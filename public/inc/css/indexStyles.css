@@ -1,0 +1,56 @@
+/*
+Gradeomatic
+Copyright Adam Swenson Merp Co Intl
+ 
+*/
+/* 
+Stylesheet for index.php
+
+    Created on : Aug 11, 2014, 8:44:38 AM
+    Author     : adam
+*/
+
+
+/* all page */
+#pageContainer{
+    margin-left: 5%;
+    margin-right: 5%;
+    padding-left: 1%;
+    padding-right: 1%;
+}
+
+#container{
+    float:left;
+    width: 80%;
+    display:block;
+    border-style: inset;
+    padding-left: 1%;
+    padding-right: 1%;
+}
+
+
+/* central page components */
+.navs{float:left;
+      width:22%;}
+
+ul {
+    list-style-type: none;
+    outline: thin;
+}
+li{
+    padding-bottom: 3pt;
+}
+
+
+/* slogan */
+.description{
+    padding-left: 2%;
+}
+#slogan{
+    font-weight: bolder;
+    font-size: 14pt;
+}
+
+.strike{
+    text-decoration: line-through;
+}

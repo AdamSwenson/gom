@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="gom" defaultIdMethod="native">
+    <behavior name="timestampable" />
+
+    <table name="r_terms" phpName="Term">
+        <column name="content" type="varchar" size="100" primaryKey="true" required="true"/>
+    </table>
+
+    <table name="r_examTopics" phpName="Topic">
+        <column name="content" type="varchar" size="100" primaryKey="true" required="true"/>
+    </table>
+
+    <table name="r_years" phpName="Year">
+        <column name="content" type="integer" size="4" primaryKey="true" required="true"/>
+    </table>
+
+    <table name="exams" phpName="Exam">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="examTerm" type="varchar" size="100" required="true"/>
+        <column name="examTopic" type="varchar" size="100" required="true"/>
+        <column name="examYear" type="integer" size="4" required="true"/>
+        <column name="locked" type="integer" size="1" required="true"/>
+        <column name="released" type="integer" size="1" required="true"/>
+        <foreign-key foreignTable="r_terms">
+        <reference local="examTerm" foreign="content"/>
+        </foreign-key>
+        <foreign-key foreignTable="r_examTopics">
+        <reference local="examTopic" foreign="content"/>
+        </foreign-key>
+        <foreign-key foreignTable="r_years">
+        <reference local="examYear" foreign="content"/>
+        </foreign-key>
+    </table>
+
+    <table name="questions" phpName="Question">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="questionText" type="longvarchar" required="true" />
+        <column name="questionName" type="varchar" size="100" />
+    </table>
+
+
+    <table name="elements" phpName="Element">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="elementName" type="varchar" size="100" />
+        <column name="displayText" type="varchar" size="225" required="true" />
+        <column name="commentText" type="longvarchar" />
+        <!--<behavior name="timestampable" />-->
+        <!--<column name="commentID" type="integer" />-->
+        <!--<foreign-key foreignTable="comments">-->
+            <!--<reference local="commentID" foreign="id"/>-->
+        <!--</foreign-key>-->
+    </table>
+
+    <table name="students" phpName="Student">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="sid" type="integer" required="true" />
+        <column name="studentName" type="varchar" size="200" />
+        <column name="email" type="varchar" size="225" />
+        <unique>
+            <unique-column name="sid"/>
+        </unique>
+    </table>
+
+    <table name="classes" phpName="Kumi">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="year" type="integer" size="4" />
+        <column name="nickname" type="varchar" size="100" />
+    </table>
+
+    <table name="stockTexts" phpName="StockText">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="valence" type="varchar" />
+        <column name="content" type="longvarchar" required="true" />
+        <column name="type" type="varchar" />
+    </table>
+
+<!--Junction tables below-->
+<!--Score tables-->
+    <table name="questionScores" phpName="QuestionScore" >
+        <column name="examID" type="integer" required="true" primaryKey="true"/>
+        <column name="questionID" type="integer" required="true" primaryKey="true" />
+        <column name="studentID" type="integer" required="true" primaryKey="true" />
+        <column name="questionScore" type="float" />
+        <foreign-key foreignTable="exams">
+            <reference local="examID" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="students">
+            <reference local="studentID" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="questions">
+            <reference local="questionID" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <table name="elementScores" phpName="ElementScore" >
+        <column name="examID" type="integer" required="true" primaryKey="true" />
+        <column name="elementID" type="integer" required="true" primaryKey="true" />
+        <column name="studentID" type="integer" required="true" primaryKey="true" />
+        <column name="elementScore" type="float" />
+        <foreign-key foreignTable="exams">
+            <reference local="examID" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="elements">
+            <reference local="elementID" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="students">
+            <reference local="studentID" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <table name="examInfo" phpName="ExamInfo" >
+        <column name="examID" type="integer" required="true" primaryKey="true"/>
+        <column name="studentID" type="integer" required="true" primaryKey="true"/>
+        <column name="completionOrder" type="integer" />
+        <column name="pages" type="float" />
+        <column name="notecard" type="float" />
+        <column name="examGroupNumber" type="integer" />
+        <foreign-key foreignTable="exams">
+            <reference local="examID" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="students">
+            <reference local="studentID" foreign="id"/>
+        </foreign-key>
+    </table>
+
+<!--Exam constituents-->
+    <table name="questionAssigner" phpName="QuestionAssigner" isCrossRef="true">
+        <column name="examID" type="integer" required="true" primaryKey="true"/>
+        <column name="questionNumber" type="integer" size="2" required="true" primaryKey="true"  />
+        <column name="questionID" type="integer" required="true" />
+        <foreign-key foreignTable="exams">
+            <reference local="examID" foreign="id" onDelete="cascade"/>
+        </foreign-key>
+        <foreign-key foreignTable="questions">
+            <reference local="questionID" foreign="id" onDelete="cascade"/>
+        </foreign-key>
+    </table>
+
+    <table name="elementXquestions" phpName="ElementAssignment">
+        <column name="examID" type="integer" primaryKey="true" required="true" />
+        <column name="questionID" type="integer" primaryKey="true" required="true" />
+        <column name="subtask" type="integer" primaryKey="true" size="2" required="true" />
+        <column name="elementID" type="integer" required="true" />
+        <foreign-key foreignTable="exams">
+            <reference local="examID" foreign="id" onDelete="cascade"/>
+        </foreign-key>
+        <foreign-key foreignTable="questions">
+            <reference local="questionID" foreign="id" onDelete="cascade"/>
+        </foreign-key>
+        <foreign-key foreignTable="elements">
+            <reference local="elementID" foreign="id" onDelete="cascade"/>
+        </foreign-key>
+    </table>
+
+<!--Class associations-->
+    <table name="studentsXclasses" phpName="StudentClassAssignment" isCrossRef="true">
+        <column name="studentID" type="integer" primaryKey="true" required="true" />
+        <column name="classID" type="integer" primaryKey="true" required="true" />
+        <foreign-key foreignTable="students">
+            <reference local="studentID" foreign="id" onDelete="cascade"/>
+        </foreign-key>
+        <foreign-key foreignTable="classes">
+            <reference local="classID" foreign="id" onDelete="cascade" />
+        </foreign-key>
+    </table>
+
+    <table name="examsXclasses" phpName="ExamClassAssignment" isCrossRef="true">
+        <column name="classID" type="integer" primaryKey="true" required="true" />
+        <column name="examID" type="integer" primaryKey="true" required="true" />
+        <foreign-key foreignTable="exams">
+            <reference local="examID" foreign="id" onDelete="cascade"/>
+        </foreign-key>
+        <foreign-key foreignTable="classes">
+            <reference local="classID" foreign="id" onDelete="cascade" />
+        </foreign-key>
+    </table>
+
+<!--Timers-->
+    <table name="time_grading" phpName="GradingTime">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="examID" type="integer" required="true" />
+        <column name="studentID" type="integer" required="true" />
+        <column name="seconds" type="float" />
+        <unique>
+            <unique-column name="examID" />
+            <unique-column name="studentID" />
+        </unique>
+        <foreign-key foreignTable="exams">
+            <reference local="examID" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="students">
+            <reference local="studentID" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="time_group" phpName="GroupTime">
+        <column name="examID" type="integer" required="true" primaryKey="true"/>
+        <column name="groupID" type="integer" required="true" primaryKey="true"/>
+        <column name="seconds" type="float" />
+        <foreign-key foreignTable="exams">
+            <reference local="examID" foreign="id"/>
+        </foreign-key>
+     </table>
+
+<!--Preferences-->
+    <table name="preferences" phpName="Preferences">
+        <column name="jqueryTheme" type="varchar" size="100" />
+        <column name="autostartExam" type="boolean" />
+        <column name="autostartGroup" type="boolean"/>
+        <column name="dashboard_num_exams" type="integer" />
+        <column name="number_questions" type="integer" />
+        <column name="number_subtasks" type="integer" />
+    </table>
+
+    <table name="pseudoIDs" phpName="PseudoID">
+        <column name="studentID" type="integer" required="true" primaryKey="true" />
+        <column name="examID" type="integer" required="true" primaryKey="true" />
+        <column name="pseudoID" type="varchar" size="225" required="true"/>
+        <unique>
+            <unique-column name="pseudoID" />
+        </unique>
+        <foreign-key foreignTable="exams">
+            <reference local="examID" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="students">
+            <reference local="studentID" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <!--Tags-->
+    <table name="tags" phpName="Tag">
+        <column name="id" type="integer" required="true" autoIncrement="true" primaryKey="true"/>
+        <column name="tag" type="varchar" size="225" required="true"/>
+        <unique>
+            <unique-column name="tag" />
+        </unique>
+    </table>
+
+    <table name="tagsXquestions" phpName="TaggedQuestion" isCrossRef="true">
+        <column name="tag_id" type="integer" primaryKey="true" required="true" />
+        <column name="question_id" type="integer" primaryKey="true" required="true" />
+        <foreign-key foreignTable="tags">
+            <reference local="tag_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="questions">
+            <reference local="question_id" foreign="id" onDelete="cascade"/>
+        </foreign-key>
+    </table>
+
+    <table name="tagsXelements" phpName="TaggedElement" isCrossRef="true">
+        <column name="tag_id" type="integer" primaryKey="true" required="true" />
+        <column name="element_id" type="integer" primaryKey="true" required="true" />
+        <foreign-key foreignTable="tags">
+            <reference local="tag_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="elements">
+            <reference local="element_id" foreign="id" onDelete="cascade" />
+        </foreign-key>
+    </table>
+
+<!--Comments-->
+    <!--<table name="comments" phpName="Comment">-->
+    <!--<column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>-->
+    <!--<column name="commentText" type="longvarchar" required="true" />-->
+    <!--<behavior name="timestampable" />-->
+    <!--</table>-->
+
+    <!--<table name="commentTypes" phpName="CommentType">-->
+    <!--<column name="type" type="varchar" size="100" required="true" primaryKey="true" />-->
+    <!--</table>-->
+
+    <!--<table name="commentAssigner" phpName="CommentAssignment" isCrossRef="true">-->
+        <!--<column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>-->
+        <!--<column name="examID" type="integer" required="true" />-->
+        <!--<column name="elementID" type="integer" required="true" />-->
+        <!--<column name="commentID" type="integer" required="true" />-->
+        <!--<column name="commentType" type="varchar" size="100" required="true" />-->
+        <!--<column name="minScore" type="float"  />-->
+        <!--<column name="maxScore" type="float" />-->
+        <!--<unique>-->
+            <!--<unique-column name="examID" />-->
+            <!--<unique-column name="elementID" />-->
+            <!--<unique-column name="commentType" />-->
+        <!--</unique>-->
+        <!--<foreign-key foreignTable="exams">-->
+            <!--<reference local="examID" foreign="id"/>-->
+        <!--</foreign-key>-->
+        <!--<foreign-key foreignTable="elements">-->
+            <!--<reference local="elementID" foreign="id"/>-->
+        <!--</foreign-key>-->
+        <!--<foreign-key foreignTable="comments">-->
+            <!--<reference local="commentID" foreign="id"/>-->
+        <!--</foreign-key>-->
+        <!--<foreign-key foreignTable="commentTypes">-->
+            <!--<reference local="commentType" foreign="type"/>-->
+        <!--</foreign-key>-->
+    <!--</table>-->
+
+    <!--<table name="comments_missing" phpName="CommentMissing">-->
+        <!--<column name="examID" type="integer" required="true" primaryKey="true"/>-->
+        <!--<column name="elementID" type="integer" required="true" primaryKey="true"/>-->
+        <!--<column name="commentID" type="integer" required="true" />-->
+        <!--<column name="stockCommentID" type="integer"  />-->
+        <!--<column name="minScore" type="float"  />-->
+        <!--<column name="maxScore" type="float" />-->
+        <!--<foreign-key foreignTable="exams">-->
+            <!--<reference local="examID" foreign="id"/>-->
+        <!--</foreign-key>-->
+        <!--<foreign-key foreignTable="elements">-->
+            <!--<reference local="elementID" foreign="id"/>-->
+        <!--</foreign-key>-->
+        <!--<foreign-key foreignTable="comments">-->
+            <!--<reference local="commentID" foreign="id"/>-->
+        <!--</foreign-key>-->
+        <!--<foreign-key foreignTable="stockTexts">-->
+            <!--<reference local="stockCommentID" foreign="id"/>-->
+        <!--</foreign-key>-->
+    <!--</table>-->
+
+    <!--<table name="comments_poor" phpName="CommentPoor">-->
+        <!--<column name="examID" type="integer" required="true" primaryKey="true"/>-->
+        <!--<column name="elementID" type="integer" required="true" primaryKey="true"/>-->
+        <!--<column name="commentID" type="integer" required="true" />-->
+        <!--<column name="stockCommentID" type="integer"  />-->
+        <!--<column name="minScore" type="float"  />-->
+        <!--<column name="maxScore" type="float" />-->
+        <!--<foreign-key foreignTable="exams">-->
+            <!--<reference local="examID" foreign="id"/>-->
+        <!--</foreign-key>-->
+        <!--<foreign-key foreignTable="elements">-->
+            <!--<reference local="elementID" foreign="id"/>-->
+        <!--</foreign-key>-->
+        <!--<foreign-key foreignTable="comments">-->
+            <!--<reference local="commentID" foreign="id"/>-->
+        <!--</foreign-key>-->
+        <!--<foreign-key foreignTable="stockTexts">-->
+            <!--<reference local="stockCommentID" foreign="id"/>-->
+        <!--</foreign-key>-->
+    <!--</table>-->
+
+
+    <!--<table name="comments_competent" phpName="CommentCompetent">-->
+        <!--<column name="examID" type="integer" required="true" primaryKey="true"/>-->
+        <!--<column name="elementID" type="integer" required="true" primaryKey="true"/>-->
+        <!--<column name="commentID" type="integer" required="true" />-->
+        <!--<column name="stockCommentID" type="integer"  />-->
+        <!--<column name="minScore" type="float"  />-->
+        <!--<column name="maxScore" type="float" />-->
+        <!--<foreign-key foreignTable="exams">-->
+            <!--<reference local="examID" foreign="id"/>-->
+        <!--</foreign-key>-->
+        <!--<foreign-key foreignTable="elements">-->
+            <!--<reference local="elementID" foreign="id"/>-->
+        <!--</foreign-key>-->
+        <!--<foreign-key foreignTable="comments">-->
+            <!--<reference local="commentID" foreign="id"/>-->
+        <!--</foreign-key>-->
+        <!--<foreign-key foreignTable="stockTexts">-->
+            <!--<reference local="stockCommentID" foreign="id"/>-->
+        <!--</foreign-key>-->
+    <!--</table>-->
+
+    <!--<table name="comments_excellent" phpName="CommentExcellent">-->
+        <!--<column name="examID" type="integer" required="true" primaryKey="true"/>-->
+        <!--<column name="elementID" type="integer" required="true" primaryKey="true"/>-->
+        <!--<column name="commentID" type="integer" required="true" />-->
+        <!--<column name="stockCommentID" type="integer"  />-->
+        <!--<column name="minScore" type="float"  />-->
+        <!--<column name="maxScore" type="float" />-->
+        <!--<foreign-key foreignTable="exams">-->
+            <!--<reference local="examID" foreign="id"/>-->
+        <!--</foreign-key>-->
+        <!--<foreign-key foreignTable="elements">-->
+            <!--<reference local="elementID" foreign="id"/>-->
+        <!--</foreign-key>-->
+        <!--<foreign-key foreignTable="comments">-->
+            <!--<reference local="commentID" foreign="id"/>-->
+        <!--</foreign-key>-->
+        <!--<foreign-key foreignTable="stockTexts">-->
+            <!--<reference local="stockCommentID" foreign="id"/>-->
+        <!--</foreign-key>-->
+    <!--</table>-->
+
+
+
+    <!--<table name="tagsXcomments" phpName="TaggedComment" isCrossRef="true">-->
+        <!--<column name="tag_id" type="integer" primaryKey="true" required="true" />-->
+        <!--<column name="comment_id" type="integer" primaryKey="true" required="true" />-->
+        <!--<foreign-key foreignTable="tags">-->
+            <!--<reference local="tag_id" foreign="id"/>-->
+        <!--</foreign-key>-->
+        <!--<foreign-key foreignTable="comments">-->
+            <!--<reference local="comment_id" foreign="id"/>-->
+        <!--</foreign-key>-->
+    <!--</table>-->
+</database>

@@ -1,0 +1,95 @@
+/*
+Gradeomatic
+Copyright Adam Swenson Merp Co Intl
+ 
+*/
+/* 
+This is the stylesheet for examsetup.php
+
+    Created on : Aug 7, 2014, 1:13:54 PM
+    Author     : adam
+*/
+
+/* Accordion */
+.accordion{
+    /*margin-top: 1%;*/
+    margin-left: 5%;
+    margin-right: 5%;
+    padding-right: 2%;
+    /*border: inset;*/
+}
+h3{
+    /*This keeps the accordion tabs from separating*/
+    margin-bottom: 0; 
+}
+
+#pageBottom{
+    /*                    display:block;
+                        clear:both;
+                        margin-top: 1px;*/
+}
+#currExamQuestionList{
+    display: block;
+    clear:both;
+    padding-left:2%;
+    padding-right:2%;
+}
+
+
+#currExamQuestionList{
+    display: block;
+    clear:both;
+}
+
+.examQuestionBlock{
+    width: 30%;
+    display:block;
+    float:left;
+    padding: 3px;
+}
+.questionIdentifierLine{
+    font-weight: bold;
+}
+
+/*                Tables*/
+.buttonCell0{
+    width: 5%;
+}
+#questions .buttonCell1{
+    width: 5%;
+}
+#questions .contentCell0{
+    width : 15%;
+}
+#questions .contentCell1{
+    width :75%;
+}
+#elements .buttonCell1{
+    width: 5%;
+}
+#elements .buttonCell2{
+    width:3%;
+}
+#elements .contentCell1{
+    width:80%;
+}
+table input[type=text]{
+    width: 100%;
+    border: 0;
+}
+tr{
+    width: 100%;
+}
+table{
+    width: 98%;
+    font-size: 10px;
+}
+
+table#cloneTable{
+    width:20%;
+}
+
+/*Used when a row has been selected for editing or assignment*/
+.selectedRow{
+    background-color : red;
+}

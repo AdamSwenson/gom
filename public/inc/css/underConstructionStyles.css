@@ -1,0 +1,23 @@
+/*
+Gradeomatic
+Copyright Adam Swenson Merp Co Intl
+ 
+*/
+/* 
+    Created on : Mar 14, 2015, 12:45:32 PM
+    Author     : adam
+*/
+
+    div #under_constuction{
+        display:block;
+        margin: 3%;
+        padding-top: 10%;
+        padding-left: 30%;
+        padding-right: 30%;
+        
+    }
+    
+    #under_constuction p{
+        font-weight: bolder;
+        font-size: 14pt;
+    }

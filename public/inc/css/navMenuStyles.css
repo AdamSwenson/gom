@@ -1,0 +1,46 @@
+.navButton{
+	/*width: 30px;*/
+}
+#navmenu{
+    width: 100%;
+}
+#navmenu ul{
+    /* This is set high so that the menu drop downs will display in front of other jquery ui items (e.g., tabs or accordions) */
+    z-index: 20000;
+	/*margin-bottom: 1px;*/
+	/*clear: both;*/
+	/*overflow: hidden;*/
+    /*white-space: nowrap;*/
+}
+#navMenu select{
+	width: 200px;
+}
+#navmenu .navMenuItem{
+    width: 15%;
+    display: block;
+    float:left;
+}
+#navmenu .navBarItem{
+    width: 100%;
+	display: block;
+	float:left;
+}
+#navmenu hr{
+	clear: both;
+	/*margin-bottom: 1px;*/
+}
+/*#navmenu .navBarDec{
+	display: block;
+	float: left;
+	margin-left:10px;
+	margin-right: 10px;
+}*/
+#navmenu #menuArea{
+    float:left;
+    display:block;
+}
+/*.testTopBar{
+	width:90%;
+	size: 10;
+	color:#FF0000;
+}*/

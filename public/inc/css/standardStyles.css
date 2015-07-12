@@ -1,0 +1,90 @@
+/*
+Gradeomatic
+Copyright Adam Swenson Merp Co Intl 
+*/
+/*
+This defines styles for all pages and the use of various class terms
+    Created on : Aug 14, 2014, 4:01:43 PM
+    Author     : adam
+*/
+
+
+*{
+    font-size: 10px;
+    /*font-family: serif;*/
+    font-family: Verdana,Arial,sans-serif;
+}
+
+/* -------------------------------------------------Common page parts       */
+
+/*This is the div which begins immediately below the navbar and encompasses all visable page elements including
+the footer. It ends before the scriptbox div*/ 
+.container{
+    margin-left: 1%;
+    margin-right: 1%;
+}
+
+/* Main sections of the page which clear both sides. Only div surrounding is .container*/
+.pageComponent{
+    display : block;
+    clear : both;
+    margin-bottom : 1px;
+    /*margin-top : 1px;*/
+}
+
+/* This contains the title of the page and any page-wide option selectors, including the tag selector and exam selectors.
+It is always a .pageComponent
+*/
+div#topbar{
+    
+}
+/*This governs the display of the leftmost pagewide element in a topbar (usually the tag selector)*/
+div#topbar .leftside{
+    display:block;
+    float: left;
+    padding-left: 5%;
+}
+/* This governs the rightmost pagewide element in a topbar (usually the exam selector) */
+div#topbar .rightside{
+    display: block;
+    float:right;
+    padding-right: 10%;
+}
+/*This governs the page title element which displays in between the pagewide elements */
+div#topbar .titlebar {
+    display: block;
+    float:left;
+    padding-left:15%;
+}
+
+div#topbar .pageTitle{
+    font-size: 14px;
+    font-weight: bolder;
+}
+
+
+/*This governs the footer area on all pages*/
+div.footer {
+    display: block;
+    margin-left: 30%;
+    margin-right: 30%;
+    padding-left: 5%;
+    padding-right: 5%;
+    clear: both;
+    text-align: center;
+}
+
+/* ------------------------------------------------ Special messages -----------*/
+.warning{
+font-weight: bold;
+font-size: 14px;
+color: red;
+}
+
+/*This governs the error message for when, e.g., an exam is not set*/
+.pageError{
+    display:block;
+    margin-left: 10%;
+    padding-top:2%;
+    padding-bottom: 2%;
+}

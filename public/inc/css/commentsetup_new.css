@@ -1,0 +1,130 @@
+/* The main question setup divs */
+.commentSetupArea {
+    display: block;
+    clear: both;
+    width: 100%;
+    margin-top: 1%;
+    margin-bottom: 2%;
+    padding-top: 1%;
+}
+
+/* The main subareas within each question div */
+.subtaskArea {
+    background-color: gray;
+    width: 100%;
+    display: block;
+    float: left;
+    /*clear:both;*/
+    padding: 10px;
+    margin-bottom: 5px;
+    /*
+                padding-left: 5%;
+                margin-left: 5%;
+                margin-bottom: 2%;
+                padding-top: 2%;
+                height: 10%;*/
+}
+
+.errorArea{
+    font-weight: bolder;
+    color: red;
+    display: block;
+    padding-left: 40%;
+}
+
+/* -------------------- Comment setup area*/
+.elementNamesArea {
+    display: block;
+    float: left;
+    clear: both;
+}
+
+.elementNicknameHolder{
+    display: block;
+    float:left;
+    margin-right: 2em;
+}
+.elementTextHolder{
+    display: block;
+    float:left;
+    margin-right: 3em;
+}
+
+.elementSelectArea {
+    display: block;
+    float: left;
+    clear: both;
+}
+
+.centralComment {
+    display: block;
+    float: left;
+    clear: both;
+}
+
+
+/*Floats at the left of the area. Does not move*/
+.taskNum {
+    display: block;
+    float: left;
+    font-size: large;
+    padding-right: 2px;
+    background-color: inherit;
+
+}
+
+/* Floating and draggable thing */
+.subtask {
+    width: 80%;
+    background-color: oldlace;
+    border: solid;
+    display: block;
+    float: left;
+
+}
+
+.subtaskPart {
+    display: block;
+    float: left;
+    background-color: inherit;
+    /*border:solid;*/
+}
+
+/*Configuration panel*/
+.commentConfig {
+
+    width: 25%;
+}
+
+.settingsDiv {
+    display: block;
+    float: left;
+    clear: both;
+}
+
+.panelPart {
+    display: block;
+    float: left;
+}
+
+.textSetting {
+    display: block;
+    float: left;
+}
+
+.rangeSetting {
+    width: 15%;
+    display: block;
+    float: left;
+}
+
+.rangeSpinner {
+    width: 3em;
+}
+
+.startHidden {
+    display: none;
+}
+
+
+

@@ -1,0 +1,42 @@
+/*
+Gradeomatic
+Copyright Adam Swenson Merp Co Intl
+ 
+*/
+/* 
+These are the styles for the exam selector block (contained in examselector.php) included on many setup pages
+    Created on : Aug 13, 2014, 11:38:24 AM
+    Author     : adam
+*/
+
+.examSelector .currentExamString{
+    font-size:16px;
+}
+
+.currentExamDisplay{
+    display: block;
+}
+.currentExamDisplay input[type=text]{
+/*    background: none;
+    border: none;
+    width: 3em;
+    font-size:16px;*/
+}
+.currentExamDisplay label{
+    
+}
+
+.currentExamDisplay.rightside{
+    display: block;
+    float:right;
+    padding-right: 10%;
+}
+
+.completedMessage{
+    display: block;
+    margin-top: 1%;
+    padding-top: 5%;
+    font-size: 16px;
+    font-weight: bolder;
+    color:red;
+}

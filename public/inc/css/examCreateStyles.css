@@ -1,0 +1,168 @@
+/*
+GRADE O MATIC
+v.3.1
+REVISED: 5APR12
+
+*/
+/**{
+    font-family: serif;
+    font-family: Verdana,Arial,sans-serif;
+}*/
+.startHidden{
+    display:none;
+}
+
+
+#examSetupArea{
+    padding-left: 25%;
+    padding-top:15%;
+    margin-top:15%;
+    margin-bottom: 30%;
+}
+.examCreationArea{
+    display:block;
+    float:left;
+    height: 10%;
+}
+.examCreationDiv{
+    display:block;
+    float:left;
+
+}
+.examCreateButtonArea{
+    display:block;
+    float:left;
+    margin-left: 2%;
+    padding-top:1%;
+}
+
+.success{
+    color: #008000;
+}
+.fail{
+    color:red;
+}
+
+/* --------------------------- Older */
+
+/* Accordion */
+.accordion{
+    /*margin-top: 1%;*/
+    margin-left: 5%;
+    margin-right: 5%;
+    padding-right: 2%;
+    /*border: inset;*/
+}
+h3{
+    /*This keeps the accordion tabs from separating*/
+    margin-bottom: 0; 
+}
+
+
+select{
+    /*width: 50%;*/
+    height: auto;
+}
+
+table select{
+    width:100%;
+    text-transform:capitalize;
+}
+
+table{
+    width:50%;
+    margin-top: 10px;
+}
+
+td{
+    width:30%;
+    padding-bottom: 0px;
+    padding-top:0px; 
+}
+
+ul {
+    list-style-type: none;
+    outline: thin;
+}
+
+h1{
+    text-align: center;
+}
+
+li{
+    /*word-spacing: 5px;*/
+}
+
+option{
+    /*font-variant: small-caps;*/
+    /*word-spacing: 5px;*/
+}
+
+/*restrictors div*/
+#currentRestricts{
+    display:block;
+    clear: both;
+}
+.restrictorType{
+    font-weight: bolder;
+}
+.rlist{
+    /*width:13em;*/
+    float: left;
+    /*margin:45px;*/
+}
+
+#restrictEnter{
+    display:block;
+    clear:both;
+    margin-top:10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    /*position: absolute top;*/
+}
+#newRestrictors{
+    margin-top: 10px;
+    /*display: block;*/
+}
+
+.restrictorListItem{
+    margin: 2px;
+    padding: 2px;
+}
+/*#restrictEdit{margin-top: 2%;}*/
+
+#newClass{
+    display:none;
+}
+
+
+/*Exam topics*/
+.etSubarea{
+    display:block;
+    clear:both;
+}
+
+
+/*exam/class assignent*/
+.ecSubarea{
+    display:block;
+    clear:both;
+}
+/*#examXclass select{
+    width: 100%;
+}*/
+.ce{
+    float: left;
+    margin: 10px;
+    padding: 5px;
+}
+#associateThem{
+    position: absolute;
+    margin-bottom: 10px;
+    display: block;
+}
+
+
+.subtaskNumber{
+    font-weight: bold;
+}

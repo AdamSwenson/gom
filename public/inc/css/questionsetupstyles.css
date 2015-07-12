@@ -1,0 +1,46 @@
+.questionArea{
+    display:block;
+    clear:both;
+    width: 80%;
+    padding-left: 5%;
+    margin-left: 5%;
+    margin-bottom: 2%;
+    padding-top: 2%;
+    height: 10%;
+}
+.qnumDisplay{
+    margin-right: 2%;
+}
+.questionSetupPart{
+    display:block;
+    float:left;
+}
+.questionTitle{
+    margin-right:2em;
+}
+.questionTextArea{
+    width:75em;
+}
+
+#statusArea{
+    display:block;
+    clear:both;
+    float: left;
+}
+
+.buttonArea{
+    display:block;
+    clear:both;
+}
+
+.neutral{
+    color: #000000;
+}
+.success{
+    font-weight: bolder;
+    color: #008000;
+}
+.failure{
+    font-weight: bolder;
+    color: red;
+}

@@ -1,0 +1,70 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: adam
+ * Date: 4/4/15
+ * Time: 4:06 PM
+ */
+
+namespace ScoreClasses;
+
+
+class ElementScoreHandler implements IElementScoreHandler
+{
+
+    /** @var  $response_handler \JsonOutputClasses\controllers\IResponseChooser */
+    public $response_handler;
+
+    /** @var  $score_obj \ElementScore */
+    public $score_obj;
+
+    /**
+     * @param \JsonOutputClasses\controllers\IResponseChooser $response_handler
+     */
+    public function set_response_handler(\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    {
+        $this->response_handler = $response_handler;
+    }
+
+
+    /**
+     * @param \Exam $exam
+     * @param \Element $element
+     * @param \Student $student
+     * @return mixed|\QuestionScore
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public function load(\Exam $exam, \Element $element, \Student $student)
+    {
+        $this->score_obj = \ElementScoreQuery::create()
+            ->filterByExam($exam)
+            ->filterByElement($element)
+            ->filterByStudent($student)
+//            ->where('studentID = ?', $student->getId())
+            ->findOneOrCreate();
+        return $this->score_obj;
+    }
+
+    /**
+     * Saves the question score
+     * @param \Exam $exam
+     * @param \Element $element
+     * @param \Student $student
+     * @param $score
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public function update(\Exam $exam, \Element $element, \Student $student, $score)
+    {
+        $this->load($exam, $element, $student);
+        $this->score_obj->setElementscore($score);
+        $result = $this->score_obj->save();
+        if($result)
+        {
+            $this->response_handler->handle_row_count(1);
+        }
+        else
+        {
+            $this->response_handler->handle_row_count(0);
+        }
+    }
+}
