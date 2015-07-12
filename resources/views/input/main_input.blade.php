@@ -126,6 +126,8 @@
                 {{--{{asset('inc/js/dashboardStatsDisplay.js')}}--}}
                 {{--];--}}
 
+            var AUTOSTARTGROUP = true;
+            var AUTOSTARTEXAM =true;
 
             function onLoad() {
                 window.console.log('onload fired');
@@ -176,7 +178,7 @@
                 statsData.addDisplayManager(new DisplayOverallStats());
                 statsData.addDisplayManager(new MakeSpeedTrendChart());
                 //then make the ajax call for server data
-                statsData.loadAllStats(DASHPHP);
+                statsData.loadAllStats('api');
             }
 
             onLoad();

@@ -12,10 +12,15 @@ namespace App\Http\Controllers;
 class InputController extends Controller
 {
 
-    public function showPage($numberOfQuestions=5)
+    public function showInputPage($numberOfQuestions=5)
     {
 //        return 'input';
         return view('input.main_input', [
             'numberOfQuestions' => $numberOfQuestions]);
+    }
+
+    public function showExamManager()
+    {
+        return "exam manager page here";
     }
 }
