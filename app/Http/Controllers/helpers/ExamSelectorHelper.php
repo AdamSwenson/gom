@@ -52,6 +52,7 @@ class ExamSelectorHelper
 
     protected function makeExamArray()
     {
+//        \ExamQuery::create()->find();
         $exams = \ExamQuery::create()->find();
         $examList = array();
         if (count($exams) > 0)

@@ -110,9 +110,9 @@
                 </div>
 
                 <div id="errorArea">
-                    status = {{$status or ''}}
+                    {{--status = {{$status or ''}}--}}
                     <p>
-                        {{$errors or ''}}
+                        {{--{{$errors or ''}}--}}
                     </p>
                 </div>
 
