@@ -6,7 +6,7 @@
  *
  */
 
-namespace RequestClasses;
+namespace App\classes\RequestClasses;
 
 /**
  *

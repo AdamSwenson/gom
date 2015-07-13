@@ -6,7 +6,7 @@
  *
  */
 
-namespace JsonOutputClasses\encoders;
+namespace App\classes\JsonOutputClasses\encoders;
 
 /**
  * This covers both functions which echo a json encoded string

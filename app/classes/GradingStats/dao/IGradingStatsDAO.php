@@ -6,7 +6,7 @@
  * Time: 5:36 PM
  */
 
-namespace GradingStats\dao;
+namespace App\classes\GradingStats\dao;
 
 
 interface IGradingStatsDAO

@@ -6,7 +6,7 @@
  * Time: 1:44 PM
  */
 
-namespace ScoreClasses\dao;
+namespace App\classes\ScoreClasses\dao;
 
 
 interface IRecorder 

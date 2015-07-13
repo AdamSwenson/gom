@@ -6,7 +6,7 @@
  * Time: 1:40 PM
  */
 
-namespace StudentClasses\dao;
+namespace App\classes\StudentClasses\dao;
 
 
 interface IStudentLoader 

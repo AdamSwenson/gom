@@ -11,7 +11,7 @@ namespace UserManagement\dao;
 
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
-use SecurityClasses\environ\LogVarHolder;
+use App\classes\SecurityClasses\environ\LogVarHolder;
 use UserManagement\errors\NewDbSetupException;
 use UserManagement\service\UserSecrets;
 

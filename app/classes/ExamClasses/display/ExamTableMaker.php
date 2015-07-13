@@ -6,7 +6,7 @@
  * Time: 5:46 PM
  */
 
-namespace ExamClasses\display;
+namespace App\classes\ExamClasses\display;
 
 
 use Whoops\Handler\Handler;
@@ -19,7 +19,7 @@ class ExamTableMaker
 
     public $encoder;
 
-    public function set_encoder(\JsonOutputClasses\encoders\DirectJsonOutput $encoder)
+    public function set_encoder(\App\classes\JsonOutputClasses\encoders\DirectJsonOutput $encoder)
     {
         $this->encoder = $encoder;
     }

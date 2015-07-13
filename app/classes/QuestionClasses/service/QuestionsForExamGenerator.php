@@ -6,13 +6,13 @@
  * Time: 5:04 PM
  */
 
-namespace QuestionClasses\service;
+namespace App\classes\QuestionClasses\service;
 
 /**
  * Class QuestionsForExamGenerator
  * Generator for getting all questions associated with an exam
  *
- * @package QuestionClasses\service
+ * @package App\classes\QuestionClasses\service
  */
 class QuestionsForExamGenerator
 {

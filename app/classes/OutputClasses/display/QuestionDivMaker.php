@@ -6,7 +6,7 @@
  *
  */
 
-namespace OutputClasses\display;
+namespace App\classes\OutputClasses\display;
 
 use QuestionAssigner;
 

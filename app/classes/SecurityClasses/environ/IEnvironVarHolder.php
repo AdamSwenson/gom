@@ -6,7 +6,7 @@
  * Time: 9:24 AM
  */
 
-namespace SecurityClasses\environ;
+namespace App\classes\SecurityClasses\environ;
 
 
 interface IEnvironVarHolder 

@@ -6,7 +6,7 @@
  * 
  */
 
-namespace ImportExportClasses\StudentUpload;
+namespace App\classes\ImportExportClasses\StudentUpload;
 
 /**
  * Handles reading the csv file
@@ -30,13 +30,13 @@ class StudentCsvProcessor implements IStudentCsvProcessor
 
     public $students = array();
 
-    /** @var $validator \ImportExportClasses\StudentImportValidator */
+    /** @var $validator \App\classes\ImportExportClasses\StudentImportValidator */
     public $validator;
 
-    /** @var $importer \ImportExportClasses\StudentImporter */
+    /** @var $importer \App\classes\ImportExportClasses\StudentImporter */
     public $importer;
     
-    /** @var $request \RequestClasses\IFileRequest */
+    /** @var $request \App\classes\RequestClasses\IFileRequest */
     public $request;
 
     /**
@@ -79,7 +79,7 @@ class StudentCsvProcessor implements IStudentCsvProcessor
         }
     }
 
-    public function process_file(\RequestClasses\IFileRequest $request)
+    public function process_file(\App\classes\RequestClasses\IFileRequest $request)
     {
         try {
             ini_set('auto_detect_line_endings', TRUE);

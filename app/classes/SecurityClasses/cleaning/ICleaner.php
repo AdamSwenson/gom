@@ -6,7 +6,7 @@
  * 
  */
 
-namespace SecurityClasses\cleaning;
+namespace App\classes\SecurityClasses\cleaning;
 
 /**
  * Interface for all cleaners. This is the main security cleaning set of tools.

@@ -6,7 +6,7 @@
  *
  */
 
-namespace JsonOutputClasses\controllers;
+namespace App\classes\JsonOutputClasses\controllers;
 
 /**
  * This receives an associative array from a database query and
@@ -87,17 +87,17 @@ class ResponseChooser implements IResponseChooser, IHandler
      * Once the type has been determined, this returns either a data handler or a status handler
      *
      * @param  type                                                                            $type String of the type of handler to load
-     * @return \JsonOutputClasses\encoders\SendDataJson | \JsonOutputClasses\encoders\SendStatusJson
+     * @return \App\classes\JsonOutputClasses\encoders\SendDataJson | \App\classes\JsonOutputClasses\encoders\SendStatusJson
      * @throws \Exception
      */
     public function load_appropriate_handler($type)
     {
         switch ($type) {
             case 'status':
-                return new \JsonOutputClasses\encoders\SendStatusJson();
+                return new \App\classes\JsonOutputClasses\encoders\SendStatusJson();
                 break;
             case 'data':
-                return new \JsonOutputClasses\encoders\SendDataJson();
+                return new \App\classes\JsonOutputClasses\encoders\SendDataJson();
                 break;
             default:
                 throw new \Exception("Type not correct ");

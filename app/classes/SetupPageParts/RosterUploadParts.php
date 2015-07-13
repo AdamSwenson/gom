@@ -86,21 +86,21 @@
 //                    while (($data = fgetcsv($file, 10000, ",")) !== FALSE) {
 //                        if ($i == 0) {
 //                            //check the header fields
-//                            \ImportExportClasses\StudentImportValidator::csv_headers($data);
+//                            \App\classes\ImportExportClasses\StudentImportValidator::csv_headers($data);
 //                            //@todo Make it fail and generate an error message here
 //                        } else {
 //                            $sid = $data[0];
 //                            $studentName = $data[1];
 //                            $email = $data[2];
 //                            try {
-//                                $classid = \ImportExportClasses\StudentImportValidator::clean($_POST['classid']);
+//                                $classid = \App\classes\ImportExportClasses\StudentImportValidator::clean($_POST['classid']);
 //                                $class = new \KumiClasses\LoadKumiByClass($user, $classid);
 //                            } catch (\Exception $e) {
 //                                echo $e->getMessage();
 //                                echo "The classID you specified was invalid. You must first create a class. Look up the id and add it to your csv file";
 //                            }
-//                            $valid = new \ImportExportClasses\StudentImportValidator($sid, $studentName, $email);
-//                            $import = new \ImportExportClasses\StudentImporter($valid, $class);
+//                            $valid = new \App\classes\ImportExportClasses\StudentImportValidator($sid, $studentName, $email);
+//                            $import = new \App\classes\ImportExportClasses\StudentImporter($valid, $class);
 //                            if ($import) {
 //                                echo $sid . ' ' . $studentName . '  ' . $class->displayID() . '  ' . $email;
 //                                echo '<br />';

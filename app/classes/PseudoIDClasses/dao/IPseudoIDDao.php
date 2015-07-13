@@ -6,7 +6,7 @@
  * Time: 1:14 PM
  */
 
-namespace PseudoIDClasses\dao;
+namespace App\classes\PseudoIDClasses\dao;
 
 
 interface IPseudoIDDao

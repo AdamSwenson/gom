@@ -6,7 +6,7 @@
  * 
  */
 
-namespace RequestClasses;
+namespace App\classes\RequestClasses;
 
 /**
  * Gets incoming request and checks for files

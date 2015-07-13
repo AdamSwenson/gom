@@ -6,7 +6,7 @@
  * Time: 8:25 AM
  */
 
-namespace ExamClasses\display;
+namespace App\classes\ExamClasses\display;
 
 
 class ExamOptionMaker

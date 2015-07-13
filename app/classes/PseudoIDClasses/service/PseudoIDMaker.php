@@ -6,12 +6,12 @@
  * Time: 12:22 PM
  */
 
-namespace PseudoIDClasses\service;
+namespace App\classes\PseudoIDClasses\service;
 
 /**
  * Class PseudoIDMaker
  * Handles creating pseudoIDs (temporary access codes for students to access exams)
- * @package PseudoIDClasses\service
+ * @package App\classes\PseudoIDClasses\service
  */
 class PseudoIDMaker implements IPseudoIDMaker
 {

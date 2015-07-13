@@ -6,7 +6,7 @@
  * Time: 12:46 PM
  */
 
-namespace TagClasses\dao;
+namespace App\classes\TagClasses\dao;
 
 
 class TagAssignmentDao 

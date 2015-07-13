@@ -6,29 +6,29 @@
  * Time: 11:07 AM
  */
 
-namespace OutputClasses\stats;
+namespace App\classes\OutputClasses\stats;
 
 /**
  * Class ExamStats
  * Calculates scores for all student exams in an
  * examination
- * @package OutputClasses\stats
+ * @package App\classes\OutputClasses\stats
  */
 class ExamStats 
 {
-    /** @var  \OutputClasses\stats\IStatsWorker */
+    /** @var  \App\classes\OutputClasses\stats\IStatsWorker */
     public $worker;
 
     public $average_array = array();
 
-    /** @var  \JsonOutputClasses\encoders\DirectJsonOutput */
+    /** @var  \App\classes\JsonOutputClasses\encoders\DirectJsonOutput */
     public $encoder;
 
-    /** @var  \ScoreClasses\dao\ScoreDAO */
+    /** @var  \App\classes\ScoreClasses\dao\ScoreDAO */
     public $score_dao;
 
     /**
-     * @param \ScoreClasses\dao\ScoreDAO $score_dao
+     * @param \App\classes\ScoreClasses\dao\ScoreDAO $score_dao
      */
     public function setScoreDao($score_dao)
     {
@@ -38,7 +38,7 @@ class ExamStats
     /**
      * @param mixed $encoder
      */
-    public function setEncoder(\JsonOutputClasses\encoders\DirectJsonOutput $encoder)
+    public function setEncoder(\App\classes\JsonOutputClasses\encoders\DirectJsonOutput $encoder)
     {
         $this->encoder = $encoder;
     }

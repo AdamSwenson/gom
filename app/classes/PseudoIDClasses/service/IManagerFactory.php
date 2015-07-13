@@ -6,7 +6,7 @@
  * Time: 5:38 AM
  */
 
-namespace PseudoIDClasses\service;
+namespace App\classes\PseudoIDClasses\service;
 
 use Propel\Runtime\Connection\ConnectionWrapper;
 

@@ -6,15 +6,15 @@
  * Time: 1:37 PM
  */
 
-namespace SecurityClasses\environ;
+namespace App\classes\SecurityClasses\environ;
 
 
-use SecurityClasses\errors\EnvironmentException;
+use App\classes\SecurityClasses\errors\EnvironmentException;
 
 /**
  * Class TemplateVarHolder
  * Holds and manages the environmental variables used by the templating engine
- * @package SecurityClasses\environ
+ * @package App\classes\SecurityClasses\environ
  */
 class TemplateVarHolder
 {

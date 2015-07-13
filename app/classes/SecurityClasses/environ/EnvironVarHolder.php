@@ -6,9 +6,9 @@
  * Time: 8:52 AM
  */
 
-namespace SecurityClasses\environ;
+namespace App\classes\SecurityClasses\environ;
 
-use SecurityClasses\errors\EnvironmentException;
+use App\classes\SecurityClasses\errors\EnvironmentException;
 
 /**
  * Class EnvironVarHolder
@@ -20,9 +20,9 @@ use SecurityClasses\errors\EnvironmentException;
  * This does NOT hold the gomUser credentials
  * This does NOT hold paths to logs.
  *
- * @package SecurityClasses\environ
+ * @package App\classes\SecurityClasses\environ
  */
-class EnvironVarHolder implements \SecurityClasses\environ\IEnvironVarHolder
+class EnvironVarHolder implements \App\classes\SecurityClasses\environ\IEnvironVarHolder
 {
     const RUNTYPE_TESTING = 'testing';
     const RUNTYPE_NORMAL = "normal";

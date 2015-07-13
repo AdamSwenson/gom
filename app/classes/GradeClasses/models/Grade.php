@@ -6,7 +6,7 @@
  * Time: 10:41 AM
  */
 
-namespace GradeClasses\models;
+namespace App\classes\GradeClasses\models;
 
 /**
  * Class Grade

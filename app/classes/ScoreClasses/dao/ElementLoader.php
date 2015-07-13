@@ -6,7 +6,7 @@
  * Time: 12:15 PM
  */
 
-namespace ScoreClasses\dao;
+namespace App\classes\ScoreClasses\dao;
 
 
 class ElementLoader extends LoaderParent implements ILoader

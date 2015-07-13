@@ -6,7 +6,7 @@
  * Time: 12:26 PM
  */
 
-namespace PseudoIDClasses\service;
+namespace App\classes\PseudoIDClasses\service;
 
 
 use Propel\Runtime\Connection\ConnectionWrapper;
@@ -18,10 +18,10 @@ class CreationManager implements IManager
      */
     const MAX_ATTEMPTS = 20;
 
-    /** @var  $dao \PseudoIDClasses\dao\IPseudoIDDao */
+    /** @var  $dao \App\classes\PseudoIDClasses\dao\IPseudoIDDao */
     protected $dao;
 
-    /** @var  $id_maker \PseudoIDClasses\service\IPseudoIDMaker */
+    /** @var  $id_maker \App\classes\PseudoIDClasses\service\IPseudoIDMaker */
     protected $id_maker;
 
     /** @var  $students \StudentQuery */
@@ -29,19 +29,19 @@ class CreationManager implements IManager
 
     protected $connection;
 
-    /** @var  \StudentClasses\dao\IStudentLoader */
+    /** @var  \App\classes\StudentClasses\dao\IStudentLoader */
     protected $student_dao;
 
     /**
      * Set the db access object
-     * @param \PseudoIDClasses\dao\IPseudoIDDao $dao
+     * @param \App\classes\PseudoIDClasses\dao\IPseudoIDDao $dao
      */
-    public function load_dao(\PseudoIDClasses\dao\IPseudoIDDao $dao)
+    public function load_dao(\App\classes\PseudoIDClasses\dao\IPseudoIDDao $dao)
     {
         $this->dao = $dao;
     }
 
-    public function load_student_dao(\StudentClasses\dao\IStudentLoader $student_loader)
+    public function load_student_dao(\App\classes\StudentClasses\dao\IStudentLoader $student_loader)
     {
         $this->student_dao = $student_loader;
     }
@@ -50,7 +50,7 @@ class CreationManager implements IManager
      * Set the object responsible for generating random values
      * @param PseudoIDMaker $id_maker
      */
-    public function load_id_maker(\PseudoIDClasses\service\PseudoIDMaker $id_maker)
+    public function load_id_maker(\App\classes\PseudoIDClasses\service\PseudoIDMaker $id_maker)
     {
         $this->id_maker = $id_maker;
     }

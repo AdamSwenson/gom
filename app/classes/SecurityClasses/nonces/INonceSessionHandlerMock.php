@@ -6,7 +6,7 @@
  *
  */
 
-namespace SecurityClasses\nonces;
+namespace App\classes\SecurityClasses\nonces;
 
 /**
  * Description of INonceSessionHandlerMock

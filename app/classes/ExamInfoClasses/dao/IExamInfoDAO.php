@@ -6,7 +6,7 @@
  * Time: 12:57 PM
  */
 
-namespace ExamInfoClasses\dao;
+namespace App\classes\ExamInfoClasses\dao;
 
 
 interface IExamInfoDAO

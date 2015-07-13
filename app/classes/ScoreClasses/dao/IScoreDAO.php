@@ -6,7 +6,7 @@
  * Time: 10:40 AM
  */
 
-namespace ScoreClasses\dao;
+namespace App\classes\ScoreClasses\dao;
 
 
 interface IScoreDAO 

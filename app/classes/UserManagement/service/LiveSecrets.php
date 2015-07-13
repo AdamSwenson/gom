@@ -105,7 +105,7 @@ class LiveSecrets extends SecretsParent
     public function loadLogVariables()
     {
         try{
-            $this->logVariables = \SecurityClasses\environ\LogVarHolder::getInstance();
+            $this->logVariables = \App\classes\SecurityClasses\environ\LogVarHolder::getInstance();
         }catch(\Exception $e)
         {
             error_log("Could not load log variables object " . $e);

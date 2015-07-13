@@ -6,19 +6,19 @@
  * Time: 9:38 AM
  */
 
-namespace ExamClasses\service;
+namespace App\classes\ExamClasses\service;
 
 /**
  * Class ExamCreator
  * Handles creating a new exam from incoming request
- * @package classes\ExamClasses\service
+ * @package classes\App\classes\ExamClasses\service
  */
 class ExamCreator extends ExamServiceParent
 {
-//    /** @var  $response_handler \JsonOutputClasses\controllers\IResponseChooser */
+//    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
 //    public $response_handler;
 
-    /** @var  $restrictor_dao \RestrictorClasses\dao\IRestrictorDAO */
+    /** @var  $restrictor_dao \App\classes\RestrictorClasses\dao\IRestrictorDAO */
     public $restrictor_dao;
 
     public $current_exam_manager;
@@ -26,31 +26,31 @@ class ExamCreator extends ExamServiceParent
     /**
      * @param mixed $current_exam_manager
      */
-    public function setCurrentExamManager(\ExamClasses\service\CurrentExamManager $current_exam_manager)
+    public function setCurrentExamManager(\App\classes\ExamClasses\service\CurrentExamManager $current_exam_manager)
     {
         $this->current_exam_manager = $current_exam_manager;
     }
 
-//    /** @var $exam_dao \ExamClasses\dao\IExamDAO  */
+//    /** @var $exam_dao \App\classes\ExamClasses\dao\IExamDAO  */
 //    public $exam_dao;
 //
-//    public function set_response_handler(\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+//    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
 //    {
 //        $this->response_handler = $response_handler;
 //    }
 //
 //    /**
-//     * @param \ExamClasses\dao\IExamDAO $exam_dao
+//     * @param \App\classes\ExamClasses\dao\IExamDAO $exam_dao
 //     */
-//    public function load_exam_dao(\ExamClasses\dao\IExamDAO $exam_dao)
+//    public function load_exam_dao(\App\classes\ExamClasses\dao\IExamDAO $exam_dao)
 //    {
 //        $this->exam_dao = $exam_dao;
 //    }
 
     /**
-     * @param \RestrictorClasses\dao\IRestrictorDAO $restrictor_dao
+     * @param \App\classes\RestrictorClasses\dao\IRestrictorDAO $restrictor_dao
      */
-    public function load_restrictor_dao(\RestrictorClasses\dao\IRestrictorDAO $restrictor_dao)
+    public function load_restrictor_dao(\App\classes\RestrictorClasses\dao\IRestrictorDAO $restrictor_dao)
     {
         $this->restrictor_dao = $restrictor_dao;
     }

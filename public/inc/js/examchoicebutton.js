@@ -79,7 +79,7 @@ function setExamId(examID) {
  * @returns {undefined}
  */
 function sendSetExamId(Send) {
-    $.post('api.php', Send, function (response) {
+    $.post('api', Send, function (response) {
         //responseHandler(response);
         if(response){
             location.reload(true);
@@ -112,7 +112,7 @@ function submitStatusChange(task, state) {
  * @returns {undefined}
  */
 function sendStatusChange(request) {
-    $.post('api.php', request, function (response) {
+    $.post('api', request, function (response) {
         responseHandler(response);
     }, "JSON");
 }

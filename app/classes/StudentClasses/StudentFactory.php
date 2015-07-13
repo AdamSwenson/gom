@@ -6,7 +6,7 @@
  * Time: 3:34 PM
  */
 
-namespace StudentClasses;
+namespace App\classes\StudentClasses;
 
 
 class StudentFactory
@@ -14,15 +14,15 @@ class StudentFactory
     /** var $student \Student*/
     public $student;
 
-    /** @var  $cleaner \SecurityClasses\cleaning\ICleanerFactory */
+    /** @var  $cleaner \App\classes\SecurityClasses\cleaning\ICleanerFactory */
     public $cleaner;
 
-    public function set_cleaner(\SecurityClasses\cleaning\ICleanerFactory $cleaner)
+    public function set_cleaner(\App\classes\SecurityClasses\cleaning\ICleanerFactory $cleaner)
     {
         $this->cleaner = $cleaner;
     }
 
-    public function load_from_request(\RequestClasses\IRequest $request)
+    public function load_from_request(\App\classes\RequestClasses\IRequest $request)
     {
         if (isset($request->http['student_id'])) {
             return $this->load_by_id($request->http['student_id']);

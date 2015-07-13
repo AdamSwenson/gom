@@ -15,6 +15,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::post('api', array('uses' => 'AjaxController@handleRequest'));
+Route::post('setup/api', array('uses' => 'AjaxController@handleRequest'));
+
 Route::get('home', 'LandingController@showLanding');
 
 Route::get('landing', 'LandingController@showLanding');
@@ -61,9 +64,7 @@ Route::get('newExam/jip', array('as' => 'api', function(){
 }));
 
 
-Route::get('api/{examid}', function($examid){
-   return "The exam id is: $examid";
-});
+
 
 Route::get('newnewexam', function(){
    return Redirect::route('api');

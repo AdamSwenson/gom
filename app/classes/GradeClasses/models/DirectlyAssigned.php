@@ -6,13 +6,13 @@
  * Time: 10:47 AM
  */
 
-namespace GradeClasses\models;
+namespace App\classes\GradeClasses\models;
 
 
 class DirectlyAssigned implements IGradeHolder
 {
 
-    /** @var  \GradeClasses\models\Grade */
+    /** @var  \App\classes\GradeClasses\models\Grade */
     protected $grade;
 
     public function __call($method, $args)
@@ -31,7 +31,7 @@ class DirectlyAssigned implements IGradeHolder
     /**
      * @param mixed $grade
      */
-    public function setGrade(\GradeClasses\models\Grade $grade)
+    public function setGrade(\App\classes\GradeClasses\models\Grade $grade)
     {
         $this->grade = $grade;
     }

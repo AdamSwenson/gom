@@ -6,7 +6,7 @@
  *
  */
 
-namespace SecurityClasses\nonces;
+namespace App\classes\SecurityClasses\nonces;
 
 /**
  * Class for generating nonces to protect against attack
@@ -21,15 +21,15 @@ class NonceMaker
 
     public $logger;
 
-    /** @var $session_handler \SecurityClasses\nonces\INonceSessionHandler This handles storage in session*/
+    /** @var $session_handler \App\classes\SecurityClasses\nonces\INonceSessionHandler This handles storage in session*/
     protected $session_handler;
 
-    public function set_logger(\SecurityClasses\logging\ISecurityLoggers $logger)
+    public function set_logger(\App\classes\SecurityClasses\logging\ISecurityLoggers $logger)
     {
         $this->logger = $logger;
     }
 
-    public function set_session_handler(\SecurityClasses\nonces\INonceSessionHandler $handler)
+    public function set_session_handler(\App\classes\SecurityClasses\nonces\INonceSessionHandler $handler)
     {
         $this->session_handler = $handler;
     }
@@ -68,9 +68,9 @@ class NonceMaker
 
     /**
      * Echos form field containing nonce
-     * @param \SecurityClasses\nonces\Nonce $nonce
+     * @param \App\classes\SecurityClasses\nonces\Nonce $nonce
      */
-    public function make_form_field(\SecurityClasses\nonces\Nonce $nonce, $page_name)
+    public function make_form_field(\App\classes\SecurityClasses\nonces\Nonce $nonce, $page_name)
     {
         echo "<input type='hidden' id='" . self::FIELD_NAME . "' name='" . self::FIELD_NAME . "' data='$page_name' value='{$nonce->token}' />";
     }

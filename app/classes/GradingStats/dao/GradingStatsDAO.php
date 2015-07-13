@@ -6,14 +6,14 @@
  * Time: 4:40 PM
  */
 
-namespace GradingStats\dao;
+namespace App\classes\GradingStats\dao;
 
 /**
  * Class GradingStatsDAO
  * This handles all database requests for statistical features of the dashboard
  *
  * @author adam
- * @package GradingStats\dao
+ * @package App\classes\GradingStats\dao
  */
 class GradingStatsDAO implements IGradingStatsDAO
 {
@@ -26,7 +26,7 @@ class GradingStatsDAO implements IGradingStatsDAO
     /** @var  $total_exams Total number of exams to grade  */
     public $total_exams;
 
-    public function set_number_exams(\ExamClasses\service\INumberExamsManager $num_exam_manager)
+    public function set_number_exams(\App\classes\ExamClasses\service\INumberExamsManager $num_exam_manager)
     {
         $this->total_exams = $num_exam_manager->get_number_exams();
     }

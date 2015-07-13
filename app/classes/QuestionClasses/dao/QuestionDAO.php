@@ -6,7 +6,7 @@
  * Time: 12:43 PM
  */
 
-namespace QuestionClasses\dao;
+namespace App\classes\QuestionClasses\dao;
 
 
 class QuestionDAO implements IQuestionDAO

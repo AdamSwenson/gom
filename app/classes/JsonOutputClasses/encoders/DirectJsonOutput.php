@@ -6,7 +6,7 @@
  * Time: 8:44 AM
  */
 
-namespace JsonOutputClasses\encoders;
+namespace App\classes\JsonOutputClasses\encoders;
 
 
 class DirectJsonOutput extends JsonEncoderParent implements IJsonOutput

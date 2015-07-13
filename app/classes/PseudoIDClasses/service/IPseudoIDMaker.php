@@ -6,7 +6,7 @@
  * Time: 1:29 PM
  */
 
-namespace PseudoIDClasses\service;
+namespace App\classes\PseudoIDClasses\service;
 
 
 interface IPseudoIDMaker

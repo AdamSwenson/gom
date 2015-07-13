@@ -6,16 +6,16 @@
  * Time: 9:13 AM
  */
 
-namespace SecurityClasses\environ;
+namespace App\classes\SecurityClasses\environ;
 
-use SecurityClasses\errors\EnvironmentException;
+use App\classes\SecurityClasses\errors\EnvironmentException;
 
 /**
  * Class LogVarHolder
  * This gets and holds environmental variables related to logs
  * i.e., their names and paths
  *
- * @package SecurityClasses\environment
+ * @package App\classes\SecurityClasses\environment
  */
 class LogVarHolder 
 {

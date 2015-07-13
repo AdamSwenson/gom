@@ -6,7 +6,7 @@
  * Time: 1:36 PM
  */
 
-namespace StudentClasses\dao;
+namespace App\classes\StudentClasses\dao;
 
 
 class StudentLoader implements IStudentLoader

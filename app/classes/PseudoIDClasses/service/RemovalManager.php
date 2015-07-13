@@ -6,26 +6,26 @@
  * Time: 10:36 AM
  */
 
-namespace PseudoIDClasses\service;
+namespace App\classes\PseudoIDClasses\service;
 
 use Propel\Runtime\Connection\ConnectionWrapper;
 
 /**
  * Class RemovalManager
  * Handles removing pseudoIDs
- * @package PseudoIDClasses\service
+ * @package App\classes\PseudoIDClasses\service
  */
 class RemovalManager implements IManager
 {
 
-    /** @var  $dao \PseudoIDClasses\dao\IPseudoIDDao */
+    /** @var  $dao \App\classes\PseudoIDClasses\dao\IPseudoIDDao */
     protected $dao;
 
     /**
      * Set the db access object
-     * @param \PseudoIDClasses\dao\IPseudoIDDao $dao
+     * @param \App\classes\PseudoIDClasses\dao\IPseudoIDDao $dao
      */
-    public function load_dao(\PseudoIDClasses\dao\IPseudoIDDao $dao)
+    public function load_dao(\App\classes\PseudoIDClasses\dao\IPseudoIDDao $dao)
     {
         $this->dao = $dao;
     }

@@ -6,7 +6,7 @@
  * Time: 5:02 PM
  */
 
-namespace CommentClasses\dao;
+namespace App\classes\CommentClassesdao;
 
 
 interface IAssignmentFactory

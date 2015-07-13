@@ -6,7 +6,7 @@
  * Time: 12:08 PM
  */
 
-namespace ScoreClasses\dao;
+namespace App\classes\ScoreClasses\dao;
 
 
 interface ILoader 

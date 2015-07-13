@@ -6,7 +6,7 @@
  * 
  */
 
-namespace SecurityClasses\cleaning;
+namespace App\classes\SecurityClasses\cleaning;
 
 /**
  * This will perform a validation or sanitization as needed
@@ -47,19 +47,19 @@ class CleanerFactory implements ICleanerFactory {
     public function make($type) {
         switch ($type) {
             case self::INTEGER:
-                $cleaner = new \SecurityClasses\cleaning\IntegerCleaner();
+                $cleaner = new \App\classes\SecurityClasses\cleaning\IntegerCleaner();
                 break;
             case self::FLOAT:
-                $cleaner = new \SecurityClasses\cleaning\FloatCleaner();
+                $cleaner = new \App\classes\SecurityClasses\cleaning\FloatCleaner();
                 break;
             case self::STRING:
-                $cleaner = new \SecurityClasses\cleaning\TextCleaner();
+                $cleaner = new \App\classes\SecurityClasses\cleaning\TextCleaner();
                 break;
             case self::TEXT:
-                $cleaner = new \SecurityClasses\cleaning\TextCleaner();
+                $cleaner = new \App\classes\SecurityClasses\cleaning\TextCleaner();
                 break;
             case self::EMAIL:
-                $cleaner = new \SecurityClasses\cleaning\EmailCleaner();
+                $cleaner = new \App\classes\SecurityClasses\cleaning\EmailCleaner();
                 break;
             default:
                 return FALSE;

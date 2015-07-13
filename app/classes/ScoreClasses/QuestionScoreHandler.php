@@ -11,16 +11,16 @@ namespace ScoreClasses;
 
 class QuestionScoreHandler implements IQuestionScoreHandler
 {
-    /** @var  $response_handler \JsonOutputClasses\controllers\IResponseChooser */
+    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
     public $response_handler;
 
     /** @var  $question_score_obj \QuestionScore */
     public $question_score_obj;
 
     /**
-     * @param \JsonOutputClasses\controllers\IResponseChooser $response_handler
+     * @param \App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler
      */
-    public function set_response_handler(\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
     {
         $this->response_handler = $response_handler;
     }

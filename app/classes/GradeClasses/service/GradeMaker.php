@@ -6,13 +6,13 @@
  * Time: 10:46 AM
  */
 
-namespace GradeClasses\service;
+namespace App\classes\GradeClasses\service;
 
 
 /**
  * Class GradeMaker
  * Factory for grade objects. Figures out which kind to use
- * @package GradeClasses\service
+ * @package App\classes\GradeClasses\service
  */
 class GradeMaker 
 {
@@ -23,7 +23,7 @@ class GradeMaker
     public static function factory($type, $displayText=null, $displayNumeric=null, $args=array())
     {
         $instance = self::determineType($type, $args);
-        $grade = new \GradeClasses\models\Grade();
+        $grade = new \App\classes\GradeClasses\models\Grade();
         $grade->setDisplayText($displayText);
         $grade->setDisplayNumeric($displayNumeric);
         $instance->setGrade($grade);
@@ -36,11 +36,11 @@ class GradeMaker
         switch($type)
         {
             case self::CALCULATED:
-                $cg = new \GradeClasses\models\CalculatedGrade();
+                $cg = new \App\classes\GradeClasses\models\CalculatedGrade();
                 return self::setCriteria($cg, $args);
                 break;
             case self::DIRECT:
-                return new \GradeClasses\models\DirectlyAssigned();
+                return new \App\classes\GradeClasses\models\DirectlyAssigned();
                 break;
             default:
                 throw new \Exception("Invalid type passed in");
@@ -51,15 +51,15 @@ class GradeMaker
     {
         if(!empty($args))
         {
-            if(array_key_exists(\GradeClasses\models\CalculatedGrade::MAX_SCORE_KEY, $args))
-//            if(isset($args[\GradeClasses\models\CalculatedGrade::MAX_SCORE_KEY]))
+            if(array_key_exists(\App\classes\GradeClasses\models\CalculatedGrade::MAX_SCORE_KEY, $args))
+//            if(isset($args[\App\classes\GradeClasses\models\CalculatedGrade::MAX_SCORE_KEY]))
             {
-                $instance->setMaxScore($args[\GradeClasses\models\CalculatedGrade::MAX_SCORE_KEY]);
+                $instance->setMaxScore($args[\App\classes\GradeClasses\models\CalculatedGrade::MAX_SCORE_KEY]);
             }
-            if(array_key_exists(\GradeClasses\models\CalculatedGrade::MIN_SCORE_KEY, $args))
-//            isset($args[\GradeClasses\models\CalculatedGrade::MIN_SCORE_KEY]))
+            if(array_key_exists(\App\classes\GradeClasses\models\CalculatedGrade::MIN_SCORE_KEY, $args))
+//            isset($args[\App\classes\GradeClasses\models\CalculatedGrade::MIN_SCORE_KEY]))
             {
-                $instance->setMinScore($args[\GradeClasses\models\CalculatedGrade::MIN_SCORE_KEY]);
+                $instance->setMinScore($args[\App\classes\GradeClasses\models\CalculatedGrade::MIN_SCORE_KEY]);
             }
         }
         return $instance;

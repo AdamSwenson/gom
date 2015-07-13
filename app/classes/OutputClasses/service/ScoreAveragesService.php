@@ -6,12 +6,12 @@
  *
  */
 
-namespace OutputClasses\service;
+namespace App\classes\OutputClasses\service;
 
 /**
  * Description of ScoreAveragesService
  *
- * DO NOT USE. USE ScoreClasses\
+ * DO NOT USE. USE App\classes\ScoreClasses\
  * @deprecated
  *
  * @author adam
@@ -22,7 +22,7 @@ class ScoreAveragesService
     public $element_averages;
     public $question_averages;
 
-    public function set_data_access(\OutputClasses\dao\IOutputDataAccess $outputdata)
+    public function set_data_access(\App\classes\OutputClasses\dao\IOutputDataAccess $outputdata)
     {
         $this->outputdata = $outputdata;
     }

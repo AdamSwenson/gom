@@ -6,11 +6,11 @@
  * Time: 2:47 PM
  */
 
-namespace CommentClasses\service;
+namespace App\classes\CommentClassesservice;
 
 
-use CommentClasses\dao\StockTextDao;
-use CommentClasses\errors\CommentException;
+use App\classes\CommentClassesdao\StockTextDao;
+use App\classes\CommentClasseserrors\CommentException;
 
 class CommentBuilder
 {

@@ -6,7 +6,7 @@
  *
  */
 
-namespace OutputClasses\service;
+namespace App\classes\OutputClasses\service;
 
 /**
  *

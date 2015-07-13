@@ -15,7 +15,7 @@ namespace DirectOutput\controllers;
  * @author adam
  * @since 15Feb2015
  */
-class DirectOutputController implements \JsonOutputClasses\controllers\IHandler
+class DirectOutputController implements \App\classes\JsonOutputClasses\controllers\IHandler
 {
 
     /** @var $dbresponse  The assoc array returned from the database */
@@ -66,7 +66,7 @@ class DirectOutputController implements \JsonOutputClasses\controllers\IHandler
      *
      *
      * @param  type $type String of the type of handler to load
-     * @return \DirectOutputClasses\encoders\DataReturner|string
+     * @return \App\classes\DirectOutputClassesencoders\DataReturner|string
      * @throws \Exception
      */
     public function load_appropriate_handler($type)
@@ -74,7 +74,7 @@ class DirectOutputController implements \JsonOutputClasses\controllers\IHandler
         $handler = '';
         switch ($type) {
             case 'question':
-                $handler = new \DirectOutputClasses\encoders\DataReturner();
+                $handler = new \App\classes\DirectOutputClassesencoders\DataReturner();
                 break;
         }
 

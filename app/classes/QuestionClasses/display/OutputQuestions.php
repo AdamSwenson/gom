@@ -6,7 +6,7 @@
  * Time: 8:21 AM
  */
 
-namespace QuestionClasses\display;
+namespace App\classes\QuestionClasses\display;
 
 
 class OutputQuestions

@@ -8,6 +8,8 @@
 
 namespace TimerClasses;
 
+use App\classes\JsonOutputClasses\controllers\IResponseChooser;
+
 /**
  * Class GroupTimerHandler
  * Loads and updates group time.
@@ -21,13 +23,13 @@ class GroupTimerHandler
     /** @var $time_handler \GroupTime */
     public $time_handler;
 
-    /** @var  $response_handler \JsonOutputClasses\controllers\IResponseChooser */
+    /** @var  $response_handler IResponseChooser */
     public $response_handler;
 
     /**
-     * @param \JsonOutputClasses\controllers\IResponseChooser $response_handler
+     * @param IResponseChooser $response_handler
      */
-    public function set_response_handler(\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    public function set_response_handler(IResponseChooser $response_handler)
     {
         $this->response_handler = $response_handler;
     }

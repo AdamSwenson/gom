@@ -6,14 +6,14 @@
  * Time: 2:55 PM
  */
 
-namespace StudentClasses\service;
+namespace App\classes\StudentClasses\service;
 
 use \Propel\Runtime\Propel;
 
 /**
  * Class AutocompleteService
  * Handles lookup of student id
- * @package StudentClasses\service
+ * @package App\classes\StudentClasses\service
  */
 class AutocompleteService
 {
@@ -22,22 +22,22 @@ class AutocompleteService
 
     public $results;
 
-    /** @var  $response_handler \JsonOutputClasses\controllers\IResponseChooser */
+    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
     public $response_handler;
 
     /**
-     * @param \JsonOutputClasses\controllers\IResponseChooser $response_handler
+     * @param \App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler
      */
-    public function set_response_handler(\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
     {
         $this->response_handler = $response_handler;
     }
 
     /**
      * @param \Exam $exam
-     * @param \RequestClasses\IRequest $request
+     * @param \App\classes\RequestClasses\IRequest $request
      */
-    public function process(\Exam $exam, \RequestClasses\IRequest $request)
+    public function process(\Exam $exam, \App\classes\RequestClasses\IRequest $request)
     {
         if (isset($request->http[self::INCOMING_KEY])) {
             $param = $request->http[self::INCOMING_KEY];

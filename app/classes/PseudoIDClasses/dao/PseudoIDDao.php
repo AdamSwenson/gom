@@ -6,7 +6,7 @@
  * Time: 1:12 PM
  */
 
-namespace PseudoIDClasses\dao;
+namespace App\classes\PseudoIDClasses\dao;
 
 
 class PseudoIDDao implements IPseudoIDDao

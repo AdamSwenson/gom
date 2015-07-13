@@ -6,7 +6,7 @@
  *
  */
 
-namespace JsonOutputClasses\encoders;
+namespace App\classes\JsonOutputClasses\encoders;
 
 /**
  * This encodes, packages, and sends a response to javascript requests expecting a report on the status of a request.

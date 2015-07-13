@@ -6,7 +6,7 @@
  *
  */
 
-namespace JsonOutputClasses\controllers;
+namespace App\classes\JsonOutputClasses\controllers;
 
 /**
  * This is the most generic of the handler interfaces

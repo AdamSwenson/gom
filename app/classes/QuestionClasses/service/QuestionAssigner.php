@@ -6,38 +6,38 @@
  * Time: 10:48 AM
  */
 
-namespace QuestionClasses\service;
+namespace App\classes\QuestionClasses\service;
 
 /**
  * Class QuestionAssigner
  * This takes an incoming array and sets up the questions
- * @package classes\QuestionClasses\service
+ * @package classes\App\classes\QuestionClasses\service
  */
 class QuestionAssigner
 {
 
-    /** @var $question_assigner_dao \classes\QuestionClasses\dao\IQuestionAssignmentDAO */
+    /** @var $question_assigner_dao \classes\App\classes\QuestionClasses\dao\IQuestionAssignmentDAO */
     public $question_assigner_dao;
 
-    /** @var  $question_dao \classes\QuestionClasses\dao\IQuestionDAO */
+    /** @var  $question_dao \classes\App\classes\QuestionClasses\dao\IQuestionDAO */
     public $question_dao;
 
-    /** @var  $response_handler \JsonOutputClasses\controllers\IResponseChooser */
+    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
     public $response_handler;
 
     public $questions = array();
 
-    public function set_response_handler(\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
     {
         $this->response_handler = $response_handler;
     }
 
-    public function set_question_assigner_dao(\QuestionClasses\dao\IQuestionAssignmentDAO $question_assigner_dao)
+    public function set_question_assigner_dao(\App\classes\QuestionClasses\dao\IQuestionAssignmentDAO $question_assigner_dao)
     {
         $this->question_assigner_dao = $question_assigner_dao;
     }
 
-    public function set_question_dao(\QuestionClasses\dao\IQuestionDAO $question_dao)
+    public function set_question_dao(\App\classes\QuestionClasses\dao\IQuestionDAO $question_dao)
     {
         $this->question_dao = $question_dao;
     }

@@ -1,9 +1,9 @@
 <?php
 
-namespace OutputClasses\stats;
+namespace App\classes\OutputClasses\stats;
 
 use Map\ElementScoresTableMap;
-use OutputClasses\stats\IStatsWorker;
+use App\classes\OutputClasses\stats\IStatsWorker;
 use Propel\Runtime\Formatter\ObjectFormatter;
 use Propel\Runtime\Propel;
 
@@ -19,11 +19,11 @@ class ElementStats implements IStatsWorker
     public $avg_key = 'elementAverage';
     public $id_key = 'elementID';
 
-    /** @var  \ScoreClasses\dao\ScoreDAO */
+    /** @var  \App\classes\ScoreClasses\dao\ScoreDAO */
     public $score_dao;
 
     /**
-     * @param \ScoreClasses\dao\ScoreDAO $score_dao
+     * @param \App\classes\ScoreClasses\dao\ScoreDAO $score_dao
      */
     public function setScoreDao($score_dao)
     {
@@ -56,7 +56,7 @@ class ElementStats implements IStatsWorker
         return $elements;
     }
 
-//    public function set_data_access(\OutputClasses\dao\OutputDataAccess $outputdata)
+//    public function set_data_access(\App\classes\OutputClasses\dao\OutputDataAccess $outputdata)
 //    {
 //        $this->outputdata = $outputdata;
 //    }

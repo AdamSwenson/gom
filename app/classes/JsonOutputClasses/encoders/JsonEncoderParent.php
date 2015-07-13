@@ -6,7 +6,7 @@
  *
  */
 
-namespace JsonOutputClasses\encoders;
+namespace App\classes\JsonOutputClasses\encoders;
 
 /**
  * This is the parent class for the everything which encodes and sends messages as json objects.
@@ -37,14 +37,14 @@ abstract class JsonEncoderParent
     /** @var $encoded Encoded array for sending */
     protected $encoded;
 
-//    /** @var $logger \SecurityClasses\logging\ISecurityLoggers Logger for encoding */
+//    /** @var $logger \App\classes\SecurityClasses\logging\ISecurityLoggers Logger for encoding */
 //    protected $logger;
 //
 //    /**
 //     * Loads an appropriate logger
-//     * @param \SecurityClasses\logging\ISecurityLoggers $logger
+//     * @param \App\classes\SecurityClasses\logging\ISecurityLoggers $logger
 //     */
-//    public function set_logger(\SecurityClasses\logging\ISecurityLoggers $logger)
+//    public function set_logger(\App\classes\SecurityClasses\logging\ISecurityLoggers $logger)
 //    {
 //        $this->logger = $logger;
 //    }

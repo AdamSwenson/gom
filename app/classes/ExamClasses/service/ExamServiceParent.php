@@ -6,23 +6,23 @@
  * Time: 2:49 PM
  */
 
-namespace ExamClasses\service;
+namespace App\classes\ExamClasses\service;
 
 /**
  * Class ExamServiceParent
  * Defines some methods shared by exam service classes
- * @package ExamClasses\service
+ * @package App\classes\ExamClasses\service
  */
 abstract class ExamServiceParent
 {
 
-    /** @var  $cleaner \SecurityClasses\cleaning\ICleanerFactory */
+    /** @var  $cleaner \App\classes\SecurityClasses\cleaning\ICleanerFactory */
     public $cleaner;
 
-    /** @var  $response_handler \JsonOutputClasses\controllers\IResponseChooser */
+    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
     public $response_handler;
 
-    /** @var $exam_dao \ExamClasses\dao\IExamDAO  */
+    /** @var $exam_dao \App\classes\ExamClasses\dao\IExamDAO  */
     public $exam_dao;
 
     /** @var  \Exam */
@@ -30,27 +30,27 @@ abstract class ExamServiceParent
 
     /**
      * Loads the factory for cleaning
-     * @param \SecurityClasses\cleaning\ICleanerFactory $cleaner
+     * @param \App\classes\SecurityClasses\cleaning\ICleanerFactory $cleaner
      */
-    public function load_cleaner(\SecurityClasses\cleaning\ICleanerFactory $cleaner)
+    public function load_cleaner(\App\classes\SecurityClasses\cleaning\ICleanerFactory $cleaner)
     {
         $this->cleaner = $cleaner;
     }
 
     /**
      * Loads the class which handles exam db interaction
-     * @param \ExamClasses\dao\IExamDAO $exam_dao
+     * @param \App\classes\ExamClasses\dao\IExamDAO $exam_dao
      */
-    public function load_exam_dao(\ExamClasses\dao\IExamDAO $exam_dao)
+    public function load_exam_dao(\App\classes\ExamClasses\dao\IExamDAO $exam_dao)
     {
         $this->exam_dao = $exam_dao;
     }
 
     /**
      * Loads the class which handles json response
-     * @param \JsonOutputClasses\controllers\IResponseChooser $response_handler
+     * @param \App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler
      */
-    public function set_response_handler(\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
     {
         $this->response_handler = $response_handler;
     }

@@ -8,7 +8,7 @@
 
 namespace UserManagement\service;
 
-use SecurityClasses\environ\EnvironVarHolder;
+use App\classes\SecurityClasses\environ\EnvironVarHolder;
 use UserManagement\errors\CredentialsException;
 
 /**

@@ -6,7 +6,7 @@
  *
  */
 
-namespace SecurityClasses\logging;
+namespace App\classes\SecurityClasses\logging;
 
 /**
  * This is the generic interface that loggers used in security functions will

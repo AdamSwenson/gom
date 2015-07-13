@@ -20,7 +20,7 @@ class StudentImporter
     /** @var $kumi \KumiClasses\models\IKumi */
     public $kumi;
     
-    /** @var $validated_student \ImportExportClasses\StudentImportValidator */
+    /** @var $validated_student \App\classes\ImportExportClasses\StudentImportValidator */
     public $validated_student;
     
     protected $sid;
@@ -51,10 +51,10 @@ class StudentImporter
 //    /**
 //     * This does the actual importing
 //     * @todo Add class validator by passing in a kumi
-//     * @param \ImportExportClasses\StudentImportValidator $valid
+//     * @param \App\classes\ImportExportClasses\StudentImportValidator $valid
 //     * @param \KumiClasses                                $class
 //     */
-//    public function __construct(\ImportExportClasses\StudentImportValidator $valid, \KumiClasses\service\LoadKumiByClass $class, $dataservice)
+//    public function __construct(\App\classes\ImportExportClasses\StudentImportValidator $valid, \KumiClasses\service\LoadKumiByClass $class, $dataservice)
 //    {
 //$this->dao = $dataservice;
 ////parent::__construct();
@@ -66,7 +66,7 @@ class StudentImporter
     
     
     
-    public function add_student(\ImportExportClasses\StudentImportValidator $validated_student){
+    public function add_student(\App\classes\ImportExportClasses\StudentImportValidator $validated_student){
         $student1 = $this->add_to_students($validated_student);
         if($student1){ 
             $student2 = $this->add_to_student_info($student1);
@@ -88,7 +88,7 @@ class StudentImporter
     /**
      * This adds the student to the main students table. It silently fails if the student already exists.
      */
-    protected function add_to_students(\ImportExportClasses\StudentImportValidator $student)
+    protected function add_to_students(\App\classes\ImportExportClasses\StudentImportValidator $student)
     {
         //Check whether student already exists in the table
         $this->query = "SELECT * FROM students WHERE sid = :sid";
@@ -108,7 +108,7 @@ class StudentImporter
     /**
      * This adds to the student info table. This is pretty much unused now. Will later allow to add class specific info.
      */
-    protected function add_to_student_info(\ImportExportClasses\StudentImportValidator $student)
+    protected function add_to_student_info(\App\classes\ImportExportClasses\StudentImportValidator $student)
     {
         //check to make sure the student is already in the students table
         $this->query = "SELECT sid FROM students WHERE sid = :sid";
@@ -130,7 +130,7 @@ class StudentImporter
     /**
      * Assign the student to the class
      */
-    protected function add_to_studentsXclasses(\ImportExportClasses\StudentImportValidator $student)
+    protected function add_to_studentsXclasses(\App\classes\ImportExportClasses\StudentImportValidator $student)
     {
         //Check if the student/class combo has already been entered
         $this->query = "SELECT sid, classID FROM studentsXclasses WHERE sid = :sid AND classID = :classID";

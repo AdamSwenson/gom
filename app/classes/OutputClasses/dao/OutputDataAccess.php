@@ -6,7 +6,7 @@
  *
  */
 
-namespace OutputClasses\dao;
+namespace App\classes\OutputClasses\dao;
 
 use Map\ElementScoresTableMap;
 use Propel\Runtime\Formatter\ObjectFormatter;
@@ -23,7 +23,7 @@ class OutputDataAccess implements IOutputDataAccess
     protected $question_assign_dao;
     protected $questions;
 
-    public function set_question_dao(\QuestionClasses\dao\IQuestionAssignmentDAO $questionAssignmentDAO)
+    public function set_question_dao(\App\classes\QuestionClasses\dao\IQuestionAssignmentDAO $questionAssignmentDAO)
     {
         $this->question_assign_dao = $questionAssignmentDAO;
     }

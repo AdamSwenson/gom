@@ -6,7 +6,7 @@
  *
  */
 
-namespace JsonOutputClasses\controllers;
+namespace App\classes\JsonOutputClasses\controllers;
 
 /**
  * This receives an associative array from a database query and determines whether to send the browswer a status message or data json

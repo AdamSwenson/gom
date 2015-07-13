@@ -6,7 +6,7 @@
  * 
  */
 
-namespace DirectOutputClasses\controllers;
+namespace App\classes\DirectOutputClassescontrollers;
 
 /**
  * This cleans and echoes a link to a page inside the gradeomatic for 

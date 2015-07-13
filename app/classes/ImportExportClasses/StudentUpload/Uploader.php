@@ -6,7 +6,7 @@
  * Time: 10:41 AM
  */
 
-namespace ImportExportClasses\StudentUpload;
+namespace App\classes\ImportExportClasses\StudentUpload;
 
 
 use Map\StudentTableMap;
@@ -16,7 +16,7 @@ class Uploader
 {
     public $errors = array();
 
-    /** @var  \ImportExportClasses\StudentUpload\IStudentCsvProcessor */
+    /** @var  \App\classes\ImportExportClasses\StudentUpload\IStudentCsvProcessor */
     protected $processor;
 
     /** @var  \Exam */
@@ -28,7 +28,7 @@ class Uploader
      * Loads the object which handles validating and processing the csv file
      * @param IStudentCsvProcessor $processor
      */
-    public function set_file_processor(\ImportExportClasses\StudentUpload\IStudentCsvProcessor $processor)
+    public function set_file_processor(\App\classes\ImportExportClasses\StudentUpload\IStudentCsvProcessor $processor)
     {
         $this->processor = $processor;
     }
@@ -44,10 +44,10 @@ class Uploader
 
     /**
      * Main publicly called method
-     * @param \RequestClasses\IFileRequest $request
+     * @param \App\classes\RequestClasses\IFileRequest $request
      * @return bool
      */
-    public function process(\RequestClasses\IFileRequest $request)
+    public function process(\App\classes\RequestClasses\IFileRequest $request)
     {
         try{
             $this->load_students($request);
@@ -63,11 +63,11 @@ class Uploader
     /**
      * Handles the loading students
      * TODO: Replace error array with custom exceptions
-     * @param \RequestClasses\IFileRequest $request
+     * @param \App\classes\RequestClasses\IFileRequest $request
      * @return bool
      * @throws \Exception
      */
-    protected function load_students(\RequestClasses\IFileRequest $request)
+    protected function load_students(\App\classes\RequestClasses\IFileRequest $request)
     {
         if($this->processor->process_file($request)){
             if(count($this->processor->students) > 0){

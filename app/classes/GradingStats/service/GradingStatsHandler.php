@@ -6,36 +6,36 @@
  * Time: 5:35 PM
  */
 
-namespace GradingStats\service;
+namespace App\classes\GradingStats\service;
 
 
 class GradingStatsHandler
 {
     public $data_holder;
 
-    /** @var  $dao \GradingStats\dao\IGradingStatsDAO */
+    /** @var  $dao \App\classes\GradingStats\dao\IGradingStatsDAO */
     public $dao;
 
-    /** @var  $response_handler \JsonOutputClasses\controllers\IResponseChooser */
+    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
     public $response_handler;
 
     /**
-     * @param \JsonOutputClasses\controllers\IResponseChooser $response_handler
+     * @param \App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler
      */
-    public function set_response_handler(\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
     {
         $this->response_handler = $response_handler;
     }
 
     /**
-     * @param \GradingStats\dao\IGradingStatsDAO $gradingStatsDAO
+     * @param \App\classes\GradingStats\dao\IGradingStatsDAO $gradingStatsDAO
      */
-    public function set_dao(\GradingStats\dao\IGradingStatsDAO $gradingStatsDAO)
+    public function set_dao(\App\classes\GradingStats\dao\IGradingStatsDAO $gradingStatsDAO)
     {
         $this->dao = $gradingStatsDAO;
     }
 
-    public function set_number_exams(\ExamClasses\service\INumberExamsManager $num_exam_manager)
+    public function set_number_exams(\App\classes\ExamClasses\service\INumberExamsManager $num_exam_manager)
     {
         $this->dao->set_number_exams($num_exam_manager);
     }
@@ -50,6 +50,6 @@ class GradingStatsHandler
 
     public function load_data_holder()
     {
-        $this->data_holder = new \GradingStats\service\StatsDataHolder();
+        $this->data_holder = new \App\classes\GradingStats\service\StatsDataHolder();
     }
 }

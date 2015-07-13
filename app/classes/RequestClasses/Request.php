@@ -6,7 +6,7 @@
  *
  */
 
-namespace RequestClasses;
+namespace App\classes\RequestClasses;
 
 /**
  * This grabs and holds the incoming http request arrays ($_GET and $_POST) and amalgamates them into one array
@@ -117,8 +117,8 @@ class Request implements IRequest
      */
     public function nonce()
     {
-        if (array_key_exists(\SecurityClasses\nonces\NonceMaker::FIELD_NAME, $this->http)) {
-            return $this->http[\SecurityClasses\nonces\NonceMaker::FIELD_NAME];
+        if (array_key_exists(\App\classes\SecurityClasses\nonces\NonceMaker::FIELD_NAME, $this->http)) {
+            return $this->http[\App\classes\SecurityClasses\nonces\NonceMaker::FIELD_NAME];
         } elseif (array_key_exists('nonce', $this->http)) {
             return $this->http['nonce'];
         }

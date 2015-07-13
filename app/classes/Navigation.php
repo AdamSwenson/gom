@@ -67,7 +67,7 @@ class Navigation
     #UTILITY SCRIPTS
     const ACCORDION_UTIL = 'inc/js/accordion_management.js'; //Callback and setter for accordion tabs
     #PROCESSORS
-    const API = 'api.php'; //This will eventually be the main processor and replace most of the others
+    const API = 'api'; //This will eventually be the main processor and replace most of the others
     #TEMPLATES
     const SCRIPT_TEMPLATES = 'inc/page_includes/ScriptTemplates.php';
 

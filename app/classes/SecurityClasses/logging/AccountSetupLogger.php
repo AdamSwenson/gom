@@ -6,7 +6,7 @@
  *
  */
 
-namespace SecurityClasses\logging;
+namespace App\classes\SecurityClasses\logging;
 
 use \Monolog\Logger;
 use \Monolog\Handler\StreamHandler;

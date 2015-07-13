@@ -6,7 +6,7 @@
  * Time: 7:00 AM
  */
 
-namespace OutputClasses\dao;
+namespace App\classes\OutputClasses\dao;
 
 
 interface ICredentialLookup 

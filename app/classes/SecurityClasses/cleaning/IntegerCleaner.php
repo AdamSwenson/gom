@@ -6,7 +6,7 @@
  * 
  */
 
-namespace SecurityClasses\cleaning;
+namespace App\classes\SecurityClasses\cleaning;
 
 /**
  * Description of IntegerCleaner

@@ -6,7 +6,7 @@
  *
  */
 
-namespace SecurityClasses\nonces;
+namespace App\classes\SecurityClasses\nonces;
 
 /**
  * Description of NonceValidator
@@ -18,18 +18,18 @@ class NonceValidator
     const MAX_PAGE_NAME_LENGTH = 50;
     const TIME_LIMIT = 3600; //one hour
 
-    /** @var $logger \SecurityClasses\logging\ISecurityLoggers */
+    /** @var $logger \App\classes\SecurityClasses\logging\ISecurityLoggers */
     public $logger;
 
-    /** @var $session_handler \SecurityClasses\nonces\INonceSessionHandler */
+    /** @var $session_handler \App\classes\SecurityClasses\nonces\INonceSessionHandler */
     protected $session_handler;
 
-    public function set_logger(\SecurityClasses\logging\ISecurityLoggers $logger)
+    public function set_logger(\App\classes\SecurityClasses\logging\ISecurityLoggers $logger)
     {
         $this->logger = $logger;
     }
 
-    public function set_session_handler(\SecurityClasses\nonces\INonceSessionHandler $handler)
+    public function set_session_handler(\App\classes\SecurityClasses\nonces\INonceSessionHandler $handler)
     {
         $this->session_handler = $handler;
     }
@@ -39,7 +39,7 @@ class NonceValidator
      * @param type $page_name
      * @param type $nonce
      */
-    protected function check_nonce($page_name, \SecurityClasses\nonces\Nonce $nonce)
+    protected function check_nonce($page_name, \App\classes\SecurityClasses\nonces\Nonce $nonce)
     {
         $stored_nonce = $this->session_handler->get_nonce($page_name);
         //verify token matches

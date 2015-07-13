@@ -6,7 +6,7 @@
  *
  */
 
-namespace OutputClasses\dao;
+namespace App\classes\OutputClasses\dao;
 
 /**
  * The methods expected by classes calling outputdataaccess
@@ -14,11 +14,11 @@ namespace OutputClasses\dao;
  */
 interface IOutputDataAccess
 {
-    public function set_question_dao(\QuestionClasses\dao\IQuestionAssignmentDAO $questionAssignmentDAO);
+    public function set_question_dao(\App\classes\QuestionClasses\dao\IQuestionAssignmentDAO $questionAssignmentDAO);
 
     public function get_questions_for_exam(\Exam $exam);
 
-   // public function get_student_score_and_item_for_question(\ExaminationClasses\Examination $exam, \StudentClasses\models\Student $student, $question);
+   // public function get_student_score_and_item_for_question(\ExaminationClasses\Examination $exam, \App\classes\StudentClasses\models\Student $student, $question);
 
 
     public function element_averages(\ExaminationClasses\models\IExam $exam);

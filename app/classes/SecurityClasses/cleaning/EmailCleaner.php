@@ -6,7 +6,7 @@
  * 
  */
 
-namespace SecurityClasses\cleaning;
+namespace App\classes\SecurityClasses\cleaning;
 
 /**
  * Validates and or cleans email strings 

@@ -6,7 +6,7 @@
  * Time: 4:34 PM
  */
 
-namespace ScoreClasses;
+namespace App\classes\ScoreClasses;
 
 /**
  * Class ScoreLoader
@@ -24,18 +24,18 @@ class ScoreLoader
 
     public $questions_to_send = array();
 
-    /** @var  $question_score_handler  \ScoreClasses\IQuestionScoreHandler */
+    /** @var  $question_score_handler  \App\classes\ScoreClasses\IQuestionScoreHandler */
     public $question_score_handler;
 
-    /** @var  $element_score_handler \ScoreClasses\IElementScoreHandler */
+    /** @var  $element_score_handler \App\classes\ScoreClasses\IElementScoreHandler */
     public $element_score_handler;
 
-    public function set_question_score_handler(\ScoreClasses\IQuestionScoreHandler $question_score_handler)
+    public function set_question_score_handler(\App\classes\ScoreClasses\IQuestionScoreHandler $question_score_handler)
     {
         $this->question_score_handler = $question_score_handler;
     }
 
-    public function set_element_score_handler(\ScoreClasses\IElementScoreHandler $element_score_handler)
+    public function set_element_score_handler(\App\classes\ScoreClasses\IElementScoreHandler $element_score_handler)
     {
         $this->element_score_handler = $element_score_handler;
     }

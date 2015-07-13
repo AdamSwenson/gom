@@ -6,7 +6,7 @@
  * Time: 1:58 PM
  */
 
-namespace CommentClasses\dao;
+namespace App\classes\CommentClassesdao;
 
 
 class AssignmentFactory implements IAssignmentFactory

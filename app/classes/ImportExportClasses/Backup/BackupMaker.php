@@ -6,7 +6,7 @@
  *
  */
 
-namespace ImportExportClasses\Backup;
+namespace App\classes\ImportExportClasses\Backup;
 
 /**
  * This creates downloadable csv files from queries to allow users to backup their data
@@ -20,7 +20,7 @@ class BackupMaker
     /** @var  $exam \Exam */
     public $exam;
 
-    /** @var  \ScoreClasses\ScoreLoader */
+    /** @var  \App\classes\ScoreClasses\ScoreLoader */
     public $scoreLoader;
 
     public $records = array();
@@ -34,9 +34,9 @@ class BackupMaker
     }
 
     /**
-     * @param \ScoreClasses\ScoreLoader $scoreLoader
+     * @param \App\classes\ScoreClasses\ScoreLoader $scoreLoader
      */
-    public function setScoreLoader(\ScoreClasses\ScoreLoader $scoreLoader)
+    public function setScoreLoader(\App\classes\ScoreClasses\ScoreLoader $scoreLoader)
     {
         $this->scoreLoader = $scoreLoader;
     }
@@ -47,10 +47,10 @@ class BackupMaker
      */
     public function loadRecords()
     {
-        $studentGenerator = new \StudentClasses\StudentsForExamGenerator();
+        $studentGenerator = new \App\classes\StudentClasses\StudentsForExamGenerator();
         foreach ($studentGenerator($this->exam) as $student) {
             $record = array('studentName' => $student->getStudentname(), 'student id' => $student->getSid());
-            $questionGenerator = new \QuestionClasses\service\QuestionsForExamGenerator($this->exam);
+            $questionGenerator = new \App\classes\QuestionClasses\service\QuestionsForExamGenerator($this->exam);
             foreach ($questionGenerator($this->exam) as $question) {
                 $scores = $this->scoreLoader->loadForBackup($this->exam, $question, $student);
                 foreach($scores as $key => $val){
@@ -113,9 +113,9 @@ class BackupMaker
 //        $this->load_students();
 //        if (count($this->students) > 0) {
 //            $this->load_questions();
-//            $score_loader = new \ScoreClasses\ScoreLoader();
-//            $score_loader->set_element_score_handler(new \ScoreClasses\ElementScoreHandler());
-//            $score_loader->set_question_score_handler(new \ScoreClasses\QuestionScoreHandler());
+//            $score_loader = new \App\classes\ScoreClasses\ScoreLoader();
+//            $score_loader->set_element_score_handler(new \App\classes\ScoreClasses\ElementScoreHandler());
+//            $score_loader->set_question_score_handler(new \App\classes\ScoreClasses\QuestionScoreHandler());
 //            foreach ($this->students as $student) {
 //                $question = '';
 //                $scores = $score_loader->load($this->exam, $question, $student);
@@ -126,15 +126,15 @@ class BackupMaker
 //
 //
 ////        \StudentQuery::create()
-//        $cleaner = new \SecurityClasses\cleaning\CleanerFactory();
-//        $question_factory = new \QuestionClasses\service\QuestionFactory();
+//        $cleaner = new \App\classes\SecurityClasses\cleaning\CleanerFactory();
+//        $question_factory = new \App\classes\QuestionClasses\service\QuestionFactory();
 //        $question_factory->set_cleaner($cleaner);
-//        $question_factory->set_question_assignment_dao(new \QuestionClasses\dao\QuestionAssignmentDAO());
+//        $question_factory->set_question_assignment_dao(new \App\classes\QuestionClasses\dao\QuestionAssignmentDAO());
 //
-//        $student_factory = new \StudentClasses\StudentFactory();
+//        $student_factory = new \App\classes\StudentClasses\StudentFactory();
 //        $student_factory->set_cleaner($cleaner);
 //
-//        $element_factory = new \ElementClasses\service\ElementFactory();
+//        $element_factory = new \App\classes\ElementClasses\service\ElementFactory();
 //        $element_factory->set_cleaner($cleaner);
 //
 //        $question_factory->set_exam($this->exam);
@@ -142,9 +142,9 @@ class BackupMaker
 //        $question = $question_factory->load_blind($request);
 //        $student = $student_factory->load_from_request($request);
 //        if (isset($this->exam) && isset($question) && isset($student)) {
-//            $score_loader = new \ScoreClasses\ScoreLoader();
-//            $score_loader->set_element_score_handler(new \ScoreClasses\ElementScoreHandler());
-//            $score_loader->set_question_score_handler(new \ScoreClasses\QuestionScoreHandler());
+//            $score_loader = new \App\classes\ScoreClasses\ScoreLoader();
+//            $score_loader->set_element_score_handler(new \App\classes\ScoreClasses\ElementScoreHandler());
+//            $score_loader->set_question_score_handler(new \App\classes\ScoreClasses\QuestionScoreHandler());
 //            $scores = $score_loader->load($exam, $question, $student);
 //
 //        }

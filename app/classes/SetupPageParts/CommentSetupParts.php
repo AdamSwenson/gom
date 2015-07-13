@@ -25,7 +25,7 @@ class CommentSetupParts
                     <select id='commentSelector'>
                         <option>Select comment</option>";
                         $getComments = array('printSelector' => true, 'send' => false);
-                        $c = new \CommentClasses\GetAllComments($this->user, $getComments);
+                        $c = new \App\classes\CommentClassesGetAllComments($this->user, $getComments);
         echo "</select>
             </p>
             <label for='commentID'>Comment ID: </label><input type='text' id='commentID' readonly='readonly' value='new' class='comment emptyMe'/><br/>

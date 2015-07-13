@@ -6,7 +6,7 @@
  * Time: 6:13 PM
  */
 
-namespace OutputClasses\stats;
+namespace App\classes\OutputClasses\stats;
 
 
 interface IStatsWorker 
@@ -16,7 +16,7 @@ interface IStatsWorker
     public function get_items(\Exam $exam);
 
     /**
-     * @param \ScoreClasses\dao\ScoreDAO $score_dao
+     * @param \App\classes\ScoreClasses\dao\ScoreDAO $score_dao
      */
     public function setScoreDao($score_dao);
 

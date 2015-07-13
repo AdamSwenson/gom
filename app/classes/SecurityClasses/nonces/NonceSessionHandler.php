@@ -6,7 +6,7 @@
  *
  */
 
-namespace SecurityClasses\nonces;
+namespace App\classes\SecurityClasses\nonces;
 
 /**
  * This handles interaction with the session variables holding nonces
@@ -36,11 +36,11 @@ class NonceSessionHandler implements INonceSessionHandler
     /**
      * Stores nonce value for the page in session
      * @param type $page_name
-     * @param \SecurityClasses\nonces\Nonce $nonce
+     * @param \App\classes\SecurityClasses\nonces\Nonce $nonce
      * @return bool
      * @throws \Exception
      */
-    public function store_nonce($page_name, \SecurityClasses\nonces\Nonce $nonce)
+    public function store_nonce($page_name, \App\classes\SecurityClasses\nonces\Nonce $nonce)
     {
         try {
         $this->initialize_session();
@@ -54,7 +54,7 @@ class NonceSessionHandler implements INonceSessionHandler
     /**
      * Retrieves nonce and timestamp for a page
      * @param  type                          $page_name
-     * @return \SecurityClasses\nonces\Nonce A nonce object with token and time set
+     * @return \App\classes\SecurityClasses\nonces\Nonce A nonce object with token and time set
      */
     public function get_nonce($page_name)
     {

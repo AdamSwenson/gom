@@ -6,7 +6,7 @@
  * Time: 4:24 PM
  */
 
-namespace ScoreClasses\dao;
+namespace App\classes\ScoreClasses\dao;
 
 use Symfony\Component\Finder\Exception\AccessDeniedException;
 
@@ -51,12 +51,12 @@ use Symfony\Component\Finder\Exception\AccessDeniedException;
  * $dao->load('element', 5)
  *
  *
- * @package ScoreClasses\dao
+ * @package App\classes\ScoreClasses\dao
  */
 class ScoreDAO implements IScoreDAO
 {
 
-    /** @var  \ScoreClasses\dao\ILoader */
+    /** @var  \App\classes\ScoreClasses\dao\ILoader */
     public $worker;
 
     /** @var  \Student */

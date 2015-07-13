@@ -6,7 +6,7 @@
  * Time: 12:16 PM
  */
 
-namespace GradeClasses\service;
+namespace App\classes\GradeClasses\service;
 
 
 class AssignmentManager 

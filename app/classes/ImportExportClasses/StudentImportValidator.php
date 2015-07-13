@@ -32,7 +32,7 @@ class StudentImportValidator
 
     protected $student_info_id;
     
-    public function set_validator(\SecurityClasses\cleaning\ICleanerFactory $cleaner_factory)
+    public function set_validator(\App\classes\SecurityClasses\cleaning\ICleanerFactory $cleaner_factory)
     {
         $this->validator = $cleaner_factory;
     }
@@ -45,7 +45,7 @@ class StudentImportValidator
      */
     public function __construct($sid, $studentname, $email)
     {
-        $this->set_validator(new \SecurityClasses\cleaning\CleanerFactory());
+        $this->set_validator(new \App\classes\SecurityClasses\cleaning\CleanerFactory());
         $this->validate_email($email);
         $this->validate_student_id($sid);
         $this->validate_student_name($studentname);

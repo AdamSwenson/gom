@@ -68,13 +68,13 @@ function failureHandler(jquerySelectorToChange, message) {
 }
 
 function sendRequest(Request, jquerySelectorToChange, message) {
-    $.post("api.php", Request, function (response) {
+    $.post("api", Request, function (response) {
         responseHandler(response, jquerySelectorToChange, message);
     }, "JSON");
 }
 
 function sendRequestCallback(Request, successCallback, failureCallback) {
-    $.post("api.php", Request, function (response) {
+    $.post("api", Request, function (response) {
         if ((response.status && (response.status.status === 'success')) || (response.data.status && response.data.status === 'success')) {
                 try {
                     successCallback();

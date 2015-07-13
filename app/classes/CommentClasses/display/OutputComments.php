@@ -6,21 +6,24 @@
  * Time: 1:10 PM
  */
 
-namespace CommentClasses\display;
+namespace App\classes\CommentClasses\display;
+
+use App\classes\ElementClasses\dao\ElementAssignmentDAO;
+use App\classes\JsonOutputClasses\encoders\IJsonOutput;
 
 /**
  * Class OutputComments
  * Used to output a json object for use by javascript when page first loads
  *
- * @package CommentClasses\display
+ * @package App\classes\CommentClasses\display
  */
 class OutputComments
 {
 
-    /** @var  \JsonOutputClasses\encoders\IJsonOutput */
+    /** @var  IJsonOutput */
     public $encoder;
 
-    /** @var  \ElementClasses\dao\ElementAssignmentDAO  */
+    /** @var  ElementAssignmentDAO  */
     public $loader;
 
     /** @var  \Exam */
@@ -31,18 +34,18 @@ class OutputComments
 
     /**
      * Loads the class which handles outputting as json
-     * @param \JsonOutputClasses\encoders\IJsonOutput $encoder
+     * @param IJsonOutput $encoder
      */
-    public function set_encoder(\JsonOutputClasses\encoders\IJsonOutput $encoder)
+    public function set_encoder(IJsonOutput $encoder)
     {
         $this->encoder = $encoder;
     }
 
     /**
      * Loads class which handles db queries
-     * @param \ElementClasses\dao\ElementAssignmentDAO $loader
+     * @param ElementAssignmentDAO $loader
      */
-    public function set_loader(\ElementClasses\dao\ElementAssignmentDAO $loader)
+    public function set_loader(ElementAssignmentDAO $loader)
     {
         $this->loader = $loader;
     }
@@ -64,7 +67,8 @@ class OutputComments
                 );
                 array_push($output, $f);
             }
-        $this->encoder->encode_and_send($output);
+  return $output;
+//        $this->encoder->encode_and_send($output);
     }
 
     public function display_for_exam(\Exam $exam)
@@ -118,6 +122,7 @@ class OutputComments
                 }
             }
         }
-        $this->encoder->encode_and_send($output);
+        return $output;
+//        $this->encoder->encode_and_send($output);
     }
 }

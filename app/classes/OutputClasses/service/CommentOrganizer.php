@@ -6,7 +6,7 @@
  *
  */
 
-namespace OutputClasses\service;
+namespace App\classes\OutputClasses\service;
 
 /**
  * Puts comments in correct order then hands to printer
@@ -15,7 +15,7 @@ namespace OutputClasses\service;
  */
 class CommentOrganizer
 {
-    /** @var $printer \OutputClasses\service\ICommentPrinter */
+    /** @var $printer \App\classes\OutputClasses\service\ICommentPrinter */
     public $printer;
     public $comments;
     public $questionNumbers = array();
@@ -23,7 +23,7 @@ class CommentOrganizer
     /** @var $sorted_comments array Holds the comments once they have been sorted */
     public $sorted_comments = array();
 
-    public function set_printer(\OutputClasses\service\ICommentPrinter $printer)
+    public function set_printer(\App\classes\OutputClasses\service\ICommentPrinter $printer)
     {
         $this->printer = $printer;
     }

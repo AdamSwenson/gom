@@ -6,7 +6,7 @@
  *
  */
 
-namespace SecurityClasses\nonces;
+namespace App\classes\SecurityClasses\nonces;
 
 /**
  * This performs validation operations and is expected by the various nonce handlers

@@ -6,7 +6,7 @@
  * Time: 4:22 PM
  */
 
-namespace TimerClasses;
+namespace App\classes\TimerClasses;
 
 /**
  * Class ExamTimerHandler
@@ -20,13 +20,13 @@ class ExamTimerHandler
     /** @var $time_handler \GradingTime */
     public $time_handler;
 
-    /** @var  $response_handler \JsonOutputClasses\controllers\IResponseChooser */
+    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
     public $response_handler;
 
     /**
-     * @param \JsonOutputClasses\controllers\IResponseChooser $response_handler
+     * @param \App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler
      */
-    public function set_response_handler(\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
     {
         $this->response_handler = $response_handler;
     }

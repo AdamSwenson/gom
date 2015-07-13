@@ -6,19 +6,19 @@
  * Time: 7:34 AM
  */
 
-namespace StudentClasses\display;
+namespace App\classes\StudentClasses\display;
 
 /**
  * Class StudentTableMaker
  * Outputs students for table
- * @package StudentClasses\display
+ * @package App\classes\StudentClasses\display
  */
 class StudentTableMaker
 {
-    /** @var  \JsonOutputClasses\encoders\DirectJsonOutput */
+    /** @var  \App\classes\JsonOutputClasses\encoders\DirectJsonOutput */
     public $encoder;
 
-    /** @var  \StudentClasses\dao\IStudentLoader */
+    /** @var  \App\classes\StudentClasses\dao\IStudentLoader */
     public $loader;
 
     /** @var  \Exam */
@@ -29,18 +29,18 @@ class StudentTableMaker
 
     /**
      * Loads the class which handles outputting as json
-     * @param \JsonOutputClasses\encoders\DirectJsonOutput $encoder
+     * @param \App\classes\JsonOutputClasses\encoders\DirectJsonOutput $encoder
      */
-    public function set_encoder(\JsonOutputClasses\encoders\DirectJsonOutput $encoder)
+    public function set_encoder(\App\classes\JsonOutputClasses\encoders\DirectJsonOutput $encoder)
     {
         $this->encoder = $encoder;
     }
 
     /**
      * Loads class which handles db queries for students
-     * @param \StudentClasses\dao\IStudentLoader $loader
+     * @param \App\classes\StudentClasses\dao\IStudentLoader $loader
      */
-    public function set_student_loader(\StudentClasses\dao\IStudentLoader $loader)
+    public function set_student_loader(\App\classes\StudentClasses\dao\IStudentLoader $loader)
     {
         $this->loader = $loader;
     }

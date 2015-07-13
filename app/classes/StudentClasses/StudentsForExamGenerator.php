@@ -6,7 +6,7 @@
  * Time: 4:58 PM
  */
 
-namespace StudentClasses;
+namespace App\classes\StudentClasses;
 
 /**
  * Class StudentsForExamGenerator

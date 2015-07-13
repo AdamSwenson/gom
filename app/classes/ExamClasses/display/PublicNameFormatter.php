@@ -6,12 +6,12 @@
  * Time: 9:53 AM
  */
 
-namespace ExamClasses\display;
+namespace App\classes\ExamClasses\display;
 
 /**
  * Class PublicNameFormatter
  * Handles formatting the exam properties for output
- * @package ExamClasses\display
+ * @package App\classes\ExamClasses\display
  */
 class PublicNameFormatter
 {

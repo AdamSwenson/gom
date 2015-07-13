@@ -6,7 +6,7 @@
  * Time: 7:18 AM
  */
 
-namespace OutputClasses\facades;
+namespace App\classes\OutputClasses\facades;
 
 
 class Visitor implements IVisitor

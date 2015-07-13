@@ -6,7 +6,7 @@
  * Time: 1:14 PM
  */
 
-namespace ExamClasses\dao;
+namespace App\classes\ExamClasses\dao;
 
 
 use Propel\Runtime\Connection\ConnectionWrapper;

@@ -6,7 +6,7 @@
  * Time: 1:35 PM
  */
 
-namespace CommentClasses\service;
+namespace App\classes\CommentClassesservice;
 
 
 class AssignmentProcessor
@@ -14,22 +14,22 @@ class AssignmentProcessor
 
     public $factory;
 
-    /** @var  $cleaner \SecurityClasses\cleaning\ICleanerFactory */
+    /** @var  $cleaner \App\classes\SecurityClasses\cleaning\ICleanerFactory */
     public $cleaner;
 
-    /** @var  $response_handler \JsonOutputClasses\controllers\IResponseChooser */
+    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
     public $response_handler;
 
     /**
-     * @param \SecurityClasses\cleaning\ICleanerFactory $cleaner
+     * @param \App\classes\SecurityClasses\cleaning\ICleanerFactory $cleaner
      */
-    public function load_cleaner(\SecurityClasses\cleaning\ICleanerFactory $cleaner)
+    public function load_cleaner(\App\classes\SecurityClasses\cleaning\ICleanerFactory $cleaner)
     {
         $this->cleaner = $cleaner;
     }
 
 
-    public function set_response_handler(\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
     {
         $this->response_handler = $response_handler;
     }

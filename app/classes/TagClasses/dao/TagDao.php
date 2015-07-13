@@ -6,13 +6,13 @@
  * Time: 12:46 PM
  */
 
-namespace TagClasses\dao;
+namespace App\classes\TagClasses\dao;
 
 /**
  * Class TagDao
  * Handles creating, editing, and deleting tags which are applied to
  * questions, elements, etc
- * @package TagClasses\dao
+ * @package App\classes\TagClasses\dao
  */
 class TagDao 
 {

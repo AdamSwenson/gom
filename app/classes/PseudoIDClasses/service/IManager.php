@@ -6,14 +6,14 @@
  * Time: 11:04 AM
  */
 
-namespace PseudoIDClasses\service;
+namespace App\classes\PseudoIDClasses\service;
 
 use Propel\Runtime\Connection\ConnectionWrapper;
 
 /**
  * Interface IManager
  * Interface for workers of ManagerFactory
- * @package PseudoIDClasses\service
+ * @package App\classes\PseudoIDClasses\service
  */
 interface IManager 
 {

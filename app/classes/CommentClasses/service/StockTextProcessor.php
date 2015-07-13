@@ -6,12 +6,12 @@
  * Time: 12:09 PM
  */
 
-namespace CommentClasses\service;
+namespace App\classes\CommentClassesservice;
 
 /**
  * Class StockTextProcessor
  * This cleans and processes new stock text from user and stores it
- * @package classes\CommentClasses\service
+ * @package classes\App\classes\CommentClassesservice
  */
 class StockTextProcessor
 {
@@ -21,26 +21,26 @@ class StockTextProcessor
     /**
      * @param mixed $dao
      */
-    public function setDao(\CommentClasses\dao\IStockTextDao $dao)
+    public function setDao(\App\classes\CommentClassesdao\IStockTextDao $dao)
     {
         $this->dao = $dao;
     }
 
-    /** @var  $response_handler \JsonOutputClasses\controllers\IResponseChooser */
+    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
     public $response_handler;
 
-    /** @var  $cleaner \SecurityClasses\cleaning\ICleanerFactory */
+    /** @var  $cleaner \App\classes\SecurityClasses\cleaning\ICleanerFactory */
     public $cleaner;
 
     /**
-     * @param \SecurityClasses\cleaning\ICleanerFactory $cleaner
+     * @param \App\classes\SecurityClasses\cleaning\ICleanerFactory $cleaner
      */
-    public function load_cleaner(\SecurityClasses\cleaning\ICleanerFactory $cleaner)
+    public function load_cleaner(\App\classes\SecurityClasses\cleaning\ICleanerFactory $cleaner)
     {
         $this->cleaner = $cleaner;
     }
 
-    public function set_response_handler(\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
     {
         $this->response_handler = $response_handler;
     }
@@ -49,7 +49,7 @@ class StockTextProcessor
     public function save_new_text($text, $valence)
     {
         $clean_text = $this->cleaner->sanitize($text, 'text');
-        $result = $this->dao->saveNewText($clean_text, $valence, \CommentClasses\dao\StockTextDao::TYPE_PREPEND);
+        $result = $this->dao->saveNewText($clean_text, $valence, \App\classes\CommentClassesdao\StockTextDao::TYPE_PREPEND);
         if($result){
             $this->response_handler->handle_row_count(1);
         }else{
@@ -74,6 +74,6 @@ class StockTextProcessor
 
 //    public function check_valence($valence)
 //    {
-//        return in_array($valence, \CommentClasses\dao\StockTextDao::$valences);
+//        return in_array($valence, \App\classes\CommentClassesdao\StockTextDao::$valences);
 //    }
 }

@@ -6,13 +6,13 @@
  * Time: 2:39 PM
  */
 
-namespace ExamClasses\service;
+namespace App\classes\ExamClasses\service;
 
 /**
  * Class LockManager
  * This handles locking and unlocking an exam.
  *
- * @package ExamClasses\service
+ * @package App\classes\ExamClasses\service
  */
 class LockManager extends ExamServiceParent implements IExamStatusManager
 {
@@ -29,24 +29,24 @@ class LockManager extends ExamServiceParent implements IExamStatusManager
     /** The task string expected for unlock operations */
     const UNLOCK_TASK = 'unlockExam';
 
-    /** @var  $request \RequestClasses\IRequest */
+    /** @var  $request \App\classes\RequestClasses\IRequest */
     protected $request;
 
-//    /** @var  $dao \ExamClasses\dao\IExamDAO */
+//    /** @var  $dao \App\classes\ExamClasses\dao\IExamDAO */
 //    public $dao;
 //
-//    /** @var  $response_handler \JsonOutputClasses\controllers\IResponseChooser */
+//    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
 //    public $response_handler;
 //
 //    /**
-//     * @param \JsonOutputClasses\controllers\IResponseChooser $response_handler
+//     * @param \App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler
 //     */
-//    public function set_response_handler(\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+//    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
 //    {
 //        $this->response_handler = $response_handler;
 //    }
 //
-//    public function load_exam_dao(\ExamClasses\dao\IExamDAO $exam_dao)
+//    public function load_exam_dao(\App\classes\ExamClasses\dao\IExamDAO $exam_dao)
 //    {
 //        $this->dao = $exam_dao;
 //    }
@@ -110,9 +110,9 @@ class LockManager extends ExamServiceParent implements IExamStatusManager
 
     /**
      * Lock or unlock an exam from a post request
-     * @param \RequestClasses\IRequest $request
+     * @param \App\classes\RequestClasses\IRequest $request
      */
-    public function execute(\RequestClasses\IRequest $request)
+    public function execute(\App\classes\RequestClasses\IRequest $request)
     {
         $this->request = $request;
         $this->choose();

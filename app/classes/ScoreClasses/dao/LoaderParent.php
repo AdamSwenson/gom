@@ -6,7 +6,7 @@
  * Time: 2:38 PM
  */
 
-namespace ScoreClasses\dao;
+namespace App\classes\ScoreClasses\dao;
 
 
 abstract class LoaderParent

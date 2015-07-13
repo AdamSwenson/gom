@@ -6,7 +6,7 @@
  * Time: 12:53 PM
  */
 
-namespace ElementClasses\dao;
+namespace App\classes\ElementClasses\dao;
 
 
 class ElementAssignmentDAO

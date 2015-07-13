@@ -6,10 +6,10 @@
  * Time: 11:20 AM
  */
 
-namespace OutputClasses\service;
+namespace App\classes\OutputClasses\service;
 
 
-use CommentClasses\dao\StockTextDao;
+use App\classes\CommentClassesdao\StockTextDao;
 
 class CommentKludge
 {
@@ -35,7 +35,7 @@ class CommentKludge
         array('min' => 7.6, 'max' => 10.0, 'valence' => StockTextDao::VALENCE_EXCELLENT)
     ];
 
-    /** @var  \ScoreClasses\dao\IScoreDAO */
+    /** @var  \App\classes\ScoreClasses\dao\IScoreDAO */
     public $dao;
 
     protected $stockTextDao;
@@ -43,7 +43,7 @@ class CommentKludge
     /**
      * @param mixed $stockTextDao
      */
-    public function setStockTextDao(\CommentClasses\dao\IStockTextDao $stockTextDao)
+    public function setStockTextDao(\App\classes\CommentClassesdao\IStockTextDao $stockTextDao)
     {
         $this->stockTextDao = $stockTextDao;
     }
@@ -53,15 +53,15 @@ class CommentKludge
     /**
      * @param mixed $commentBuilder
      */
-    public function setCommentBuilder(\CommentClasses\service\CommentBuilder $commentBuilder)
+    public function setCommentBuilder(\App\classes\CommentClassesservice\CommentBuilder $commentBuilder)
     {
         $this->commentBuilder = $commentBuilder;
     }
 
     /**
-     * @param \ScoreClasses\dao\IScoreDAO $dao
+     * @param \App\classes\ScoreClasses\dao\IScoreDAO $dao
      */
-    public function setDao(\ScoreClasses\dao\IScoreDAO $dao)
+    public function setDao(\App\classes\ScoreClasses\dao\IScoreDAO $dao)
     {
         $this->dao = $dao;
     }

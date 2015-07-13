@@ -6,7 +6,7 @@
  * Time: 2:57 PM
  */
 
-namespace CommentClasses\errors;
+namespace App\classes\CommentClasseserrors;
 
 
 class CommentException extends \Exception

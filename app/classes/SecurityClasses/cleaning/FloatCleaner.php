@@ -6,7 +6,7 @@
  * 
  */
 
-namespace SecurityClasses\cleaning;
+namespace App\classes\SecurityClasses\cleaning;
 
 /**
  * Handles both float and string representation of a float

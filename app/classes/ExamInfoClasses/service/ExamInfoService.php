@@ -6,28 +6,28 @@
  * Time: 12:59 PM
  */
 
-namespace ExamInfoClasses\service;
+namespace App\classes\ExamInfoClasses\service;
 
 
 class ExamInfoService
 {
     public static $types = array('pages', 'notecard', 'completionOrder');
 
-    /** @var  $dao \ExamInfoClasses\dao\IExamInfoDAO */
+    /** @var  $dao \App\classes\ExamInfoClasses\dao\IExamInfoDAO */
     public $dao;
 
-    /** @var  $response_handler \JsonOutputClasses\controllers\IResponseChooser */
+    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
     public $response_handler;
 
     /**
-     * @param \JsonOutputClasses\controllers\IResponseChooser $response_handler
+     * @param \App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler
      */
-    public function set_response_handler(\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
     {
         $this->response_handler = $response_handler;
     }
 
-    public function set_dao(\ExamInfoClasses\dao\IExamInfoDAO $exam_info_dao)
+    public function set_dao(\App\classes\ExamInfoClasses\dao\IExamInfoDAO $exam_info_dao)
     {
         $this->dao = $exam_info_dao;
     }
@@ -40,7 +40,7 @@ class ExamInfoService
         $this->response_handler->handle_response($r);
     }
 
-    public function update(\Exam $exam, \Student $student, \RequestClasses\IRequest $request)
+    public function update(\Exam $exam, \Student $student, \App\classes\RequestClasses\IRequest $request)
     {
         if(isset($request->http['type']) && isset($request->http['score']))
         {

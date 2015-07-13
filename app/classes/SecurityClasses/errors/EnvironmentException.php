@@ -6,7 +6,7 @@
  * Time: 9:54 AM
  */
 
-namespace SecurityClasses\errors;
+namespace App\classes\SecurityClasses\errors;
 
 
 class EnvironmentException extends \Exception

@@ -6,7 +6,7 @@
  * Time: 7:17 PM
  */
 
-namespace PreferenceClasses\dao;
+namespace App\classes\PreferenceClasses\dao;
 
 
 class PreferencesDAO

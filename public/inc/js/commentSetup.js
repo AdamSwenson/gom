@@ -211,7 +211,7 @@ function changePanelVisibility(dthis) {
 function updateExisting(){
     var Request = new Object();
     Request.task = 'get'
-    $.post("api.php", Request, function (response) {
+    $.post("api", Request, function (response) {
         responseHandler(response, jquerySelectorToChange, message);
     }, "JSON");
 }

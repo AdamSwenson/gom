@@ -109,7 +109,7 @@ function addLeadingZero(val) {
  * @returns {undefined}
  */
 function sendTimerUpdate(Send, checkvalue){
-    $.post('api.php', Send, function(reply) {
+    $.post('api', Send, function(reply) {
         if (reply && (reply.currentTime === checkvalue)) {
        //     window.console.log('jip');
         }
@@ -311,7 +311,7 @@ TimerDisplay.prototype.getServerTime = function() {
     }else if(this.timerType === 'group'){
         var Send = {'requestType': 'timer', 'please': 'getGroupTime', 'groupNumber': this.groupNumber};
     }
-    $.post('api.php', Send, function(reply){
+    $.post('api', Send, function(reply){
             if (reply && reply.time > 0) {
                 me.elapsedTime = Number(reply.data.time);
             } else {

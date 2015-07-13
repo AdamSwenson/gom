@@ -6,27 +6,27 @@
  * Time: 1:19 PM
  */
 
-namespace ElementClasses\service;
+namespace App\classes\ElementClasses\service;
 
 
 class ElementFactory
 {
-    /** @var  $cleaner \SecurityClasses\cleaning\ICleanerFactory */
+    /** @var  $cleaner \App\classes\SecurityClasses\cleaning\ICleanerFactory */
     public $cleaner;
 
     /**
-     * @param \SecurityClasses\cleaning\ICleanerFactory $cleaner
+     * @param \App\classes\SecurityClasses\cleaning\ICleanerFactory $cleaner
      */
-    public function set_cleaner(\SecurityClasses\cleaning\ICleanerFactory $cleaner)
+    public function set_cleaner(\App\classes\SecurityClasses\cleaning\ICleanerFactory $cleaner)
     {
         $this->cleaner = $cleaner;
     }
 
     /**
-     * @param \RequestClasses\IRequest $request
+     * @param \App\classes\RequestClasses\IRequest $request
      * @return bool|\Element
      */
-    public function load(\RequestClasses\IRequest $request)
+    public function load(\App\classes\RequestClasses\IRequest $request)
     {
         if(isset($request->http['elementID']))
         {

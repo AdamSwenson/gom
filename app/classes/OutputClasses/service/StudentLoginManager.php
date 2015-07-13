@@ -6,7 +6,7 @@
  *
  */
 
-namespace OutputClasses\service;
+namespace App\classes\OutputClasses\service;
 
 /**
  * This handles the student access on the output page.
@@ -19,14 +19,14 @@ namespace OutputClasses\service;
  * //Now we need to create a dataservice to handle requests for scores and comments
  * $student_login_manager->get_credentials($secrets)
  * //Finally, we can make a student object which has the relevant data for requests
- * $student_login_manager->make_student(\StudentClasses\factories\StudentPIDFactory, $pseudoid)
+ * $student_login_manager->make_student(\App\classes\StudentClasses\factories\StudentPIDFactory, $pseudoid)
  * $student_login_manager->set_exam(new \ExaminationClasses\models\ExamLight());
  *
  * @author adam
  */
 class StudentLoginManager {
 
-    /** @var $lookup \OutputClasses\dao\ICredentialLookup */
+    /** @var $lookup \App\classes\OutputClasses\dao\ICredentialLookup */
     protected $lookup;
 
     /** @var $secrets  */
@@ -43,19 +43,19 @@ class StudentLoginManager {
 
     /**
      * Stores the object which will handle looking up the db credentials in self::lookup
-     * @param \OutputClasses\dao\ICredentialLookup $lookup
+     * @param \App\classes\OutputClasses\dao\ICredentialLookup $lookup
      */
-    public function set_lookup(\OutputClasses\dao\ICredentialLookup $lookup) {
+    public function set_lookup(\App\classes\OutputClasses\dao\ICredentialLookup $lookup) {
         $this->lookup = $lookup;
     }
 
-    public function login(\RequestClasses\IRequest $request)
+    public function login(\App\classes\RequestClasses\IRequest $request)
     {
         if (isset($request->http['access_code']) && isset($request->http['lookup'])) {
             try {
                 $this->process_access_token($request->http['access_code']);
                 if ($this->lookup->success) {
-                    return \OutputClasses\facades\Visitor::make($this->lookup->get_exam(),
+                    return \App\classes\OutputClasses\facades\Visitor::make($this->lookup->get_exam(),
                         $this->lookup->get_student());
                 }
             } catch (\Exception $e) {

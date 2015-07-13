@@ -6,7 +6,7 @@
  * Time: 1:11 PM
  */
 
-namespace QuestionClasses\dao;
+namespace App\classes\QuestionClasses\dao;
 
 
 

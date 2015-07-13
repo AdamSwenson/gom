@@ -6,7 +6,7 @@
  * Time: 4:52 PM
  */
 
-namespace ExamClasses\service;
+namespace App\classes\ExamClasses\service;
 
 
 interface INumberExamsManager

@@ -1,6 +1,6 @@
 <?php
 
-namespace OutputClasses\stats;
+namespace App\classes\OutputClasses\stats;
 
 /**
  * Gets average score on each question for all students taking the exam
@@ -14,11 +14,11 @@ class QuestionStats implements IStatsWorker
 
     public $id_key = 'questionID';
 
-    /** @var  \ScoreClasses\dao\ScoreDAO */
+    /** @var  \App\classes\ScoreClasses\dao\ScoreDAO */
     public $score_dao;
 
     /**
-     * @param \ScoreClasses\dao\ScoreDAO $score_dao
+     * @param \App\classes\ScoreClasses\dao\ScoreDAO $score_dao
      */
     public function setScoreDao($score_dao)
     {

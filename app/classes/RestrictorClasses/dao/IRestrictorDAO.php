@@ -6,7 +6,7 @@
  * Time: 10:25 AM
  */
 
-namespace RestrictorClasses\dao;
+namespace App\classes\RestrictorClasses\dao;
 
 
 interface IRestrictorDAO

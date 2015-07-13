@@ -6,7 +6,7 @@
  * Time: 8:39 AM
  */
 
-namespace OutputClasses\facades;
+namespace App\classes\OutputClasses\facades;
 
 
 interface IVisitor 

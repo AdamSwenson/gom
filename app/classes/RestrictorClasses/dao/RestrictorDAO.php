@@ -6,7 +6,7 @@
  * Time: 1:17 PM
  */
 
-namespace RestrictorClasses\dao;
+namespace App\classes\RestrictorClasses\dao;
 
 /**
  * Class RestrictorDAO
@@ -19,10 +19,10 @@ namespace RestrictorClasses\dao;
  */
 class RestrictorDAO implements IRestrictorDAO
 {
-    /** @var  $cleaner \SecurityClasses\cleaning\ICleanerFactory */
+    /** @var  $cleaner \App\classes\SecurityClasses\cleaning\ICleanerFactory */
     public $cleaner;
 
-    public function set_cleaner(\SecurityClasses\cleaning\ICleanerFactory $cleanerFactory){
+    public function set_cleaner(\App\classes\SecurityClasses\cleaning\ICleanerFactory $cleanerFactory){
         $this->cleaner = $cleanerFactory;
     }
 

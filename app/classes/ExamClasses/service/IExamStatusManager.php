@@ -6,16 +6,16 @@
  * Time: 5:02 PM
  */
 
-namespace ExamClasses\service;
+namespace App\classes\ExamClasses\service;
 
 /**
  * Interface IExamStatusManager
  * Managers for locked and released status changes on exams
- * @package ExamClasses\service
+ * @package App\classes\ExamClasses\service
  */
 interface IExamStatusManager
 {
 
-    public function execute(\RequestClasses\IRequest $request);
+    public function execute(\App\classes\RequestClasses\IRequest $request);
 
 }

@@ -6,7 +6,7 @@
  * Time: 12:55 PM
  */
 
-namespace ExamInfoClasses\dao;
+namespace App\classes\ExamInfoClasses\dao;
 
 
 class ExamInfoDAO implements IExamInfoDAO

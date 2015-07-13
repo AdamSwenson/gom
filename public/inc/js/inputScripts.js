@@ -59,7 +59,7 @@ function setAutocomplete(exam, record) {
     $('#sid').autocomplete({
         source: function(req, add) {
             req.task = 'getAutoSID';
-            $.post('api.php', req, function(response) {
+            $.post('api', req, function(response) {
                 var suggestions = [];
                 $.each(response.data, function(i, val) {
                     suggestions.push(val);
@@ -91,7 +91,7 @@ Exam.prototype.getExamInfo = function() {
     var Req = new Object();
     Req.task = 'getExamInfo';
     Req.sid = $("#sid").val();
-    $.post('api.php', Req, function(response) {
+    $.post('api', Req, function(response) {
         var result = dataResponse(response);
         if(result){
         $.each(result, function(key, value) {
@@ -181,7 +181,7 @@ function getRecord(record, question) {
     Req.questionNumber = question;
     Req.sid = record.sid;
     Req.task = 'getRecord';
-    $.post('api.php', Req, function(response) {
+    $.post('api', Req, function(response) {
         //var result = dataResponse(response);
         var result = response.data;
         window.console.log('getRecord', result);
@@ -298,7 +298,7 @@ Record.prototype.Element = function(Item) {
  */
 function submitItem(Send, itemname) {
     getNonce(Send);
-    $.post('api.php', Send, function(response) {
+    $.post('api', Send, function(response) {
         var result = statusResponse(response);
         window.console.log(result);
         successCheck(itemname, result);

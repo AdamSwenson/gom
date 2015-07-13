@@ -6,7 +6,7 @@
  * Time: 3:32 PM
  */
 
-namespace RequestClasses;
+namespace App\classes\RequestClasses;
 
 
 interface IFileRequest

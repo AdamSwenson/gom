@@ -6,7 +6,7 @@
  * Time: 1:58 PM
  */
 
-namespace GradeClasses\service;
+namespace App\classes\GradeClasses\service;
 
 
 class GradeValidator

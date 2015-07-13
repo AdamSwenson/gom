@@ -6,7 +6,7 @@
  *
  */
 
-namespace GradingStats\service;
+namespace App\classes\GradingStats\service;
 
 /**
  * This holds the statistical data that the dashboard script is expecting

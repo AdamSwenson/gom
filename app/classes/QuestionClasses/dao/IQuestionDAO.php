@@ -6,7 +6,7 @@
  * Time: 10:51 AM
  */
 
-namespace QuestionClasses\dao;
+namespace App\classes\QuestionClasses\dao;
 
 
 interface IQuestionDAO

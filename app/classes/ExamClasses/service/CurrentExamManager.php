@@ -6,13 +6,13 @@
  * Time: 10:44 AM
  */
 
-namespace ExamClasses\service;
+namespace App\classes\ExamClasses\service;
 
 /**
  * Class CurrentExamManager
  * handles storing current exam in session and retrieving
  * from session
- * @package ExamClasses\service
+ * @package App\classes\ExamClasses\service
  */
 class CurrentExamManager {
 

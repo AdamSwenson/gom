@@ -6,7 +6,7 @@
  * Time: 5:10 PM
  */
 
-namespace ImportExportClasses\StudentUpload;
+namespace App\classes\ImportExportClasses\StudentUpload;
 
 
 interface IStudentCsvProcessor 
@@ -15,5 +15,5 @@ interface IStudentCsvProcessor
 
     public function check_header_order(array $headers);
 
-    public function process_file(\RequestClasses\IFileRequest $request);
+    public function process_file(\App\classes\RequestClasses\IFileRequest $request);
 }

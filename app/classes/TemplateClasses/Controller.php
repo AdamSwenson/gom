@@ -9,7 +9,7 @@
 namespace TemplateClasses;
 
 
-use SecurityClasses\environ\TemplateVarHolder;
+use App\classes\SecurityClasses\environ\TemplateVarHolder;
 
 class Controller
 {

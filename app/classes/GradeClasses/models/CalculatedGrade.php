@@ -6,12 +6,12 @@
  * Time: 10:46 AM
  */
 
-namespace GradeClasses\models;
+namespace App\classes\GradeClasses\models;
 
 /**
  * Class CalculatedGrade
  * This holds a grade object along with its criteria
- * @package GradeClasses\service
+ * @package App\classes\GradeClasses\service
  */
 class CalculatedGrade implements IGradeHolder
 {
@@ -19,7 +19,7 @@ class CalculatedGrade implements IGradeHolder
 
     const MAX_SCORE_KEY = 'maxScore';
 
-    /** @var  \GradeClasses\models\Grade */
+    /** @var  \App\classes\GradeClasses\models\Grade */
     protected $grade;
 
     protected $minScore;
@@ -42,7 +42,7 @@ class CalculatedGrade implements IGradeHolder
     /**
      * @param mixed $grade
      */
-    public function setGrade(\GradeClasses\models\Grade $grade)
+    public function setGrade(\App\classes\GradeClasses\models\Grade $grade)
     {
         $this->grade = $grade;
     }

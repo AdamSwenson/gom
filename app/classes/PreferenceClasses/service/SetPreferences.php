@@ -6,7 +6,7 @@
  * Time: 7:25 PM
  */
 
-namespace PreferenceClasses\service;
+namespace App\classes\PreferenceClasses\service;
 
 
 class SetPreferences
@@ -20,7 +20,7 @@ class SetPreferences
     {
         if(isset($_SESSION)){
             if(!isset($_SESSION['preferences'])){
-                $_SESSION['preferences'] = \PreferenceClasses\dao\PreferencesDAO::load();
+                $_SESSION['preferences'] = \App\classes\PreferenceClasses\dao\PreferencesDAO::load();
             }
         }
     }
