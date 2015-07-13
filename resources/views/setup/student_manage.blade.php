@@ -13,7 +13,6 @@
     @include("layouts.topbar")
     <div class="pageComponent">
 
-
         <div id="bodymain">
 
             <div class='completedMessage'></div>
@@ -138,7 +137,7 @@
 
     </div>
 
-
+@endsection
 
 @section('jsArea')
     <?php
