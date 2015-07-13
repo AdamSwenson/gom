@@ -1,6 +1,6 @@
 <?php
 
-namespace PageToolClasses;
+namespace App\classes\PageToolClasses;
 
 /**
  * This manages jquery plugins so that a page just needs to call this to load the plugins and all the locations and syntax are defined in one place
@@ -31,7 +31,7 @@ class JQueryPlugins
 
     public static function jCookieLoad()
     {
-        echo "<script type='text/javascript' src='" . \classes\Navigation::JCOOKIE . "/jquery.cookie.js'></script>";
+        echo "<script type='text/javascript' src='inc/js/jquery.cookie.js'></script>";
     }
 
     public function datatables() { self::dataTablesLoad();}

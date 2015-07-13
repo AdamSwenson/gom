@@ -142,7 +142,7 @@
 
 @section('jsArea')
     <?php
-    $jc = new \PageToolClasses\JQueryPlugins();
+    $jc = new \App\classes\PageToolClasses\JQueryPlugins();
     $jc->jCookie();
     $jc->dataTablesLoad();
     ?>
