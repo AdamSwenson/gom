@@ -66,7 +66,7 @@ class DirectOutputController implements \App\classes\JsonOutputClasses\controlle
      *
      *
      * @param  type $type String of the type of handler to load
-     * @return \App\classes\DirectOutputClassesencoders\DataReturner|string
+     * @return \App\classes\DirectOutputClasses\encoders\DataReturner|string
      * @throws \Exception
      */
     public function load_appropriate_handler($type)
@@ -74,7 +74,7 @@ class DirectOutputController implements \App\classes\JsonOutputClasses\controlle
         $handler = '';
         switch ($type) {
             case 'question':
-                $handler = new \App\classes\DirectOutputClassesencoders\DataReturner();
+                $handler = new \App\classes\DirectOutputClasses\encoders\DataReturner();
                 break;
         }
 

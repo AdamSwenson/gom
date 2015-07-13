@@ -2,177 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5ef8f7fb-6296-4e72-9523-7b5e3fc3facd" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Http/Controllers/AjaxController.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/classes/RequestHandlers/workers/ExamWorker.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/classes/RequestHandlers/workers/GradeWorker.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/classes/RequestHandlers/workers/IRequestWorker.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/classes/RequestHandlers/workers/InputWorker.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/classes/RequestHandlers/workers/ItemWorker.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/classes/RequestHandlers/MasterRequestHandler.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/classes/RequestHandlers/workers/ScoreWorker.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/classes/RequestHandlers/workers/StatsWorker.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/classes/RequestHandlers/workers/TagWorker.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/classes/RequestHandlers/workers/TimeWorker.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/codeStyleSettings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/logging/AccountSetupLogger.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/logging/AccountSetupLogger.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/CommentClasses/dao/AssignmentFactory.php" afterPath="$PROJECT_DIR$/app/classes/CommentClasses/dao/AssignmentFactory.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/GradeClasses/service/AssignmentManager.php" afterPath="$PROJECT_DIR$/app/classes/GradeClasses/service/AssignmentManager.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/CommentClasses/service/AssignmentProcessor.php" afterPath="$PROJECT_DIR$/app/classes/CommentClasses/service/AssignmentProcessor.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/StudentClasses/service/AutocompleteService.php" afterPath="$PROJECT_DIR$/app/classes/StudentClasses/service/AutocompleteService.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ImportExportClasses/Backup/BackupMaker.php" afterPath="$PROJECT_DIR$/app/classes/ImportExportClasses/Backup/BackupMaker.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/GradeClasses/models/CalculatedGrade.php" afterPath="$PROJECT_DIR$/app/classes/GradeClasses/models/CalculatedGrade.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/cleaning/CleanerFactory.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/cleaning/CleanerFactory.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/CommentClasses/service/CommentBuilder.php" afterPath="$PROJECT_DIR$/app/classes/CommentClasses/service/CommentBuilder.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/CommentClasses/errors/CommentException.php" afterPath="$PROJECT_DIR$/app/classes/CommentClasses/errors/CommentException.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/service/CommentKludge.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/service/CommentKludge.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/CommentClasses/dao/CommentLoader.php" afterPath="$PROJECT_DIR$/app/classes/CommentClasses/dao/CommentLoader.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/service/CommentOrganizer.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/service/CommentOrganizer.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/service/CommentPrinter.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/service/CommentPrinter.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SetupPageParts/CommentSetupParts.php" afterPath="$PROJECT_DIR$/app/classes/SetupPageParts/CommentSetupParts.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/display/CommentsMaker.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/display/CommentsMaker.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/TemplateClasses/Controller.php" afterPath="$PROJECT_DIR$/app/classes/TemplateClasses/Controller.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/PseudoIDClasses/service/CreationManager.php" afterPath="$PROJECT_DIR$/app/classes/PseudoIDClasses/service/CreationManager.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/dao/CredentialLookup.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/dao/CredentialLookup.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ExamClasses/service/CurrentExamManager.php" afterPath="$PROJECT_DIR$/app/classes/ExamClasses/service/CurrentExamManager.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Http/Controllers/helpers/ExamSelectorHelper.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Http/Controllers/StudentController.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/resources/views/setup/student_manage.blade.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/inc/css/studentmanager.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/DirectOutputClasses/encoders/DataReturner.php" afterPath="$PROJECT_DIR$/app/classes/DirectOutputClasses/encoders/DataReturner.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/JsonOutputClasses/encoders/DirectJsonOutput.php" afterPath="$PROJECT_DIR$/app/classes/JsonOutputClasses/encoders/DirectJsonOutput.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/DirectOutputClasses/controllers/DirectOutputController.php" afterPath="$PROJECT_DIR$/app/classes/DirectOutputClasses/controllers/DirectOutputController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/GradeClasses/models/DirectlyAssigned.php" afterPath="$PROJECT_DIR$/app/classes/GradeClasses/models/DirectlyAssigned.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ElementClasses/dao/ElementAssignmentDAO.php" afterPath="$PROJECT_DIR$/app/classes/ElementClasses/dao/ElementAssignmentDAO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ElementClasses/service/ElementFactory.php" afterPath="$PROJECT_DIR$/app/classes/ElementClasses/service/ElementFactory.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ScoreClasses/dao/ElementLoader.php" afterPath="$PROJECT_DIR$/app/classes/ScoreClasses/dao/ElementLoader.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ScoreClasses/ElementScoreHandler.php" afterPath="$PROJECT_DIR$/app/classes/ScoreClasses/ElementScoreHandler.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/stats/ElementStats.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/stats/ElementStats.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/cleaning/EmailCleaner.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/cleaning/EmailCleaner.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/environ/EnvironVarHolder.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/environ/EnvironVarHolder.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/errors/EnvironmentException.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/errors/EnvironmentException.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ExamClasses/service/ExamCreator.php" afterPath="$PROJECT_DIR$/app/classes/ExamClasses/service/ExamCreator.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ExamClasses/dao/ExamDAO.php" afterPath="$PROJECT_DIR$/app/classes/ExamClasses/dao/ExamDAO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ExamInfoClasses/dao/ExamInfoDAO.php" afterPath="$PROJECT_DIR$/app/classes/ExamInfoClasses/dao/ExamInfoDAO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ExamInfoClasses/service/ExamInfoService.php" afterPath="$PROJECT_DIR$/app/classes/ExamInfoClasses/service/ExamInfoService.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ExamClasses/display/ExamOptionMaker.php" afterPath="$PROJECT_DIR$/app/classes/ExamClasses/display/ExamOptionMaker.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ExamClasses/service/ExamServiceParent.php" afterPath="$PROJECT_DIR$/app/classes/ExamClasses/service/ExamServiceParent.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/stats/ExamStats.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/stats/ExamStats.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ExamClasses/display/ExamTableMaker.php" afterPath="$PROJECT_DIR$/app/classes/ExamClasses/display/ExamTableMaker.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/TimerClasses/ExamTimerHandler.php" afterPath="$PROJECT_DIR$/app/classes/TimerClasses/ExamTimerHandler.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/RequestClasses/FileRequest.php" afterPath="$PROJECT_DIR$/app/classes/RequestClasses/FileRequest.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/cleaning/FloatCleaner.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/cleaning/FloatCleaner.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/GradeClasses/models/Grade.php" afterPath="$PROJECT_DIR$/app/classes/GradeClasses/models/Grade.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/GradeClasses/service/GradeMaker.php" afterPath="$PROJECT_DIR$/app/classes/GradeClasses/service/GradeMaker.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/GradeClasses/service/GradeValidator.php" afterPath="$PROJECT_DIR$/app/classes/GradeClasses/service/GradeValidator.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/GradingStats/dao/GradingStatsDAO.php" afterPath="$PROJECT_DIR$/app/classes/GradingStats/dao/GradingStatsDAO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/GradingStats/service/GradingStatsHandler.php" afterPath="$PROJECT_DIR$/app/classes/GradingStats/service/GradingStatsHandler.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/TimerClasses/GroupTimerHandler.php" afterPath="$PROJECT_DIR$/app/classes/TimerClasses/GroupTimerHandler.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/DirectOutputClasses/encoders/HtmlEncoder.php" afterPath="$PROJECT_DIR$/app/classes/DirectOutputClasses/encoders/HtmlEncoder.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/CommentClasses/dao/IAssignmentFactory.php" afterPath="$PROJECT_DIR$/app/classes/CommentClasses/dao/IAssignmentFactory.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/cleaning/ICleaner.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/cleaning/ICleaner.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/cleaning/ICleanerFactory.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/cleaning/ICleanerFactory.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/service/ICommentPrinter.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/service/ICommentPrinter.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/dao/ICredentialLookup.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/dao/ICredentialLookup.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/environ/IEnvironVarHolder.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/environ/IEnvironVarHolder.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ExamClasses/dao/IExamDAO.php" afterPath="$PROJECT_DIR$/app/classes/ExamClasses/dao/IExamDAO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ExamInfoClasses/dao/IExamInfoDAO.php" afterPath="$PROJECT_DIR$/app/classes/ExamInfoClasses/dao/IExamInfoDAO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ExamClasses/service/IExamStatusManager.php" afterPath="$PROJECT_DIR$/app/classes/ExamClasses/service/IExamStatusManager.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/RequestClasses/IFileRequest.php" afterPath="$PROJECT_DIR$/app/classes/RequestClasses/IFileRequest.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/GradeClasses/models/IGradeHolder.php" afterPath="$PROJECT_DIR$/app/classes/GradeClasses/models/IGradeHolder.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/GradingStats/dao/IGradingStatsDAO.php" afterPath="$PROJECT_DIR$/app/classes/GradingStats/dao/IGradingStatsDAO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/JsonOutputClasses/controllers/IHandler.php" afterPath="$PROJECT_DIR$/app/classes/JsonOutputClasses/controllers/IHandler.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/JsonOutputClasses/encoders/IJsonOutput.php" afterPath="$PROJECT_DIR$/app/classes/JsonOutputClasses/encoders/IJsonOutput.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ScoreClasses/dao/ILoader.php" afterPath="$PROJECT_DIR$/app/classes/ScoreClasses/dao/ILoader.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/PseudoIDClasses/service/IManager.php" afterPath="$PROJECT_DIR$/app/classes/PseudoIDClasses/service/IManager.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/PseudoIDClasses/service/IManagerFactory.php" afterPath="$PROJECT_DIR$/app/classes/PseudoIDClasses/service/IManagerFactory.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/nonces/INonceSessionHandler.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/nonces/INonceSessionHandler.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/nonces/INonceSessionHandlerMock.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/nonces/INonceSessionHandlerMock.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ExamClasses/service/INumberExamsManager.php" afterPath="$PROJECT_DIR$/app/classes/ExamClasses/service/INumberExamsManager.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/dao/IOutputDataAccess.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/dao/IOutputDataAccess.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/PseudoIDClasses/dao/IPseudoIDDao.php" afterPath="$PROJECT_DIR$/app/classes/PseudoIDClasses/dao/IPseudoIDDao.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/PseudoIDClasses/service/IPseudoIDMaker.php" afterPath="$PROJECT_DIR$/app/classes/PseudoIDClasses/service/IPseudoIDMaker.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/QuestionClasses/dao/IQuestionAssignmentDAO.php" afterPath="$PROJECT_DIR$/app/classes/QuestionClasses/dao/IQuestionAssignmentDAO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/QuestionClasses/dao/IQuestionDAO.php" afterPath="$PROJECT_DIR$/app/classes/QuestionClasses/dao/IQuestionDAO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ScoreClasses/dao/IRecorder.php" afterPath="$PROJECT_DIR$/app/classes/ScoreClasses/dao/IRecorder.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/RequestClasses/IRequest.php" afterPath="$PROJECT_DIR$/app/classes/RequestClasses/IRequest.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/JsonOutputClasses/controllers/IResponseChooser.php" afterPath="$PROJECT_DIR$/app/classes/JsonOutputClasses/controllers/IResponseChooser.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/RestrictorClasses/dao/IRestrictorDAO.php" afterPath="$PROJECT_DIR$/app/classes/RestrictorClasses/dao/IRestrictorDAO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ScoreClasses/dao/IScoreDAO.php" afterPath="$PROJECT_DIR$/app/classes/ScoreClasses/dao/IScoreDAO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/logging/ISecurityLoggers.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/logging/ISecurityLoggers.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/stats/IStatsWorker.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/stats/IStatsWorker.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/CommentClasses/dao/IStockTextDao.php" afterPath="$PROJECT_DIR$/app/classes/CommentClasses/dao/IStockTextDao.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ImportExportClasses/StudentUpload/IStudentCsvProcessor.php" afterPath="$PROJECT_DIR$/app/classes/ImportExportClasses/StudentUpload/IStudentCsvProcessor.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/StudentClasses/dao/IStudentLoader.php" afterPath="$PROJECT_DIR$/app/classes/StudentClasses/dao/IStudentLoader.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/facades/IVisitor.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/facades/IVisitor.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/cleaning/InputCleaner.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/cleaning/InputCleaner.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/cleaning/IntegerCleaner.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/cleaning/IntegerCleaner.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/DirectOutputClasses/controllers/InternalNavLink.php" afterPath="$PROJECT_DIR$/app/classes/DirectOutputClasses/controllers/InternalNavLink.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/DirectOutputClasses/encoders/JavascriptVariableEncoder.php" afterPath="$PROJECT_DIR$/app/classes/DirectOutputClasses/encoders/JavascriptVariableEncoder.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/JsonOutputClasses/encoders/JsonEncoderParent.php" afterPath="$PROJECT_DIR$/app/classes/JsonOutputClasses/encoders/JsonEncoderParent.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/UserManagement/service/LiveSecrets.php" afterPath="$PROJECT_DIR$/app/classes/UserManagement/service/LiveSecrets.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ScoreClasses/dao/LoaderParent.php" afterPath="$PROJECT_DIR$/app/classes/ScoreClasses/dao/LoaderParent.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ExamClasses/service/LockManager.php" afterPath="$PROJECT_DIR$/app/classes/ExamClasses/service/LockManager.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/environ/LogVarHolder.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/environ/LogVarHolder.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/PseudoIDClasses/service/ManagerFactory.php" afterPath="$PROJECT_DIR$/app/classes/PseudoIDClasses/service/ManagerFactory.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/Navigation.php" afterPath="$PROJECT_DIR$/app/classes/Navigation.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/nonces/Nonce.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/nonces/Nonce.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/nonces/NonceMaker.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/nonces/NonceMaker.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/nonces/NonceSessionHandler.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/nonces/NonceSessionHandler.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/nonces/NonceValidator.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/nonces/NonceValidator.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ExamClasses/service/NumberExamsManager.php" afterPath="$PROJECT_DIR$/app/classes/ExamClasses/service/NumberExamsManager.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/CommentClasses/display/OutputComments.php" afterPath="$PROJECT_DIR$/app/classes/CommentClasses/display/OutputComments.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/dao/OutputDataAccess.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/dao/OutputDataAccess.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/QuestionClasses/display/OutputQuestions.php" afterPath="$PROJECT_DIR$/app/classes/QuestionClasses/display/OutputQuestions.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/PreferenceClasses/dao/PreferencesDAO.php" afterPath="$PROJECT_DIR$/app/classes/PreferenceClasses/dao/PreferencesDAO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/PseudoIDClasses/dao/PseudoIDDao.php" afterPath="$PROJECT_DIR$/app/classes/PseudoIDClasses/dao/PseudoIDDao.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/PseudoIDClasses/service/PseudoIDMaker.php" afterPath="$PROJECT_DIR$/app/classes/PseudoIDClasses/service/PseudoIDMaker.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ExamClasses/display/PublicNameFormatter.php" afterPath="$PROJECT_DIR$/app/classes/ExamClasses/display/PublicNameFormatter.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/QuestionClasses/service/QuestionAssigner.php" afterPath="$PROJECT_DIR$/app/classes/QuestionClasses/service/QuestionAssigner.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/QuestionClasses/dao/QuestionAssignmentDAO.php" afterPath="$PROJECT_DIR$/app/classes/QuestionClasses/dao/QuestionAssignmentDAO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/QuestionClasses/dao/QuestionDAO.php" afterPath="$PROJECT_DIR$/app/classes/QuestionClasses/dao/QuestionDAO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/display/QuestionDivMaker.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/display/QuestionDivMaker.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/QuestionClasses/service/QuestionFactory.php" afterPath="$PROJECT_DIR$/app/classes/QuestionClasses/service/QuestionFactory.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ScoreClasses/dao/QuestionLoader.php" afterPath="$PROJECT_DIR$/app/classes/ScoreClasses/dao/QuestionLoader.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ScoreClasses/QuestionScoreHandler.php" afterPath="$PROJECT_DIR$/app/classes/ScoreClasses/QuestionScoreHandler.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/stats/QuestionStats.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/stats/QuestionStats.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/QuestionClasses/service/QuestionsForExamGenerator.php" afterPath="$PROJECT_DIR$/app/classes/QuestionClasses/service/QuestionsForExamGenerator.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ExamClasses/service/ReleaseManager.php" afterPath="$PROJECT_DIR$/app/classes/ExamClasses/service/ReleaseManager.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/PseudoIDClasses/service/RemovalManager.php" afterPath="$PROJECT_DIR$/app/classes/PseudoIDClasses/service/RemovalManager.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/RequestClasses/Request.php" afterPath="$PROJECT_DIR$/app/classes/RequestClasses/Request.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/JsonOutputClasses/controllers/ResponseChooser.php" afterPath="$PROJECT_DIR$/app/classes/JsonOutputClasses/controllers/ResponseChooser.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/RestrictorClasses/dao/RestrictorDAO.php" afterPath="$PROJECT_DIR$/app/classes/RestrictorClasses/dao/RestrictorDAO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SetupPageParts/RosterUploadParts.php" afterPath="$PROJECT_DIR$/app/classes/SetupPageParts/RosterUploadParts.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/service/ScoreAveragesService.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/service/ScoreAveragesService.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ScoreClasses/dao/ScoreDAO.php" afterPath="$PROJECT_DIR$/app/classes/ScoreClasses/dao/ScoreDAO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ScoreClasses/ScoreLoader.php" afterPath="$PROJECT_DIR$/app/classes/ScoreClasses/ScoreLoader.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/JsonOutputClasses/encoders/SendDataJson.php" afterPath="$PROJECT_DIR$/app/classes/JsonOutputClasses/encoders/SendDataJson.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/JsonOutputClasses/encoders/SendStatusJson.php" afterPath="$PROJECT_DIR$/app/classes/JsonOutputClasses/encoders/SendStatusJson.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/PreferenceClasses/service/SetPreferences.php" afterPath="$PROJECT_DIR$/app/classes/PreferenceClasses/service/SetPreferences.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Http/Controllers/SetupController.php" afterPath="$PROJECT_DIR$/app/Http/Controllers/SetupController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/GradingStats/service/StatsDataHolder.php" afterPath="$PROJECT_DIR$/app/classes/GradingStats/service/StatsDataHolder.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/CommentClasses/dao/StockTextDao.php" afterPath="$PROJECT_DIR$/app/classes/CommentClasses/dao/StockTextDao.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/CommentClasses/service/StockTextProcessor.php" afterPath="$PROJECT_DIR$/app/classes/CommentClasses/service/StockTextProcessor.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ImportExportClasses/StudentUpload/StudentCsvProcessor.php" afterPath="$PROJECT_DIR$/app/classes/ImportExportClasses/StudentUpload/StudentCsvProcessor.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/StudentClasses/StudentFactory.php" afterPath="$PROJECT_DIR$/app/classes/StudentClasses/StudentFactory.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ImportExportClasses/StudentImportValidator.php" afterPath="$PROJECT_DIR$/app/classes/ImportExportClasses/StudentImportValidator.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ImportExportClasses/StudentImporter.php" afterPath="$PROJECT_DIR$/app/classes/ImportExportClasses/StudentImporter.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/StudentClasses/dao/StudentLoader.php" afterPath="$PROJECT_DIR$/app/classes/StudentClasses/dao/StudentLoader.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/service/StudentLoginManager.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/service/StudentLoginManager.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ScoreClasses/service/StudentScoreService.php" afterPath="$PROJECT_DIR$/app/classes/ScoreClasses/service/StudentScoreService.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/StudentClasses/display/StudentTableMaker.php" afterPath="$PROJECT_DIR$/app/classes/StudentClasses/display/StudentTableMaker.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/StudentClasses/StudentsForExamGenerator.php" afterPath="$PROJECT_DIR$/app/classes/StudentClasses/StudentsForExamGenerator.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/TagClasses/dao/TagAssignmentDao.php" afterPath="$PROJECT_DIR$/app/classes/TagClasses/dao/TagAssignmentDao.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/TagClasses/dao/TagDao.php" afterPath="$PROJECT_DIR$/app/classes/TagClasses/dao/TagDao.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/environ/TemplateVarHolder.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/environ/TemplateVarHolder.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/SecurityClasses/cleaning/TextCleaner.php" afterPath="$PROJECT_DIR$/app/classes/SecurityClasses/cleaning/TextCleaner.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/DirectOutputClasses/encoders/UniversalOutputEncoder.php" afterPath="$PROJECT_DIR$/app/classes/DirectOutputClasses/encoders/UniversalOutputEncoder.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/ImportExportClasses/StudentUpload/Uploader.php" afterPath="$PROJECT_DIR$/app/classes/ImportExportClasses/StudentUpload/Uploader.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/UserManagement/service/UserSecrets.php" afterPath="$PROJECT_DIR$/app/classes/UserManagement/service/UserSecrets.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/UserManagement/dao/UsersDbConnection.php" afterPath="$PROJECT_DIR$/app/classes/UserManagement/dao/UsersDbConnection.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/classes/OutputClasses/facades/Visitor.php" afterPath="$PROJECT_DIR$/app/classes/OutputClasses/facades/Visitor.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/inc/js/commentSetup.js" afterPath="$PROJECT_DIR$/public/inc/js/commentSetup.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/inc/js/common.js" afterPath="$PROJECT_DIR$/public/inc/js/common.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/inc/js/dashboardscripts.js" afterPath="$PROJECT_DIR$/public/inc/js/dashboardscripts.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/views/setup/element_create.blade.php" afterPath="$PROJECT_DIR$/resources/views/setup/element_create.blade.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/inc/js/examchoicebutton.js" afterPath="$PROJECT_DIR$/public/inc/js/examchoicebutton.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/inc/js/inputScripts.js" afterPath="$PROJECT_DIR$/public/inc/js/inputScripts.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/views/layouts/master.blade.php" afterPath="$PROJECT_DIR$/resources/views/layouts/master.blade.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Http/routes.php" afterPath="$PROJECT_DIR$/app/Http/routes.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -196,56 +36,72 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="d44d82b3a5d61c2e48587c4925a566e0" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/storage/framework/views/d44d82b3a5d61c2e48587c4925a566e0">
+      <file leaf-file-name=".env" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.env">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="113" column="4" selection-start-line="113" selection-start-column="4" selection-end-line="113" selection-end-column="4" />
+              <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="element_create.blade.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="AjaxController.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/Http/Controllers/AjaxController.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-6.875">
+              <caret line="20" column="40" selection-start-line="20" selection-start-column="40" selection-end-line="20" selection-end-column="40" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="config.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/propel_config/config.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="element_create.blade.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/resources/views/setup/element_create.blade.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.27542374">
-              <caret line="139" column="8" selection-start-line="139" selection-start-column="8" selection-end-line="139" selection-end-column="8" />
+            <state vertical-scroll-proportion="-0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="laravel.log" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/storage/logs/laravel.log">
+      <file leaf-file-name="ExamSelectorHelper.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/Http/Controllers/helpers/ExamSelectorHelper.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-6.375">
+              <caret line="40" column="9" selection-start-line="40" selection-start-column="9" selection-end-line="40" selection-end-column="9" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="propel.xml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/config/propel/propel.xml">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="10594" column="52" selection-start-line="10594" selection-start-column="52" selection-end-line="10594" selection-end-column="52" />
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MasterRequestHandler.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/classes/RequestHandlers/MasterRequestHandler.php">
+      <file leaf-file-name="routes.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/Http/routes.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-17.625">
-              <caret line="79" column="12" selection-start-line="79" selection-start-column="12" selection-end-line="81" selection-end-column="24" />
-              <folding>
-                <element signature="e#128#183#0#PHP" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="OutputComments.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/classes/CommentClasses/display/OutputComments.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-63.75">
-              <caret line="125" column="2" selection-start-line="125" selection-start-column="2" selection-end-line="125" selection-end-column="2" />
-              <folding>
-                <element signature="e#134#190#0#PHP" expanded="true" />
-              </folding>
+            <state vertical-scroll-proportion="-26.25">
+              <caret line="51" column="87" selection-start-line="51" selection-start-column="87" selection-end-line="51" selection-end-column="87" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -253,10 +109,32 @@
       <file leaf-file-name="SetupController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/Http/Controllers/SetupController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-12.0">
-              <caret line="53" column="49" selection-start-line="53" selection-start-column="49" selection-end-line="53" selection-end-column="49" />
+            <state vertical-scroll-proportion="-21.25">
+              <caret line="39" column="103" selection-start-line="39" selection-start-column="45" selection-end-line="39" selection-end-column="103" />
               <folding>
                 <element signature="e#121#175#0#PHP" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="student_manage.blade.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/resources/views/setup/student_manage.blade.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-14.5">
+              <caret line="163" column="2" selection-start-line="163" selection-start-column="2" selection-end-line="163" selection-end-column="2" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="StudentController.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/Http/Controllers/StudentController.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-13.75">
+              <caret line="35" column="58" selection-start-line="35" selection-start-column="58" selection-end-line="35" selection-end-column="58" />
+              <folding>
+                <element signature="e#122#177#0#PHP" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -303,15 +181,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/app/classes/GradeClasses/models/CalculatedGrade.php" />
-        <option value="$PROJECT_DIR$/app/classes/GradingStats/dao/GradingStatsDAO.php" />
-        <option value="$PROJECT_DIR$/app/classes/PreferenceClasses/dao/PreferencesDAO.php" />
-        <option value="$PROJECT_DIR$/app/classes/ExamClasses/service/ReleaseManager.php" />
-        <option value="$PROJECT_DIR$/app/classes/ElementClasses/service/ElementFactory.php" />
-        <option value="$PROJECT_DIR$/app/classes/ImportExportClasses/Backup/BackupMaker.php" />
-        <option value="$PROJECT_DIR$/app/classes/TagClasses/dao/TagAssignmentDao.php" />
-        <option value="$PROJECT_DIR$/app/classes/ScoreClasses/ScoreLoader.php" />
-        <option value="$PROJECT_DIR$/app/classes/ExamClasses/display/ExamTableMaker.php" />
         <option value="$PROJECT_DIR$/app/classes/OutputClasses/stats/ExamStats.php" />
         <option value="$PROJECT_DIR$/app/classes/ScoreClasses/service/StudentScoreService.php" />
         <option value="$PROJECT_DIR$/app/classes/StudentClasses/display/StudentTableMaker.php" />
@@ -324,7 +193,6 @@
         <option value="$PROJECT_DIR$/app/classes/RequestHandlers/workers/IRequestWorker.php" />
         <option value="$PROJECT_DIR$/app/classes/CommentClasses/service/AssignmentProcessor.php" />
         <option value="$PROJECT_DIR$/app/classes/CommentClasses/service/StockTextProcessor.php" />
-        <option value="$PROJECT_DIR$/app/classes/DirectOutputClasses/controllers/DirectOutputController.php" />
         <option value="$PROJECT_DIR$/app/classes/ExamClasses/service/ExamCreator.php" />
         <option value="$PROJECT_DIR$/app/classes/ExamClasses/service/ExamServiceParent.php" />
         <option value="$PROJECT_DIR$/app/classes/ExamClasses/service/LockManager.php" />
@@ -352,8 +220,18 @@
         <option value="$PROJECT_DIR$/app/classes/RequestHandlers/workers/TimeWorker.php" />
         <option value="$PROJECT_DIR$/app/classes/JsonOutputClasses/encoders/DirectJsonOutput.php" />
         <option value="$PROJECT_DIR$/app/classes/CommentClasses/display/OutputComments.php" />
-        <option value="$PROJECT_DIR$/app/Http/Controllers/SetupController.php" />
         <option value="$PROJECT_DIR$/resources/views/setup/element_create.blade.php" />
+        <option value="$PROJECT_DIR$/app/classes/DirectOutputClasses/controllers/DirectOutputController.php" />
+        <option value="$PROJECT_DIR$/app/classes/DirectOutputClasses/encoders/DataReturner.php" />
+        <option value="$PROJECT_DIR$/app/classes/DirectOutputClasses/encoders/HtmlEncoder.php" />
+        <option value="$PROJECT_DIR$/app/classes/DirectOutputClasses/encoders/JavascriptVariableEncoder.php" />
+        <option value="$PROJECT_DIR$/app/classes/DirectOutputClasses/encoders/UniversalOutputEncoder.php" />
+        <option value="$PROJECT_DIR$/app/Http/Controllers/SetupController.php" />
+        <option value="$PROJECT_DIR$/app/Http/Controllers/helpers/ExamSelectorHelper.php" />
+        <option value="$PROJECT_DIR$/public/inc/css/studentmanager.css" />
+        <option value="$PROJECT_DIR$/app/Http/Controllers/StudentController.php" />
+        <option value="$PROJECT_DIR$/app/Http/routes.php" />
+        <option value="$PROJECT_DIR$/resources/views/setup/student_manage.blade.php" />
       </list>
     </option>
   </component>
@@ -455,78 +333,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="tests" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="logs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="framework" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="framework" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="storage" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -747,10 +553,6 @@
               <option name="myItemId" value="inc" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -767,6 +569,10 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="inc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="css" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -835,6 +641,38 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="factories" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gom3" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gom3" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="config" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gom3" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gom3" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="config" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="propel" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -970,46 +808,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="Http" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Http" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Controllers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="Exceptions" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -1090,224 +888,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="classes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimerClasses" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="classes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ScoreClasses" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="classes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ScoreClasses" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dao" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="classes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="RequestHandlers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="classes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="RequestHandlers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="workers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="classes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="JsonOutputClasses" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="encoders" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="classes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="JsonOutputClasses" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controllers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="classes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CommentClasses" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gom3" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="classes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CommentClasses" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="display" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
     </panes>
@@ -1371,7 +951,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="4" y="22" width="1436" height="878" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32894737" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32894737" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1386,7 +966,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="PlantUML" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1456241" sideWeight="0.49473685" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1456241" sideWeight="0.49473685" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Command Line Tools Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3276316" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -1439,126 +1019,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/classes/StudentClasses/StudentFactory.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.06355932">
-          <caret line="8" column="10" selection-start-line="8" selection-start-column="10" selection-end-line="8" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/classes/ExamClasses/service/IExamStatusManager.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.27542374">
-          <caret line="18" column="41" selection-start-line="18" selection-start-column="41" selection-end-line="18" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/classes/ElementClasses/service/ElementFactory.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.48728815">
-          <caret line="28" column="38" selection-start-line="28" selection-start-column="38" selection-end-line="28" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/classes/ImportExportClasses/Backup/BackupMaker.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.61440676">
-          <caret line="49" column="52" selection-start-line="49" selection-start-column="52" selection-end-line="49" selection-end-column="52" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/classes/ScoreClasses/service/StudentScoreService.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6991525">
-          <caret line="37" column="32" selection-start-line="37" selection-start-column="32" selection-end-line="37" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/classes/StudentClasses/StudentsForExamGenerator.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.06355932">
-          <caret line="8" column="22" selection-start-line="8" selection-start-column="22" selection-end-line="8" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/classes/StudentClasses/display/StudentTableMaker.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-17.5">
-          <caret line="33" column="33" selection-start-line="33" selection-start-column="33" selection-end-line="33" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/classes/JsonOutputClasses/controllers/ResponseChooser.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.021186441">
-          <caret line="8" column="10" selection-start-line="8" selection-start-column="10" selection-end-line="8" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/classes/JsonOutputClasses/controllers/IHandler.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.084745765">
-          <caret line="8" column="10" selection-start-line="8" selection-start-column="10" selection-end-line="8" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/classes/JsonOutputClasses/controllers/IResponseChooser.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.084745765">
-          <caret line="8" column="10" selection-start-line="8" selection-start-column="10" selection-end-line="8" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/classes/RequestHandlers/workers/IRequestWorker.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.23305085">
-          <caret line="16" column="5" selection-start-line="16" selection-start-column="5" selection-end-line="16" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/classes/CommentClasses/service/AssignmentProcessor.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.833333">
-          <caret line="31" column="42" selection-start-line="31" selection-start-column="42" selection-end-line="31" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/classes/CommentClasses/service/StockTextProcessor.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.833333">
-          <caret line="42" column="42" selection-start-line="42" selection-start-column="42" selection-end-line="42" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/classes/DirectOutputClasses/controllers/DirectOutputController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.125">
-          <caret line="17" column="41" selection-start-line="17" selection-start-column="41" selection-end-line="17" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/classes/ExamClasses/service/ExamCreator.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.833333">
-          <caret line="36" column="44" selection-start-line="36" selection-start-column="44" selection-end-line="36" selection-end-column="44" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/classes/ExamClasses/service/ExamServiceParent.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-12.625">
@@ -1655,14 +1115,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/classes/RequestClasses/FileRequest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.5">
-          <caret line="8" column="22" selection-start-line="8" selection-start-column="22" selection-end-line="8" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/classes/RequestClasses/Request.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-3.75">
@@ -1716,7 +1168,7 @@
         <state vertical-scroll-proportion="-29.25">
           <caret line="64" column="0" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
           <folding>
-            <element signature="e#136#176#0#PHP" expanded="true" />
+            <element signature="e#136#176#0#PHP" expanded="false" />
             <element signature="e#1307#1380#0#PHP" expanded="false" />
             <element signature="e#3312#3366#0#PHP" expanded="false" />
           </folding>
@@ -1788,7 +1240,7 @@
         <state vertical-scroll-proportion="-17.625">
           <caret line="79" column="12" selection-start-line="79" selection-start-column="12" selection-end-line="81" selection-end-column="24" />
           <folding>
-            <element signature="e#128#183#0#PHP" expanded="true" />
+            <element signature="e#128#183#0#PHP" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1798,7 +1250,7 @@
         <state vertical-scroll-proportion="-7.625">
           <caret line="36" column="57" selection-start-line="36" selection-start-column="57" selection-end-line="36" selection-end-column="57" />
           <folding>
-            <element signature="e#136#182#0#PHP" expanded="true" />
+            <element signature="e#136#182#0#PHP" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1823,14 +1275,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="10594" column="52" selection-start-line="10594" selection-start-column="52" selection-end-line="10594" selection-end-column="52" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/AjaxController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.5084746">
-          <caret line="20" column="40" selection-start-line="20" selection-start-column="40" selection-end-line="20" selection-end-column="40" />
           <folding />
         </state>
       </provider>
@@ -1869,20 +1313,158 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/classes/DirectOutputClasses/encoders/HtmlEncoder.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.5">
+          <caret line="8" column="10" selection-start-line="8" selection-start-column="10" selection-end-line="8" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/classes/DirectOutputClasses/encoders/JavascriptVariableEncoder.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.5">
+          <caret line="8" column="10" selection-start-line="8" selection-start-column="10" selection-end-line="8" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/classes/DirectOutputClasses/controllers/DirectOutputController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.5254238">
+          <caret line="76" column="32" selection-start-line="76" selection-start-column="32" selection-end-line="76" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/classes/DirectOutputClasses/encoders/DataReturner.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.084745765">
+          <caret line="8" column="10" selection-start-line="8" selection-start-column="10" selection-end-line="8" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/classes/DirectOutputClasses/encoders/UniversalOutputEncoder.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.5">
+          <caret line="8" column="10" selection-start-line="8" selection-start-column="10" selection-end-line="8" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/AjaxController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.875">
+          <caret line="20" column="40" selection-start-line="20" selection-start-column="40" selection-end-line="20" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/classes/RequestClasses/FileRequest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.33898306">
+          <caret line="8" column="22" selection-start-line="8" selection-start-column="22" selection-end-line="8" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/inc/css/studentmanager.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.06147541">
+          <caret line="3" column="1" selection-start-line="3" selection-start-column="1" selection-end-line="3" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/Http/Controllers/SetupController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-12.0">
-          <caret line="53" column="49" selection-start-line="53" selection-start-column="49" selection-end-line="53" selection-end-column="49" />
+        <state vertical-scroll-proportion="-21.25">
+          <caret line="39" column="103" selection-start-line="39" selection-start-column="45" selection-end-line="39" selection-end-column="103" />
           <folding>
             <element signature="e#121#175#0#PHP" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/StudentController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-13.75">
+          <caret line="35" column="58" selection-start-line="35" selection-start-column="58" selection-end-line="35" selection-end-column="58" />
+          <folding>
+            <element signature="e#122#177#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/Http/routes.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-26.25">
+          <caret line="51" column="87" selection-start-line="51" selection-start-column="87" selection-end-line="51" selection-end-column="87" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/views/setup/student_manage.blade.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-14.5">
+          <caret line="163" column="2" selection-start-line="163" selection-start-column="2" selection-end-line="163" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.45454547">
+          <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.env.example">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.10245901">
+          <caret line="5" column="21" selection-start-line="5" selection-start-column="21" selection-end-line="5" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.env">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/resources/views/setup/element_create.blade.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.27542374">
-          <caret line="139" column="8" selection-start-line="139" selection-start-column="8" selection-end-line="139" selection-end-column="8" />
+        <state vertical-scroll-proportion="-0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/helpers/ExamSelectorHelper.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.375">
+          <caret line="40" column="9" selection-start-line="40" selection-start-column="9" selection-end-line="40" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/propel_config/config.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config/propel/propel.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>

@@ -6,7 +6,7 @@
  * 
  */
 
-namespace App\classes\DirectOutputClassesencoders;
+namespace App\classes\DirectOutputClasses\encoders;
 
 /**
  * Description of UniversalOutputEncoder

@@ -13,16 +13,20 @@ use App\classes\CommentClasses\display\OutputComments;
 use App\classes\ElementClasses\dao\ElementAssignmentDAO;
 use App\classes\ExamClasses\service\CurrentExamManager;
 use App\classes\JsonOutputClasses\encoders\DirectJsonOutput;
+use App\Http\Controllers\helpers\ExamSelectorHelper;
 
 class SetupController extends Controller
 {
 
     public $exam;
 
+    public $examSelectorHelper;
+
     public function __construct()
     {
         $current_exam_manager = new CurrentExamManager();
         $this->exam = $current_exam_manager->get_current_exam();
+        $this->examSelectorHelper = new ExamSelectorHelper();
     }
 
     public function showQuestionCreate($numQuestions = 5)
@@ -33,7 +37,7 @@ class SetupController extends Controller
             'inPageTitle' => "Create questions"
         ];
 
-        return view('setup/question_create', $this->makeExamSelectorComponent($out));
+        return view('setup/question_create', $this->examSelectorHelper->makeExamSelectorComponent($out));
     }
 
 
@@ -58,7 +62,7 @@ class SetupController extends Controller
             'numberOfSubtasks' => $numSubtasks
         ];
 
-        return view('setup/element_create', $this->makeExamSelectorComponent($out));
+        return view('setup/element_create', $this->examSelectorHelper->makeExamSelectorComponent($out));
     }
 
 
@@ -70,53 +74,6 @@ class SetupController extends Controller
             ]);
     }
 
-
-    public function makeExamDisplayText($exam)
-    {
-        $text = $exam->getExamyear() . ' ' . $exam->getExamterm() . '  ' . $exam->getExamtopic();
-        return $text;
-    }
-
-    public function makeExamArray()
-    {
-        $exams = \ExamQuery::create()->find();
-        $examList = array();
-        if (count($exams) > 0)
-        {
-            foreach ($exams as $e)
-            {
-                array_push($examList, [
-                    'optionId' => $e->getId(),
-                    'optionValue' => $e->getId(),
-                    'optionText' => $this->makeExamDisplayText($e)
-                ]);
-            }
-        }
-
-        return $examList;
-    }
-
-    /**
-     * Takes the array that's about to go to the view and
-     * adds the bits for the exam selector
-     * @param array $outArray
-     * @return array
-     */
-    public function makeExamSelectorComponent(array $outArray)
-    {
-        if ($this->exam)
-        {
-            $outArray['currentExamId'] = $this->exam->getId();
-            $outArray['currentExamString'] = $this->makeExamDisplayText($this->exam);
-        } else
-        {
-            $outArray['currentExamId'] = '';
-            $outArray['currentExamString'] = '';
-        }
-        $outArray['examOptions'] = $this->makeExamArray();
-
-        return $outArray;
-    }
 
 
 }

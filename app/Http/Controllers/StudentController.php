@@ -1,0 +1,61 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: adam
+ * Date: 7/13/15
+ * Time: 10:19 AM
+ */
+
+namespace App\Http\Controllers;
+
+
+use App\classes\ExamClasses\service\CurrentExamManager;
+use App\classes\ImportExportClasses\StudentUpload\StudentCsvProcessor;
+use App\classes\ImportExportClasses\StudentUpload\Uploader;
+use App\classes\RequestClasses\FileRequest;
+use App\Http\Controllers\helpers\ExamSelectorHelper;
+
+class StudentController extends Controller
+{
+    public $exam;
+
+    public $examSelectorHelper;
+
+    public function __construct()
+    {
+        $current_exam_manager = new CurrentExamManager();
+        $this->exam = $current_exam_manager->get_current_exam();
+        $this->examSelectorHelper = new ExamSelectorHelper();
+    }
+
+
+    public function showStudentUploader()
+    {
+        $out = [
+            'pageTitle' => 'Manage students',
+            "inPageTitle" => "Upload student information",
+        ];
+
+        return view('setup/student_manage', $this->examSelectorHelper->makeExamSelectorComponent($out));
+    }
+
+    public function handleUpload()
+    {
+
+        $request = FileRequest::create();
+
+        $status = 'unloaded';
+        if($this->exam && ($request->task() === 'uploadStudents'))
+        {
+            $uploader = new Uploader();
+            $uploader->set_file_processor(new StudentCsvProcessor());
+            $uploader->set_exam($this->exam);
+            if($uploader->process($request)){
+                $status = 'success';
+            }else{
+                $status = 'fail';
+                $errors = $uploader->errors;
+            }
+        }
+    }
+}

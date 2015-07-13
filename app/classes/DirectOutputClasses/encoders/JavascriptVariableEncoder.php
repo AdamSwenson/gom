@@ -6,7 +6,7 @@
  * 
  */
 
-namespace App\classes\DirectOutputClassesencoders;
+namespace App\classes\DirectOutputClasses\encoders;
 
 /**
  * This safely encodes things which are to be echoed into the document as javascript variables

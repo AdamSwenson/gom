@@ -137,7 +137,7 @@
     <script type="text/javascript">
         var comments = <?php echo json_encode($allComments,  \JSON_FORCE_OBJECT);?>;
         var currentExamComments = <?php echo json_encode($currentComments, \JSON_FORCE_OBJECT);?>;
-        
+
     </script>
     <script type="text/javascript">
 

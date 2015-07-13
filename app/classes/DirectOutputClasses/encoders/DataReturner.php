@@ -6,7 +6,7 @@
  *
  */
 
-namespace App\classes\DirectOutputClassesencoders;
+namespace App\classes\DirectOutputClasses\encoders;
 
 /**
  * This is used when the handler needs to pass the raw data to something

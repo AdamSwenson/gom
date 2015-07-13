@@ -6,7 +6,7 @@
  *
  */
 
-namespace App\classes\DirectOutputClassesencoders;
+namespace App\classes\DirectOutputClasses\encoders;
 
 //use ezyang\htmlpurifier\HTMLPurifier_Config;
 //    require_once '/path/to/HTMLPurifier.auto.php';

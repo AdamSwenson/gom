@@ -49,9 +49,7 @@ Route::get('setup/exam', array('uses' => 'SetupController@showExamCreate', 'as' 
 Route::get('setup/question', array('uses' => 'SetupController@showQuestionCreate', 'as' => 'questionsetup'));
 Route::get('setup/element', array('uses' => 'SetupController@showElementCreate', 'as' => 'commentsetup' ));
 
-Route::get('studentmanager', function(){
-   return 'student manager here';
-});
+Route::get('studentmanager', array('uses' => 'StudentController@showStudentUploader'));
 
 Route::get('input', array('uses' => 'InputController@showInputPage'));
 
