@@ -21,10 +21,13 @@ Route::post('setup/api', array('uses' => 'AjaxController@handleRequest'));
 Route::get('home', 'LandingController@showLanding');
 
 Route::get('landing', 'LandingController@showLanding');
+Route::get('index', 'LandingController@showLanding');
 
 Route::get('account/home', function(){
     return "Account home page";
 });
+
+
 Route::get('account/user_settings', function(){
     return "User settings page";
 });
@@ -35,10 +38,11 @@ Route::get('account/logout', function(){
     return "Logout";
 });
 
+Route::get('exammanager', array('uses' => 'InputController@showExamManager'));
 
-Route::get('studentview', function(){
-   return 'student view';
-});
+
+Route::get('input', array('uses' => 'InputController@showInputPage'));
+
 
 Route::get('instructions', function(){
    return 'instructions page';
@@ -47,23 +51,22 @@ Route::get('instructions', function(){
 Route::get('setup/exam', array('uses' => 'SetupController@showExamCreate', 'as' => 'examcreate'));
 
 Route::get('setup/question', array('uses' => 'SetupController@showQuestionCreate', 'as' => 'questionsetup'));
+
 Route::get('setup/element', array('uses' => 'SetupController@showElementCreate', 'as' => 'commentsetup' ));
 
 Route::get('studentmanager', array('uses' => 'StudentController@showStudentUploader'));
 
-Route::get('input', array('uses' => 'InputController@showInputPage'));
+Route::get('studentview', function(){
+    return 'student view';
+});
 
-Route::get('exammanager', array('uses' => 'InputController@showExamManager'));
+Route::get('report/analytics', function(){
+    return "This will eventually be the analytics page";
+});
 
 Route::get('report/gradeassign', array('uses' => 'ReportController@showGradeAssign'));
 
-Route::get('newExam/jip', array('as' => 'api', function(){
-   return 'jip NEW EXAM content';
-}));
-
-
-
-
-Route::get('newnewexam', function(){
-   return Redirect::route('api');
+Route::get('report/qualitycontrol', function(){
+    return "This will eventually be the quality control page";
 });
+

@@ -160,7 +160,7 @@
     //global variables for scripts
     $j = new \App\classes\DirectOutputClasses\encoders\JavascriptVariableEncoder();
         print('var studentRecords = ');
-//        ($exam ? $table_maker->display_for_exam($exam) : print("''"));
+        (!empty($exam) ? $table_maker->display_for_exam($exam) : print("''"));
         echo ';';
         ?>
                 $(document).ready(function () {

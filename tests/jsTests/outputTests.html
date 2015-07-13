@@ -1,0 +1,66 @@
+
+<!--
+Gradeomatic
+Copyright Adam Swenson Merp Co Intl
+ 
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Output Test Suite</title>
+        <link rel="stylesheet" href="unitTestHelpers/qunit-1.15.0.css" type="text/css" media="screen">
+        <script type="text/javascript" src="unitTestHelpers/jquery-1.11.1.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery-ui.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery.tmpl.min.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/qunit-1.15.0.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/json2.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery.mockjax.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery.cookie.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/blanket.js" data-cover-flags="debug"></script>
+
+<!--        <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-1.15.0.css" type="text/css" media="screen">
+        <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery.tmpl.min.js"></script>
+        <script type="text/javascript" src="https://code.jquery.com/qunit/qunit-1.15.0.js"></script>
+        <script type="text/javascript" src="/~adam/gradeomatic/tests/js/unitTestHelpers/json2.js"></script>
+        <script type="text/javascript" src="/~adam/gradeomatic/tests/js/unitTestHelpers/jquery.mockjax.js"></script>
+        <script type="text/javascript" src="/~adam/gradeomatic/tests/js/unitTestHelpers/jquery.cookie.js"></script>
+        <script type="text/javascript" src="/~adam/gradeomatic/tests/js/unitTestHelpers/blanket.js" data-cover-flags="debug"></script>-->
+
+        <!--Constants go here-->
+        <script type="text/javascript">
+        </script>
+        <!-- Your project file goes here -->
+        <script type="text/javascript" src="../../src/www/inc/js/outputScripts.js" data-cover></script>
+        <script type="text/javascript" src="../../src/www/inc/js/chartScripts.js" data-cover></script>
+        <!-- Your tests file goes here -->
+        <script type="text/javascript" src="js/output_outputScriptsTests.js" ></script>
+        <script type="text/javascript" src="js/output_chartScriptsTests.js"></script>
+
+    </head>
+    <body>
+         <div id="scriptBox">
+                <div id="templates">
+                    <script id="questionResult" type="text/x-jQuery-tmpl">
+                        <div id="q${questionNumber}">
+                        <h1 class="mainHeading">Q${questionNumber}: ${questionTitle}</h1>
+                        <p class="stockText generalStock"></p>
+                        <ul id="q${questionNumber}Comments"></ul>
+                        </div>
+                    </script>
+                    <script id="commentTemplate" type="text/x-jQuery-tmpl">
+                        <li class="subtask${subtask} commentParagraph" id="el${elementID}" data="${elementScore}">${content}</li>
+                        <div id="el${elementID}Chart"></div>
+                    </script>
+                </div>
+         </div>
+        <h1 id="qunit-header">Output Scripts Test Suite</h1>
+        <h2 id="qunit-banner"></h2>
+        <div id="qunit-testrunner-toolbar"></div>
+        <h2 id="qunit-userAgent"></h2>
+        <ol id="qunit-tests"></ol>
+        <div id="qunit-fixture"></div>
+        <div id="test"></div>
+    </body>
+</html>

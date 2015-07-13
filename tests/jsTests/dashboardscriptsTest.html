@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Dashboard scripts Test Suite</title>
+        <link rel="stylesheet" href="unitTestHelpers/qunit-1.15.0.css" type="text/css" media="screen">
+        <script type="text/javascript" src="unitTestHelpers/jquery-1.11.1.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery-ui.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery.tmpl.min.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/qunit-1.15.0.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/json2.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery.mockjax.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery.cookie.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/blanket.js" data-cover-flags="debug"></script>
+
+        <!--Constants go here-->
+        <script type="text/javascript">
+            var EXAMID = 1;
+            var DASHPHP = 'dummyapi.php';
+            var $fixture = $("#qunit-fixture");
+            var examinfo = ['pages', 'notecard', 'completionOrder'];
+            $.cookie('jip', '45');
+
+        </script>
+        <!-- Your project file goes here -->
+        <script type="text/javascript" src="../../src/www/inc/js/dashboardscripts.js" data-cover></script>
+        <script type="text/javascript" src="../../src/www/inc/js/dashboardStatsscripts.js" data-cover></script>
+        <script type="text/javascript" src="../../src/www/inc/js/dashboardStatsDisplay.js" data-cover></script>
+        <!-- Your tests file goes here -->
+        <script type="text/javascript" src="js/dashboard_utilitiesTests.js" ></script>
+        <script type="text/javascript" src="js/dashboard_TimerRecordTests.js" ></script>
+        <script type="text/javascript" src="js/dashboard_TimerDisplayTests.js" ></script>
+        <script type="text/javascript" src="js/dashboard_StatsTests.js" ></script>
+        <script type="text/javascript">
+
+        </script>        
+    </head>
+    <body>
+
+        <h1 id="qunit-header">Dashboard scripts Test Suite</h1>
+        <h2 id="qunit-banner"></h2>
+        <div id="qunit-testrunner-toolbar"></div>
+        <h2 id="qunit-userAgent"></h2>
+        <ol id="qunit-tests"></ol>
+        <div id="qunit-fixture"></div>
+        <div id="show"></div>
+    </body>
+</html>

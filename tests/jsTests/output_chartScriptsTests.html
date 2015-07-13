@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chartscript Test Suite</title>
+                <link rel="stylesheet" href="unitTestHelpers/qunit-1.15.0.css" type="text/css" media="screen">
+        <script type="text/javascript" src="unitTestHelpers/jquery-1.11.1.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery-ui.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery.tmpl.min.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/qunit-1.15.0.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/json2.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery.mockjax.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery.cookie.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/blanket.js" data-cover-flags="debug"></script>
+
+<!--        <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-1.15.0.css" type="text/css" media="screen">
+        <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="https://code.jquery.com/qunit/qunit-1.15.0.js"></script>
+        <script type="text/javascript" src="/~adam/gradeomatic/tests/js/unitTestHelpers/json2.js"></script>
+        <script type="text/javascript" src="/~adam/gradeomatic/tests/js/unitTestHelpers/jquery.mockjax.js"></script>
+        <script type="text/javascript" src="/~adam/gradeomatic/tests/js/unitTestHelpers/jquery.cookie.js"></script>
+        <script type="text/javascript" src="/~adam/gradeomatic/tests/js/unitTestHelpers/blanket.js" data-cover-flags="debug"></script>-->
+<!--
+        Constants go here
+        <script type="text/javascript">
+            var elementScores = [
+                {"elementID": "17",
+                    "elementAbbr": "singer_overview",
+                    "subtask": "1",
+                    "elementEnglish": "Presentation of a brief overview of Singer's argument",
+                    "questionNumber": "2",
+                    "eid": "17",
+                    "elementScore": "4.5"},
+                {"elementID": "13",
+                    "elementAbbr": "singer_location_argument",
+                    "subtask": "2",
+                    "elementEnglish": "Setting out Singer's argument that distance per se can't matter morally",
+                    "questionNumber": "5",
+                    "eid": "13",
+                    "elementScore": "3.3"}
+            ];
+            var questionScores = [
+                {"questionID": "73", "questionNumber": "1", "questionTitle": "Tragedy of the Commons", "qid": "73", "questionScore": "6.00"},
+                {"questionID": "74", "questionNumber": "2", "questionTitle": "Moral Hazard", "qid": "74", "questionScore": "7.50"},
+                {"questionID": "25", "questionNumber": "3", "questionTitle": "Too demandingness objection", "qid": "25", "questionScore": null},
+                {"questionID": "24", "questionNumber": "4", "questionTitle": "Leveling down argument and response", "qid": "24", "questionScore": "8.00"},
+                {"questionID": "15", "questionNumber": "5", "questionTitle": "Distance and location don't matter", "qid": "15", "questionScore": null}];
+            var elementAverages = [{"elementAverage": "0.823077", "elementID": "62", "elementAbbr": "tocForcedChange", "questionNumber": "1"},
+                {"elementAverage": "1.750000", "elementID": "56", "elementAbbr": "tocList", "questionNumber": "1"},
+                {"elementAverage": "3.276923", "elementID": "98", "elementAbbr": "tocShortSighted", "questionNumber": "1"},
+                {"elementAverage": "3.911538", "elementID": "27", "elementAbbr": "toc_example", "questionNumber": "1"},
+                {"elementAverage": "3.096154", "elementID": "19", "elementAbbr": "toc_strategy", "questionNumber": "1"},
+                {"elementAverage": "3.326923", "elementID": "12", "elementAbbr": "toc_structure", "questionNumber": "1"},
+                {"elementAverage": "8.000000", "elementID": "57", "elementAbbr": "mhList", "questionNumber": "2"},
+                {"elementAverage": "5.423077", "elementID": "100", "elementAbbr": "mhUnintConsq", "questionNumber": "2"},
+                {"elementAverage": "4.719231", "elementID": "29", "elementAbbr": "mh_definition", "questionNumber": "2"},
+                {"elementAverage": "5.557692", "elementID": "30", "elementAbbr": "mh_example", "questionNumber": "2"},
+                {"elementAverage": "4.957692", "elementID": "23", "elementAbbr": "mh_risk", "questionNumber": "2"},
+                {"elementAverage": "0.828125", "elementID": "46", "elementAbbr": "conseqOverview", "questionNumber": "3"},
+                {"elementAverage": "1.453125", "elementID": "49", "elementAbbr": "demandingDepth", "questionNumber": "3"},
+                {"elementAverage": "3.031250", "elementID": "47", "elementAbbr": "demandingExample", "questionNumber": "3"},
+                {"elementAverage": "2.265625", "elementID": "48", "elementAbbr": "demandingImp", "questionNumber": "3"},
+                {"elementAverage": "0.156250", "elementID": "50", "elementAbbr": "demandingOIC", "questionNumber": "3"},
+                {"elementAverage": "1.171875", "elementID": "51", "elementAbbr": "demandingReply", "questionNumber": "3"},
+                {"elementAverage": "9.636364", "elementID": "99", "elementAbbr": "ldsNotForced", "questionNumber": "4"}, {"elementAverage": "3.941176", "elementID": "63", "elementAbbr": "ldsProbSinger", "questionNumber": "4"}, {"elementAverage": "3.639706", "elementID": "34", "elementAbbr": "lds_cms", "questionNumber": "4"}, {"elementAverage": "4.838235", "elementID": "33", "elementAbbr": "lds_dmu", "questionNumber": "4"}, {"elementAverage": "4.095588", "elementID": "32", "elementAbbr": "lds_ideal", "questionNumber": "4"}, {"elementAverage": "5.000000", "elementID": "24", "elementAbbr": "lds_objectionable", "questionNumber": "4"}, {"elementAverage": "2.833333", "elementID": "101", "elementAbbr": "num_rescuers_matter", "questionNumber": "5"}, {"elementAverage": "1.650000", "elementID": "13", "elementAbbr": "singer_location_argument", "questionNumber": "5"}, {"elementAverage": "3.900000", "elementID": "14", "elementAbbr": "singer_location_can_matter", "questionNumber": "5"}, {"elementAverage": "1.183333", "elementID": "17", "elementAbbr": "singer_overview", "questionNumber": "5"}, {"elementAverage": "1.500000", "elementID": "16", "elementAbbr": "singer_rescuers_argu", "questionNumber": "5"}];
+            var questionAverages = [
+                {"questionAverage": "3.373077", "questionID": "73", "questionNumber": "1"},
+                {"questionAverage": "5.317686", "questionID": "74", "questionNumber": "2"},
+                {"questionAverage": "2.546875", "questionID": "25", "questionNumber": "3"},
+                {"questionAverage": "5.485294", "questionID": "24", "questionNumber": "4"},
+                {"questionAverage": "3.350000", "questionID": "15", "questionNumber": "5"}];
+            var expectedQuestionNumbers = [1, 2, 3, 4, 5];
+            var expectedQuestionTitles = ["Tragedy of the Commons", "Moral Hazard", "Too demandingness objection", "Leveling down argument and response", "Distance and location don't matter"];
+            var expectedQuestionScores = [6.00, 7.5, 0, 8, 0];
+            var expectedQuestionAverages = [3.373077, 5.317686, 2.546875, 5.485294, 3.350000];
+        </script>-->
+        <!--for browser-->
+        <script type="text/javascript" src="../src/www/inc/js/chartScripts.js" data-cover></script>
+
+        <!-- Your project file goes here -->
+        <script type="text/javascript" src="../../src/www/inc/js/chartScripts.js" data-cover></script>
+        <!-- Your tests file goes here -->
+        <script type="text/javascript" src="js/output_chartScriptsTests.js"></script>
+    </head>
+    <body>
+        <h1 id="qunit-header">QUnit Test Suite</h1>
+        <h2 id="qunit-banner"></h2>
+        <div id="qunit-testrunner-toolbar"></div>
+        <h2 id="qunit-userAgent"></h2>
+        <ol id="qunit-tests"></ol>
+        <div id="qunit-fixture"></div>
+        <div id="show"></div>
+    </body>
+</html>

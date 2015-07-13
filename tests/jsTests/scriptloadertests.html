@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>scriptloader Test Suite</title>
+                <link rel="stylesheet" href="unitTestHelpers/qunit-1.15.0.css" type="text/css" media="screen">
+        <script type="text/javascript" src="unitTestHelpers/jquery-1.11.1.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery-ui.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery.tmpl.min.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/qunit-1.15.0.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/json2.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery.mockjax.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/jquery.cookie.js"></script>
+        <script type="text/javascript" src="unitTestHelpers/blanket.js" data-cover-flags="debug"></script>
+
+<!--        <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-1.15.0.css" type="text/css" media="screen">
+        <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="https://code.jquery.com/qunit/qunit-1.15.0.js"></script>-->
+        <script type="text/javascript" src="unitTestHelpers/qunit-assert-step.js"></script>
+
+        <!-- Your project file goes here -->
+
+        <!-- Your tests file goes here -->
+        <script type="text/javascript">
+            var test1 = false;
+            var test2 = false;
+            var test3 = false;
+            test('All false', function() {
+                notEqual(test1, true);
+                notEqual(test2, true);
+                notEqual(test3, true);
+            });
+            var scripts = ['loadertestscript1.js', 'loadertestscript2.js', 'loadertestscript3.js'];
+            function scriptLoader(numscripts, i) {
+                if (i === numscripts) { //done
+                    onLoad();
+                } else {
+                    switch (i) {
+                            case 0:
+                                test('Before load of script1', function(){
+                                notEqual(test1, true);
+                                notEqual(test2, true);
+                                notEqual(test3, true);    
+                                });
+                                break;
+                            case 1:
+                                test('before load of script2', function(){
+                                equal(test1, true);
+                                notEqual(test2, true);
+                                notEqual(test3, true);    
+                                });
+                                break;
+                            case 2:
+                            test('before load of script3', function(){
+                                equal(test1, true);
+                                equal(test2, true);
+                                notEqual(test3, true);    
+                                });
+                                break;
+                        }
+                    $.getScript(scripts[i]).done(function(data, textStatus) {
+                        switch (i) {
+                            case 0:
+                                test('After load of script1', function(){
+                                equal(test1, true);
+                                notEqual(test2, true);
+                                notEqual(test3, true);    
+                                });
+                                break;
+                            case 1:
+                                test('After load of script2', function(){
+                                equal(test1, true);
+                                equal(test2, true);
+                                notEqual(test3, true);    
+                                });
+                                break;
+                            case 2:
+                            test('After load of script3', function(){
+                                equal(test1, true);
+                                equal(test2, true);
+                                equal(test3, true);    
+                                });
+                                break;
+                        }
+                        if (textStatus) {
+                            switch (i) {
+                                case 0:
+                                    break;
+                                case 1:
+                                    break;
+                                case 2:
+                                    break;
+                            }
+                            i++;
+                            scriptLoader(numscripts, i);
+                        }
+                    });
+                }
+            }
+            ;
+            /**
+             * Do any styling or activities required by the page
+             * @returns {undefined}
+             */
+            function onLoad() {
+                test('All true', function() {
+                    equal(test1, true);
+                    equal(test2, true);
+                    equal(test3, true);
+                });
+            }
+            ;
+            scriptLoader(scripts.length, 0);
+
+        </script>
+    </head>
+    <body>
+        <h1 id="qunit-header">QUnit Test Suite</h1>
+        <h2 id="qunit-banner"></h2>
+        <div id="qunit-testrunner-toolbar"></div>
+        <h2 id="qunit-userAgent"></h2>
+        <ol id="qunit-tests"></ol>
+    </body>
+</html>
