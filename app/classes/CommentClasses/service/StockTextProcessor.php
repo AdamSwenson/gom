@@ -6,7 +6,9 @@
  * Time: 12:09 PM
  */
 
-namespace App\classes\CommentClassesservice;
+namespace App\classes\CommentClasses\service;
+
+use App\classes\CommentClasses\dao\StockTextDao;
 
 /**
  * Class StockTextProcessor
@@ -21,7 +23,7 @@ class StockTextProcessor
     /**
      * @param mixed $dao
      */
-    public function setDao(\App\classes\CommentClassesdao\IStockTextDao $dao)
+    public function setDao(\App\classes\CommentClasses\dao\IStockTextDao $dao)
     {
         $this->dao = $dao;
     }
@@ -49,7 +51,7 @@ class StockTextProcessor
     public function save_new_text($text, $valence)
     {
         $clean_text = $this->cleaner->sanitize($text, 'text');
-        $result = $this->dao->saveNewText($clean_text, $valence, \App\classes\CommentClassesdao\StockTextDao::TYPE_PREPEND);
+        $result = $this->dao->saveNewText($clean_text, $valence, StockTextDao::TYPE_PREPEND);
         if($result){
             $this->response_handler->handle_row_count(1);
         }else{

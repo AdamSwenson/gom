@@ -9,7 +9,9 @@
 namespace App\classes\RestrictorClasses\dao;
 
 
-class IRestrictorDAOMock extends \classes\MockParent implements IRestrictorDAO
+use App\classes\MockParent;
+
+class IRestrictorDAOMock extends MockParent implements IRestrictorDAO
 {
 
     /**

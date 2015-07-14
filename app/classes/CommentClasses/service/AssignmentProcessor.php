@@ -6,7 +6,7 @@
  * Time: 1:35 PM
  */
 
-namespace App\classes\CommentClassesservice;
+namespace App\classes\CommentClasses\service;
 
 
 class AssignmentProcessor
@@ -201,8 +201,7 @@ function process_missing($incoming)
     }
 }
 
-public
-function process_poor($incoming)
+public function process_poor($incoming)
 {
     if (isset($incoming['poor_min']) && isset($incoming['poor_max'])) {
         $object = $this->factory->load('poor');
@@ -212,8 +211,7 @@ function process_poor($incoming)
     }
 }
 
-public
-function process_competent($incoming)
+public function process_competent($incoming)
 {
     if (isset($incoming['competent_min']) && isset($incoming['competent_max'])) {
         $object = $this->factory->load('competent');
@@ -223,8 +221,7 @@ function process_competent($incoming)
     }
 }
 
-public
-function process_excellent($incoming)
+public function process_excellent($incoming)
 {
     if (isset($incoming['excellent_min']) && isset($incoming['excellent_max'])) {
         $object = $this->factory->load('excellent');

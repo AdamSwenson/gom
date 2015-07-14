@@ -6,10 +6,10 @@
  * Time: 3:16 PM
  */
 
-namespace UserManagement\dao;
+namespace App\classes\UserManagement\dao;
 
 
-interface IUserTableManagmentDao 
+interface IUserTableManagementDao
 {
 
 

@@ -8,7 +8,7 @@
 
 namespace App\classes\UserManagement\maker;
 
-use classes\MockParent;
+use App\classes\MockParent;
 
 /**
  * Description of ICredentialGeneratorMock

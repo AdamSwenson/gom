@@ -6,7 +6,7 @@
  * Time: 10:55 AM
  */
 
-namespace UserManagement\errors;
+namespace App\classes\UserManagement\errors;
 
 class CredentialsException extends \Exception
 {

@@ -1,5 +1,5 @@
 <?php
-namespace UserManagement\maker;
+namespace App\classes\UserManagement\maker;
 
 class CredentialGenerator implements ICredentialGenerator
 {

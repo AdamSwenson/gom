@@ -6,7 +6,7 @@
  * Time: 8:57 AM
  */
 
-namespace ScoreClasses;
+namespace App\classes\ScoreClasses;
 
 
 interface IOutputScoreDAO 

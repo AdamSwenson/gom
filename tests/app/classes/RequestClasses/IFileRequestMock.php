@@ -9,7 +9,9 @@
 namespace App\classes\RequestClasses;
 
 
-class IFileRequestMock extends \classes\MockParent implements IFileRequest
+use App\classes\MockParent;
+
+class IFileRequestMock extends MockParent implements IFileRequest
 {
     /** @var $files Array of raw files passed in */
     public $files = array();

@@ -8,6 +8,10 @@
 
 namespace App\classes\ImportExportClasses\Backup;
 
+use App\classes\QuestionClasses\service\QuestionsForExamGenerator;
+use App\classes\ScoreClasses\ScoreLoader;
+use App\classes\StudentClasses\StudentsForExamGenerator;
+
 /**
  * This creates downloadable csv files from queries to allow users to backup their data
  * @todo Make subclasses for backing up other data (grading info etc)
@@ -20,7 +24,7 @@ class BackupMaker
     /** @var  $exam \Exam */
     public $exam;
 
-    /** @var  \App\classes\ScoreClasses\ScoreLoader */
+    /** @var  ScoreLoader */
     public $scoreLoader;
 
     public $records = array();
@@ -34,9 +38,9 @@ class BackupMaker
     }
 
     /**
-     * @param \App\classes\ScoreClasses\ScoreLoader $scoreLoader
+     * @param ScoreLoader $scoreLoader
      */
-    public function setScoreLoader(\App\classes\ScoreClasses\ScoreLoader $scoreLoader)
+    public function setScoreLoader(ScoreLoader $scoreLoader)
     {
         $this->scoreLoader = $scoreLoader;
     }
@@ -47,10 +51,10 @@ class BackupMaker
      */
     public function loadRecords()
     {
-        $studentGenerator = new \App\classes\StudentClasses\StudentsForExamGenerator();
+        $studentGenerator = new StudentsForExamGenerator();
         foreach ($studentGenerator($this->exam) as $student) {
             $record = array('studentName' => $student->getStudentname(), 'student id' => $student->getSid());
-            $questionGenerator = new \App\classes\QuestionClasses\service\QuestionsForExamGenerator($this->exam);
+            $questionGenerator = new QuestionsForExamGenerator($this->exam);
             foreach ($questionGenerator($this->exam) as $question) {
                 $scores = $this->scoreLoader->loadForBackup($this->exam, $question, $student);
                 foreach($scores as $key => $val){

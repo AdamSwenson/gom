@@ -6,7 +6,7 @@
  * Time: 5:28 PM
  */
 
-namespace UserManagement\service;
+namespace App\classes\UserManagement\service;
 
 
 class Secrets

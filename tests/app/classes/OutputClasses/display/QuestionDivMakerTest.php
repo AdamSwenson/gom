@@ -2,6 +2,7 @@
 
 namespace App\classes\OutputClasses\display;
 
+use App\classes\OutputClasses\display\QuestionDivMaker;
 use PHPMD\Renderer\HTMLRendererTest;
 
 /**
@@ -100,8 +101,8 @@ HTML;
         $question_number = self::$qnum;
         $expected = "<div id='Q" . $question_number . "Chart' "
                 . "class='elementChartDiv' "
-                . "style='height:" . \OutputClasses\display\QuestionDivMaker::QUESTION_CHART_HEIGHT . "; "
-                . "width:" . \OutputClasses\display\QuestionDivMaker::QUESTION_CHART_WIDTH . "' >"
+                . "style='height:" . QuestionDivMaker::QUESTION_CHART_HEIGHT . "; "
+                . "width:" . QuestionDivMaker::QUESTION_CHART_WIDTH . "' >"
                 . " </div>";
         $this->assertEquals($expected, $this->object->makeQuestionChartDiv($this->question_assign));
     }

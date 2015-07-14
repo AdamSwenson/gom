@@ -8,12 +8,14 @@
 
 namespace App\classes\OutputClasses\service;
 
+use App\classes\MockParent;
+
 /**
  * Description of ICommentPrinterMock
  *
  * @author adam
  */
-class ICommentPrinterMock extends \classes\MockParent implements ICommentPrinter
+class ICommentPrinterMock extends MockParent implements ICommentPrinter
 {
     public $chartbody;
     public $closing;

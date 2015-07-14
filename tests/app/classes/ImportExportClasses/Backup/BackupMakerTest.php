@@ -9,6 +9,10 @@
 namespace App\classes\ImportExportClasses\Backup;
 
 
+use App\classes\ScoreClasses\ElementScoreHandler;
+use App\classes\ScoreClasses\QuestionScoreHandler;
+use App\classes\ScoreClasses\ScoreLoader;
+
 class BackupMakerTest extends \PHPUnit_Framework_TestCase {
 
     protected $object; 
@@ -19,9 +23,9 @@ class BackupMakerTest extends \PHPUnit_Framework_TestCase {
         $this->object = new BackupMaker;
         $this->exam = \ExamQuery::create()->filterById(1)->findOneOrCreate();
 
-        $score_loader = new \App\classes\ScoreClasses\ScoreLoader();
-        $score_loader->set_element_score_handler(new \App\classes\ScoreClasses\ElementScoreHandler());
-        $score_loader->set_question_score_handler(new \App\classes\ScoreClasses\QuestionScoreHandler());
+        $score_loader = new ScoreLoader();
+        $score_loader->set_element_score_handler(new ElementScoreHandler());
+        $score_loader->set_question_score_handler(new QuestionScoreHandler());
         $this->object->setScoreLoader($score_loader);
     }
 

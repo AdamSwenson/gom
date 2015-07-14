@@ -6,7 +6,7 @@
  * Time: 5:29 PM
  */
 
-namespace UserManagement\service;
+namespace App\classes\UserManagement\service;
 
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;

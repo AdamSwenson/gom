@@ -9,7 +9,9 @@
 namespace App\classes\ScoreClasses;
 
 
-class IElementScoreHandlerMock extends \classes\MockParent implements IElementScoreHandler
+use App\classes\MockParent;
+
+class IElementScoreHandlerMock extends MockParent implements IElementScoreHandler
 {
 
     /**

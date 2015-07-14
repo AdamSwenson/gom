@@ -9,7 +9,7 @@
 namespace App\classes\ScoreClasses;
 
 
-class IQuestionScoreHandlerMock extends \classes\MockParent implements IQuestionScoreHandler
+class IQuestionScoreHandlerMock extends \App\classes\MockParent implements IQuestionScoreHandler
 {
 
     /**

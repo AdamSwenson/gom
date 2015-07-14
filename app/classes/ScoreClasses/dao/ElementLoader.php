@@ -11,7 +11,7 @@ namespace App\classes\ScoreClasses\dao;
 
 class ElementLoader extends LoaderParent implements ILoader
 {
-    static public $type = 'element';
+    static public $type = ScoreDAO::WORKER_ELEMENT;
 
     public function all()
     {

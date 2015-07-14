@@ -9,7 +9,9 @@
 namespace App\classes\ScoreClasses\dao;
 
 
-class ILoaderMock extends \classes\MockParent implements ILoader
+use App\classes\MockParent;
+
+class ILoaderMock extends MockParent implements ILoader
 {
 
     /**

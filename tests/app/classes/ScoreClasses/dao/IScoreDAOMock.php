@@ -9,7 +9,7 @@
 namespace App\classes\ScoreClasses\dao;
 
 
-use classes\MockParent;
+use App\classes\MockParent;
 
 class IScoreDAOMock extends MockParent implements IScoreDAO
 {

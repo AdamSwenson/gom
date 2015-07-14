@@ -9,7 +9,9 @@
 namespace App\classes\ScoreClasses;
 
 
-class IOutputScoreDAOMock extends \classes\MockParent implements IOutputScoreDAO
+use App\classes\MockParent;
+
+class IOutputScoreDAOMock extends MockParent implements IOutputScoreDAO
 {
     public function __call($name, $arguments)
     {

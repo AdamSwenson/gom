@@ -55,6 +55,11 @@ use Symfony\Component\Finder\Exception\AccessDeniedException;
  */
 class ScoreDAO implements IScoreDAO
 {
+    const WORKER_QUESTION = 'question';
+    const WORKER_ELEMENT = 'element';
+
+    const BY_ALL = 'all';
+    const BY_QUESTION_NUMBER = 'questionnumber';
 
     /** @var  \App\classes\ScoreClasses\dao\ILoader */
     public $worker;
@@ -94,57 +99,60 @@ class ScoreDAO implements IScoreDAO
      * @return array
      * @throws \Exception
      */
-    public function load($kind, $by, $arg=false)
+    public function load($kind, $by, $arg = false)
     {
         $this->load_worker($kind);
         $this->execute($by, $arg);
+
         return $this->results;
     }
 
 
     public function record($kind, $arg)
-    {}
+    {
+    }
 
     /**
-     * [do not call externally]
+     * [do not call externally. Only public to help unit testing]
      * @param $kind
      * @throws \Exception
      */
     public function load_worker($kind)
     {
-        switch($kind)
+        switch ($kind)
         {
-            case 'question':
+            case self::WORKER_QUESTION:
                 $this->worker = new QuestionLoader();
                 break;
-            case 'element':
+            case self::WORKER_ELEMENT:
                 $this->worker = new ElementLoader();
                 break;
             default:
                 throw new \Exception('Invalid kind requested');
         }
-        if(!empty($this->exam)) {
+        if (!empty($this->exam))
+        {
             $this->worker->setExam($this->exam);
         }
-        if(!empty($this->student))
+        if (!empty($this->student))
         {
             $this->worker->setStudent($this->student);
         }
     }
 
     /**
-     * [do not call externally]
+     * [do not call externally. Only public to help unit testing]
      * @param $by
      * @param bool $arg
      * @throws \Exception
      */
-    public function execute($by, $arg=false)
+    public function execute($by, $arg = false)
     {
-        if(!$this->is_object_request($by))
+        if (!$this->is_object_request($by))
         {
-            if(!$this->is_id_request($by))
+            if (!$this->is_id_request($by))
             {
-                if(!$this->is_string_request($by, $arg))
+                if (!$this->is_string_request($by, $arg))
                 {
                     throw new \Exception('invalid action request');
                 }
@@ -153,23 +161,25 @@ class ScoreDAO implements IScoreDAO
     }
 
     /**
-     * [do not call externally]
+     * [do not call externally. Only public to help unit testing]
      * @param $by
      * @return bool
      */
     public function is_object_request($by)
     {
-        if(($by instanceof \Question) || ($by instanceof \Element))
+        if (($by instanceof \Question) || ($by instanceof \Element))
         {
             $this->results = $this->worker->object($by);
+
             return true;
-        }else{
+        } else
+        {
             return false;
         }
     }
 
     /**
-     * [do not call externally]
+     * [do not call externally. Only public to help unit testing]
      * If an integer has been passed in, treat it as
      * the id of the item to get score for.
      * @param $by
@@ -178,15 +188,15 @@ class ScoreDAO implements IScoreDAO
      */
     public function is_id_request($by)
     {
-        if(is_integer($by))
+        if (is_integer($by))
         {
-            switch($this->worker->type)
+            switch ($this->worker->type)
             {
-                case 'question':
+                case self::WORKER_QUESTION:
                     $item = \QuestionQuery::create()->filterById($by)->findOne();
                     break;
 
-                case 'element':
+                case self::WORKER_ELEMENT:
                     $item = \ElementQuery::create()->filterById($by)->findOne();
                     break;
                 default:
@@ -194,8 +204,10 @@ class ScoreDAO implements IScoreDAO
             }
             $this->check_set($item);
             $this->results = $this->worker->object($item);
+
             return true;
-        }else{
+        } else
+        {
             return false;
         }
     }
@@ -207,22 +219,23 @@ class ScoreDAO implements IScoreDAO
      * @return bool
      * @throws \Exception
      */
-    public function is_string_request($by, $arg=false)
+    public function is_string_request($by, $arg = false)
     {
         $this->check_set($by);
-        switch($by)
+        switch ($by)
         {
-            case 'all':
+            case self::BY_ALL:
                 $this->results = $this->worker->all();
                 break;
 
-            case 'questionnumber':
+            case self::BY_QUESTION_NUMBER:
                 $this->check_set($arg);
                 $this->results = $this->worker->question_number($arg);
                 break;
             default:
                 return false;
         }
+
         return true;
     }
 
@@ -236,7 +249,8 @@ class ScoreDAO implements IScoreDAO
      */
     protected function check_set($arg)
     {
-        if(isset($arg) && !empty($arg)){
+        if (isset($arg) && !empty($arg))
+        {
             return true;
         }
         throw new \Exception('empty required value for request');
@@ -254,7 +268,8 @@ class ScoreDAO implements IScoreDAO
     {
         $this->setExam($exam);
         $this->setStudent($student);
-        return $this->load('element', 'questionnumber', $question_number);
+
+        return $this->load(self::WORKER_ELEMENT, self::BY_QUESTION_NUMBER, $question_number);
 //        try {
 //            $scores = array();
 //            $q = \QuestionAssignerQuery::create()
@@ -301,20 +316,21 @@ class ScoreDAO implements IScoreDAO
      */
     public function load_question_scores(\Exam $exam, \Student $student, \Question $question)
     {
-        if(!empty($question->getId()))
+        if (!empty($question->getId()))
         {
             $question_score_obj = \QuestionScoreQuery::create()
                 ->filterByExam($exam)
                 ->filterByQuestion($question)
                 ->filterByStudent($student)
                 ->findOneOrCreate();
-        }else
+        } else
         {
             $question_score_obj = \QuestionScoreQuery::create()
                 ->filterByExam($exam)
                 ->filterByStudent($student)
                 ->findOneOrCreate();
         }
+
         return $question_score_obj;
     }
 }

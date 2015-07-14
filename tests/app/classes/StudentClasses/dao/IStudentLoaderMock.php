@@ -9,7 +9,9 @@
 namespace App\classes\StudentClasses\dao;
 
 
-class IStudentLoaderMock extends \classes\MockParent implements IStudentLoader
+use App\classes\MockParent;
+
+class IStudentLoaderMock extends MockParent implements IStudentLoader
 {
 
     public function load_students_by_exam(\Exam $exam)

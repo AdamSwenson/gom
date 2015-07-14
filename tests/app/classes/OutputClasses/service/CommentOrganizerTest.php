@@ -55,16 +55,16 @@ class CommentOrganizerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers OutputClasses\service\CommentOrganizer::set_printer
+     * @covers \App\classes\OutputClasses\service\CommentOrganizer::set_printer
      */
     public function testSet_printer()
     {
         $this->object->set_printer($this->printer);
-        $this->assertInstanceOf('\OutputClasses\service\ICommentPrinter', $this->object->printer);
+        $this->assertInstanceOf('\App\classes\OutputClasses\service\ICommentPrinter', $this->object->printer);
     }
 
     /**
-     * @covers OutputClasses\service\CommentOrganizer::load_comment_array
+     * @covers \App\classes\OutputClasses\service\CommentOrganizer::load_comment_array
      */
     public function testLoad_comment_array()
     {
@@ -75,7 +75,7 @@ class CommentOrganizerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers OutputClasses\service\CommentOrganizer::set_question_numbers
+     * @covers \App\classes\OutputClasses\service\CommentOrganizer::set_question_numbers
      */
     public function testSet_question_numbers()
     {
@@ -86,7 +86,7 @@ class CommentOrganizerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers OutputClasses\service\CommentOrganizer::sort_comments
+     * @covers \App\classes\OutputClasses\service\CommentOrganizer::sort_comments
      */
     public function testSort_comments()
     {
@@ -107,7 +107,7 @@ class CommentOrganizerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers OutputClasses\service\CommentOrganizer::run
+     * @covers \App\classes\OutputClasses\service\CommentOrganizer::run
      */
     public function testRun()
     {
@@ -131,7 +131,7 @@ class CommentOrganizerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers OutputClasses\service\CommentOrganizer::make
+     * @covers \App\classes\OutputClasses\service\CommentOrganizer::make
      */
     public function testMake()
     {

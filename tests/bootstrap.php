@@ -6,8 +6,11 @@
  * Time: 10:21 PM
  */
 
+use App\classes\DbTestAids;
+
 require_once 'vendor/autoload.php';
 
+//require_once 'app/propel_config/config.php';
 
 # initialize propel
 //require_once("bootstrap/app.php");
@@ -24,15 +27,15 @@ $originalinclude = ini_get('include_path');
 //ini_set('include_path', $originalinclude);
 
 
-//\classes\DbTestAids::populate_item_assignments2();
-//\classes\DbTestAids::populate_restrictors();
-//\classes\DbTestAids::populate_students();
-//\classes\DbTestAids::populate_classes();
+//DbTestAids::populate_item_assignments2();
+//DbTestAids::populate_restrictors();
+//DbTestAids::populate_students();
+//DbTestAids::populate_classes();
 ////\classes\DbTestAids::populate_scores();
-//\classes\DbTestAids::populate_element_scores();
-//\classes\DbTestAids::populate_question_scores();
-//\classes\DbTestAids::populate_pseudoids();
-//\classes\DbTestAids::populate_times();
-//
+//DbTestAids::populate_element_scores();
+//DbTestAids::populate_question_scores();
+//DbTestAids::populate_pseudoids();
+//DbTestAids::populate_times();
+
 //\classes\DbTestAids::populate_tags();
 

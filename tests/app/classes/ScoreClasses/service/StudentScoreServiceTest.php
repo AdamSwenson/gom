@@ -3,7 +3,7 @@
 namespace App\classes\ScoreClasses\service;
 
 use App\classes\JsonOutputClasses\encoders\IJsonOutputMock;
-use OutputClasses\facades\IVisitorMock;
+use App\classes\OutputClasses\facades\IVisitorMock;
 use App\classes\ScoreClasses\dao\IScoreDAOMock;
 use App\classes\ScoreClasses\IOutputScoreDAOMock;
 

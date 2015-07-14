@@ -9,9 +9,10 @@
 namespace App\classes\ExamClasses\dao;
 
 
+use App\classes\MockParent;
 use Propel\Runtime\Connection\ConnectionWrapper;
 
-class IExamDAOMock extends \classes\MockParent implements IExamDAO
+class IExamDAOMock extends MockParent implements IExamDAO
 {
     public $response;
     public $called;

@@ -9,7 +9,9 @@
 namespace App\classes\CommentClasses\dao;
 
 
-class IAssignmentFactoryMock extends \classes\MockParent implements IAssignmentFactory
+use App\classes\MockParent;
+
+class IAssignmentFactoryMock extends MockParent implements IAssignmentFactory
 {
 
 

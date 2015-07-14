@@ -9,6 +9,8 @@
 namespace App\classes\ElementClasses\dao;
 
 
+use App\classes\DbTestAids;
+
 class ElementAssignmentDAOTest extends \PHPUnit_Framework_TestCase {
     public $object;
     public $question;
@@ -20,9 +22,9 @@ class ElementAssignmentDAOTest extends \PHPUnit_Framework_TestCase {
 
         $this->object = new ElementAssignmentDAO();
 
-        $this->exam = \classes\DbTestAids::make_exam('testterm4', 2012, 'testtopic4');
-        $this->question = \classes\DbTestAids::make_question('testquestiontext');
-        $this->element = \classes\DbTestAids::make_element('testelement name');
+        $this->exam = DbTestAids::make_exam('testterm4', 2012, 'testtopic4');
+        $this->question = DbTestAids::make_question('testquestiontext');
+        $this->element = DbTestAids::make_element('testelement name');
 
         parent::setUp();
     }

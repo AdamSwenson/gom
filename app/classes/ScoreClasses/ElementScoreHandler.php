@@ -6,22 +6,24 @@
  * Time: 4:06 PM
  */
 
-namespace ScoreClasses;
+namespace App\classes\ScoreClasses;
 
+
+use App\classes\JsonOutputClasses\controllers\IResponseChooser;
 
 class ElementScoreHandler implements IElementScoreHandler
 {
 
-    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
+    /** @var  $response_handler IResponseChooser */
     public $response_handler;
 
     /** @var  $score_obj \ElementScore */
     public $score_obj;
 
     /**
-     * @param \App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler
+     * @param IResponseChooser $response_handler
      */
-    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    public function set_response_handler(IResponseChooser $response_handler)
     {
         $this->response_handler = $response_handler;
     }

@@ -9,6 +9,8 @@
 namespace App\classes\OutputClasses\service;
 
 
+use App\classes\ScoreClasses\dao\IScoreDAOMock;
+
 class CommentKludgeTest extends \PHPUnit_Framework_TestCase {
 
     protected $object; 
@@ -18,7 +20,7 @@ class CommentKludgeTest extends \PHPUnit_Framework_TestCase {
 
         parent::setUp();
         $this->object = new CommentKludge;
-        $this->dao = new \App\classes\ScoreClasses\dao\IScoreDAOMock();
+        $this->dao = new IScoreDAOMock();
         $this->object->setDao($this->dao);
     }
 

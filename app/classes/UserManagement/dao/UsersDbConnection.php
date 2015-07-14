@@ -6,14 +6,14 @@
  * Time: 3:25 PM
  */
 
-namespace UserManagement\dao;
+namespace App\classes\UserManagement\dao;
 
 
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use App\classes\SecurityClasses\environ\LogVarHolder;
-use UserManagement\errors\NewDbSetupException;
-use UserManagement\service\UserSecrets;
+use App\classes\UserManagement\errors\NewDbSetupException;
+use App\classes\UserManagement\service\UserSecrets;
 
 class UsersDbConnection
 {

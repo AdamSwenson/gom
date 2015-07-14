@@ -9,7 +9,9 @@
 namespace App\classes\QuestionClasses\dao;
 
 
-class IQuestionDAOMock extends \classes\MockParent implements IQuestionDAO
+use App\classes\MockParent;
+
+class IQuestionDAOMock extends MockParent implements IQuestionDAO
 {
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\classes\OutputClasses\service;
 
+use App\classes\OutputClasses\dao\ICredentialLookupMock;
 use App\classes\RequestClasses\IRequestMock;
 
 /**
@@ -22,7 +23,7 @@ class StudentLoginManagerTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->object = new StudentLoginManager();
-        $this->lookup = new \OutputClasses\dao\ICredentialLookupMock();
+        $this->lookup = new ICredentialLookupMock();
         $this->request = new IRequestMock();
 
         $this->exam = new \Exam();
@@ -40,16 +41,16 @@ class StudentLoginManagerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \OutputClasses\service\StudentLoginManager::set_lookup
+     * @covers \App\classes\OutputClasses\service\StudentLoginManager::set_lookup
      */
     public function testSet_lookup()
     {
         $this->object->set_lookup($this->lookup);
-        $this->assertAttributeInstanceOf('\OutputClasses\dao\ICredentialLookup', 'lookup', $this->object);
+        $this->assertAttributeInstanceOf('\App\classes\OutputClasses\dao\ICredentialLookup', 'lookup', $this->object);
     }
 
     /**
-     * @covers \OutputClasses\service\StudentLoginManager::process_access_token
+     * @covers \App\classes\OutputClasses\service\StudentLoginManager::process_access_token
      */
     public function testProcess_access_token()
     {
@@ -60,7 +61,7 @@ class StudentLoginManagerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \OutputClasses\service\StudentLoginManager::process_access_token
+     * @covers \App\classes\OutputClasses\service\StudentLoginManager::process_access_token
      * @expectedException \Exception
      */
         public function testProcess_access_token_throws_on_invalid_chars()
@@ -78,7 +79,7 @@ class StudentLoginManagerTest extends \PHPUnit_Framework_TestCase
         $this->object->set_lookup($this->lookup);
 
         $result = $this->object->login($this->request);
-        $this->assertInstanceOf('\OutputClasses\facades\Visitor', $result);
+        $this->assertInstanceOf('\App\classes\OutputClasses\facades\Visitor', $result);
         $this->assertAttributeInstanceOf('\Exam', 'exam', $result);
         $this->assertAttributeInstanceOf('\Student', 'student', $result);
     }

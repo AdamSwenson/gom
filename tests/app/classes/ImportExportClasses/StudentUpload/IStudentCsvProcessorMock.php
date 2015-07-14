@@ -9,7 +9,9 @@
 namespace App\classes\ImportExportClasses\StudentUpload;
 
 
-class IStudentCsvProcessorMock extends \classes\MockParent implements IStudentCsvProcessor
+use App\classes\MockParent;
+
+class IStudentCsvProcessorMock extends MockParent implements IStudentCsvProcessor
 {
 
     public $file_error;

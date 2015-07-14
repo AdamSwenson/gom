@@ -9,7 +9,9 @@
 namespace App\classes\PseudoIDClasses\dao;
 
 
-class IPseudoIDDaoMock extends \classes\MockParent implements IPseudoIDDao
+use App\classes\MockParent;
+
+class IPseudoIDDaoMock extends MockParent implements IPseudoIDDao
 {
 
     public function record(\Exam $exam, \Student $student, $pseudoID)

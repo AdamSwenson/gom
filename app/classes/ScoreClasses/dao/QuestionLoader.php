@@ -9,9 +9,11 @@
 namespace App\classes\ScoreClasses\dao;
 
 
+use App\classes\ScoreClasses\dao\ScoreDAO;
+
 class QuestionLoader extends LoaderParent implements ILoader
 {
-    static public $type = 'question';
+    static public $type = ScoreDAO::WORKER_QUESTION;
 
 
     public function all()

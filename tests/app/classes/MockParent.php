@@ -6,7 +6,7 @@
  * Time: 1:27 PM
  */
 
-namespace App\classes\classes;
+namespace App\classes;
 
 
 class MockParent

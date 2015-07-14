@@ -6,7 +6,7 @@
  * Time: 8:17 AM
  */
 
-namespace App\classes\classes;
+namespace App\classes;
 
 
 trait MockTraits 

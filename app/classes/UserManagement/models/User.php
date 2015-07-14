@@ -6,13 +6,16 @@
  * 
  */
 
-namespace UserManagement\models;
+namespace App\classes\UserManagement\models;
+
+use App\classes\UserManagement\models\IDBCredentials;
+use App\classes\UserManagement\models\IUser;
 
 /**
  * New version of user
  * @author adam
  */
-class User implements \UserManagement\models\IUser, \UserManagement\models\IDBCredentials
+class User implements IUser, IDBCredentials
 {
  
     /** @var $userID User User ID passed in from usercake system */

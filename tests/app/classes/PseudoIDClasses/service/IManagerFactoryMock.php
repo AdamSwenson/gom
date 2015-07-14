@@ -9,9 +9,10 @@
 namespace App\classes\PseudoIDClasses\service;
 
 
+use App\classes\MockParent;
 use Propel\Runtime\Connection\ConnectionWrapper;
 
-class IManagerFactoryMock extends \classes\MockParent implements IManagerFactory
+class IManagerFactoryMock extends MockParent implements IManagerFactory
 {
 
     public function create_pseudoIDs(ConnectionWrapper $conn, \Exam $exam)

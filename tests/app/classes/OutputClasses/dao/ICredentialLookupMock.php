@@ -9,7 +9,9 @@
 namespace App\classes\OutputClasses\dao;
 
 
-class ICredentialLookupMock extends \classes\MockParent implements ICredentialLookup
+use App\classes\MockParent;
+
+class ICredentialLookupMock extends MockParent implements ICredentialLookup
 {
 
     public $success;

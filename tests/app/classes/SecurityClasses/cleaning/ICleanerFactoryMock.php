@@ -9,7 +9,9 @@
 namespace App\classes\SecurityClasses\cleaning;
 
 
-class ICleanerFactoryMock extends \classes\MockParent implements ICleanerFactory
+use App\classes\MockParent;
+
+class ICleanerFactoryMock extends MockParent implements ICleanerFactory
 {
 
     public function validate($to_validate, $type)

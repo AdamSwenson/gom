@@ -8,12 +8,14 @@
 
 namespace App\classes\RequestClasses;
 
+use App\classes\MockParent;
+
 /**
  * Description of IRequestMock
  *
  * @author adam
  */
-class IRequestMock extends \classes\MockParent implements IRequest
+class IRequestMock extends MockParent implements IRequest
 {
     public $http = array();
 

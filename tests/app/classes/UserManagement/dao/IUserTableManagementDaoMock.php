@@ -9,7 +9,10 @@
 namespace App\classes\UserManagement\dao;
 
 
-class IUserTableManagementDaoMock extends \classes\MockParent implements \App\classes\UserManagement\dao\IUserTableManagmentDao
+use App\classes\MockParent;
+use App\classes\UserManagement\dao\IUserTableManagementDao;
+
+class IUserTableManagementDaoMock extends MockParent implements IUserTableManagementDao
 {
 
     public function make($user)
@@ -21,6 +24,7 @@ class IUserTableManagementDaoMock extends \classes\MockParent implements \App\cl
     /**
      * This retrieves the userID for the newly activated account from the activation token. It loads the user id for use in the next steps.
      * @param  string $token The activation token sent via email
+     * @return \App\classes\The|bool
      * @throws \Exception
      */
     public function retrieve_userid_from_token($token)

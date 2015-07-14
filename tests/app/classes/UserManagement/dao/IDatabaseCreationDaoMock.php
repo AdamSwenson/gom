@@ -8,9 +8,10 @@
 
 namespace App\classes\UserManagement\dao;
 
-use classes\MockParent;
+use \App\classes\MockParent;
+use App\classes\UserManagement\dao\IDatabaseCreationDao;
 
-class IDatabaseCreationDaoMock extends MockParent implements \App\classes\UserManagement\dao\IDatabaseCreationDao
+class IDatabaseCreationDaoMock extends MockParent implements IDatabaseCreationDao
 {
 
     /**

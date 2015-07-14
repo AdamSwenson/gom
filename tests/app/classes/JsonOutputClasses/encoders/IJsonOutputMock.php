@@ -9,10 +9,28 @@
 namespace App\classes\JsonOutputClasses\encoders;
 
 
-class IJsonOutputMock extends \classes\MockParent implements IJsonOutput
-{
-    use \classes\MockTraits;
+use App\classes\MockParent;
+use App\classes\MockTraits;
 
+class IJsonOutputMock extends MockParent implements IJsonOutput
+{
+ //   use MockTraits;
+
+    public $caller;
+    public $args;
+
+    public function record($caller = __FUNCTION__, $args=array())
+    {
+        $this->caller = $caller;
+        $this->args = $args;
+    }
+
+
+    public function __call($name, $args)
+    {
+        $this->record($name, $args);
+        $this->$name($args);
+    }
     /**
      * Give this the result and it will encode and echo it out.
      * @param array $result The result from the db

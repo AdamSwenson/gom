@@ -9,7 +9,9 @@
 namespace App\classes\UserManagement\maker;
 
 
-class ISetupWatcherMock extends \classes\MockParent implements ISetupWatcher
+use App\classes\MockParent;
+
+class ISetupWatcherMock extends MockParent implements ISetupWatcher
 {
 
     public function update($message)

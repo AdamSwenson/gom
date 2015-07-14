@@ -9,7 +9,9 @@
 namespace App\classes\OutputClasses\facades;
 
 
-class IVisitorMock extends \classes\MockParent implements IVisitor
+use App\classes\MockParent;
+
+class IVisitorMock extends MockParent implements IVisitor
 {
 
     public $examid;

@@ -6,7 +6,7 @@
  * Time: 6:32 PM
  */
 
-namespace UserManagement\maker;
+namespace App\classes\UserManagement\maker;
 
 
 use SplSubject;

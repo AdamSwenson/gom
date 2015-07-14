@@ -9,7 +9,9 @@
 namespace App\classes\CommentClasses\dao;
 
 
-class IStockTextDaoMock extends \classes\MockParent implements IStockTextDao
+use App\classes\MockParent;
+
+class IStockTextDaoMock extends MockParent implements IStockTextDao
 {
 
     /**

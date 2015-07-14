@@ -8,12 +8,14 @@
 
 namespace App\classes\SecurityClasses\logging;
 
+use App\classes\MockParent;
+
 /**
  * Description of ISecurityLoggersMock
  *
  * @author adam
  */
-class ISecurityLoggersMock extends \classes\MockParent implements ISecurityLoggers
+class ISecurityLoggersMock extends MockParent implements ISecurityLoggers
 {
     public $logged = '';
     public function criticalEvent($to_log)

@@ -6,7 +6,7 @@
  * Time: 3:57 PM
  */
 
-namespace ScoreClasses;
+namespace App\classes\ScoreClasses;
 
 
 interface IElementScoreHandler

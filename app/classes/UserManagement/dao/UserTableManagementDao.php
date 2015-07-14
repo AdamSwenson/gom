@@ -6,14 +6,14 @@
  * Time: 3:16 PM
  */
 
-namespace UserManagement\dao;
+namespace App\classes\UserManagement\dao;
 
 
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
-use UserManagement\errors\NewDbSetupException;
+use App\classes\UserManagement\errors\NewDbSetupException;
 
-class UserTableManagementDao extends UsersDbConnection implements \UserManagement\dao\IUserTableManagmentDao
+class UserTableManagementDao extends UsersDbConnection implements App\classes\UserManagement\dao\IUserTableManagmentDao
 {
 
     static protected $root;

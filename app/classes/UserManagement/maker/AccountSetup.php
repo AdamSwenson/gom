@@ -6,7 +6,7 @@
  *
  */
 
-namespace UserManagement\maker;
+namespace App\classes\UserManagement\maker;
 
 use UserManagement\dao\IUserTableManagmentDao;
 use UserManagement\errors\NewDbSetupException;

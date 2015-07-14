@@ -8,12 +8,14 @@
 
 namespace App\classes\JsonOutputClasses\controllers;
 
+use App\classes\MockParent;
+
 /**
  * Description of IResponseChooserMock
  *
  * @author adam
  */
-class IResponseChooserMock extends \classes\MockParent implements IResponseChooser
+class IResponseChooserMock extends MockParent implements IResponseChooser
 {
     public $been_called = false;
     public $loaded = array();

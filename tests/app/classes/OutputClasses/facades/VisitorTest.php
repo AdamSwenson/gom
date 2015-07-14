@@ -27,7 +27,7 @@ class VisitorTest extends \PHPUnit_Framework_TestCase
     public function testMake()
     {
         $r = Visitor::make($this->exam, $this->student);
-        $this->assertInstanceOf('\OutputClasses\facades\Visitor', $r);
+        $this->assertInstanceOf('\App\classes\OutputClasses\facades\Visitor', $r);
         $this->assertAttributeInstanceOf('\Student', 'student', $r);
         $this->assertAttributeInstanceOf('\Exam', 'exam', $r);
     }

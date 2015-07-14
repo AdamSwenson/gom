@@ -6,7 +6,7 @@
  * Time: 1:17 PM
  */
 
-namespace App\classes\classes;
+namespace App\classes;
 
 use Propel\Runtime\ActiveQuery\Criteria;
 
