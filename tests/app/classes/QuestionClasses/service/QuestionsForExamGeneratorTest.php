@@ -9,11 +9,11 @@
 namespace App\classes\QuestionClasses\service;
 
 
-class QuestionsForExamGeneratorTest extends \PHPUnit_Framework_TestCase {
+class QuestionsForExamGeneratorTest extends \TestCase {
 
     protected $object; 
     
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
 

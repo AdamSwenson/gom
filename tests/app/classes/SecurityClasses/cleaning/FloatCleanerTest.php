@@ -9,12 +9,12 @@
 namespace App\classes\SecurityClasses\cleaning;
 
 
-class FloatCleanerTest extends \PHPUnit_Framework_TestCase {
+class FloatCleanerTest extends \TestCase {
 
     protected $object;
 
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new FloatCleaner();

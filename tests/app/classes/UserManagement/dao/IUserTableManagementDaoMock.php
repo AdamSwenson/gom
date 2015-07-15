@@ -10,9 +10,8 @@ namespace App\classes\UserManagement\dao;
 
 
 use App\classes\MockParent;
-use App\classes\UserManagement\dao\IUserTableManagementDao;
 
-class IUserTableManagementDaoMock extends MockParent implements IUserTableManagementDao
+class IUserTableManagementDaoMock extends MockParent implements \App\classes\UserManagement\dao\IUserTableManagementDao
 {
 
     public function make($user)

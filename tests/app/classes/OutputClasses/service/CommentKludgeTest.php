@@ -11,11 +11,11 @@ namespace App\classes\OutputClasses\service;
 
 use App\classes\ScoreClasses\dao\IScoreDAOMock;
 
-class CommentKludgeTest extends \PHPUnit_Framework_TestCase {
+class CommentKludgeTest extends \TestCase {
 
     protected $object; 
     
-    protected function setUp()
+    public function setUp()
     {
 
         parent::setUp();

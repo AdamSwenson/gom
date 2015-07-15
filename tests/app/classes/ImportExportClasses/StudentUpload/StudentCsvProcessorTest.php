@@ -9,14 +9,14 @@
 namespace App\classes\ImportExportClasses\StudentUpload;
 
 
-class StudentCsvProcessorTest extends \PHPUnit_Framework_TestCase
+class StudentCsvProcessorTest extends \TestCase
 {
     static public $valid_files = array("tests/test_student_upload_valid.csv");
     static public $invalid_files = array("tests/test_student_upload_invalid.csv");
 
     protected $object;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new StudentCsvProcessor;

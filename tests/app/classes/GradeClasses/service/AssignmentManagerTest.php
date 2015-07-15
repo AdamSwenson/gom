@@ -9,14 +9,14 @@
 namespace App\classes\GradeClasses\service;
 
 
-class AssignmentManagerTest extends \PHPUnit_Framework_TestCase {
+class AssignmentManagerTest extends \TestCase {
 
     public $direct_grade_objects;
     public $calc_grade_objects;
     public $grade_objects;
     protected $object;
     
-    protected function setUp()
+    public function setUp()
     {
         $this->numObj = 10;
 

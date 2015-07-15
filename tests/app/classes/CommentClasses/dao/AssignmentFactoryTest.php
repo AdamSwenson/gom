@@ -9,11 +9,11 @@
 namespace App\classes\CommentClasses\dao;
 
 
-class AssignmentFactoryTest extends \PHPUnit_Framework_TestCase {
+class AssignmentFactoryTest extends \TestCase {
     public $object;
 
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new AssignmentFactory();

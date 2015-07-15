@@ -9,7 +9,7 @@
 namespace App\classes\ImportExportClasses\StudentUpload;
 
 
-class UploaderTest extends \PHPUnit_Framework_TestCase
+class UploaderTest extends \TestCase
 {
 
     static public $valid_files = array("tests/test_student_upload_valid.csv");
@@ -25,7 +25,7 @@ class UploaderTest extends \PHPUnit_Framework_TestCase
     protected $request;
     protected $students;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new Uploader;

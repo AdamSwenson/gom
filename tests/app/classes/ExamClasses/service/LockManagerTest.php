@@ -9,13 +9,13 @@
 namespace App\classes\ExamClasses\service;
 
 
-class LockManagerTest extends \PHPUnit_Framework_TestCase {
+class LockManagerTest extends \TestCase {
 
     protected $object;
 public $request;
     public $examdao;
     public $response_handler;
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new LockManager();

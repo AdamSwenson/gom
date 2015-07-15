@@ -9,12 +9,12 @@
 namespace App\classes\ScoreClasses;
 
 
-class ScoreLoaderTest extends \PHPUnit_Framework_TestCase {
+class ScoreLoaderTest extends \TestCase {
     public $object;
     public $question_score_handler;
     public $element_score_handler;
 
-    protected function setUp()
+    public function setUp()
     {
         $this->object = new \App\classes\ScoreClasses\ScoreLoader();
         $this->question_score_handler = new \App\classes\ScoreClasses\IQuestionScoreHandlerMock();

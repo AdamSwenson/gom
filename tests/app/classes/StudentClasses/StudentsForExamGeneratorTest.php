@@ -9,11 +9,11 @@
 namespace App\classes\StudentClasses;
 
 
-class StudentsForExamGeneratorTest extends \PHPUnit_Framework_TestCase {
+class StudentsForExamGeneratorTest extends \TestCase {
 
     protected $object; 
     
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
     }

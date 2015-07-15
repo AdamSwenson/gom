@@ -11,13 +11,13 @@ namespace App\classes\classes\App\classes\RestrictorClasses\dao;
 
 use App\classes\RestrictorClasses\dao\RestrictorDAO;
 
-class RestrictorDAOTest extends \PHPUnit_Framework_TestCase
+class RestrictorDAOTest extends \TestCase
 {
 
     public $object;
     public $cleaner;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new RestrictorDAO();

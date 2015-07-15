@@ -18,6 +18,9 @@ Route::get('/', function () {
 Route::post('api', array('uses' => 'AjaxController@handleRequest'));
 Route::post('setup/api', array('uses' => 'AjaxController@handleRequest'));
 
+Route::post('upload_students', array('uses' => 'StudentController@handleUpload'));
+
+
 Route::get('home', 'LandingController@showLanding');
 
 Route::get('landing', 'LandingController@showLanding');
@@ -69,4 +72,5 @@ Route::get('report/gradeassign', array('uses' => 'ReportController@showGradeAssi
 Route::get('report/qualitycontrol', function(){
     return "This will eventually be the quality control page";
 });
+
 

@@ -11,13 +11,13 @@ namespace App\classes\classes\App\classes\ExamClasses\service;
 
 use App\classes\ExamClasses\service\NumberExamsManager;
 
-class NumberExamsManagerTest extends \PHPUnit_Framework_TestCase {
+class NumberExamsManagerTest extends \TestCase {
     public $cleaner;
     public $object;
 
 
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new NumberExamsManager();
@@ -25,7 +25,7 @@ class NumberExamsManagerTest extends \PHPUnit_Framework_TestCase {
         $this->response_handler = new \App\classes\JsonOutputClasses\controllers\IResponseChooserMock();
     }
 
-    protected function tearDown(){
+    public function tearDown(){
         unset($_SESSION);
     }
 

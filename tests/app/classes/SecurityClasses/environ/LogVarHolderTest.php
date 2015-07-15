@@ -11,7 +11,7 @@ namespace App\classes\SecurityClasses\environ;
 
 use App\classes\SecurityClasses\environ\LogVarHolder;
 
-class LogVarHolderTest extends \PHPUnit_Framework_TestCase
+class LogVarHolderTest extends \TestCase
 {
 
     protected $object;
@@ -19,7 +19,7 @@ class LogVarHolderTest extends \PHPUnit_Framework_TestCase
     protected $stored = array();
 
 
-    protected function setUp()
+    public function setUp()
     {
         $this->path1 = "test1/test1";
         $this->path2 = "test2/test2";
@@ -29,7 +29,7 @@ class LogVarHolderTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
         parent::tearDown();
         LogVarHolder::getInstance()->destroy();

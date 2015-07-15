@@ -11,13 +11,13 @@ namespace App\classes\SecurityClasses\environ;
 
 use App\classes\SecurityClasses\environ\EnvironVarHolder;
 
-class EnvironVarHolderTest extends \PHPUnit_Framework_TestCase
+class EnvironVarHolderTest extends \TestCase
 {
 
     protected $object;
 
     public $stored = array();
-    protected function setUp()
+    public function setUp()
     {
         $this->path1 = "test1/test1";
         $this->path2 = "test2/test2";
@@ -30,7 +30,7 @@ class EnvironVarHolderTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
         EnvironVarHolder::getInstance()->destroy();
         foreach($this->stored as $k => $v)

@@ -13,14 +13,14 @@ use App\classes\CommentClasses\dao\IStockTextDaoMock;
 use App\classes\JsonOutputClasses\controllers\IResponseChooserMock;
 use App\classes\SecurityClasses\cleaning\ICleanerFactoryMock;
 
-class StockTextProcessorTest extends \PHPUnit_Framework_TestCase {
+class StockTextProcessorTest extends \TestCase {
 
     public $object;
     public $cleaner;
     public $handler;
 
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new StockTextProcessor();

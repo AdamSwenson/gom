@@ -13,11 +13,11 @@ use App\classes\ScoreClasses\ElementScoreHandler;
 use App\classes\ScoreClasses\QuestionScoreHandler;
 use App\classes\ScoreClasses\ScoreLoader;
 
-class BackupMakerTest extends \PHPUnit_Framework_TestCase {
+class BackupMakerTest extends \TestCase {
 
     protected $object; 
     
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new BackupMaker;

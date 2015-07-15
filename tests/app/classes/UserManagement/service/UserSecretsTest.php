@@ -11,7 +11,7 @@ namespace App\classes\UserManagement\service;
 
 use App\classes\UserManagement\service\UserSecrets;
 
-class UserSecretsTest extends \PHPUnit_Framework_TestCase
+class UserSecretsTest extends \TestCase
 {
 
     protected $object;
@@ -21,7 +21,7 @@ class UserSecretsTest extends \PHPUnit_Framework_TestCase
     static public $dbname = 'testdbname';
     static public $host = 'testhostname';
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new UserSecrets;

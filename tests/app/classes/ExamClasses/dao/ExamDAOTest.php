@@ -7,7 +7,7 @@
  */
 namespace App\classes\ExamClasses\dao;
 
-class ExamDAOTest extends \PHPUnit_Framework_TestCase
+class ExamDAOTest extends \TestCase
 //\Propel\Tests\TestCase
 //\Propel\Tests\TestCaseFixtures
     //\Propel\Tests\TestCaseFixturesDatabase
@@ -19,7 +19,7 @@ class ExamDAOTest extends \PHPUnit_Framework_TestCase
     public $object;
 
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new ExamDAO();

@@ -9,7 +9,7 @@
 namespace App\classes\QuestionClasses\dao;
 
 
-class QuestionDAOTest extends \PHPUnit_Framework_TestCase
+class QuestionDAOTest extends \TestCase
 {
     public $object;
 

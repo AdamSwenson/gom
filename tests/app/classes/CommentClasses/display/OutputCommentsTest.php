@@ -11,12 +11,12 @@ namespace App\classes\CommentClasses\display;
 
 use App\classes\JsonOutputClasses\encoders\DirectJsonOutput;
 
-class OutputCommentsTest extends \PHPUnit_Framework_TestCase
+class OutputCommentsTest extends \TestCase
 {
 
     protected $object;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new OutputComments;

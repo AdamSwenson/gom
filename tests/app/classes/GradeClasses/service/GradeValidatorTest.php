@@ -9,7 +9,7 @@
 namespace App\classes\GradeClasses\service;
 
 
-class GradeValidatorTest extends \PHPUnit_Framework_TestCase
+class GradeValidatorTest extends \TestCase
 {
     public $direct_grade_objects;
     public $calc_grade_objects;
@@ -21,7 +21,7 @@ class GradeValidatorTest extends \PHPUnit_Framework_TestCase
 //    public static $calc_grade_objects = array();
 //    public static $direct_grade_objects = array();
 
-    protected function setUp()
+    public function setUp()
     {
         $this->numObj = 10;
         parent::setUp();

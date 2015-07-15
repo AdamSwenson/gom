@@ -12,7 +12,7 @@ namespace App\classes\CommentClasses\service;
 use App\classes\CommentClasses\dao\IAssignmentFactoryMock;
 use App\classes\SecurityClasses\cleaning\ICleanerFactoryMock;
 
-class AssignmentProcessorTest extends \PHPUnit_Framework_TestCase
+class AssignmentProcessorTest extends \TestCase
 {
     public $object;
     public $cleaner;
@@ -20,7 +20,7 @@ class AssignmentProcessorTest extends \PHPUnit_Framework_TestCase
     public $exam;
     public $element;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new AssignmentProcessor();

@@ -11,12 +11,12 @@ namespace App\classes\CommentClasses\dao;
 
 use classes\DbTestAids;
 
-class CommentLoaderTest extends \PHPUnit_Framework_TestCase {
+class CommentLoaderTest extends \TestCase {
 
     protected $object;
     protected $inserted_examids;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new CommentLoader;

@@ -9,7 +9,7 @@
 namespace App\classes\ExamClasses\service;
 
 
-class ReleaseManagerTest extends \PHPUnit_Framework_TestCase {
+class ReleaseManagerTest extends \TestCase {
 
     public $manager_factory;
     protected $object;
@@ -17,7 +17,7 @@ class ReleaseManagerTest extends \PHPUnit_Framework_TestCase {
     public $examdao;
     public $response_handler;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new ReleaseManager();

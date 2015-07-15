@@ -12,7 +12,7 @@ namespace App\classes\ElementClasses\service;
 use App\classes\RequestClasses\IRequestMock;
 use App\classes\SecurityClasses\cleaning\ICleanerFactoryMock;
 
-class ElementFactoryTest extends \PHPUnit_Framework_TestCase
+class ElementFactoryTest extends \TestCase
 {
 
 
@@ -20,7 +20,7 @@ class ElementFactoryTest extends \PHPUnit_Framework_TestCase
     public $object;
     public $cleaner;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->cleaner = new ICleanerFactoryMock();

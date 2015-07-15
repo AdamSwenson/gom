@@ -9,7 +9,7 @@
 namespace App\classes\ExamClasses\service;
 
 
-class ExamCreatorTest extends \PHPUnit_Framework_TestCase
+class ExamCreatorTest extends \TestCase
 {
 
     public $object;

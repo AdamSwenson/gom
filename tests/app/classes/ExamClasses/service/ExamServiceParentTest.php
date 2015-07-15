@@ -9,14 +9,14 @@
 namespace App\classes\ExamClasses\service;
 
 
-class ExamServiceParentTest extends \PHPUnit_Framework_TestCase {
+class ExamServiceParentTest extends \TestCase {
 
     protected $object;
     public $examdao;
     public $response_handler;
     public $cleaner;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = $this->getMockForAbstractClass('\App\classes\ExamClasses\service\ExamServiceParent');

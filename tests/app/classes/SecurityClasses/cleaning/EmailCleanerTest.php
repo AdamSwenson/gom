@@ -9,11 +9,11 @@
 namespace App\classes\SecurityClasses\cleaning;
 
 
-class EmailCleanerTest extends \PHPUnit_Framework_TestCase {
+class EmailCleanerTest extends \TestCase {
 
     protected $object; 
     
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new EmailCleaner;

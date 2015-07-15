@@ -12,14 +12,14 @@ use App\classes\QuestionClasses\dao\IQuestionAssignmentDAOMock;
 use App\classes\RequestClasses\IRequestMock;
 use App\classes\SecurityClasses\cleaning\ICleanerFactoryMock;
 
-class QuestionFactoryTest extends \PHPUnit_Framework_TestCase
+class QuestionFactoryTest extends \TestCase
 {
     public $qa_dao;
     public $request;
     public $object;
     public $cleaner;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->cleaner = new ICleanerFactoryMock();

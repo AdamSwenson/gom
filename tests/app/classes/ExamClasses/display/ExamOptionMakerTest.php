@@ -9,7 +9,7 @@
 namespace App\classes\ExamClasses\display;
 
 
-class ExamOptionMakerTest extends \PHPUnit_Framework_TestCase {
+class ExamOptionMakerTest extends \TestCase {
     public $object;
 
     public static $id = 34;
@@ -23,7 +23,7 @@ class ExamOptionMakerTest extends \PHPUnit_Framework_TestCase {
     public $expected;
 
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new ExamOptionMaker();

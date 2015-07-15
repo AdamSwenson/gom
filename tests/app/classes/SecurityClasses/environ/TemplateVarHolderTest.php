@@ -9,14 +9,14 @@
 namespace App\classes\SecurityClasses\environ;
 
 
-class TemplateVarHolderTest extends \PHPUnit_Framework_TestCase
+class TemplateVarHolderTest extends \TestCase
 {
 
     protected $object;
 
     protected $stored = array();
 
-    protected function setUp()
+    public function setUp()
     {
         $this->path1 = "test1/test1";
         $this->path2 = "test2/test2";
@@ -26,7 +26,7 @@ class TemplateVarHolderTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
         parent::tearDown();
         TemplateVarHolder::getInstance()->destroy();

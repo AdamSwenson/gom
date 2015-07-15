@@ -9,12 +9,12 @@
 namespace App\classes\StudentClasses\dao;
 
 
-class StudentLoaderTest extends \PHPUnit_Framework_TestCase {
+class StudentLoaderTest extends \TestCase {
 
     protected $object;
     protected $exam;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new StudentLoader;

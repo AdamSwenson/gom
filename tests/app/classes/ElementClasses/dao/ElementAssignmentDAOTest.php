@@ -11,13 +11,13 @@ namespace App\classes\ElementClasses\dao;
 
 use App\classes\DbTestAids;
 
-class ElementAssignmentDAOTest extends \PHPUnit_Framework_TestCase {
+class ElementAssignmentDAOTest extends \TestCase {
     public $object;
     public $question;
     public $exam;
     public $element;
 
-    protected function setUp()
+    public function setUp()
     {
 
         $this->object = new ElementAssignmentDAO();

@@ -12,7 +12,7 @@ namespace App\classes\PseudoIDClasses\service;
 use Map\PseudoIDTableMap;
 use Propel\Runtime\Propel;
 
-class CreationManagerTest extends \PHPUnit_Framework_TestCase
+class CreationManagerTest extends \TestCase
 {
 
     public $pid_maker;
@@ -22,7 +22,7 @@ class CreationManagerTest extends \PHPUnit_Framework_TestCase
     protected $student_dao;
     protected $students;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new CreationManager;

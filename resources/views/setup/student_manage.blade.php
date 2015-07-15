@@ -92,7 +92,7 @@
                     </p>
                 </div>
                 <div class="pageComponent">
-                    <form enctype="multipart/form-data" method="post" action='{{$_SERVER['PHP_SELF']}}; ?>' role="form">
+                    <form enctype="multipart/form-data" method="post" action='{{url('upload_students')}}' role="form">
                         <div class="form-group">
                             <input type="hidden" name="task" value="uploadStudents"/>
 

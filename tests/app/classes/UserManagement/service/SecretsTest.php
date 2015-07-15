@@ -9,13 +9,22 @@
 namespace App\classes\UserManagement\service;
 
 
-class SecretsTest extends \PHPUnit_Framework_TestCase {
+class SecretsTest extends \TestCase {
 
     protected $object; 
     
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
+        ;
+
+putenv("DB_USERNAME=testuser4");
+putenv("DB_PASS=testpass3");
+putenv("DB_HOST=localhost");
+putenv("DB_NAME=gom_propel");
+        putenv("LOCATION=local");
+        putenv("RUNTYPE=testing");
+putenv("DEVSTATE=development");
         //$this->object = new Secrets;
     }
 

@@ -9,14 +9,14 @@
 namespace App\classes\OutputClasses\facades;
 
 
-class VisitorTest extends \PHPUnit_Framework_TestCase
+class VisitorTest extends \TestCase
 {
 
     protected $object;
     protected $exam;
     protected $student;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new Visitor;

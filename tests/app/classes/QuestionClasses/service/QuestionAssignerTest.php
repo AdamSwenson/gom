@@ -9,14 +9,14 @@
 namespace App\classes\QuestionClasses\service;
 
 
-class QuestionAssignerTest extends \PHPUnit_Framework_TestCase
+class QuestionAssignerTest extends \TestCase
 {
     public $object;
     public $questiondao;
     public $assignerdao;
     public $response_handler;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new QuestionAssigner();

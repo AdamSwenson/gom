@@ -9,7 +9,7 @@
 namespace App\classes\ScoreClasses\dao;
 
 
-class ScoreDAOTest extends \PHPUnit_Framework_TestCase {
+class ScoreDAOTest extends \TestCase {
 
     public $worker;
     protected $object;
@@ -18,7 +18,7 @@ class ScoreDAOTest extends \PHPUnit_Framework_TestCase {
         array('request' => 'element', 'expected' => '\App\classes\ScoreClasses\dao\ElementLoader'),
         array('request' => 'question', 'expected' => '\App\classes\ScoreClasses\dao\QuestionLoader'));
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new ScoreDAO;

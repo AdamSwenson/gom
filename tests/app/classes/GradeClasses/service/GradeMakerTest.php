@@ -9,13 +9,13 @@
 namespace App\classes\GradeClasses\service;
 
 
-class GradeMakerTest extends \PHPUnit_Framework_TestCase {
+class GradeMakerTest extends \TestCase {
 
     public $displayNumeric;
     public $displayText;
     protected $object;
     
-    protected function setUp()
+    public function setUp()
     {
         $this->displayText = 'TestText';
         $this->displayNumeric = 88.5;
