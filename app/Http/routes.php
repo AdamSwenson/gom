@@ -70,3 +70,8 @@ Route::get('report/qualitycontrol', function(){
     return "This will eventually be the quality control page";
 });
 
+//////////////////////
+//HSVersion Addition//
+//////////////////////
+
+//Route::get('home')
