@@ -27,6 +27,9 @@ Route::get('account/home', function(){
     return "Account home page";
 });
 
+Route::get('account/create', function(){
+    return "Account create";
+});
 
 Route::get('account/user_settings', function(){
     return "User settings page";
