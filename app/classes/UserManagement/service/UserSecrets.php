@@ -6,7 +6,7 @@
  * Time: 8:54 PM
  */
 
-namespace UserManagement\service;
+namespace App\classes\UserManagement\service;
 
 use App\classes\SecurityClasses\environ\EnvironVarHolder;
 use UserManagement\errors\CredentialsException;

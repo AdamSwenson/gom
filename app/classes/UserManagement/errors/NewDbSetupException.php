@@ -6,7 +6,7 @@
  * Time: 1:32 PM
  */
 
-namespace UserManagement\errors;
+namespace App\classes\UserManagement\errors;
 
 
 class NewDbSetupException extends \Exception

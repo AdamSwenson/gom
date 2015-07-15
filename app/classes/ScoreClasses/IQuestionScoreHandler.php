@@ -6,7 +6,7 @@
  * Time: 3:58 PM
  */
 
-namespace ScoreClasses;
+namespace App\classes\ScoreClasses;
 
 
 interface IQuestionScoreHandler

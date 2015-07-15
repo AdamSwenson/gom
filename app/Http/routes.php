@@ -18,6 +18,9 @@ Route::get('/', function () {
 Route::post('api', array('uses' => 'AjaxController@handleRequest'));
 Route::post('setup/api', array('uses' => 'AjaxController@handleRequest'));
 
+Route::post('upload_students', array('uses' => 'StudentController@handleUpload'));
+
+
 Route::get('home', 'LandingController@showLanding');
 
 Route::get('landing', 'LandingController@showLanding');
@@ -27,9 +30,6 @@ Route::get('account/home', function(){
     return "Account home page";
 });
 
-Route::get('account/create', function(){
-    return "Account create";
-});
 
 Route::get('account/user_settings', function(){
     return "User settings page";
@@ -73,8 +73,4 @@ Route::get('report/qualitycontrol', function(){
     return "This will eventually be the quality control page";
 });
 
-//////////////////////
-//HSVersion Addition//
-//////////////////////
 
-//Route::get('home')

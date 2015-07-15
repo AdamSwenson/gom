@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<project name="gom" description="gradeomatic tasks" default="main">
+
+    <target name="rebuild" description="Updates the mysql schema and updates composer's autoloader (important if you have added classes)">
+        <!--rebuild db with arbitrary data-->
+        <echo message="Updating database" />
+        <exec command="vendor/bin/propel sql:insert"/>
+        <!--refresh the autoloader-->
+        <echo message="Updating autoloader" />
+        <exec command="composer dump-autoload"/>
+    </target>
+
+    <target name="completelyRebuildModel" description="Completely rebuilds the generated sql and classes from schema.xml">
+        <echo message="Rebuilding sql model"/>
+        <exec command="export LOCATION=local; vendor/bin/propel sql:build --overwrite" />
+        <exec command="export LOCATION=local; vendor/bin/propel model:build" />
+        <echo message="Inserting new schema into db"/>
+        <exec command="export LOCATION=local; vendor/bin/propel sql:insert" />
+        <echo message="Refreshing autoload"/>
+        <exec command="composer dump-autoload" />
+    </target>
+
+    <target name="refreshLogs">
+        <delete file="/Users/adam/Sites/log/querylog_gom.html" />
+        <delete file="/Users/adam/Sites/log/querylog_user.html" />
+        <delete file="/Users/adam/Sites/log/errorlog.html" />
+        <delete file="/Users/adam/Sites/log/user_setup_log.html" />
+
+        <touch file="/Users/adam/Sites/log/querylog_gom.html" />
+        <touch file="/Users/adam/Sites/log/querylog_user.html" />
+        <touch file="/Users/adam/Sites/log/errorlog.html" />
+        <touch file="/Users/adam/Sites/log/user_setup_log.html" />
+
+        <chmod file="/Users/adam/Sites/log/querylog_gom.html" mode="0666" verbose="true" />
+        <chmod file="/Users/adam/Sites/log/querylog_user.html" mode="0666" verbose="true" />
+        <chmod file="/Users/adam/Sites/log/errorlog.html" mode="0666" verbose="true"/>
+        <chmod file="/Users/adam/Sites/log/user_setup_log.html" mode="0666" verbose="true" />
+    </target>
+
+    <target name="deployWithCapistrano">
+        <exec command="git add . ; git commit -a -m'deploying'; git push"/>
+        <exec command="cap production deploy --trace"/>
+    </target>
+</project>

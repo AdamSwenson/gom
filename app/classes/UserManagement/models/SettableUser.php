@@ -6,14 +6,17 @@
  *
  */
 
-namespace UserManagement\models;
+namespace App\classes\UserManagement\models;
+
+use App\classes\UserManagement\models\ISettableUser;
+use App\classes\UserManagement\models\IUser;
 
 /**
  * Description of SettableUser
  *
  * @author adam
  */
-class SettableUser implements \UserManagement\models\IUser, \UserManagement\models\ISettableUser
+class SettableUser implements IUser, ISettableUser
 {
     protected $userID;
     protected $db_name;

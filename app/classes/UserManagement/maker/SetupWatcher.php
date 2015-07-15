@@ -6,7 +6,7 @@
  * Time: 6:22 PM
  */
 
-namespace UserManagement\maker;
+namespace App\classes\UserManagement\maker;
 
 
 use SplObserver;

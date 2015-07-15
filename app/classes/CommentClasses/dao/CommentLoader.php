@@ -6,12 +6,12 @@
  * Time: 10:44 AM
  */
 
-namespace App\classes\CommentClassesdao;
+namespace App\classes\CommentClasses\dao;
 
 /**
  * Class CommentLoader
  * DAO for loading comments
- * @package App\classes\CommentClassesdao
+ * @package App\classes\CommentClasses\dao
  */
 class CommentLoader 
 {

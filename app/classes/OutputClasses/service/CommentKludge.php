@@ -9,7 +9,10 @@
 namespace App\classes\OutputClasses\service;
 
 
-use App\classes\CommentClassesdao\StockTextDao;
+use App\classes\CommentClasses\dao\IStockTextDao;
+use App\classes\CommentClasses\dao\StockTextDao;
+use App\classes\CommentClasses\service\CommentBuilder;
+use App\classes\ScoreClasses\dao\IScoreDAO;
 
 class CommentKludge
 {
@@ -35,7 +38,7 @@ class CommentKludge
         array('min' => 7.6, 'max' => 10.0, 'valence' => StockTextDao::VALENCE_EXCELLENT)
     ];
 
-    /** @var  \App\classes\ScoreClasses\dao\IScoreDAO */
+    /** @var  IScoreDAO */
     public $dao;
 
     protected $stockTextDao;
@@ -43,7 +46,7 @@ class CommentKludge
     /**
      * @param mixed $stockTextDao
      */
-    public function setStockTextDao(\App\classes\CommentClassesdao\IStockTextDao $stockTextDao)
+    public function setStockTextDao(IStockTextDao $stockTextDao)
     {
         $this->stockTextDao = $stockTextDao;
     }
@@ -53,15 +56,15 @@ class CommentKludge
     /**
      * @param mixed $commentBuilder
      */
-    public function setCommentBuilder(\App\classes\CommentClassesservice\CommentBuilder $commentBuilder)
+    public function setCommentBuilder(CommentBuilder $commentBuilder)
     {
         $this->commentBuilder = $commentBuilder;
     }
 
     /**
-     * @param \App\classes\ScoreClasses\dao\IScoreDAO $dao
+     * @param IScoreDAO $dao
      */
-    public function setDao(\App\classes\ScoreClasses\dao\IScoreDAO $dao)
+    public function setDao(IScoreDAO $dao)
     {
         $this->dao = $dao;
     }

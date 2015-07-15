@@ -6,7 +6,7 @@
  * Time: 4:49 PM
  */
 
-namespace UserManagement\dao;
+namespace App\classes\UserManagement\dao;
 
 
 interface IDatabaseCreationDao 
