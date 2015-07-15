@@ -13,9 +13,11 @@ use App\classes\CommentClasses\dao\IStockTextDao;
 use App\classes\CommentClasses\dao\StockTextDao;
 use App\classes\CommentClasses\service\CommentBuilder;
 use App\classes\ScoreClasses\dao\IScoreDAO;
+use App\classes\ScoreClasses\dao\ScoreDAO;
 
 class CommentKludge
 {
+    //This is all stuff that should be in the stocktext table
     const FORGOT = "You forgot to....";
     const POOR = "You did not do a very good job of.....";
     const OKAY = "You did an okay job of.....";
@@ -74,7 +76,7 @@ class CommentKludge
     {
         $this->dao->setExam($exam);
         $this->dao->setStudent($student);
-        $scores = $this->dao->load('element', 'questionnumber', $question_number);
+        $scores = $this->dao->load(ScoreDAO::WORKER_ELEMENT, ScoreDAO::BY_QUESTION_NUMBER, $question_number);
         //$scores = $this->dao->element_scores_by_question_number($exam, $student, $question_number);
 //        $scores = $this->find_scores($exam, $student, $question_number);
         foreach ($scores as $s) {
