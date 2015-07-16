@@ -60,7 +60,7 @@ class PreferencesTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 8;
+    const NUM_COLUMNS = 9;
 
     /**
      * The number of lazy-loaded columns
@@ -70,7 +70,7 @@ class PreferencesTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 8;
+    const NUM_HYDRATE_COLUMNS = 9;
 
     /**
      * the column name for the jqueryTheme field
@@ -103,6 +103,11 @@ class PreferencesTableMap extends TableMap
     const COL_NUMBER_SUBTASKS = 'preferences.number_subtasks';
 
     /**
+     * the column name for the user_id field
+     */
+    const COL_USER_ID = 'preferences.user_id';
+
+    /**
      * the column name for the created_at field
      */
     const COL_CREATED_AT = 'preferences.created_at';
@@ -124,11 +129,11 @@ class PreferencesTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Jquerytheme', 'Autostartexam', 'Autostartgroup', 'DashboardNumExams', 'NumberQuestions', 'NumberSubtasks', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('jquerytheme', 'autostartexam', 'autostartgroup', 'dashboardNumExams', 'numberQuestions', 'numberSubtasks', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(PreferencesTableMap::COL_JQUERYTHEME, PreferencesTableMap::COL_AUTOSTARTEXAM, PreferencesTableMap::COL_AUTOSTARTGROUP, PreferencesTableMap::COL_DASHBOARD_NUM_EXAMS, PreferencesTableMap::COL_NUMBER_QUESTIONS, PreferencesTableMap::COL_NUMBER_SUBTASKS, PreferencesTableMap::COL_CREATED_AT, PreferencesTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('jqueryTheme', 'autostartExam', 'autostartGroup', 'dashboard_num_exams', 'number_questions', 'number_subtasks', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
+        self::TYPE_PHPNAME       => array('Jquerytheme', 'Autostartexam', 'Autostartgroup', 'DashboardNumExams', 'NumberQuestions', 'NumberSubtasks', 'UserId', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('jquerytheme', 'autostartexam', 'autostartgroup', 'dashboardNumExams', 'numberQuestions', 'numberSubtasks', 'userId', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(PreferencesTableMap::COL_JQUERYTHEME, PreferencesTableMap::COL_AUTOSTARTEXAM, PreferencesTableMap::COL_AUTOSTARTGROUP, PreferencesTableMap::COL_DASHBOARD_NUM_EXAMS, PreferencesTableMap::COL_NUMBER_QUESTIONS, PreferencesTableMap::COL_NUMBER_SUBTASKS, PreferencesTableMap::COL_USER_ID, PreferencesTableMap::COL_CREATED_AT, PreferencesTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('jqueryTheme', 'autostartExam', 'autostartGroup', 'dashboard_num_exams', 'number_questions', 'number_subtasks', 'user_id', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -138,11 +143,11 @@ class PreferencesTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Jquerytheme' => 0, 'Autostartexam' => 1, 'Autostartgroup' => 2, 'DashboardNumExams' => 3, 'NumberQuestions' => 4, 'NumberSubtasks' => 5, 'CreatedAt' => 6, 'UpdatedAt' => 7, ),
-        self::TYPE_CAMELNAME     => array('jquerytheme' => 0, 'autostartexam' => 1, 'autostartgroup' => 2, 'dashboardNumExams' => 3, 'numberQuestions' => 4, 'numberSubtasks' => 5, 'createdAt' => 6, 'updatedAt' => 7, ),
-        self::TYPE_COLNAME       => array(PreferencesTableMap::COL_JQUERYTHEME => 0, PreferencesTableMap::COL_AUTOSTARTEXAM => 1, PreferencesTableMap::COL_AUTOSTARTGROUP => 2, PreferencesTableMap::COL_DASHBOARD_NUM_EXAMS => 3, PreferencesTableMap::COL_NUMBER_QUESTIONS => 4, PreferencesTableMap::COL_NUMBER_SUBTASKS => 5, PreferencesTableMap::COL_CREATED_AT => 6, PreferencesTableMap::COL_UPDATED_AT => 7, ),
-        self::TYPE_FIELDNAME     => array('jqueryTheme' => 0, 'autostartExam' => 1, 'autostartGroup' => 2, 'dashboard_num_exams' => 3, 'number_questions' => 4, 'number_subtasks' => 5, 'created_at' => 6, 'updated_at' => 7, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
+        self::TYPE_PHPNAME       => array('Jquerytheme' => 0, 'Autostartexam' => 1, 'Autostartgroup' => 2, 'DashboardNumExams' => 3, 'NumberQuestions' => 4, 'NumberSubtasks' => 5, 'UserId' => 6, 'CreatedAt' => 7, 'UpdatedAt' => 8, ),
+        self::TYPE_CAMELNAME     => array('jquerytheme' => 0, 'autostartexam' => 1, 'autostartgroup' => 2, 'dashboardNumExams' => 3, 'numberQuestions' => 4, 'numberSubtasks' => 5, 'userId' => 6, 'createdAt' => 7, 'updatedAt' => 8, ),
+        self::TYPE_COLNAME       => array(PreferencesTableMap::COL_JQUERYTHEME => 0, PreferencesTableMap::COL_AUTOSTARTEXAM => 1, PreferencesTableMap::COL_AUTOSTARTGROUP => 2, PreferencesTableMap::COL_DASHBOARD_NUM_EXAMS => 3, PreferencesTableMap::COL_NUMBER_QUESTIONS => 4, PreferencesTableMap::COL_NUMBER_SUBTASKS => 5, PreferencesTableMap::COL_USER_ID => 6, PreferencesTableMap::COL_CREATED_AT => 7, PreferencesTableMap::COL_UPDATED_AT => 8, ),
+        self::TYPE_FIELDNAME     => array('jqueryTheme' => 0, 'autostartExam' => 1, 'autostartGroup' => 2, 'dashboard_num_exams' => 3, 'number_questions' => 4, 'number_subtasks' => 5, 'user_id' => 6, 'created_at' => 7, 'updated_at' => 8, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -168,6 +173,7 @@ class PreferencesTableMap extends TableMap
         $this->addColumn('dashboard_num_exams', 'DashboardNumExams', 'INTEGER', false, null, null);
         $this->addColumn('number_questions', 'NumberQuestions', 'INTEGER', false, null, null);
         $this->addColumn('number_subtasks', 'NumberSubtasks', 'INTEGER', false, null, null);
+        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'users', 'id', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -177,6 +183,13 @@ class PreferencesTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('User', '\\User', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, null, false);
     } // buildRelations()
 
     /**
@@ -330,6 +343,7 @@ class PreferencesTableMap extends TableMap
             $criteria->addSelectColumn(PreferencesTableMap::COL_DASHBOARD_NUM_EXAMS);
             $criteria->addSelectColumn(PreferencesTableMap::COL_NUMBER_QUESTIONS);
             $criteria->addSelectColumn(PreferencesTableMap::COL_NUMBER_SUBTASKS);
+            $criteria->addSelectColumn(PreferencesTableMap::COL_USER_ID);
             $criteria->addSelectColumn(PreferencesTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(PreferencesTableMap::COL_UPDATED_AT);
         } else {
@@ -339,6 +353,7 @@ class PreferencesTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.dashboard_num_exams');
             $criteria->addSelectColumn($alias . '.number_questions');
             $criteria->addSelectColumn($alias . '.number_subtasks');
+            $criteria->addSelectColumn($alias . '.user_id');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }

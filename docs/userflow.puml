@@ -1,0 +1,23 @@
+@startuml
+node CreateExam{
+examName
+Year
+Term
+}
+
+node AddQuestions{
+QuestionName
+QuestionText
+}
+
+
+(*)  --> "check input"
+
+If "input is verbose" then
+--> [Yes] "turn on verbosity"
+--> "run command"
+else
+--> "run command"
+Endif
+-->(*)
+@enduml

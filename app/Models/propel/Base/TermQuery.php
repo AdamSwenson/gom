@@ -21,10 +21,12 @@ use Propel\Runtime\Exception\PropelException;
  *
  *
  * @method     ChildTermQuery orderByContent($order = Criteria::ASC) Order by the content column
+ * @method     ChildTermQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildTermQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildTermQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildTermQuery groupByContent() Group by the content column
+ * @method     ChildTermQuery groupByUserId() Group by the user_id column
  * @method     ChildTermQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildTermQuery groupByUpdatedAt() Group by the updated_at column
  *
@@ -32,16 +34,21 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildTermQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildTermQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
+ * @method     ChildTermQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildTermQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildTermQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
+ *
  * @method     ChildTermQuery leftJoinExam($relationAlias = null) Adds a LEFT JOIN clause to the query using the Exam relation
  * @method     ChildTermQuery rightJoinExam($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Exam relation
  * @method     ChildTermQuery innerJoinExam($relationAlias = null) Adds a INNER JOIN clause to the query using the Exam relation
  *
- * @method     \ExamQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \UserQuery|\ExamQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildTerm findOne(ConnectionInterface $con = null) Return the first ChildTerm matching the query
  * @method     ChildTerm findOneOrCreate(ConnectionInterface $con = null) Return the first ChildTerm matching the query, or a new ChildTerm object populated from the query conditions when no match is found
  *
  * @method     ChildTerm findOneByContent(string $content) Return the first ChildTerm filtered by the content column
+ * @method     ChildTerm findOneByUserId(int $user_id) Return the first ChildTerm filtered by the user_id column
  * @method     ChildTerm findOneByCreatedAt(string $created_at) Return the first ChildTerm filtered by the created_at column
  * @method     ChildTerm findOneByUpdatedAt(string $updated_at) Return the first ChildTerm filtered by the updated_at column *
 
@@ -49,11 +56,13 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildTerm requireOne(ConnectionInterface $con = null) Return the first ChildTerm matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildTerm requireOneByContent(string $content) Return the first ChildTerm filtered by the content column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildTerm requireOneByUserId(int $user_id) Return the first ChildTerm filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTerm requireOneByCreatedAt(string $created_at) Return the first ChildTerm filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTerm requireOneByUpdatedAt(string $updated_at) Return the first ChildTerm filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildTerm[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildTerm objects based on current ModelCriteria
  * @method     ChildTerm[]|ObjectCollection findByContent(string $content) Return ChildTerm objects filtered by the content column
+ * @method     ChildTerm[]|ObjectCollection findByUserId(int $user_id) Return ChildTerm objects filtered by the user_id column
  * @method     ChildTerm[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildTerm objects filtered by the created_at column
  * @method     ChildTerm[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildTerm objects filtered by the updated_at column
  * @method     ChildTerm[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -148,7 +157,7 @@ abstract class TermQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT content, created_at, updated_at FROM r_terms WHERE content = :p0';
+        $sql = 'SELECT content, user_id, created_at, updated_at FROM r_terms WHERE content = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_STR);
@@ -268,6 +277,49 @@ abstract class TermQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the user_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUserId(1234); // WHERE user_id = 1234
+     * $query->filterByUserId(array(12, 34)); // WHERE user_id IN (12, 34)
+     * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
+     * </code>
+     *
+     * @see       filterByUser()
+     *
+     * @param     mixed $userId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildTermQuery The current query, for fluid interface
+     */
+    public function filterByUserId($userId = null, $comparison = null)
+    {
+        if (is_array($userId)) {
+            $useMinMax = false;
+            if (isset($userId['min'])) {
+                $this->addUsingAlias(TermTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($userId['max'])) {
+                $this->addUsingAlias(TermTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(TermTableMap::COL_USER_ID, $userId, $comparison);
+    }
+
+    /**
      * Filter the query on the created_at column
      *
      * Example usage:
@@ -351,6 +403,83 @@ abstract class TermQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(TermTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \User object
+     *
+     * @param \User|ObjectCollection $user The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildTermQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = null)
+    {
+        if ($user instanceof \User) {
+            return $this
+                ->addUsingAlias(TermTableMap::COL_USER_ID, $user->getId(), $comparison);
+        } elseif ($user instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(TermTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByUser() only accepts arguments of type \User or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the User relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildTermQuery The current query, for fluid interface
+     */
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('User');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'User');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the User relation User object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \UserQuery A secondary query class using the current class as primary query
+     */
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
     }
 
     /**

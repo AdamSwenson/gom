@@ -3,15 +3,11 @@
 namespace Base;
 
 use \Element as ChildElement;
-use \ElementAssignment as ChildElementAssignment;
-use \ElementAssignmentQuery as ChildElementAssignmentQuery;
 use \ElementQuery as ChildElementQuery;
 use \ElementScore as ChildElementScore;
 use \ElementScoreQuery as ChildElementScoreQuery;
-use \Tag as ChildTag;
-use \TagQuery as ChildTagQuery;
-use \TaggedElement as ChildTaggedElement;
-use \TaggedElementQuery as ChildTaggedElementQuery;
+use \User as ChildUser;
+use \UserQuery as ChildUserQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
@@ -96,6 +92,12 @@ abstract class Element implements ActiveRecordInterface
     protected $commenttext;
 
     /**
+     * The value for the user_id field.
+     * @var        int
+     */
+    protected $user_id;
+
+    /**
      * The value for the created_at field.
      * @var        \DateTime
      */
@@ -108,32 +110,15 @@ abstract class Element implements ActiveRecordInterface
     protected $updated_at;
 
     /**
+     * @var        ChildUser
+     */
+    protected $aUser;
+
+    /**
      * @var        ObjectCollection|ChildElementScore[] Collection to store aggregation of ChildElementScore objects.
      */
     protected $collElementScores;
     protected $collElementScoresPartial;
-
-    /**
-     * @var        ObjectCollection|ChildElementAssignment[] Collection to store aggregation of ChildElementAssignment objects.
-     */
-    protected $collElementAssignments;
-    protected $collElementAssignmentsPartial;
-
-    /**
-     * @var        ObjectCollection|ChildTaggedElement[] Collection to store aggregation of ChildTaggedElement objects.
-     */
-    protected $collTaggedElements;
-    protected $collTaggedElementsPartial;
-
-    /**
-     * @var        ObjectCollection|ChildTag[] Cross Collection to store aggregation of ChildTag objects.
-     */
-    protected $collTags;
-
-    /**
-     * @var bool
-     */
-    protected $collTagsPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -145,27 +130,9 @@ abstract class Element implements ActiveRecordInterface
 
     /**
      * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildTag[]
-     */
-    protected $tagsScheduledForDeletion = null;
-
-    /**
-     * An array of objects scheduled for deletion.
      * @var ObjectCollection|ChildElementScore[]
      */
     protected $elementScoresScheduledForDeletion = null;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildElementAssignment[]
-     */
-    protected $elementAssignmentsScheduledForDeletion = null;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildTaggedElement[]
-     */
-    protected $taggedElementsScheduledForDeletion = null;
 
     /**
      * Initializes internal state of Base\Element object.
@@ -425,6 +392,16 @@ abstract class Element implements ActiveRecordInterface
     }
 
     /**
+     * Get the [user_id] column value.
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [created_at] column value.
      *
      *
@@ -545,6 +522,30 @@ abstract class Element implements ActiveRecordInterface
     } // setCommenttext()
 
     /**
+     * Set the value of [user_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\Element The current object (for fluent API support)
+     */
+    public function setUserId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[ElementTableMap::COL_USER_ID] = true;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
+        }
+
+        return $this;
+    } // setUserId()
+
+    /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
@@ -632,13 +633,16 @@ abstract class Element implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ElementTableMap::translateFieldName('Commenttext', TableMap::TYPE_PHPNAME, $indexType)];
             $this->commenttext = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ElementTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ElementTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->user_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ElementTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ElementTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ElementTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -651,7 +655,7 @@ abstract class Element implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = ElementTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 7; // 7 = ElementTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Element'), 0, $e);
@@ -673,6 +677,9 @@ abstract class Element implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
+        }
     } // ensureConsistency
 
     /**
@@ -712,13 +719,9 @@ abstract class Element implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aUser = null;
             $this->collElementScores = null;
 
-            $this->collElementAssignments = null;
-
-            $this->collTaggedElements = null;
-
-            $this->collTags = null;
         } // if (deep)
     }
 
@@ -830,6 +833,18 @@ abstract class Element implements ActiveRecordInterface
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
 
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -840,35 +855,6 @@ abstract class Element implements ActiveRecordInterface
                 }
                 $this->resetModified();
             }
-
-            if ($this->tagsScheduledForDeletion !== null) {
-                if (!$this->tagsScheduledForDeletion->isEmpty()) {
-                    $pks = array();
-                    foreach ($this->tagsScheduledForDeletion as $entry) {
-                        $entryPk = [];
-
-                        $entryPk[1] = $this->getId();
-                        $entryPk[0] = $entry->getId();
-                        $pks[] = $entryPk;
-                    }
-
-                    \TaggedElementQuery::create()
-                        ->filterByPrimaryKeys($pks)
-                        ->delete($con);
-
-                    $this->tagsScheduledForDeletion = null;
-                }
-
-            }
-
-            if ($this->collTags) {
-                foreach ($this->collTags as $tag) {
-                    if (!$tag->isDeleted() && ($tag->isNew() || $tag->isModified())) {
-                        $tag->save($con);
-                    }
-                }
-            }
-
 
             if ($this->elementScoresScheduledForDeletion !== null) {
                 if (!$this->elementScoresScheduledForDeletion->isEmpty()) {
@@ -881,40 +867,6 @@ abstract class Element implements ActiveRecordInterface
 
             if ($this->collElementScores !== null) {
                 foreach ($this->collElementScores as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
-            if ($this->elementAssignmentsScheduledForDeletion !== null) {
-                if (!$this->elementAssignmentsScheduledForDeletion->isEmpty()) {
-                    \ElementAssignmentQuery::create()
-                        ->filterByPrimaryKeys($this->elementAssignmentsScheduledForDeletion->getPrimaryKeys(false))
-                        ->delete($con);
-                    $this->elementAssignmentsScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collElementAssignments !== null) {
-                foreach ($this->collElementAssignments as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
-            if ($this->taggedElementsScheduledForDeletion !== null) {
-                if (!$this->taggedElementsScheduledForDeletion->isEmpty()) {
-                    \TaggedElementQuery::create()
-                        ->filterByPrimaryKeys($this->taggedElementsScheduledForDeletion->getPrimaryKeys(false))
-                        ->delete($con);
-                    $this->taggedElementsScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collTaggedElements !== null) {
-                foreach ($this->collTaggedElements as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -959,6 +911,9 @@ abstract class Element implements ActiveRecordInterface
         if ($this->isColumnModified(ElementTableMap::COL_COMMENTTEXT)) {
             $modifiedColumns[':p' . $index++]  = 'commentText';
         }
+        if ($this->isColumnModified(ElementTableMap::COL_USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'user_id';
+        }
         if ($this->isColumnModified(ElementTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
@@ -987,6 +942,9 @@ abstract class Element implements ActiveRecordInterface
                         break;
                     case 'commentText':
                         $stmt->bindValue($identifier, $this->commenttext, PDO::PARAM_STR);
+                        break;
+                    case 'user_id':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1069,9 +1027,12 @@ abstract class Element implements ActiveRecordInterface
                 return $this->getCommenttext();
                 break;
             case 4:
-                return $this->getCreatedAt();
+                return $this->getUserId();
                 break;
             case 5:
+                return $this->getCreatedAt();
+                break;
+            case 6:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1108,21 +1069,22 @@ abstract class Element implements ActiveRecordInterface
             $keys[1] => $this->getElementname(),
             $keys[2] => $this->getDisplaytext(),
             $keys[3] => $this->getCommenttext(),
-            $keys[4] => $this->getCreatedAt(),
-            $keys[5] => $this->getUpdatedAt(),
+            $keys[4] => $this->getUserId(),
+            $keys[5] => $this->getCreatedAt(),
+            $keys[6] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[4]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[4]];
-            $result[$keys[4]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[5]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[5]];
             $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[6]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[6]];
+            $result[$keys[6]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1131,6 +1093,21 @@ abstract class Element implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
+            if (null !== $this->aUser) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'user';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'users';
+                        break;
+                    default:
+                        $key = 'User';
+                }
+
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
             if (null !== $this->collElementScores) {
 
                 switch ($keyType) {
@@ -1145,36 +1122,6 @@ abstract class Element implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->collElementScores->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
-            }
-            if (null !== $this->collElementAssignments) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'elementAssignments';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'elementXquestionss';
-                        break;
-                    default:
-                        $key = 'ElementAssignments';
-                }
-
-                $result[$key] = $this->collElementAssignments->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
-            }
-            if (null !== $this->collTaggedElements) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'taggedElements';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'tagsXelementss';
-                        break;
-                    default:
-                        $key = 'TaggedElements';
-                }
-
-                $result[$key] = $this->collTaggedElements->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1223,9 +1170,12 @@ abstract class Element implements ActiveRecordInterface
                 $this->setCommenttext($value);
                 break;
             case 4:
-                $this->setCreatedAt($value);
+                $this->setUserId($value);
                 break;
             case 5:
+                $this->setCreatedAt($value);
+                break;
+            case 6:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1267,10 +1217,13 @@ abstract class Element implements ActiveRecordInterface
             $this->setCommenttext($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setCreatedAt($arr[$keys[4]]);
+            $this->setUserId($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setUpdatedAt($arr[$keys[5]]);
+            $this->setCreatedAt($arr[$keys[5]]);
+        }
+        if (array_key_exists($keys[6], $arr)) {
+            $this->setUpdatedAt($arr[$keys[6]]);
         }
     }
 
@@ -1324,6 +1277,9 @@ abstract class Element implements ActiveRecordInterface
         }
         if ($this->isColumnModified(ElementTableMap::COL_COMMENTTEXT)) {
             $criteria->add(ElementTableMap::COL_COMMENTTEXT, $this->commenttext);
+        }
+        if ($this->isColumnModified(ElementTableMap::COL_USER_ID)) {
+            $criteria->add(ElementTableMap::COL_USER_ID, $this->user_id);
         }
         if ($this->isColumnModified(ElementTableMap::COL_CREATED_AT)) {
             $criteria->add(ElementTableMap::COL_CREATED_AT, $this->created_at);
@@ -1420,6 +1376,7 @@ abstract class Element implements ActiveRecordInterface
         $copyObj->setElementname($this->getElementname());
         $copyObj->setDisplaytext($this->getDisplaytext());
         $copyObj->setCommenttext($this->getCommenttext());
+        $copyObj->setUserId($this->getUserId());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
 
@@ -1431,18 +1388,6 @@ abstract class Element implements ActiveRecordInterface
             foreach ($this->getElementScores() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addElementScore($relObj->copy($deepCopy));
-                }
-            }
-
-            foreach ($this->getElementAssignments() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addElementAssignment($relObj->copy($deepCopy));
-                }
-            }
-
-            foreach ($this->getTaggedElements() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addTaggedElement($relObj->copy($deepCopy));
                 }
             }
 
@@ -1476,6 +1421,57 @@ abstract class Element implements ActiveRecordInterface
         return $copyObj;
     }
 
+    /**
+     * Declares an association between this object and a ChildUser object.
+     *
+     * @param  ChildUser $v
+     * @return $this|\Element The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUser(ChildUser $v = null)
+    {
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
+        }
+
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
+        if ($v !== null) {
+            $v->addElement($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildUser object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUser The associated ChildUser object.
+     * @throws PropelException
+     */
+    public function getUser(ConnectionInterface $con = null)
+    {
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addElements($this);
+             */
+        }
+
+        return $this->aUser;
+    }
+
 
     /**
      * Initializes a collection based on the name of a relation.
@@ -1489,12 +1485,6 @@ abstract class Element implements ActiveRecordInterface
     {
         if ('ElementScore' == $relationName) {
             return $this->initElementScores();
-        }
-        if ('ElementAssignment' == $relationName) {
-            return $this->initElementAssignments();
-        }
-        if ('TaggedElement' == $relationName) {
-            return $this->initTaggedElements();
         }
     }
 
@@ -1736,6 +1726,31 @@ abstract class Element implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildElementScore[] List of ChildElementScore objects
      */
+    public function getElementScoresJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildElementScoreQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getElementScores($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Element is new, it will return
+     * an empty collection; or if this Element has previously
+     * been saved, it will retrieve related ElementScores from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Element.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildElementScore[] List of ChildElementScore objects
+     */
     public function getElementScoresJoinExam(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildElementScoreQuery::create(null, $criteria);
@@ -1770,772 +1785,20 @@ abstract class Element implements ActiveRecordInterface
     }
 
     /**
-     * Clears out the collElementAssignments collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addElementAssignments()
-     */
-    public function clearElementAssignments()
-    {
-        $this->collElementAssignments = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collElementAssignments collection loaded partially.
-     */
-    public function resetPartialElementAssignments($v = true)
-    {
-        $this->collElementAssignmentsPartial = $v;
-    }
-
-    /**
-     * Initializes the collElementAssignments collection.
-     *
-     * By default this just sets the collElementAssignments collection to an empty array (like clearcollElementAssignments());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initElementAssignments($overrideExisting = true)
-    {
-        if (null !== $this->collElementAssignments && !$overrideExisting) {
-            return;
-        }
-        $this->collElementAssignments = new ObjectCollection();
-        $this->collElementAssignments->setModel('\ElementAssignment');
-    }
-
-    /**
-     * Gets an array of ChildElementAssignment objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildElement is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildElementAssignment[] List of ChildElementAssignment objects
-     * @throws PropelException
-     */
-    public function getElementAssignments(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collElementAssignmentsPartial && !$this->isNew();
-        if (null === $this->collElementAssignments || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collElementAssignments) {
-                // return empty collection
-                $this->initElementAssignments();
-            } else {
-                $collElementAssignments = ChildElementAssignmentQuery::create(null, $criteria)
-                    ->filterByElement($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collElementAssignmentsPartial && count($collElementAssignments)) {
-                        $this->initElementAssignments(false);
-
-                        foreach ($collElementAssignments as $obj) {
-                            if (false == $this->collElementAssignments->contains($obj)) {
-                                $this->collElementAssignments->append($obj);
-                            }
-                        }
-
-                        $this->collElementAssignmentsPartial = true;
-                    }
-
-                    return $collElementAssignments;
-                }
-
-                if ($partial && $this->collElementAssignments) {
-                    foreach ($this->collElementAssignments as $obj) {
-                        if ($obj->isNew()) {
-                            $collElementAssignments[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collElementAssignments = $collElementAssignments;
-                $this->collElementAssignmentsPartial = false;
-            }
-        }
-
-        return $this->collElementAssignments;
-    }
-
-    /**
-     * Sets a collection of ChildElementAssignment objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $elementAssignments A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildElement The current object (for fluent API support)
-     */
-    public function setElementAssignments(Collection $elementAssignments, ConnectionInterface $con = null)
-    {
-        /** @var ChildElementAssignment[] $elementAssignmentsToDelete */
-        $elementAssignmentsToDelete = $this->getElementAssignments(new Criteria(), $con)->diff($elementAssignments);
-
-
-        $this->elementAssignmentsScheduledForDeletion = $elementAssignmentsToDelete;
-
-        foreach ($elementAssignmentsToDelete as $elementAssignmentRemoved) {
-            $elementAssignmentRemoved->setElement(null);
-        }
-
-        $this->collElementAssignments = null;
-        foreach ($elementAssignments as $elementAssignment) {
-            $this->addElementAssignment($elementAssignment);
-        }
-
-        $this->collElementAssignments = $elementAssignments;
-        $this->collElementAssignmentsPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related ElementAssignment objects.
-     *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related ElementAssignment objects.
-     * @throws PropelException
-     */
-    public function countElementAssignments(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collElementAssignmentsPartial && !$this->isNew();
-        if (null === $this->collElementAssignments || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collElementAssignments) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getElementAssignments());
-            }
-
-            $query = ChildElementAssignmentQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByElement($this)
-                ->count($con);
-        }
-
-        return count($this->collElementAssignments);
-    }
-
-    /**
-     * Method called to associate a ChildElementAssignment object to this object
-     * through the ChildElementAssignment foreign key attribute.
-     *
-     * @param  ChildElementAssignment $l ChildElementAssignment
-     * @return $this|\Element The current object (for fluent API support)
-     */
-    public function addElementAssignment(ChildElementAssignment $l)
-    {
-        if ($this->collElementAssignments === null) {
-            $this->initElementAssignments();
-            $this->collElementAssignmentsPartial = true;
-        }
-
-        if (!$this->collElementAssignments->contains($l)) {
-            $this->doAddElementAssignment($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildElementAssignment $elementAssignment The ChildElementAssignment object to add.
-     */
-    protected function doAddElementAssignment(ChildElementAssignment $elementAssignment)
-    {
-        $this->collElementAssignments[]= $elementAssignment;
-        $elementAssignment->setElement($this);
-    }
-
-    /**
-     * @param  ChildElementAssignment $elementAssignment The ChildElementAssignment object to remove.
-     * @return $this|ChildElement The current object (for fluent API support)
-     */
-    public function removeElementAssignment(ChildElementAssignment $elementAssignment)
-    {
-        if ($this->getElementAssignments()->contains($elementAssignment)) {
-            $pos = $this->collElementAssignments->search($elementAssignment);
-            $this->collElementAssignments->remove($pos);
-            if (null === $this->elementAssignmentsScheduledForDeletion) {
-                $this->elementAssignmentsScheduledForDeletion = clone $this->collElementAssignments;
-                $this->elementAssignmentsScheduledForDeletion->clear();
-            }
-            $this->elementAssignmentsScheduledForDeletion[]= clone $elementAssignment;
-            $elementAssignment->setElement(null);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Element is new, it will return
-     * an empty collection; or if this Element has previously
-     * been saved, it will retrieve related ElementAssignments from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Element.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildElementAssignment[] List of ChildElementAssignment objects
-     */
-    public function getElementAssignmentsJoinExam(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildElementAssignmentQuery::create(null, $criteria);
-        $query->joinWith('Exam', $joinBehavior);
-
-        return $this->getElementAssignments($query, $con);
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Element is new, it will return
-     * an empty collection; or if this Element has previously
-     * been saved, it will retrieve related ElementAssignments from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Element.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildElementAssignment[] List of ChildElementAssignment objects
-     */
-    public function getElementAssignmentsJoinQuestion(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildElementAssignmentQuery::create(null, $criteria);
-        $query->joinWith('Question', $joinBehavior);
-
-        return $this->getElementAssignments($query, $con);
-    }
-
-    /**
-     * Clears out the collTaggedElements collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addTaggedElements()
-     */
-    public function clearTaggedElements()
-    {
-        $this->collTaggedElements = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collTaggedElements collection loaded partially.
-     */
-    public function resetPartialTaggedElements($v = true)
-    {
-        $this->collTaggedElementsPartial = $v;
-    }
-
-    /**
-     * Initializes the collTaggedElements collection.
-     *
-     * By default this just sets the collTaggedElements collection to an empty array (like clearcollTaggedElements());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initTaggedElements($overrideExisting = true)
-    {
-        if (null !== $this->collTaggedElements && !$overrideExisting) {
-            return;
-        }
-        $this->collTaggedElements = new ObjectCollection();
-        $this->collTaggedElements->setModel('\TaggedElement');
-    }
-
-    /**
-     * Gets an array of ChildTaggedElement objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildElement is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildTaggedElement[] List of ChildTaggedElement objects
-     * @throws PropelException
-     */
-    public function getTaggedElements(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collTaggedElementsPartial && !$this->isNew();
-        if (null === $this->collTaggedElements || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collTaggedElements) {
-                // return empty collection
-                $this->initTaggedElements();
-            } else {
-                $collTaggedElements = ChildTaggedElementQuery::create(null, $criteria)
-                    ->filterByElement($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collTaggedElementsPartial && count($collTaggedElements)) {
-                        $this->initTaggedElements(false);
-
-                        foreach ($collTaggedElements as $obj) {
-                            if (false == $this->collTaggedElements->contains($obj)) {
-                                $this->collTaggedElements->append($obj);
-                            }
-                        }
-
-                        $this->collTaggedElementsPartial = true;
-                    }
-
-                    return $collTaggedElements;
-                }
-
-                if ($partial && $this->collTaggedElements) {
-                    foreach ($this->collTaggedElements as $obj) {
-                        if ($obj->isNew()) {
-                            $collTaggedElements[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collTaggedElements = $collTaggedElements;
-                $this->collTaggedElementsPartial = false;
-            }
-        }
-
-        return $this->collTaggedElements;
-    }
-
-    /**
-     * Sets a collection of ChildTaggedElement objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $taggedElements A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildElement The current object (for fluent API support)
-     */
-    public function setTaggedElements(Collection $taggedElements, ConnectionInterface $con = null)
-    {
-        /** @var ChildTaggedElement[] $taggedElementsToDelete */
-        $taggedElementsToDelete = $this->getTaggedElements(new Criteria(), $con)->diff($taggedElements);
-
-
-        //since at least one column in the foreign key is at the same time a PK
-        //we can not just set a PK to NULL in the lines below. We have to store
-        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
-        $this->taggedElementsScheduledForDeletion = clone $taggedElementsToDelete;
-
-        foreach ($taggedElementsToDelete as $taggedElementRemoved) {
-            $taggedElementRemoved->setElement(null);
-        }
-
-        $this->collTaggedElements = null;
-        foreach ($taggedElements as $taggedElement) {
-            $this->addTaggedElement($taggedElement);
-        }
-
-        $this->collTaggedElements = $taggedElements;
-        $this->collTaggedElementsPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related TaggedElement objects.
-     *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related TaggedElement objects.
-     * @throws PropelException
-     */
-    public function countTaggedElements(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collTaggedElementsPartial && !$this->isNew();
-        if (null === $this->collTaggedElements || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collTaggedElements) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getTaggedElements());
-            }
-
-            $query = ChildTaggedElementQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByElement($this)
-                ->count($con);
-        }
-
-        return count($this->collTaggedElements);
-    }
-
-    /**
-     * Method called to associate a ChildTaggedElement object to this object
-     * through the ChildTaggedElement foreign key attribute.
-     *
-     * @param  ChildTaggedElement $l ChildTaggedElement
-     * @return $this|\Element The current object (for fluent API support)
-     */
-    public function addTaggedElement(ChildTaggedElement $l)
-    {
-        if ($this->collTaggedElements === null) {
-            $this->initTaggedElements();
-            $this->collTaggedElementsPartial = true;
-        }
-
-        if (!$this->collTaggedElements->contains($l)) {
-            $this->doAddTaggedElement($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildTaggedElement $taggedElement The ChildTaggedElement object to add.
-     */
-    protected function doAddTaggedElement(ChildTaggedElement $taggedElement)
-    {
-        $this->collTaggedElements[]= $taggedElement;
-        $taggedElement->setElement($this);
-    }
-
-    /**
-     * @param  ChildTaggedElement $taggedElement The ChildTaggedElement object to remove.
-     * @return $this|ChildElement The current object (for fluent API support)
-     */
-    public function removeTaggedElement(ChildTaggedElement $taggedElement)
-    {
-        if ($this->getTaggedElements()->contains($taggedElement)) {
-            $pos = $this->collTaggedElements->search($taggedElement);
-            $this->collTaggedElements->remove($pos);
-            if (null === $this->taggedElementsScheduledForDeletion) {
-                $this->taggedElementsScheduledForDeletion = clone $this->collTaggedElements;
-                $this->taggedElementsScheduledForDeletion->clear();
-            }
-            $this->taggedElementsScheduledForDeletion[]= clone $taggedElement;
-            $taggedElement->setElement(null);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Element is new, it will return
-     * an empty collection; or if this Element has previously
-     * been saved, it will retrieve related TaggedElements from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Element.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildTaggedElement[] List of ChildTaggedElement objects
-     */
-    public function getTaggedElementsJoinTag(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildTaggedElementQuery::create(null, $criteria);
-        $query->joinWith('Tag', $joinBehavior);
-
-        return $this->getTaggedElements($query, $con);
-    }
-
-    /**
-     * Clears out the collTags collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addTags()
-     */
-    public function clearTags()
-    {
-        $this->collTags = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Initializes the collTags crossRef collection.
-     *
-     * By default this just sets the collTags collection to an empty collection (like clearTags());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @return void
-     */
-    public function initTags()
-    {
-        $this->collTags = new ObjectCollection();
-        $this->collTagsPartial = true;
-
-        $this->collTags->setModel('\Tag');
-    }
-
-    /**
-     * Checks if the collTags collection is loaded.
-     *
-     * @return bool
-     */
-    public function isTagsLoaded()
-    {
-        return null !== $this->collTags;
-    }
-
-    /**
-     * Gets a collection of ChildTag objects related by a many-to-many relationship
-     * to the current object by way of the tagsXelements cross-reference table.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildElement is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria Optional query object to filter the query
-     * @param      ConnectionInterface $con Optional connection object
-     *
-     * @return ObjectCollection|ChildTag[] List of ChildTag objects
-     */
-    public function getTags(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collTagsPartial && !$this->isNew();
-        if (null === $this->collTags || null !== $criteria || $partial) {
-            if ($this->isNew()) {
-                // return empty collection
-                if (null === $this->collTags) {
-                    $this->initTags();
-                }
-            } else {
-
-                $query = ChildTagQuery::create(null, $criteria)
-                    ->filterByElement($this);
-                $collTags = $query->find($con);
-                if (null !== $criteria) {
-                    return $collTags;
-                }
-
-                if ($partial && $this->collTags) {
-                    //make sure that already added objects gets added to the list of the database.
-                    foreach ($this->collTags as $obj) {
-                        if (!$collTags->contains($obj)) {
-                            $collTags[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collTags = $collTags;
-                $this->collTagsPartial = false;
-            }
-        }
-
-        return $this->collTags;
-    }
-
-    /**
-     * Sets a collection of Tag objects related by a many-to-many relationship
-     * to the current object by way of the tagsXelements cross-reference table.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param  Collection $tags A Propel collection.
-     * @param  ConnectionInterface $con Optional connection object
-     * @return $this|ChildElement The current object (for fluent API support)
-     */
-    public function setTags(Collection $tags, ConnectionInterface $con = null)
-    {
-        $this->clearTags();
-        $currentTags = $this->getTags();
-
-        $tagsScheduledForDeletion = $currentTags->diff($tags);
-
-        foreach ($tagsScheduledForDeletion as $toDelete) {
-            $this->removeTag($toDelete);
-        }
-
-        foreach ($tags as $tag) {
-            if (!$currentTags->contains($tag)) {
-                $this->doAddTag($tag);
-            }
-        }
-
-        $this->collTagsPartial = false;
-        $this->collTags = $tags;
-
-        return $this;
-    }
-
-    /**
-     * Gets the number of Tag objects related by a many-to-many relationship
-     * to the current object by way of the tagsXelements cross-reference table.
-     *
-     * @param      Criteria $criteria Optional query object to filter the query
-     * @param      boolean $distinct Set to true to force count distinct
-     * @param      ConnectionInterface $con Optional connection object
-     *
-     * @return int the number of related Tag objects
-     */
-    public function countTags(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collTagsPartial && !$this->isNew();
-        if (null === $this->collTags || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collTags) {
-                return 0;
-            } else {
-
-                if ($partial && !$criteria) {
-                    return count($this->getTags());
-                }
-
-                $query = ChildTagQuery::create(null, $criteria);
-                if ($distinct) {
-                    $query->distinct();
-                }
-
-                return $query
-                    ->filterByElement($this)
-                    ->count($con);
-            }
-        } else {
-            return count($this->collTags);
-        }
-    }
-
-    /**
-     * Associate a ChildTag to this object
-     * through the tagsXelements cross reference table.
-     *
-     * @param ChildTag $tag
-     * @return ChildElement The current object (for fluent API support)
-     */
-    public function addTag(ChildTag $tag)
-    {
-        if ($this->collTags === null) {
-            $this->initTags();
-        }
-
-        if (!$this->getTags()->contains($tag)) {
-            // only add it if the **same** object is not already associated
-            $this->collTags->push($tag);
-            $this->doAddTag($tag);
-        }
-
-        return $this;
-    }
-
-    /**
-     *
-     * @param ChildTag $tag
-     */
-    protected function doAddTag(ChildTag $tag)
-    {
-        $taggedElement = new ChildTaggedElement();
-
-        $taggedElement->setTag($tag);
-
-        $taggedElement->setElement($this);
-
-        $this->addTaggedElement($taggedElement);
-
-        // set the back reference to this object directly as using provided method either results
-        // in endless loop or in multiple relations
-        if (!$tag->isElementsLoaded()) {
-            $tag->initElements();
-            $tag->getElements()->push($this);
-        } elseif (!$tag->getElements()->contains($this)) {
-            $tag->getElements()->push($this);
-        }
-
-    }
-
-    /**
-     * Remove tag of this object
-     * through the tagsXelements cross reference table.
-     *
-     * @param ChildTag $tag
-     * @return ChildElement The current object (for fluent API support)
-     */
-    public function removeTag(ChildTag $tag)
-    {
-        if ($this->getTags()->contains($tag)) { $taggedElement = new ChildTaggedElement();
-
-            $taggedElement->setTag($tag);
-            if ($tag->isElementsLoaded()) {
-                //remove the back reference if available
-                $tag->getElements()->removeObject($this);
-            }
-
-            $taggedElement->setElement($this);
-            $this->removeTaggedElement(clone $taggedElement);
-            $taggedElement->clear();
-
-            $this->collTags->remove($this->collTags->search($tag));
-
-            if (null === $this->tagsScheduledForDeletion) {
-                $this->tagsScheduledForDeletion = clone $this->collTags;
-                $this->tagsScheduledForDeletion->clear();
-            }
-
-            $this->tagsScheduledForDeletion->push($tag);
-        }
-
-
-        return $this;
-    }
-
-    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
      */
     public function clear()
     {
+        if (null !== $this->aUser) {
+            $this->aUser->removeElement($this);
+        }
         $this->id = null;
         $this->elementname = null;
         $this->displaytext = null;
         $this->commenttext = null;
+        $this->user_id = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -2561,27 +1824,10 @@ abstract class Element implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
-            if ($this->collElementAssignments) {
-                foreach ($this->collElementAssignments as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
-            if ($this->collTaggedElements) {
-                foreach ($this->collTaggedElements as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
-            if ($this->collTags) {
-                foreach ($this->collTags as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
         } // if ($deep)
 
         $this->collElementScores = null;
-        $this->collElementAssignments = null;
-        $this->collTaggedElements = null;
-        $this->collTags = null;
+        $this->aUser = null;
     }
 
     /**

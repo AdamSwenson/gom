@@ -22,17 +22,23 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildTaggedQuestionQuery orderByTagId($order = Criteria::ASC) Order by the tag_id column
  * @method     ChildTaggedQuestionQuery orderByQuestionId($order = Criteria::ASC) Order by the question_id column
+ * @method     ChildTaggedQuestionQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildTaggedQuestionQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildTaggedQuestionQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildTaggedQuestionQuery groupByTagId() Group by the tag_id column
  * @method     ChildTaggedQuestionQuery groupByQuestionId() Group by the question_id column
+ * @method     ChildTaggedQuestionQuery groupByUserId() Group by the user_id column
  * @method     ChildTaggedQuestionQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildTaggedQuestionQuery groupByUpdatedAt() Group by the updated_at column
  *
  * @method     ChildTaggedQuestionQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildTaggedQuestionQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildTaggedQuestionQuery innerJoin($relation) Adds a INNER JOIN clause to the query
+ *
+ * @method     ChildTaggedQuestionQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildTaggedQuestionQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildTaggedQuestionQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
  *
  * @method     ChildTaggedQuestionQuery leftJoinTag($relationAlias = null) Adds a LEFT JOIN clause to the query using the Tag relation
  * @method     ChildTaggedQuestionQuery rightJoinTag($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Tag relation
@@ -42,13 +48,14 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildTaggedQuestionQuery rightJoinQuestion($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Question relation
  * @method     ChildTaggedQuestionQuery innerJoinQuestion($relationAlias = null) Adds a INNER JOIN clause to the query using the Question relation
  *
- * @method     \TagQuery|\QuestionQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \UserQuery|\TagQuery|\QuestionQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildTaggedQuestion findOne(ConnectionInterface $con = null) Return the first ChildTaggedQuestion matching the query
  * @method     ChildTaggedQuestion findOneOrCreate(ConnectionInterface $con = null) Return the first ChildTaggedQuestion matching the query, or a new ChildTaggedQuestion object populated from the query conditions when no match is found
  *
  * @method     ChildTaggedQuestion findOneByTagId(int $tag_id) Return the first ChildTaggedQuestion filtered by the tag_id column
  * @method     ChildTaggedQuestion findOneByQuestionId(int $question_id) Return the first ChildTaggedQuestion filtered by the question_id column
+ * @method     ChildTaggedQuestion findOneByUserId(int $user_id) Return the first ChildTaggedQuestion filtered by the user_id column
  * @method     ChildTaggedQuestion findOneByCreatedAt(string $created_at) Return the first ChildTaggedQuestion filtered by the created_at column
  * @method     ChildTaggedQuestion findOneByUpdatedAt(string $updated_at) Return the first ChildTaggedQuestion filtered by the updated_at column *
 
@@ -57,12 +64,14 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildTaggedQuestion requireOneByTagId(int $tag_id) Return the first ChildTaggedQuestion filtered by the tag_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTaggedQuestion requireOneByQuestionId(int $question_id) Return the first ChildTaggedQuestion filtered by the question_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildTaggedQuestion requireOneByUserId(int $user_id) Return the first ChildTaggedQuestion filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTaggedQuestion requireOneByCreatedAt(string $created_at) Return the first ChildTaggedQuestion filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTaggedQuestion requireOneByUpdatedAt(string $updated_at) Return the first ChildTaggedQuestion filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildTaggedQuestion[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildTaggedQuestion objects based on current ModelCriteria
  * @method     ChildTaggedQuestion[]|ObjectCollection findByTagId(int $tag_id) Return ChildTaggedQuestion objects filtered by the tag_id column
  * @method     ChildTaggedQuestion[]|ObjectCollection findByQuestionId(int $question_id) Return ChildTaggedQuestion objects filtered by the question_id column
+ * @method     ChildTaggedQuestion[]|ObjectCollection findByUserId(int $user_id) Return ChildTaggedQuestion objects filtered by the user_id column
  * @method     ChildTaggedQuestion[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildTaggedQuestion objects filtered by the created_at column
  * @method     ChildTaggedQuestion[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildTaggedQuestion objects filtered by the updated_at column
  * @method     ChildTaggedQuestion[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -157,7 +166,7 @@ abstract class TaggedQuestionQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT tag_id, question_id, created_at, updated_at FROM tagsXquestions WHERE tag_id = :p0 AND question_id = :p1';
+        $sql = 'SELECT tag_id, question_id, user_id, created_at, updated_at FROM tagsXquestions WHERE tag_id = :p0 AND question_id = :p1';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
@@ -346,6 +355,49 @@ abstract class TaggedQuestionQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the user_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUserId(1234); // WHERE user_id = 1234
+     * $query->filterByUserId(array(12, 34)); // WHERE user_id IN (12, 34)
+     * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
+     * </code>
+     *
+     * @see       filterByUser()
+     *
+     * @param     mixed $userId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildTaggedQuestionQuery The current query, for fluid interface
+     */
+    public function filterByUserId($userId = null, $comparison = null)
+    {
+        if (is_array($userId)) {
+            $useMinMax = false;
+            if (isset($userId['min'])) {
+                $this->addUsingAlias(TaggedQuestionTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($userId['max'])) {
+                $this->addUsingAlias(TaggedQuestionTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(TaggedQuestionTableMap::COL_USER_ID, $userId, $comparison);
+    }
+
+    /**
      * Filter the query on the created_at column
      *
      * Example usage:
@@ -429,6 +481,83 @@ abstract class TaggedQuestionQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(TaggedQuestionTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \User object
+     *
+     * @param \User|ObjectCollection $user The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildTaggedQuestionQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = null)
+    {
+        if ($user instanceof \User) {
+            return $this
+                ->addUsingAlias(TaggedQuestionTableMap::COL_USER_ID, $user->getId(), $comparison);
+        } elseif ($user instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(TaggedQuestionTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByUser() only accepts arguments of type \User or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the User relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildTaggedQuestionQuery The current query, for fluid interface
+     */
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('User');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'User');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the User relation User object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \UserQuery A secondary query class using the current class as primary query
+     */
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
     }
 
     /**

@@ -8,6 +8,8 @@ use \Question as ChildQuestion;
 use \QuestionAssigner as ChildQuestionAssigner;
 use \QuestionAssignerQuery as ChildQuestionAssignerQuery;
 use \QuestionQuery as ChildQuestionQuery;
+use \User as ChildUser;
+use \UserQuery as ChildUserQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
@@ -85,6 +87,12 @@ abstract class QuestionAssigner implements ActiveRecordInterface
     protected $questionid;
 
     /**
+     * The value for the user_id field.
+     * @var        int
+     */
+    protected $user_id;
+
+    /**
      * The value for the created_at field.
      * @var        \DateTime
      */
@@ -95,6 +103,11 @@ abstract class QuestionAssigner implements ActiveRecordInterface
      * @var        \DateTime
      */
     protected $updated_at;
+
+    /**
+     * @var        ChildUser
+     */
+    protected $aUser;
 
     /**
      * @var        ChildExam
@@ -362,6 +375,16 @@ abstract class QuestionAssigner implements ActiveRecordInterface
     }
 
     /**
+     * Get the [user_id] column value.
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [created_at] column value.
      *
      *
@@ -470,6 +493,30 @@ abstract class QuestionAssigner implements ActiveRecordInterface
     } // setQuestionid()
 
     /**
+     * Set the value of [user_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\QuestionAssigner The current object (for fluent API support)
+     */
+    public function setUserId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[QuestionAssignerTableMap::COL_USER_ID] = true;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
+        }
+
+        return $this;
+    } // setUserId()
+
+    /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
@@ -554,13 +601,16 @@ abstract class QuestionAssigner implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : QuestionAssignerTableMap::translateFieldName('Questionid', TableMap::TYPE_PHPNAME, $indexType)];
             $this->questionid = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : QuestionAssignerTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : QuestionAssignerTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->user_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : QuestionAssignerTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : QuestionAssignerTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : QuestionAssignerTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -573,7 +623,7 @@ abstract class QuestionAssigner implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 5; // 5 = QuestionAssignerTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 6; // 6 = QuestionAssignerTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\QuestionAssigner'), 0, $e);
@@ -600,6 +650,9 @@ abstract class QuestionAssigner implements ActiveRecordInterface
         }
         if ($this->aQuestion !== null && $this->questionid !== $this->aQuestion->getId()) {
             $this->aQuestion = null;
+        }
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
         }
     } // ensureConsistency
 
@@ -640,6 +693,7 @@ abstract class QuestionAssigner implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aUser = null;
             $this->aExam = null;
             $this->aQuestion = null;
         } // if (deep)
@@ -758,6 +812,13 @@ abstract class QuestionAssigner implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
+            }
+
             if ($this->aExam !== null) {
                 if ($this->aExam->isModified() || $this->aExam->isNew()) {
                     $affectedRows += $this->aExam->save($con);
@@ -814,6 +875,9 @@ abstract class QuestionAssigner implements ActiveRecordInterface
         if ($this->isColumnModified(QuestionAssignerTableMap::COL_QUESTIONID)) {
             $modifiedColumns[':p' . $index++]  = 'questionID';
         }
+        if ($this->isColumnModified(QuestionAssignerTableMap::COL_USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'user_id';
+        }
         if ($this->isColumnModified(QuestionAssignerTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
@@ -839,6 +903,9 @@ abstract class QuestionAssigner implements ActiveRecordInterface
                         break;
                     case 'questionID':
                         $stmt->bindValue($identifier, $this->questionid, PDO::PARAM_INT);
+                        break;
+                    case 'user_id':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -911,9 +978,12 @@ abstract class QuestionAssigner implements ActiveRecordInterface
                 return $this->getQuestionid();
                 break;
             case 3:
-                return $this->getCreatedAt();
+                return $this->getUserId();
                 break;
             case 4:
+                return $this->getCreatedAt();
+                break;
+            case 5:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -949,21 +1019,22 @@ abstract class QuestionAssigner implements ActiveRecordInterface
             $keys[0] => $this->getExamid(),
             $keys[1] => $this->getQuestionnumber(),
             $keys[2] => $this->getQuestionid(),
-            $keys[3] => $this->getCreatedAt(),
-            $keys[4] => $this->getUpdatedAt(),
+            $keys[3] => $this->getUserId(),
+            $keys[4] => $this->getCreatedAt(),
+            $keys[5] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[3]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[3]];
-            $result[$keys[3]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[4]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[4]];
             $result[$keys[4]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[5]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[5]];
+            $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -972,6 +1043,21 @@ abstract class QuestionAssigner implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
+            if (null !== $this->aUser) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'user';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'users';
+                        break;
+                    default:
+                        $key = 'User';
+                }
+
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
             if (null !== $this->aExam) {
 
                 switch ($keyType) {
@@ -1046,9 +1132,12 @@ abstract class QuestionAssigner implements ActiveRecordInterface
                 $this->setQuestionid($value);
                 break;
             case 3:
-                $this->setCreatedAt($value);
+                $this->setUserId($value);
                 break;
             case 4:
+                $this->setCreatedAt($value);
+                break;
+            case 5:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1087,10 +1176,13 @@ abstract class QuestionAssigner implements ActiveRecordInterface
             $this->setQuestionid($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setCreatedAt($arr[$keys[3]]);
+            $this->setUserId($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setUpdatedAt($arr[$keys[4]]);
+            $this->setCreatedAt($arr[$keys[4]]);
+        }
+        if (array_key_exists($keys[5], $arr)) {
+            $this->setUpdatedAt($arr[$keys[5]]);
         }
     }
 
@@ -1141,6 +1233,9 @@ abstract class QuestionAssigner implements ActiveRecordInterface
         }
         if ($this->isColumnModified(QuestionAssignerTableMap::COL_QUESTIONID)) {
             $criteria->add(QuestionAssignerTableMap::COL_QUESTIONID, $this->questionid);
+        }
+        if ($this->isColumnModified(QuestionAssignerTableMap::COL_USER_ID)) {
+            $criteria->add(QuestionAssignerTableMap::COL_USER_ID, $this->user_id);
         }
         if ($this->isColumnModified(QuestionAssignerTableMap::COL_CREATED_AT)) {
             $criteria->add(QuestionAssignerTableMap::COL_CREATED_AT, $this->created_at);
@@ -1252,6 +1347,7 @@ abstract class QuestionAssigner implements ActiveRecordInterface
         $copyObj->setExamid($this->getExamid());
         $copyObj->setQuestionnumber($this->getQuestionnumber());
         $copyObj->setQuestionid($this->getQuestionid());
+        $copyObj->setUserId($this->getUserId());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
@@ -1279,6 +1375,57 @@ abstract class QuestionAssigner implements ActiveRecordInterface
         $this->copyInto($copyObj, $deepCopy);
 
         return $copyObj;
+    }
+
+    /**
+     * Declares an association between this object and a ChildUser object.
+     *
+     * @param  ChildUser $v
+     * @return $this|\QuestionAssigner The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUser(ChildUser $v = null)
+    {
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
+        }
+
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
+        if ($v !== null) {
+            $v->addQuestionAssigner($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildUser object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUser The associated ChildUser object.
+     * @throws PropelException
+     */
+    public function getUser(ConnectionInterface $con = null)
+    {
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addQuestionAssigners($this);
+             */
+        }
+
+        return $this->aUser;
     }
 
     /**
@@ -1390,6 +1537,9 @@ abstract class QuestionAssigner implements ActiveRecordInterface
      */
     public function clear()
     {
+        if (null !== $this->aUser) {
+            $this->aUser->removeQuestionAssigner($this);
+        }
         if (null !== $this->aExam) {
             $this->aExam->removeQuestionAssigner($this);
         }
@@ -1399,6 +1549,7 @@ abstract class QuestionAssigner implements ActiveRecordInterface
         $this->examid = null;
         $this->questionnumber = null;
         $this->questionid = null;
+        $this->user_id = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -1421,6 +1572,7 @@ abstract class QuestionAssigner implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
+        $this->aUser = null;
         $this->aExam = null;
         $this->aQuestion = null;
     }

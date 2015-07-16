@@ -50,7 +50,7 @@ class ExamDAO implements IExamDAO
      */
     public function load_all_exams()
     {
-        $exams = \ExamQuery::create()->find();
+        $exams = \ExamQuery::create()->filterByUser($ser)->find();
         return $exams;
     }
 

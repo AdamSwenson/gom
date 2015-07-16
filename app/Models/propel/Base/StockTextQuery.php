@@ -10,6 +10,7 @@ use Map\StockTextTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
+use Propel\Runtime\ActiveQuery\ModelJoin;
 use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\PropelException;
@@ -23,6 +24,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStockTextQuery orderByValence($order = Criteria::ASC) Order by the valence column
  * @method     ChildStockTextQuery orderByContent($order = Criteria::ASC) Order by the content column
  * @method     ChildStockTextQuery orderByType($order = Criteria::ASC) Order by the type column
+ * @method     ChildStockTextQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildStockTextQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildStockTextQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
@@ -30,12 +32,19 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStockTextQuery groupByValence() Group by the valence column
  * @method     ChildStockTextQuery groupByContent() Group by the content column
  * @method     ChildStockTextQuery groupByType() Group by the type column
+ * @method     ChildStockTextQuery groupByUserId() Group by the user_id column
  * @method     ChildStockTextQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildStockTextQuery groupByUpdatedAt() Group by the updated_at column
  *
  * @method     ChildStockTextQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildStockTextQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildStockTextQuery innerJoin($relation) Adds a INNER JOIN clause to the query
+ *
+ * @method     ChildStockTextQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildStockTextQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildStockTextQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
+ *
+ * @method     \UserQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildStockText findOne(ConnectionInterface $con = null) Return the first ChildStockText matching the query
  * @method     ChildStockText findOneOrCreate(ConnectionInterface $con = null) Return the first ChildStockText matching the query, or a new ChildStockText object populated from the query conditions when no match is found
@@ -44,6 +53,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStockText findOneByValence(string $valence) Return the first ChildStockText filtered by the valence column
  * @method     ChildStockText findOneByContent(string $content) Return the first ChildStockText filtered by the content column
  * @method     ChildStockText findOneByType(string $type) Return the first ChildStockText filtered by the type column
+ * @method     ChildStockText findOneByUserId(int $user_id) Return the first ChildStockText filtered by the user_id column
  * @method     ChildStockText findOneByCreatedAt(string $created_at) Return the first ChildStockText filtered by the created_at column
  * @method     ChildStockText findOneByUpdatedAt(string $updated_at) Return the first ChildStockText filtered by the updated_at column *
 
@@ -54,6 +64,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStockText requireOneByValence(string $valence) Return the first ChildStockText filtered by the valence column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStockText requireOneByContent(string $content) Return the first ChildStockText filtered by the content column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStockText requireOneByType(string $type) Return the first ChildStockText filtered by the type column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildStockText requireOneByUserId(int $user_id) Return the first ChildStockText filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStockText requireOneByCreatedAt(string $created_at) Return the first ChildStockText filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStockText requireOneByUpdatedAt(string $updated_at) Return the first ChildStockText filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
@@ -62,6 +73,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStockText[]|ObjectCollection findByValence(string $valence) Return ChildStockText objects filtered by the valence column
  * @method     ChildStockText[]|ObjectCollection findByContent(string $content) Return ChildStockText objects filtered by the content column
  * @method     ChildStockText[]|ObjectCollection findByType(string $type) Return ChildStockText objects filtered by the type column
+ * @method     ChildStockText[]|ObjectCollection findByUserId(int $user_id) Return ChildStockText objects filtered by the user_id column
  * @method     ChildStockText[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildStockText objects filtered by the created_at column
  * @method     ChildStockText[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildStockText objects filtered by the updated_at column
  * @method     ChildStockText[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -156,7 +168,7 @@ abstract class StockTextQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, valence, content, type, created_at, updated_at FROM stockTexts WHERE id = :p0';
+        $sql = 'SELECT id, valence, content, type, user_id, created_at, updated_at FROM stockTexts WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -375,6 +387,49 @@ abstract class StockTextQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the user_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUserId(1234); // WHERE user_id = 1234
+     * $query->filterByUserId(array(12, 34)); // WHERE user_id IN (12, 34)
+     * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
+     * </code>
+     *
+     * @see       filterByUser()
+     *
+     * @param     mixed $userId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildStockTextQuery The current query, for fluid interface
+     */
+    public function filterByUserId($userId = null, $comparison = null)
+    {
+        if (is_array($userId)) {
+            $useMinMax = false;
+            if (isset($userId['min'])) {
+                $this->addUsingAlias(StockTextTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($userId['max'])) {
+                $this->addUsingAlias(StockTextTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(StockTextTableMap::COL_USER_ID, $userId, $comparison);
+    }
+
+    /**
      * Filter the query on the created_at column
      *
      * Example usage:
@@ -458,6 +513,83 @@ abstract class StockTextQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(StockTextTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \User object
+     *
+     * @param \User|ObjectCollection $user The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildStockTextQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = null)
+    {
+        if ($user instanceof \User) {
+            return $this
+                ->addUsingAlias(StockTextTableMap::COL_USER_ID, $user->getId(), $comparison);
+        } elseif ($user instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(StockTextTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByUser() only accepts arguments of type \User or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the User relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildStockTextQuery The current query, for fluid interface
+     */
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('User');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'User');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the User relation User object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \UserQuery A secondary query class using the current class as primary query
+     */
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
     }
 
     /**

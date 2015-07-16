@@ -8,6 +8,8 @@ use \ExamClassAssignmentQuery as ChildExamClassAssignmentQuery;
 use \ExamQuery as ChildExamQuery;
 use \Kumi as ChildKumi;
 use \KumiQuery as ChildKumiQuery;
+use \User as ChildUser;
+use \UserQuery as ChildUserQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
@@ -79,6 +81,12 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
     protected $examid;
 
     /**
+     * The value for the user_id field.
+     * @var        int
+     */
+    protected $user_id;
+
+    /**
      * The value for the created_at field.
      * @var        \DateTime
      */
@@ -89,6 +97,11 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
      * @var        \DateTime
      */
     protected $updated_at;
+
+    /**
+     * @var        ChildUser
+     */
+    protected $aUser;
 
     /**
      * @var        ChildExam
@@ -346,6 +359,16 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
     }
 
     /**
+     * Get the [user_id] column value.
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [created_at] column value.
      *
      *
@@ -434,6 +457,30 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
     } // setExamid()
 
     /**
+     * Set the value of [user_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\ExamClassAssignment The current object (for fluent API support)
+     */
+    public function setUserId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[ExamClassAssignmentTableMap::COL_USER_ID] = true;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
+        }
+
+        return $this;
+    } // setUserId()
+
+    /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
@@ -515,13 +562,16 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : ExamClassAssignmentTableMap::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)];
             $this->examid = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ExamClassAssignmentTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ExamClassAssignmentTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->user_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ExamClassAssignmentTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ExamClassAssignmentTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ExamClassAssignmentTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -534,7 +584,7 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 4; // 4 = ExamClassAssignmentTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 5; // 5 = ExamClassAssignmentTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\ExamClassAssignment'), 0, $e);
@@ -561,6 +611,9 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
         }
         if ($this->aExam !== null && $this->examid !== $this->aExam->getId()) {
             $this->aExam = null;
+        }
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
         }
     } // ensureConsistency
 
@@ -601,6 +654,7 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aUser = null;
             $this->aExam = null;
             $this->aKumi = null;
         } // if (deep)
@@ -719,6 +773,13 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
+            }
+
             if ($this->aExam !== null) {
                 if ($this->aExam->isModified() || $this->aExam->isNew()) {
                     $affectedRows += $this->aExam->save($con);
@@ -772,6 +833,9 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
         if ($this->isColumnModified(ExamClassAssignmentTableMap::COL_EXAMID)) {
             $modifiedColumns[':p' . $index++]  = 'examID';
         }
+        if ($this->isColumnModified(ExamClassAssignmentTableMap::COL_USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'user_id';
+        }
         if ($this->isColumnModified(ExamClassAssignmentTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
@@ -794,6 +858,9 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
                         break;
                     case 'examID':
                         $stmt->bindValue($identifier, $this->examid, PDO::PARAM_INT);
+                        break;
+                    case 'user_id':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -863,9 +930,12 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
                 return $this->getExamid();
                 break;
             case 2:
-                return $this->getCreatedAt();
+                return $this->getUserId();
                 break;
             case 3:
+                return $this->getCreatedAt();
+                break;
+            case 4:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -900,21 +970,22 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getClassid(),
             $keys[1] => $this->getExamid(),
-            $keys[2] => $this->getCreatedAt(),
-            $keys[3] => $this->getUpdatedAt(),
+            $keys[2] => $this->getUserId(),
+            $keys[3] => $this->getCreatedAt(),
+            $keys[4] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[2]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[2]];
-            $result[$keys[2]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[3]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[3]];
             $result[$keys[3]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[4]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[4]];
+            $result[$keys[4]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -923,6 +994,21 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
+            if (null !== $this->aUser) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'user';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'users';
+                        break;
+                    default:
+                        $key = 'User';
+                }
+
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
             if (null !== $this->aExam) {
 
                 switch ($keyType) {
@@ -994,9 +1080,12 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
                 $this->setExamid($value);
                 break;
             case 2:
-                $this->setCreatedAt($value);
+                $this->setUserId($value);
                 break;
             case 3:
+                $this->setCreatedAt($value);
+                break;
+            case 4:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1032,10 +1121,13 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
             $this->setExamid($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setCreatedAt($arr[$keys[2]]);
+            $this->setUserId($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setUpdatedAt($arr[$keys[3]]);
+            $this->setCreatedAt($arr[$keys[3]]);
+        }
+        if (array_key_exists($keys[4], $arr)) {
+            $this->setUpdatedAt($arr[$keys[4]]);
         }
     }
 
@@ -1083,6 +1175,9 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
         }
         if ($this->isColumnModified(ExamClassAssignmentTableMap::COL_EXAMID)) {
             $criteria->add(ExamClassAssignmentTableMap::COL_EXAMID, $this->examid);
+        }
+        if ($this->isColumnModified(ExamClassAssignmentTableMap::COL_USER_ID)) {
+            $criteria->add(ExamClassAssignmentTableMap::COL_USER_ID, $this->user_id);
         }
         if ($this->isColumnModified(ExamClassAssignmentTableMap::COL_CREATED_AT)) {
             $criteria->add(ExamClassAssignmentTableMap::COL_CREATED_AT, $this->created_at);
@@ -1200,6 +1295,7 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
     {
         $copyObj->setClassid($this->getClassid());
         $copyObj->setExamid($this->getExamid());
+        $copyObj->setUserId($this->getUserId());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
@@ -1227,6 +1323,57 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
         $this->copyInto($copyObj, $deepCopy);
 
         return $copyObj;
+    }
+
+    /**
+     * Declares an association between this object and a ChildUser object.
+     *
+     * @param  ChildUser $v
+     * @return $this|\ExamClassAssignment The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUser(ChildUser $v = null)
+    {
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
+        }
+
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
+        if ($v !== null) {
+            $v->addExamClassAssignment($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildUser object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUser The associated ChildUser object.
+     * @throws PropelException
+     */
+    public function getUser(ConnectionInterface $con = null)
+    {
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addExamClassAssignments($this);
+             */
+        }
+
+        return $this->aUser;
     }
 
     /**
@@ -1338,6 +1485,9 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
      */
     public function clear()
     {
+        if (null !== $this->aUser) {
+            $this->aUser->removeExamClassAssignment($this);
+        }
         if (null !== $this->aExam) {
             $this->aExam->removeExamClassAssignment($this);
         }
@@ -1346,6 +1496,7 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
         }
         $this->classid = null;
         $this->examid = null;
+        $this->user_id = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -1368,6 +1519,7 @@ abstract class ExamClassAssignment implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
+        $this->aUser = null;
         $this->aExam = null;
         $this->aKumi = null;
     }

@@ -8,16 +8,12 @@ use \ExamInfo as ChildExamInfo;
 use \ExamInfoQuery as ChildExamInfoQuery;
 use \GradingTime as ChildGradingTime;
 use \GradingTimeQuery as ChildGradingTimeQuery;
-use \Kumi as ChildKumi;
-use \KumiQuery as ChildKumiQuery;
-use \PseudoID as ChildPseudoID;
-use \PseudoIDQuery as ChildPseudoIDQuery;
 use \QuestionScore as ChildQuestionScore;
 use \QuestionScoreQuery as ChildQuestionScoreQuery;
 use \Student as ChildStudent;
-use \StudentClassAssignment as ChildStudentClassAssignment;
-use \StudentClassAssignmentQuery as ChildStudentClassAssignmentQuery;
 use \StudentQuery as ChildStudentQuery;
+use \User as ChildUser;
+use \UserQuery as ChildUserQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
@@ -102,6 +98,12 @@ abstract class Student implements ActiveRecordInterface
     protected $email;
 
     /**
+     * The value for the user_id field.
+     * @var        int
+     */
+    protected $user_id;
+
+    /**
      * The value for the created_at field.
      * @var        \DateTime
      */
@@ -112,6 +114,11 @@ abstract class Student implements ActiveRecordInterface
      * @var        \DateTime
      */
     protected $updated_at;
+
+    /**
+     * @var        ChildUser
+     */
+    protected $aUser;
 
     /**
      * @var        ObjectCollection|ChildQuestionScore[] Collection to store aggregation of ChildQuestionScore objects.
@@ -132,32 +139,10 @@ abstract class Student implements ActiveRecordInterface
     protected $collExamInfosPartial;
 
     /**
-     * @var        ObjectCollection|ChildStudentClassAssignment[] Collection to store aggregation of ChildStudentClassAssignment objects.
-     */
-    protected $collStudentClassAssignments;
-    protected $collStudentClassAssignmentsPartial;
-
-    /**
      * @var        ObjectCollection|ChildGradingTime[] Collection to store aggregation of ChildGradingTime objects.
      */
     protected $collGradingTimes;
     protected $collGradingTimesPartial;
-
-    /**
-     * @var        ObjectCollection|ChildPseudoID[] Collection to store aggregation of ChildPseudoID objects.
-     */
-    protected $collPseudoIDs;
-    protected $collPseudoIDsPartial;
-
-    /**
-     * @var        ObjectCollection|ChildKumi[] Cross Collection to store aggregation of ChildKumi objects.
-     */
-    protected $collKumis;
-
-    /**
-     * @var bool
-     */
-    protected $collKumisPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -166,12 +151,6 @@ abstract class Student implements ActiveRecordInterface
      * @var boolean
      */
     protected $alreadyInSave = false;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildKumi[]
-     */
-    protected $kumisScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -193,21 +172,9 @@ abstract class Student implements ActiveRecordInterface
 
     /**
      * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildStudentClassAssignment[]
-     */
-    protected $studentClassAssignmentsScheduledForDeletion = null;
-
-    /**
-     * An array of objects scheduled for deletion.
      * @var ObjectCollection|ChildGradingTime[]
      */
     protected $gradingTimesScheduledForDeletion = null;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildPseudoID[]
-     */
-    protected $pseudoIDsScheduledForDeletion = null;
 
     /**
      * Initializes internal state of Base\Student object.
@@ -467,6 +434,16 @@ abstract class Student implements ActiveRecordInterface
     }
 
     /**
+     * Get the [user_id] column value.
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [created_at] column value.
      *
      *
@@ -587,6 +564,30 @@ abstract class Student implements ActiveRecordInterface
     } // setEmail()
 
     /**
+     * Set the value of [user_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\Student The current object (for fluent API support)
+     */
+    public function setUserId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[StudentTableMap::COL_USER_ID] = true;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
+        }
+
+        return $this;
+    } // setUserId()
+
+    /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
@@ -674,13 +675,16 @@ abstract class Student implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : StudentTableMap::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)];
             $this->email = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : StudentTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : StudentTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->user_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : StudentTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : StudentTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : StudentTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -693,7 +697,7 @@ abstract class Student implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = StudentTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 7; // 7 = StudentTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Student'), 0, $e);
@@ -715,6 +719,9 @@ abstract class Student implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
+        }
     } // ensureConsistency
 
     /**
@@ -754,19 +761,15 @@ abstract class Student implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aUser = null;
             $this->collQuestionScores = null;
 
             $this->collElementScores = null;
 
             $this->collExamInfos = null;
 
-            $this->collStudentClassAssignments = null;
-
             $this->collGradingTimes = null;
 
-            $this->collPseudoIDs = null;
-
-            $this->collKumis = null;
         } // if (deep)
     }
 
@@ -878,6 +881,18 @@ abstract class Student implements ActiveRecordInterface
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
 
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -888,35 +903,6 @@ abstract class Student implements ActiveRecordInterface
                 }
                 $this->resetModified();
             }
-
-            if ($this->kumisScheduledForDeletion !== null) {
-                if (!$this->kumisScheduledForDeletion->isEmpty()) {
-                    $pks = array();
-                    foreach ($this->kumisScheduledForDeletion as $entry) {
-                        $entryPk = [];
-
-                        $entryPk[0] = $this->getId();
-                        $entryPk[1] = $entry->getId();
-                        $pks[] = $entryPk;
-                    }
-
-                    \StudentClassAssignmentQuery::create()
-                        ->filterByPrimaryKeys($pks)
-                        ->delete($con);
-
-                    $this->kumisScheduledForDeletion = null;
-                }
-
-            }
-
-            if ($this->collKumis) {
-                foreach ($this->collKumis as $kumi) {
-                    if (!$kumi->isDeleted() && ($kumi->isNew() || $kumi->isModified())) {
-                        $kumi->save($con);
-                    }
-                }
-            }
-
 
             if ($this->questionScoresScheduledForDeletion !== null) {
                 if (!$this->questionScoresScheduledForDeletion->isEmpty()) {
@@ -969,23 +955,6 @@ abstract class Student implements ActiveRecordInterface
                 }
             }
 
-            if ($this->studentClassAssignmentsScheduledForDeletion !== null) {
-                if (!$this->studentClassAssignmentsScheduledForDeletion->isEmpty()) {
-                    \StudentClassAssignmentQuery::create()
-                        ->filterByPrimaryKeys($this->studentClassAssignmentsScheduledForDeletion->getPrimaryKeys(false))
-                        ->delete($con);
-                    $this->studentClassAssignmentsScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collStudentClassAssignments !== null) {
-                foreach ($this->collStudentClassAssignments as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
             if ($this->gradingTimesScheduledForDeletion !== null) {
                 if (!$this->gradingTimesScheduledForDeletion->isEmpty()) {
                     \GradingTimeQuery::create()
@@ -997,23 +966,6 @@ abstract class Student implements ActiveRecordInterface
 
             if ($this->collGradingTimes !== null) {
                 foreach ($this->collGradingTimes as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
-            if ($this->pseudoIDsScheduledForDeletion !== null) {
-                if (!$this->pseudoIDsScheduledForDeletion->isEmpty()) {
-                    \PseudoIDQuery::create()
-                        ->filterByPrimaryKeys($this->pseudoIDsScheduledForDeletion->getPrimaryKeys(false))
-                        ->delete($con);
-                    $this->pseudoIDsScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collPseudoIDs !== null) {
-                foreach ($this->collPseudoIDs as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -1058,6 +1010,9 @@ abstract class Student implements ActiveRecordInterface
         if ($this->isColumnModified(StudentTableMap::COL_EMAIL)) {
             $modifiedColumns[':p' . $index++]  = 'email';
         }
+        if ($this->isColumnModified(StudentTableMap::COL_USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'user_id';
+        }
         if ($this->isColumnModified(StudentTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
@@ -1086,6 +1041,9 @@ abstract class Student implements ActiveRecordInterface
                         break;
                     case 'email':
                         $stmt->bindValue($identifier, $this->email, PDO::PARAM_STR);
+                        break;
+                    case 'user_id':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1168,9 +1126,12 @@ abstract class Student implements ActiveRecordInterface
                 return $this->getEmail();
                 break;
             case 4:
-                return $this->getCreatedAt();
+                return $this->getUserId();
                 break;
             case 5:
+                return $this->getCreatedAt();
+                break;
+            case 6:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1207,21 +1168,22 @@ abstract class Student implements ActiveRecordInterface
             $keys[1] => $this->getSid(),
             $keys[2] => $this->getStudentname(),
             $keys[3] => $this->getEmail(),
-            $keys[4] => $this->getCreatedAt(),
-            $keys[5] => $this->getUpdatedAt(),
+            $keys[4] => $this->getUserId(),
+            $keys[5] => $this->getCreatedAt(),
+            $keys[6] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[4]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[4]];
-            $result[$keys[4]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[5]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[5]];
             $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[6]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[6]];
+            $result[$keys[6]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1230,6 +1192,21 @@ abstract class Student implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
+            if (null !== $this->aUser) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'user';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'users';
+                        break;
+                    default:
+                        $key = 'User';
+                }
+
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
             if (null !== $this->collQuestionScores) {
 
                 switch ($keyType) {
@@ -1275,21 +1252,6 @@ abstract class Student implements ActiveRecordInterface
 
                 $result[$key] = $this->collExamInfos->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
-            if (null !== $this->collStudentClassAssignments) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'studentClassAssignments';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'studentsXclassess';
-                        break;
-                    default:
-                        $key = 'StudentClassAssignments';
-                }
-
-                $result[$key] = $this->collStudentClassAssignments->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
-            }
             if (null !== $this->collGradingTimes) {
 
                 switch ($keyType) {
@@ -1304,21 +1266,6 @@ abstract class Student implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->collGradingTimes->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
-            }
-            if (null !== $this->collPseudoIDs) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'pseudoIDs';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'pseudoIDss';
-                        break;
-                    default:
-                        $key = 'PseudoIDs';
-                }
-
-                $result[$key] = $this->collPseudoIDs->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1367,9 +1314,12 @@ abstract class Student implements ActiveRecordInterface
                 $this->setEmail($value);
                 break;
             case 4:
-                $this->setCreatedAt($value);
+                $this->setUserId($value);
                 break;
             case 5:
+                $this->setCreatedAt($value);
+                break;
+            case 6:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1411,10 +1361,13 @@ abstract class Student implements ActiveRecordInterface
             $this->setEmail($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setCreatedAt($arr[$keys[4]]);
+            $this->setUserId($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setUpdatedAt($arr[$keys[5]]);
+            $this->setCreatedAt($arr[$keys[5]]);
+        }
+        if (array_key_exists($keys[6], $arr)) {
+            $this->setUpdatedAt($arr[$keys[6]]);
         }
     }
 
@@ -1468,6 +1421,9 @@ abstract class Student implements ActiveRecordInterface
         }
         if ($this->isColumnModified(StudentTableMap::COL_EMAIL)) {
             $criteria->add(StudentTableMap::COL_EMAIL, $this->email);
+        }
+        if ($this->isColumnModified(StudentTableMap::COL_USER_ID)) {
+            $criteria->add(StudentTableMap::COL_USER_ID, $this->user_id);
         }
         if ($this->isColumnModified(StudentTableMap::COL_CREATED_AT)) {
             $criteria->add(StudentTableMap::COL_CREATED_AT, $this->created_at);
@@ -1564,6 +1520,7 @@ abstract class Student implements ActiveRecordInterface
         $copyObj->setSid($this->getSid());
         $copyObj->setStudentname($this->getStudentname());
         $copyObj->setEmail($this->getEmail());
+        $copyObj->setUserId($this->getUserId());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
 
@@ -1590,21 +1547,9 @@ abstract class Student implements ActiveRecordInterface
                 }
             }
 
-            foreach ($this->getStudentClassAssignments() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addStudentClassAssignment($relObj->copy($deepCopy));
-                }
-            }
-
             foreach ($this->getGradingTimes() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addGradingTime($relObj->copy($deepCopy));
-                }
-            }
-
-            foreach ($this->getPseudoIDs() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addPseudoID($relObj->copy($deepCopy));
                 }
             }
 
@@ -1638,6 +1583,57 @@ abstract class Student implements ActiveRecordInterface
         return $copyObj;
     }
 
+    /**
+     * Declares an association between this object and a ChildUser object.
+     *
+     * @param  ChildUser $v
+     * @return $this|\Student The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUser(ChildUser $v = null)
+    {
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
+        }
+
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
+        if ($v !== null) {
+            $v->addStudent($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildUser object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUser The associated ChildUser object.
+     * @throws PropelException
+     */
+    public function getUser(ConnectionInterface $con = null)
+    {
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addStudents($this);
+             */
+        }
+
+        return $this->aUser;
+    }
+
 
     /**
      * Initializes a collection based on the name of a relation.
@@ -1658,14 +1654,8 @@ abstract class Student implements ActiveRecordInterface
         if ('ExamInfo' == $relationName) {
             return $this->initExamInfos();
         }
-        if ('StudentClassAssignment' == $relationName) {
-            return $this->initStudentClassAssignments();
-        }
         if ('GradingTime' == $relationName) {
             return $this->initGradingTimes();
-        }
-        if ('PseudoID' == $relationName) {
-            return $this->initPseudoIDs();
         }
     }
 
@@ -1888,6 +1878,31 @@ abstract class Student implements ActiveRecordInterface
         }
 
         return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Student is new, it will return
+     * an empty collection; or if this Student has previously
+     * been saved, it will retrieve related QuestionScores from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Student.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildQuestionScore[] List of ChildQuestionScore objects
+     */
+    public function getQuestionScoresJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildQuestionScoreQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getQuestionScores($query, $con);
     }
 
 
@@ -2178,6 +2193,31 @@ abstract class Student implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildElementScore[] List of ChildElementScore objects
      */
+    public function getElementScoresJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildElementScoreQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getElementScores($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Student is new, it will return
+     * an empty collection; or if this Student has previously
+     * been saved, it will retrieve related ElementScores from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Student.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildElementScore[] List of ChildElementScore objects
+     */
     public function getElementScoresJoinExam(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildElementScoreQuery::create(null, $criteria);
@@ -2449,233 +2489,12 @@ abstract class Student implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildExamInfo[] List of ChildExamInfo objects
      */
-    public function getExamInfosJoinExam(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getExamInfosJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildExamInfoQuery::create(null, $criteria);
-        $query->joinWith('Exam', $joinBehavior);
+        $query->joinWith('User', $joinBehavior);
 
         return $this->getExamInfos($query, $con);
-    }
-
-    /**
-     * Clears out the collStudentClassAssignments collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addStudentClassAssignments()
-     */
-    public function clearStudentClassAssignments()
-    {
-        $this->collStudentClassAssignments = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collStudentClassAssignments collection loaded partially.
-     */
-    public function resetPartialStudentClassAssignments($v = true)
-    {
-        $this->collStudentClassAssignmentsPartial = $v;
-    }
-
-    /**
-     * Initializes the collStudentClassAssignments collection.
-     *
-     * By default this just sets the collStudentClassAssignments collection to an empty array (like clearcollStudentClassAssignments());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initStudentClassAssignments($overrideExisting = true)
-    {
-        if (null !== $this->collStudentClassAssignments && !$overrideExisting) {
-            return;
-        }
-        $this->collStudentClassAssignments = new ObjectCollection();
-        $this->collStudentClassAssignments->setModel('\StudentClassAssignment');
-    }
-
-    /**
-     * Gets an array of ChildStudentClassAssignment objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildStudent is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildStudentClassAssignment[] List of ChildStudentClassAssignment objects
-     * @throws PropelException
-     */
-    public function getStudentClassAssignments(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collStudentClassAssignmentsPartial && !$this->isNew();
-        if (null === $this->collStudentClassAssignments || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collStudentClassAssignments) {
-                // return empty collection
-                $this->initStudentClassAssignments();
-            } else {
-                $collStudentClassAssignments = ChildStudentClassAssignmentQuery::create(null, $criteria)
-                    ->filterByStudent($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collStudentClassAssignmentsPartial && count($collStudentClassAssignments)) {
-                        $this->initStudentClassAssignments(false);
-
-                        foreach ($collStudentClassAssignments as $obj) {
-                            if (false == $this->collStudentClassAssignments->contains($obj)) {
-                                $this->collStudentClassAssignments->append($obj);
-                            }
-                        }
-
-                        $this->collStudentClassAssignmentsPartial = true;
-                    }
-
-                    return $collStudentClassAssignments;
-                }
-
-                if ($partial && $this->collStudentClassAssignments) {
-                    foreach ($this->collStudentClassAssignments as $obj) {
-                        if ($obj->isNew()) {
-                            $collStudentClassAssignments[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collStudentClassAssignments = $collStudentClassAssignments;
-                $this->collStudentClassAssignmentsPartial = false;
-            }
-        }
-
-        return $this->collStudentClassAssignments;
-    }
-
-    /**
-     * Sets a collection of ChildStudentClassAssignment objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $studentClassAssignments A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildStudent The current object (for fluent API support)
-     */
-    public function setStudentClassAssignments(Collection $studentClassAssignments, ConnectionInterface $con = null)
-    {
-        /** @var ChildStudentClassAssignment[] $studentClassAssignmentsToDelete */
-        $studentClassAssignmentsToDelete = $this->getStudentClassAssignments(new Criteria(), $con)->diff($studentClassAssignments);
-
-
-        //since at least one column in the foreign key is at the same time a PK
-        //we can not just set a PK to NULL in the lines below. We have to store
-        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
-        $this->studentClassAssignmentsScheduledForDeletion = clone $studentClassAssignmentsToDelete;
-
-        foreach ($studentClassAssignmentsToDelete as $studentClassAssignmentRemoved) {
-            $studentClassAssignmentRemoved->setStudent(null);
-        }
-
-        $this->collStudentClassAssignments = null;
-        foreach ($studentClassAssignments as $studentClassAssignment) {
-            $this->addStudentClassAssignment($studentClassAssignment);
-        }
-
-        $this->collStudentClassAssignments = $studentClassAssignments;
-        $this->collStudentClassAssignmentsPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related StudentClassAssignment objects.
-     *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related StudentClassAssignment objects.
-     * @throws PropelException
-     */
-    public function countStudentClassAssignments(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collStudentClassAssignmentsPartial && !$this->isNew();
-        if (null === $this->collStudentClassAssignments || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collStudentClassAssignments) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getStudentClassAssignments());
-            }
-
-            $query = ChildStudentClassAssignmentQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByStudent($this)
-                ->count($con);
-        }
-
-        return count($this->collStudentClassAssignments);
-    }
-
-    /**
-     * Method called to associate a ChildStudentClassAssignment object to this object
-     * through the ChildStudentClassAssignment foreign key attribute.
-     *
-     * @param  ChildStudentClassAssignment $l ChildStudentClassAssignment
-     * @return $this|\Student The current object (for fluent API support)
-     */
-    public function addStudentClassAssignment(ChildStudentClassAssignment $l)
-    {
-        if ($this->collStudentClassAssignments === null) {
-            $this->initStudentClassAssignments();
-            $this->collStudentClassAssignmentsPartial = true;
-        }
-
-        if (!$this->collStudentClassAssignments->contains($l)) {
-            $this->doAddStudentClassAssignment($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildStudentClassAssignment $studentClassAssignment The ChildStudentClassAssignment object to add.
-     */
-    protected function doAddStudentClassAssignment(ChildStudentClassAssignment $studentClassAssignment)
-    {
-        $this->collStudentClassAssignments[]= $studentClassAssignment;
-        $studentClassAssignment->setStudent($this);
-    }
-
-    /**
-     * @param  ChildStudentClassAssignment $studentClassAssignment The ChildStudentClassAssignment object to remove.
-     * @return $this|ChildStudent The current object (for fluent API support)
-     */
-    public function removeStudentClassAssignment(ChildStudentClassAssignment $studentClassAssignment)
-    {
-        if ($this->getStudentClassAssignments()->contains($studentClassAssignment)) {
-            $pos = $this->collStudentClassAssignments->search($studentClassAssignment);
-            $this->collStudentClassAssignments->remove($pos);
-            if (null === $this->studentClassAssignmentsScheduledForDeletion) {
-                $this->studentClassAssignmentsScheduledForDeletion = clone $this->collStudentClassAssignments;
-                $this->studentClassAssignmentsScheduledForDeletion->clear();
-            }
-            $this->studentClassAssignmentsScheduledForDeletion[]= clone $studentClassAssignment;
-            $studentClassAssignment->setStudent(null);
-        }
-
-        return $this;
     }
 
 
@@ -2684,7 +2503,7 @@ abstract class Student implements ActiveRecordInterface
      * an identical criteria, it returns the collection.
      * Otherwise if this Student is new, it will return
      * an empty collection; or if this Student has previously
-     * been saved, it will retrieve related StudentClassAssignments from storage.
+     * been saved, it will retrieve related ExamInfos from storage.
      *
      * This method is protected by default in order to keep the public
      * api reasonable.  You can provide public methods for those you
@@ -2693,14 +2512,14 @@ abstract class Student implements ActiveRecordInterface
      * @param      Criteria $criteria optional Criteria object to narrow the query
      * @param      ConnectionInterface $con optional connection object
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildStudentClassAssignment[] List of ChildStudentClassAssignment objects
+     * @return ObjectCollection|ChildExamInfo[] List of ChildExamInfo objects
      */
-    public function getStudentClassAssignmentsJoinKumi(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getExamInfosJoinExam(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
-        $query = ChildStudentClassAssignmentQuery::create(null, $criteria);
-        $query->joinWith('Kumi', $joinBehavior);
+        $query = ChildExamInfoQuery::create(null, $criteria);
+        $query->joinWith('Exam', $joinBehavior);
 
-        return $this->getStudentClassAssignments($query, $con);
+        return $this->getExamInfos($query, $con);
     }
 
     /**
@@ -2938,6 +2757,31 @@ abstract class Student implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildGradingTime[] List of ChildGradingTime objects
      */
+    public function getGradingTimesJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildGradingTimeQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getGradingTimes($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Student is new, it will return
+     * an empty collection; or if this Student has previously
+     * been saved, it will retrieve related GradingTimes from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Student.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildGradingTime[] List of ChildGradingTime objects
+     */
     public function getGradingTimesJoinExam(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildGradingTimeQuery::create(null, $criteria);
@@ -2947,504 +2791,20 @@ abstract class Student implements ActiveRecordInterface
     }
 
     /**
-     * Clears out the collPseudoIDs collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addPseudoIDs()
-     */
-    public function clearPseudoIDs()
-    {
-        $this->collPseudoIDs = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collPseudoIDs collection loaded partially.
-     */
-    public function resetPartialPseudoIDs($v = true)
-    {
-        $this->collPseudoIDsPartial = $v;
-    }
-
-    /**
-     * Initializes the collPseudoIDs collection.
-     *
-     * By default this just sets the collPseudoIDs collection to an empty array (like clearcollPseudoIDs());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initPseudoIDs($overrideExisting = true)
-    {
-        if (null !== $this->collPseudoIDs && !$overrideExisting) {
-            return;
-        }
-        $this->collPseudoIDs = new ObjectCollection();
-        $this->collPseudoIDs->setModel('\PseudoID');
-    }
-
-    /**
-     * Gets an array of ChildPseudoID objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildStudent is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildPseudoID[] List of ChildPseudoID objects
-     * @throws PropelException
-     */
-    public function getPseudoIDs(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collPseudoIDsPartial && !$this->isNew();
-        if (null === $this->collPseudoIDs || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collPseudoIDs) {
-                // return empty collection
-                $this->initPseudoIDs();
-            } else {
-                $collPseudoIDs = ChildPseudoIDQuery::create(null, $criteria)
-                    ->filterByStudent($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collPseudoIDsPartial && count($collPseudoIDs)) {
-                        $this->initPseudoIDs(false);
-
-                        foreach ($collPseudoIDs as $obj) {
-                            if (false == $this->collPseudoIDs->contains($obj)) {
-                                $this->collPseudoIDs->append($obj);
-                            }
-                        }
-
-                        $this->collPseudoIDsPartial = true;
-                    }
-
-                    return $collPseudoIDs;
-                }
-
-                if ($partial && $this->collPseudoIDs) {
-                    foreach ($this->collPseudoIDs as $obj) {
-                        if ($obj->isNew()) {
-                            $collPseudoIDs[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collPseudoIDs = $collPseudoIDs;
-                $this->collPseudoIDsPartial = false;
-            }
-        }
-
-        return $this->collPseudoIDs;
-    }
-
-    /**
-     * Sets a collection of ChildPseudoID objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $pseudoIDs A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildStudent The current object (for fluent API support)
-     */
-    public function setPseudoIDs(Collection $pseudoIDs, ConnectionInterface $con = null)
-    {
-        /** @var ChildPseudoID[] $pseudoIDsToDelete */
-        $pseudoIDsToDelete = $this->getPseudoIDs(new Criteria(), $con)->diff($pseudoIDs);
-
-
-        //since at least one column in the foreign key is at the same time a PK
-        //we can not just set a PK to NULL in the lines below. We have to store
-        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
-        $this->pseudoIDsScheduledForDeletion = clone $pseudoIDsToDelete;
-
-        foreach ($pseudoIDsToDelete as $pseudoIDRemoved) {
-            $pseudoIDRemoved->setStudent(null);
-        }
-
-        $this->collPseudoIDs = null;
-        foreach ($pseudoIDs as $pseudoID) {
-            $this->addPseudoID($pseudoID);
-        }
-
-        $this->collPseudoIDs = $pseudoIDs;
-        $this->collPseudoIDsPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related PseudoID objects.
-     *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related PseudoID objects.
-     * @throws PropelException
-     */
-    public function countPseudoIDs(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collPseudoIDsPartial && !$this->isNew();
-        if (null === $this->collPseudoIDs || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collPseudoIDs) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getPseudoIDs());
-            }
-
-            $query = ChildPseudoIDQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByStudent($this)
-                ->count($con);
-        }
-
-        return count($this->collPseudoIDs);
-    }
-
-    /**
-     * Method called to associate a ChildPseudoID object to this object
-     * through the ChildPseudoID foreign key attribute.
-     *
-     * @param  ChildPseudoID $l ChildPseudoID
-     * @return $this|\Student The current object (for fluent API support)
-     */
-    public function addPseudoID(ChildPseudoID $l)
-    {
-        if ($this->collPseudoIDs === null) {
-            $this->initPseudoIDs();
-            $this->collPseudoIDsPartial = true;
-        }
-
-        if (!$this->collPseudoIDs->contains($l)) {
-            $this->doAddPseudoID($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildPseudoID $pseudoID The ChildPseudoID object to add.
-     */
-    protected function doAddPseudoID(ChildPseudoID $pseudoID)
-    {
-        $this->collPseudoIDs[]= $pseudoID;
-        $pseudoID->setStudent($this);
-    }
-
-    /**
-     * @param  ChildPseudoID $pseudoID The ChildPseudoID object to remove.
-     * @return $this|ChildStudent The current object (for fluent API support)
-     */
-    public function removePseudoID(ChildPseudoID $pseudoID)
-    {
-        if ($this->getPseudoIDs()->contains($pseudoID)) {
-            $pos = $this->collPseudoIDs->search($pseudoID);
-            $this->collPseudoIDs->remove($pos);
-            if (null === $this->pseudoIDsScheduledForDeletion) {
-                $this->pseudoIDsScheduledForDeletion = clone $this->collPseudoIDs;
-                $this->pseudoIDsScheduledForDeletion->clear();
-            }
-            $this->pseudoIDsScheduledForDeletion[]= clone $pseudoID;
-            $pseudoID->setStudent(null);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Student is new, it will return
-     * an empty collection; or if this Student has previously
-     * been saved, it will retrieve related PseudoIDs from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Student.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildPseudoID[] List of ChildPseudoID objects
-     */
-    public function getPseudoIDsJoinExam(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildPseudoIDQuery::create(null, $criteria);
-        $query->joinWith('Exam', $joinBehavior);
-
-        return $this->getPseudoIDs($query, $con);
-    }
-
-    /**
-     * Clears out the collKumis collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addKumis()
-     */
-    public function clearKumis()
-    {
-        $this->collKumis = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Initializes the collKumis crossRef collection.
-     *
-     * By default this just sets the collKumis collection to an empty collection (like clearKumis());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @return void
-     */
-    public function initKumis()
-    {
-        $this->collKumis = new ObjectCollection();
-        $this->collKumisPartial = true;
-
-        $this->collKumis->setModel('\Kumi');
-    }
-
-    /**
-     * Checks if the collKumis collection is loaded.
-     *
-     * @return bool
-     */
-    public function isKumisLoaded()
-    {
-        return null !== $this->collKumis;
-    }
-
-    /**
-     * Gets a collection of ChildKumi objects related by a many-to-many relationship
-     * to the current object by way of the studentsXclasses cross-reference table.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildStudent is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria Optional query object to filter the query
-     * @param      ConnectionInterface $con Optional connection object
-     *
-     * @return ObjectCollection|ChildKumi[] List of ChildKumi objects
-     */
-    public function getKumis(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collKumisPartial && !$this->isNew();
-        if (null === $this->collKumis || null !== $criteria || $partial) {
-            if ($this->isNew()) {
-                // return empty collection
-                if (null === $this->collKumis) {
-                    $this->initKumis();
-                }
-            } else {
-
-                $query = ChildKumiQuery::create(null, $criteria)
-                    ->filterByStudent($this);
-                $collKumis = $query->find($con);
-                if (null !== $criteria) {
-                    return $collKumis;
-                }
-
-                if ($partial && $this->collKumis) {
-                    //make sure that already added objects gets added to the list of the database.
-                    foreach ($this->collKumis as $obj) {
-                        if (!$collKumis->contains($obj)) {
-                            $collKumis[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collKumis = $collKumis;
-                $this->collKumisPartial = false;
-            }
-        }
-
-        return $this->collKumis;
-    }
-
-    /**
-     * Sets a collection of Kumi objects related by a many-to-many relationship
-     * to the current object by way of the studentsXclasses cross-reference table.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param  Collection $kumis A Propel collection.
-     * @param  ConnectionInterface $con Optional connection object
-     * @return $this|ChildStudent The current object (for fluent API support)
-     */
-    public function setKumis(Collection $kumis, ConnectionInterface $con = null)
-    {
-        $this->clearKumis();
-        $currentKumis = $this->getKumis();
-
-        $kumisScheduledForDeletion = $currentKumis->diff($kumis);
-
-        foreach ($kumisScheduledForDeletion as $toDelete) {
-            $this->removeKumi($toDelete);
-        }
-
-        foreach ($kumis as $kumi) {
-            if (!$currentKumis->contains($kumi)) {
-                $this->doAddKumi($kumi);
-            }
-        }
-
-        $this->collKumisPartial = false;
-        $this->collKumis = $kumis;
-
-        return $this;
-    }
-
-    /**
-     * Gets the number of Kumi objects related by a many-to-many relationship
-     * to the current object by way of the studentsXclasses cross-reference table.
-     *
-     * @param      Criteria $criteria Optional query object to filter the query
-     * @param      boolean $distinct Set to true to force count distinct
-     * @param      ConnectionInterface $con Optional connection object
-     *
-     * @return int the number of related Kumi objects
-     */
-    public function countKumis(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collKumisPartial && !$this->isNew();
-        if (null === $this->collKumis || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collKumis) {
-                return 0;
-            } else {
-
-                if ($partial && !$criteria) {
-                    return count($this->getKumis());
-                }
-
-                $query = ChildKumiQuery::create(null, $criteria);
-                if ($distinct) {
-                    $query->distinct();
-                }
-
-                return $query
-                    ->filterByStudent($this)
-                    ->count($con);
-            }
-        } else {
-            return count($this->collKumis);
-        }
-    }
-
-    /**
-     * Associate a ChildKumi to this object
-     * through the studentsXclasses cross reference table.
-     *
-     * @param ChildKumi $kumi
-     * @return ChildStudent The current object (for fluent API support)
-     */
-    public function addKumi(ChildKumi $kumi)
-    {
-        if ($this->collKumis === null) {
-            $this->initKumis();
-        }
-
-        if (!$this->getKumis()->contains($kumi)) {
-            // only add it if the **same** object is not already associated
-            $this->collKumis->push($kumi);
-            $this->doAddKumi($kumi);
-        }
-
-        return $this;
-    }
-
-    /**
-     *
-     * @param ChildKumi $kumi
-     */
-    protected function doAddKumi(ChildKumi $kumi)
-    {
-        $studentClassAssignment = new ChildStudentClassAssignment();
-
-        $studentClassAssignment->setKumi($kumi);
-
-        $studentClassAssignment->setStudent($this);
-
-        $this->addStudentClassAssignment($studentClassAssignment);
-
-        // set the back reference to this object directly as using provided method either results
-        // in endless loop or in multiple relations
-        if (!$kumi->isStudentsLoaded()) {
-            $kumi->initStudents();
-            $kumi->getStudents()->push($this);
-        } elseif (!$kumi->getStudents()->contains($this)) {
-            $kumi->getStudents()->push($this);
-        }
-
-    }
-
-    /**
-     * Remove kumi of this object
-     * through the studentsXclasses cross reference table.
-     *
-     * @param ChildKumi $kumi
-     * @return ChildStudent The current object (for fluent API support)
-     */
-    public function removeKumi(ChildKumi $kumi)
-    {
-        if ($this->getKumis()->contains($kumi)) { $studentClassAssignment = new ChildStudentClassAssignment();
-
-            $studentClassAssignment->setKumi($kumi);
-            if ($kumi->isStudentsLoaded()) {
-                //remove the back reference if available
-                $kumi->getStudents()->removeObject($this);
-            }
-
-            $studentClassAssignment->setStudent($this);
-            $this->removeStudentClassAssignment(clone $studentClassAssignment);
-            $studentClassAssignment->clear();
-
-            $this->collKumis->remove($this->collKumis->search($kumi));
-
-            if (null === $this->kumisScheduledForDeletion) {
-                $this->kumisScheduledForDeletion = clone $this->collKumis;
-                $this->kumisScheduledForDeletion->clear();
-            }
-
-            $this->kumisScheduledForDeletion->push($kumi);
-        }
-
-
-        return $this;
-    }
-
-    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
      */
     public function clear()
     {
+        if (null !== $this->aUser) {
+            $this->aUser->removeStudent($this);
+        }
         $this->id = null;
         $this->sid = null;
         $this->studentname = null;
         $this->email = null;
+        $this->user_id = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -3480,23 +2840,8 @@ abstract class Student implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
-            if ($this->collStudentClassAssignments) {
-                foreach ($this->collStudentClassAssignments as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
             if ($this->collGradingTimes) {
                 foreach ($this->collGradingTimes as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
-            if ($this->collPseudoIDs) {
-                foreach ($this->collPseudoIDs as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
-            if ($this->collKumis) {
-                foreach ($this->collKumis as $o) {
                     $o->clearAllReferences($deep);
                 }
             }
@@ -3505,10 +2850,8 @@ abstract class Student implements ActiveRecordInterface
         $this->collQuestionScores = null;
         $this->collElementScores = null;
         $this->collExamInfos = null;
-        $this->collStudentClassAssignments = null;
         $this->collGradingTimes = null;
-        $this->collPseudoIDs = null;
-        $this->collKumis = null;
+        $this->aUser = null;
     }
 
     /**

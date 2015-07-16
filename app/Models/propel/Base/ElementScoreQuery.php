@@ -24,6 +24,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildElementScoreQuery orderByElementid($order = Criteria::ASC) Order by the elementID column
  * @method     ChildElementScoreQuery orderByStudentid($order = Criteria::ASC) Order by the studentID column
  * @method     ChildElementScoreQuery orderByElementscore($order = Criteria::ASC) Order by the elementScore column
+ * @method     ChildElementScoreQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildElementScoreQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildElementScoreQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
@@ -31,12 +32,17 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildElementScoreQuery groupByElementid() Group by the elementID column
  * @method     ChildElementScoreQuery groupByStudentid() Group by the studentID column
  * @method     ChildElementScoreQuery groupByElementscore() Group by the elementScore column
+ * @method     ChildElementScoreQuery groupByUserId() Group by the user_id column
  * @method     ChildElementScoreQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildElementScoreQuery groupByUpdatedAt() Group by the updated_at column
  *
  * @method     ChildElementScoreQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildElementScoreQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildElementScoreQuery innerJoin($relation) Adds a INNER JOIN clause to the query
+ *
+ * @method     ChildElementScoreQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildElementScoreQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildElementScoreQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
  *
  * @method     ChildElementScoreQuery leftJoinExam($relationAlias = null) Adds a LEFT JOIN clause to the query using the Exam relation
  * @method     ChildElementScoreQuery rightJoinExam($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Exam relation
@@ -50,7 +56,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildElementScoreQuery rightJoinStudent($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Student relation
  * @method     ChildElementScoreQuery innerJoinStudent($relationAlias = null) Adds a INNER JOIN clause to the query using the Student relation
  *
- * @method     \ExamQuery|\ElementQuery|\StudentQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \UserQuery|\ExamQuery|\ElementQuery|\StudentQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildElementScore findOne(ConnectionInterface $con = null) Return the first ChildElementScore matching the query
  * @method     ChildElementScore findOneOrCreate(ConnectionInterface $con = null) Return the first ChildElementScore matching the query, or a new ChildElementScore object populated from the query conditions when no match is found
@@ -59,6 +65,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildElementScore findOneByElementid(int $elementID) Return the first ChildElementScore filtered by the elementID column
  * @method     ChildElementScore findOneByStudentid(int $studentID) Return the first ChildElementScore filtered by the studentID column
  * @method     ChildElementScore findOneByElementscore(double $elementScore) Return the first ChildElementScore filtered by the elementScore column
+ * @method     ChildElementScore findOneByUserId(int $user_id) Return the first ChildElementScore filtered by the user_id column
  * @method     ChildElementScore findOneByCreatedAt(string $created_at) Return the first ChildElementScore filtered by the created_at column
  * @method     ChildElementScore findOneByUpdatedAt(string $updated_at) Return the first ChildElementScore filtered by the updated_at column *
 
@@ -69,6 +76,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildElementScore requireOneByElementid(int $elementID) Return the first ChildElementScore filtered by the elementID column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildElementScore requireOneByStudentid(int $studentID) Return the first ChildElementScore filtered by the studentID column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildElementScore requireOneByElementscore(double $elementScore) Return the first ChildElementScore filtered by the elementScore column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildElementScore requireOneByUserId(int $user_id) Return the first ChildElementScore filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildElementScore requireOneByCreatedAt(string $created_at) Return the first ChildElementScore filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildElementScore requireOneByUpdatedAt(string $updated_at) Return the first ChildElementScore filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
@@ -77,6 +85,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildElementScore[]|ObjectCollection findByElementid(int $elementID) Return ChildElementScore objects filtered by the elementID column
  * @method     ChildElementScore[]|ObjectCollection findByStudentid(int $studentID) Return ChildElementScore objects filtered by the studentID column
  * @method     ChildElementScore[]|ObjectCollection findByElementscore(double $elementScore) Return ChildElementScore objects filtered by the elementScore column
+ * @method     ChildElementScore[]|ObjectCollection findByUserId(int $user_id) Return ChildElementScore objects filtered by the user_id column
  * @method     ChildElementScore[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildElementScore objects filtered by the created_at column
  * @method     ChildElementScore[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildElementScore objects filtered by the updated_at column
  * @method     ChildElementScore[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -171,7 +180,7 @@ abstract class ElementScoreQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT examID, elementID, studentID, elementScore, created_at, updated_at FROM elementScores WHERE examID = :p0 AND elementID = :p1 AND studentID = :p2';
+        $sql = 'SELECT examID, elementID, studentID, elementScore, user_id, created_at, updated_at FROM elementScores WHERE examID = :p0 AND elementID = :p1 AND studentID = :p2';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
@@ -448,6 +457,49 @@ abstract class ElementScoreQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the user_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUserId(1234); // WHERE user_id = 1234
+     * $query->filterByUserId(array(12, 34)); // WHERE user_id IN (12, 34)
+     * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
+     * </code>
+     *
+     * @see       filterByUser()
+     *
+     * @param     mixed $userId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildElementScoreQuery The current query, for fluid interface
+     */
+    public function filterByUserId($userId = null, $comparison = null)
+    {
+        if (is_array($userId)) {
+            $useMinMax = false;
+            if (isset($userId['min'])) {
+                $this->addUsingAlias(ElementScoreTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($userId['max'])) {
+                $this->addUsingAlias(ElementScoreTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ElementScoreTableMap::COL_USER_ID, $userId, $comparison);
+    }
+
+    /**
      * Filter the query on the created_at column
      *
      * Example usage:
@@ -531,6 +583,83 @@ abstract class ElementScoreQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(ElementScoreTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \User object
+     *
+     * @param \User|ObjectCollection $user The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildElementScoreQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = null)
+    {
+        if ($user instanceof \User) {
+            return $this
+                ->addUsingAlias(ElementScoreTableMap::COL_USER_ID, $user->getId(), $comparison);
+        } elseif ($user instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(ElementScoreTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByUser() only accepts arguments of type \User or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the User relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildElementScoreQuery The current query, for fluid interface
+     */
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('User');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'User');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the User relation User object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \UserQuery A secondary query class using the current class as primary query
+     */
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
     }
 
     /**

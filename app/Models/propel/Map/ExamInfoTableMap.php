@@ -59,7 +59,7 @@ class ExamInfoTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 8;
+    const NUM_COLUMNS = 9;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class ExamInfoTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 8;
+    const NUM_HYDRATE_COLUMNS = 9;
 
     /**
      * the column name for the examID field
@@ -102,6 +102,11 @@ class ExamInfoTableMap extends TableMap
     const COL_EXAMGROUPNUMBER = 'examInfo.examGroupNumber';
 
     /**
+     * the column name for the user_id field
+     */
+    const COL_USER_ID = 'examInfo.user_id';
+
+    /**
      * the column name for the created_at field
      */
     const COL_CREATED_AT = 'examInfo.created_at';
@@ -123,11 +128,11 @@ class ExamInfoTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Examid', 'Studentid', 'Completionorder', 'Pages', 'Notecard', 'Examgroupnumber', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('examid', 'studentid', 'completionorder', 'pages', 'notecard', 'examgroupnumber', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(ExamInfoTableMap::COL_EXAMID, ExamInfoTableMap::COL_STUDENTID, ExamInfoTableMap::COL_COMPLETIONORDER, ExamInfoTableMap::COL_PAGES, ExamInfoTableMap::COL_NOTECARD, ExamInfoTableMap::COL_EXAMGROUPNUMBER, ExamInfoTableMap::COL_CREATED_AT, ExamInfoTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('examID', 'studentID', 'completionOrder', 'pages', 'notecard', 'examGroupNumber', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
+        self::TYPE_PHPNAME       => array('Examid', 'Studentid', 'Completionorder', 'Pages', 'Notecard', 'Examgroupnumber', 'UserId', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('examid', 'studentid', 'completionorder', 'pages', 'notecard', 'examgroupnumber', 'userId', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(ExamInfoTableMap::COL_EXAMID, ExamInfoTableMap::COL_STUDENTID, ExamInfoTableMap::COL_COMPLETIONORDER, ExamInfoTableMap::COL_PAGES, ExamInfoTableMap::COL_NOTECARD, ExamInfoTableMap::COL_EXAMGROUPNUMBER, ExamInfoTableMap::COL_USER_ID, ExamInfoTableMap::COL_CREATED_AT, ExamInfoTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('examID', 'studentID', 'completionOrder', 'pages', 'notecard', 'examGroupNumber', 'user_id', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -137,11 +142,11 @@ class ExamInfoTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Examid' => 0, 'Studentid' => 1, 'Completionorder' => 2, 'Pages' => 3, 'Notecard' => 4, 'Examgroupnumber' => 5, 'CreatedAt' => 6, 'UpdatedAt' => 7, ),
-        self::TYPE_CAMELNAME     => array('examid' => 0, 'studentid' => 1, 'completionorder' => 2, 'pages' => 3, 'notecard' => 4, 'examgroupnumber' => 5, 'createdAt' => 6, 'updatedAt' => 7, ),
-        self::TYPE_COLNAME       => array(ExamInfoTableMap::COL_EXAMID => 0, ExamInfoTableMap::COL_STUDENTID => 1, ExamInfoTableMap::COL_COMPLETIONORDER => 2, ExamInfoTableMap::COL_PAGES => 3, ExamInfoTableMap::COL_NOTECARD => 4, ExamInfoTableMap::COL_EXAMGROUPNUMBER => 5, ExamInfoTableMap::COL_CREATED_AT => 6, ExamInfoTableMap::COL_UPDATED_AT => 7, ),
-        self::TYPE_FIELDNAME     => array('examID' => 0, 'studentID' => 1, 'completionOrder' => 2, 'pages' => 3, 'notecard' => 4, 'examGroupNumber' => 5, 'created_at' => 6, 'updated_at' => 7, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
+        self::TYPE_PHPNAME       => array('Examid' => 0, 'Studentid' => 1, 'Completionorder' => 2, 'Pages' => 3, 'Notecard' => 4, 'Examgroupnumber' => 5, 'UserId' => 6, 'CreatedAt' => 7, 'UpdatedAt' => 8, ),
+        self::TYPE_CAMELNAME     => array('examid' => 0, 'studentid' => 1, 'completionorder' => 2, 'pages' => 3, 'notecard' => 4, 'examgroupnumber' => 5, 'userId' => 6, 'createdAt' => 7, 'updatedAt' => 8, ),
+        self::TYPE_COLNAME       => array(ExamInfoTableMap::COL_EXAMID => 0, ExamInfoTableMap::COL_STUDENTID => 1, ExamInfoTableMap::COL_COMPLETIONORDER => 2, ExamInfoTableMap::COL_PAGES => 3, ExamInfoTableMap::COL_NOTECARD => 4, ExamInfoTableMap::COL_EXAMGROUPNUMBER => 5, ExamInfoTableMap::COL_USER_ID => 6, ExamInfoTableMap::COL_CREATED_AT => 7, ExamInfoTableMap::COL_UPDATED_AT => 8, ),
+        self::TYPE_FIELDNAME     => array('examID' => 0, 'studentID' => 1, 'completionOrder' => 2, 'pages' => 3, 'notecard' => 4, 'examGroupNumber' => 5, 'user_id' => 6, 'created_at' => 7, 'updated_at' => 8, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -167,6 +172,7 @@ class ExamInfoTableMap extends TableMap
         $this->addColumn('pages', 'Pages', 'FLOAT', false, null, null);
         $this->addColumn('notecard', 'Notecard', 'FLOAT', false, null, null);
         $this->addColumn('examGroupNumber', 'Examgroupnumber', 'INTEGER', false, null, null);
+        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'users', 'id', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -176,6 +182,13 @@ class ExamInfoTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('User', '\\User', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, null, false);
         $this->addRelation('Exam', '\\Exam', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
@@ -414,6 +427,7 @@ class ExamInfoTableMap extends TableMap
             $criteria->addSelectColumn(ExamInfoTableMap::COL_PAGES);
             $criteria->addSelectColumn(ExamInfoTableMap::COL_NOTECARD);
             $criteria->addSelectColumn(ExamInfoTableMap::COL_EXAMGROUPNUMBER);
+            $criteria->addSelectColumn(ExamInfoTableMap::COL_USER_ID);
             $criteria->addSelectColumn(ExamInfoTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(ExamInfoTableMap::COL_UPDATED_AT);
         } else {
@@ -423,6 +437,7 @@ class ExamInfoTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.pages');
             $criteria->addSelectColumn($alias . '.notecard');
             $criteria->addSelectColumn($alias . '.examGroupNumber');
+            $criteria->addSelectColumn($alias . '.user_id');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }

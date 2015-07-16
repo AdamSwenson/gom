@@ -15,7 +15,8 @@ $username = putenv("DB_USERNAME=testuser4");
 $password = putenv("DB_PASSWORD=testpass4");
 $host = putenv("DB_HOST=localhost");
 $database = putenv("DB_DATABASE=gom_propel");
-//require_once 'app/propel_config/config.php';
+
+require_once 'app/propel_config/config.php';
 
 # initialize propel
 //require_once("bootstrap/app.php");
@@ -32,15 +33,15 @@ $originalinclude = ini_get('include_path');
 //ini_set('include_path', $originalinclude);
 
 
-//DbTestAids::populate_item_assignments2();
-//DbTestAids::populate_restrictors();
-//DbTestAids::populate_students();
-//DbTestAids::populate_classes();
-////\classes\DbTestAids::populate_scores();
-//DbTestAids::populate_element_scores();
-//DbTestAids::populate_question_scores();
-//DbTestAids::populate_pseudoids();
-//DbTestAids::populate_times();
+DbTestAids::populate_item_assignments2();
+DbTestAids::populate_restrictors();
+DbTestAids::populate_students();
+DbTestAids::populate_classes();
+//\classes\DbTestAids::populate_scores();
+DbTestAids::populate_element_scores();
+DbTestAids::populate_question_scores();
+DbTestAids::populate_pseudoids();
+DbTestAids::populate_times();
 
 //\classes\DbTestAids::populate_tags();
 

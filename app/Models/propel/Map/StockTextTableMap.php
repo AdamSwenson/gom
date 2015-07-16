@@ -59,7 +59,7 @@ class StockTextTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 7;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class StockTextTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 7;
 
     /**
      * the column name for the id field
@@ -90,6 +90,11 @@ class StockTextTableMap extends TableMap
      * the column name for the type field
      */
     const COL_TYPE = 'stockTexts.type';
+
+    /**
+     * the column name for the user_id field
+     */
+    const COL_USER_ID = 'stockTexts.user_id';
 
     /**
      * the column name for the created_at field
@@ -113,11 +118,11 @@ class StockTextTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Valence', 'Content', 'Type', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'valence', 'content', 'type', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(StockTextTableMap::COL_ID, StockTextTableMap::COL_VALENCE, StockTextTableMap::COL_CONTENT, StockTextTableMap::COL_TYPE, StockTextTableMap::COL_CREATED_AT, StockTextTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'valence', 'content', 'type', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id', 'Valence', 'Content', 'Type', 'UserId', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'valence', 'content', 'type', 'userId', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(StockTextTableMap::COL_ID, StockTextTableMap::COL_VALENCE, StockTextTableMap::COL_CONTENT, StockTextTableMap::COL_TYPE, StockTextTableMap::COL_USER_ID, StockTextTableMap::COL_CREATED_AT, StockTextTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'valence', 'content', 'type', 'user_id', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -127,11 +132,11 @@ class StockTextTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Valence' => 1, 'Content' => 2, 'Type' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'valence' => 1, 'content' => 2, 'type' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
-        self::TYPE_COLNAME       => array(StockTextTableMap::COL_ID => 0, StockTextTableMap::COL_VALENCE => 1, StockTextTableMap::COL_CONTENT => 2, StockTextTableMap::COL_TYPE => 3, StockTextTableMap::COL_CREATED_AT => 4, StockTextTableMap::COL_UPDATED_AT => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'valence' => 1, 'content' => 2, 'type' => 3, 'created_at' => 4, 'updated_at' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Valence' => 1, 'Content' => 2, 'Type' => 3, 'UserId' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'valence' => 1, 'content' => 2, 'type' => 3, 'userId' => 4, 'createdAt' => 5, 'updatedAt' => 6, ),
+        self::TYPE_COLNAME       => array(StockTextTableMap::COL_ID => 0, StockTextTableMap::COL_VALENCE => 1, StockTextTableMap::COL_CONTENT => 2, StockTextTableMap::COL_TYPE => 3, StockTextTableMap::COL_USER_ID => 4, StockTextTableMap::COL_CREATED_AT => 5, StockTextTableMap::COL_UPDATED_AT => 6, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'valence' => 1, 'content' => 2, 'type' => 3, 'user_id' => 4, 'created_at' => 5, 'updated_at' => 6, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -155,6 +160,7 @@ class StockTextTableMap extends TableMap
         $this->addColumn('valence', 'Valence', 'VARCHAR', false, 255, null);
         $this->addColumn('content', 'Content', 'LONGVARCHAR', true, null, null);
         $this->addColumn('type', 'Type', 'VARCHAR', false, 255, null);
+        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'users', 'id', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -164,6 +170,13 @@ class StockTextTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('User', '\\User', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, null, false);
     } // buildRelations()
 
     /**
@@ -324,6 +337,7 @@ class StockTextTableMap extends TableMap
             $criteria->addSelectColumn(StockTextTableMap::COL_VALENCE);
             $criteria->addSelectColumn(StockTextTableMap::COL_CONTENT);
             $criteria->addSelectColumn(StockTextTableMap::COL_TYPE);
+            $criteria->addSelectColumn(StockTextTableMap::COL_USER_ID);
             $criteria->addSelectColumn(StockTextTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(StockTextTableMap::COL_UPDATED_AT);
         } else {
@@ -331,6 +345,7 @@ class StockTextTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.valence');
             $criteria->addSelectColumn($alias . '.content');
             $criteria->addSelectColumn($alias . '.type');
+            $criteria->addSelectColumn($alias . '.user_id');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }

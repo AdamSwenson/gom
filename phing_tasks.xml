@@ -13,10 +13,10 @@
 
     <target name="completelyRebuildModel" description="Completely rebuilds the generated sql and classes from schema.xml">
         <echo message="Rebuilding sql model"/>
-        <exec command="export LOCATION=local; vendor/bin/propel sql:build --overwrite" />
-        <exec command="export LOCATION=local; vendor/bin/propel model:build" />
+        <exec command="export LOCATION=local; ../../vendor/bin/propel sql:build --overwrite" dir="config/propel" />
+        <exec command="export LOCATION=local; ../../vendor/bin/propel model:build" />
         <echo message="Inserting new schema into db"/>
-        <exec command="export LOCATION=local; vendor/bin/propel sql:insert" />
+        <exec command="export LOCATION=local; ../../vendor/bin/propel sql:insert" />
         <echo message="Refreshing autoload"/>
         <exec command="composer dump-autoload" />
     </target>

@@ -2,16 +2,43 @@
 <database name="gom" defaultIdMethod="native">
     <behavior name="timestampable" />
 
+    <table name="users" phpName="User">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+        <column name="username" type="varchar" size="50" required="true" />
+        <column name="displayname" type="varchar" size="100" required="true"/>
+        <column name="password" type="varchar" size="225" required="true"/>
+        <column name="email" type="varchar" size="150" required="true"/>
+        <column name="activation_token" type="varchar" size="225" required="true"/>
+        <column name="last_activation_request" type="integer" size="11" required="true"/>
+        <column name="lost_password_request" type="integer" size="1" required="true"/>
+        <column name="active" type="integer" size="1" required="true"/>
+        <column name="title" type="varchar" size="150" required="true"/>
+        <column name="sign_up_stamp" type="integer" size="11" required="true"/>
+        <column name="last_sign_in_stamp" type="integer" size="11" required="true"/>
+    </table>
+
     <table name="r_terms" phpName="Term">
         <column name="content" type="varchar" size="100" primaryKey="true" required="true"/>
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="User" refPhpName="term" onDelete="cascade"/>
+        </foreign-key>
     </table>
 
     <table name="r_examTopics" phpName="Topic">
         <column name="content" type="varchar" size="100" primaryKey="true" required="true"/>
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="User" refPhpName="topic" onDelete="cascade"/>
+        </foreign-key>
     </table>
 
     <table name="r_years" phpName="Year">
         <column name="content" type="integer" size="4" primaryKey="true" required="true"/>
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="User" refPhpName="year" onDelete="cascade"/>
+        </foreign-key>
     </table>
 
     <table name="exams" phpName="Exam">
@@ -21,6 +48,10 @@
         <column name="examYear" type="integer" size="4" required="true"/>
         <column name="locked" type="integer" size="1" required="true"/>
         <column name="released" type="integer" size="1" required="true"/>
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="user" refPhpName="exam" onDelete="cascade"/>
+        </foreign-key>
         <foreign-key foreignTable="r_terms">
         <reference local="examTerm" foreign="content"/>
         </foreign-key>
@@ -36,6 +67,10 @@
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
         <column name="questionText" type="longvarchar" required="true" />
         <column name="questionName" type="varchar" size="100" />
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="User" refPhpName="Question" onDelete="cascade"/>
+        </foreign-key>
     </table>
 
 
@@ -44,11 +79,10 @@
         <column name="elementName" type="varchar" size="100" />
         <column name="displayText" type="varchar" size="225" required="true" />
         <column name="commentText" type="longvarchar" />
-        <!--<behavior name="timestampable" />-->
-        <!--<column name="commentID" type="integer" />-->
-        <!--<foreign-key foreignTable="comments">-->
-            <!--<reference local="commentID" foreign="id"/>-->
-        <!--</foreign-key>-->
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" onDelete="cascade"/>
+        </foreign-key>
     </table>
 
     <table name="students" phpName="Student">
@@ -56,6 +90,10 @@
         <column name="sid" type="integer" required="true" />
         <column name="studentName" type="varchar" size="200" />
         <column name="email" type="varchar" size="225" />
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" onDelete="cascade"/>
+        </foreign-key>
         <unique>
             <unique-column name="sid"/>
         </unique>
@@ -65,6 +103,10 @@
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
         <column name="year" type="integer" size="4" />
         <column name="nickname" type="varchar" size="100" />
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" onDelete="cascade"/>
+        </foreign-key>
     </table>
 
     <table name="stockTexts" phpName="StockText">
@@ -72,6 +114,10 @@
         <column name="valence" type="varchar" />
         <column name="content" type="longvarchar" required="true" />
         <column name="type" type="varchar" />
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" onDelete="cascade"/>
+        </foreign-key>
     </table>
 
 <!--Junction tables below-->
@@ -81,6 +127,10 @@
         <column name="questionID" type="integer" required="true" primaryKey="true" />
         <column name="studentID" type="integer" required="true" primaryKey="true" />
         <column name="questionScore" type="float" />
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="User" refPhpName="questionScore" onDelete="cascade"/>
+        </foreign-key>
         <foreign-key foreignTable="exams">
             <reference local="examID" foreign="id"/>
         </foreign-key>
@@ -97,6 +147,10 @@
         <column name="elementID" type="integer" required="true" primaryKey="true" />
         <column name="studentID" type="integer" required="true" primaryKey="true" />
         <column name="elementScore" type="float" />
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="User" refPhpName="ElementScore" onDelete="cascade"/>
+        </foreign-key>
         <foreign-key foreignTable="exams">
             <reference local="examID" foreign="id"/>
         </foreign-key>
@@ -115,6 +169,10 @@
         <column name="pages" type="float" />
         <column name="notecard" type="float" />
         <column name="examGroupNumber" type="integer" />
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="User" refPhpName="examInfo" onDelete="cascade"/>
+        </foreign-key>
         <foreign-key foreignTable="exams">
             <reference local="examID" foreign="id"/>
         </foreign-key>
@@ -128,6 +186,10 @@
         <column name="examID" type="integer" required="true" primaryKey="true"/>
         <column name="questionNumber" type="integer" size="2" required="true" primaryKey="true"  />
         <column name="questionID" type="integer" required="true" />
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="user" refPhpName="questionAssigner" onDelete="cascade"/>
+        </foreign-key>
         <foreign-key foreignTable="exams">
             <reference local="examID" foreign="id" onDelete="cascade"/>
         </foreign-key>
@@ -141,6 +203,10 @@
         <column name="questionID" type="integer" primaryKey="true" required="true" />
         <column name="subtask" type="integer" primaryKey="true" size="2" required="true" />
         <column name="elementID" type="integer" required="true" />
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="user" refPhpName="ElementAssignment" onDelete="cascade"/>
+        </foreign-key>
         <foreign-key foreignTable="exams">
             <reference local="examID" foreign="id" onDelete="cascade"/>
         </foreign-key>
@@ -156,6 +222,10 @@
     <table name="studentsXclasses" phpName="StudentClassAssignment" isCrossRef="true">
         <column name="studentID" type="integer" primaryKey="true" required="true" />
         <column name="classID" type="integer" primaryKey="true" required="true" />
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="user" refPhpName="StudentClassAssignment" onDelete="cascade"/>
+        </foreign-key>
         <foreign-key foreignTable="students">
             <reference local="studentID" foreign="id" onDelete="cascade"/>
         </foreign-key>
@@ -167,6 +237,10 @@
     <table name="examsXclasses" phpName="ExamClassAssignment" isCrossRef="true">
         <column name="classID" type="integer" primaryKey="true" required="true" />
         <column name="examID" type="integer" primaryKey="true" required="true" />
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="user" refPhpName="ExamClassAssignment" onDelete="cascade"/>
+        </foreign-key>
         <foreign-key foreignTable="exams">
             <reference local="examID" foreign="id" onDelete="cascade"/>
         </foreign-key>
@@ -181,6 +255,10 @@
         <column name="examID" type="integer" required="true" />
         <column name="studentID" type="integer" required="true" />
         <column name="seconds" type="float" />
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="User" refPhpName="GradingTime" onDelete="cascade"/>
+        </foreign-key>
         <unique>
             <unique-column name="examID" />
             <unique-column name="studentID" />
@@ -197,6 +275,10 @@
         <column name="examID" type="integer" required="true" primaryKey="true"/>
         <column name="groupID" type="integer" required="true" primaryKey="true"/>
         <column name="seconds" type="float" />
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="User" refPhpName="GroupTime" onDelete="cascade"/>
+        </foreign-key>
         <foreign-key foreignTable="exams">
             <reference local="examID" foreign="id"/>
         </foreign-key>
@@ -210,12 +292,20 @@
         <column name="dashboard_num_exams" type="integer" />
         <column name="number_questions" type="integer" />
         <column name="number_subtasks" type="integer" />
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="User" refPhpName="Preferences" onDelete="cascade"/>
+        </foreign-key>
     </table>
 
     <table name="pseudoIDs" phpName="PseudoID">
         <column name="studentID" type="integer" required="true" primaryKey="true" />
         <column name="examID" type="integer" required="true" primaryKey="true" />
         <column name="pseudoID" type="varchar" size="225" required="true"/>
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="User" refPhpName="PseudoID" onDelete="cascade"/>
+        </foreign-key>
         <unique>
             <unique-column name="pseudoID" />
         </unique>
@@ -231,6 +321,10 @@
     <table name="tags" phpName="Tag">
         <column name="id" type="integer" required="true" autoIncrement="true" primaryKey="true"/>
         <column name="tag" type="varchar" size="225" required="true"/>
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="User" refPhpName="Tag" onDelete="cascade"/>
+        </foreign-key>
         <unique>
             <unique-column name="tag" />
         </unique>
@@ -239,6 +333,10 @@
     <table name="tagsXquestions" phpName="TaggedQuestion" isCrossRef="true">
         <column name="tag_id" type="integer" primaryKey="true" required="true" />
         <column name="question_id" type="integer" primaryKey="true" required="true" />
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="user" refPhpName="TaggedQuestion" onDelete="cascade"/>
+        </foreign-key>
         <foreign-key foreignTable="tags">
             <reference local="tag_id" foreign="id"/>
         </foreign-key>
@@ -250,6 +348,10 @@
     <table name="tagsXelements" phpName="TaggedElement" isCrossRef="true">
         <column name="tag_id" type="integer" primaryKey="true" required="true" />
         <column name="element_id" type="integer" primaryKey="true" required="true" />
+        <column name="user_id" type="integer" required="true" />
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="id" phpName="user" refPhpName="TaggedElement" onDelete="cascade"/>
+        </foreign-key>
         <foreign-key foreignTable="tags">
             <reference local="tag_id" foreign="id"/>
         </foreign-key>

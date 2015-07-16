@@ -59,7 +59,7 @@ class ElementAssignmentTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 7;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class ElementAssignmentTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 7;
 
     /**
      * the column name for the examID field
@@ -90,6 +90,11 @@ class ElementAssignmentTableMap extends TableMap
      * the column name for the elementID field
      */
     const COL_ELEMENTID = 'elementXquestions.elementID';
+
+    /**
+     * the column name for the user_id field
+     */
+    const COL_USER_ID = 'elementXquestions.user_id';
 
     /**
      * the column name for the created_at field
@@ -113,11 +118,11 @@ class ElementAssignmentTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Examid', 'Questionid', 'Subtask', 'Elementid', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('examid', 'questionid', 'subtask', 'elementid', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(ElementAssignmentTableMap::COL_EXAMID, ElementAssignmentTableMap::COL_QUESTIONID, ElementAssignmentTableMap::COL_SUBTASK, ElementAssignmentTableMap::COL_ELEMENTID, ElementAssignmentTableMap::COL_CREATED_AT, ElementAssignmentTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('examID', 'questionID', 'subtask', 'elementID', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Examid', 'Questionid', 'Subtask', 'Elementid', 'UserId', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('examid', 'questionid', 'subtask', 'elementid', 'userId', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(ElementAssignmentTableMap::COL_EXAMID, ElementAssignmentTableMap::COL_QUESTIONID, ElementAssignmentTableMap::COL_SUBTASK, ElementAssignmentTableMap::COL_ELEMENTID, ElementAssignmentTableMap::COL_USER_ID, ElementAssignmentTableMap::COL_CREATED_AT, ElementAssignmentTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('examID', 'questionID', 'subtask', 'elementID', 'user_id', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -127,11 +132,11 @@ class ElementAssignmentTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Examid' => 0, 'Questionid' => 1, 'Subtask' => 2, 'Elementid' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
-        self::TYPE_CAMELNAME     => array('examid' => 0, 'questionid' => 1, 'subtask' => 2, 'elementid' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
-        self::TYPE_COLNAME       => array(ElementAssignmentTableMap::COL_EXAMID => 0, ElementAssignmentTableMap::COL_QUESTIONID => 1, ElementAssignmentTableMap::COL_SUBTASK => 2, ElementAssignmentTableMap::COL_ELEMENTID => 3, ElementAssignmentTableMap::COL_CREATED_AT => 4, ElementAssignmentTableMap::COL_UPDATED_AT => 5, ),
-        self::TYPE_FIELDNAME     => array('examID' => 0, 'questionID' => 1, 'subtask' => 2, 'elementID' => 3, 'created_at' => 4, 'updated_at' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Examid' => 0, 'Questionid' => 1, 'Subtask' => 2, 'Elementid' => 3, 'UserId' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, ),
+        self::TYPE_CAMELNAME     => array('examid' => 0, 'questionid' => 1, 'subtask' => 2, 'elementid' => 3, 'userId' => 4, 'createdAt' => 5, 'updatedAt' => 6, ),
+        self::TYPE_COLNAME       => array(ElementAssignmentTableMap::COL_EXAMID => 0, ElementAssignmentTableMap::COL_QUESTIONID => 1, ElementAssignmentTableMap::COL_SUBTASK => 2, ElementAssignmentTableMap::COL_ELEMENTID => 3, ElementAssignmentTableMap::COL_USER_ID => 4, ElementAssignmentTableMap::COL_CREATED_AT => 5, ElementAssignmentTableMap::COL_UPDATED_AT => 6, ),
+        self::TYPE_FIELDNAME     => array('examID' => 0, 'questionID' => 1, 'subtask' => 2, 'elementID' => 3, 'user_id' => 4, 'created_at' => 5, 'updated_at' => 6, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -155,6 +160,7 @@ class ElementAssignmentTableMap extends TableMap
         $this->addForeignPrimaryKey('questionID', 'Questionid', 'INTEGER' , 'questions', 'id', true, null, null);
         $this->addPrimaryKey('subtask', 'Subtask', 'INTEGER', true, 2, null);
         $this->addForeignKey('elementID', 'Elementid', 'INTEGER', 'elements', 'id', true, null, null);
+        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'users', 'id', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -164,6 +170,13 @@ class ElementAssignmentTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('User', '\\User', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, null, false);
         $this->addRelation('Exam', '\\Exam', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
@@ -412,6 +425,7 @@ class ElementAssignmentTableMap extends TableMap
             $criteria->addSelectColumn(ElementAssignmentTableMap::COL_QUESTIONID);
             $criteria->addSelectColumn(ElementAssignmentTableMap::COL_SUBTASK);
             $criteria->addSelectColumn(ElementAssignmentTableMap::COL_ELEMENTID);
+            $criteria->addSelectColumn(ElementAssignmentTableMap::COL_USER_ID);
             $criteria->addSelectColumn(ElementAssignmentTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(ElementAssignmentTableMap::COL_UPDATED_AT);
         } else {
@@ -419,6 +433,7 @@ class ElementAssignmentTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.questionID');
             $criteria->addSelectColumn($alias . '.subtask');
             $criteria->addSelectColumn($alias . '.elementID');
+            $criteria->addSelectColumn($alias . '.user_id');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }

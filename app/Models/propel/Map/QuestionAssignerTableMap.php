@@ -59,7 +59,7 @@ class QuestionAssignerTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 5;
+    const NUM_COLUMNS = 6;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class QuestionAssignerTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 5;
+    const NUM_HYDRATE_COLUMNS = 6;
 
     /**
      * the column name for the examID field
@@ -85,6 +85,11 @@ class QuestionAssignerTableMap extends TableMap
      * the column name for the questionID field
      */
     const COL_QUESTIONID = 'questionAssigner.questionID';
+
+    /**
+     * the column name for the user_id field
+     */
+    const COL_USER_ID = 'questionAssigner.user_id';
 
     /**
      * the column name for the created_at field
@@ -108,11 +113,11 @@ class QuestionAssignerTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Examid', 'Questionnumber', 'Questionid', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('examid', 'questionnumber', 'questionid', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(QuestionAssignerTableMap::COL_EXAMID, QuestionAssignerTableMap::COL_QUESTIONNUMBER, QuestionAssignerTableMap::COL_QUESTIONID, QuestionAssignerTableMap::COL_CREATED_AT, QuestionAssignerTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('examID', 'questionNumber', 'questionID', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
+        self::TYPE_PHPNAME       => array('Examid', 'Questionnumber', 'Questionid', 'UserId', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('examid', 'questionnumber', 'questionid', 'userId', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(QuestionAssignerTableMap::COL_EXAMID, QuestionAssignerTableMap::COL_QUESTIONNUMBER, QuestionAssignerTableMap::COL_QUESTIONID, QuestionAssignerTableMap::COL_USER_ID, QuestionAssignerTableMap::COL_CREATED_AT, QuestionAssignerTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('examID', 'questionNumber', 'questionID', 'user_id', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -122,11 +127,11 @@ class QuestionAssignerTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Examid' => 0, 'Questionnumber' => 1, 'Questionid' => 2, 'CreatedAt' => 3, 'UpdatedAt' => 4, ),
-        self::TYPE_CAMELNAME     => array('examid' => 0, 'questionnumber' => 1, 'questionid' => 2, 'createdAt' => 3, 'updatedAt' => 4, ),
-        self::TYPE_COLNAME       => array(QuestionAssignerTableMap::COL_EXAMID => 0, QuestionAssignerTableMap::COL_QUESTIONNUMBER => 1, QuestionAssignerTableMap::COL_QUESTIONID => 2, QuestionAssignerTableMap::COL_CREATED_AT => 3, QuestionAssignerTableMap::COL_UPDATED_AT => 4, ),
-        self::TYPE_FIELDNAME     => array('examID' => 0, 'questionNumber' => 1, 'questionID' => 2, 'created_at' => 3, 'updated_at' => 4, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
+        self::TYPE_PHPNAME       => array('Examid' => 0, 'Questionnumber' => 1, 'Questionid' => 2, 'UserId' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
+        self::TYPE_CAMELNAME     => array('examid' => 0, 'questionnumber' => 1, 'questionid' => 2, 'userId' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
+        self::TYPE_COLNAME       => array(QuestionAssignerTableMap::COL_EXAMID => 0, QuestionAssignerTableMap::COL_QUESTIONNUMBER => 1, QuestionAssignerTableMap::COL_QUESTIONID => 2, QuestionAssignerTableMap::COL_USER_ID => 3, QuestionAssignerTableMap::COL_CREATED_AT => 4, QuestionAssignerTableMap::COL_UPDATED_AT => 5, ),
+        self::TYPE_FIELDNAME     => array('examID' => 0, 'questionNumber' => 1, 'questionID' => 2, 'user_id' => 3, 'created_at' => 4, 'updated_at' => 5, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -150,6 +155,7 @@ class QuestionAssignerTableMap extends TableMap
         $this->addForeignPrimaryKey('examID', 'Examid', 'INTEGER' , 'exams', 'id', true, null, null);
         $this->addPrimaryKey('questionNumber', 'Questionnumber', 'INTEGER', true, 2, null);
         $this->addForeignKey('questionID', 'Questionid', 'INTEGER', 'questions', 'id', true, null, null);
+        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'users', 'id', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -159,6 +165,13 @@ class QuestionAssignerTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('User', '\\User', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, null, false);
         $this->addRelation('Exam', '\\Exam', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
@@ -394,12 +407,14 @@ class QuestionAssignerTableMap extends TableMap
             $criteria->addSelectColumn(QuestionAssignerTableMap::COL_EXAMID);
             $criteria->addSelectColumn(QuestionAssignerTableMap::COL_QUESTIONNUMBER);
             $criteria->addSelectColumn(QuestionAssignerTableMap::COL_QUESTIONID);
+            $criteria->addSelectColumn(QuestionAssignerTableMap::COL_USER_ID);
             $criteria->addSelectColumn(QuestionAssignerTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(QuestionAssignerTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.examID');
             $criteria->addSelectColumn($alias . '.questionNumber');
             $criteria->addSelectColumn($alias . '.questionID');
+            $criteria->addSelectColumn($alias . '.user_id');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }

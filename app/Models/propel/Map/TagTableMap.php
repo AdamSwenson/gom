@@ -59,7 +59,7 @@ class TagTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 4;
+    const NUM_COLUMNS = 5;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class TagTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 4;
+    const NUM_HYDRATE_COLUMNS = 5;
 
     /**
      * the column name for the id field
@@ -80,6 +80,11 @@ class TagTableMap extends TableMap
      * the column name for the tag field
      */
     const COL_TAG = 'tags.tag';
+
+    /**
+     * the column name for the user_id field
+     */
+    const COL_USER_ID = 'tags.user_id';
 
     /**
      * the column name for the created_at field
@@ -103,11 +108,11 @@ class TagTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Tag', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'tag', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(TagTableMap::COL_ID, TagTableMap::COL_TAG, TagTableMap::COL_CREATED_AT, TagTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'tag', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, )
+        self::TYPE_PHPNAME       => array('Id', 'Tag', 'UserId', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'tag', 'userId', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(TagTableMap::COL_ID, TagTableMap::COL_TAG, TagTableMap::COL_USER_ID, TagTableMap::COL_CREATED_AT, TagTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'tag', 'user_id', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
     );
 
     /**
@@ -117,11 +122,11 @@ class TagTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Tag' => 1, 'CreatedAt' => 2, 'UpdatedAt' => 3, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'tag' => 1, 'createdAt' => 2, 'updatedAt' => 3, ),
-        self::TYPE_COLNAME       => array(TagTableMap::COL_ID => 0, TagTableMap::COL_TAG => 1, TagTableMap::COL_CREATED_AT => 2, TagTableMap::COL_UPDATED_AT => 3, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'tag' => 1, 'created_at' => 2, 'updated_at' => 3, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Tag' => 1, 'UserId' => 2, 'CreatedAt' => 3, 'UpdatedAt' => 4, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'tag' => 1, 'userId' => 2, 'createdAt' => 3, 'updatedAt' => 4, ),
+        self::TYPE_COLNAME       => array(TagTableMap::COL_ID => 0, TagTableMap::COL_TAG => 1, TagTableMap::COL_USER_ID => 2, TagTableMap::COL_CREATED_AT => 3, TagTableMap::COL_UPDATED_AT => 4, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'tag' => 1, 'user_id' => 2, 'created_at' => 3, 'updated_at' => 4, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
     );
 
     /**
@@ -143,6 +148,7 @@ class TagTableMap extends TableMap
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('tag', 'Tag', 'VARCHAR', true, 225, null);
+        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'users', 'id', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -152,6 +158,13 @@ class TagTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('User', '\\User', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, null, false);
         $this->addRelation('TaggedQuestion', '\\TaggedQuestion', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
@@ -326,11 +339,13 @@ class TagTableMap extends TableMap
         if (null === $alias) {
             $criteria->addSelectColumn(TagTableMap::COL_ID);
             $criteria->addSelectColumn(TagTableMap::COL_TAG);
+            $criteria->addSelectColumn(TagTableMap::COL_USER_ID);
             $criteria->addSelectColumn(TagTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(TagTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.tag');
+            $criteria->addSelectColumn($alias . '.user_id');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }

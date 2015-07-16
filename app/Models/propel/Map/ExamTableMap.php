@@ -59,7 +59,7 @@ class ExamTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 8;
+    const NUM_COLUMNS = 9;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class ExamTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 8;
+    const NUM_HYDRATE_COLUMNS = 9;
 
     /**
      * the column name for the id field
@@ -102,6 +102,11 @@ class ExamTableMap extends TableMap
     const COL_RELEASED = 'exams.released';
 
     /**
+     * the column name for the user_id field
+     */
+    const COL_USER_ID = 'exams.user_id';
+
+    /**
      * the column name for the created_at field
      */
     const COL_CREATED_AT = 'exams.created_at';
@@ -123,11 +128,11 @@ class ExamTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Examterm', 'Examtopic', 'Examyear', 'Locked', 'Released', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'examterm', 'examtopic', 'examyear', 'locked', 'released', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(ExamTableMap::COL_ID, ExamTableMap::COL_EXAMTERM, ExamTableMap::COL_EXAMTOPIC, ExamTableMap::COL_EXAMYEAR, ExamTableMap::COL_LOCKED, ExamTableMap::COL_RELEASED, ExamTableMap::COL_CREATED_AT, ExamTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'examTerm', 'examTopic', 'examYear', 'locked', 'released', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
+        self::TYPE_PHPNAME       => array('Id', 'Examterm', 'Examtopic', 'Examyear', 'Locked', 'Released', 'UserId', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'examterm', 'examtopic', 'examyear', 'locked', 'released', 'userId', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(ExamTableMap::COL_ID, ExamTableMap::COL_EXAMTERM, ExamTableMap::COL_EXAMTOPIC, ExamTableMap::COL_EXAMYEAR, ExamTableMap::COL_LOCKED, ExamTableMap::COL_RELEASED, ExamTableMap::COL_USER_ID, ExamTableMap::COL_CREATED_AT, ExamTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'examTerm', 'examTopic', 'examYear', 'locked', 'released', 'user_id', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -137,11 +142,11 @@ class ExamTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Examterm' => 1, 'Examtopic' => 2, 'Examyear' => 3, 'Locked' => 4, 'Released' => 5, 'CreatedAt' => 6, 'UpdatedAt' => 7, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'examterm' => 1, 'examtopic' => 2, 'examyear' => 3, 'locked' => 4, 'released' => 5, 'createdAt' => 6, 'updatedAt' => 7, ),
-        self::TYPE_COLNAME       => array(ExamTableMap::COL_ID => 0, ExamTableMap::COL_EXAMTERM => 1, ExamTableMap::COL_EXAMTOPIC => 2, ExamTableMap::COL_EXAMYEAR => 3, ExamTableMap::COL_LOCKED => 4, ExamTableMap::COL_RELEASED => 5, ExamTableMap::COL_CREATED_AT => 6, ExamTableMap::COL_UPDATED_AT => 7, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'examTerm' => 1, 'examTopic' => 2, 'examYear' => 3, 'locked' => 4, 'released' => 5, 'created_at' => 6, 'updated_at' => 7, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Examterm' => 1, 'Examtopic' => 2, 'Examyear' => 3, 'Locked' => 4, 'Released' => 5, 'UserId' => 6, 'CreatedAt' => 7, 'UpdatedAt' => 8, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'examterm' => 1, 'examtopic' => 2, 'examyear' => 3, 'locked' => 4, 'released' => 5, 'userId' => 6, 'createdAt' => 7, 'updatedAt' => 8, ),
+        self::TYPE_COLNAME       => array(ExamTableMap::COL_ID => 0, ExamTableMap::COL_EXAMTERM => 1, ExamTableMap::COL_EXAMTOPIC => 2, ExamTableMap::COL_EXAMYEAR => 3, ExamTableMap::COL_LOCKED => 4, ExamTableMap::COL_RELEASED => 5, ExamTableMap::COL_USER_ID => 6, ExamTableMap::COL_CREATED_AT => 7, ExamTableMap::COL_UPDATED_AT => 8, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'examTerm' => 1, 'examTopic' => 2, 'examYear' => 3, 'locked' => 4, 'released' => 5, 'user_id' => 6, 'created_at' => 7, 'updated_at' => 8, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -167,6 +172,7 @@ class ExamTableMap extends TableMap
         $this->addForeignKey('examYear', 'Examyear', 'INTEGER', 'r_years', 'content', true, 4, null);
         $this->addColumn('locked', 'Locked', 'INTEGER', true, 1, null);
         $this->addColumn('released', 'Released', 'INTEGER', true, 1, null);
+        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'users', 'id', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -176,6 +182,13 @@ class ExamTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('User', '\\User', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, null, false);
         $this->addRelation('Term', '\\Term', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
@@ -218,27 +231,6 @@ class ExamTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'ExamInfos', false);
-        $this->addRelation('QuestionAssigner', '\\QuestionAssigner', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':examID',
-    1 => ':id',
-  ),
-), null, null, 'QuestionAssigners', false);
-        $this->addRelation('ElementAssignment', '\\ElementAssignment', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':examID',
-    1 => ':id',
-  ),
-), null, null, 'ElementAssignments', false);
-        $this->addRelation('ExamClassAssignment', '\\ExamClassAssignment', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':examID',
-    1 => ':id',
-  ),
-), null, null, 'ExamClassAssignments', false);
         $this->addRelation('GradingTime', '\\GradingTime', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
@@ -253,14 +245,6 @@ class ExamTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'GroupTimes', false);
-        $this->addRelation('PseudoID', '\\PseudoID', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':examID',
-    1 => ':id',
-  ),
-), null, null, 'PseudoIDs', false);
-        $this->addRelation('Kumi', '\\Kumi', RelationMap::MANY_TO_MANY, array(), null, null, 'Kumis');
     } // buildRelations()
 
     /**
@@ -423,6 +407,7 @@ class ExamTableMap extends TableMap
             $criteria->addSelectColumn(ExamTableMap::COL_EXAMYEAR);
             $criteria->addSelectColumn(ExamTableMap::COL_LOCKED);
             $criteria->addSelectColumn(ExamTableMap::COL_RELEASED);
+            $criteria->addSelectColumn(ExamTableMap::COL_USER_ID);
             $criteria->addSelectColumn(ExamTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(ExamTableMap::COL_UPDATED_AT);
         } else {
@@ -432,6 +417,7 @@ class ExamTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.examYear');
             $criteria->addSelectColumn($alias . '.locked');
             $criteria->addSelectColumn($alias . '.released');
+            $criteria->addSelectColumn($alias . '.user_id');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }

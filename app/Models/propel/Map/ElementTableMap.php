@@ -59,7 +59,7 @@ class ElementTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 7;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class ElementTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 7;
 
     /**
      * the column name for the id field
@@ -90,6 +90,11 @@ class ElementTableMap extends TableMap
      * the column name for the commentText field
      */
     const COL_COMMENTTEXT = 'elements.commentText';
+
+    /**
+     * the column name for the user_id field
+     */
+    const COL_USER_ID = 'elements.user_id';
 
     /**
      * the column name for the created_at field
@@ -113,11 +118,11 @@ class ElementTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Elementname', 'Displaytext', 'Commenttext', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'elementname', 'displaytext', 'commenttext', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(ElementTableMap::COL_ID, ElementTableMap::COL_ELEMENTNAME, ElementTableMap::COL_DISPLAYTEXT, ElementTableMap::COL_COMMENTTEXT, ElementTableMap::COL_CREATED_AT, ElementTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'elementName', 'displayText', 'commentText', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id', 'Elementname', 'Displaytext', 'Commenttext', 'UserId', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'elementname', 'displaytext', 'commenttext', 'userId', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(ElementTableMap::COL_ID, ElementTableMap::COL_ELEMENTNAME, ElementTableMap::COL_DISPLAYTEXT, ElementTableMap::COL_COMMENTTEXT, ElementTableMap::COL_USER_ID, ElementTableMap::COL_CREATED_AT, ElementTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'elementName', 'displayText', 'commentText', 'user_id', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -127,11 +132,11 @@ class ElementTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Elementname' => 1, 'Displaytext' => 2, 'Commenttext' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'elementname' => 1, 'displaytext' => 2, 'commenttext' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
-        self::TYPE_COLNAME       => array(ElementTableMap::COL_ID => 0, ElementTableMap::COL_ELEMENTNAME => 1, ElementTableMap::COL_DISPLAYTEXT => 2, ElementTableMap::COL_COMMENTTEXT => 3, ElementTableMap::COL_CREATED_AT => 4, ElementTableMap::COL_UPDATED_AT => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'elementName' => 1, 'displayText' => 2, 'commentText' => 3, 'created_at' => 4, 'updated_at' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Elementname' => 1, 'Displaytext' => 2, 'Commenttext' => 3, 'UserId' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'elementname' => 1, 'displaytext' => 2, 'commenttext' => 3, 'userId' => 4, 'createdAt' => 5, 'updatedAt' => 6, ),
+        self::TYPE_COLNAME       => array(ElementTableMap::COL_ID => 0, ElementTableMap::COL_ELEMENTNAME => 1, ElementTableMap::COL_DISPLAYTEXT => 2, ElementTableMap::COL_COMMENTTEXT => 3, ElementTableMap::COL_USER_ID => 4, ElementTableMap::COL_CREATED_AT => 5, ElementTableMap::COL_UPDATED_AT => 6, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'elementName' => 1, 'displayText' => 2, 'commentText' => 3, 'user_id' => 4, 'created_at' => 5, 'updated_at' => 6, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -155,6 +160,7 @@ class ElementTableMap extends TableMap
         $this->addColumn('elementName', 'Elementname', 'VARCHAR', false, 100, null);
         $this->addColumn('displayText', 'Displaytext', 'VARCHAR', true, 225, null);
         $this->addColumn('commentText', 'Commenttext', 'LONGVARCHAR', false, null, null);
+        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'users', 'id', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -164,6 +170,13 @@ class ElementTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('User', '\\User', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, null, false);
         $this->addRelation('ElementScore', '\\ElementScore', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
@@ -171,21 +184,6 @@ class ElementTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'ElementScores', false);
-        $this->addRelation('ElementAssignment', '\\ElementAssignment', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':elementID',
-    1 => ':id',
-  ),
-), null, null, 'ElementAssignments', false);
-        $this->addRelation('TaggedElement', '\\TaggedElement', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':element_id',
-    1 => ':id',
-  ),
-), null, null, 'TaggedElements', false);
-        $this->addRelation('Tag', '\\Tag', RelationMap::MANY_TO_MANY, array(), null, null, 'Tags');
     } // buildRelations()
 
     /**
@@ -346,6 +344,7 @@ class ElementTableMap extends TableMap
             $criteria->addSelectColumn(ElementTableMap::COL_ELEMENTNAME);
             $criteria->addSelectColumn(ElementTableMap::COL_DISPLAYTEXT);
             $criteria->addSelectColumn(ElementTableMap::COL_COMMENTTEXT);
+            $criteria->addSelectColumn(ElementTableMap::COL_USER_ID);
             $criteria->addSelectColumn(ElementTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(ElementTableMap::COL_UPDATED_AT);
         } else {
@@ -353,6 +352,7 @@ class ElementTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.elementName');
             $criteria->addSelectColumn($alias . '.displayText');
             $criteria->addSelectColumn($alias . '.commentText');
+            $criteria->addSelectColumn($alias . '.user_id');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }

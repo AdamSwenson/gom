@@ -24,6 +24,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildElementAssignmentQuery orderByQuestionid($order = Criteria::ASC) Order by the questionID column
  * @method     ChildElementAssignmentQuery orderBySubtask($order = Criteria::ASC) Order by the subtask column
  * @method     ChildElementAssignmentQuery orderByElementid($order = Criteria::ASC) Order by the elementID column
+ * @method     ChildElementAssignmentQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildElementAssignmentQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildElementAssignmentQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
@@ -31,12 +32,17 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildElementAssignmentQuery groupByQuestionid() Group by the questionID column
  * @method     ChildElementAssignmentQuery groupBySubtask() Group by the subtask column
  * @method     ChildElementAssignmentQuery groupByElementid() Group by the elementID column
+ * @method     ChildElementAssignmentQuery groupByUserId() Group by the user_id column
  * @method     ChildElementAssignmentQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildElementAssignmentQuery groupByUpdatedAt() Group by the updated_at column
  *
  * @method     ChildElementAssignmentQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildElementAssignmentQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildElementAssignmentQuery innerJoin($relation) Adds a INNER JOIN clause to the query
+ *
+ * @method     ChildElementAssignmentQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildElementAssignmentQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildElementAssignmentQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
  *
  * @method     ChildElementAssignmentQuery leftJoinExam($relationAlias = null) Adds a LEFT JOIN clause to the query using the Exam relation
  * @method     ChildElementAssignmentQuery rightJoinExam($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Exam relation
@@ -50,7 +56,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildElementAssignmentQuery rightJoinElement($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Element relation
  * @method     ChildElementAssignmentQuery innerJoinElement($relationAlias = null) Adds a INNER JOIN clause to the query using the Element relation
  *
- * @method     \ExamQuery|\QuestionQuery|\ElementQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \UserQuery|\ExamQuery|\QuestionQuery|\ElementQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildElementAssignment findOne(ConnectionInterface $con = null) Return the first ChildElementAssignment matching the query
  * @method     ChildElementAssignment findOneOrCreate(ConnectionInterface $con = null) Return the first ChildElementAssignment matching the query, or a new ChildElementAssignment object populated from the query conditions when no match is found
@@ -59,6 +65,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildElementAssignment findOneByQuestionid(int $questionID) Return the first ChildElementAssignment filtered by the questionID column
  * @method     ChildElementAssignment findOneBySubtask(int $subtask) Return the first ChildElementAssignment filtered by the subtask column
  * @method     ChildElementAssignment findOneByElementid(int $elementID) Return the first ChildElementAssignment filtered by the elementID column
+ * @method     ChildElementAssignment findOneByUserId(int $user_id) Return the first ChildElementAssignment filtered by the user_id column
  * @method     ChildElementAssignment findOneByCreatedAt(string $created_at) Return the first ChildElementAssignment filtered by the created_at column
  * @method     ChildElementAssignment findOneByUpdatedAt(string $updated_at) Return the first ChildElementAssignment filtered by the updated_at column *
 
@@ -69,6 +76,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildElementAssignment requireOneByQuestionid(int $questionID) Return the first ChildElementAssignment filtered by the questionID column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildElementAssignment requireOneBySubtask(int $subtask) Return the first ChildElementAssignment filtered by the subtask column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildElementAssignment requireOneByElementid(int $elementID) Return the first ChildElementAssignment filtered by the elementID column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildElementAssignment requireOneByUserId(int $user_id) Return the first ChildElementAssignment filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildElementAssignment requireOneByCreatedAt(string $created_at) Return the first ChildElementAssignment filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildElementAssignment requireOneByUpdatedAt(string $updated_at) Return the first ChildElementAssignment filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
@@ -77,6 +85,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildElementAssignment[]|ObjectCollection findByQuestionid(int $questionID) Return ChildElementAssignment objects filtered by the questionID column
  * @method     ChildElementAssignment[]|ObjectCollection findBySubtask(int $subtask) Return ChildElementAssignment objects filtered by the subtask column
  * @method     ChildElementAssignment[]|ObjectCollection findByElementid(int $elementID) Return ChildElementAssignment objects filtered by the elementID column
+ * @method     ChildElementAssignment[]|ObjectCollection findByUserId(int $user_id) Return ChildElementAssignment objects filtered by the user_id column
  * @method     ChildElementAssignment[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildElementAssignment objects filtered by the created_at column
  * @method     ChildElementAssignment[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildElementAssignment objects filtered by the updated_at column
  * @method     ChildElementAssignment[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -171,7 +180,7 @@ abstract class ElementAssignmentQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT examID, questionID, subtask, elementID, created_at, updated_at FROM elementXquestions WHERE examID = :p0 AND questionID = :p1 AND subtask = :p2';
+        $sql = 'SELECT examID, questionID, subtask, elementID, user_id, created_at, updated_at FROM elementXquestions WHERE examID = :p0 AND questionID = :p1 AND subtask = :p2';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
@@ -448,6 +457,49 @@ abstract class ElementAssignmentQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the user_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUserId(1234); // WHERE user_id = 1234
+     * $query->filterByUserId(array(12, 34)); // WHERE user_id IN (12, 34)
+     * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
+     * </code>
+     *
+     * @see       filterByUser()
+     *
+     * @param     mixed $userId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildElementAssignmentQuery The current query, for fluid interface
+     */
+    public function filterByUserId($userId = null, $comparison = null)
+    {
+        if (is_array($userId)) {
+            $useMinMax = false;
+            if (isset($userId['min'])) {
+                $this->addUsingAlias(ElementAssignmentTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($userId['max'])) {
+                $this->addUsingAlias(ElementAssignmentTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ElementAssignmentTableMap::COL_USER_ID, $userId, $comparison);
+    }
+
+    /**
      * Filter the query on the created_at column
      *
      * Example usage:
@@ -531,6 +583,83 @@ abstract class ElementAssignmentQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(ElementAssignmentTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \User object
+     *
+     * @param \User|ObjectCollection $user The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildElementAssignmentQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = null)
+    {
+        if ($user instanceof \User) {
+            return $this
+                ->addUsingAlias(ElementAssignmentTableMap::COL_USER_ID, $user->getId(), $comparison);
+        } elseif ($user instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(ElementAssignmentTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByUser() only accepts arguments of type \User or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the User relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildElementAssignmentQuery The current query, for fluid interface
+     */
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('User');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'User');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the User relation User object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \UserQuery A secondary query class using the current class as primary query
+     */
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
     }
 
     /**
