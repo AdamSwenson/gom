@@ -8,6 +8,9 @@
 
 namespace App\classes\RestrictorClasses\dao;
 
+use App\classes\SecurityClasses\cleaning\ICleanerFactory;
+use App\classes\Traits\UserTraits;
+
 /**
  * Class RestrictorDAO
  *
@@ -19,10 +22,20 @@ namespace App\classes\RestrictorClasses\dao;
  */
 class RestrictorDAO implements IRestrictorDAO
 {
-    /** @var  $cleaner \App\classes\SecurityClasses\cleaning\ICleanerFactory */
+
+    use UserTraits;
+
+    /** @var \User */
+    public $user;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
+    /** @var  $cleaner ICleanerFactory */
     public $cleaner;
 
-    public function set_cleaner(\App\classes\SecurityClasses\cleaning\ICleanerFactory $cleanerFactory){
+    public function set_cleaner(ICleanerFactory $cleanerFactory){
         $this->cleaner = $cleanerFactory;
     }
 
@@ -37,7 +50,10 @@ class RestrictorDAO implements IRestrictorDAO
         if(!$year_int) {
             throw new \Exception("inproper input to load_year");
         }
-        $year = \YearQuery::create()->filterByPrimaryKey($year_int)->findOneOrCreate();
+        $year = \YearQuery::create()
+            ->filterByUser($this->user)
+            ->filterByPrimaryKey($year_int)
+            ->findOneOrCreate();
         return $year;
     }
 
@@ -52,7 +68,10 @@ class RestrictorDAO implements IRestrictorDAO
         if(!$ts) {
            throw new \Exception("inproper input to load_term");
         }
-        $term = \TermQuery::create()->filterByPrimaryKey($ts)->findOneOrCreate();
+        $term = \TermQuery::create()
+            ->filterByUser($this->user)
+            ->filterByPrimaryKey($ts)
+            ->findOneOrCreate();
         return $term;
     }
 
@@ -65,9 +84,12 @@ class RestrictorDAO implements IRestrictorDAO
     {
         $ts = $this->cleaner->sanitize($examTopic, 'string');
         if(!$ts) {
-            throw new \Exception("inproper input to load_topic");
+            throw new \Exception("improper input to load_topic");
         }
-        $topic = \TopicQuery::create()->filterByPrimaryKey($ts)->findOneOrCreate();
+        $topic = \TopicQuery::create()
+            ->filterByUser($this->user)
+            ->filterByPrimaryKey($ts)
+            ->findOneOrCreate();
         return $topic;
     }
 

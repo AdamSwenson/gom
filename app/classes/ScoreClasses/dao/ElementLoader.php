@@ -9,8 +9,20 @@
 namespace App\classes\ScoreClasses\dao;
 
 
+use App\classes\Traits\UserTraits;
+
 class ElementLoader extends LoaderParent implements ILoader
 {
+
+    use UserTraits;
+
+    /** @var \User */
+    public $user;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
     static public $type = ScoreDAO::WORKER_ELEMENT;
 
     public function all()
@@ -30,12 +42,14 @@ class ElementLoader extends LoaderParent implements ILoader
     {
         if(isset($this->student)){
              return  \ElementScoreQuery::create()
+                 ->filterByUser($this->user)
                 ->filterByExam($this->exam)
                 ->filterByStudent($this->student)
                 ->filterByElement($object)
                 ->findOne();
         }else{
             return  \ElementScoreQuery::create()
+                ->filterByUser($this->user)
                 ->filterByExam($this->exam)
                 ->filterByElement($object)
                 ->find();
@@ -51,6 +65,7 @@ class ElementLoader extends LoaderParent implements ILoader
         try {
             $scores = array();
             $q = \QuestionAssignerQuery::create()
+                ->filterByUser($this->user)
                 ->filterByExam($this->exam)
                 ->filterByQuestionnumber($questionNumber)
                 ->findOne();
@@ -58,6 +73,7 @@ class ElementLoader extends LoaderParent implements ILoader
                 throw new \Exception();
             }
             $el_assigns = \ElementAssignmentQuery::create()
+                ->filterByUser($this->user)
                 ->filterByExam($this->exam)
                 ->filterByQuestion($q->getQuestion())
                 ->orderBySubtask()
@@ -79,6 +95,7 @@ class ElementLoader extends LoaderParent implements ILoader
     protected function get_one_with_student(\Element $element)
     {
         return  \ElementScoreQuery::create()
+            ->filterByUser($this->user)
             ->filterByExam($this->exam)
             ->filterByStudent($this->student)
             ->filterByElement($element)
@@ -88,6 +105,7 @@ class ElementLoader extends LoaderParent implements ILoader
     protected function get_one_no_student(\Element $element)
     {
         return  \ElementScoreQuery::create()
+            ->filterByUser($this->user)
             ->filterByExam($this->exam)
             ->filterByElement($element)
             ->findOne();
@@ -99,6 +117,7 @@ class ElementLoader extends LoaderParent implements ILoader
     protected function get_all_element_scores_for_student()
     {
         return  \ElementScoreQuery::create()
+            ->filterByUser($this->user)
             ->filterByExam($this->exam)
             ->filterByStudent($this->student)
             ->find();
@@ -110,6 +129,7 @@ class ElementLoader extends LoaderParent implements ILoader
     protected function get_all_element_scores_for_exam()
     {
         return  \ElementScoreQuery::create()
+            ->filterByUser($this->user)
             ->filterByExam($this->exam)
             ->find();
     }

@@ -133,4 +133,15 @@ class IExamDAOMock extends MockParent implements IExamDAO
      * @return mixed|void
      */
     public function set_connection(ConnectionWrapper $conn){}
+
+    /**
+     * Deletes the exam after checking that the user is authenticated
+     * @param \Exam $exam
+     * @return mixed
+     */
+    public function delete_exam(\Exam $exam)
+    {
+        $this->record_call(__FUNCTION__, array($exam));
+        return $this->response;
+    }
 }

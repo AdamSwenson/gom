@@ -15,6 +15,12 @@ use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Propel;
 
 
+
+//require_once '../../../vendor/autoload.php';
+
+function run(){
+
+}
 /**
  * Class DbTestAids
  * These are tools for putting the database into a known state
@@ -33,10 +39,19 @@ class DbTestAids
 
     public static function populate_all()
     {
-        self::populate_item_assignments();
-        self::populate_restrictors();
-        self::populate_students();
-        self::populate_classes();
+        //
+DbTestAids::populate_item_assignments2();
+DbTestAids::populate_restrictors();
+DbTestAids::populate_students();
+DbTestAids::populate_classes();
+//\classes\DbTestAids::populate_scores();
+DbTestAids::populate_element_scores();
+DbTestAids::populate_question_scores();
+DbTestAids::populate_pseudoids();
+DbTestAids::populate_times();
+
+//\classes\DbTestAids::populate_tags();
+
     }
 
     public static function add_user()
@@ -607,3 +622,5 @@ class DbTestAids
         return $q;
     }
 }
+
+//DbTestAids::populate_all();

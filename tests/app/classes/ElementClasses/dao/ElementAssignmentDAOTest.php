@@ -16,17 +16,27 @@ class ElementAssignmentDAOTest extends \TestCase {
     public $question;
     public $exam;
     public $element;
+    public $user;
 
     public function setUp()
     {
 
+        parent::setUp();
+        $this->user = \UserQuery::create()->filterById(self::$userid)->findOneOrCreate();
+
         $this->object = new ElementAssignmentDAO();
 
-        $this->exam = DbTestAids::make_exam('testterm4', 2012, 'testtopic4');
-        $this->question = DbTestAids::make_question('testquestiontext');
-        $this->element = DbTestAids::make_element('testelement name');
+        $this->exam = \ExamQuery::create()->filterByUser($this->user)->findOne();
+        //DbTestAids::make_exam('testterm4', 2012, 'testtopic4');
+        $this->question = \QuestionQuery::create()
+            ->filterByUser($this->user)
+            ->findOne();
+        //DbTestAids::make_question('testquestiontext');
+        $this->element = \ElementQuery::create()
+            ->filterByUser($this->user)
+            ->findOne();
+        //DbTestAids::make_element('testelement name');
 
-        parent::setUp();
     }
 
     public function testRecord()

@@ -17,23 +17,27 @@ class ExamDAOTest extends \TestCase
     public $year;
     public $topic;
     public $object;
+    public $user;
 
 
     public function setUp()
     {
         parent::setUp();
         $this->object = new ExamDAO();
-        $this->year = \YearQuery::create()->filterByContent(2015)->findOneOrCreate();
-        $this->term = \TermQuery::create()->filterByContent('testTerm')->findOneOrCreate();
-        $this->topic = \TopicQuery::create()->filterByContent('testTopic')->findOneOrCreate();
+        $this->user = \UserQuery::create()->filterById(self::$userid)->findOneOrCreate();
+        $this->year = \YearQuery::create()->filterByUser($this->user)->filterByContent(2015)->findOneOrCreate();
+        $this->term = \TermQuery::create()->filterByUser($this->user)->filterByContent('testTerm')->findOneOrCreate();
+        $this->topic = \TopicQuery::create()->filterByUser($this->user)->filterByContent('testTopic')->findOneOrCreate();
     }
 
     public function makeexam($term, $year, $topic, $locked=0)
     {
-        $yr = \YearQuery::create()->filterByContent($year)->findOneOrCreate();
-        $tm = \TermQuery::create()->filterByContent($term)->findOneOrCreate();
-        $tc = \TopicQuery::create()->filterByContent($topic)->findOneOrCreate();
+
+        $yr = \YearQuery::create()->filterByUser($this->user)->filterByContent($year)->findOneOrCreate();
+        $tm = \TermQuery::create()->filterByUser($this->user)->filterByContent($term)->findOneOrCreate();
+        $tc = \TopicQuery::create()->filterByUser($this->user)->filterByContent($topic)->findOneOrCreate();
         $ex = new \Exam();
+        $ex->setUser($this->user);
         $ex->setTopic($tc);
         $ex->setTerm($tm);
         $ex->setYear($yr);
@@ -51,11 +55,8 @@ class ExamDAOTest extends \TestCase
 
     public function testLoad_all_exams()
     {
-        $this->makeexam('t1', 2000, 't1');
-        $this->makeexam('t2', 2000, 't2');
-        $this->makeexam('t1', 2001, 't1');
         $result = $this->object->load_all_exams();
-        $this->assertTrue(count($result) >= 3);
+        $this->assertTrue(count($result) >= 1);
     }
 
     public function testLoad_unlocked_exams()

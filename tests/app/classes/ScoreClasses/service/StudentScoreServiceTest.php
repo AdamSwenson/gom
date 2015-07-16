@@ -35,9 +35,13 @@ class StudentScoreServiceTest extends \TestCase
      */
     public function setUp()
     {
-        $ex = \ExamQuery::create()->findOne();
-        $st = \StudentQuery::create()->findOne();
+//        $ex = \ExamQuery::create()->findOne();
+//        $st = \StudentQuery::create()->findOne();
 
+        $ex = new \Exam();
+        $ex->setId(1);
+        $st = new \Student();
+        $st->setId(1);
         $this->object = new StudentScoreService();
         $this->encoder = new IJsonOutputMock();
         $this->escores = \ElementScoreQuery::create()->limit(5)->find();

@@ -9,8 +9,19 @@
 namespace App\classes\TagClasses\dao;
 
 
-class TagAssignmentDao 
+use App\classes\Traits\UserTraits;
+
+class TagAssignmentDao
 {
+    use UserTraits;
+
+    /** @var \User */
+    public $user;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
 
     protected $tagRelation;
 
@@ -27,6 +38,7 @@ class TagAssignmentDao
         {
             case $item instanceof \Question:
                 $q = \TaggedQuestionQuery::create()
+                    ->filterByUser($this->user)
                 ->filterByQuestion($item)
                 ->filterByTag($tag)
                 ->findOneOrCreate();
@@ -35,6 +47,7 @@ class TagAssignmentDao
 
             case $item instanceof \Element:
                 $q = \TaggedElementQuery::create()
+                    ->filterByUser($this->user)
                     ->filterByElement($item)
                     ->filterByTag($tag)
                     ->findOneOrCreate();
@@ -59,12 +72,14 @@ class TagAssignmentDao
         {
             case $item instanceof \Question:
                 return \TaggedQuestionQuery::create()
+                    ->filterByUser($this->user)
                     ->filterByQuestion($item)
                     ->find();
                 break;
 
             case $item instanceof \Element:
                 return \TaggedElementQuery::create()
+                    ->filterByUser($this->user)
                     ->filterByElement($item)
                     ->find();
                 break;

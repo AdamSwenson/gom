@@ -8,6 +8,10 @@
 
 namespace App\classes\ScoreClasses;
 
+use App\classes\ScoreClasses\IElementScoreHandler;
+use App\classes\ScoreClasses\IQuestionScoreHandler;
+use App\classes\Traits\UserTraits;
+
 /**
  * Class ScoreLoader
  * This gets the questions, elements, and scores for use in  grading.
@@ -24,25 +28,36 @@ class ScoreLoader
 
     public $questions_to_send = array();
 
-    /** @var  $question_score_handler  \App\classes\ScoreClasses\IQuestionScoreHandler */
+    /** @var  $question_score_handler  IQuestionScoreHandler */
     public $question_score_handler;
 
-    /** @var  $element_score_handler \App\classes\ScoreClasses\IElementScoreHandler */
+    /** @var  $element_score_handler IElementScoreHandler */
     public $element_score_handler;
 
-    public function set_question_score_handler(\App\classes\ScoreClasses\IQuestionScoreHandler $question_score_handler)
+    use UserTraits;
+
+    /** @var \User */
+    public $user;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
+    public function set_question_score_handler(IQuestionScoreHandler $question_score_handler)
     {
         $this->question_score_handler = $question_score_handler;
     }
 
-    public function set_element_score_handler(\App\classes\ScoreClasses\IElementScoreHandler $element_score_handler)
+    public function set_element_score_handler(IElementScoreHandler $element_score_handler)
     {
         $this->element_score_handler = $element_score_handler;
     }
 
     protected function get_questions(\Exam $exam, \Question $question)
     {
-        return \QuestionAssignerQuery::create()->filterByExam($exam)->filterByQuestion($question)->findOneOrCreate();
+        return \QuestionAssignerQuery::create()
+            ->filterByUser($this->user)
+            ->filterByExam($exam)->filterByQuestion($question)->findOneOrCreate();
     }
 
 

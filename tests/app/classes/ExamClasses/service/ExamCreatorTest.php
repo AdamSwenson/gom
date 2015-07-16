@@ -9,6 +9,10 @@
 namespace App\classes\ExamClasses\service;
 
 
+use App\classes\ExamClasses\dao\IExamDAOMock;
+use App\classes\JsonOutputClasses\controllers\IResponseChooserMock;
+use App\classes\RestrictorClasses\dao\IRestrictorDAOMock;
+
 class ExamCreatorTest extends \TestCase
 {
 
@@ -20,9 +24,9 @@ class ExamCreatorTest extends \TestCase
     function setUp()
     {
         $this->object = new ExamCreator();
-        $this->examdao = new \App\classes\ExamClasses\dao\IExamDAOMock();
-        $this->restrictordao = new \App\classes\RestrictorClasses\dao\IRestrictorDAOMock();
-        $this->response_handler = new \App\classes\JsonOutputClasses\controllers\IResponseChooserMock();
+        $this->examdao = new IExamDAOMock();
+        $this->restrictordao = new IRestrictorDAOMock();
+        $this->response_handler = new IResponseChooserMock();
     }
 
     public function testSet_response_handler()

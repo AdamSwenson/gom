@@ -9,6 +9,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      */
     protected $baseUrl = 'http://localhost';
 
+    public static $userid = 1;
     /**
      * Creates the application.
      *
@@ -19,6 +20,8 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         $app = require __DIR__.'/../bootstrap/app.php';
 
         $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+
+        Auth::loginUsingId(self::$userid);
 
         return $app;
     }

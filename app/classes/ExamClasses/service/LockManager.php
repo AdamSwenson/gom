@@ -8,6 +8,8 @@
 
 namespace App\classes\ExamClasses\service;
 
+use App\classes\RequestClasses\IRequest;
+
 /**
  * Class LockManager
  * This handles locking and unlocking an exam.
@@ -29,7 +31,7 @@ class LockManager extends ExamServiceParent implements IExamStatusManager
     /** The task string expected for unlock operations */
     const UNLOCK_TASK = 'unlockExam';
 
-    /** @var  $request \App\classes\RequestClasses\IRequest */
+    /** @var  $request IRequest */
     protected $request;
 
 //    /** @var  $dao \App\classes\ExamClasses\dao\IExamDAO */
@@ -110,9 +112,9 @@ class LockManager extends ExamServiceParent implements IExamStatusManager
 
     /**
      * Lock or unlock an exam from a post request
-     * @param \App\classes\RequestClasses\IRequest $request
+     * @param IRequest $request
      */
-    public function execute(\App\classes\RequestClasses\IRequest $request)
+    public function execute(IRequest $request)
     {
         $this->request = $request;
         $this->choose();

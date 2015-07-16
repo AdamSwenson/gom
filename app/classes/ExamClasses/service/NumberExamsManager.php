@@ -8,6 +8,9 @@
 
 namespace App\classes\ExamClasses\service;
 
+use App\classes\JsonOutputClasses\controllers\IResponseChooser;
+use App\classes\SecurityClasses\cleaning\ICleanerFactory;
+
 /**
  * This sets the session cookie with number of exams to be graded after sanitizing the incoming string
  *
@@ -21,24 +24,24 @@ class NumberExamsManager implements INumberExamsManager
     /** var MAX_EXAMS defines the upper limit of how many */
     const MAX_EXAMS = 1000;
 
-    /** @var  $cleaner \App\classes\SecurityClasses\cleaning\ICleanerFactory */
+    /** @var  $cleaner ICleanerFactory */
     public $cleaner;
 
     /**
-     * @param \App\classes\SecurityClasses\cleaning\ICleanerFactory $cleaner
+     * @param ICleanerFactory $cleaner
      */
-    public function load_cleaner(\App\classes\SecurityClasses\cleaning\ICleanerFactory $cleaner)
+    public function load_cleaner(ICleanerFactory $cleaner)
     {
         $this->cleaner = $cleaner;
     }
 
-    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
+    /** @var  $response_handler IResponseChooser */
     public $response_handler;
 
     /**
-     * @param \App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler
+     * @param IResponseChooser $response_handler
      */
-    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    public function set_response_handler(IResponseChooser $response_handler)
     {
         $this->response_handler = $response_handler;
     }

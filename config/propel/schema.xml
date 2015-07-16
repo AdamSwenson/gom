@@ -188,7 +188,7 @@
         <column name="questionID" type="integer" required="true" />
         <column name="user_id" type="integer" required="true" />
         <foreign-key foreignTable="users">
-            <reference local="user_id" foreign="id" phpName="user" refPhpName="questionAssigner" onDelete="cascade"/>
+            <reference local="user_id" foreign="id" phpName="user" refPhpName="question_assigner" onDelete="cascade"/>
         </foreign-key>
         <foreign-key foreignTable="exams">
             <reference local="examID" foreign="id" onDelete="cascade"/>
@@ -208,13 +208,13 @@
             <reference local="user_id" foreign="id" phpName="user" refPhpName="ElementAssignment" onDelete="cascade"/>
         </foreign-key>
         <foreign-key foreignTable="exams">
-            <reference local="examID" foreign="id" onDelete="cascade"/>
+            <reference local="examID" foreign="id" phpName="exam" refPhpName="ElementAssigner" onDelete="cascade"/>
         </foreign-key>
         <foreign-key foreignTable="questions">
-            <reference local="questionID" foreign="id" onDelete="cascade"/>
+            <reference local="questionID" foreign="id" phpName="question" refPhpName="ElementAssigner" onDelete="cascade"/>
         </foreign-key>
         <foreign-key foreignTable="elements">
-            <reference local="elementID" foreign="id" onDelete="cascade"/>
+            <reference local="elementID" foreign="id" phpName="element" refPhpName="ElementAssigner" onDelete="cascade"/>
         </foreign-key>
     </table>
 

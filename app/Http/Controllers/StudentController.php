@@ -11,7 +11,7 @@ namespace App\Http\Controllers;
 
 use App\classes\ExamClasses\service\CurrentExamManager;
 use App\classes\ImportExportClasses\StudentUpload\StudentCsvProcessor;
-use App\classes\ImportExportClasses\StudentUpload\Uploader;
+use App\classes\ImportExportClasses\dao\Uploader;
 use App\classes\RequestClasses\FileRequest;
 use App\Http\Controllers\helpers\ExamSelectorHelper;
 

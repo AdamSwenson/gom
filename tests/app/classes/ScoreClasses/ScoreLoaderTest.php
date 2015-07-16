@@ -9,6 +9,10 @@
 namespace App\classes\ScoreClasses;
 
 
+use App\classes\ScoreClasses\IElementScoreHandlerMock;
+use App\classes\ScoreClasses\IQuestionScoreHandlerMock;
+use App\classes\ScoreClasses\ScoreLoader;
+
 class ScoreLoaderTest extends \TestCase {
     public $object;
     public $question_score_handler;
@@ -16,10 +20,10 @@ class ScoreLoaderTest extends \TestCase {
 
     public function setUp()
     {
-        $this->object = new \App\classes\ScoreClasses\ScoreLoader();
-        $this->question_score_handler = new \App\classes\ScoreClasses\IQuestionScoreHandlerMock();
-        $this->element_score_handler = new \App\classes\ScoreClasses\IElementScoreHandlerMock();
         parent::setUp();
+        $this->object = new ScoreLoader();
+        $this->question_score_handler = new IQuestionScoreHandlerMock();
+        $this->element_score_handler = new IElementScoreHandlerMock();
     }
 
     /**

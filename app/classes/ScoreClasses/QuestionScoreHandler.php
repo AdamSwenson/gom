@@ -9,18 +9,30 @@
 namespace App\classes\ScoreClasses;
 
 
+use App\classes\JsonOutputClasses\controllers\IResponseChooser;
+use App\classes\Traits\UserTraits;
+
 class QuestionScoreHandler implements IQuestionScoreHandler
 {
-    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
+    /** @var  $response_handler IResponseChooser */
     public $response_handler;
 
     /** @var  $question_score_obj \QuestionScore */
     public $question_score_obj;
 
+    use UserTraits;
+
+    /** @var \User */
+    public $user;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
     /**
-     * @param \App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler
+     * @param IResponseChooser $response_handler
      */
-    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    public function set_response_handler(IResponseChooser $response_handler)
     {
         $this->response_handler = $response_handler;
     }
@@ -36,6 +48,7 @@ class QuestionScoreHandler implements IQuestionScoreHandler
     public function load(\Exam $exam, \Question $question, \Student $student)
     {
         $this->question_score_obj = \QuestionScoreQuery::create()
+            ->filterByUser($this->user)
             ->filterByExam($exam)
             ->filterByQuestion($question)
             ->filterByStudent($student)

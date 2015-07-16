@@ -9,9 +9,20 @@
 namespace App\classes\QuestionClasses\dao;
 
 
+use App\classes\Traits\UserTraits;
+
 class QuestionDAO implements IQuestionDAO
 {
 
+    use UserTraits;
+
+    /** @var \User */
+    public $user;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
     /**
      * Loads a question object from an array
      * @param array $incoming
@@ -35,7 +46,10 @@ class QuestionDAO implements IQuestionDAO
      */
     public function get_question($questionID)
     {
-        $question = \QuestionQuery::create()->filterById($questionID)->findOneOrCreate();
+        $question = \QuestionQuery::create()
+            ->filterByUser($this->user)
+            ->filterById($questionID)
+            ->findOneOrCreate();
 //        if($question->isNew()){
 //            $question->save();
 //        }

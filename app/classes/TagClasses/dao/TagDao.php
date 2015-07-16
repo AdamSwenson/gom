@@ -8,6 +8,8 @@
 
 namespace App\classes\TagClasses\dao;
 
+use App\classes\Traits\UserTraits;
+
 /**
  * Class TagDao
  * Handles creating, editing, and deleting tags which are applied to
@@ -16,6 +18,16 @@ namespace App\classes\TagClasses\dao;
  */
 class TagDao 
 {
+    use UserTraits;
+
+    /** @var \User */
+    public $user;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
+
     /**
      * Creates a new tag with the specified text
      * @param $tagtext

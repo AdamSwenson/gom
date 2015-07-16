@@ -9,6 +9,9 @@
 namespace App\classes\ImportExportClasses\StudentUpload;
 
 
+use App\classes\ImportExportClasses\StudentUpload\IStudentCsvProcessor;
+use App\classes\RequestClasses\IFileRequest;
+use App\classes\ImportExportClasses\dao\ImportDao;
 use Map\StudentTableMap;
 use Propel\Runtime\Propel;
 
@@ -16,7 +19,10 @@ class Uploader
 {
     public $errors = array();
 
-    /** @var  \App\classes\ImportExportClasses\StudentUpload\IStudentCsvProcessor */
+    /** @var ImportDao  */
+    public $dao;
+
+    /** @var  IStudentCsvProcessor */
     protected $processor;
 
     /** @var  \Exam */
@@ -24,11 +30,15 @@ class Uploader
 
     protected $connection;
 
+    public function __construct()
+    {
+    $this->dao = new ImportDao();
+    }
     /**
      * Loads the object which handles validating and processing the csv file
      * @param IStudentCsvProcessor $processor
      */
-    public function set_file_processor(\App\classes\ImportExportClasses\StudentUpload\IStudentCsvProcessor $processor)
+    public function set_file_processor(IStudentCsvProcessor $processor)
     {
         $this->processor = $processor;
     }
@@ -44,10 +54,10 @@ class Uploader
 
     /**
      * Main publicly called method
-     * @param \App\classes\RequestClasses\IFileRequest $request
+     * @param IFileRequest $request
      * @return bool
      */
-    public function process(\App\classes\RequestClasses\IFileRequest $request)
+    public function process(IFileRequest $request)
     {
         try{
             $this->load_students($request);
@@ -63,11 +73,11 @@ class Uploader
     /**
      * Handles the loading students
      * TODO: Replace error array with custom exceptions
-     * @param \App\classes\RequestClasses\IFileRequest $request
+     * @param IFileRequest $request
      * @return bool
      * @throws \Exception
      */
-    protected function load_students(\App\classes\RequestClasses\IFileRequest $request)
+    protected function load_students(IFileRequest $request)
     {
         if($this->processor->process_file($request)){
             if(count($this->processor->students) > 0){
@@ -116,58 +126,61 @@ class Uploader
      */
     public function add_record($sid, $student_name, $kumi_name, $email=false)
     {
-        try {
-            $kumi = \KumiQuery::create()
-                ->filterByNickname($kumi_name)
-                ->filterByYear($this->exam->getExamyear())
-                ->findOneOrCreate($this->connection);
-            $kumi->save($this->connection);
-
-        //    $student = \StudentQuery::create()->filterBySid($sid)->filterByStudentname($student_name)->findOneOrCreate($this->connection);
-          //  $student = new \Student($this->connection);
-            //$student->setSid($sid);
-            if ($email) {
-                $student = \StudentQuery::create()
-                    ->filterBySid($sid)
-                    ->filterByStudentname($student_name)
-                    ->filterByEmail($email)
-                    ->findOneOrCreate($this->connection);
-//                $student->setEmail($email);
-            }else{
-                $student = \StudentQuery::create()
-                    ->filterBySid($sid)
-                    ->filterByStudentname($student_name)
-                    ->findOneOrCreate($this->connection);
-            }
-            $student->save($this->connection);
-
-            $assign = \StudentClassAssignmentQuery::create()
-                ->filterByKumi($kumi)
-                ->filterByStudent($student)
-                ->findOneOrCreate($this->connection);
-            $assign->save($this->connection);
-//            $assign = new \StudentClassAssignment($this->connection);
-//            $assign->setStudent($student);
-//            $assign->setKumi($kumi);
-//            $assign->save($this->connection);
-
-            $exam_assign = \ExamClassAssignmentQuery::create()
-                ->filterByKumi($kumi)
-                ->filterByExam($this->exam)
-                ->findOneOrCreate($this->connection);
-            $exam_assign->save($this->connection);
-//            $exam_assign->setKumi($kumi);
-//            $exam_assign->setExam($this->exam);
-//            if(isset($this->connection)){
-//                $exam_assign->save($this->connection);
-//            }else{
-//                $exam_assign->save();
-//            }
-        }catch(\Exception $e)
-        {
-            array_push($this->errors, array('sid' => $sid, 'student_name' => $student_name));
-            throw $e;
-        }
+        $this->dao->add_record($sid, $student_name, $kumi_name, $email);
     }
+
+//        try {
+//            $kumi = \KumiQuery::create()
+//                ->filterByNickname($kumi_name)
+//                ->filterByYear($this->exam->getExamyear())
+//                ->findOneOrCreate($this->connection);
+//            $kumi->save($this->connection);
+//
+//        //    $student = \StudentQuery::create()->filterBySid($sid)->filterByStudentname($student_name)->findOneOrCreate($this->connection);
+//          //  $student = new \Student($this->connection);
+//            //$student->setSid($sid);
+//            if ($email) {
+//                $student = \StudentQuery::create()
+//                    ->filterBySid($sid)
+//                    ->filterByStudentname($student_name)
+//                    ->filterByEmail($email)
+//                    ->findOneOrCreate($this->connection);
+////                $student->setEmail($email);
+//            }else{
+//                $student = \StudentQuery::create()
+//                    ->filterBySid($sid)
+//                    ->filterByStudentname($student_name)
+//                    ->findOneOrCreate($this->connection);
+//            }
+//            $student->save($this->connection);
+//
+//            $assign = \StudentClassAssignmentQuery::create()
+//                ->filterByKumi($kumi)
+//                ->filterByStudent($student)
+//                ->findOneOrCreate($this->connection);
+//            $assign->save($this->connection);
+////            $assign = new \StudentClassAssignment($this->connection);
+////            $assign->setStudent($student);
+////            $assign->setKumi($kumi);
+////            $assign->save($this->connection);
+//
+//            $exam_assign = \ExamClassAssignmentQuery::create()
+//                ->filterByKumi($kumi)
+//                ->filterByExam($this->exam)
+//                ->findOneOrCreate($this->connection);
+//            $exam_assign->save($this->connection);
+////            $exam_assign->setKumi($kumi);
+////            $exam_assign->setExam($this->exam);
+////            if(isset($this->connection)){
+////                $exam_assign->save($this->connection);
+////            }else{
+////                $exam_assign->save();
+////            }
+//        }catch(\Exception $e)
+//        {
+//            array_push($this->errors, array('sid' => $sid, 'student_name' => $student_name));
+//            throw $e;
+//        }
+//    }
 
 }

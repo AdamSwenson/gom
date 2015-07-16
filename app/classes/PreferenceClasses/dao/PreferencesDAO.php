@@ -9,9 +9,20 @@
 namespace App\classes\PreferenceClasses\dao;
 
 
+use App\classes\Traits\UserTraits;
+
 class PreferencesDAO
 {
 
+    use UserTraits;
+
+    /** @var \User */
+    public $user;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
     /**
      * Loads a Preferences object into a session
      */

@@ -101,6 +101,7 @@ return array(
     'App\\classes\\StudentClasses\\StudentsForExamGeneratorTest' => $baseDir . '/tests/app/classes/StudentClasses/StudentsForExamGeneratorTest.php',
     'App\\classes\\StudentClasses\\dao\\IStudentLoaderMock' => $baseDir . '/tests/app/classes/StudentClasses/dao/IStudentLoaderMock.php',
     'App\\classes\\StudentClasses\\dao\\StudentLoaderTest' => $baseDir . '/tests/app/classes/StudentClasses/dao/StudentLoaderTest.php',
+    'App\\classes\\Traits\\UserTraitsTest' => $baseDir . '/tests/app/classes/Traits/UserTraitsTest.php',
     'App\\classes\\UserManagement\\dao\\IDatabaseCreationDaoMock' => $baseDir . '/tests/app/classes/UserManagement/dao/IDatabaseCreationDaoMock.php',
     'App\\classes\\UserManagement\\dao\\IUserTableManagementDaoMock' => $baseDir . '/tests/app/classes/UserManagement/dao/IUserTableManagementDaoMock.php',
     'App\\classes\\UserManagement\\maker\\AccountSetupTest' => $baseDir . '/tests/app/classes/UserManagement/maker/AccountSetupTest.php',

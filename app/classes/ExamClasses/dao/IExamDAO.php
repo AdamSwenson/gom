@@ -30,6 +30,13 @@ interface IExamDAO
     public function save_new_exam(\Year $year, \Term $term, \Topic $topic);
 
     /**
+     * Deletes the exam after checking that the user is authenticated
+     * @param \Exam $exam
+     * @return mixed
+     */
+    public function delete_exam(\Exam $exam);
+
+    /**
      * Returns all exams
      * @return \Exam[]|\Propel\Runtime\Collection\ObjectCollection
      */

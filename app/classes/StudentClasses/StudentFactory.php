@@ -9,20 +9,31 @@
 namespace App\classes\StudentClasses;
 
 
+use App\classes\RequestClasses\IRequest;
+use App\classes\SecurityClasses\cleaning\ICleanerFactory;
+use App\classes\StudentClasses\dao\StudentLoader;
+
 class StudentFactory
 {
+    public $studentDao;
+
     /** var $student \Student*/
     public $student;
 
-    /** @var  $cleaner \App\classes\SecurityClasses\cleaning\ICleanerFactory */
+    /** @var  $cleaner ICleanerFactory */
     public $cleaner;
 
-    public function set_cleaner(\App\classes\SecurityClasses\cleaning\ICleanerFactory $cleaner)
+    public function __construct()
+    {
+        $this->studentDao = new StudentLoader();
+    }
+
+    public function set_cleaner(ICleanerFactory $cleaner)
     {
         $this->cleaner = $cleaner;
     }
 
-    public function load_from_request(\App\classes\RequestClasses\IRequest $request)
+    public function load_from_request(IRequest $request)
     {
         if (isset($request->http['student_id'])) {
             return $this->load_by_id($request->http['student_id']);
@@ -55,11 +66,11 @@ class StudentFactory
      * @param $id
      * @return \Student
      */
-    public
-    function load_by_id($id)
+    public function load_by_id($id)
     {
         $clean_id = $this->cleaner->sanitize($id, 'integer');
-        $this->student = \StudentQuery::create()->filterById($clean_id)->findOneOrCreate();
+        $this->student = $this->studentDao->load_student_by_id($clean_id);
+        //\StudentQuery::create()->filterById($clean_id)->findOneOrCreate();
         return $this->student;
     }
 
@@ -72,7 +83,8 @@ class StudentFactory
     function load_by_sid($sid)
     {
         $clean_id = $this->cleaner->sanitize($sid, 'integer');
-        $this->student = \StudentQuery::create()->filterBySid($clean_id)->findOneOrCreate();
+        $this->student = $this->studentDao->load_student_by_sid($sid);
+        //\StudentQuery::create()->filterBySid($clean_id)->findOneOrCreate();
         return $this->student;
     }
 
@@ -85,8 +97,7 @@ class StudentFactory
         }
     }
 
-    public
-    function delete_student($sid)
+    public function delete_student($sid)
     {
     }
 }

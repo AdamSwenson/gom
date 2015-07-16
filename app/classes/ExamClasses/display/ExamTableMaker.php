@@ -9,7 +9,8 @@
 namespace App\classes\ExamClasses\display;
 
 
-use Whoops\Handler\Handler;
+use App\classes\JsonOutputClasses\encoders\DirectJsonOutput;
+
 
 class ExamTableMaker
 {
@@ -19,7 +20,7 @@ class ExamTableMaker
 
     public $encoder;
 
-    public function set_encoder(\App\classes\JsonOutputClasses\encoders\DirectJsonOutput $encoder)
+    public function set_encoder(DirectJsonOutput $encoder)
     {
         $this->encoder = $encoder;
     }

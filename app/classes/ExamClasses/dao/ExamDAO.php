@@ -9,13 +9,25 @@
 namespace App\classes\ExamClasses\dao;
 
 
+use App\classes\Traits\UserTraits;
+use App\classes\UserManagement\errors\CredentialsException;
 use Propel\Runtime\Connection\ConnectionWrapper;
 
 class ExamDAO implements IExamDAO
 {
+    use UserTraits;
 
     /** @var  PropelPDO */
     public $connection;
+
+    /** @var \User */
+    public $user;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
+
 
     /**
      * Sets a connection object for use with transactions
@@ -37,6 +49,7 @@ class ExamDAO implements IExamDAO
     public function save_new_exam(\Year $year, \Term $term, \Topic $topic)
     {
         $exam = new \Exam();
+        $exam->setUser($this->user);
         $exam->setTopic($topic);
         $exam->setYear($year);
         $exam->setTerm($term);
@@ -45,12 +58,31 @@ class ExamDAO implements IExamDAO
     }
 
     /**
+     * Deletes the exam
+     * @param \Exam $exam
+     * @return mixed|void
+     * @throws CredentialsException
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public function delete_exam(\Exam $exam)
+    {
+        if($this->isLoggedIn())
+        {
+            return $exam->delete();
+        }else{
+            throw new CredentialsException("delete exam");
+        }
+    }
+
+    /**
      * Returns all exams
      * @return \Exam[]|\Propel\Runtime\Collection\ObjectCollection
      */
     public function load_all_exams()
     {
-        $exams = \ExamQuery::create()->filterByUser($ser)->find();
+        $exams = \ExamQuery::create()
+            ->filterByUser($this->user)
+            ->find();
         return $exams;
     }
 
@@ -60,7 +92,10 @@ class ExamDAO implements IExamDAO
      */
     public function load_unlocked_exams()
     {
-        $exams = \ExamQuery::create()->filterByLocked(0)->find();
+        $exams = \ExamQuery::create()
+            ->filterByUser($this->user)
+            ->filterByLocked(0)
+            ->find();
         return $exams;
     }
 

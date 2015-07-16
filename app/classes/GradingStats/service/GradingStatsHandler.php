@@ -9,33 +9,38 @@
 namespace App\classes\GradingStats\service;
 
 
+use App\classes\ExamClasses\service\INumberExamsManager;
+use App\classes\GradingStats\dao\IGradingStatsDAO;
+use App\classes\GradingStats\service\StatsDataHolder;
+use App\classes\JsonOutputClasses\controllers\IResponseChooser;
+
 class GradingStatsHandler
 {
     public $data_holder;
 
-    /** @var  $dao \App\classes\GradingStats\dao\IGradingStatsDAO */
+    /** @var  $dao IGradingStatsDAO */
     public $dao;
 
-    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
+    /** @var  $response_handler IResponseChooser */
     public $response_handler;
 
     /**
-     * @param \App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler
+     * @param IResponseChooser $response_handler
      */
-    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    public function set_response_handler(IResponseChooser $response_handler)
     {
         $this->response_handler = $response_handler;
     }
 
     /**
-     * @param \App\classes\GradingStats\dao\IGradingStatsDAO $gradingStatsDAO
+     * @param IGradingStatsDAO $gradingStatsDAO
      */
-    public function set_dao(\App\classes\GradingStats\dao\IGradingStatsDAO $gradingStatsDAO)
+    public function set_dao(IGradingStatsDAO $gradingStatsDAO)
     {
         $this->dao = $gradingStatsDAO;
     }
 
-    public function set_number_exams(\App\classes\ExamClasses\service\INumberExamsManager $num_exam_manager)
+    public function set_number_exams(INumberExamsManager $num_exam_manager)
     {
         $this->dao->set_number_exams($num_exam_manager);
     }
@@ -50,6 +55,6 @@ class GradingStatsHandler
 
     public function load_data_holder()
     {
-        $this->data_holder = new \App\classes\GradingStats\service\StatsDataHolder();
+        $this->data_holder = new StatsDataHolder();
     }
 }

@@ -13,6 +13,16 @@ namespace App\classes\QuestionClasses\dao;
 class QuestionAssignmentDAO implements IQuestionAssignmentDAO
 {
 
+    use UserTraits;
+
+    /** @var \User */
+    public $user;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
+
     /**
      * Loads and returns a question assignment
      * @param \Exam $exam
@@ -48,13 +58,12 @@ class QuestionAssignmentDAO implements IQuestionAssignmentDAO
      */
     public function record(\Exam $exam, \Question $question, $question_number)
     {
-        $result = FALSE;
-        $q_assign = \QuestionAssignerQuery::create()->filterByExam($exam)->filterByQuestionnumber($question_number)->findOneOrCreate();
+        $q_assign = \QuestionAssignerQuery::create()
+            ->filterByUser($this->user)
+            ->filterByExam($exam)
+            ->filterByQuestionnumber($question_number)
+            ->findOneOrCreate();
         $q_assign->setQuestion($question);
         return $q_assign->save();
-//        if(($q_assign->isNew()) || ($q_assign->isModified())) {
-//            $result = TRUE;
-//        }
-//        return $result;
     }
 }

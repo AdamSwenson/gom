@@ -12,10 +12,12 @@ class CredentialsException extends \Exception
 {
 
     const INVALID_SOURCE = 100;
+    const NOT_LOGGED_IN = 200;
 
     static public $messages = [
         "default" => "Unspecified credential error occurred",
-        self::INVALID_SOURCE => "Invalid source for credentials requested"
+        self::INVALID_SOURCE => "Invalid source for credentials requested",
+        self::NOT_LOGGED_IN => "Attempt to do something by a non authorized user"
     ];
 
     public function __construct($type=null, $exception=null)
