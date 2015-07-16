@@ -8,13 +8,20 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Schema;
 
 class LandingController extends Controller
 {
 
     public function showLanding()
     {
-     //   return "landing page";
+       // Schema::create('art',function($newtable)
+      //  {
+      //      $newtable -> increments('id');
+      //      $newtable -> string('artist');
+      //      $newtable -> string('title',500);
+      //      $newtable -> text('description');
+     //   });
         return view('landing');
     }
 
