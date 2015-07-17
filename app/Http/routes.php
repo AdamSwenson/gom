@@ -22,13 +22,19 @@ Route::post('upload_students', array('uses' => 'StudentController@handleUpload')
 
 
 Route::get('home', 'LandingController@showLanding');
-
 Route::get('landing', 'LandingController@showLanding');
 Route::get('index', 'LandingController@showLanding');
+
+
+Route::get('login', 'LandingController@showLandingLoggedIn');
+
+Route::post('account/home', 'LandingController@loggedIn');
 
 Route::get('account/home', function(){
     return "Account home page";
 });
+
+Route::get('account/create','LandingController@accountCreate');
 
 
 Route::get('account/user_settings', function(){

@@ -8,6 +8,9 @@
 
     <link href='inc/images/favicon.ico' rel='icon' type='image/x-icon'/>
 
+    <!--here is where bootstrap UI is linked -->
+    <link href="{{ asset('components/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
+
     @yield('cssLinks')
     @include('layouts.js_jqueryCss')
 </head>

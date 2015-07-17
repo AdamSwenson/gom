@@ -8,20 +8,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Schema;
+use App\Http\Requests;
+use Illuminate\Http\Request;
+
 
 class LandingController extends Controller
 {
 
     public function showLanding()
     {
-       // Schema::create('art',function($newtable)
-      //  {
-      //      $newtable -> increments('id');
-      //      $newtable -> string('artist');
-      //      $newtable -> string('title',500);
-      //      $newtable -> text('description');
-     //   });
         return view('landing');
     }
 
@@ -29,4 +24,17 @@ class LandingController extends Controller
     {
         return view('landing');
     }
+
+    public function loggedIn(Request $request)
+    {
+
+        $email = $request->get('email');
+        return $email;
+    }
+
+    public function accountCreate()
+    {
+        return view('account.create');
+    }
+
 }
