@@ -9,8 +9,22 @@
 namespace App\classes\StudentClasses\display;
 
 /**
+ * DEPRECATED.
+ * DO NOT USE
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  * Class StudentTableMaker
  * Outputs students for table
+ * @deprecated
  * @package App\classes\StudentClasses\display
  */
 class StudentTableMaker

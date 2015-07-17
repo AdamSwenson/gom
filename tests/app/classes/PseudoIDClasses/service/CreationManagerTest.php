@@ -9,6 +9,9 @@
 namespace App\classes\PseudoIDClasses\service;
 
 
+use App\classes\PseudoIDClasses\dao\IPseudoIDDaoMock;
+use App\classes\PseudoIDClasses\service\PseudoIDMaker;
+use App\classes\StudentClasses\dao\IStudentDaoMock;
 use Map\PseudoIDTableMap;
 use Propel\Runtime\Propel;
 
@@ -26,13 +29,13 @@ class CreationManagerTest extends \TestCase
     {
         parent::setUp();
         $this->object = new CreationManager;
-        $this->pid_maker = new \App\classes\PseudoIDClasses\service\PseudoIDMaker();
-        $this->dao = new \App\classes\PseudoIDClasses\dao\IPseudoIDDaoMock();
+        $this->pid_maker = new PseudoIDMaker();
+        $this->dao = new IPseudoIDDaoMock();
 
         $ecaq = \ExamClassAssignmentQuery::create()->find();
         $this->exam = $ecaq[0]->getExam();
 
-        $this->student_dao = new \App\classes\StudentClasses\dao\IStudentLoaderMock();
+        $this->student_dao = new IStudentDaoMock();
         $this->students = array();
         foreach([1, 2, 3, 4, 5] as $n){
             array_push($this->students, \StudentQuery::create()->filterById($n)->findOneOrCreate());

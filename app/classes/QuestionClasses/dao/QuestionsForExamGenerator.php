@@ -6,7 +6,7 @@
  * Time: 5:04 PM
  */
 
-namespace App\classes\QuestionClasses\service;
+namespace App\classes\QuestionClasses\dao;
 
 /**
  * Class QuestionsForExamGenerator

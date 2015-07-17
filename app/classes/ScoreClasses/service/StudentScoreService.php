@@ -8,6 +8,11 @@
 
 namespace App\classes\ScoreClasses\service;
 
+use App\classes\JsonOutputClasses\encoders\IJsonOutput;
+use App\classes\OutputClasses\facades\IVisitor;
+use App\classes\ScoreClasses\dao\IScoreDAO;
+use App\classes\ScoreClasses\IOutputScoreDAO;
+
 /**
  * Handles getting a student's scores for the output page
  *
@@ -28,19 +33,19 @@ class StudentScoreService
 
     protected $exam;
 
-    /** @var  \App\classes\JsonOutputClasses\encoders\IJsonOutput */
+    /** @var  IJsonOutput */
     public $encoder;
 
 public $dao;
     /**
-     * @param \App\classes\JsonOutputClasses\encoders\IJsonOutput $encoder
+     * @param IJsonOutput $encoder
      */
-    public function setEncoder(\App\classes\JsonOutputClasses\encoders\IJsonOutput $encoder)
+    public function setEncoder(IJsonOutput $encoder)
     {
         $this->encoder = $encoder;
     }
 
-    public function set_dao(\App\classes\ScoreClasses\dao\IScoreDAO $dao)
+    public function set_dao(IScoreDAO $dao)
     {
         $this->dao = $dao;
     }
@@ -49,7 +54,7 @@ public $dao;
      * Sets the data access object which does the actual querying etc
      * @param \App\classes\ScoreClasses\IOutputScoreDAO
      */
-    public function set_data_access(\App\classes\ScoreClasses\IOutputScoreDAO $data_access)
+    public function set_data_access(IOutputScoreDAO $data_access)
     {
         $this->data_access = $data_access;
     }
@@ -64,9 +69,9 @@ public $dao;
 
     /**
      * Gets all questions scores for the student and stores in self::question_scores
-     * @param \App\classes\OutputClasses\facades\IVisitor $visitor
+     * @param IVisitor $visitor
      */
-    public function get_question_scores(\App\classes\OutputClasses\facades\IVisitor $visitor)
+    public function get_question_scores(IVisitor $visitor)
     {
         $this->load_objects($visitor);
 
@@ -89,10 +94,10 @@ public $dao;
 
     /**
      * Retrieves scores for a particular question and stores in self::question_scores
-     * @param \App\classes\OutputClasses\facades\IVisitor $visitor
+     * @param IVisitor $visitor
      * @param \Question $question
      */
-    public function get_particular_question_score(\App\classes\OutputClasses\facades\IVisitor $visitor, \Question $question)
+    public function get_particular_question_score(IVisitor $visitor, \Question $question)
     {
         $this->load_objects($visitor);
         $this->dao->setExam($this->exam);
@@ -111,9 +116,9 @@ public $dao;
      * el.setScore(v['elementScore']);
      * el.setSubtask(v['subtask']);
      *
-     * @param \App\classes\OutputClasses\facades\IVisitor $visitor
+     * @param IVisitor $visitor
      */
-    public function get_element_scores(\App\classes\OutputClasses\facades\IVisitor $visitor)
+    public function get_element_scores(IVisitor $visitor)
     {
         $this->load_objects($visitor);
         $this->dao->setExam($this->exam);
@@ -144,10 +149,10 @@ public $dao;
 
     /**
      * Retrieves scores for a single element and stores in self::element_scores
-     * @param \App\classes\OutputClasses\facades\IVisitor $visitor
+     * @param IVisitor $visitor
      * @param \Element $element
      */
-    public function get_particular_element_score(\App\classes\OutputClasses\facades\IVisitor $visitor, \Element $element)
+    public function get_particular_element_score(IVisitor $visitor, \Element $element)
     {
         $this->load_objects($visitor);
         $this->dao->setExam($this->exam);
@@ -158,9 +163,9 @@ public $dao;
 
     /**
      * Retrieves comments and stores in self::comments
-     * @param \App\classes\OutputClasses\facades\IVisitor $visitor
+     * @param IVisitor $visitor
      */
-    public function get_comments(\App\classes\OutputClasses\facades\IVisitor $visitor)
+    public function get_comments(IVisitor $visitor)
     {
         $this->load_objects($visitor);
         $this->comments = $this->data_access->get_comments($this->exam, $this->student);
@@ -174,9 +179,9 @@ public $dao;
      * Note that this isn't as wasteful as it seems: Propel's instance cache
      * should be holding them, so there won't be a hit to the db.
      *
-     * @param \App\classes\OutputClasses\facades\IVisitor $visitor
+     * @param IVisitor $visitor
      */
-    protected function load_objects(\App\classes\OutputClasses\facades\IVisitor $visitor)
+    protected function load_objects(IVisitor $visitor)
     {
         $this->exam = \ExamQuery::create()->filterById($visitor->examID())->findOne();
         $this->student = \StudentQuery::create()->filterById($visitor->studentID())->findOne();

@@ -8,9 +8,9 @@
 
 namespace App\classes\ImportExportClasses\Backup;
 
-use App\classes\QuestionClasses\service\QuestionsForExamGenerator;
+use App\classes\QuestionClasses\dao\QuestionsForExamGenerator;
 use App\classes\ScoreClasses\ScoreLoader;
-use App\classes\StudentClasses\StudentsForExamGenerator;
+use App\classes\StudentClasses\dao\StudentsForExamGenerator;
 
 /**
  * This creates downloadable csv files from queries to allow users to backup their data

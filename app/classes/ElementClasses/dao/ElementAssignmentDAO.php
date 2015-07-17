@@ -11,9 +11,15 @@ namespace App\classes\ElementClasses\dao;
 
 use App\classes\Traits\UserTraits;
 
+/**
+ * Class ElementAssignmentDAO
+ * Handles almost all database interactions with the elementsXquestions table
+ *
+ * @package App\classes\ElementClasses\dao
+ */
 class ElementAssignmentDAO
 {
-use UserTraits;
+    use UserTraits;
 
     /** @var \User */
     public $user;
@@ -32,7 +38,8 @@ use UserTraits;
      */
     public function load_elements(\Exam $exam, \Question $question)
     {
-        $assignments = \ElementAssignmentQuery::create()->filterByUser($this->user)
+        $assignments = \ElementAssignmentQuery::create()
+            ->filterByUser($this->user)
             ->filterByExam($exam)
             ->filterByQuestion($question)
             ->find();
@@ -45,9 +52,11 @@ use UserTraits;
 //            ->filterByQuestion($question)
 //            ->endUse()
 //            ->find();
-        foreach($assignments as $j){
-        array_push($e, $j);
-    }
+        foreach ($assignments as $j)
+        {
+            array_push($e, $j);
+        }
+
         return $e;
 //        return \ElementAssignmentQuery::create()->filterByExam($exam)->filterByQuestion($question)->find();
     }
@@ -67,12 +76,14 @@ use UserTraits;
         $element_assign = \ElementAssignmentQuery::create()
             ->filterByUser($this->user)
             ->filterByExam($exam)
-                ->useQuestionQuery()
-                    ->useQuestionAssignerQuery()
-                        ->filterByExam($exam)
-                    ->endUse()->with('QuestionAssigner')
-                ->endUse()->with('Question')
+            ->useQuestionQuery()
+            ->useQuery('QuestionAssignerQuery')
+//            ->useQuestionAssignerQuery()
+            ->filterByExam($exam)
+            ->endUse()->with('QuestionAssigner')
+            ->endUse()->with('Question')
             ->find();
+
         return $element_assign;
     }
 
@@ -94,6 +105,7 @@ use UserTraits;
         $eq->setElement($element);
 //        $eq->setSubtask($subtask);
         $eq->save();
+
         return $eq;
     }
 }

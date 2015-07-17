@@ -9,7 +9,7 @@
 namespace App\classes\StudentClasses\dao;
 
 
-class StudentLoaderTest extends \TestCase {
+class StudentDaoTest extends \TestCase {
 
     protected $object;
     protected $exam;
@@ -17,10 +17,9 @@ class StudentLoaderTest extends \TestCase {
     public function setUp()
     {
         parent::setUp();
-        $this->object = new StudentLoader;
+        $this->object = new StudentDao;
         $ecaq = \ExamClassAssignmentQuery::create()->find();
         $this->exam = $ecaq[0]->getExam();
-
     }
 
     /**
@@ -28,9 +27,9 @@ class StudentLoaderTest extends \TestCase {
      */
     public function testLoad_students_by_exam()
     {
-        $this->object->load_students_by_exam($this->exam);
-        $this->assertTrue(count($this->object->students) > 0);
-        foreach ($this->object->students as $s) {
+        $results = $this->object->load_students_by_exam($this->exam);
+        $this->assertTrue(count($results) > 0);
+        foreach ($results as $s) {
             $this->assertInstanceOf('\Student', $s);
         }
     }

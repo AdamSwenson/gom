@@ -293,7 +293,8 @@ DbTestAids::populate_times();
                 $eca->save();
                 foreach ($students as $s)
                 {
-                    $sca = \StudentClassAssignmentQuery::create()->filterByUser(self::get_user())
+                    $sca = \StudentClassAssignmentQuery::create()
+                        ->filterByUser(self::get_user())
                         ->filterByStudent($s)
                         ->filterByKumi($kumi)
                         ->findOneOrCreate();
@@ -314,7 +315,8 @@ DbTestAids::populate_times();
         {
             for ($i = 0; $i < $num_exams;)
             {
-                $eaq = \ElementAssignmentQuery::create()->filterByUser(self::get_user())
+                $eaq = \ElementAssignmentQuery::create()
+                    ->filterByUser(self::get_user())
                     ->filterByExam($exams[$i])->find();
                 foreach ($students as $s)
                 {
@@ -544,9 +546,9 @@ DbTestAids::populate_times();
             } else
             {
                 foreach ($elements as $e)
-                {
+                {$user = self::get_user();
                     $z = \TaggedElementQuery::create()
-                        ->filterByUser(self::get_user())
+                        ->filterByUser($user)
                         ->filterByElement($e)
                         ->filterByTag($t)
                         ->findOneOrCreate();

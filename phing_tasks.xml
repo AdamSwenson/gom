@@ -13,7 +13,7 @@
     </target>
 
     <target name="addData" description="add data to db">
-        <exec command="tests/app/classes/DbTestAids.php"/>
+        <exec command="php PopulateScript.php" dir="tests/app/classes/" passthru="true"/>
     </target>
 
     <target name="completelyRebuildModel" description="Completely rebuilds the generated sql and classes from schema.xml">

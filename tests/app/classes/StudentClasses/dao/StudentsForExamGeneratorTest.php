@@ -6,7 +6,7 @@
  * Time: 5:05 PM
  */
 
-namespace App\classes\StudentClasses;
+namespace App\classes\StudentClasses\dao;
 
 
 class StudentsForExamGeneratorTest extends \TestCase {

@@ -6,14 +6,21 @@
  * Time: 3:34 PM
  */
 
-namespace App\classes\StudentClasses;
+namespace App\classes\StudentClasses\service;
 
 
 use App\classes\RequestClasses\IRequest;
 use App\classes\SecurityClasses\cleaning\ICleanerFactory;
-use App\classes\StudentClasses\dao\StudentLoader;
+use App\classes\StudentClasses\dao\StudentDao;
 
-class StudentFactory
+/**
+ * Class StudentService
+ * This is the main object for interacting with the students database.
+ * You should not interact with StudentDao directly since this handles
+ * all the validation and sanitization.
+ * @package App\classes\StudentClasses\service
+ */
+class StudentService
 {
     public $studentDao;
 
@@ -25,7 +32,7 @@ class StudentFactory
 
     public function __construct()
     {
-        $this->studentDao = new StudentLoader();
+        $this->studentDao = new StudentDao();
     }
 
     public function set_cleaner(ICleanerFactory $cleaner)
@@ -70,7 +77,6 @@ class StudentFactory
     {
         $clean_id = $this->cleaner->sanitize($id, 'integer');
         $this->student = $this->studentDao->load_student_by_id($clean_id);
-        //\StudentQuery::create()->filterById($clean_id)->findOneOrCreate();
         return $this->student;
     }
 
@@ -79,17 +85,14 @@ class StudentFactory
      * @param $sid
      * @return \Student
      */
-    public
-    function load_by_sid($sid)
+    public function load_by_sid($sid)
     {
         $clean_id = $this->cleaner->sanitize($sid, 'integer');
-        $this->student = $this->studentDao->load_student_by_sid($sid);
-        //\StudentQuery::create()->filterBySid($clean_id)->findOneOrCreate();
+        $this->student = $this->studentDao->load_student_by_sid($clean_id);
         return $this->student;
     }
 
-    public
-    function update_email($sid, $email)
+    public function update_email($sid, $email)
     {
         if ((!isset($this->student)) || ($this->student->getId() !== $sid)) {
             $this->load_by_sid($sid);

@@ -6,7 +6,10 @@
  * Time: 4:58 PM
  */
 
-namespace App\classes\StudentClasses;
+namespace App\classes\StudentClasses\dao;
+
+use App\classes\StudentClasses\dao\StudentDao;
+use App\classes\Traits\UserTraits;
 
 /**
  * Class StudentsForExamGenerator
@@ -16,13 +19,30 @@ namespace App\classes\StudentClasses;
  * that it is not awesome like Python, you need to do this:
  *
  * $sg = new StudentsForExamGenerator();
- * foreach($sg($exam) as $s){}
+ * foreach($sg($exam) as $student)
+ * {
+        $student
+ * }
  *
  * @package StudentClasses
  */
 class StudentsForExamGenerator
 {
+    use UserTraits;
+
     public $exam;
+
+    public $dao;
+
+    /** @var \User */
+    public $user;
+
+
+    public function __construct()
+    {
+        $this->dao = new StudentDao();
+        $this->user = $this->getUser();
+    }
 
     /**
      * Returns a generator of students
@@ -32,10 +52,18 @@ class StudentsForExamGenerator
      */
     public function __invoke(\Exam $exam)
     {
+        $this->dao = new StudentDao();
+        $this->user = $this->getUser();
         $this->exam = $exam;
-        $assigns = \ExamClassAssignmentQuery::create()->filterByExam($this->exam)->find();
+        $assigns = \ExamClassAssignmentQuery::create()
+            ->filterByUser($this->user)
+            ->filterByExam($this->exam)
+            ->find();
         foreach ($assigns as $kumi_assign) {
-            $sca = \StudentClassAssignmentQuery::create()->filterByKumi($kumi_assign->getKumi())->find();
+            $sca = \StudentClassAssignmentQuery::create()
+                ->filterByUser($this->user)
+                ->filterByKumi($kumi_assign->getKumi())
+                ->find();
             foreach ($sca as $s) {
                 yield $s->getStudent();
             }

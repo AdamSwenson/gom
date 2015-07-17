@@ -19,8 +19,6 @@ $database = putenv("DB_DATABASE=gom_propel");
 
 //require_once 'app/propel_config/config.php';
 //
-//
-//
 //DbTestAids::populate_item_assignments2();
 //DbTestAids::populate_restrictors();
 //DbTestAids::populate_students();

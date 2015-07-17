@@ -40,7 +40,7 @@ CREATE TABLE `r_terms`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`content`),
+    PRIMARY KEY (`content`,`user_id`),
     INDEX `r_terms_fi_69bd79` (`user_id`),
     CONSTRAINT `r_terms_fk_69bd79`
         FOREIGN KEY (`user_id`)
@@ -59,7 +59,7 @@ CREATE TABLE `r_examTopics`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`content`),
+    PRIMARY KEY (`content`,`user_id`),
     INDEX `r_examTopics_fi_69bd79` (`user_id`),
     CONSTRAINT `r_examTopics_fk_69bd79`
         FOREIGN KEY (`user_id`)
@@ -78,7 +78,7 @@ CREATE TABLE `r_years`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`content`),
+    PRIMARY KEY (`content`,`user_id`),
     INDEX `r_years_fi_69bd79` (`user_id`),
     CONSTRAINT `r_years_fk_69bd79`
         FOREIGN KEY (`user_id`)
@@ -102,7 +102,7 @@ CREATE TABLE `exams`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`id`),
+    PRIMARY KEY (`id`,`user_id`),
     INDEX `exams_fi_69bd79` (`user_id`),
     INDEX `exams_fi_159d06` (`examTerm`),
     INDEX `exams_fi_6a54a1` (`examTopic`),
@@ -135,7 +135,7 @@ CREATE TABLE `questions`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`id`),
+    PRIMARY KEY (`id`,`questionText`),
     INDEX `questions_fi_69bd79` (`user_id`),
     CONSTRAINT `questions_fk_69bd79`
         FOREIGN KEY (`user_id`)
@@ -157,7 +157,7 @@ CREATE TABLE `elements`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`id`),
+    PRIMARY KEY (`id`,`user_id`),
     INDEX `elements_fi_69bd79` (`user_id`),
     CONSTRAINT `elements_fk_69bd79`
         FOREIGN KEY (`user_id`)
@@ -179,7 +179,7 @@ CREATE TABLE `students`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`id`),
+    PRIMARY KEY (`id`,`user_id`),
     UNIQUE INDEX `students_u_920f7a` (`sid`),
     INDEX `students_fi_69bd79` (`user_id`),
     CONSTRAINT `students_fk_69bd79`
@@ -201,7 +201,7 @@ CREATE TABLE `classes`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`id`),
+    PRIMARY KEY (`id`,`user_id`),
     INDEX `classes_fi_69bd79` (`user_id`),
     CONSTRAINT `classes_fk_69bd79`
         FOREIGN KEY (`user_id`)
@@ -223,7 +223,7 @@ CREATE TABLE `stockTexts`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`id`),
+    PRIMARY KEY (`id`,`user_id`),
     INDEX `stockTexts_fi_69bd79` (`user_id`),
     CONSTRAINT `stockTexts_fk_69bd79`
         FOREIGN KEY (`user_id`)
@@ -245,7 +245,7 @@ CREATE TABLE `questionScores`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`examID`,`questionID`,`studentID`),
+    PRIMARY KEY (`examID`,`questionID`,`studentID`,`user_id`),
     INDEX `questionScores_fi_69bd79` (`user_id`),
     INDEX `questionScores_fi_175030` (`studentID`),
     INDEX `questionScores_fi_048855` (`questionID`),
@@ -274,11 +274,11 @@ CREATE TABLE `elementScores`
     `examID` INTEGER NOT NULL,
     `elementID` INTEGER NOT NULL,
     `studentID` INTEGER NOT NULL,
-    `elementScore` FLOAT,
     `user_id` INTEGER NOT NULL,
+    `elementScore` FLOAT,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`examID`,`elementID`,`studentID`),
+    PRIMARY KEY (`examID`,`elementID`,`studentID`,`user_id`),
     INDEX `elementScores_fi_69bd79` (`user_id`),
     INDEX `elementScores_fi_fd5216` (`elementID`),
     INDEX `elementScores_fi_175030` (`studentID`),
@@ -306,14 +306,14 @@ CREATE TABLE `examInfo`
 (
     `examID` INTEGER NOT NULL,
     `studentID` INTEGER NOT NULL,
+    `user_id` INTEGER NOT NULL,
     `completionOrder` INTEGER,
     `pages` FLOAT,
     `notecard` FLOAT,
     `examGroupNumber` INTEGER,
-    `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`examID`,`studentID`),
+    PRIMARY KEY (`examID`,`studentID`,`user_id`),
     INDEX `examInfo_fi_69bd79` (`user_id`),
     INDEX `examInfo_fi_175030` (`studentID`),
     CONSTRAINT `examInfo_fk_69bd79`
@@ -337,11 +337,11 @@ CREATE TABLE `questionAssigner`
 (
     `examID` INTEGER NOT NULL,
     `questionNumber` INTEGER(2) NOT NULL,
-    `questionID` INTEGER NOT NULL,
     `user_id` INTEGER NOT NULL,
+    `questionID` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`examID`,`questionNumber`),
+    PRIMARY KEY (`examID`,`questionNumber`,`user_id`),
     INDEX `questionAssigner_fi_69bd79` (`user_id`),
     INDEX `questionAssigner_fi_048855` (`questionID`),
     CONSTRAINT `questionAssigner_fk_69bd79`
@@ -370,22 +370,22 @@ CREATE TABLE `elementXquestions`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`examID`,`questionID`,`subtask`),
-    INDEX `elementXquestions_fi_69bd79` (`user_id`),
+    PRIMARY KEY (`examID`,`questionID`,`subtask`,`user_id`),
     INDEX `elementXquestions_fi_048855` (`questionID`),
     INDEX `elementXquestions_fi_fd5216` (`elementID`),
-    CONSTRAINT `elementXquestions_fk_69bd79`
-        FOREIGN KEY (`user_id`)
-        REFERENCES `users` (`id`),
-    CONSTRAINT `elementXquestions_fk_71c1fe`
-        FOREIGN KEY (`examID`)
-        REFERENCES `exams` (`id`),
+    INDEX `elementXquestions_fi_69bd79` (`user_id`),
     CONSTRAINT `elementXquestions_fk_048855`
         FOREIGN KEY (`questionID`)
         REFERENCES `questions` (`id`),
     CONSTRAINT `elementXquestions_fk_fd5216`
         FOREIGN KEY (`elementID`)
-        REFERENCES `elements` (`id`)
+        REFERENCES `elements` (`id`),
+    CONSTRAINT `elementXquestions_fk_71c1fe`
+        FOREIGN KEY (`examID`)
+        REFERENCES `exams` (`id`),
+    CONSTRAINT `elementXquestions_fk_69bd79`
+        FOREIGN KEY (`user_id`)
+        REFERENCES `users` (`id`)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
@@ -401,18 +401,18 @@ CREATE TABLE `studentsXclasses`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`studentID`,`classID`),
-    INDEX `studentsXclasses_fi_69bd79` (`user_id`),
+    PRIMARY KEY (`studentID`,`classID`,`user_id`),
     INDEX `studentsXclasses_fi_ab8f61` (`classID`),
-    CONSTRAINT `studentsXclasses_fk_69bd79`
-        FOREIGN KEY (`user_id`)
-        REFERENCES `users` (`id`),
+    INDEX `studentsXclasses_fi_69bd79` (`user_id`),
     CONSTRAINT `studentsXclasses_fk_175030`
         FOREIGN KEY (`studentID`)
         REFERENCES `students` (`id`),
     CONSTRAINT `studentsXclasses_fk_ab8f61`
         FOREIGN KEY (`classID`)
-        REFERENCES `classes` (`id`)
+        REFERENCES `classes` (`id`),
+    CONSTRAINT `studentsXclasses_fk_69bd79`
+        FOREIGN KEY (`user_id`)
+        REFERENCES `users` (`id`)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
@@ -428,18 +428,18 @@ CREATE TABLE `examsXclasses`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`classID`,`examID`),
-    INDEX `examsXclasses_fi_69bd79` (`user_id`),
+    PRIMARY KEY (`classID`,`examID`,`user_id`),
     INDEX `examsXclasses_fi_71c1fe` (`examID`),
-    CONSTRAINT `examsXclasses_fk_69bd79`
-        FOREIGN KEY (`user_id`)
-        REFERENCES `users` (`id`),
+    INDEX `examsXclasses_fi_69bd79` (`user_id`),
     CONSTRAINT `examsXclasses_fk_71c1fe`
         FOREIGN KEY (`examID`)
         REFERENCES `exams` (`id`),
     CONSTRAINT `examsXclasses_fk_ab8f61`
         FOREIGN KEY (`classID`)
-        REFERENCES `classes` (`id`)
+        REFERENCES `classes` (`id`),
+    CONSTRAINT `examsXclasses_fk_69bd79`
+        FOREIGN KEY (`user_id`)
+        REFERENCES `users` (`id`)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
@@ -457,7 +457,7 @@ CREATE TABLE `time_grading`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`id`),
+    PRIMARY KEY (`id`,`user_id`),
     UNIQUE INDEX `time_grading_u_0e7b81` (`examID`, `studentID`),
     INDEX `time_grading_fi_69bd79` (`user_id`),
     INDEX `time_grading_fi_175030` (`studentID`),
@@ -486,7 +486,7 @@ CREATE TABLE `time_group`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`examID`,`groupID`),
+    PRIMARY KEY (`examID`,`groupID`,`user_id`),
     INDEX `time_group_fi_69bd79` (`user_id`),
     CONSTRAINT `time_group_fk_69bd79`
         FOREIGN KEY (`user_id`)
@@ -513,7 +513,7 @@ CREATE TABLE `preferences`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    INDEX `preferences_fi_69bd79` (`user_id`),
+    PRIMARY KEY (`user_id`),
     CONSTRAINT `preferences_fk_69bd79`
         FOREIGN KEY (`user_id`)
         REFERENCES `users` (`id`)
@@ -533,7 +533,7 @@ CREATE TABLE `pseudoIDs`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`studentID`,`examID`),
+    PRIMARY KEY (`studentID`,`examID`,`user_id`),
     UNIQUE INDEX `pseudoIDs_u_aace2c` (`pseudoID`),
     INDEX `pseudoIDs_fi_69bd79` (`user_id`),
     INDEX `pseudoIDs_fi_71c1fe` (`examID`),
@@ -561,7 +561,7 @@ CREATE TABLE `tags`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`id`),
+    PRIMARY KEY (`id`,`user_id`),
     UNIQUE INDEX `tags_u_24e05a` (`tag`),
     INDEX `tags_fi_69bd79` (`user_id`),
     CONSTRAINT `tags_fk_69bd79`
@@ -582,7 +582,7 @@ CREATE TABLE `tagsXquestions`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`tag_id`,`question_id`),
+    PRIMARY KEY (`tag_id`,`question_id`,`user_id`),
     INDEX `tagsXquestions_fi_69bd79` (`user_id`),
     INDEX `tagsXquestions_fi_83fc93` (`question_id`),
     CONSTRAINT `tagsXquestions_fk_69bd79`
@@ -609,7 +609,7 @@ CREATE TABLE `tagsXelements`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`tag_id`,`element_id`),
+    PRIMARY KEY (`tag_id`,`element_id`,`user_id`),
     INDEX `tagsXelements_fi_69bd79` (`user_id`),
     INDEX `tagsXelements_fi_88cff7` (`element_id`),
     CONSTRAINT `tagsXelements_fk_69bd79`

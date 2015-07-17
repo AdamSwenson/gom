@@ -155,7 +155,7 @@
         <?php
        $table_maker = new \App\classes\StudentClasses\display\StudentTableMaker();
         $table_maker->set_encoder(new \App\classes\JsonOutputClasses\encoders\DirectJsonOutput());
-        $table_maker->set_student_loader(new \App\classes\StudentClasses\dao\StudentLoader());
+        $table_maker->set_student_loader(new \App\classes\StudentClasses\dao\StudentDao());
 
     //global variables for scripts
     $j = new \App\classes\DirectOutputClasses\encoders\JavascriptVariableEncoder();

@@ -14,7 +14,7 @@ use \App\classes\JsonOutputClasses\controllers\ResponseChooser;
 use \App\classes\QuestionClasses\dao\QuestionAssignmentDAO;
 use \App\classes\QuestionClasses\service\QuestionFactory;
 use \App\classes\SecurityClasses\cleaning\CleanerFactory;
-use \App\classes\StudentClasses\StudentFactory;
+use App\classes\StudentClasses\service\StudentService;
 
 abstract class IRequestWorker
 {
@@ -41,7 +41,7 @@ abstract class IRequestWorker
         $this->question_factory->set_cleaner($this->cleaner);
         $this->question_factory->set_question_assignment_dao(new QuestionAssignmentDAO());
 
-        $this->student_factory = new StudentFactory();
+        $this->student_factory = new StudentService();
         $this->student_factory->set_cleaner($this->cleaner);
 
         $this->element_factory = new ElementFactory();

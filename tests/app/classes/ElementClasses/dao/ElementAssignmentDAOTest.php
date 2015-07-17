@@ -27,15 +27,14 @@ class ElementAssignmentDAOTest extends \TestCase {
         $this->object = new ElementAssignmentDAO();
 
         $this->exam = \ExamQuery::create()->filterByUser($this->user)->findOne();
-        //DbTestAids::make_exam('testterm4', 2012, 'testtopic4');
+
         $this->question = \QuestionQuery::create()
             ->filterByUser($this->user)
             ->findOne();
-        //DbTestAids::make_question('testquestiontext');
+
         $this->element = \ElementQuery::create()
             ->filterByUser($this->user)
             ->findOne();
-        //DbTestAids::make_element('testelement name');
 
     }
 

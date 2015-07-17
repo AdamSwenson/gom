@@ -21,7 +21,10 @@ use App\classes\Traits\UserTraits;
  */
 class ScoreLoader
 {
+    use UserTraits;
 
+    /** @var \User */
+    public $user;
     public $to_send = array();
 
     public $elements_to_send = array();
@@ -34,15 +37,12 @@ class ScoreLoader
     /** @var  $element_score_handler IElementScoreHandler */
     public $element_score_handler;
 
-    use UserTraits;
-
-    /** @var \User */
-    public $user;
 
     function __construct()
     {
         $this->user = $this->getUser();
     }
+
     public function set_question_score_handler(IQuestionScoreHandler $question_score_handler)
     {
         $this->question_score_handler = $question_score_handler;
@@ -64,6 +64,7 @@ class ScoreLoader
     protected function get_elements(\Exam $exam, \Question $question)
     {
         $element_assignments = \ElementAssignmentQuery::create()
+            ->filterByUser($this->user)
             ->filterByExam($exam)
             ->filterByQuestion($question)
             ->find();
