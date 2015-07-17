@@ -30,7 +30,7 @@ class LandingController extends Controller
 
         $email = $request->get('email');
         //return $email;
-        return view('account.create')->with('email',$email);
+        return view('account.home')->with('email',$email);
     }
 
     public function accountCreate()

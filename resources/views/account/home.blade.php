@@ -36,7 +36,7 @@
                     <!-- Something goes here-->
                     <h1> </h1>
                 </div>
-                <h1> Thanks !</h1>
+                <h1> Thanks ! {{ $email }}</h1>
             </div>
 
 

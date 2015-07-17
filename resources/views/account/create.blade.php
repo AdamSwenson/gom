@@ -36,7 +36,7 @@
                     <!-- Something goes here-->
                     <h1> </h1>
                 </div>
-                <h1> {{$email}}</h1>
+                <h1> Create Account Here</h1>
             </div>
 @endsection
 
