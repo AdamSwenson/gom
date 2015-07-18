@@ -34,11 +34,11 @@
             <div class="row" >
                 <div class="col-xs-8">
                     <!-- Something goes here-->
-                    <h1> </h1>
-                </div>
-                <h1> Thanks ! {{ $email }}</h1>
-            </div>
+                    <h1> <h1>Account Created Check your email to confirm!</h1>  </h1>
 
+                </div>
+
+            </div>
 @endsection
 
 @section('jsArea')
@@ -67,4 +67,5 @@
     </script>
 
 @endsection
+
 @endsection

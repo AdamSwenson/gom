@@ -29,12 +29,14 @@ Route::get('index', 'LandingController@showLanding');
 Route::get('login', 'LandingController@showLandingLoggedIn');
 
 Route::post('account/home', 'LandingController@loggedIn');
-
 Route::get('account/home', function(){
     return "Account home page";
 });
 
+
 Route::get('account/create','LandingController@accountCreate');
+
+Route::post('account/confirm','LandingController@accountConfirm');
 
 
 Route::get('account/user_settings', function(){
@@ -46,6 +48,8 @@ Route::get('account/preferences', function(){
 Route::get('account/logout', function(){
     return "Logout";
 });
+
+
 
 Route::get('exammanager', array('uses' => 'InputController@showExamManager'));
 

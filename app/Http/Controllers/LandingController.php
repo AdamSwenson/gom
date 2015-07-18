@@ -29,7 +29,8 @@ class LandingController extends Controller
     {
 
         $email = $request->get('email');
-        //return $email;
+        $password = $request->get('password');
+
         return view('account.home')->with('email',$email);
     }
 
@@ -38,4 +39,8 @@ class LandingController extends Controller
         return view('account.create');
     }
 
+    public function accountConfirm()
+    {
+        return view('account.confirm');
+    }
 }

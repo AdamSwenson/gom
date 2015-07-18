@@ -37,7 +37,7 @@
                     <!-- Something goes here-->
 
                 </div>
-                <form method="POST" action="{{url('account/home')}}" accept-charset="UTF-8" class="col-xs-4">
+                <form role="form" method="POST" action="{{url('account/home')}}" accept-charset="UTF-8" class="col-xs-4">
                     <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                     <h3 class="text-left"> Log In:</h3>
                     <div class="form-group ">
