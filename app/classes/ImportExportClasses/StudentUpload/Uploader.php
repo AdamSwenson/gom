@@ -50,6 +50,7 @@ class Uploader
     public function set_exam(\Exam $exam)
     {
         $this->exam = $exam;
+        $this->dao->setExam($exam);
     }
 
     /**

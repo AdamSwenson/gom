@@ -46,11 +46,21 @@ class ExamDAOTest extends \TestCase
 
     public function testSave_new_exam()
     {
-        $result = $this->object->save_new_exam($this->year, $this->term, $this->topic);
+        $year = \Faker\Factory::create()->year();
+        $term = \Faker\Factory::create()->word();
+        $topic = \Faker\Factory::create()->word();
+
+        $result = $this->object->save_new_exam($year, $term, $topic);
         $this->assertInstanceOf('\Exam', $result);
-        $this->assertEquals($this->year->getContent(), $result->getYear()->getContent());
-        $this->assertEquals($this->term->getContent(), $result->getTerm()->getContent());
-        $this->assertEquals($this->topic->getContent(), $result->getTopic()->getContent());
+        $this->assertEquals($year, $result->getExamyear());
+        $this->assertEquals($term, $result->getExamterm());
+        $this->assertEquals($topic, $result->getExamtopic());
+
+//        $result = $this->object->save_new_exam($this->year->getContent(), $this->term->getContent(), $this->topic->getContent());
+//        $this->assertInstanceOf('\Exam', $result);
+//        $this->assertEquals($this->year->getContent(), $result->getYear()->getContent());
+//        $this->assertEquals($this->term->getContent(), $result->getTerm()->getContent());
+//        $this->assertEquals($this->topic->getContent(), $result->getTopic()->getContent());
     }
 
     public function testLoad_all_exams()
@@ -66,21 +76,64 @@ class ExamDAOTest extends \TestCase
 
     public function testLock_exam()
     {
+        $ex = \ExamQuery::create()
+            ->filterByUser($this->user)
+            ->filterByLocked(0)
+            ->findOne();
+        $eid = $ex->getId();
+        $this->assertNotEmpty($ex);
+        $this->object->lock_exam($ex);
+
+        $r = \ExamQuery::create()->findOneById($eid);
+        $this->assertEquals(1, $r->getLocked());
     }
 
 
     public function testUnlock_exam()
     {
+        $ex = \ExamQuery::create()
+            ->filterByUser($this->user)
+            ->filterByLocked(1)
+            ->findOne();
+        $eid = $ex->getId();
+        $this->assertNotEmpty($ex);
+        $this->object->unlock_exam($ex);
+
+        $r = \ExamQuery::create()->findOneById($eid);
+        $this->assertEquals(0, $r->getLocked());
       }
 
     public function testMark_exam_released()
     {
+        $ex = \ExamQuery::create()
+            ->filterByUser($this->user)
+            ->filterByReleased(0)
+            ->findOne();
+        $eid = $ex->getId();
 
+        $this->assertNotEmpty($ex);
+
+        $this->object->mark_exam_released($ex);
+
+        $r = \ExamQuery::create()->findOneById($eid);
+        $this->assertEquals(1, $r->getReleased());
     }
 
 
     public function testUnmark_exam_released()
     {
+        $ex = \ExamQuery::create()
+            ->filterByUser($this->user)
+            ->filterByReleased(1)
+            ->findOne();
+        $eid = $ex->getId();
+
+        $this->assertNotEmpty($ex);
+
+        $this->object->unmark_exam_released($ex);
+
+        $r = \ExamQuery::create()->findOneById($eid);
+        $this->assertEquals(0, $r->getReleased());
     }
 
 

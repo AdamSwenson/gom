@@ -18,7 +18,7 @@ class SecretsTest extends \TestCase {
         parent::setUp();
         ;
 
-putenv("DB_USERNAME=testuser4");
+putenv("DB_USERNAME=testuser3");
 putenv("DB_PASS=testpass3");
 putenv("DB_HOST=localhost");
 putenv("DB_NAME=gom_propel");
@@ -52,32 +52,32 @@ putenv("DEVSTATE=development");
         $this->assertEquals("development", getenv("DEVSTATE"));
 
     }
-    public function testAll()
-    {
-        $this->object = Secrets::factory();
-        $this->assertInstanceOf('\App\classes\UserManagement\service\SecretsParent', $this->object);
-        $this->assertEquals("mysql:host=localhost;dbname=gom_propel", $this->object->getDsn());
-        $this->assertEquals("testuser3", $this->object->getUsername());
-        $this->assertEquals("gom_propel", $this->object->getDatabasename());
-        $this->assertEquals("testpass3", $this->object->getPassword());
-    }
-
-    public function testFactoryOverrideUser()
-    {
-        $this->object = Secrets::factory(\App\classes\UserManagement\service\Secrets::USER);
-        $this->assertInstanceOf('\App\classes\UserManagement\service\UserSecrets', $this->object);
-    }
-
-    public function testFactoryOverriderTest()
-    {
-        $this->object = Secrets::factory(\App\classes\UserManagement\service\Secrets::TEST);
-        $this->assertInstanceOf('\App\classes\UserManagement\service\TestingSecrets', $this->object);
-    }
-
-//    public function testFactoryOverrideLive()
+//    public function testAll()
 //    {
-//        $this->object = Secrets::factory(\App\classes\UserManagement\service\Secrets::NORMAL);
-//        $this->assertInstanceOf('\App\classes\UserManagement\service\LiveSecrets', $this->object);
+//        $this->object = Secrets::factory();
+//        $this->assertInstanceOf('\App\classes\UserManagement\service\SecretsParent', $this->object);
+//        $this->assertEquals("mysql:host=localhost;dbname=gom_propel", $this->object->getDsn());
+//        $this->assertEquals("testuser3", $this->object->getUsername());
+//        $this->assertEquals("gom_propel", $this->object->getDatabasename());
+//        $this->assertEquals("testpass3", $this->object->getPassword());
 //    }
+//
+//    public function testFactoryOverrideUser()
+//    {
+//        $this->object = Secrets::factory(\App\classes\UserManagement\service\Secrets::USER);
+//        $this->assertInstanceOf('\App\classes\UserManagement\service\UserSecrets', $this->object);
+//    }
+//
+//    public function testFactoryOverriderTest()
+//    {
+//        $this->object = Secrets::factory(\App\classes\UserManagement\service\Secrets::TEST);
+//        $this->assertInstanceOf('\App\classes\UserManagement\service\TestingSecrets', $this->object);
+//    }
+//
+////    public function testFactoryOverrideLive()
+////    {
+////        $this->object = Secrets::factory(\App\classes\UserManagement\service\Secrets::NORMAL);
+////        $this->assertInstanceOf('\App\classes\UserManagement\service\LiveSecrets', $this->object);
+////    }
 
 }

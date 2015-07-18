@@ -167,11 +167,11 @@ class ExamTableMap extends TableMap
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addForeignKey('examTerm', 'Examterm', 'VARCHAR', 'r_terms', 'content', true, 100, null);
-        $this->addForeignKey('examTopic', 'Examtopic', 'VARCHAR', 'r_examTopics', 'content', true, 100, null);
-        $this->addForeignKey('examYear', 'Examyear', 'INTEGER', 'r_years', 'content', true, 4, null);
-        $this->addColumn('locked', 'Locked', 'INTEGER', true, 1, null);
-        $this->addColumn('released', 'Released', 'INTEGER', true, 1, null);
+        $this->addColumn('examTerm', 'Examterm', 'VARCHAR', true, 100, null);
+        $this->addColumn('examTopic', 'Examtopic', 'VARCHAR', true, 100, null);
+        $this->addColumn('examYear', 'Examyear', 'INTEGER', true, 4, null);
+        $this->addColumn('locked', 'Locked', 'INTEGER', true, 1, 0);
+        $this->addColumn('released', 'Released', 'INTEGER', true, 1, 0);
         $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'users', 'id', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
@@ -187,27 +187,6 @@ class ExamTableMap extends TableMap
   array (
     0 => ':user_id',
     1 => ':id',
-  ),
-), null, null, null, false);
-        $this->addRelation('Term', '\\Term', RelationMap::MANY_TO_ONE, array (
-  0 =>
-  array (
-    0 => ':examTerm',
-    1 => ':content',
-  ),
-), null, null, null, false);
-        $this->addRelation('Topic', '\\Topic', RelationMap::MANY_TO_ONE, array (
-  0 =>
-  array (
-    0 => ':examTopic',
-    1 => ':content',
-  ),
-), null, null, null, false);
-        $this->addRelation('Year', '\\Year', RelationMap::MANY_TO_ONE, array (
-  0 =>
-  array (
-    0 => ':examYear',
-    1 => ':content',
   ),
 ), null, null, null, false);
         $this->addRelation('QuestionScore', '\\QuestionScore', RelationMap::ONE_TO_MANY, array (
@@ -231,6 +210,27 @@ class ExamTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'ExamInfos', false);
+        $this->addRelation('QuestionAssigner', '\\QuestionAssigner', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':examID',
+    1 => ':id',
+  ),
+), null, null, 'QuestionAssigners', false);
+        $this->addRelation('ElementAssignment', '\\ElementAssignment', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':examID',
+    1 => ':id',
+  ),
+), null, null, 'ElementAssignments', false);
+        $this->addRelation('ExamClassAssignment', '\\ExamClassAssignment', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':examID',
+    1 => ':id',
+  ),
+), null, null, 'ExamClassAssignments', false);
         $this->addRelation('GradingTime', '\\GradingTime', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
@@ -245,6 +245,13 @@ class ExamTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'GroupTimes', false);
+        $this->addRelation('PseudoID', '\\PseudoID', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':examID',
+    1 => ':id',
+  ),
+), null, null, 'PseudoIDs', false);
     } // buildRelations()
 
     /**

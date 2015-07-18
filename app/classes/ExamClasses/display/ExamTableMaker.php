@@ -11,7 +11,19 @@ namespace App\classes\ExamClasses\display;
 
 use App\classes\JsonOutputClasses\encoders\DirectJsonOutput;
 
-
+/**
+ * DEPRECATED
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * @deprecated
+ *
+ */
 class ExamTableMaker
 {
     public $out = array();

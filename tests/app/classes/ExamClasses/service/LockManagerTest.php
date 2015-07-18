@@ -31,34 +31,34 @@ public $request;
         $this->object->load_exam_dao($this->examdao);
     }
 
-//    /**
-//     * @covers \App\classes\ExamClasses\service\LockManager::execute
-//     */
-//    public function testExecute_lock()
-//    {
-//        $this->request->http = array('task' => LockManager::LOCK_TASK, LockManager::LOCK_KEY => 5);
-//        $this->request->set_response('lockExam');
-//        $this->examdao->set_response(TRUE);
-//        $this->object->execute($this->request);
-//
-//        $this->assertEquals('lock_exam', $this->examdao->called);
-//        $this->assertEquals(count($this->response_handler->called_list), 1);
-//        $this->assertEquals('handle_row_count', $this->response_handler->called);
-//    }
-//
-//    /**
-//     * @covers \App\classes\ExamClasses\service\LockManager::execute
-//     */
-//    public function testExecute_unlock()
-//    {
-//        $this->request->http = array('task' => LockManager::UNLOCK_TASK, LockManager::UNLOCK_KEY => 5);
-//        $this->request->set_response('unlockExam');
-//        $this->object->execute($this->request);
-//        //$this->assertEquals(1, count($this->examdao->called_list));
-//        $this->assertEquals('unlock_exam', $this->examdao->called);
-//        $this->assertEquals(count($this->response_handler->called_list), 1);
-//        $this->assertEquals('handle_row_count', $this->response_handler->called);
-//    }
+    /**
+     * @covers \App\classes\ExamClasses\service\LockManager::execute
+     */
+    public function testExecute_lock()
+    {
+        $this->request->http = array('task' => LockManager::LOCK_TASK, LockManager::LOCK_KEY => 5);
+        $this->request->set_response('lockExam');
+        $this->examdao->set_response(TRUE);
+        $this->object->execute($this->request);
+
+        $this->assertEquals('lock_exam', $this->examdao->called);
+        $this->assertEquals(count($this->response_handler->called_list), 1);
+        $this->assertEquals('handle_row_count', $this->response_handler->called);
+    }
+
+    /**
+     * @covers \App\classes\ExamClasses\service\LockManager::execute
+     */
+    public function testExecute_unlock()
+    {
+        $this->request->http = array('task' => LockManager::UNLOCK_TASK, LockManager::UNLOCK_KEY => 5);
+        $this->request->set_response('unlockExam');
+        $this->object->execute($this->request);
+        //$this->assertEquals(1, count($this->examdao->called_list));
+        $this->assertEquals('unlock_exam', $this->examdao->called);
+        $this->assertEquals(count($this->response_handler->called_list), 1);
+        $this->assertEquals('handle_row_count', $this->response_handler->called);
+    }
 
 
 }

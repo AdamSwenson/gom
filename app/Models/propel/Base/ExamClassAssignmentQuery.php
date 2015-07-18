@@ -20,12 +20,14 @@ use Propel\Runtime\Exception\PropelException;
  *
  *
  *
+ * @method     ChildExamClassAssignmentQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildExamClassAssignmentQuery orderByClassid($order = Criteria::ASC) Order by the classID column
  * @method     ChildExamClassAssignmentQuery orderByExamid($order = Criteria::ASC) Order by the examID column
  * @method     ChildExamClassAssignmentQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildExamClassAssignmentQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildExamClassAssignmentQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
+ * @method     ChildExamClassAssignmentQuery groupById() Group by the id column
  * @method     ChildExamClassAssignmentQuery groupByClassid() Group by the classID column
  * @method     ChildExamClassAssignmentQuery groupByExamid() Group by the examID column
  * @method     ChildExamClassAssignmentQuery groupByUserId() Group by the user_id column
@@ -36,10 +38,6 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildExamClassAssignmentQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildExamClassAssignmentQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
- * @method     ChildExamClassAssignmentQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
- * @method     ChildExamClassAssignmentQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
- * @method     ChildExamClassAssignmentQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
- *
  * @method     ChildExamClassAssignmentQuery leftJoinExam($relationAlias = null) Adds a LEFT JOIN clause to the query using the Exam relation
  * @method     ChildExamClassAssignmentQuery rightJoinExam($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Exam relation
  * @method     ChildExamClassAssignmentQuery innerJoinExam($relationAlias = null) Adds a INNER JOIN clause to the query using the Exam relation
@@ -48,11 +46,16 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildExamClassAssignmentQuery rightJoinKumi($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Kumi relation
  * @method     ChildExamClassAssignmentQuery innerJoinKumi($relationAlias = null) Adds a INNER JOIN clause to the query using the Kumi relation
  *
- * @method     \UserQuery|\ExamQuery|\KumiQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildExamClassAssignmentQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildExamClassAssignmentQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildExamClassAssignmentQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
+ *
+ * @method     \ExamQuery|\KumiQuery|\UserQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildExamClassAssignment findOne(ConnectionInterface $con = null) Return the first ChildExamClassAssignment matching the query
  * @method     ChildExamClassAssignment findOneOrCreate(ConnectionInterface $con = null) Return the first ChildExamClassAssignment matching the query, or a new ChildExamClassAssignment object populated from the query conditions when no match is found
  *
+ * @method     ChildExamClassAssignment findOneById(int $id) Return the first ChildExamClassAssignment filtered by the id column
  * @method     ChildExamClassAssignment findOneByClassid(int $classID) Return the first ChildExamClassAssignment filtered by the classID column
  * @method     ChildExamClassAssignment findOneByExamid(int $examID) Return the first ChildExamClassAssignment filtered by the examID column
  * @method     ChildExamClassAssignment findOneByUserId(int $user_id) Return the first ChildExamClassAssignment filtered by the user_id column
@@ -62,6 +65,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildExamClassAssignment requirePk($key, ConnectionInterface $con = null) Return the ChildExamClassAssignment by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildExamClassAssignment requireOne(ConnectionInterface $con = null) Return the first ChildExamClassAssignment matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
+ * @method     ChildExamClassAssignment requireOneById(int $id) Return the first ChildExamClassAssignment filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildExamClassAssignment requireOneByClassid(int $classID) Return the first ChildExamClassAssignment filtered by the classID column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildExamClassAssignment requireOneByExamid(int $examID) Return the first ChildExamClassAssignment filtered by the examID column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildExamClassAssignment requireOneByUserId(int $user_id) Return the first ChildExamClassAssignment filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -69,6 +73,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildExamClassAssignment requireOneByUpdatedAt(string $updated_at) Return the first ChildExamClassAssignment filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildExamClassAssignment[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildExamClassAssignment objects based on current ModelCriteria
+ * @method     ChildExamClassAssignment[]|ObjectCollection findById(int $id) Return ChildExamClassAssignment objects filtered by the id column
  * @method     ChildExamClassAssignment[]|ObjectCollection findByClassid(int $classID) Return ChildExamClassAssignment objects filtered by the classID column
  * @method     ChildExamClassAssignment[]|ObjectCollection findByExamid(int $examID) Return ChildExamClassAssignment objects filtered by the examID column
  * @method     ChildExamClassAssignment[]|ObjectCollection findByUserId(int $user_id) Return ChildExamClassAssignment objects filtered by the user_id column
@@ -123,10 +128,10 @@ abstract class ExamClassAssignmentQuery extends ModelCriteria
      * Go fast if the query is untouched.
      *
      * <code>
-     * $obj = $c->findPk(array(12, 34), $con);
+     * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param array[$classID, $examID] $key Primary key to use for the query
+     * @param mixed $key Primary key to use for the query
      * @param ConnectionInterface $con an optional connection object
      *
      * @return ChildExamClassAssignment|array|mixed the result, formatted by the current formatter
@@ -136,7 +141,7 @@ abstract class ExamClassAssignmentQuery extends ModelCriteria
         if ($key === null) {
             return null;
         }
-        if ((null !== ($obj = ExamClassAssignmentTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && !$this->formatter) {
+        if ((null !== ($obj = ExamClassAssignmentTableMap::getInstanceFromPool((string) $key))) && !$this->formatter) {
             // the object is already in the instance pool
             return $obj;
         }
@@ -166,11 +171,10 @@ abstract class ExamClassAssignmentQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT classID, examID, user_id, created_at, updated_at FROM examsXclasses WHERE classID = :p0 AND examID = :p1';
+        $sql = 'SELECT id, classID, examID, user_id, created_at, updated_at FROM examsXclasses WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
-            $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
-            $stmt->bindValue(':p1', $key[1], PDO::PARAM_INT);
+            $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
             Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -181,7 +185,7 @@ abstract class ExamClassAssignmentQuery extends ModelCriteria
             /** @var ChildExamClassAssignment $obj */
             $obj = new ChildExamClassAssignment();
             $obj->hydrate($row);
-            ExamClassAssignmentTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1])));
+            ExamClassAssignmentTableMap::addInstanceToPool($obj, (string) $key);
         }
         $stmt->closeCursor();
 
@@ -210,7 +214,7 @@ abstract class ExamClassAssignmentQuery extends ModelCriteria
     /**
      * Find objects by primary key
      * <code>
-     * $objs = $c->findPks(array(array(12, 56), array(832, 123), array(123, 456)), $con);
+     * $objs = $c->findPks(array(12, 56, 832), $con);
      * </code>
      * @param     array $keys Primary keys to use for the query
      * @param     ConnectionInterface $con an optional connection object
@@ -240,10 +244,8 @@ abstract class ExamClassAssignmentQuery extends ModelCriteria
      */
     public function filterByPrimaryKey($key)
     {
-        $this->addUsingAlias(ExamClassAssignmentTableMap::COL_CLASSID, $key[0], Criteria::EQUAL);
-        $this->addUsingAlias(ExamClassAssignmentTableMap::COL_EXAMID, $key[1], Criteria::EQUAL);
 
-        return $this;
+        return $this->addUsingAlias(ExamClassAssignmentTableMap::COL_ID, $key, Criteria::EQUAL);
     }
 
     /**
@@ -255,17 +257,49 @@ abstract class ExamClassAssignmentQuery extends ModelCriteria
      */
     public function filterByPrimaryKeys($keys)
     {
-        if (empty($keys)) {
-            return $this->add(null, '1<>1', Criteria::CUSTOM);
-        }
-        foreach ($keys as $key) {
-            $cton0 = $this->getNewCriterion(ExamClassAssignmentTableMap::COL_CLASSID, $key[0], Criteria::EQUAL);
-            $cton1 = $this->getNewCriterion(ExamClassAssignmentTableMap::COL_EXAMID, $key[1], Criteria::EQUAL);
-            $cton0->addAnd($cton1);
-            $this->addOr($cton0);
+
+        return $this->addUsingAlias(ExamClassAssignmentTableMap::COL_ID, $keys, Criteria::IN);
+    }
+
+    /**
+     * Filter the query on the id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterById(1234); // WHERE id = 1234
+     * $query->filterById(array(12, 34)); // WHERE id IN (12, 34)
+     * $query->filterById(array('min' => 12)); // WHERE id > 12
+     * </code>
+     *
+     * @param     mixed $id The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildExamClassAssignmentQuery The current query, for fluid interface
+     */
+    public function filterById($id = null, $comparison = null)
+    {
+        if (is_array($id)) {
+            $useMinMax = false;
+            if (isset($id['min'])) {
+                $this->addUsingAlias(ExamClassAssignmentTableMap::COL_ID, $id['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($id['max'])) {
+                $this->addUsingAlias(ExamClassAssignmentTableMap::COL_ID, $id['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
         }
 
-        return $this;
+        return $this->addUsingAlias(ExamClassAssignmentTableMap::COL_ID, $id, $comparison);
     }
 
     /**
@@ -484,83 +518,6 @@ abstract class ExamClassAssignmentQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \User object
-     *
-     * @param \User|ObjectCollection $user The related object(s) to use as filter
-     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @throws \Propel\Runtime\Exception\PropelException
-     *
-     * @return ChildExamClassAssignmentQuery The current query, for fluid interface
-     */
-    public function filterByUser($user, $comparison = null)
-    {
-        if ($user instanceof \User) {
-            return $this
-                ->addUsingAlias(ExamClassAssignmentTableMap::COL_USER_ID, $user->getId(), $comparison);
-        } elseif ($user instanceof ObjectCollection) {
-            if (null === $comparison) {
-                $comparison = Criteria::IN;
-            }
-
-            return $this
-                ->addUsingAlias(ExamClassAssignmentTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
-        } else {
-            throw new PropelException('filterByUser() only accepts arguments of type \User or Collection');
-        }
-    }
-
-    /**
-     * Adds a JOIN clause to the query using the User relation
-     *
-     * @param     string $relationAlias optional alias for the relation
-     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-     *
-     * @return $this|ChildExamClassAssignmentQuery The current query, for fluid interface
-     */
-    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
-    {
-        $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('User');
-
-        // create a ModelJoin object for this join
-        $join = new ModelJoin();
-        $join->setJoinType($joinType);
-        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
-        if ($previousJoin = $this->getPreviousJoin()) {
-            $join->setPreviousJoin($previousJoin);
-        }
-
-        // add the ModelJoin to the current object
-        if ($relationAlias) {
-            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
-            $this->addJoinObject($join, $relationAlias);
-        } else {
-            $this->addJoinObject($join, 'User');
-        }
-
-        return $this;
-    }
-
-    /**
-     * Use the User relation User object
-     *
-     * @see useQuery()
-     *
-     * @param     string $relationAlias optional alias for the relation,
-     *                                   to be used as main alias in the secondary query
-     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-     *
-     * @return \UserQuery A secondary query class using the current class as primary query
-     */
-    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
-    {
-        return $this
-            ->joinUser($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
-    }
-
-    /**
      * Filter the query by a related \Exam object
      *
      * @param \Exam|ObjectCollection $exam The related object(s) to use as filter
@@ -715,6 +672,83 @@ abstract class ExamClassAssignmentQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query by a related \User object
+     *
+     * @param \User|ObjectCollection $user The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildExamClassAssignmentQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = null)
+    {
+        if ($user instanceof \User) {
+            return $this
+                ->addUsingAlias(ExamClassAssignmentTableMap::COL_USER_ID, $user->getId(), $comparison);
+        } elseif ($user instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(ExamClassAssignmentTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByUser() only accepts arguments of type \User or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the User relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildExamClassAssignmentQuery The current query, for fluid interface
+     */
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('User');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'User');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the User relation User object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \UserQuery A secondary query class using the current class as primary query
+     */
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
+    }
+
+    /**
      * Exclude object from result
      *
      * @param   ChildExamClassAssignment $examClassAssignment Object to remove from the list of results
@@ -724,9 +758,7 @@ abstract class ExamClassAssignmentQuery extends ModelCriteria
     public function prune($examClassAssignment = null)
     {
         if ($examClassAssignment) {
-            $this->addCond('pruneCond0', $this->getAliasedColName(ExamClassAssignmentTableMap::COL_CLASSID), $examClassAssignment->getClassid(), Criteria::NOT_EQUAL);
-            $this->addCond('pruneCond1', $this->getAliasedColName(ExamClassAssignmentTableMap::COL_EXAMID), $examClassAssignment->getExamid(), Criteria::NOT_EQUAL);
-            $this->combine(array('pruneCond0', 'pruneCond1'), Criteria::LOGICAL_OR);
+            $this->addUsingAlias(ExamClassAssignmentTableMap::COL_ID, $examClassAssignment->getId(), Criteria::NOT_EQUAL);
         }
 
         return $this;

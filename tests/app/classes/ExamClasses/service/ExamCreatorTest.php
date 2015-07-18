@@ -61,9 +61,9 @@ class ExamCreatorTest extends \TestCase
         $this->assertEquals('load_topic', $this->restrictordao->called_list[2][0]);
 
         $this->assertEquals('save_new_exam', $this->examdao->called_list[0][0]);
-        $this->assertInstanceOf('Year', $this->examdao->year);
-        $this->assertInstanceOf('Term', $this->examdao->term);
-        $this->assertInstanceOf('Topic', $this->examdao->topic);
+//        $this->assertInstanceOf('Year', $this->examdao->year);
+//        $this->assertInstanceOf('Term', $this->examdao->term);
+//        $this->assertInstanceOf('Topic', $this->examdao->topic);
     }
 
     public function test_create_exam_count_is_zero()

@@ -133,10 +133,10 @@ abstract class GradingTimeQuery extends ModelCriteria
      * Go fast if the query is untouched.
      *
      * <code>
-     * $obj  = $c->findPk(12, $con);
+     * $obj = $c->findPk(array(12, 34), $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query
+     * @param array[$id, $user_id] $key Primary key to use for the query
      * @param ConnectionInterface $con an optional connection object
      *
      * @return ChildGradingTime|array|mixed the result, formatted by the current formatter
@@ -146,7 +146,7 @@ abstract class GradingTimeQuery extends ModelCriteria
         if ($key === null) {
             return null;
         }
-        if ((null !== ($obj = GradingTimeTableMap::getInstanceFromPool((string) $key))) && !$this->formatter) {
+        if ((null !== ($obj = GradingTimeTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && !$this->formatter) {
             // the object is already in the instance pool
             return $obj;
         }
@@ -176,10 +176,11 @@ abstract class GradingTimeQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, examID, studentID, seconds, user_id, created_at, updated_at FROM time_grading WHERE id = :p0';
+        $sql = 'SELECT id, examID, studentID, seconds, user_id, created_at, updated_at FROM time_grading WHERE id = :p0 AND user_id = :p1';
         try {
             $stmt = $con->prepare($sql);
-            $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
+            $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
+            $stmt->bindValue(':p1', $key[1], PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
             Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -190,7 +191,7 @@ abstract class GradingTimeQuery extends ModelCriteria
             /** @var ChildGradingTime $obj */
             $obj = new ChildGradingTime();
             $obj->hydrate($row);
-            GradingTimeTableMap::addInstanceToPool($obj, (string) $key);
+            GradingTimeTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1])));
         }
         $stmt->closeCursor();
 
@@ -219,7 +220,7 @@ abstract class GradingTimeQuery extends ModelCriteria
     /**
      * Find objects by primary key
      * <code>
-     * $objs = $c->findPks(array(12, 56, 832), $con);
+     * $objs = $c->findPks(array(array(12, 56), array(832, 123), array(123, 456)), $con);
      * </code>
      * @param     array $keys Primary keys to use for the query
      * @param     ConnectionInterface $con an optional connection object
@@ -249,8 +250,10 @@ abstract class GradingTimeQuery extends ModelCriteria
      */
     public function filterByPrimaryKey($key)
     {
+        $this->addUsingAlias(GradingTimeTableMap::COL_ID, $key[0], Criteria::EQUAL);
+        $this->addUsingAlias(GradingTimeTableMap::COL_USER_ID, $key[1], Criteria::EQUAL);
 
-        return $this->addUsingAlias(GradingTimeTableMap::COL_ID, $key, Criteria::EQUAL);
+        return $this;
     }
 
     /**
@@ -262,8 +265,17 @@ abstract class GradingTimeQuery extends ModelCriteria
      */
     public function filterByPrimaryKeys($keys)
     {
+        if (empty($keys)) {
+            return $this->add(null, '1<>1', Criteria::CUSTOM);
+        }
+        foreach ($keys as $key) {
+            $cton0 = $this->getNewCriterion(GradingTimeTableMap::COL_ID, $key[0], Criteria::EQUAL);
+            $cton1 = $this->getNewCriterion(GradingTimeTableMap::COL_USER_ID, $key[1], Criteria::EQUAL);
+            $cton0->addAnd($cton1);
+            $this->addOr($cton0);
+        }
 
-        return $this->addUsingAlias(GradingTimeTableMap::COL_ID, $keys, Criteria::IN);
+        return $this;
     }
 
     /**
@@ -804,7 +816,9 @@ abstract class GradingTimeQuery extends ModelCriteria
     public function prune($gradingTime = null)
     {
         if ($gradingTime) {
-            $this->addUsingAlias(GradingTimeTableMap::COL_ID, $gradingTime->getId(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond0', $this->getAliasedColName(GradingTimeTableMap::COL_ID), $gradingTime->getId(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond1', $this->getAliasedColName(GradingTimeTableMap::COL_USER_ID), $gradingTime->getUserId(), Criteria::NOT_EQUAL);
+            $this->combine(array('pruneCond0', 'pruneCond1'), Criteria::LOGICAL_OR);
         }
 
         return $this;

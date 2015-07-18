@@ -15,12 +15,13 @@ use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Propel;
 
 
-
 //require_once '../../../vendor/autoload.php';
 
-function run(){
+function run()
+{
 
 }
+
 /**
  * Class DbTestAids
  * These are tools for putting the database into a known state
@@ -40,15 +41,17 @@ class DbTestAids
     public static function populate_all()
     {
         //
-DbTestAids::populate_item_assignments2();
-DbTestAids::populate_restrictors();
-DbTestAids::populate_students();
-DbTestAids::populate_classes();
+
+        //DbTestAids::populate_restrictors();
+        DbTestAids::populate_item_assignments2();
+        DbTestAids::populate_students();
+        DbTestAids::populate_classes();
+
 //\classes\DbTestAids::populate_scores();
-DbTestAids::populate_element_scores();
-DbTestAids::populate_question_scores();
-DbTestAids::populate_pseudoids();
-DbTestAids::populate_times();
+        DbTestAids::populate_element_scores();
+        DbTestAids::populate_question_scores();
+       // DbTestAids::populate_pseudoids();
+        DbTestAids::populate_times();
 
 //\classes\DbTestAids::populate_tags();
 
@@ -104,6 +107,7 @@ DbTestAids::populate_times();
             }
         } catch (\Exception $e)
         {
+            echo "\n Error with " . __FUNCTION__ . " " . $e->getMessage();
         }
     }
 
@@ -115,22 +119,39 @@ DbTestAids::populate_times();
             $faker = \Faker\Factory::create();
             for ($i = 0; $i < $num; $i++)
             {
-                $t = new \Term();
-                $t->setUser(self::get_user());
-                $t->setContent($faker->word());
+                $t = \TermQuery::create()
+                    ->filterByUser(self::get_user())
+                    ->filterByContent($faker->word())
+                    ->findOneOrCreate();
                 $t->save();
+//                $t = new \Term();
+//                $t->setUser(self::get_user());
+//                $t->setContent($faker->word());
+//                $t->save();
 
-                $y = new \Year();
-                $y->setUser(self::get_user());
-                $y->setContent($faker->year);
+                $y = \YearQuery::create()
+                    ->filterByUser(self::get_user())
+                    ->filterByContent($faker->year())
+                    ->findOneOrCreate();
                 $y->save();
+//                $y = new \Year();
+//                $y->setUser(self::get_user());
+//                $y->setContent($faker->year);
+//                $y->save();
 
-                $p = new \Topic();
-                $p->setUser(self::get_user());
-                $p->setContent($faker->word());
+                $p = \TopicQuery::create()
+                    ->filterByUser(self::get_user())
+                    ->filterByContent($faker->word())
+                    ->findOneOrCreate();
+                $p->save();
+//                $p = new \Topic();
+//                $p->setUser(self::get_user());
+//                $p->setContent($faker->word());
+//                $p->save();
             }
         } catch (\Exception $e)
         {
+            echo "\n Error with " . __FUNCTION__ . " " . $e->getMessage();
         }
     }
 
@@ -140,12 +161,21 @@ DbTestAids::populate_times();
         $yr = \YearQuery::create()->filterByContent($year)->findOneOrCreate();
         $tm = \TermQuery::create()->filterByContent($term)->findOneOrCreate();
         $tc = \TopicQuery::create()->filterByContent($topic)->findOneOrCreate();
-        $ex = new \Exam();
-        $ex->setUser($user);
-        $ex->setTopic($tc);
-        $ex->setTerm($tm);
-        $ex->setYear($yr);
+        $ex = \ExamQuery::create()
+            ->filterByUser($user)
+//        ->filterByExamtopic($tc)
+//            ->filterByExamyear($yr)
+//            ->filterByExamterm($tm)
+            ->filterByExamyear($year)
+        ->filterByExamterm($term)
+        ->filterByExamtopic($topic)
+        ->findOneOrCreate();
         $ex->save();
+//        $ex->setUser($user);
+//        $ex->setTopic($tc);
+//        $ex->setTerm($tm);
+//        $ex->setYear($yr);
+//        $ex->save();
 
         return $ex;
     }
@@ -162,6 +192,7 @@ DbTestAids::populate_times();
             }
         } catch (\Exception $e)
         {
+            echo "\n Error with " . __FUNCTION__ . " " . $e->getMessage();
         }
     }
 
@@ -181,6 +212,7 @@ DbTestAids::populate_times();
             }
         } catch (\Exception $e)
         {
+            echo "\n Error with " . __FUNCTION__ . " " . $e->getMessage();
         }
     }
 
@@ -226,7 +258,7 @@ DbTestAids::populate_times();
     {
         self::populate_exams();
         self::populate_items(30);
-
+        $user = self::get_user();
         try
         {
             $exams = \ExamQuery::create()->find();
@@ -242,7 +274,7 @@ DbTestAids::populate_times();
                     try
                     {
                         $qa = \QuestionAssignerQuery::create()
-                            ->filterByUser(self::get_user())
+                            ->filterByUser($user)
                             ->filterByExam($exam)
                             ->filterByQuestionnumber($i)
                             ->findOneOrCreate();
@@ -252,7 +284,7 @@ DbTestAids::populate_times();
                         for ($k = 1; $k <= $num_subtasks; $k++)
                         {
                             $ea = \ElementAssignmentQuery::create()
-                                ->filterByUser(self::get_user())
+                                ->filterByUser($user)
                                 ->filterByExam($exam)
                                 ->filterByQuestion($questions[$i])
                                 ->filterBySubtask($k)->findOneOrCreate();
@@ -262,11 +294,13 @@ DbTestAids::populate_times();
                         }
                     } catch (\Exception $e)
                     {
-                    }
+                        echo "\n Error with " . __FUNCTION__ . " " . $e->getMessage() . " " . $e->getLine();
+                        }
                 }
             }
         } catch (\Exception $e)
         {
+            echo "\n Error with " . __FUNCTION__ . " " . $e->getMessage(). " " . $e->getLine();
         }
     }
 
@@ -304,6 +338,7 @@ DbTestAids::populate_times();
             }
         } catch (\Exception $e)
         {
+            echo "\n Error with " . __FUNCTION__ . " " . $e->getMessage();
         }
     }
 
@@ -329,11 +364,12 @@ DbTestAids::populate_times();
                                 ->filterByExam($exams[$i])
                                 ->filterByStudent($s)
                                 ->filterByElement($ea->getElement())
-                                ->filterByElementscore(self::rand_float(0, 10, 2))
                                 ->findOneOrCreate();
+                            $eee->setElementscore(self::rand_float(0, 10, 2));
                             $eee->save();
                         } catch (\Exception $e)
                         {
+                            echo "\n Error with " . __FUNCTION__ . " " . $e->getMessage();
                         }
                     }
                 }
@@ -341,6 +377,7 @@ DbTestAids::populate_times();
             }
         } catch (\Exception $e)
         {
+            echo "\n Error with " . __FUNCTION__ . " " . $e->getMessage();
         }
     }
 
@@ -364,8 +401,8 @@ DbTestAids::populate_times();
                                 ->filterByExam($exams[$i])
                                 ->filterByStudent($s)
                                 ->filterByQuestion($qa->getQuestion())
-                                ->filterByQuestionscore(self::rand_float(0, 10, 2))
                                 ->findOneOrCreate();
+                            $eee->setQuestionscore(self::rand_float(0, 10, 2));
                             $eee->save();
                         } catch (\Exception $e)
                         {
@@ -376,6 +413,8 @@ DbTestAids::populate_times();
             }
         } catch (\Exception $e)
         {
+            echo "\n Error with " . __FUNCTION__ . " " . $e->getMessage();
+//            echo $e->getMessage();
             // error_log($e);
         }
     }
@@ -401,6 +440,7 @@ DbTestAids::populate_times();
                 }
             } catch (\Exception $e)
             {
+                echo $e->getMessage();
                 //error_log($e);
             }
         }
@@ -455,6 +495,7 @@ DbTestAids::populate_times();
 
         } catch (\Exception $e)
         {
+            echo "\n Error with " . __FUNCTION__ . " " . $e->getMessage();
         }
     }
 
@@ -510,12 +551,14 @@ DbTestAids::populate_times();
                         $gq->save();
                     } catch (\Exception $e)
                     {
+                        echo "\n Error with " . __FUNCTION__ . " " . $e->getMessage();
 //                        error_log($e);
                     }
                 }
             }
         } catch (\Exception $e)
         {
+            echo "\n Error with " . __FUNCTION__ . " " . $e->getMessage();
 //            error_log($e);
         }
     }
@@ -546,7 +589,8 @@ DbTestAids::populate_times();
             } else
             {
                 foreach ($elements as $e)
-                {$user = self::get_user();
+                {
+                    $user = self::get_user();
                     $z = \TaggedElementQuery::create()
                         ->filterByUser($user)
                         ->filterByElement($e)

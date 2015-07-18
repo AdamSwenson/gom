@@ -15,6 +15,7 @@ class QuestionDAOTest extends \TestCase
 
     public function setUp()
     {
+        parent::setUp();
         $this->object = new QuestionDAO();
     }
 

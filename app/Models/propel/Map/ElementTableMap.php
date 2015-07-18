@@ -184,6 +184,13 @@ class ElementTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'ElementScores', false);
+        $this->addRelation('ElementAssignment', '\\ElementAssignment', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':elementID',
+    1 => ':id',
+  ),
+), null, null, 'ElementAssignments', false);
     } // buildRelations()
 
     /**

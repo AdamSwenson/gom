@@ -171,6 +171,20 @@ class KumiTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, null, false);
+        $this->addRelation('StudentClassAssignment', '\\StudentClassAssignment', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':classID',
+    1 => ':id',
+  ),
+), null, null, 'StudentClassAssignments', false);
+        $this->addRelation('ExamClassAssignment', '\\ExamClassAssignment', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':classID',
+    1 => ':id',
+  ),
+), null, null, 'ExamClassAssignments', false);
     } // buildRelations()
 
     /**

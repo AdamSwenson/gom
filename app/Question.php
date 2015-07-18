@@ -6,5 +6,37 @@ use Illuminate\Database\Eloquent\Model;
 
 class Question extends Model
 {
-    //
+    protected $fillable = [
+        'questionText',
+        'questionName'
+    ];
+
+    /**
+     * Associates with user
+     * @param $user_id
+     */
+    public function setUser($user_id)
+    {
+        $this->attributes['user_id'] = $user_id;
+    }
+
+    public function setQuestiontext($questionText)
+    {
+        $this->attributes['questionText'] = $questionText;
+    }
+
+    public function setQuestionname($questionName)
+    {
+        $this->attributes['questionName'] = $questionName;
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
+
+    public function exam()
+    {
+        return $this->belongsToMany('App\Exam', 'question_assignments');
+    }
 }

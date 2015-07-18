@@ -81,6 +81,12 @@ abstract class ExamInfo implements ActiveRecordInterface
     protected $studentid;
 
     /**
+     * The value for the user_id field.
+     * @var        int
+     */
+    protected $user_id;
+
+    /**
      * The value for the completionorder field.
      * @var        int
      */
@@ -105,12 +111,6 @@ abstract class ExamInfo implements ActiveRecordInterface
     protected $examgroupnumber;
 
     /**
-     * The value for the user_id field.
-     * @var        int
-     */
-    protected $user_id;
-
-    /**
      * The value for the created_at field.
      * @var        \DateTime
      */
@@ -123,11 +123,6 @@ abstract class ExamInfo implements ActiveRecordInterface
     protected $updated_at;
 
     /**
-     * @var        ChildUser
-     */
-    protected $aUser;
-
-    /**
      * @var        ChildExam
      */
     protected $aExam;
@@ -136,6 +131,11 @@ abstract class ExamInfo implements ActiveRecordInterface
      * @var        ChildStudent
      */
     protected $aStudent;
+
+    /**
+     * @var        ChildUser
+     */
+    protected $aUser;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -383,6 +383,16 @@ abstract class ExamInfo implements ActiveRecordInterface
     }
 
     /**
+     * Get the [user_id] column value.
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
      * Get the [completionorder] column value.
      *
      * @return int
@@ -420,16 +430,6 @@ abstract class ExamInfo implements ActiveRecordInterface
     public function getExamgroupnumber()
     {
         return $this->examgroupnumber;
-    }
-
-    /**
-     * Get the [user_id] column value.
-     *
-     * @return int
-     */
-    public function getUserId()
-    {
-        return $this->user_id;
     }
 
     /**
@@ -521,6 +521,30 @@ abstract class ExamInfo implements ActiveRecordInterface
     } // setStudentid()
 
     /**
+     * Set the value of [user_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\ExamInfo The current object (for fluent API support)
+     */
+    public function setUserId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[ExamInfoTableMap::COL_USER_ID] = true;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
+        }
+
+        return $this;
+    } // setUserId()
+
+    /**
      * Set the value of [completionorder] column.
      *
      * @param int $v new value
@@ -599,30 +623,6 @@ abstract class ExamInfo implements ActiveRecordInterface
 
         return $this;
     } // setExamgroupnumber()
-
-    /**
-     * Set the value of [user_id] column.
-     *
-     * @param int $v new value
-     * @return $this|\ExamInfo The current object (for fluent API support)
-     */
-    public function setUserId($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->user_id !== $v) {
-            $this->user_id = $v;
-            $this->modifiedColumns[ExamInfoTableMap::COL_USER_ID] = true;
-        }
-
-        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
-            $this->aUser = null;
-        }
-
-        return $this;
-    } // setUserId()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
@@ -706,20 +706,20 @@ abstract class ExamInfo implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : ExamInfoTableMap::translateFieldName('Studentid', TableMap::TYPE_PHPNAME, $indexType)];
             $this->studentid = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ExamInfoTableMap::translateFieldName('Completionorder', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ExamInfoTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->user_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ExamInfoTableMap::translateFieldName('Completionorder', TableMap::TYPE_PHPNAME, $indexType)];
             $this->completionorder = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ExamInfoTableMap::translateFieldName('Pages', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ExamInfoTableMap::translateFieldName('Pages', TableMap::TYPE_PHPNAME, $indexType)];
             $this->pages = (null !== $col) ? (double) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ExamInfoTableMap::translateFieldName('Notecard', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ExamInfoTableMap::translateFieldName('Notecard', TableMap::TYPE_PHPNAME, $indexType)];
             $this->notecard = (null !== $col) ? (double) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ExamInfoTableMap::translateFieldName('Examgroupnumber', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ExamInfoTableMap::translateFieldName('Examgroupnumber', TableMap::TYPE_PHPNAME, $indexType)];
             $this->examgroupnumber = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ExamInfoTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->user_id = (null !== $col) ? (int) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : ExamInfoTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
@@ -810,9 +810,9 @@ abstract class ExamInfo implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aUser = null;
             $this->aExam = null;
             $this->aStudent = null;
+            $this->aUser = null;
         } // if (deep)
     }
 
@@ -929,13 +929,6 @@ abstract class ExamInfo implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aUser !== null) {
-                if ($this->aUser->isModified() || $this->aUser->isNew()) {
-                    $affectedRows += $this->aUser->save($con);
-                }
-                $this->setUser($this->aUser);
-            }
-
             if ($this->aExam !== null) {
                 if ($this->aExam->isModified() || $this->aExam->isNew()) {
                     $affectedRows += $this->aExam->save($con);
@@ -948,6 +941,13 @@ abstract class ExamInfo implements ActiveRecordInterface
                     $affectedRows += $this->aStudent->save($con);
                 }
                 $this->setStudent($this->aStudent);
+            }
+
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -989,6 +989,9 @@ abstract class ExamInfo implements ActiveRecordInterface
         if ($this->isColumnModified(ExamInfoTableMap::COL_STUDENTID)) {
             $modifiedColumns[':p' . $index++]  = 'studentID';
         }
+        if ($this->isColumnModified(ExamInfoTableMap::COL_USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'user_id';
+        }
         if ($this->isColumnModified(ExamInfoTableMap::COL_COMPLETIONORDER)) {
             $modifiedColumns[':p' . $index++]  = 'completionOrder';
         }
@@ -1000,9 +1003,6 @@ abstract class ExamInfo implements ActiveRecordInterface
         }
         if ($this->isColumnModified(ExamInfoTableMap::COL_EXAMGROUPNUMBER)) {
             $modifiedColumns[':p' . $index++]  = 'examGroupNumber';
-        }
-        if ($this->isColumnModified(ExamInfoTableMap::COL_USER_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'user_id';
         }
         if ($this->isColumnModified(ExamInfoTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
@@ -1027,6 +1027,9 @@ abstract class ExamInfo implements ActiveRecordInterface
                     case 'studentID':
                         $stmt->bindValue($identifier, $this->studentid, PDO::PARAM_INT);
                         break;
+                    case 'user_id':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
+                        break;
                     case 'completionOrder':
                         $stmt->bindValue($identifier, $this->completionorder, PDO::PARAM_INT);
                         break;
@@ -1038,9 +1041,6 @@ abstract class ExamInfo implements ActiveRecordInterface
                         break;
                     case 'examGroupNumber':
                         $stmt->bindValue($identifier, $this->examgroupnumber, PDO::PARAM_INT);
-                        break;
-                    case 'user_id':
-                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1110,19 +1110,19 @@ abstract class ExamInfo implements ActiveRecordInterface
                 return $this->getStudentid();
                 break;
             case 2:
-                return $this->getCompletionorder();
+                return $this->getUserId();
                 break;
             case 3:
-                return $this->getPages();
+                return $this->getCompletionorder();
                 break;
             case 4:
-                return $this->getNotecard();
+                return $this->getPages();
                 break;
             case 5:
-                return $this->getExamgroupnumber();
+                return $this->getNotecard();
                 break;
             case 6:
-                return $this->getUserId();
+                return $this->getExamgroupnumber();
                 break;
             case 7:
                 return $this->getCreatedAt();
@@ -1162,11 +1162,11 @@ abstract class ExamInfo implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getExamid(),
             $keys[1] => $this->getStudentid(),
-            $keys[2] => $this->getCompletionorder(),
-            $keys[3] => $this->getPages(),
-            $keys[4] => $this->getNotecard(),
-            $keys[5] => $this->getExamgroupnumber(),
-            $keys[6] => $this->getUserId(),
+            $keys[2] => $this->getUserId(),
+            $keys[3] => $this->getCompletionorder(),
+            $keys[4] => $this->getPages(),
+            $keys[5] => $this->getNotecard(),
+            $keys[6] => $this->getExamgroupnumber(),
             $keys[7] => $this->getCreatedAt(),
             $keys[8] => $this->getUpdatedAt(),
         );
@@ -1190,21 +1190,6 @@ abstract class ExamInfo implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aUser) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'user';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'users';
-                        break;
-                    default:
-                        $key = 'User';
-                }
-
-                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
             if (null !== $this->aExam) {
 
                 switch ($keyType) {
@@ -1234,6 +1219,21 @@ abstract class ExamInfo implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->aStudent->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aUser) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'user';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'users';
+                        break;
+                    default:
+                        $key = 'User';
+                }
+
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -1276,19 +1276,19 @@ abstract class ExamInfo implements ActiveRecordInterface
                 $this->setStudentid($value);
                 break;
             case 2:
-                $this->setCompletionorder($value);
+                $this->setUserId($value);
                 break;
             case 3:
-                $this->setPages($value);
+                $this->setCompletionorder($value);
                 break;
             case 4:
-                $this->setNotecard($value);
+                $this->setPages($value);
                 break;
             case 5:
-                $this->setExamgroupnumber($value);
+                $this->setNotecard($value);
                 break;
             case 6:
-                $this->setUserId($value);
+                $this->setExamgroupnumber($value);
                 break;
             case 7:
                 $this->setCreatedAt($value);
@@ -1329,19 +1329,19 @@ abstract class ExamInfo implements ActiveRecordInterface
             $this->setStudentid($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setCompletionorder($arr[$keys[2]]);
+            $this->setUserId($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setPages($arr[$keys[3]]);
+            $this->setCompletionorder($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setNotecard($arr[$keys[4]]);
+            $this->setPages($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setExamgroupnumber($arr[$keys[5]]);
+            $this->setNotecard($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setUserId($arr[$keys[6]]);
+            $this->setExamgroupnumber($arr[$keys[6]]);
         }
         if (array_key_exists($keys[7], $arr)) {
             $this->setCreatedAt($arr[$keys[7]]);
@@ -1396,6 +1396,9 @@ abstract class ExamInfo implements ActiveRecordInterface
         if ($this->isColumnModified(ExamInfoTableMap::COL_STUDENTID)) {
             $criteria->add(ExamInfoTableMap::COL_STUDENTID, $this->studentid);
         }
+        if ($this->isColumnModified(ExamInfoTableMap::COL_USER_ID)) {
+            $criteria->add(ExamInfoTableMap::COL_USER_ID, $this->user_id);
+        }
         if ($this->isColumnModified(ExamInfoTableMap::COL_COMPLETIONORDER)) {
             $criteria->add(ExamInfoTableMap::COL_COMPLETIONORDER, $this->completionorder);
         }
@@ -1407,9 +1410,6 @@ abstract class ExamInfo implements ActiveRecordInterface
         }
         if ($this->isColumnModified(ExamInfoTableMap::COL_EXAMGROUPNUMBER)) {
             $criteria->add(ExamInfoTableMap::COL_EXAMGROUPNUMBER, $this->examgroupnumber);
-        }
-        if ($this->isColumnModified(ExamInfoTableMap::COL_USER_ID)) {
-            $criteria->add(ExamInfoTableMap::COL_USER_ID, $this->user_id);
         }
         if ($this->isColumnModified(ExamInfoTableMap::COL_CREATED_AT)) {
             $criteria->add(ExamInfoTableMap::COL_CREATED_AT, $this->created_at);
@@ -1527,11 +1527,11 @@ abstract class ExamInfo implements ActiveRecordInterface
     {
         $copyObj->setExamid($this->getExamid());
         $copyObj->setStudentid($this->getStudentid());
+        $copyObj->setUserId($this->getUserId());
         $copyObj->setCompletionorder($this->getCompletionorder());
         $copyObj->setPages($this->getPages());
         $copyObj->setNotecard($this->getNotecard());
         $copyObj->setExamgroupnumber($this->getExamgroupnumber());
-        $copyObj->setUserId($this->getUserId());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
@@ -1559,57 +1559,6 @@ abstract class ExamInfo implements ActiveRecordInterface
         $this->copyInto($copyObj, $deepCopy);
 
         return $copyObj;
-    }
-
-    /**
-     * Declares an association between this object and a ChildUser object.
-     *
-     * @param  ChildUser $v
-     * @return $this|\ExamInfo The current object (for fluent API support)
-     * @throws PropelException
-     */
-    public function setUser(ChildUser $v = null)
-    {
-        if ($v === null) {
-            $this->setUserId(NULL);
-        } else {
-            $this->setUserId($v->getId());
-        }
-
-        $this->aUser = $v;
-
-        // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildUser object, it will not be re-added.
-        if ($v !== null) {
-            $v->addExamInfo($this);
-        }
-
-
-        return $this;
-    }
-
-
-    /**
-     * Get the associated ChildUser object
-     *
-     * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildUser The associated ChildUser object.
-     * @throws PropelException
-     */
-    public function getUser(ConnectionInterface $con = null)
-    {
-        if ($this->aUser === null && ($this->user_id !== null)) {
-            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
-            /* The following can be used additionally to
-                guarantee the related object contains a reference
-                to this object.  This level of coupling may, however, be
-                undesirable since it could result in an only partially populated collection
-                in the referenced object.
-                $this->aUser->addExamInfos($this);
-             */
-        }
-
-        return $this->aUser;
     }
 
     /**
@@ -1715,28 +1664,79 @@ abstract class ExamInfo implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a ChildUser object.
+     *
+     * @param  ChildUser $v
+     * @return $this|\ExamInfo The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUser(ChildUser $v = null)
+    {
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
+        }
+
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
+        if ($v !== null) {
+            $v->addExamInfo($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildUser object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUser The associated ChildUser object.
+     * @throws PropelException
+     */
+    public function getUser(ConnectionInterface $con = null)
+    {
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addExamInfos($this);
+             */
+        }
+
+        return $this->aUser;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
      */
     public function clear()
     {
-        if (null !== $this->aUser) {
-            $this->aUser->removeExamInfo($this);
-        }
         if (null !== $this->aExam) {
             $this->aExam->removeExamInfo($this);
         }
         if (null !== $this->aStudent) {
             $this->aStudent->removeExamInfo($this);
         }
+        if (null !== $this->aUser) {
+            $this->aUser->removeExamInfo($this);
+        }
         $this->examid = null;
         $this->studentid = null;
+        $this->user_id = null;
         $this->completionorder = null;
         $this->pages = null;
         $this->notecard = null;
         $this->examgroupnumber = null;
-        $this->user_id = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -1759,9 +1759,9 @@ abstract class ExamInfo implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
-        $this->aUser = null;
         $this->aExam = null;
         $this->aStudent = null;
+        $this->aUser = null;
     }
 
     /**

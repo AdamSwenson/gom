@@ -42,7 +42,15 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildKumiQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
  * @method     ChildKumiQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
  *
- * @method     \UserQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildKumiQuery leftJoinStudentClassAssignment($relationAlias = null) Adds a LEFT JOIN clause to the query using the StudentClassAssignment relation
+ * @method     ChildKumiQuery rightJoinStudentClassAssignment($relationAlias = null) Adds a RIGHT JOIN clause to the query using the StudentClassAssignment relation
+ * @method     ChildKumiQuery innerJoinStudentClassAssignment($relationAlias = null) Adds a INNER JOIN clause to the query using the StudentClassAssignment relation
+ *
+ * @method     ChildKumiQuery leftJoinExamClassAssignment($relationAlias = null) Adds a LEFT JOIN clause to the query using the ExamClassAssignment relation
+ * @method     ChildKumiQuery rightJoinExamClassAssignment($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ExamClassAssignment relation
+ * @method     ChildKumiQuery innerJoinExamClassAssignment($relationAlias = null) Adds a INNER JOIN clause to the query using the ExamClassAssignment relation
+ *
+ * @method     \UserQuery|\StudentClassAssignmentQuery|\ExamClassAssignmentQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildKumi findOne(ConnectionInterface $con = null) Return the first ChildKumi matching the query
  * @method     ChildKumi findOneOrCreate(ConnectionInterface $con = null) Return the first ChildKumi matching the query, or a new ChildKumi object populated from the query conditions when no match is found
@@ -568,6 +576,152 @@ abstract class KumiQuery extends ModelCriteria
         return $this
             ->joinUser($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
+    }
+
+    /**
+     * Filter the query by a related \StudentClassAssignment object
+     *
+     * @param \StudentClassAssignment|ObjectCollection $studentClassAssignment the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildKumiQuery The current query, for fluid interface
+     */
+    public function filterByStudentClassAssignment($studentClassAssignment, $comparison = null)
+    {
+        if ($studentClassAssignment instanceof \StudentClassAssignment) {
+            return $this
+                ->addUsingAlias(KumiTableMap::COL_ID, $studentClassAssignment->getClassid(), $comparison);
+        } elseif ($studentClassAssignment instanceof ObjectCollection) {
+            return $this
+                ->useStudentClassAssignmentQuery()
+                ->filterByPrimaryKeys($studentClassAssignment->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByStudentClassAssignment() only accepts arguments of type \StudentClassAssignment or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the StudentClassAssignment relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildKumiQuery The current query, for fluid interface
+     */
+    public function joinStudentClassAssignment($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('StudentClassAssignment');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'StudentClassAssignment');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the StudentClassAssignment relation StudentClassAssignment object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \StudentClassAssignmentQuery A secondary query class using the current class as primary query
+     */
+    public function useStudentClassAssignmentQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinStudentClassAssignment($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'StudentClassAssignment', '\StudentClassAssignmentQuery');
+    }
+
+    /**
+     * Filter the query by a related \ExamClassAssignment object
+     *
+     * @param \ExamClassAssignment|ObjectCollection $examClassAssignment the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildKumiQuery The current query, for fluid interface
+     */
+    public function filterByExamClassAssignment($examClassAssignment, $comparison = null)
+    {
+        if ($examClassAssignment instanceof \ExamClassAssignment) {
+            return $this
+                ->addUsingAlias(KumiTableMap::COL_ID, $examClassAssignment->getClassid(), $comparison);
+        } elseif ($examClassAssignment instanceof ObjectCollection) {
+            return $this
+                ->useExamClassAssignmentQuery()
+                ->filterByPrimaryKeys($examClassAssignment->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByExamClassAssignment() only accepts arguments of type \ExamClassAssignment or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the ExamClassAssignment relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildKumiQuery The current query, for fluid interface
+     */
+    public function joinExamClassAssignment($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('ExamClassAssignment');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'ExamClassAssignment');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the ExamClassAssignment relation ExamClassAssignment object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \ExamClassAssignmentQuery A secondary query class using the current class as primary query
+     */
+    public function useExamClassAssignmentQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinExamClassAssignment($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'ExamClassAssignment', '\ExamClassAssignmentQuery');
     }
 
     /**

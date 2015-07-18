@@ -102,6 +102,22 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildUserQuery rightJoinExamInfo($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ExamInfo relation
  * @method     ChildUserQuery innerJoinExamInfo($relationAlias = null) Adds a INNER JOIN clause to the query using the ExamInfo relation
  *
+ * @method     ChildUserQuery leftJoinQuestionAssigner($relationAlias = null) Adds a LEFT JOIN clause to the query using the QuestionAssigner relation
+ * @method     ChildUserQuery rightJoinQuestionAssigner($relationAlias = null) Adds a RIGHT JOIN clause to the query using the QuestionAssigner relation
+ * @method     ChildUserQuery innerJoinQuestionAssigner($relationAlias = null) Adds a INNER JOIN clause to the query using the QuestionAssigner relation
+ *
+ * @method     ChildUserQuery leftJoinElementAssignment($relationAlias = null) Adds a LEFT JOIN clause to the query using the ElementAssignment relation
+ * @method     ChildUserQuery rightJoinElementAssignment($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ElementAssignment relation
+ * @method     ChildUserQuery innerJoinElementAssignment($relationAlias = null) Adds a INNER JOIN clause to the query using the ElementAssignment relation
+ *
+ * @method     ChildUserQuery leftJoinStudentClassAssignment($relationAlias = null) Adds a LEFT JOIN clause to the query using the StudentClassAssignment relation
+ * @method     ChildUserQuery rightJoinStudentClassAssignment($relationAlias = null) Adds a RIGHT JOIN clause to the query using the StudentClassAssignment relation
+ * @method     ChildUserQuery innerJoinStudentClassAssignment($relationAlias = null) Adds a INNER JOIN clause to the query using the StudentClassAssignment relation
+ *
+ * @method     ChildUserQuery leftJoinExamClassAssignment($relationAlias = null) Adds a LEFT JOIN clause to the query using the ExamClassAssignment relation
+ * @method     ChildUserQuery rightJoinExamClassAssignment($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ExamClassAssignment relation
+ * @method     ChildUserQuery innerJoinExamClassAssignment($relationAlias = null) Adds a INNER JOIN clause to the query using the ExamClassAssignment relation
+ *
  * @method     ChildUserQuery leftJoinGradingTime($relationAlias = null) Adds a LEFT JOIN clause to the query using the GradingTime relation
  * @method     ChildUserQuery rightJoinGradingTime($relationAlias = null) Adds a RIGHT JOIN clause to the query using the GradingTime relation
  * @method     ChildUserQuery innerJoinGradingTime($relationAlias = null) Adds a INNER JOIN clause to the query using the GradingTime relation
@@ -110,7 +126,15 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildUserQuery rightJoinGroupTime($relationAlias = null) Adds a RIGHT JOIN clause to the query using the GroupTime relation
  * @method     ChildUserQuery innerJoinGroupTime($relationAlias = null) Adds a INNER JOIN clause to the query using the GroupTime relation
  *
- * @method     \TermQuery|\TopicQuery|\YearQuery|\ExamQuery|\QuestionQuery|\ElementQuery|\StudentQuery|\KumiQuery|\StockTextQuery|\QuestionScoreQuery|\ElementScoreQuery|\ExamInfoQuery|\GradingTimeQuery|\GroupTimeQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildUserQuery leftJoinPreferences($relationAlias = null) Adds a LEFT JOIN clause to the query using the Preferences relation
+ * @method     ChildUserQuery rightJoinPreferences($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Preferences relation
+ * @method     ChildUserQuery innerJoinPreferences($relationAlias = null) Adds a INNER JOIN clause to the query using the Preferences relation
+ *
+ * @method     ChildUserQuery leftJoinPseudoID($relationAlias = null) Adds a LEFT JOIN clause to the query using the PseudoID relation
+ * @method     ChildUserQuery rightJoinPseudoID($relationAlias = null) Adds a RIGHT JOIN clause to the query using the PseudoID relation
+ * @method     ChildUserQuery innerJoinPseudoID($relationAlias = null) Adds a INNER JOIN clause to the query using the PseudoID relation
+ *
+ * @method     \TermQuery|\TopicQuery|\YearQuery|\ExamQuery|\QuestionQuery|\ElementQuery|\StudentQuery|\KumiQuery|\StockTextQuery|\QuestionScoreQuery|\ElementScoreQuery|\ExamInfoQuery|\QuestionAssignerQuery|\ElementAssignmentQuery|\StudentClassAssignmentQuery|\ExamClassAssignmentQuery|\GradingTimeQuery|\GroupTimeQuery|\PreferencesQuery|\PseudoIDQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildUser findOne(ConnectionInterface $con = null) Return the first ChildUser matching the query
  * @method     ChildUser findOneOrCreate(ConnectionInterface $con = null) Return the first ChildUser matching the query, or a new ChildUser object populated from the query conditions when no match is found
@@ -1728,6 +1752,298 @@ abstract class UserQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query by a related \QuestionAssigner object
+     *
+     * @param \QuestionAssigner|ObjectCollection $questionAssigner the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByQuestionAssigner($questionAssigner, $comparison = null)
+    {
+        if ($questionAssigner instanceof \QuestionAssigner) {
+            return $this
+                ->addUsingAlias(UserTableMap::COL_ID, $questionAssigner->getUserId(), $comparison);
+        } elseif ($questionAssigner instanceof ObjectCollection) {
+            return $this
+                ->useQuestionAssignerQuery()
+                ->filterByPrimaryKeys($questionAssigner->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByQuestionAssigner() only accepts arguments of type \QuestionAssigner or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the QuestionAssigner relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinQuestionAssigner($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('QuestionAssigner');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'QuestionAssigner');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the QuestionAssigner relation QuestionAssigner object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \QuestionAssignerQuery A secondary query class using the current class as primary query
+     */
+    public function useQuestionAssignerQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinQuestionAssigner($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'QuestionAssigner', '\QuestionAssignerQuery');
+    }
+
+    /**
+     * Filter the query by a related \ElementAssignment object
+     *
+     * @param \ElementAssignment|ObjectCollection $elementAssignment the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByElementAssignment($elementAssignment, $comparison = null)
+    {
+        if ($elementAssignment instanceof \ElementAssignment) {
+            return $this
+                ->addUsingAlias(UserTableMap::COL_ID, $elementAssignment->getUserId(), $comparison);
+        } elseif ($elementAssignment instanceof ObjectCollection) {
+            return $this
+                ->useElementAssignmentQuery()
+                ->filterByPrimaryKeys($elementAssignment->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByElementAssignment() only accepts arguments of type \ElementAssignment or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the ElementAssignment relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinElementAssignment($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('ElementAssignment');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'ElementAssignment');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the ElementAssignment relation ElementAssignment object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \ElementAssignmentQuery A secondary query class using the current class as primary query
+     */
+    public function useElementAssignmentQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinElementAssignment($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'ElementAssignment', '\ElementAssignmentQuery');
+    }
+
+    /**
+     * Filter the query by a related \StudentClassAssignment object
+     *
+     * @param \StudentClassAssignment|ObjectCollection $studentClassAssignment the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByStudentClassAssignment($studentClassAssignment, $comparison = null)
+    {
+        if ($studentClassAssignment instanceof \StudentClassAssignment) {
+            return $this
+                ->addUsingAlias(UserTableMap::COL_ID, $studentClassAssignment->getUserId(), $comparison);
+        } elseif ($studentClassAssignment instanceof ObjectCollection) {
+            return $this
+                ->useStudentClassAssignmentQuery()
+                ->filterByPrimaryKeys($studentClassAssignment->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByStudentClassAssignment() only accepts arguments of type \StudentClassAssignment or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the StudentClassAssignment relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinStudentClassAssignment($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('StudentClassAssignment');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'StudentClassAssignment');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the StudentClassAssignment relation StudentClassAssignment object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \StudentClassAssignmentQuery A secondary query class using the current class as primary query
+     */
+    public function useStudentClassAssignmentQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinStudentClassAssignment($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'StudentClassAssignment', '\StudentClassAssignmentQuery');
+    }
+
+    /**
+     * Filter the query by a related \ExamClassAssignment object
+     *
+     * @param \ExamClassAssignment|ObjectCollection $examClassAssignment the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByExamClassAssignment($examClassAssignment, $comparison = null)
+    {
+        if ($examClassAssignment instanceof \ExamClassAssignment) {
+            return $this
+                ->addUsingAlias(UserTableMap::COL_ID, $examClassAssignment->getUserId(), $comparison);
+        } elseif ($examClassAssignment instanceof ObjectCollection) {
+            return $this
+                ->useExamClassAssignmentQuery()
+                ->filterByPrimaryKeys($examClassAssignment->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByExamClassAssignment() only accepts arguments of type \ExamClassAssignment or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the ExamClassAssignment relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinExamClassAssignment($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('ExamClassAssignment');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'ExamClassAssignment');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the ExamClassAssignment relation ExamClassAssignment object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \ExamClassAssignmentQuery A secondary query class using the current class as primary query
+     */
+    public function useExamClassAssignmentQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinExamClassAssignment($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'ExamClassAssignment', '\ExamClassAssignmentQuery');
+    }
+
+    /**
      * Filter the query by a related \GradingTime object
      *
      * @param \GradingTime|ObjectCollection $gradingTime the related object to use as filter
@@ -1871,6 +2187,152 @@ abstract class UserQuery extends ModelCriteria
         return $this
             ->joinGroupTime($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'GroupTime', '\GroupTimeQuery');
+    }
+
+    /**
+     * Filter the query by a related \Preferences object
+     *
+     * @param \Preferences|ObjectCollection $preferences the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByPreferences($preferences, $comparison = null)
+    {
+        if ($preferences instanceof \Preferences) {
+            return $this
+                ->addUsingAlias(UserTableMap::COL_ID, $preferences->getUserId(), $comparison);
+        } elseif ($preferences instanceof ObjectCollection) {
+            return $this
+                ->usePreferencesQuery()
+                ->filterByPrimaryKeys($preferences->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByPreferences() only accepts arguments of type \Preferences or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Preferences relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinPreferences($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Preferences');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Preferences');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Preferences relation Preferences object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \PreferencesQuery A secondary query class using the current class as primary query
+     */
+    public function usePreferencesQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinPreferences($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Preferences', '\PreferencesQuery');
+    }
+
+    /**
+     * Filter the query by a related \PseudoID object
+     *
+     * @param \PseudoID|ObjectCollection $pseudoID the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByPseudoID($pseudoID, $comparison = null)
+    {
+        if ($pseudoID instanceof \PseudoID) {
+            return $this
+                ->addUsingAlias(UserTableMap::COL_ID, $pseudoID->getUserId(), $comparison);
+        } elseif ($pseudoID instanceof ObjectCollection) {
+            return $this
+                ->usePseudoIDQuery()
+                ->filterByPrimaryKeys($pseudoID->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByPseudoID() only accepts arguments of type \PseudoID or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the PseudoID relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinPseudoID($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('PseudoID');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'PseudoID');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the PseudoID relation PseudoID object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \PseudoIDQuery A secondary query class using the current class as primary query
+     */
+    public function usePseudoIDQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinPseudoID($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'PseudoID', '\PseudoIDQuery');
     }
 
     /**

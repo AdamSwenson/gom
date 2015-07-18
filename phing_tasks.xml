@@ -9,7 +9,7 @@
         <!--refresh the autoloader-->
         <echo message="Updating laravel and autoloader" />
         <exec command="php artisan dump-autoload"/>
-        <!--<exec command="composer dump-autoload"/>-->
+        <exec command="composer dump-autoload"/>
     </target>
 
     <target name="addData" description="add data to db">
@@ -18,12 +18,12 @@
 
     <target name="completelyRebuildModel" description="Completely rebuilds the generated sql and classes from schema.xml">
         <echo message="Rebuilding sql model"/>
-        <exec command="export LOCATION=local; ../../vendor/bin/propel sql:build --overwrite" dir="config/propel" />
-        <exec command="export LOCATION=local; ../../vendor/bin/propel model:build" />
+        <exec command="../../vendor/bin/propel model:build" dir="config/propel" passthru="true"/>
+        <exec command="../../vendor/bin/propel sql:build --overwrite" dir="config/propel" passthru="true" />
         <echo message="Inserting new schema into db"/>
-        <exec command="export LOCATION=local; ../../vendor/bin/propel sql:insert" />
+        <exec command="../../vendor/bin/propel sql:insert" dir="config/propel" passthru="true"/>
         <echo message="Refreshing autoload"/>
-        <exec command="composer dump-autoload" />
+        <exec command="php artisan dump-autoload" />
     </target>
 
     <target name="refreshLogs">

@@ -71,6 +71,12 @@ abstract class ElementAssignment implements ActiveRecordInterface
     protected $virtualColumns = array();
 
     /**
+     * The value for the id field.
+     * @var        int
+     */
+    protected $id;
+
+    /**
      * The value for the examid field.
      * @var        int
      */
@@ -113,16 +119,6 @@ abstract class ElementAssignment implements ActiveRecordInterface
     protected $updated_at;
 
     /**
-     * @var        ChildUser
-     */
-    protected $aUser;
-
-    /**
-     * @var        ChildExam
-     */
-    protected $aExam;
-
-    /**
      * @var        ChildQuestion
      */
     protected $aQuestion;
@@ -131,6 +127,16 @@ abstract class ElementAssignment implements ActiveRecordInterface
      * @var        ChildElement
      */
     protected $aElement;
+
+    /**
+     * @var        ChildExam
+     */
+    protected $aExam;
+
+    /**
+     * @var        ChildUser
+     */
+    protected $aUser;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -358,6 +364,16 @@ abstract class ElementAssignment implements ActiveRecordInterface
     }
 
     /**
+     * Get the [id] column value.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * Get the [examid] column value.
      *
      * @return int
@@ -446,6 +462,26 @@ abstract class ElementAssignment implements ActiveRecordInterface
             return $this->updated_at instanceof \DateTime ? $this->updated_at->format($format) : null;
         }
     }
+
+    /**
+     * Set the value of [id] column.
+     *
+     * @param int $v new value
+     * @return $this|\ElementAssignment The current object (for fluent API support)
+     */
+    public function setId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->id !== $v) {
+            $this->id = $v;
+            $this->modifiedColumns[ElementAssignmentTableMap::COL_ID] = true;
+        }
+
+        return $this;
+    } // setId()
 
     /**
      * Set the value of [examid] column.
@@ -639,28 +675,31 @@ abstract class ElementAssignment implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : ElementAssignmentTableMap::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : ElementAssignmentTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : ElementAssignmentTableMap::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)];
             $this->examid = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : ElementAssignmentTableMap::translateFieldName('Questionid', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ElementAssignmentTableMap::translateFieldName('Questionid', TableMap::TYPE_PHPNAME, $indexType)];
             $this->questionid = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ElementAssignmentTableMap::translateFieldName('Subtask', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ElementAssignmentTableMap::translateFieldName('Subtask', TableMap::TYPE_PHPNAME, $indexType)];
             $this->subtask = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ElementAssignmentTableMap::translateFieldName('Elementid', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ElementAssignmentTableMap::translateFieldName('Elementid', TableMap::TYPE_PHPNAME, $indexType)];
             $this->elementid = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ElementAssignmentTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ElementAssignmentTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->user_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ElementAssignmentTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ElementAssignmentTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ElementAssignmentTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : ElementAssignmentTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -673,7 +712,7 @@ abstract class ElementAssignment implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 7; // 7 = ElementAssignmentTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 8; // 8 = ElementAssignmentTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\ElementAssignment'), 0, $e);
@@ -746,10 +785,10 @@ abstract class ElementAssignment implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aUser = null;
-            $this->aExam = null;
             $this->aQuestion = null;
             $this->aElement = null;
+            $this->aExam = null;
+            $this->aUser = null;
         } // if (deep)
     }
 
@@ -866,20 +905,6 @@ abstract class ElementAssignment implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aUser !== null) {
-                if ($this->aUser->isModified() || $this->aUser->isNew()) {
-                    $affectedRows += $this->aUser->save($con);
-                }
-                $this->setUser($this->aUser);
-            }
-
-            if ($this->aExam !== null) {
-                if ($this->aExam->isModified() || $this->aExam->isNew()) {
-                    $affectedRows += $this->aExam->save($con);
-                }
-                $this->setExam($this->aExam);
-            }
-
             if ($this->aQuestion !== null) {
                 if ($this->aQuestion->isModified() || $this->aQuestion->isNew()) {
                     $affectedRows += $this->aQuestion->save($con);
@@ -892,6 +917,20 @@ abstract class ElementAssignment implements ActiveRecordInterface
                     $affectedRows += $this->aElement->save($con);
                 }
                 $this->setElement($this->aElement);
+            }
+
+            if ($this->aExam !== null) {
+                if ($this->aExam->isModified() || $this->aExam->isNew()) {
+                    $affectedRows += $this->aExam->save($con);
+                }
+                $this->setExam($this->aExam);
+            }
+
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -925,8 +964,15 @@ abstract class ElementAssignment implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
+        $this->modifiedColumns[ElementAssignmentTableMap::COL_ID] = true;
+        if (null !== $this->id) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . ElementAssignmentTableMap::COL_ID . ')');
+        }
 
          // check the columns in natural order for more readable SQL queries
+        if ($this->isColumnModified(ElementAssignmentTableMap::COL_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'id';
+        }
         if ($this->isColumnModified(ElementAssignmentTableMap::COL_EXAMID)) {
             $modifiedColumns[':p' . $index++]  = 'examID';
         }
@@ -959,6 +1005,9 @@ abstract class ElementAssignment implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
+                    case 'id':
+                        $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
+                        break;
                     case 'examID':
                         $stmt->bindValue($identifier, $this->examid, PDO::PARAM_INT);
                         break;
@@ -987,6 +1036,13 @@ abstract class ElementAssignment implements ActiveRecordInterface
             Propel::log($e->getMessage(), Propel::LOG_ERR);
             throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), 0, $e);
         }
+
+        try {
+            $pk = $con->lastInsertId();
+        } catch (Exception $e) {
+            throw new PropelException('Unable to get autoincrement id.', 0, $e);
+        }
+        $this->setId($pk);
 
         $this->setNew(false);
     }
@@ -1036,24 +1092,27 @@ abstract class ElementAssignment implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                return $this->getExamid();
+                return $this->getId();
                 break;
             case 1:
-                return $this->getQuestionid();
+                return $this->getExamid();
                 break;
             case 2:
-                return $this->getSubtask();
+                return $this->getQuestionid();
                 break;
             case 3:
-                return $this->getElementid();
+                return $this->getSubtask();
                 break;
             case 4:
-                return $this->getUserId();
+                return $this->getElementid();
                 break;
             case 5:
-                return $this->getCreatedAt();
+                return $this->getUserId();
                 break;
             case 6:
+                return $this->getCreatedAt();
+                break;
+            case 7:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1086,26 +1145,27 @@ abstract class ElementAssignment implements ActiveRecordInterface
         $alreadyDumpedObjects['ElementAssignment'][$this->hashCode()] = true;
         $keys = ElementAssignmentTableMap::getFieldNames($keyType);
         $result = array(
-            $keys[0] => $this->getExamid(),
-            $keys[1] => $this->getQuestionid(),
-            $keys[2] => $this->getSubtask(),
-            $keys[3] => $this->getElementid(),
-            $keys[4] => $this->getUserId(),
-            $keys[5] => $this->getCreatedAt(),
-            $keys[6] => $this->getUpdatedAt(),
+            $keys[0] => $this->getId(),
+            $keys[1] => $this->getExamid(),
+            $keys[2] => $this->getQuestionid(),
+            $keys[3] => $this->getSubtask(),
+            $keys[4] => $this->getElementid(),
+            $keys[5] => $this->getUserId(),
+            $keys[6] => $this->getCreatedAt(),
+            $keys[7] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[5]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[5]];
-            $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[6]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[6]];
             $result[$keys[6]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[7]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[7]];
+            $result[$keys[7]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1114,36 +1174,6 @@ abstract class ElementAssignment implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aUser) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'user';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'users';
-                        break;
-                    default:
-                        $key = 'User';
-                }
-
-                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
-            if (null !== $this->aExam) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'exam';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'exams';
-                        break;
-                    default:
-                        $key = 'Exam';
-                }
-
-                $result[$key] = $this->aExam->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
             if (null !== $this->aQuestion) {
 
                 switch ($keyType) {
@@ -1173,6 +1203,36 @@ abstract class ElementAssignment implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->aElement->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aExam) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'exam';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'exams';
+                        break;
+                    default:
+                        $key = 'Exam';
+                }
+
+                $result[$key] = $this->aExam->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aUser) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'user';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'users';
+                        break;
+                    default:
+                        $key = 'User';
+                }
+
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -1209,24 +1269,27 @@ abstract class ElementAssignment implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                $this->setExamid($value);
+                $this->setId($value);
                 break;
             case 1:
-                $this->setQuestionid($value);
+                $this->setExamid($value);
                 break;
             case 2:
-                $this->setSubtask($value);
+                $this->setQuestionid($value);
                 break;
             case 3:
-                $this->setElementid($value);
+                $this->setSubtask($value);
                 break;
             case 4:
-                $this->setUserId($value);
+                $this->setElementid($value);
                 break;
             case 5:
-                $this->setCreatedAt($value);
+                $this->setUserId($value);
                 break;
             case 6:
+                $this->setCreatedAt($value);
+                break;
+            case 7:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1256,25 +1319,28 @@ abstract class ElementAssignment implements ActiveRecordInterface
         $keys = ElementAssignmentTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
-            $this->setExamid($arr[$keys[0]]);
+            $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setQuestionid($arr[$keys[1]]);
+            $this->setExamid($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setSubtask($arr[$keys[2]]);
+            $this->setQuestionid($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setElementid($arr[$keys[3]]);
+            $this->setSubtask($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setUserId($arr[$keys[4]]);
+            $this->setElementid($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setCreatedAt($arr[$keys[5]]);
+            $this->setUserId($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setUpdatedAt($arr[$keys[6]]);
+            $this->setCreatedAt($arr[$keys[6]]);
+        }
+        if (array_key_exists($keys[7], $arr)) {
+            $this->setUpdatedAt($arr[$keys[7]]);
         }
     }
 
@@ -1317,6 +1383,9 @@ abstract class ElementAssignment implements ActiveRecordInterface
     {
         $criteria = new Criteria(ElementAssignmentTableMap::DATABASE_NAME);
 
+        if ($this->isColumnModified(ElementAssignmentTableMap::COL_ID)) {
+            $criteria->add(ElementAssignmentTableMap::COL_ID, $this->id);
+        }
         if ($this->isColumnModified(ElementAssignmentTableMap::COL_EXAMID)) {
             $criteria->add(ElementAssignmentTableMap::COL_EXAMID, $this->examid);
         }
@@ -1355,9 +1424,7 @@ abstract class ElementAssignment implements ActiveRecordInterface
     public function buildPkeyCriteria()
     {
         $criteria = ChildElementAssignmentQuery::create();
-        $criteria->add(ElementAssignmentTableMap::COL_EXAMID, $this->examid);
-        $criteria->add(ElementAssignmentTableMap::COL_QUESTIONID, $this->questionid);
-        $criteria->add(ElementAssignmentTableMap::COL_SUBTASK, $this->subtask);
+        $criteria->add(ElementAssignmentTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1370,26 +1437,10 @@ abstract class ElementAssignment implements ActiveRecordInterface
      */
     public function hashCode()
     {
-        $validPk = null !== $this->getExamid() &&
-            null !== $this->getQuestionid() &&
-            null !== $this->getSubtask();
+        $validPk = null !== $this->getId();
 
-        $validPrimaryKeyFKs = 2;
+        $validPrimaryKeyFKs = 0;
         $primaryKeyFKs = [];
-
-        //relation elementXquestions_fk_71c1fe to table exams
-        if ($this->aExam && $hash = spl_object_hash($this->aExam)) {
-            $primaryKeyFKs[] = $hash;
-        } else {
-            $validPrimaryKeyFKs = false;
-        }
-
-        //relation elementXquestions_fk_048855 to table questions
-        if ($this->aQuestion && $hash = spl_object_hash($this->aQuestion)) {
-            $primaryKeyFKs[] = $hash;
-        } else {
-            $validPrimaryKeyFKs = false;
-        }
 
         if ($validPk) {
             return crc32(json_encode($this->getPrimaryKey(), JSON_UNESCAPED_UNICODE));
@@ -1401,31 +1452,23 @@ abstract class ElementAssignment implements ActiveRecordInterface
     }
 
     /**
-     * Returns the composite primary key for this object.
-     * The array elements will be in same order as specified in XML.
-     * @return array
+     * Returns the primary key for this object (row).
+     * @return int
      */
     public function getPrimaryKey()
     {
-        $pks = array();
-        $pks[0] = $this->getExamid();
-        $pks[1] = $this->getQuestionid();
-        $pks[2] = $this->getSubtask();
-
-        return $pks;
+        return $this->getId();
     }
 
     /**
-     * Set the [composite] primary key.
+     * Generic method to set the primary key (id column).
      *
-     * @param      array $keys The elements of the composite key (order must match the order in XML file).
+     * @param       int $key Primary key.
      * @return void
      */
-    public function setPrimaryKey($keys)
+    public function setPrimaryKey($key)
     {
-        $this->setExamid($keys[0]);
-        $this->setQuestionid($keys[1]);
-        $this->setSubtask($keys[2]);
+        $this->setId($key);
     }
 
     /**
@@ -1434,7 +1477,7 @@ abstract class ElementAssignment implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return (null === $this->getExamid()) && (null === $this->getQuestionid()) && (null === $this->getSubtask());
+        return null === $this->getId();
     }
 
     /**
@@ -1459,6 +1502,7 @@ abstract class ElementAssignment implements ActiveRecordInterface
         $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
             $copyObj->setNew(true);
+            $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
         }
     }
 
@@ -1482,108 +1526,6 @@ abstract class ElementAssignment implements ActiveRecordInterface
         $this->copyInto($copyObj, $deepCopy);
 
         return $copyObj;
-    }
-
-    /**
-     * Declares an association between this object and a ChildUser object.
-     *
-     * @param  ChildUser $v
-     * @return $this|\ElementAssignment The current object (for fluent API support)
-     * @throws PropelException
-     */
-    public function setUser(ChildUser $v = null)
-    {
-        if ($v === null) {
-            $this->setUserId(NULL);
-        } else {
-            $this->setUserId($v->getId());
-        }
-
-        $this->aUser = $v;
-
-        // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildUser object, it will not be re-added.
-        if ($v !== null) {
-            $v->addElementAssignment($this);
-        }
-
-
-        return $this;
-    }
-
-
-    /**
-     * Get the associated ChildUser object
-     *
-     * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildUser The associated ChildUser object.
-     * @throws PropelException
-     */
-    public function getUser(ConnectionInterface $con = null)
-    {
-        if ($this->aUser === null && ($this->user_id !== null)) {
-            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
-            /* The following can be used additionally to
-                guarantee the related object contains a reference
-                to this object.  This level of coupling may, however, be
-                undesirable since it could result in an only partially populated collection
-                in the referenced object.
-                $this->aUser->addElementAssignments($this);
-             */
-        }
-
-        return $this->aUser;
-    }
-
-    /**
-     * Declares an association between this object and a ChildExam object.
-     *
-     * @param  ChildExam $v
-     * @return $this|\ElementAssignment The current object (for fluent API support)
-     * @throws PropelException
-     */
-    public function setExam(ChildExam $v = null)
-    {
-        if ($v === null) {
-            $this->setExamid(NULL);
-        } else {
-            $this->setExamid($v->getId());
-        }
-
-        $this->aExam = $v;
-
-        // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildExam object, it will not be re-added.
-        if ($v !== null) {
-            $v->addElementAssignment($this);
-        }
-
-
-        return $this;
-    }
-
-
-    /**
-     * Get the associated ChildExam object
-     *
-     * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildExam The associated ChildExam object.
-     * @throws PropelException
-     */
-    public function getExam(ConnectionInterface $con = null)
-    {
-        if ($this->aExam === null && ($this->examid !== null)) {
-            $this->aExam = ChildExamQuery::create()->findPk($this->examid, $con);
-            /* The following can be used additionally to
-                guarantee the related object contains a reference
-                to this object.  This level of coupling may, however, be
-                undesirable since it could result in an only partially populated collection
-                in the referenced object.
-                $this->aExam->addElementAssignments($this);
-             */
-        }
-
-        return $this->aExam;
     }
 
     /**
@@ -1689,24 +1631,127 @@ abstract class ElementAssignment implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a ChildExam object.
+     *
+     * @param  ChildExam $v
+     * @return $this|\ElementAssignment The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setExam(ChildExam $v = null)
+    {
+        if ($v === null) {
+            $this->setExamid(NULL);
+        } else {
+            $this->setExamid($v->getId());
+        }
+
+        $this->aExam = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildExam object, it will not be re-added.
+        if ($v !== null) {
+            $v->addElementAssignment($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildExam object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildExam The associated ChildExam object.
+     * @throws PropelException
+     */
+    public function getExam(ConnectionInterface $con = null)
+    {
+        if ($this->aExam === null && ($this->examid !== null)) {
+            $this->aExam = ChildExamQuery::create()->findPk($this->examid, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aExam->addElementAssignments($this);
+             */
+        }
+
+        return $this->aExam;
+    }
+
+    /**
+     * Declares an association between this object and a ChildUser object.
+     *
+     * @param  ChildUser $v
+     * @return $this|\ElementAssignment The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUser(ChildUser $v = null)
+    {
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
+        }
+
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
+        if ($v !== null) {
+            $v->addElementAssignment($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildUser object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUser The associated ChildUser object.
+     * @throws PropelException
+     */
+    public function getUser(ConnectionInterface $con = null)
+    {
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addElementAssignments($this);
+             */
+        }
+
+        return $this->aUser;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
      */
     public function clear()
     {
-        if (null !== $this->aUser) {
-            $this->aUser->removeElementAssignment($this);
-        }
-        if (null !== $this->aExam) {
-            $this->aExam->removeElementAssignment($this);
-        }
         if (null !== $this->aQuestion) {
             $this->aQuestion->removeElementAssignment($this);
         }
         if (null !== $this->aElement) {
             $this->aElement->removeElementAssignment($this);
         }
+        if (null !== $this->aExam) {
+            $this->aExam->removeElementAssignment($this);
+        }
+        if (null !== $this->aUser) {
+            $this->aUser->removeElementAssignment($this);
+        }
+        $this->id = null;
         $this->examid = null;
         $this->questionid = null;
         $this->subtask = null;
@@ -1734,10 +1779,10 @@ abstract class ElementAssignment implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
-        $this->aUser = null;
-        $this->aExam = null;
         $this->aQuestion = null;
         $this->aElement = null;
+        $this->aExam = null;
+        $this->aUser = null;
     }
 
     /**

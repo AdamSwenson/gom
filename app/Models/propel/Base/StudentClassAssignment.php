@@ -69,6 +69,12 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
     protected $virtualColumns = array();
 
     /**
+     * The value for the id field.
+     * @var        int
+     */
+    protected $id;
+
+    /**
      * The value for the studentid field.
      * @var        int
      */
@@ -99,11 +105,6 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
     protected $updated_at;
 
     /**
-     * @var        ChildUser
-     */
-    protected $aUser;
-
-    /**
      * @var        ChildStudent
      */
     protected $aStudent;
@@ -112,6 +113,11 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
      * @var        ChildKumi
      */
     protected $aKumi;
+
+    /**
+     * @var        ChildUser
+     */
+    protected $aUser;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -339,6 +345,16 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
     }
 
     /**
+     * Get the [id] column value.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * Get the [studentid] column value.
      *
      * @return int
@@ -407,6 +423,26 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
             return $this->updated_at instanceof \DateTime ? $this->updated_at->format($format) : null;
         }
     }
+
+    /**
+     * Set the value of [id] column.
+     *
+     * @param int $v new value
+     * @return $this|\StudentClassAssignment The current object (for fluent API support)
+     */
+    public function setId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->id !== $v) {
+            $this->id = $v;
+            $this->modifiedColumns[StudentClassAssignmentTableMap::COL_ID] = true;
+        }
+
+        return $this;
+    } // setId()
 
     /**
      * Set the value of [studentid] column.
@@ -556,22 +592,25 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : StudentClassAssignmentTableMap::translateFieldName('Studentid', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : StudentClassAssignmentTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : StudentClassAssignmentTableMap::translateFieldName('Studentid', TableMap::TYPE_PHPNAME, $indexType)];
             $this->studentid = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : StudentClassAssignmentTableMap::translateFieldName('Classid', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : StudentClassAssignmentTableMap::translateFieldName('Classid', TableMap::TYPE_PHPNAME, $indexType)];
             $this->classid = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : StudentClassAssignmentTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : StudentClassAssignmentTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->user_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : StudentClassAssignmentTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : StudentClassAssignmentTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : StudentClassAssignmentTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : StudentClassAssignmentTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -584,7 +623,7 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 5; // 5 = StudentClassAssignmentTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 6; // 6 = StudentClassAssignmentTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\StudentClassAssignment'), 0, $e);
@@ -654,9 +693,9 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aUser = null;
             $this->aStudent = null;
             $this->aKumi = null;
+            $this->aUser = null;
         } // if (deep)
     }
 
@@ -773,13 +812,6 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aUser !== null) {
-                if ($this->aUser->isModified() || $this->aUser->isNew()) {
-                    $affectedRows += $this->aUser->save($con);
-                }
-                $this->setUser($this->aUser);
-            }
-
             if ($this->aStudent !== null) {
                 if ($this->aStudent->isModified() || $this->aStudent->isNew()) {
                     $affectedRows += $this->aStudent->save($con);
@@ -792,6 +824,13 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
                     $affectedRows += $this->aKumi->save($con);
                 }
                 $this->setKumi($this->aKumi);
+            }
+
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -825,8 +864,15 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
+        $this->modifiedColumns[StudentClassAssignmentTableMap::COL_ID] = true;
+        if (null !== $this->id) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . StudentClassAssignmentTableMap::COL_ID . ')');
+        }
 
          // check the columns in natural order for more readable SQL queries
+        if ($this->isColumnModified(StudentClassAssignmentTableMap::COL_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'id';
+        }
         if ($this->isColumnModified(StudentClassAssignmentTableMap::COL_STUDENTID)) {
             $modifiedColumns[':p' . $index++]  = 'studentID';
         }
@@ -853,6 +899,9 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
+                    case 'id':
+                        $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
+                        break;
                     case 'studentID':
                         $stmt->bindValue($identifier, $this->studentid, PDO::PARAM_INT);
                         break;
@@ -875,6 +924,13 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
             Propel::log($e->getMessage(), Propel::LOG_ERR);
             throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), 0, $e);
         }
+
+        try {
+            $pk = $con->lastInsertId();
+        } catch (Exception $e) {
+            throw new PropelException('Unable to get autoincrement id.', 0, $e);
+        }
+        $this->setId($pk);
 
         $this->setNew(false);
     }
@@ -924,18 +980,21 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                return $this->getStudentid();
+                return $this->getId();
                 break;
             case 1:
-                return $this->getClassid();
+                return $this->getStudentid();
                 break;
             case 2:
-                return $this->getUserId();
+                return $this->getClassid();
                 break;
             case 3:
-                return $this->getCreatedAt();
+                return $this->getUserId();
                 break;
             case 4:
+                return $this->getCreatedAt();
+                break;
+            case 5:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -968,24 +1027,25 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
         $alreadyDumpedObjects['StudentClassAssignment'][$this->hashCode()] = true;
         $keys = StudentClassAssignmentTableMap::getFieldNames($keyType);
         $result = array(
-            $keys[0] => $this->getStudentid(),
-            $keys[1] => $this->getClassid(),
-            $keys[2] => $this->getUserId(),
-            $keys[3] => $this->getCreatedAt(),
-            $keys[4] => $this->getUpdatedAt(),
+            $keys[0] => $this->getId(),
+            $keys[1] => $this->getStudentid(),
+            $keys[2] => $this->getClassid(),
+            $keys[3] => $this->getUserId(),
+            $keys[4] => $this->getCreatedAt(),
+            $keys[5] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[3]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[3]];
-            $result[$keys[3]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[4]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[4]];
             $result[$keys[4]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[5]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[5]];
+            $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -994,21 +1054,6 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aUser) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'user';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'users';
-                        break;
-                    default:
-                        $key = 'User';
-                }
-
-                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
             if (null !== $this->aStudent) {
 
                 switch ($keyType) {
@@ -1038,6 +1083,21 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->aKumi->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aUser) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'user';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'users';
+                        break;
+                    default:
+                        $key = 'User';
+                }
+
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -1074,18 +1134,21 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                $this->setStudentid($value);
+                $this->setId($value);
                 break;
             case 1:
-                $this->setClassid($value);
+                $this->setStudentid($value);
                 break;
             case 2:
-                $this->setUserId($value);
+                $this->setClassid($value);
                 break;
             case 3:
-                $this->setCreatedAt($value);
+                $this->setUserId($value);
                 break;
             case 4:
+                $this->setCreatedAt($value);
+                break;
+            case 5:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1115,19 +1178,22 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
         $keys = StudentClassAssignmentTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
-            $this->setStudentid($arr[$keys[0]]);
+            $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setClassid($arr[$keys[1]]);
+            $this->setStudentid($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setUserId($arr[$keys[2]]);
+            $this->setClassid($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setCreatedAt($arr[$keys[3]]);
+            $this->setUserId($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setUpdatedAt($arr[$keys[4]]);
+            $this->setCreatedAt($arr[$keys[4]]);
+        }
+        if (array_key_exists($keys[5], $arr)) {
+            $this->setUpdatedAt($arr[$keys[5]]);
         }
     }
 
@@ -1170,6 +1236,9 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
     {
         $criteria = new Criteria(StudentClassAssignmentTableMap::DATABASE_NAME);
 
+        if ($this->isColumnModified(StudentClassAssignmentTableMap::COL_ID)) {
+            $criteria->add(StudentClassAssignmentTableMap::COL_ID, $this->id);
+        }
         if ($this->isColumnModified(StudentClassAssignmentTableMap::COL_STUDENTID)) {
             $criteria->add(StudentClassAssignmentTableMap::COL_STUDENTID, $this->studentid);
         }
@@ -1202,8 +1271,7 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
     public function buildPkeyCriteria()
     {
         $criteria = ChildStudentClassAssignmentQuery::create();
-        $criteria->add(StudentClassAssignmentTableMap::COL_STUDENTID, $this->studentid);
-        $criteria->add(StudentClassAssignmentTableMap::COL_CLASSID, $this->classid);
+        $criteria->add(StudentClassAssignmentTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1216,25 +1284,10 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
      */
     public function hashCode()
     {
-        $validPk = null !== $this->getStudentid() &&
-            null !== $this->getClassid();
+        $validPk = null !== $this->getId();
 
-        $validPrimaryKeyFKs = 2;
+        $validPrimaryKeyFKs = 0;
         $primaryKeyFKs = [];
-
-        //relation studentsXclasses_fk_175030 to table students
-        if ($this->aStudent && $hash = spl_object_hash($this->aStudent)) {
-            $primaryKeyFKs[] = $hash;
-        } else {
-            $validPrimaryKeyFKs = false;
-        }
-
-        //relation studentsXclasses_fk_ab8f61 to table classes
-        if ($this->aKumi && $hash = spl_object_hash($this->aKumi)) {
-            $primaryKeyFKs[] = $hash;
-        } else {
-            $validPrimaryKeyFKs = false;
-        }
 
         if ($validPk) {
             return crc32(json_encode($this->getPrimaryKey(), JSON_UNESCAPED_UNICODE));
@@ -1246,29 +1299,23 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
     }
 
     /**
-     * Returns the composite primary key for this object.
-     * The array elements will be in same order as specified in XML.
-     * @return array
+     * Returns the primary key for this object (row).
+     * @return int
      */
     public function getPrimaryKey()
     {
-        $pks = array();
-        $pks[0] = $this->getStudentid();
-        $pks[1] = $this->getClassid();
-
-        return $pks;
+        return $this->getId();
     }
 
     /**
-     * Set the [composite] primary key.
+     * Generic method to set the primary key (id column).
      *
-     * @param      array $keys The elements of the composite key (order must match the order in XML file).
+     * @param       int $key Primary key.
      * @return void
      */
-    public function setPrimaryKey($keys)
+    public function setPrimaryKey($key)
     {
-        $this->setStudentid($keys[0]);
-        $this->setClassid($keys[1]);
+        $this->setId($key);
     }
 
     /**
@@ -1277,7 +1324,7 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return (null === $this->getStudentid()) && (null === $this->getClassid());
+        return null === $this->getId();
     }
 
     /**
@@ -1300,6 +1347,7 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
         $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
             $copyObj->setNew(true);
+            $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
         }
     }
 
@@ -1323,57 +1371,6 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
         $this->copyInto($copyObj, $deepCopy);
 
         return $copyObj;
-    }
-
-    /**
-     * Declares an association between this object and a ChildUser object.
-     *
-     * @param  ChildUser $v
-     * @return $this|\StudentClassAssignment The current object (for fluent API support)
-     * @throws PropelException
-     */
-    public function setUser(ChildUser $v = null)
-    {
-        if ($v === null) {
-            $this->setUserId(NULL);
-        } else {
-            $this->setUserId($v->getId());
-        }
-
-        $this->aUser = $v;
-
-        // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildUser object, it will not be re-added.
-        if ($v !== null) {
-            $v->addStudentClassAssignment($this);
-        }
-
-
-        return $this;
-    }
-
-
-    /**
-     * Get the associated ChildUser object
-     *
-     * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildUser The associated ChildUser object.
-     * @throws PropelException
-     */
-    public function getUser(ConnectionInterface $con = null)
-    {
-        if ($this->aUser === null && ($this->user_id !== null)) {
-            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
-            /* The following can be used additionally to
-                guarantee the related object contains a reference
-                to this object.  This level of coupling may, however, be
-                undesirable since it could result in an only partially populated collection
-                in the referenced object.
-                $this->aUser->addStudentClassAssignments($this);
-             */
-        }
-
-        return $this->aUser;
     }
 
     /**
@@ -1479,21 +1476,73 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a ChildUser object.
+     *
+     * @param  ChildUser $v
+     * @return $this|\StudentClassAssignment The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUser(ChildUser $v = null)
+    {
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
+        }
+
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
+        if ($v !== null) {
+            $v->addStudentClassAssignment($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildUser object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUser The associated ChildUser object.
+     * @throws PropelException
+     */
+    public function getUser(ConnectionInterface $con = null)
+    {
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addStudentClassAssignments($this);
+             */
+        }
+
+        return $this->aUser;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
      */
     public function clear()
     {
-        if (null !== $this->aUser) {
-            $this->aUser->removeStudentClassAssignment($this);
-        }
         if (null !== $this->aStudent) {
             $this->aStudent->removeStudentClassAssignment($this);
         }
         if (null !== $this->aKumi) {
             $this->aKumi->removeStudentClassAssignment($this);
         }
+        if (null !== $this->aUser) {
+            $this->aUser->removeStudentClassAssignment($this);
+        }
+        $this->id = null;
         $this->studentid = null;
         $this->classid = null;
         $this->user_id = null;
@@ -1519,9 +1568,9 @@ abstract class StudentClassAssignment implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
-        $this->aUser = null;
         $this->aStudent = null;
         $this->aKumi = null;
+        $this->aUser = null;
     }
 
     /**

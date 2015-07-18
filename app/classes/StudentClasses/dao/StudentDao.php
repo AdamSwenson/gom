@@ -48,34 +48,34 @@ class StudentDao implements IStudentDao
      */
     public function load_students_by_exam(\Exam $exam)
     {
-        $results = array();
-        $ecaq = \ExamClassAssignmentQuery::create()
-            ->filterByUser($this->user)
-            ->filterByExam($exam)
-            ->find();
-        foreach($ecaq as $k){
-            $studentAssigns = \StudentClassAssignmentQuery::create()
-                ->filterByUser($this->user)
-                ->filterByKumi($k->getKumi())
-                ->find();
-            foreach($studentAssigns as $s)
-            {
-                array_push($results, $s->getStudent());
-            }
-        }
-
-        return $results;
-
-//        return \StudentQuery::create()
+//        $results = array();
+//        $ecaq = \ExamClassAssignmentQuery::create()
 //            ->filterByUser($this->user)
-////            ->useStudentClassAssignmentQuery()
-//                ->useKumiQuery()
-//                    ->useExamClassAssignmentQuery()
-//                        ->filterByExam($exam)
-//                    ->endUse()
-//                ->endUse()
-//            ->endUse()
+//            ->filterByExam($exam)
 //            ->find();
+//        foreach($ecaq as $k){
+//            $studentAssigns = \StudentClassAssignmentQuery::create()
+//                ->filterByUser($this->user)
+//                ->filterByKumi($k->getKumi())
+//                ->find();
+//            foreach($studentAssigns as $s)
+//            {
+//                array_push($results, $s->getStudent());
+//            }
+//        }
+//
+//        return $results;
+
+        return \StudentQuery::create()
+            ->filterByUser($this->user)
+            ->useStudentClassAssignmentQuery()
+                ->useKumiQuery()
+                    ->useExamClassAssignmentQuery()
+                        ->filterByExam($exam)
+                    ->endUse()
+                ->endUse()
+            ->endUse()
+            ->find();
     }
 
     /**

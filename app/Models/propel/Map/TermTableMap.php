@@ -159,13 +159,6 @@ class TermTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, null, false);
-        $this->addRelation('Exam', '\\Exam', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':examTerm',
-    1 => ':content',
-  ),
-), null, null, 'Exams', false);
     } // buildRelations()
 
     /**

@@ -59,7 +59,7 @@ class ElementAssignmentTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 7;
+    const NUM_COLUMNS = 8;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,12 @@ class ElementAssignmentTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 7;
+    const NUM_HYDRATE_COLUMNS = 8;
+
+    /**
+     * the column name for the id field
+     */
+    const COL_ID = 'elementXquestions.id';
 
     /**
      * the column name for the examID field
@@ -118,11 +123,11 @@ class ElementAssignmentTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Examid', 'Questionid', 'Subtask', 'Elementid', 'UserId', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('examid', 'questionid', 'subtask', 'elementid', 'userId', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(ElementAssignmentTableMap::COL_EXAMID, ElementAssignmentTableMap::COL_QUESTIONID, ElementAssignmentTableMap::COL_SUBTASK, ElementAssignmentTableMap::COL_ELEMENTID, ElementAssignmentTableMap::COL_USER_ID, ElementAssignmentTableMap::COL_CREATED_AT, ElementAssignmentTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('examID', 'questionID', 'subtask', 'elementID', 'user_id', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id', 'Examid', 'Questionid', 'Subtask', 'Elementid', 'UserId', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'examid', 'questionid', 'subtask', 'elementid', 'userId', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(ElementAssignmentTableMap::COL_ID, ElementAssignmentTableMap::COL_EXAMID, ElementAssignmentTableMap::COL_QUESTIONID, ElementAssignmentTableMap::COL_SUBTASK, ElementAssignmentTableMap::COL_ELEMENTID, ElementAssignmentTableMap::COL_USER_ID, ElementAssignmentTableMap::COL_CREATED_AT, ElementAssignmentTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'examID', 'questionID', 'subtask', 'elementID', 'user_id', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
     );
 
     /**
@@ -132,11 +137,11 @@ class ElementAssignmentTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Examid' => 0, 'Questionid' => 1, 'Subtask' => 2, 'Elementid' => 3, 'UserId' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, ),
-        self::TYPE_CAMELNAME     => array('examid' => 0, 'questionid' => 1, 'subtask' => 2, 'elementid' => 3, 'userId' => 4, 'createdAt' => 5, 'updatedAt' => 6, ),
-        self::TYPE_COLNAME       => array(ElementAssignmentTableMap::COL_EXAMID => 0, ElementAssignmentTableMap::COL_QUESTIONID => 1, ElementAssignmentTableMap::COL_SUBTASK => 2, ElementAssignmentTableMap::COL_ELEMENTID => 3, ElementAssignmentTableMap::COL_USER_ID => 4, ElementAssignmentTableMap::COL_CREATED_AT => 5, ElementAssignmentTableMap::COL_UPDATED_AT => 6, ),
-        self::TYPE_FIELDNAME     => array('examID' => 0, 'questionID' => 1, 'subtask' => 2, 'elementID' => 3, 'user_id' => 4, 'created_at' => 5, 'updated_at' => 6, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Examid' => 1, 'Questionid' => 2, 'Subtask' => 3, 'Elementid' => 4, 'UserId' => 5, 'CreatedAt' => 6, 'UpdatedAt' => 7, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'examid' => 1, 'questionid' => 2, 'subtask' => 3, 'elementid' => 4, 'userId' => 5, 'createdAt' => 6, 'updatedAt' => 7, ),
+        self::TYPE_COLNAME       => array(ElementAssignmentTableMap::COL_ID => 0, ElementAssignmentTableMap::COL_EXAMID => 1, ElementAssignmentTableMap::COL_QUESTIONID => 2, ElementAssignmentTableMap::COL_SUBTASK => 3, ElementAssignmentTableMap::COL_ELEMENTID => 4, ElementAssignmentTableMap::COL_USER_ID => 5, ElementAssignmentTableMap::COL_CREATED_AT => 6, ElementAssignmentTableMap::COL_UPDATED_AT => 7, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'examID' => 1, 'questionID' => 2, 'subtask' => 3, 'elementID' => 4, 'user_id' => 5, 'created_at' => 6, 'updated_at' => 7, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
     );
 
     /**
@@ -154,11 +159,13 @@ class ElementAssignmentTableMap extends TableMap
         $this->setIdentifierQuoting(false);
         $this->setClassName('\\ElementAssignment');
         $this->setPackage('');
-        $this->setUseIdGenerator(false);
+        $this->setUseIdGenerator(true);
+        $this->setIsCrossRef(true);
         // columns
-        $this->addForeignPrimaryKey('examID', 'Examid', 'INTEGER' , 'exams', 'id', true, null, null);
-        $this->addForeignPrimaryKey('questionID', 'Questionid', 'INTEGER' , 'questions', 'id', true, null, null);
-        $this->addPrimaryKey('subtask', 'Subtask', 'INTEGER', true, 2, null);
+        $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
+        $this->addForeignKey('examID', 'Examid', 'INTEGER', 'exams', 'id', true, null, null);
+        $this->addForeignKey('questionID', 'Questionid', 'INTEGER', 'questions', 'id', true, null, null);
+        $this->addColumn('subtask', 'Subtask', 'INTEGER', true, 2, null);
         $this->addForeignKey('elementID', 'Elementid', 'INTEGER', 'elements', 'id', true, null, null);
         $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'users', 'id', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
@@ -170,20 +177,6 @@ class ElementAssignmentTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('User', '\\User', RelationMap::MANY_TO_ONE, array (
-  0 =>
-  array (
-    0 => ':user_id',
-    1 => ':id',
-  ),
-), null, null, null, false);
-        $this->addRelation('Exam', '\\Exam', RelationMap::MANY_TO_ONE, array (
-  0 =>
-  array (
-    0 => ':examID',
-    1 => ':id',
-  ),
-), null, null, null, false);
         $this->addRelation('Question', '\\Question', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
@@ -195,6 +188,20 @@ class ElementAssignmentTableMap extends TableMap
   0 =>
   array (
     0 => ':elementID',
+    1 => ':id',
+  ),
+), null, null, null, false);
+        $this->addRelation('Exam', '\\Exam', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':examID',
+    1 => ':id',
+  ),
+), null, null, null, false);
+        $this->addRelation('User', '\\User', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':user_id',
     1 => ':id',
   ),
 ), null, null, null, false);
@@ -214,59 +221,6 @@ class ElementAssignmentTableMap extends TableMap
     } // getBehaviors()
 
     /**
-     * Adds an object to the instance pool.
-     *
-     * Propel keeps cached copies of objects in an instance pool when they are retrieved
-     * from the database. In some cases you may need to explicitly add objects
-     * to the cache in order to ensure that the same objects are always returned by find*()
-     * and findPk*() calls.
-     *
-     * @param \ElementAssignment $obj A \ElementAssignment object.
-     * @param string $key             (optional) key to use for instance map (for performance boost if key was already calculated externally).
-     */
-    public static function addInstanceToPool($obj, $key = null)
-    {
-        if (Propel::isInstancePoolingEnabled()) {
-            if (null === $key) {
-                $key = serialize(array((string) $obj->getExamid(), (string) $obj->getQuestionid(), (string) $obj->getSubtask()));
-            } // if key === null
-            self::$instances[$key] = $obj;
-        }
-    }
-
-    /**
-     * Removes an object from the instance pool.
-     *
-     * Propel keeps cached copies of objects in an instance pool when they are retrieved
-     * from the database.  In some cases -- especially when you override doDelete
-     * methods in your stub classes -- you may need to explicitly remove objects
-     * from the cache in order to prevent returning objects that no longer exist.
-     *
-     * @param mixed $value A \ElementAssignment object or a primary key value.
-     */
-    public static function removeInstanceFromPool($value)
-    {
-        if (Propel::isInstancePoolingEnabled() && null !== $value) {
-            if (is_object($value) && $value instanceof \ElementAssignment) {
-                $key = serialize(array((string) $value->getExamid(), (string) $value->getQuestionid(), (string) $value->getSubtask()));
-
-            } elseif (is_array($value) && count($value) === 3) {
-                // assume we've been passed a primary key";
-                $key = serialize(array((string) $value[0], (string) $value[1], (string) $value[2]));
-            } elseif ($value instanceof Criteria) {
-                self::$instances = [];
-
-                return;
-            } else {
-                $e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or \ElementAssignment object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value, true)));
-                throw $e;
-            }
-
-            unset(self::$instances[$key]);
-        }
-    }
-
-    /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
      *
      * For tables with a single-column primary key, that simple pkey value will be returned.  For tables with
@@ -282,11 +236,11 @@ class ElementAssignmentTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Questionid', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Subtask', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Questionid', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Subtask', TableMap::TYPE_PHPNAME, $indexType)]));
+        return (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
     }
 
     /**
@@ -303,25 +257,11 @@ class ElementAssignmentTableMap extends TableMap
      */
     public static function getPrimaryKeyFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-            $pks = [];
-
-        $pks[] = (int) $row[
+        return (int) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 0 + $offset
-                : self::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)
+                : self::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)
         ];
-        $pks[] = (int) $row[
-            $indexType == TableMap::TYPE_NUM
-                ? 1 + $offset
-                : self::translateFieldName('Questionid', TableMap::TYPE_PHPNAME, $indexType)
-        ];
-        $pks[] = (int) $row[
-            $indexType == TableMap::TYPE_NUM
-                ? 2 + $offset
-                : self::translateFieldName('Subtask', TableMap::TYPE_PHPNAME, $indexType)
-        ];
-
-        return $pks;
     }
 
     /**
@@ -421,6 +361,7 @@ class ElementAssignmentTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
+            $criteria->addSelectColumn(ElementAssignmentTableMap::COL_ID);
             $criteria->addSelectColumn(ElementAssignmentTableMap::COL_EXAMID);
             $criteria->addSelectColumn(ElementAssignmentTableMap::COL_QUESTIONID);
             $criteria->addSelectColumn(ElementAssignmentTableMap::COL_SUBTASK);
@@ -429,6 +370,7 @@ class ElementAssignmentTableMap extends TableMap
             $criteria->addSelectColumn(ElementAssignmentTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(ElementAssignmentTableMap::COL_UPDATED_AT);
         } else {
+            $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.examID');
             $criteria->addSelectColumn($alias . '.questionID');
             $criteria->addSelectColumn($alias . '.subtask');
@@ -487,18 +429,7 @@ class ElementAssignmentTableMap extends TableMap
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
             $criteria = new Criteria(ElementAssignmentTableMap::DATABASE_NAME);
-            // primary key is composite; we therefore, expect
-            // the primary key passed to be an array of pkey values
-            if (count($values) == count($values, COUNT_RECURSIVE)) {
-                // array is not multi-dimensional
-                $values = array($values);
-            }
-            foreach ($values as $value) {
-                $criterion = $criteria->getNewCriterion(ElementAssignmentTableMap::COL_EXAMID, $value[0]);
-                $criterion->addAnd($criteria->getNewCriterion(ElementAssignmentTableMap::COL_QUESTIONID, $value[1]));
-                $criterion->addAnd($criteria->getNewCriterion(ElementAssignmentTableMap::COL_SUBTASK, $value[2]));
-                $criteria->addOr($criterion);
-            }
+            $criteria->add(ElementAssignmentTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
         $query = ElementAssignmentQuery::create()->mergeWith($criteria);
@@ -544,6 +475,10 @@ class ElementAssignmentTableMap extends TableMap
             $criteria = clone $criteria; // rename for clarity
         } else {
             $criteria = $criteria->buildCriteria(); // build Criteria from ElementAssignment object
+        }
+
+        if ($criteria->containsKey(ElementAssignmentTableMap::COL_ID) && $criteria->keyContainsValue(ElementAssignmentTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.ElementAssignmentTableMap::COL_ID.')');
         }
 
 

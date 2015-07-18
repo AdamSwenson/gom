@@ -2,8 +2,12 @@
 
 namespace Base;
 
+use \ExamClassAssignment as ChildExamClassAssignment;
+use \ExamClassAssignmentQuery as ChildExamClassAssignmentQuery;
 use \Kumi as ChildKumi;
 use \KumiQuery as ChildKumiQuery;
+use \StudentClassAssignment as ChildStudentClassAssignment;
+use \StudentClassAssignmentQuery as ChildStudentClassAssignmentQuery;
 use \User as ChildUser;
 use \UserQuery as ChildUserQuery;
 use \DateTime;
@@ -15,6 +19,7 @@ use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
+use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
@@ -106,12 +111,36 @@ abstract class Kumi implements ActiveRecordInterface
     protected $aUser;
 
     /**
+     * @var        ObjectCollection|ChildStudentClassAssignment[] Collection to store aggregation of ChildStudentClassAssignment objects.
+     */
+    protected $collStudentClassAssignments;
+    protected $collStudentClassAssignmentsPartial;
+
+    /**
+     * @var        ObjectCollection|ChildExamClassAssignment[] Collection to store aggregation of ChildExamClassAssignment objects.
+     */
+    protected $collExamClassAssignments;
+    protected $collExamClassAssignmentsPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
      * @var boolean
      */
     protected $alreadyInSave = false;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildStudentClassAssignment[]
+     */
+    protected $studentClassAssignmentsScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildExamClassAssignment[]
+     */
+    protected $examClassAssignmentsScheduledForDeletion = null;
 
     /**
      * Initializes internal state of Base\Kumi object.
@@ -666,6 +695,10 @@ abstract class Kumi implements ActiveRecordInterface
         if ($deep) {  // also de-associate any related objects?
 
             $this->aUser = null;
+            $this->collStudentClassAssignments = null;
+
+            $this->collExamClassAssignments = null;
+
         } // if (deep)
     }
 
@@ -798,6 +831,40 @@ abstract class Kumi implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
+            }
+
+            if ($this->studentClassAssignmentsScheduledForDeletion !== null) {
+                if (!$this->studentClassAssignmentsScheduledForDeletion->isEmpty()) {
+                    \StudentClassAssignmentQuery::create()
+                        ->filterByPrimaryKeys($this->studentClassAssignmentsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->studentClassAssignmentsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collStudentClassAssignments !== null) {
+                foreach ($this->collStudentClassAssignments as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->examClassAssignmentsScheduledForDeletion !== null) {
+                if (!$this->examClassAssignmentsScheduledForDeletion->isEmpty()) {
+                    \ExamClassAssignmentQuery::create()
+                        ->filterByPrimaryKeys($this->examClassAssignmentsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->examClassAssignmentsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collExamClassAssignments !== null) {
+                foreach ($this->collExamClassAssignments as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             $this->alreadyInSave = false;
@@ -1024,6 +1091,36 @@ abstract class Kumi implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->collStudentClassAssignments) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'studentClassAssignments';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'studentsXclassess';
+                        break;
+                    default:
+                        $key = 'StudentClassAssignments';
+                }
+
+                $result[$key] = $this->collStudentClassAssignments->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collExamClassAssignments) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'examClassAssignments';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'examsXclassess';
+                        break;
+                    default:
+                        $key = 'ExamClassAssignments';
+                }
+
+                $result[$key] = $this->collExamClassAssignments->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1271,6 +1368,26 @@ abstract class Kumi implements ActiveRecordInterface
         $copyObj->setUserId($this->getUserId());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
+
+        if ($deepCopy) {
+            // important: temporarily setNew(false) because this affects the behavior of
+            // the getter/setter methods for fkey referrer objects.
+            $copyObj->setNew(false);
+
+            foreach ($this->getStudentClassAssignments() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addStudentClassAssignment($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getExamClassAssignments() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addExamClassAssignment($relObj->copy($deepCopy));
+                }
+            }
+
+        } // if ($deepCopy)
+
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1350,6 +1467,561 @@ abstract class Kumi implements ActiveRecordInterface
         return $this->aUser;
     }
 
+
+    /**
+     * Initializes a collection based on the name of a relation.
+     * Avoids crafting an 'init[$relationName]s' method name
+     * that wouldn't work when StandardEnglishPluralizer is used.
+     *
+     * @param      string $relationName The name of the relation to initialize
+     * @return void
+     */
+    public function initRelation($relationName)
+    {
+        if ('StudentClassAssignment' == $relationName) {
+            return $this->initStudentClassAssignments();
+        }
+        if ('ExamClassAssignment' == $relationName) {
+            return $this->initExamClassAssignments();
+        }
+    }
+
+    /**
+     * Clears out the collStudentClassAssignments collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addStudentClassAssignments()
+     */
+    public function clearStudentClassAssignments()
+    {
+        $this->collStudentClassAssignments = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collStudentClassAssignments collection loaded partially.
+     */
+    public function resetPartialStudentClassAssignments($v = true)
+    {
+        $this->collStudentClassAssignmentsPartial = $v;
+    }
+
+    /**
+     * Initializes the collStudentClassAssignments collection.
+     *
+     * By default this just sets the collStudentClassAssignments collection to an empty array (like clearcollStudentClassAssignments());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initStudentClassAssignments($overrideExisting = true)
+    {
+        if (null !== $this->collStudentClassAssignments && !$overrideExisting) {
+            return;
+        }
+        $this->collStudentClassAssignments = new ObjectCollection();
+        $this->collStudentClassAssignments->setModel('\StudentClassAssignment');
+    }
+
+    /**
+     * Gets an array of ChildStudentClassAssignment objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildKumi is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildStudentClassAssignment[] List of ChildStudentClassAssignment objects
+     * @throws PropelException
+     */
+    public function getStudentClassAssignments(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collStudentClassAssignmentsPartial && !$this->isNew();
+        if (null === $this->collStudentClassAssignments || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collStudentClassAssignments) {
+                // return empty collection
+                $this->initStudentClassAssignments();
+            } else {
+                $collStudentClassAssignments = ChildStudentClassAssignmentQuery::create(null, $criteria)
+                    ->filterByKumi($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collStudentClassAssignmentsPartial && count($collStudentClassAssignments)) {
+                        $this->initStudentClassAssignments(false);
+
+                        foreach ($collStudentClassAssignments as $obj) {
+                            if (false == $this->collStudentClassAssignments->contains($obj)) {
+                                $this->collStudentClassAssignments->append($obj);
+                            }
+                        }
+
+                        $this->collStudentClassAssignmentsPartial = true;
+                    }
+
+                    return $collStudentClassAssignments;
+                }
+
+                if ($partial && $this->collStudentClassAssignments) {
+                    foreach ($this->collStudentClassAssignments as $obj) {
+                        if ($obj->isNew()) {
+                            $collStudentClassAssignments[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collStudentClassAssignments = $collStudentClassAssignments;
+                $this->collStudentClassAssignmentsPartial = false;
+            }
+        }
+
+        return $this->collStudentClassAssignments;
+    }
+
+    /**
+     * Sets a collection of ChildStudentClassAssignment objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $studentClassAssignments A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildKumi The current object (for fluent API support)
+     */
+    public function setStudentClassAssignments(Collection $studentClassAssignments, ConnectionInterface $con = null)
+    {
+        /** @var ChildStudentClassAssignment[] $studentClassAssignmentsToDelete */
+        $studentClassAssignmentsToDelete = $this->getStudentClassAssignments(new Criteria(), $con)->diff($studentClassAssignments);
+
+
+        $this->studentClassAssignmentsScheduledForDeletion = $studentClassAssignmentsToDelete;
+
+        foreach ($studentClassAssignmentsToDelete as $studentClassAssignmentRemoved) {
+            $studentClassAssignmentRemoved->setKumi(null);
+        }
+
+        $this->collStudentClassAssignments = null;
+        foreach ($studentClassAssignments as $studentClassAssignment) {
+            $this->addStudentClassAssignment($studentClassAssignment);
+        }
+
+        $this->collStudentClassAssignments = $studentClassAssignments;
+        $this->collStudentClassAssignmentsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related StudentClassAssignment objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related StudentClassAssignment objects.
+     * @throws PropelException
+     */
+    public function countStudentClassAssignments(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collStudentClassAssignmentsPartial && !$this->isNew();
+        if (null === $this->collStudentClassAssignments || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collStudentClassAssignments) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getStudentClassAssignments());
+            }
+
+            $query = ChildStudentClassAssignmentQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByKumi($this)
+                ->count($con);
+        }
+
+        return count($this->collStudentClassAssignments);
+    }
+
+    /**
+     * Method called to associate a ChildStudentClassAssignment object to this object
+     * through the ChildStudentClassAssignment foreign key attribute.
+     *
+     * @param  ChildStudentClassAssignment $l ChildStudentClassAssignment
+     * @return $this|\Kumi The current object (for fluent API support)
+     */
+    public function addStudentClassAssignment(ChildStudentClassAssignment $l)
+    {
+        if ($this->collStudentClassAssignments === null) {
+            $this->initStudentClassAssignments();
+            $this->collStudentClassAssignmentsPartial = true;
+        }
+
+        if (!$this->collStudentClassAssignments->contains($l)) {
+            $this->doAddStudentClassAssignment($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildStudentClassAssignment $studentClassAssignment The ChildStudentClassAssignment object to add.
+     */
+    protected function doAddStudentClassAssignment(ChildStudentClassAssignment $studentClassAssignment)
+    {
+        $this->collStudentClassAssignments[]= $studentClassAssignment;
+        $studentClassAssignment->setKumi($this);
+    }
+
+    /**
+     * @param  ChildStudentClassAssignment $studentClassAssignment The ChildStudentClassAssignment object to remove.
+     * @return $this|ChildKumi The current object (for fluent API support)
+     */
+    public function removeStudentClassAssignment(ChildStudentClassAssignment $studentClassAssignment)
+    {
+        if ($this->getStudentClassAssignments()->contains($studentClassAssignment)) {
+            $pos = $this->collStudentClassAssignments->search($studentClassAssignment);
+            $this->collStudentClassAssignments->remove($pos);
+            if (null === $this->studentClassAssignmentsScheduledForDeletion) {
+                $this->studentClassAssignmentsScheduledForDeletion = clone $this->collStudentClassAssignments;
+                $this->studentClassAssignmentsScheduledForDeletion->clear();
+            }
+            $this->studentClassAssignmentsScheduledForDeletion[]= clone $studentClassAssignment;
+            $studentClassAssignment->setKumi(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Kumi is new, it will return
+     * an empty collection; or if this Kumi has previously
+     * been saved, it will retrieve related StudentClassAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Kumi.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildStudentClassAssignment[] List of ChildStudentClassAssignment objects
+     */
+    public function getStudentClassAssignmentsJoinStudent(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildStudentClassAssignmentQuery::create(null, $criteria);
+        $query->joinWith('Student', $joinBehavior);
+
+        return $this->getStudentClassAssignments($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Kumi is new, it will return
+     * an empty collection; or if this Kumi has previously
+     * been saved, it will retrieve related StudentClassAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Kumi.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildStudentClassAssignment[] List of ChildStudentClassAssignment objects
+     */
+    public function getStudentClassAssignmentsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildStudentClassAssignmentQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getStudentClassAssignments($query, $con);
+    }
+
+    /**
+     * Clears out the collExamClassAssignments collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addExamClassAssignments()
+     */
+    public function clearExamClassAssignments()
+    {
+        $this->collExamClassAssignments = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collExamClassAssignments collection loaded partially.
+     */
+    public function resetPartialExamClassAssignments($v = true)
+    {
+        $this->collExamClassAssignmentsPartial = $v;
+    }
+
+    /**
+     * Initializes the collExamClassAssignments collection.
+     *
+     * By default this just sets the collExamClassAssignments collection to an empty array (like clearcollExamClassAssignments());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initExamClassAssignments($overrideExisting = true)
+    {
+        if (null !== $this->collExamClassAssignments && !$overrideExisting) {
+            return;
+        }
+        $this->collExamClassAssignments = new ObjectCollection();
+        $this->collExamClassAssignments->setModel('\ExamClassAssignment');
+    }
+
+    /**
+     * Gets an array of ChildExamClassAssignment objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildKumi is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildExamClassAssignment[] List of ChildExamClassAssignment objects
+     * @throws PropelException
+     */
+    public function getExamClassAssignments(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collExamClassAssignmentsPartial && !$this->isNew();
+        if (null === $this->collExamClassAssignments || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collExamClassAssignments) {
+                // return empty collection
+                $this->initExamClassAssignments();
+            } else {
+                $collExamClassAssignments = ChildExamClassAssignmentQuery::create(null, $criteria)
+                    ->filterByKumi($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collExamClassAssignmentsPartial && count($collExamClassAssignments)) {
+                        $this->initExamClassAssignments(false);
+
+                        foreach ($collExamClassAssignments as $obj) {
+                            if (false == $this->collExamClassAssignments->contains($obj)) {
+                                $this->collExamClassAssignments->append($obj);
+                            }
+                        }
+
+                        $this->collExamClassAssignmentsPartial = true;
+                    }
+
+                    return $collExamClassAssignments;
+                }
+
+                if ($partial && $this->collExamClassAssignments) {
+                    foreach ($this->collExamClassAssignments as $obj) {
+                        if ($obj->isNew()) {
+                            $collExamClassAssignments[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collExamClassAssignments = $collExamClassAssignments;
+                $this->collExamClassAssignmentsPartial = false;
+            }
+        }
+
+        return $this->collExamClassAssignments;
+    }
+
+    /**
+     * Sets a collection of ChildExamClassAssignment objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $examClassAssignments A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildKumi The current object (for fluent API support)
+     */
+    public function setExamClassAssignments(Collection $examClassAssignments, ConnectionInterface $con = null)
+    {
+        /** @var ChildExamClassAssignment[] $examClassAssignmentsToDelete */
+        $examClassAssignmentsToDelete = $this->getExamClassAssignments(new Criteria(), $con)->diff($examClassAssignments);
+
+
+        $this->examClassAssignmentsScheduledForDeletion = $examClassAssignmentsToDelete;
+
+        foreach ($examClassAssignmentsToDelete as $examClassAssignmentRemoved) {
+            $examClassAssignmentRemoved->setKumi(null);
+        }
+
+        $this->collExamClassAssignments = null;
+        foreach ($examClassAssignments as $examClassAssignment) {
+            $this->addExamClassAssignment($examClassAssignment);
+        }
+
+        $this->collExamClassAssignments = $examClassAssignments;
+        $this->collExamClassAssignmentsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related ExamClassAssignment objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related ExamClassAssignment objects.
+     * @throws PropelException
+     */
+    public function countExamClassAssignments(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collExamClassAssignmentsPartial && !$this->isNew();
+        if (null === $this->collExamClassAssignments || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collExamClassAssignments) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getExamClassAssignments());
+            }
+
+            $query = ChildExamClassAssignmentQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByKumi($this)
+                ->count($con);
+        }
+
+        return count($this->collExamClassAssignments);
+    }
+
+    /**
+     * Method called to associate a ChildExamClassAssignment object to this object
+     * through the ChildExamClassAssignment foreign key attribute.
+     *
+     * @param  ChildExamClassAssignment $l ChildExamClassAssignment
+     * @return $this|\Kumi The current object (for fluent API support)
+     */
+    public function addExamClassAssignment(ChildExamClassAssignment $l)
+    {
+        if ($this->collExamClassAssignments === null) {
+            $this->initExamClassAssignments();
+            $this->collExamClassAssignmentsPartial = true;
+        }
+
+        if (!$this->collExamClassAssignments->contains($l)) {
+            $this->doAddExamClassAssignment($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildExamClassAssignment $examClassAssignment The ChildExamClassAssignment object to add.
+     */
+    protected function doAddExamClassAssignment(ChildExamClassAssignment $examClassAssignment)
+    {
+        $this->collExamClassAssignments[]= $examClassAssignment;
+        $examClassAssignment->setKumi($this);
+    }
+
+    /**
+     * @param  ChildExamClassAssignment $examClassAssignment The ChildExamClassAssignment object to remove.
+     * @return $this|ChildKumi The current object (for fluent API support)
+     */
+    public function removeExamClassAssignment(ChildExamClassAssignment $examClassAssignment)
+    {
+        if ($this->getExamClassAssignments()->contains($examClassAssignment)) {
+            $pos = $this->collExamClassAssignments->search($examClassAssignment);
+            $this->collExamClassAssignments->remove($pos);
+            if (null === $this->examClassAssignmentsScheduledForDeletion) {
+                $this->examClassAssignmentsScheduledForDeletion = clone $this->collExamClassAssignments;
+                $this->examClassAssignmentsScheduledForDeletion->clear();
+            }
+            $this->examClassAssignmentsScheduledForDeletion[]= clone $examClassAssignment;
+            $examClassAssignment->setKumi(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Kumi is new, it will return
+     * an empty collection; or if this Kumi has previously
+     * been saved, it will retrieve related ExamClassAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Kumi.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildExamClassAssignment[] List of ChildExamClassAssignment objects
+     */
+    public function getExamClassAssignmentsJoinExam(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildExamClassAssignmentQuery::create(null, $criteria);
+        $query->joinWith('Exam', $joinBehavior);
+
+        return $this->getExamClassAssignments($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Kumi is new, it will return
+     * an empty collection; or if this Kumi has previously
+     * been saved, it will retrieve related ExamClassAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Kumi.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildExamClassAssignment[] List of ChildExamClassAssignment objects
+     */
+    public function getExamClassAssignmentsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildExamClassAssignmentQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getExamClassAssignments($query, $con);
+    }
+
     /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
@@ -1384,8 +2056,20 @@ abstract class Kumi implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collStudentClassAssignments) {
+                foreach ($this->collStudentClassAssignments as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collExamClassAssignments) {
+                foreach ($this->collExamClassAssignments as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
+        $this->collStudentClassAssignments = null;
+        $this->collExamClassAssignments = null;
         $this->aUser = null;
     }
 

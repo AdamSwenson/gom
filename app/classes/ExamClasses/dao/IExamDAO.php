@@ -27,7 +27,7 @@ interface IExamDAO
      * @param \Topic $topic
      * @return \Exam
      */
-    public function save_new_exam(\Year $year, \Term $term, \Topic $topic);
+    public function save_new_exam($year, $term, $topic);
 
     /**
      * Deletes the exam after checking that the user is authenticated

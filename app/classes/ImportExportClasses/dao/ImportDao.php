@@ -11,19 +11,36 @@ namespace App\classes\ImportExportClasses\dao;
 
 use App\classes\Traits\UserTraits;
 
-class ImportDao
+class ImportDao implements IImportDao
 {
     use UserTraits;
 
     /** @var \User */
     public $user;
 
+    public $exam;
+
+    public $errors = array();
+
     function __construct()
     {
         $this->user = $this->getUser();
     }
 
+    public function setExam(\Exam $exam)
+    {
+        $this->exam = $exam;
+    }
 
+    /**
+     * Takes a new student record and adds it to the database
+     *
+     * @param $sid
+     * @param $student_name
+     * @param $kumi_name
+     * @param bool|false $email
+     * @throws \Exception
+     */
     public function add_record($sid, $student_name, $kumi_name, $email=false)
     {
         try {

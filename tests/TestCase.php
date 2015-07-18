@@ -22,7 +22,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
         Auth::loginUsingId(self::$userid);
-
+        $this->user = \UserQuery::create()->filterById(self::$userid)->findOneOrCreate();
         return $app;
     }
 }

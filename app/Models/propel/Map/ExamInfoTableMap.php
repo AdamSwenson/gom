@@ -82,6 +82,11 @@ class ExamInfoTableMap extends TableMap
     const COL_STUDENTID = 'examInfo.studentID';
 
     /**
+     * the column name for the user_id field
+     */
+    const COL_USER_ID = 'examInfo.user_id';
+
+    /**
      * the column name for the completionOrder field
      */
     const COL_COMPLETIONORDER = 'examInfo.completionOrder';
@@ -100,11 +105,6 @@ class ExamInfoTableMap extends TableMap
      * the column name for the examGroupNumber field
      */
     const COL_EXAMGROUPNUMBER = 'examInfo.examGroupNumber';
-
-    /**
-     * the column name for the user_id field
-     */
-    const COL_USER_ID = 'examInfo.user_id';
 
     /**
      * the column name for the created_at field
@@ -128,10 +128,10 @@ class ExamInfoTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Examid', 'Studentid', 'Completionorder', 'Pages', 'Notecard', 'Examgroupnumber', 'UserId', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('examid', 'studentid', 'completionorder', 'pages', 'notecard', 'examgroupnumber', 'userId', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(ExamInfoTableMap::COL_EXAMID, ExamInfoTableMap::COL_STUDENTID, ExamInfoTableMap::COL_COMPLETIONORDER, ExamInfoTableMap::COL_PAGES, ExamInfoTableMap::COL_NOTECARD, ExamInfoTableMap::COL_EXAMGROUPNUMBER, ExamInfoTableMap::COL_USER_ID, ExamInfoTableMap::COL_CREATED_AT, ExamInfoTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('examID', 'studentID', 'completionOrder', 'pages', 'notecard', 'examGroupNumber', 'user_id', 'created_at', 'updated_at', ),
+        self::TYPE_PHPNAME       => array('Examid', 'Studentid', 'UserId', 'Completionorder', 'Pages', 'Notecard', 'Examgroupnumber', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('examid', 'studentid', 'userId', 'completionorder', 'pages', 'notecard', 'examgroupnumber', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(ExamInfoTableMap::COL_EXAMID, ExamInfoTableMap::COL_STUDENTID, ExamInfoTableMap::COL_USER_ID, ExamInfoTableMap::COL_COMPLETIONORDER, ExamInfoTableMap::COL_PAGES, ExamInfoTableMap::COL_NOTECARD, ExamInfoTableMap::COL_EXAMGROUPNUMBER, ExamInfoTableMap::COL_CREATED_AT, ExamInfoTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('examID', 'studentID', 'user_id', 'completionOrder', 'pages', 'notecard', 'examGroupNumber', 'created_at', 'updated_at', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
@@ -142,10 +142,10 @@ class ExamInfoTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Examid' => 0, 'Studentid' => 1, 'Completionorder' => 2, 'Pages' => 3, 'Notecard' => 4, 'Examgroupnumber' => 5, 'UserId' => 6, 'CreatedAt' => 7, 'UpdatedAt' => 8, ),
-        self::TYPE_CAMELNAME     => array('examid' => 0, 'studentid' => 1, 'completionorder' => 2, 'pages' => 3, 'notecard' => 4, 'examgroupnumber' => 5, 'userId' => 6, 'createdAt' => 7, 'updatedAt' => 8, ),
-        self::TYPE_COLNAME       => array(ExamInfoTableMap::COL_EXAMID => 0, ExamInfoTableMap::COL_STUDENTID => 1, ExamInfoTableMap::COL_COMPLETIONORDER => 2, ExamInfoTableMap::COL_PAGES => 3, ExamInfoTableMap::COL_NOTECARD => 4, ExamInfoTableMap::COL_EXAMGROUPNUMBER => 5, ExamInfoTableMap::COL_USER_ID => 6, ExamInfoTableMap::COL_CREATED_AT => 7, ExamInfoTableMap::COL_UPDATED_AT => 8, ),
-        self::TYPE_FIELDNAME     => array('examID' => 0, 'studentID' => 1, 'completionOrder' => 2, 'pages' => 3, 'notecard' => 4, 'examGroupNumber' => 5, 'user_id' => 6, 'created_at' => 7, 'updated_at' => 8, ),
+        self::TYPE_PHPNAME       => array('Examid' => 0, 'Studentid' => 1, 'UserId' => 2, 'Completionorder' => 3, 'Pages' => 4, 'Notecard' => 5, 'Examgroupnumber' => 6, 'CreatedAt' => 7, 'UpdatedAt' => 8, ),
+        self::TYPE_CAMELNAME     => array('examid' => 0, 'studentid' => 1, 'userId' => 2, 'completionorder' => 3, 'pages' => 4, 'notecard' => 5, 'examgroupnumber' => 6, 'createdAt' => 7, 'updatedAt' => 8, ),
+        self::TYPE_COLNAME       => array(ExamInfoTableMap::COL_EXAMID => 0, ExamInfoTableMap::COL_STUDENTID => 1, ExamInfoTableMap::COL_USER_ID => 2, ExamInfoTableMap::COL_COMPLETIONORDER => 3, ExamInfoTableMap::COL_PAGES => 4, ExamInfoTableMap::COL_NOTECARD => 5, ExamInfoTableMap::COL_EXAMGROUPNUMBER => 6, ExamInfoTableMap::COL_CREATED_AT => 7, ExamInfoTableMap::COL_UPDATED_AT => 8, ),
+        self::TYPE_FIELDNAME     => array('examID' => 0, 'studentID' => 1, 'user_id' => 2, 'completionOrder' => 3, 'pages' => 4, 'notecard' => 5, 'examGroupNumber' => 6, 'created_at' => 7, 'updated_at' => 8, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
@@ -168,11 +168,11 @@ class ExamInfoTableMap extends TableMap
         // columns
         $this->addForeignPrimaryKey('examID', 'Examid', 'INTEGER' , 'exams', 'id', true, null, null);
         $this->addForeignPrimaryKey('studentID', 'Studentid', 'INTEGER' , 'students', 'id', true, null, null);
+        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'users', 'id', true, null, null);
         $this->addColumn('completionOrder', 'Completionorder', 'INTEGER', false, null, null);
         $this->addColumn('pages', 'Pages', 'FLOAT', false, null, null);
         $this->addColumn('notecard', 'Notecard', 'FLOAT', false, null, null);
         $this->addColumn('examGroupNumber', 'Examgroupnumber', 'INTEGER', false, null, null);
-        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'users', 'id', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -182,13 +182,6 @@ class ExamInfoTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('User', '\\User', RelationMap::MANY_TO_ONE, array (
-  0 =>
-  array (
-    0 => ':user_id',
-    1 => ':id',
-  ),
-), null, null, null, false);
         $this->addRelation('Exam', '\\Exam', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
@@ -200,6 +193,13 @@ class ExamInfoTableMap extends TableMap
   0 =>
   array (
     0 => ':studentID',
+    1 => ':id',
+  ),
+), null, null, null, false);
+        $this->addRelation('User', '\\User', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':user_id',
     1 => ':id',
   ),
 ), null, null, null, false);
@@ -423,21 +423,21 @@ class ExamInfoTableMap extends TableMap
         if (null === $alias) {
             $criteria->addSelectColumn(ExamInfoTableMap::COL_EXAMID);
             $criteria->addSelectColumn(ExamInfoTableMap::COL_STUDENTID);
+            $criteria->addSelectColumn(ExamInfoTableMap::COL_USER_ID);
             $criteria->addSelectColumn(ExamInfoTableMap::COL_COMPLETIONORDER);
             $criteria->addSelectColumn(ExamInfoTableMap::COL_PAGES);
             $criteria->addSelectColumn(ExamInfoTableMap::COL_NOTECARD);
             $criteria->addSelectColumn(ExamInfoTableMap::COL_EXAMGROUPNUMBER);
-            $criteria->addSelectColumn(ExamInfoTableMap::COL_USER_ID);
             $criteria->addSelectColumn(ExamInfoTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(ExamInfoTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.examID');
             $criteria->addSelectColumn($alias . '.studentID');
+            $criteria->addSelectColumn($alias . '.user_id');
             $criteria->addSelectColumn($alias . '.completionOrder');
             $criteria->addSelectColumn($alias . '.pages');
             $criteria->addSelectColumn($alias . '.notecard');
             $criteria->addSelectColumn($alias . '.examGroupNumber');
-            $criteria->addSelectColumn($alias . '.user_id');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }

@@ -46,7 +46,7 @@ class IExamDAOMock extends MockParent implements IExamDAO
      * @param \Topic $topic
      * @return \Exam
      */
-    function save_new_exam(\Year $year, \Term $term, \Topic $topic)
+    function save_new_exam($year, $term, $topic)
     {
         $caller = __FUNCTION__;
         $this->record_call($caller, array($year, $term, $topic));

@@ -89,16 +89,16 @@ abstract class ElementScore implements ActiveRecordInterface
     protected $studentid;
 
     /**
-     * The value for the elementscore field.
-     * @var        double
-     */
-    protected $elementscore;
-
-    /**
      * The value for the user_id field.
      * @var        int
      */
     protected $user_id;
+
+    /**
+     * The value for the elementscore field.
+     * @var        double
+     */
+    protected $elementscore;
 
     /**
      * The value for the created_at field.
@@ -111,11 +111,6 @@ abstract class ElementScore implements ActiveRecordInterface
      * @var        \DateTime
      */
     protected $updated_at;
-
-    /**
-     * @var        ChildUser
-     */
-    protected $aUser;
 
     /**
      * @var        ChildExam
@@ -131,6 +126,11 @@ abstract class ElementScore implements ActiveRecordInterface
      * @var        ChildStudent
      */
     protected $aStudent;
+
+    /**
+     * @var        ChildUser
+     */
+    protected $aUser;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -388,16 +388,6 @@ abstract class ElementScore implements ActiveRecordInterface
     }
 
     /**
-     * Get the [elementscore] column value.
-     *
-     * @return double
-     */
-    public function getElementscore()
-    {
-        return $this->elementscore;
-    }
-
-    /**
      * Get the [user_id] column value.
      *
      * @return int
@@ -405,6 +395,16 @@ abstract class ElementScore implements ActiveRecordInterface
     public function getUserId()
     {
         return $this->user_id;
+    }
+
+    /**
+     * Get the [elementscore] column value.
+     *
+     * @return double
+     */
+    public function getElementscore()
+    {
+        return $this->elementscore;
     }
 
     /**
@@ -520,26 +520,6 @@ abstract class ElementScore implements ActiveRecordInterface
     } // setStudentid()
 
     /**
-     * Set the value of [elementscore] column.
-     *
-     * @param double $v new value
-     * @return $this|\ElementScore The current object (for fluent API support)
-     */
-    public function setElementscore($v)
-    {
-        if ($v !== null) {
-            $v = (double) $v;
-        }
-
-        if ($this->elementscore !== $v) {
-            $this->elementscore = $v;
-            $this->modifiedColumns[ElementScoreTableMap::COL_ELEMENTSCORE] = true;
-        }
-
-        return $this;
-    } // setElementscore()
-
-    /**
      * Set the value of [user_id] column.
      *
      * @param int $v new value
@@ -562,6 +542,26 @@ abstract class ElementScore implements ActiveRecordInterface
 
         return $this;
     } // setUserId()
+
+    /**
+     * Set the value of [elementscore] column.
+     *
+     * @param double $v new value
+     * @return $this|\ElementScore The current object (for fluent API support)
+     */
+    public function setElementscore($v)
+    {
+        if ($v !== null) {
+            $v = (double) $v;
+        }
+
+        if ($this->elementscore !== $v) {
+            $this->elementscore = $v;
+            $this->modifiedColumns[ElementScoreTableMap::COL_ELEMENTSCORE] = true;
+        }
+
+        return $this;
+    } // setElementscore()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
@@ -648,11 +648,11 @@ abstract class ElementScore implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ElementScoreTableMap::translateFieldName('Studentid', TableMap::TYPE_PHPNAME, $indexType)];
             $this->studentid = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ElementScoreTableMap::translateFieldName('Elementscore', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->elementscore = (null !== $col) ? (double) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ElementScoreTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ElementScoreTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->user_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ElementScoreTableMap::translateFieldName('Elementscore', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->elementscore = (null !== $col) ? (double) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ElementScoreTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
@@ -746,10 +746,10 @@ abstract class ElementScore implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aUser = null;
             $this->aExam = null;
             $this->aElement = null;
             $this->aStudent = null;
+            $this->aUser = null;
         } // if (deep)
     }
 
@@ -866,13 +866,6 @@ abstract class ElementScore implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aUser !== null) {
-                if ($this->aUser->isModified() || $this->aUser->isNew()) {
-                    $affectedRows += $this->aUser->save($con);
-                }
-                $this->setUser($this->aUser);
-            }
-
             if ($this->aExam !== null) {
                 if ($this->aExam->isModified() || $this->aExam->isNew()) {
                     $affectedRows += $this->aExam->save($con);
@@ -892,6 +885,13 @@ abstract class ElementScore implements ActiveRecordInterface
                     $affectedRows += $this->aStudent->save($con);
                 }
                 $this->setStudent($this->aStudent);
+            }
+
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -936,11 +936,11 @@ abstract class ElementScore implements ActiveRecordInterface
         if ($this->isColumnModified(ElementScoreTableMap::COL_STUDENTID)) {
             $modifiedColumns[':p' . $index++]  = 'studentID';
         }
-        if ($this->isColumnModified(ElementScoreTableMap::COL_ELEMENTSCORE)) {
-            $modifiedColumns[':p' . $index++]  = 'elementScore';
-        }
         if ($this->isColumnModified(ElementScoreTableMap::COL_USER_ID)) {
             $modifiedColumns[':p' . $index++]  = 'user_id';
+        }
+        if ($this->isColumnModified(ElementScoreTableMap::COL_ELEMENTSCORE)) {
+            $modifiedColumns[':p' . $index++]  = 'elementScore';
         }
         if ($this->isColumnModified(ElementScoreTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
@@ -968,11 +968,11 @@ abstract class ElementScore implements ActiveRecordInterface
                     case 'studentID':
                         $stmt->bindValue($identifier, $this->studentid, PDO::PARAM_INT);
                         break;
-                    case 'elementScore':
-                        $stmt->bindValue($identifier, $this->elementscore, PDO::PARAM_STR);
-                        break;
                     case 'user_id':
                         $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
+                        break;
+                    case 'elementScore':
+                        $stmt->bindValue($identifier, $this->elementscore, PDO::PARAM_STR);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1045,10 +1045,10 @@ abstract class ElementScore implements ActiveRecordInterface
                 return $this->getStudentid();
                 break;
             case 3:
-                return $this->getElementscore();
+                return $this->getUserId();
                 break;
             case 4:
-                return $this->getUserId();
+                return $this->getElementscore();
                 break;
             case 5:
                 return $this->getCreatedAt();
@@ -1089,8 +1089,8 @@ abstract class ElementScore implements ActiveRecordInterface
             $keys[0] => $this->getExamid(),
             $keys[1] => $this->getElementid(),
             $keys[2] => $this->getStudentid(),
-            $keys[3] => $this->getElementscore(),
-            $keys[4] => $this->getUserId(),
+            $keys[3] => $this->getUserId(),
+            $keys[4] => $this->getElementscore(),
             $keys[5] => $this->getCreatedAt(),
             $keys[6] => $this->getUpdatedAt(),
         );
@@ -1114,21 +1114,6 @@ abstract class ElementScore implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aUser) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'user';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'users';
-                        break;
-                    default:
-                        $key = 'User';
-                }
-
-                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
             if (null !== $this->aExam) {
 
                 switch ($keyType) {
@@ -1174,6 +1159,21 @@ abstract class ElementScore implements ActiveRecordInterface
 
                 $result[$key] = $this->aStudent->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
+            if (null !== $this->aUser) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'user';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'users';
+                        break;
+                    default:
+                        $key = 'User';
+                }
+
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
         }
 
         return $result;
@@ -1218,10 +1218,10 @@ abstract class ElementScore implements ActiveRecordInterface
                 $this->setStudentid($value);
                 break;
             case 3:
-                $this->setElementscore($value);
+                $this->setUserId($value);
                 break;
             case 4:
-                $this->setUserId($value);
+                $this->setElementscore($value);
                 break;
             case 5:
                 $this->setCreatedAt($value);
@@ -1265,10 +1265,10 @@ abstract class ElementScore implements ActiveRecordInterface
             $this->setStudentid($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setElementscore($arr[$keys[3]]);
+            $this->setUserId($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setUserId($arr[$keys[4]]);
+            $this->setElementscore($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
             $this->setCreatedAt($arr[$keys[5]]);
@@ -1326,11 +1326,11 @@ abstract class ElementScore implements ActiveRecordInterface
         if ($this->isColumnModified(ElementScoreTableMap::COL_STUDENTID)) {
             $criteria->add(ElementScoreTableMap::COL_STUDENTID, $this->studentid);
         }
-        if ($this->isColumnModified(ElementScoreTableMap::COL_ELEMENTSCORE)) {
-            $criteria->add(ElementScoreTableMap::COL_ELEMENTSCORE, $this->elementscore);
-        }
         if ($this->isColumnModified(ElementScoreTableMap::COL_USER_ID)) {
             $criteria->add(ElementScoreTableMap::COL_USER_ID, $this->user_id);
+        }
+        if ($this->isColumnModified(ElementScoreTableMap::COL_ELEMENTSCORE)) {
+            $criteria->add(ElementScoreTableMap::COL_ELEMENTSCORE, $this->elementscore);
         }
         if ($this->isColumnModified(ElementScoreTableMap::COL_CREATED_AT)) {
             $criteria->add(ElementScoreTableMap::COL_CREATED_AT, $this->created_at);
@@ -1460,8 +1460,8 @@ abstract class ElementScore implements ActiveRecordInterface
         $copyObj->setExamid($this->getExamid());
         $copyObj->setElementid($this->getElementid());
         $copyObj->setStudentid($this->getStudentid());
-        $copyObj->setElementscore($this->getElementscore());
         $copyObj->setUserId($this->getUserId());
+        $copyObj->setElementscore($this->getElementscore());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
@@ -1489,57 +1489,6 @@ abstract class ElementScore implements ActiveRecordInterface
         $this->copyInto($copyObj, $deepCopy);
 
         return $copyObj;
-    }
-
-    /**
-     * Declares an association between this object and a ChildUser object.
-     *
-     * @param  ChildUser $v
-     * @return $this|\ElementScore The current object (for fluent API support)
-     * @throws PropelException
-     */
-    public function setUser(ChildUser $v = null)
-    {
-        if ($v === null) {
-            $this->setUserId(NULL);
-        } else {
-            $this->setUserId($v->getId());
-        }
-
-        $this->aUser = $v;
-
-        // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildUser object, it will not be re-added.
-        if ($v !== null) {
-            $v->addElementScore($this);
-        }
-
-
-        return $this;
-    }
-
-
-    /**
-     * Get the associated ChildUser object
-     *
-     * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildUser The associated ChildUser object.
-     * @throws PropelException
-     */
-    public function getUser(ConnectionInterface $con = null)
-    {
-        if ($this->aUser === null && ($this->user_id !== null)) {
-            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
-            /* The following can be used additionally to
-                guarantee the related object contains a reference
-                to this object.  This level of coupling may, however, be
-                undesirable since it could result in an only partially populated collection
-                in the referenced object.
-                $this->aUser->addElementScores($this);
-             */
-        }
-
-        return $this->aUser;
     }
 
     /**
@@ -1696,15 +1645,63 @@ abstract class ElementScore implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a ChildUser object.
+     *
+     * @param  ChildUser $v
+     * @return $this|\ElementScore The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUser(ChildUser $v = null)
+    {
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
+        }
+
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
+        if ($v !== null) {
+            $v->addElementScore($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildUser object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUser The associated ChildUser object.
+     * @throws PropelException
+     */
+    public function getUser(ConnectionInterface $con = null)
+    {
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addElementScores($this);
+             */
+        }
+
+        return $this->aUser;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
      */
     public function clear()
     {
-        if (null !== $this->aUser) {
-            $this->aUser->removeElementScore($this);
-        }
         if (null !== $this->aExam) {
             $this->aExam->removeElementScore($this);
         }
@@ -1714,11 +1711,14 @@ abstract class ElementScore implements ActiveRecordInterface
         if (null !== $this->aStudent) {
             $this->aStudent->removeElementScore($this);
         }
+        if (null !== $this->aUser) {
+            $this->aUser->removeElementScore($this);
+        }
         $this->examid = null;
         $this->elementid = null;
         $this->studentid = null;
-        $this->elementscore = null;
         $this->user_id = null;
+        $this->elementscore = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -1741,10 +1741,10 @@ abstract class ElementScore implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
-        $this->aUser = null;
         $this->aExam = null;
         $this->aElement = null;
         $this->aStudent = null;
+        $this->aUser = null;
     }
 
     /**

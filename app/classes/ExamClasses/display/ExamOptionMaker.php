@@ -8,7 +8,23 @@
 
 namespace App\classes\ExamClasses\display;
 
-
+/**
+ * DEPRECATED
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * Class ExamOptionMaker
+ * @deprecated
+ * @package App\classes\ExamClasses\display
+ */
 class ExamOptionMaker
 {
     public function all_exams($unlocked_only=false)

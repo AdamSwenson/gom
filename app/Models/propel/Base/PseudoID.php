@@ -1262,6 +1262,7 @@ abstract class PseudoID implements ActiveRecordInterface
         $criteria = ChildPseudoIDQuery::create();
         $criteria->add(PseudoIDTableMap::COL_STUDENTID, $this->studentid);
         $criteria->add(PseudoIDTableMap::COL_EXAMID, $this->examid);
+        $criteria->add(PseudoIDTableMap::COL_USER_ID, $this->user_id);
 
         return $criteria;
     }
@@ -1275,10 +1276,18 @@ abstract class PseudoID implements ActiveRecordInterface
     public function hashCode()
     {
         $validPk = null !== $this->getStudentid() &&
-            null !== $this->getExamid();
+            null !== $this->getExamid() &&
+            null !== $this->getUserId();
 
-        $validPrimaryKeyFKs = 2;
+        $validPrimaryKeyFKs = 3;
         $primaryKeyFKs = [];
+
+        //relation pseudoIDs_fk_69bd79 to table users
+        if ($this->aUser && $hash = spl_object_hash($this->aUser)) {
+            $primaryKeyFKs[] = $hash;
+        } else {
+            $validPrimaryKeyFKs = false;
+        }
 
         //relation pseudoIDs_fk_71c1fe to table exams
         if ($this->aExam && $hash = spl_object_hash($this->aExam)) {
@@ -1313,6 +1322,7 @@ abstract class PseudoID implements ActiveRecordInterface
         $pks = array();
         $pks[0] = $this->getStudentid();
         $pks[1] = $this->getExamid();
+        $pks[2] = $this->getUserId();
 
         return $pks;
     }
@@ -1327,6 +1337,7 @@ abstract class PseudoID implements ActiveRecordInterface
     {
         $this->setStudentid($keys[0]);
         $this->setExamid($keys[1]);
+        $this->setUserId($keys[2]);
     }
 
     /**
@@ -1335,7 +1346,7 @@ abstract class PseudoID implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return (null === $this->getStudentid()) && (null === $this->getExamid());
+        return (null === $this->getStudentid()) && (null === $this->getExamid()) && (null === $this->getUserId());
     }
 
     /**

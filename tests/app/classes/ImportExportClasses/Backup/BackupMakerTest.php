@@ -30,6 +30,9 @@ class BackupMakerTest extends \TestCase {
     }
 
 
+    /**
+     * @group slowTests
+     */
     public function testLoadRecords()
     {
         $this->object->set_exam($this->exam);

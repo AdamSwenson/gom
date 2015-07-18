@@ -9,6 +9,8 @@
 namespace App\classes\ImportExportClasses\StudentUpload;
 
 
+use \App\classes\ImportExportClasses\dao\IImportDaoMock;
+
 class UploaderTest extends \TestCase
 {
 
@@ -29,15 +31,18 @@ class UploaderTest extends \TestCase
     {
         parent::setUp();
         $this->object = new Uploader;
-        $yr = \YearQuery::create()->filterByContent(2015)->findOneOrCreate();
-        $tm = \TermQuery::create()->filterByContent('testterm')->findOneOrCreate();
-        $tc = \TopicQuery::create()->filterByContent('testtopic')->findOneOrCreate();
-        $this->exam = new \Exam();
-        $this->exam->setTopic($tc);
-        $this->exam->setTerm($tm);
-        $this->exam->setYear($yr);
-        $this->exam->save();
+        $this->dao = new IImportDaoMock();
+        $this->object->dao = $this->dao;
 
+//        $yr = \YearQuery::create()->filterByContent(2015)->findOneOrCreate();
+//        $tm = \TermQuery::create()->filterByContent('testterm')->findOneOrCreate();
+//        $tc = \TopicQuery::create()->filterByContent('testtopic')->findOneOrCreate();
+//        $this->exam = new \Exam();
+//        $this->exam->setTopic($tc);
+//        $this->exam->setTerm($tm);
+//        $this->exam->setYear($yr);
+//        $this->exam->save();
+        $this->exam = \ExamQuery::create()->findOne();
         $this->student_name = MD5(microtime());
         $this->kumi_name = MD5(microtime());
         $this->sid = mt_rand(1000000, 9999999);
@@ -128,24 +133,36 @@ class UploaderTest extends \TestCase
     {
         $this->object->set_exam($this->exam);
         $this->object->add_record($this->sid, $this->student_name, $this->kumi_name, $this->email);
+        $this->assertEquals('setExam', $this->dao->called_list[0][0]);
 
-        $db_student = \StudentQuery::create()->filterBySid($this->sid)->findOne();
-        $this->assertEquals($this->sid, $db_student->getSid());
-        $this->assertEquals($this->student_name, $db_student->getStudentname());
-        $this->assertEquals($this->email, $db_student->getEmail());
-
-
-        $db_kumi = \KumiQuery::create()->filterByNickname($this->kumi_name)->findOne();
-        $this->assertEquals($this->exam->getExamyear(), $db_kumi->getYear());
-
-        $db_assign = \StudentClassAssignmentQuery::create()->filterByStudentid($db_student->getId())->find();
-
-        $assigned_classes = array();
-        foreach ($db_assign as $assign) {
-            $k = $assign->getKumi();
-            array_push($assigned_classes, $k->getId());
-        }
-        $this->assertContains($db_kumi->getId(), $assigned_classes);
+        $this->assertEquals('add_record', $this->dao->called);
+        $this->assertNotEmpty($this->dao->called_list[1]);
+        $this->assertEquals('add_record', $this->dao->called_list[1][0]);
+        $this->assertEquals($this->sid, $this->dao->called_list[1][1][0]);
+        $this->assertEquals($this->student_name, $this->dao->called_list[1][1][1]);
+        $this->assertEquals($this->kumi_name, $this->dao->called_list[1][1][2]);
+        $this->assertEquals($this->email, $this->dao->called_list[1][1][3]);
     }
+//        $db_student = \StudentQuery::create()
+//            ->filterByUser($this->user)
+//            ->filterBySid($this->sid)
+//            ->findOne();
+//        $this->assertEquals($this->sid, $db_student->getSid());
+//        $this->assertEquals($this->student_name, $db_student->getStudentname());
+//        $this->assertEquals($this->email, $db_student->getEmail());
+//
+//
+//        $db_kumi = \KumiQuery::create()->filterByNickname($this->kumi_name)->findOne();
+//        $this->assertEquals($this->exam->getExamyear(), $db_kumi->getYear());
+//
+//        $db_assign = \StudentClassAssignmentQuery::create()->filterByStudentid($db_student->getId())->find();
+//
+//        $assigned_classes = array();
+//        foreach ($db_assign as $assign) {
+//            $k = $assign->getKumi();
+//            array_push($assigned_classes, $k->getId());
+//        }
+//        $this->assertContains($db_kumi->getId(), $assigned_classes);
+//    }
 
 }

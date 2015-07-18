@@ -1225,6 +1225,7 @@ abstract class GroupTime implements ActiveRecordInterface
         $criteria = ChildGroupTimeQuery::create();
         $criteria->add(GroupTimeTableMap::COL_EXAMID, $this->examid);
         $criteria->add(GroupTimeTableMap::COL_GROUPID, $this->groupid);
+        $criteria->add(GroupTimeTableMap::COL_USER_ID, $this->user_id);
 
         return $criteria;
     }
@@ -1238,10 +1239,18 @@ abstract class GroupTime implements ActiveRecordInterface
     public function hashCode()
     {
         $validPk = null !== $this->getExamid() &&
-            null !== $this->getGroupid();
+            null !== $this->getGroupid() &&
+            null !== $this->getUserId();
 
-        $validPrimaryKeyFKs = 1;
+        $validPrimaryKeyFKs = 2;
         $primaryKeyFKs = [];
+
+        //relation time_group_fk_69bd79 to table users
+        if ($this->aUser && $hash = spl_object_hash($this->aUser)) {
+            $primaryKeyFKs[] = $hash;
+        } else {
+            $validPrimaryKeyFKs = false;
+        }
 
         //relation time_group_fk_71c1fe to table exams
         if ($this->aExam && $hash = spl_object_hash($this->aExam)) {
@@ -1269,6 +1278,7 @@ abstract class GroupTime implements ActiveRecordInterface
         $pks = array();
         $pks[0] = $this->getExamid();
         $pks[1] = $this->getGroupid();
+        $pks[2] = $this->getUserId();
 
         return $pks;
     }
@@ -1283,6 +1293,7 @@ abstract class GroupTime implements ActiveRecordInterface
     {
         $this->setExamid($keys[0]);
         $this->setGroupid($keys[1]);
+        $this->setUserId($keys[2]);
     }
 
     /**
@@ -1291,7 +1302,7 @@ abstract class GroupTime implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return (null === $this->getExamid()) && (null === $this->getGroupid());
+        return (null === $this->getExamid()) && (null === $this->getGroupid()) && (null === $this->getUserId());
     }
 
     /**

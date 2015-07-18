@@ -2,7 +2,11 @@
 
 namespace Base;
 
+use \ElementAssignment as ChildElementAssignment;
+use \ElementAssignmentQuery as ChildElementAssignmentQuery;
 use \Question as ChildQuestion;
+use \QuestionAssigner as ChildQuestionAssigner;
+use \QuestionAssignerQuery as ChildQuestionAssignerQuery;
 use \QuestionQuery as ChildQuestionQuery;
 use \QuestionScore as ChildQuestionScore;
 use \QuestionScoreQuery as ChildQuestionScoreQuery;
@@ -115,6 +119,18 @@ abstract class Question implements ActiveRecordInterface
     protected $collQuestionScoresPartial;
 
     /**
+     * @var        ObjectCollection|ChildQuestionAssigner[] Collection to store aggregation of ChildQuestionAssigner objects.
+     */
+    protected $collQuestionAssigners;
+    protected $collQuestionAssignersPartial;
+
+    /**
+     * @var        ObjectCollection|ChildElementAssignment[] Collection to store aggregation of ChildElementAssignment objects.
+     */
+    protected $collElementAssignments;
+    protected $collElementAssignmentsPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
@@ -127,6 +143,18 @@ abstract class Question implements ActiveRecordInterface
      * @var ObjectCollection|ChildQuestionScore[]
      */
     protected $questionScoresScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildQuestionAssigner[]
+     */
+    protected $questionAssignersScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildElementAssignment[]
+     */
+    protected $elementAssignmentsScheduledForDeletion = null;
 
     /**
      * Initializes internal state of Base\Question object.
@@ -683,6 +711,10 @@ abstract class Question implements ActiveRecordInterface
             $this->aUser = null;
             $this->collQuestionScores = null;
 
+            $this->collQuestionAssigners = null;
+
+            $this->collElementAssignments = null;
+
         } // if (deep)
     }
 
@@ -828,6 +860,40 @@ abstract class Question implements ActiveRecordInterface
 
             if ($this->collQuestionScores !== null) {
                 foreach ($this->collQuestionScores as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->questionAssignersScheduledForDeletion !== null) {
+                if (!$this->questionAssignersScheduledForDeletion->isEmpty()) {
+                    \QuestionAssignerQuery::create()
+                        ->filterByPrimaryKeys($this->questionAssignersScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->questionAssignersScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collQuestionAssigners !== null) {
+                foreach ($this->collQuestionAssigners as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->elementAssignmentsScheduledForDeletion !== null) {
+                if (!$this->elementAssignmentsScheduledForDeletion->isEmpty()) {
+                    \ElementAssignmentQuery::create()
+                        ->filterByPrimaryKeys($this->elementAssignmentsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->elementAssignmentsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collElementAssignments !== null) {
+                foreach ($this->collElementAssignments as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -1073,6 +1139,36 @@ abstract class Question implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->collQuestionScores->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collQuestionAssigners) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'questionAssigners';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'questionAssigners';
+                        break;
+                    default:
+                        $key = 'QuestionAssigners';
+                }
+
+                $result[$key] = $this->collQuestionAssigners->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collElementAssignments) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'elementAssignments';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'elementXquestionss';
+                        break;
+                    default:
+                        $key = 'ElementAssignments';
+                }
+
+                $result[$key] = $this->collElementAssignments->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1332,6 +1428,18 @@ abstract class Question implements ActiveRecordInterface
                 }
             }
 
+            foreach ($this->getQuestionAssigners() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addQuestionAssigner($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getElementAssignments() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addElementAssignment($relObj->copy($deepCopy));
+                }
+            }
+
         } // if ($deepCopy)
 
         if ($makeNew) {
@@ -1426,6 +1534,12 @@ abstract class Question implements ActiveRecordInterface
     {
         if ('QuestionScore' == $relationName) {
             return $this->initQuestionScores();
+        }
+        if ('QuestionAssigner' == $relationName) {
+            return $this->initQuestionAssigners();
+        }
+        if ('ElementAssignment' == $relationName) {
+            return $this->initElementAssignments();
         }
     }
 
@@ -1726,6 +1840,567 @@ abstract class Question implements ActiveRecordInterface
     }
 
     /**
+     * Clears out the collQuestionAssigners collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addQuestionAssigners()
+     */
+    public function clearQuestionAssigners()
+    {
+        $this->collQuestionAssigners = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collQuestionAssigners collection loaded partially.
+     */
+    public function resetPartialQuestionAssigners($v = true)
+    {
+        $this->collQuestionAssignersPartial = $v;
+    }
+
+    /**
+     * Initializes the collQuestionAssigners collection.
+     *
+     * By default this just sets the collQuestionAssigners collection to an empty array (like clearcollQuestionAssigners());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initQuestionAssigners($overrideExisting = true)
+    {
+        if (null !== $this->collQuestionAssigners && !$overrideExisting) {
+            return;
+        }
+        $this->collQuestionAssigners = new ObjectCollection();
+        $this->collQuestionAssigners->setModel('\QuestionAssigner');
+    }
+
+    /**
+     * Gets an array of ChildQuestionAssigner objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildQuestion is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildQuestionAssigner[] List of ChildQuestionAssigner objects
+     * @throws PropelException
+     */
+    public function getQuestionAssigners(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collQuestionAssignersPartial && !$this->isNew();
+        if (null === $this->collQuestionAssigners || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collQuestionAssigners) {
+                // return empty collection
+                $this->initQuestionAssigners();
+            } else {
+                $collQuestionAssigners = ChildQuestionAssignerQuery::create(null, $criteria)
+                    ->filterByQuestion($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collQuestionAssignersPartial && count($collQuestionAssigners)) {
+                        $this->initQuestionAssigners(false);
+
+                        foreach ($collQuestionAssigners as $obj) {
+                            if (false == $this->collQuestionAssigners->contains($obj)) {
+                                $this->collQuestionAssigners->append($obj);
+                            }
+                        }
+
+                        $this->collQuestionAssignersPartial = true;
+                    }
+
+                    return $collQuestionAssigners;
+                }
+
+                if ($partial && $this->collQuestionAssigners) {
+                    foreach ($this->collQuestionAssigners as $obj) {
+                        if ($obj->isNew()) {
+                            $collQuestionAssigners[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collQuestionAssigners = $collQuestionAssigners;
+                $this->collQuestionAssignersPartial = false;
+            }
+        }
+
+        return $this->collQuestionAssigners;
+    }
+
+    /**
+     * Sets a collection of ChildQuestionAssigner objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $questionAssigners A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildQuestion The current object (for fluent API support)
+     */
+    public function setQuestionAssigners(Collection $questionAssigners, ConnectionInterface $con = null)
+    {
+        /** @var ChildQuestionAssigner[] $questionAssignersToDelete */
+        $questionAssignersToDelete = $this->getQuestionAssigners(new Criteria(), $con)->diff($questionAssigners);
+
+
+        $this->questionAssignersScheduledForDeletion = $questionAssignersToDelete;
+
+        foreach ($questionAssignersToDelete as $questionAssignerRemoved) {
+            $questionAssignerRemoved->setQuestion(null);
+        }
+
+        $this->collQuestionAssigners = null;
+        foreach ($questionAssigners as $questionAssigner) {
+            $this->addQuestionAssigner($questionAssigner);
+        }
+
+        $this->collQuestionAssigners = $questionAssigners;
+        $this->collQuestionAssignersPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related QuestionAssigner objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related QuestionAssigner objects.
+     * @throws PropelException
+     */
+    public function countQuestionAssigners(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collQuestionAssignersPartial && !$this->isNew();
+        if (null === $this->collQuestionAssigners || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collQuestionAssigners) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getQuestionAssigners());
+            }
+
+            $query = ChildQuestionAssignerQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByQuestion($this)
+                ->count($con);
+        }
+
+        return count($this->collQuestionAssigners);
+    }
+
+    /**
+     * Method called to associate a ChildQuestionAssigner object to this object
+     * through the ChildQuestionAssigner foreign key attribute.
+     *
+     * @param  ChildQuestionAssigner $l ChildQuestionAssigner
+     * @return $this|\Question The current object (for fluent API support)
+     */
+    public function addQuestionAssigner(ChildQuestionAssigner $l)
+    {
+        if ($this->collQuestionAssigners === null) {
+            $this->initQuestionAssigners();
+            $this->collQuestionAssignersPartial = true;
+        }
+
+        if (!$this->collQuestionAssigners->contains($l)) {
+            $this->doAddQuestionAssigner($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildQuestionAssigner $questionAssigner The ChildQuestionAssigner object to add.
+     */
+    protected function doAddQuestionAssigner(ChildQuestionAssigner $questionAssigner)
+    {
+        $this->collQuestionAssigners[]= $questionAssigner;
+        $questionAssigner->setQuestion($this);
+    }
+
+    /**
+     * @param  ChildQuestionAssigner $questionAssigner The ChildQuestionAssigner object to remove.
+     * @return $this|ChildQuestion The current object (for fluent API support)
+     */
+    public function removeQuestionAssigner(ChildQuestionAssigner $questionAssigner)
+    {
+        if ($this->getQuestionAssigners()->contains($questionAssigner)) {
+            $pos = $this->collQuestionAssigners->search($questionAssigner);
+            $this->collQuestionAssigners->remove($pos);
+            if (null === $this->questionAssignersScheduledForDeletion) {
+                $this->questionAssignersScheduledForDeletion = clone $this->collQuestionAssigners;
+                $this->questionAssignersScheduledForDeletion->clear();
+            }
+            $this->questionAssignersScheduledForDeletion[]= clone $questionAssigner;
+            $questionAssigner->setQuestion(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Question is new, it will return
+     * an empty collection; or if this Question has previously
+     * been saved, it will retrieve related QuestionAssigners from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Question.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildQuestionAssigner[] List of ChildQuestionAssigner objects
+     */
+    public function getQuestionAssignersJoinExam(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildQuestionAssignerQuery::create(null, $criteria);
+        $query->joinWith('Exam', $joinBehavior);
+
+        return $this->getQuestionAssigners($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Question is new, it will return
+     * an empty collection; or if this Question has previously
+     * been saved, it will retrieve related QuestionAssigners from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Question.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildQuestionAssigner[] List of ChildQuestionAssigner objects
+     */
+    public function getQuestionAssignersJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildQuestionAssignerQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getQuestionAssigners($query, $con);
+    }
+
+    /**
+     * Clears out the collElementAssignments collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addElementAssignments()
+     */
+    public function clearElementAssignments()
+    {
+        $this->collElementAssignments = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collElementAssignments collection loaded partially.
+     */
+    public function resetPartialElementAssignments($v = true)
+    {
+        $this->collElementAssignmentsPartial = $v;
+    }
+
+    /**
+     * Initializes the collElementAssignments collection.
+     *
+     * By default this just sets the collElementAssignments collection to an empty array (like clearcollElementAssignments());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initElementAssignments($overrideExisting = true)
+    {
+        if (null !== $this->collElementAssignments && !$overrideExisting) {
+            return;
+        }
+        $this->collElementAssignments = new ObjectCollection();
+        $this->collElementAssignments->setModel('\ElementAssignment');
+    }
+
+    /**
+     * Gets an array of ChildElementAssignment objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildQuestion is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildElementAssignment[] List of ChildElementAssignment objects
+     * @throws PropelException
+     */
+    public function getElementAssignments(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collElementAssignmentsPartial && !$this->isNew();
+        if (null === $this->collElementAssignments || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collElementAssignments) {
+                // return empty collection
+                $this->initElementAssignments();
+            } else {
+                $collElementAssignments = ChildElementAssignmentQuery::create(null, $criteria)
+                    ->filterByQuestion($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collElementAssignmentsPartial && count($collElementAssignments)) {
+                        $this->initElementAssignments(false);
+
+                        foreach ($collElementAssignments as $obj) {
+                            if (false == $this->collElementAssignments->contains($obj)) {
+                                $this->collElementAssignments->append($obj);
+                            }
+                        }
+
+                        $this->collElementAssignmentsPartial = true;
+                    }
+
+                    return $collElementAssignments;
+                }
+
+                if ($partial && $this->collElementAssignments) {
+                    foreach ($this->collElementAssignments as $obj) {
+                        if ($obj->isNew()) {
+                            $collElementAssignments[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collElementAssignments = $collElementAssignments;
+                $this->collElementAssignmentsPartial = false;
+            }
+        }
+
+        return $this->collElementAssignments;
+    }
+
+    /**
+     * Sets a collection of ChildElementAssignment objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $elementAssignments A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildQuestion The current object (for fluent API support)
+     */
+    public function setElementAssignments(Collection $elementAssignments, ConnectionInterface $con = null)
+    {
+        /** @var ChildElementAssignment[] $elementAssignmentsToDelete */
+        $elementAssignmentsToDelete = $this->getElementAssignments(new Criteria(), $con)->diff($elementAssignments);
+
+
+        $this->elementAssignmentsScheduledForDeletion = $elementAssignmentsToDelete;
+
+        foreach ($elementAssignmentsToDelete as $elementAssignmentRemoved) {
+            $elementAssignmentRemoved->setQuestion(null);
+        }
+
+        $this->collElementAssignments = null;
+        foreach ($elementAssignments as $elementAssignment) {
+            $this->addElementAssignment($elementAssignment);
+        }
+
+        $this->collElementAssignments = $elementAssignments;
+        $this->collElementAssignmentsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related ElementAssignment objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related ElementAssignment objects.
+     * @throws PropelException
+     */
+    public function countElementAssignments(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collElementAssignmentsPartial && !$this->isNew();
+        if (null === $this->collElementAssignments || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collElementAssignments) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getElementAssignments());
+            }
+
+            $query = ChildElementAssignmentQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByQuestion($this)
+                ->count($con);
+        }
+
+        return count($this->collElementAssignments);
+    }
+
+    /**
+     * Method called to associate a ChildElementAssignment object to this object
+     * through the ChildElementAssignment foreign key attribute.
+     *
+     * @param  ChildElementAssignment $l ChildElementAssignment
+     * @return $this|\Question The current object (for fluent API support)
+     */
+    public function addElementAssignment(ChildElementAssignment $l)
+    {
+        if ($this->collElementAssignments === null) {
+            $this->initElementAssignments();
+            $this->collElementAssignmentsPartial = true;
+        }
+
+        if (!$this->collElementAssignments->contains($l)) {
+            $this->doAddElementAssignment($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildElementAssignment $elementAssignment The ChildElementAssignment object to add.
+     */
+    protected function doAddElementAssignment(ChildElementAssignment $elementAssignment)
+    {
+        $this->collElementAssignments[]= $elementAssignment;
+        $elementAssignment->setQuestion($this);
+    }
+
+    /**
+     * @param  ChildElementAssignment $elementAssignment The ChildElementAssignment object to remove.
+     * @return $this|ChildQuestion The current object (for fluent API support)
+     */
+    public function removeElementAssignment(ChildElementAssignment $elementAssignment)
+    {
+        if ($this->getElementAssignments()->contains($elementAssignment)) {
+            $pos = $this->collElementAssignments->search($elementAssignment);
+            $this->collElementAssignments->remove($pos);
+            if (null === $this->elementAssignmentsScheduledForDeletion) {
+                $this->elementAssignmentsScheduledForDeletion = clone $this->collElementAssignments;
+                $this->elementAssignmentsScheduledForDeletion->clear();
+            }
+            $this->elementAssignmentsScheduledForDeletion[]= clone $elementAssignment;
+            $elementAssignment->setQuestion(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Question is new, it will return
+     * an empty collection; or if this Question has previously
+     * been saved, it will retrieve related ElementAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Question.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildElementAssignment[] List of ChildElementAssignment objects
+     */
+    public function getElementAssignmentsJoinElement(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildElementAssignmentQuery::create(null, $criteria);
+        $query->joinWith('Element', $joinBehavior);
+
+        return $this->getElementAssignments($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Question is new, it will return
+     * an empty collection; or if this Question has previously
+     * been saved, it will retrieve related ElementAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Question.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildElementAssignment[] List of ChildElementAssignment objects
+     */
+    public function getElementAssignmentsJoinExam(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildElementAssignmentQuery::create(null, $criteria);
+        $query->joinWith('Exam', $joinBehavior);
+
+        return $this->getElementAssignments($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Question is new, it will return
+     * an empty collection; or if this Question has previously
+     * been saved, it will retrieve related ElementAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Question.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildElementAssignment[] List of ChildElementAssignment objects
+     */
+    public function getElementAssignmentsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildElementAssignmentQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getElementAssignments($query, $con);
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
@@ -1764,9 +2439,21 @@ abstract class Question implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collQuestionAssigners) {
+                foreach ($this->collQuestionAssigners as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collElementAssignments) {
+                foreach ($this->collElementAssignments as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
         $this->collQuestionScores = null;
+        $this->collQuestionAssigners = null;
+        $this->collElementAssignments = null;
         $this->aUser = null;
     }
 

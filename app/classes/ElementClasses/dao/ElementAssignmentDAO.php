@@ -38,26 +38,26 @@ class ElementAssignmentDAO
      */
     public function load_elements(\Exam $exam, \Question $question)
     {
-        $assignments = \ElementAssignmentQuery::create()
-            ->filterByUser($this->user)
-            ->filterByExam($exam)
-            ->filterByQuestion($question)
-            ->find();
-
-        $e = array();
-//        $eq = \ElementQuery::create()
+//        $assignments = \ElementAssignmentQuery::create()
 //            ->filterByUser($this->user)
-//            ->useElementAssignmentQuery();
 //            ->filterByExam($exam)
 //            ->filterByQuestion($question)
-//            ->endUse()
 //            ->find();
-        foreach ($assignments as $j)
-        {
-            array_push($e, $j);
-        }
+//
+//        $e = array();
+    return \ElementQuery::create()
+            ->filterByUser($this->user)
+                ->useElementAssignmentQuery()
+                    ->filterByExam($exam)
+                    ->filterByQuestion($question)
+                ->endUse()
+            ->find();
+//        foreach ($assignments as $j)
+//        {
+//            array_push($e, $j);
+//        }
 
-        return $e;
+//        return $e;
 //        return \ElementAssignmentQuery::create()->filterByExam($exam)->filterByQuestion($question)->find();
     }
 
@@ -76,12 +76,11 @@ class ElementAssignmentDAO
         $element_assign = \ElementAssignmentQuery::create()
             ->filterByUser($this->user)
             ->filterByExam($exam)
-            ->useQuestionQuery()
-            ->useQuery('QuestionAssignerQuery')
-//            ->useQuestionAssignerQuery()
-            ->filterByExam($exam)
-            ->endUse()->with('QuestionAssigner')
-            ->endUse()->with('Question')
+                ->useQuestionQuery()
+                    ->useQuestionAssignerQuery()
+                        ->filterByExam($exam)
+                    ->endUse()->with('QuestionAssigner')
+                ->endUse()->with('Question')
             ->find();
 
         return $element_assign;

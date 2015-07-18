@@ -1,0 +1,34 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class ElementAssignment extends Model
+{
+
+    /**
+     * Associates with user
+     * @param $user_id
+     */
+    public function setUser($user_id)
+    {
+        $this->attributes['user_id'] = $user_id;
+    }
+
+#--------- Foreign keys
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
+
+    public function exam()
+    {
+        return $this->belongsToMany('App\Exam', 'element_assignments');
+    }
+
+    public function elementScores()
+    {
+        return $this->hasMany('App\ElementScore');
+    }
+}

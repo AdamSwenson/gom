@@ -1204,6 +1204,7 @@ abstract class TaggedElement implements ActiveRecordInterface
         $criteria = ChildTaggedElementQuery::create();
         $criteria->add(TaggedElementTableMap::COL_TAG_ID, $this->tag_id);
         $criteria->add(TaggedElementTableMap::COL_ELEMENT_ID, $this->element_id);
+        $criteria->add(TaggedElementTableMap::COL_USER_ID, $this->user_id);
 
         return $criteria;
     }
@@ -1217,10 +1218,18 @@ abstract class TaggedElement implements ActiveRecordInterface
     public function hashCode()
     {
         $validPk = null !== $this->getTagId() &&
-            null !== $this->getElementId();
+            null !== $this->getElementId() &&
+            null !== $this->getUserId();
 
-        $validPrimaryKeyFKs = 2;
+        $validPrimaryKeyFKs = 3;
         $primaryKeyFKs = [];
+
+        //relation tagsXelements_fk_69bd79 to table users
+        if ($this->aUser && $hash = spl_object_hash($this->aUser)) {
+            $primaryKeyFKs[] = $hash;
+        } else {
+            $validPrimaryKeyFKs = false;
+        }
 
         //relation tagsXelements_fk_6bac06 to table tags
         if ($this->aTag && $hash = spl_object_hash($this->aTag)) {
@@ -1255,6 +1264,7 @@ abstract class TaggedElement implements ActiveRecordInterface
         $pks = array();
         $pks[0] = $this->getTagId();
         $pks[1] = $this->getElementId();
+        $pks[2] = $this->getUserId();
 
         return $pks;
     }
@@ -1269,6 +1279,7 @@ abstract class TaggedElement implements ActiveRecordInterface
     {
         $this->setTagId($keys[0]);
         $this->setElementId($keys[1]);
+        $this->setUserId($keys[2]);
     }
 
     /**
@@ -1277,7 +1288,7 @@ abstract class TaggedElement implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return (null === $this->getTagId()) && (null === $this->getElementId());
+        return (null === $this->getTagId()) && (null === $this->getElementId()) && (null === $this->getUserId());
     }
 
     /**
@@ -1414,7 +1425,9 @@ abstract class TaggedElement implements ActiveRecordInterface
     public function getTag(ConnectionInterface $con = null)
     {
         if ($this->aTag === null && ($this->tag_id !== null)) {
-            $this->aTag = ChildTagQuery::create()->findPk($this->tag_id, $con);
+            $this->aTag = ChildTagQuery::create()
+                ->filterByTaggedElement($this) // here
+                ->findOne($con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be

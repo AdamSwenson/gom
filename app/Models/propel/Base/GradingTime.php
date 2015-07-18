@@ -1330,6 +1330,7 @@ abstract class GradingTime implements ActiveRecordInterface
     {
         $criteria = ChildGradingTimeQuery::create();
         $criteria->add(GradingTimeTableMap::COL_ID, $this->id);
+        $criteria->add(GradingTimeTableMap::COL_USER_ID, $this->user_id);
 
         return $criteria;
     }
@@ -1342,10 +1343,18 @@ abstract class GradingTime implements ActiveRecordInterface
      */
     public function hashCode()
     {
-        $validPk = null !== $this->getId();
+        $validPk = null !== $this->getId() &&
+            null !== $this->getUserId();
 
-        $validPrimaryKeyFKs = 0;
+        $validPrimaryKeyFKs = 1;
         $primaryKeyFKs = [];
+
+        //relation time_grading_fk_69bd79 to table users
+        if ($this->aUser && $hash = spl_object_hash($this->aUser)) {
+            $primaryKeyFKs[] = $hash;
+        } else {
+            $validPrimaryKeyFKs = false;
+        }
 
         if ($validPk) {
             return crc32(json_encode($this->getPrimaryKey(), JSON_UNESCAPED_UNICODE));
@@ -1357,23 +1366,29 @@ abstract class GradingTime implements ActiveRecordInterface
     }
 
     /**
-     * Returns the primary key for this object (row).
-     * @return int
+     * Returns the composite primary key for this object.
+     * The array elements will be in same order as specified in XML.
+     * @return array
      */
     public function getPrimaryKey()
     {
-        return $this->getId();
+        $pks = array();
+        $pks[0] = $this->getId();
+        $pks[1] = $this->getUserId();
+
+        return $pks;
     }
 
     /**
-     * Generic method to set the primary key (id column).
+     * Set the [composite] primary key.
      *
-     * @param       int $key Primary key.
+     * @param      array $keys The elements of the composite key (order must match the order in XML file).
      * @return void
      */
-    public function setPrimaryKey($key)
+    public function setPrimaryKey($keys)
     {
-        $this->setId($key);
+        $this->setId($keys[0]);
+        $this->setUserId($keys[1]);
     }
 
     /**
@@ -1382,7 +1397,7 @@ abstract class GradingTime implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return null === $this->getId();
+        return (null === $this->getId()) && (null === $this->getUserId());
     }
 
     /**

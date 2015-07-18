@@ -60,157 +60,157 @@ class CommentPrinterTest extends \TestCase
      */
     public function testQuestion_div_opening()
     {
-        $questionNumber = 2;
-        $result = $this->object->question_div_opening($questionNumber);
-        $expected = "<div id='q" . $questionNumber . "'>";
-        $this->assertXmlStringEqualsXmlString($expected, $result);
+//        $questionNumber = 2;
+//        $result = $this->object->question_div_opening($questionNumber);
+//        $expected = "<div id='q" . $questionNumber . "'>";
+//        $this->assertXmlStringEqualsXmlString($expected, $result);
     }
-
-    /**
-     * @covers OutputClasses\service\CommentPrinter::main_heading
-     */
-    public function testMain_heading()
-    {
-        $questionNumber = 2;
-        $questionTitle = "Test title";
-        $expected = <<<HTML
-        <h1 class='mainHeading'>Q{$questionNumber}: {$questionTitle}</h1>
-HTML;
-        $result = $this->object->main_heading($questionNumber, $questionTitle);
-        $this->assertXmlStringEqualsXmlString($expected, $result);
-    }
-
-    /**
-     * @covers OutputClasses\service\CommentPrinter::paragraph_open
-     */
-    public function testParagraph_open()
-    {
-        $expected = "<p class='stockText generalStock'>";
-        $this->assertXmlStringEqualsXmlString(trim($expected), trim($this->object->paragraph_open()));
-    }
-
-    /**
-     * @covers OutputClasses\service\CommentPrinter::comment_body_list_open
-     */
-    public function testComment_body_list_open()
-    {
-        $questionNumber = 4;
-        $expected = "<p class='commentList' > <ul id='q" . $questionNumber . "Comments'>";
-        $this->assertXmlStringEqualsXmlString(trim($expected), trim($this->object->comment_body_list_open($questionNumber)));
-    }
-
-    /**
-     * @covers OutputClasses\service\CommentPrinter::comment_body_paragraph
-     */
-    public function testComment_body_paragraph()
-    {
-        $subtask = 3;
-        $elementID = 45;
-        $elementScore = 5.54;
-        $content = 'content of test ';
-        $expected = "<li class='subtask{$subtask} commentParagraph' id='el{$elementID}' data='{$elementScore}'>{$content}</li>";
-        $actual = $this->object->comment_body_paragraph($elementID, $subtask, $elementScore, $content);
-        $this->assertXmlStringEqualsXmlString(trim($expected), trim($actual));
-    }
-
-    /**
-     * @covers OutputClasses\service\CommentPrinter::list_close
-     */
-    public function testList_close()
-    {
-        $this->assertXmlStringEqualsXmlString("</ul> </p>", trim($this->object->list_close()));
-    }
-
-    /**
-     * @covers OutputClasses\service\CommentPrinter::reset_comment
-     */
-    public function testReset_comment()
-    {
-        $this->object->comment = 'lots of text here already';
-        $this->assertTrue(count($this->object->comment) > 0);
-        $this->object->reset_comment();
-        $this->assertEmpty($this->object->comment);
-        $this->assertXmlStringEqualsXmlString(1, count($this->object->comment));
-    }
-
-    /**
-     * @covers OutputClasses\service\CommentPrinter::element_chart_div
-     */
-    public function testElement_chart_div()
-    {
-        $elementID = 45;
-        $expected = "<div id='el" . $elementID . "Chart'></div>";
-        $actual = $this->object->element_chart_div($elementID);
-        $this->assertXmlStringEqualsXmlString(trim($expected), trim($actual));
-    }
-
-    /**
-     * @covers OutputClasses\service\CommentPrinter::close_div
-     */
-    public function testClose_div()
-    {
-        $this->assertXmlStringEqualsXmlString("</div>", $this->object->close_div());
-    }
-
-    /**
-     * @covers OutputClasses\service\CommentPrinter::make_opening
-     */
-    public function testMake_opening()
-    {
-        $questionNumber = 4;
-        $questionTitle = "title";
-        $expected = "<div id='q" . $questionNumber . "'>";
-        $expected .= "<h1 class='mainHeading'>Q" . $questionNumber . ": " . $questionTitle . "</h1>";
-        $expected .= "<p class='stockText generalStock'>";
-        $this->object->make_opening($questionNumber, $questionTitle);
-        $this->assertXmlStringEqualsXmlString(trim($expected), trim($this->object->comment));
-    }
-
-    /**
-     * @covers OutputClasses\service\CommentPrinter::make_comment_body
-     */
-    public function testMake_comment_body()
-    {
-        $questionNumber = 1;
-        $expected = '';
-        $expected = "<p class='commentList' > <ul id='q" . $questionNumber . "Comments'>";
-        foreach (self::$q1_expectedcomments as $e) {
-            $expected .= "<li class='subtask{$e['subtask']} commentParagraph' id='el{$e['elementID']}' data='{$e['elementScore']}'>" . $e['content'] . "</li>";
-        }
-        $expected .= "</ul> </p>";
-        $this->object->make_comment_body($questionNumber, self::$q1_expectedcomments);
-        $this->assertXmlStringEqualsXmlString($expected, trim($this->object->comment));
-    }
-
-    /**
-     * @covers OutputClasses\service\CommentPrinter::make_chart_body
-     */
-    public function testMake_chart_body()
-    {
-        $elements = array(array('elementID' => 3), array('elementID' => 4));
-        $expected = "<div id='el3Chart'></div><div id='el4Chart'></div>";
-        $this->object->make_chart_body($elements);
-        $this->assertXmlStringEqualsXmlString($expected, trim($this->object->comment));
-    }
-
-    /**
-     * @covers OutputClasses\service\CommentPrinter::make_closing
-     */
-    public function testMake_closing()
-    {
-        $this->object->make_closing();
-        $this->assertXmlStringEqualsXmlString("</div>", $this->object->comment);
-    }
-
-    /**
-     * @covers OutputClasses\service\CommentPrinter::print_comment
-     */
-    public function testPrint_comment()
-    {
-        $teststring = "testing string";
-        $this->object->comment = $teststring;
-        $this->expectOutputString($teststring);
-        $this->object->print_comment();
-    }
+//
+//    /**
+//     * @covers OutputClasses\service\CommentPrinter::main_heading
+//     */
+//    public function testMain_heading()
+//    {
+//        $questionNumber = 2;
+//        $questionTitle = "Test title";
+//        $expected = <<<HTML
+//        <h1 class='mainHeading'>Q{$questionNumber}: {$questionTitle}</h1>
+//HTML;
+//        $result = $this->object->main_heading($questionNumber, $questionTitle);
+//        $this->assertXmlStringEqualsXmlString($expected, $result);
+//    }
+//
+//    /**
+//     * @covers OutputClasses\service\CommentPrinter::paragraph_open
+//     */
+//    public function testParagraph_open()
+//    {
+//        $expected = "<p class='stockText generalStock'>";
+//        $this->assertXmlStringEqualsXmlString(trim($expected), trim($this->object->paragraph_open()));
+//    }
+//
+//    /**
+//     * @covers OutputClasses\service\CommentPrinter::comment_body_list_open
+//     */
+//    public function testComment_body_list_open()
+//    {
+//        $questionNumber = 4;
+//        $expected = "<p class='commentList' > <ul id='q" . $questionNumber . "Comments'>";
+//        $this->assertXmlStringEqualsXmlString(trim($expected), trim($this->object->comment_body_list_open($questionNumber)));
+//    }
+//
+//    /**
+//     * @covers OutputClasses\service\CommentPrinter::comment_body_paragraph
+//     */
+//    public function testComment_body_paragraph()
+//    {
+//        $subtask = 3;
+//        $elementID = 45;
+//        $elementScore = 5.54;
+//        $content = 'content of test ';
+//        $expected = "<li class='subtask{$subtask} commentParagraph' id='el{$elementID}' data='{$elementScore}'>{$content}</li>";
+//        $actual = $this->object->comment_body_paragraph($elementID, $subtask, $elementScore, $content);
+//        $this->assertXmlStringEqualsXmlString(trim($expected), trim($actual));
+//    }
+//
+//    /**
+//     * @covers OutputClasses\service\CommentPrinter::list_close
+//     */
+//    public function testList_close()
+//    {
+//        $this->assertXmlStringEqualsXmlString("</ul> </p>", trim($this->object->list_close()));
+//    }
+//
+//    /**
+//     * @covers OutputClasses\service\CommentPrinter::reset_comment
+//     */
+//    public function testReset_comment()
+//    {
+//        $this->object->comment = 'lots of text here already';
+//        $this->assertTrue(count($this->object->comment) > 0);
+//        $this->object->reset_comment();
+//        $this->assertEmpty($this->object->comment);
+//        $this->assertXmlStringEqualsXmlString(1, count($this->object->comment));
+//    }
+//
+//    /**
+//     * @covers OutputClasses\service\CommentPrinter::element_chart_div
+//     */
+//    public function testElement_chart_div()
+//    {
+//        $elementID = 45;
+//        $expected = "<div id='el" . $elementID . "Chart'></div>";
+//        $actual = $this->object->element_chart_div($elementID);
+//        $this->assertXmlStringEqualsXmlString(trim($expected), trim($actual));
+//    }
+//
+//    /**
+//     * @covers OutputClasses\service\CommentPrinter::close_div
+//     */
+//    public function testClose_div()
+//    {
+//        $this->assertXmlStringEqualsXmlString("</div>", $this->object->close_div());
+//    }
+//
+//    /**
+//     * @covers OutputClasses\service\CommentPrinter::make_opening
+//     */
+//    public function testMake_opening()
+//    {
+//        $questionNumber = 4;
+//        $questionTitle = "title";
+//        $expected = "<div id='q" . $questionNumber . "'>";
+//        $expected .= "<h1 class='mainHeading'>Q" . $questionNumber . ": " . $questionTitle . "</h1>";
+//        $expected .= "<p class='stockText generalStock'>";
+//        $this->object->make_opening($questionNumber, $questionTitle);
+//        $this->assertXmlStringEqualsXmlString(trim($expected), trim($this->object->comment));
+//    }
+//
+//    /**
+//     * @covers OutputClasses\service\CommentPrinter::make_comment_body
+//     */
+//    public function testMake_comment_body()
+//    {
+//        $questionNumber = 1;
+//        $expected = '';
+//        $expected = "<p class='commentList' > <ul id='q" . $questionNumber . "Comments'>";
+//        foreach (self::$q1_expectedcomments as $e) {
+//            $expected .= "<li class='subtask{$e['subtask']} commentParagraph' id='el{$e['elementID']}' data='{$e['elementScore']}'>" . $e['content'] . "</li>";
+//        }
+//        $expected .= "</ul> </p>";
+//        $this->object->make_comment_body($questionNumber, self::$q1_expectedcomments);
+//        $this->assertXmlStringEqualsXmlString($expected, trim($this->object->comment));
+//    }
+//
+//    /**
+//     * @covers OutputClasses\service\CommentPrinter::make_chart_body
+//     */
+//    public function testMake_chart_body()
+//    {
+//        $elements = array(array('elementID' => 3), array('elementID' => 4));
+//        $expected = "<div id='el3Chart'></div><div id='el4Chart'></div>";
+//        $this->object->make_chart_body($elements);
+//        $this->assertXmlStringEqualsXmlString($expected, trim($this->object->comment));
+//    }
+//
+//    /**
+//     * @covers OutputClasses\service\CommentPrinter::make_closing
+//     */
+//    public function testMake_closing()
+//    {
+//        $this->object->make_closing();
+//        $this->assertXmlStringEqualsXmlString("</div>", $this->object->comment);
+//    }
+//
+//    /**
+//     * @covers OutputClasses\service\CommentPrinter::print_comment
+//     */
+//    public function testPrint_comment()
+//    {
+//        $teststring = "testing string";
+//        $this->object->comment = $teststring;
+//        $this->expectOutputString($teststring);
+//        $this->object->print_comment();
+//    }
 
 }

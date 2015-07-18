@@ -2,8 +2,6 @@
 
 namespace Base;
 
-use \Exam as ChildExam;
-use \ExamQuery as ChildExamQuery;
 use \Topic as ChildTopic;
 use \TopicQuery as ChildTopicQuery;
 use \User as ChildUser;
@@ -17,7 +15,6 @@ use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
-use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
@@ -27,7 +24,7 @@ use Propel\Runtime\Parser\AbstractParser;
 use Propel\Runtime\Util\PropelDateTime;
 
 /**
- * Base class that represents a row from the 'r_examTopics' table.
+ * Base class that represents a row from the 'r_topics' table.
  *
  *
  *
@@ -97,24 +94,12 @@ abstract class Topic implements ActiveRecordInterface
     protected $aUser;
 
     /**
-     * @var        ObjectCollection|ChildExam[] Collection to store aggregation of ChildExam objects.
-     */
-    protected $collExams;
-    protected $collExamsPartial;
-
-    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
      * @var boolean
      */
     protected $alreadyInSave = false;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildExam[]
-     */
-    protected $examsScheduledForDeletion = null;
 
     /**
      * Initializes internal state of Base\Topic object.
@@ -603,8 +588,6 @@ abstract class Topic implements ActiveRecordInterface
         if ($deep) {  // also de-associate any related objects?
 
             $this->aUser = null;
-            $this->collExams = null;
-
         } // if (deep)
     }
 
@@ -739,23 +722,6 @@ abstract class Topic implements ActiveRecordInterface
                 $this->resetModified();
             }
 
-            if ($this->examsScheduledForDeletion !== null) {
-                if (!$this->examsScheduledForDeletion->isEmpty()) {
-                    \ExamQuery::create()
-                        ->filterByPrimaryKeys($this->examsScheduledForDeletion->getPrimaryKeys(false))
-                        ->delete($con);
-                    $this->examsScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collExams !== null) {
-                foreach ($this->collExams as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
             $this->alreadyInSave = false;
 
         }
@@ -792,7 +758,7 @@ abstract class Topic implements ActiveRecordInterface
         }
 
         $sql = sprintf(
-            'INSERT INTO r_examTopics (%s) VALUES (%s)',
+            'INSERT INTO r_topics (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -949,21 +915,6 @@ abstract class Topic implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
-            if (null !== $this->collExams) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'exams';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'examss';
-                        break;
-                    default:
-                        $key = 'Exams';
-                }
-
-                $result[$key] = $this->collExams->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1192,20 +1143,6 @@ abstract class Topic implements ActiveRecordInterface
         $copyObj->setUserId($this->getUserId());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
-
-        if ($deepCopy) {
-            // important: temporarily setNew(false) because this affects the behavior of
-            // the getter/setter methods for fkey referrer objects.
-            $copyObj->setNew(false);
-
-            foreach ($this->getExams() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addExam($relObj->copy($deepCopy));
-                }
-            }
-
-        } // if ($deepCopy)
-
         if ($makeNew) {
             $copyObj->setNew(true);
         }
@@ -1284,315 +1221,6 @@ abstract class Topic implements ActiveRecordInterface
         return $this->aUser;
     }
 
-
-    /**
-     * Initializes a collection based on the name of a relation.
-     * Avoids crafting an 'init[$relationName]s' method name
-     * that wouldn't work when StandardEnglishPluralizer is used.
-     *
-     * @param      string $relationName The name of the relation to initialize
-     * @return void
-     */
-    public function initRelation($relationName)
-    {
-        if ('Exam' == $relationName) {
-            return $this->initExams();
-        }
-    }
-
-    /**
-     * Clears out the collExams collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addExams()
-     */
-    public function clearExams()
-    {
-        $this->collExams = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collExams collection loaded partially.
-     */
-    public function resetPartialExams($v = true)
-    {
-        $this->collExamsPartial = $v;
-    }
-
-    /**
-     * Initializes the collExams collection.
-     *
-     * By default this just sets the collExams collection to an empty array (like clearcollExams());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initExams($overrideExisting = true)
-    {
-        if (null !== $this->collExams && !$overrideExisting) {
-            return;
-        }
-        $this->collExams = new ObjectCollection();
-        $this->collExams->setModel('\Exam');
-    }
-
-    /**
-     * Gets an array of ChildExam objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildTopic is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildExam[] List of ChildExam objects
-     * @throws PropelException
-     */
-    public function getExams(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collExamsPartial && !$this->isNew();
-        if (null === $this->collExams || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collExams) {
-                // return empty collection
-                $this->initExams();
-            } else {
-                $collExams = ChildExamQuery::create(null, $criteria)
-                    ->filterByTopic($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collExamsPartial && count($collExams)) {
-                        $this->initExams(false);
-
-                        foreach ($collExams as $obj) {
-                            if (false == $this->collExams->contains($obj)) {
-                                $this->collExams->append($obj);
-                            }
-                        }
-
-                        $this->collExamsPartial = true;
-                    }
-
-                    return $collExams;
-                }
-
-                if ($partial && $this->collExams) {
-                    foreach ($this->collExams as $obj) {
-                        if ($obj->isNew()) {
-                            $collExams[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collExams = $collExams;
-                $this->collExamsPartial = false;
-            }
-        }
-
-        return $this->collExams;
-    }
-
-    /**
-     * Sets a collection of ChildExam objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $exams A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildTopic The current object (for fluent API support)
-     */
-    public function setExams(Collection $exams, ConnectionInterface $con = null)
-    {
-        /** @var ChildExam[] $examsToDelete */
-        $examsToDelete = $this->getExams(new Criteria(), $con)->diff($exams);
-
-
-        $this->examsScheduledForDeletion = $examsToDelete;
-
-        foreach ($examsToDelete as $examRemoved) {
-            $examRemoved->setTopic(null);
-        }
-
-        $this->collExams = null;
-        foreach ($exams as $exam) {
-            $this->addExam($exam);
-        }
-
-        $this->collExams = $exams;
-        $this->collExamsPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related Exam objects.
-     *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related Exam objects.
-     * @throws PropelException
-     */
-    public function countExams(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collExamsPartial && !$this->isNew();
-        if (null === $this->collExams || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collExams) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getExams());
-            }
-
-            $query = ChildExamQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByTopic($this)
-                ->count($con);
-        }
-
-        return count($this->collExams);
-    }
-
-    /**
-     * Method called to associate a ChildExam object to this object
-     * through the ChildExam foreign key attribute.
-     *
-     * @param  ChildExam $l ChildExam
-     * @return $this|\Topic The current object (for fluent API support)
-     */
-    public function addExam(ChildExam $l)
-    {
-        if ($this->collExams === null) {
-            $this->initExams();
-            $this->collExamsPartial = true;
-        }
-
-        if (!$this->collExams->contains($l)) {
-            $this->doAddExam($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildExam $exam The ChildExam object to add.
-     */
-    protected function doAddExam(ChildExam $exam)
-    {
-        $this->collExams[]= $exam;
-        $exam->setTopic($this);
-    }
-
-    /**
-     * @param  ChildExam $exam The ChildExam object to remove.
-     * @return $this|ChildTopic The current object (for fluent API support)
-     */
-    public function removeExam(ChildExam $exam)
-    {
-        if ($this->getExams()->contains($exam)) {
-            $pos = $this->collExams->search($exam);
-            $this->collExams->remove($pos);
-            if (null === $this->examsScheduledForDeletion) {
-                $this->examsScheduledForDeletion = clone $this->collExams;
-                $this->examsScheduledForDeletion->clear();
-            }
-            $this->examsScheduledForDeletion[]= clone $exam;
-            $exam->setTopic(null);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Topic is new, it will return
-     * an empty collection; or if this Topic has previously
-     * been saved, it will retrieve related Exams from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Topic.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildExam[] List of ChildExam objects
-     */
-    public function getExamsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildExamQuery::create(null, $criteria);
-        $query->joinWith('User', $joinBehavior);
-
-        return $this->getExams($query, $con);
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Topic is new, it will return
-     * an empty collection; or if this Topic has previously
-     * been saved, it will retrieve related Exams from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Topic.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildExam[] List of ChildExam objects
-     */
-    public function getExamsJoinTerm(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildExamQuery::create(null, $criteria);
-        $query->joinWith('Term', $joinBehavior);
-
-        return $this->getExams($query, $con);
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Topic is new, it will return
-     * an empty collection; or if this Topic has previously
-     * been saved, it will retrieve related Exams from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Topic.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildExam[] List of ChildExam objects
-     */
-    public function getExamsJoinYear(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildExamQuery::create(null, $criteria);
-        $query->joinWith('Year', $joinBehavior);
-
-        return $this->getExams($query, $con);
-    }
-
     /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
@@ -1625,14 +1253,8 @@ abstract class Topic implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
-            if ($this->collExams) {
-                foreach ($this->collExams as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
         } // if ($deep)
 
-        $this->collExams = null;
         $this->aUser = null;
     }
 

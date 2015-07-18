@@ -123,10 +123,10 @@ abstract class TagQuery extends ModelCriteria
      * Go fast if the query is untouched.
      *
      * <code>
-     * $obj  = $c->findPk(12, $con);
+     * $obj = $c->findPk(array(12, 34), $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query
+     * @param array[$id, $user_id] $key Primary key to use for the query
      * @param ConnectionInterface $con an optional connection object
      *
      * @return ChildTag|array|mixed the result, formatted by the current formatter
@@ -136,7 +136,7 @@ abstract class TagQuery extends ModelCriteria
         if ($key === null) {
             return null;
         }
-        if ((null !== ($obj = TagTableMap::getInstanceFromPool((string) $key))) && !$this->formatter) {
+        if ((null !== ($obj = TagTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && !$this->formatter) {
             // the object is already in the instance pool
             return $obj;
         }
@@ -166,10 +166,11 @@ abstract class TagQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, tag, user_id, created_at, updated_at FROM tags WHERE id = :p0';
+        $sql = 'SELECT id, tag, user_id, created_at, updated_at FROM tags WHERE id = :p0 AND user_id = :p1';
         try {
             $stmt = $con->prepare($sql);
-            $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
+            $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
+            $stmt->bindValue(':p1', $key[1], PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
             Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -180,7 +181,7 @@ abstract class TagQuery extends ModelCriteria
             /** @var ChildTag $obj */
             $obj = new ChildTag();
             $obj->hydrate($row);
-            TagTableMap::addInstanceToPool($obj, (string) $key);
+            TagTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1])));
         }
         $stmt->closeCursor();
 
@@ -209,7 +210,7 @@ abstract class TagQuery extends ModelCriteria
     /**
      * Find objects by primary key
      * <code>
-     * $objs = $c->findPks(array(12, 56, 832), $con);
+     * $objs = $c->findPks(array(array(12, 56), array(832, 123), array(123, 456)), $con);
      * </code>
      * @param     array $keys Primary keys to use for the query
      * @param     ConnectionInterface $con an optional connection object
@@ -239,8 +240,10 @@ abstract class TagQuery extends ModelCriteria
      */
     public function filterByPrimaryKey($key)
     {
+        $this->addUsingAlias(TagTableMap::COL_ID, $key[0], Criteria::EQUAL);
+        $this->addUsingAlias(TagTableMap::COL_USER_ID, $key[1], Criteria::EQUAL);
 
-        return $this->addUsingAlias(TagTableMap::COL_ID, $key, Criteria::EQUAL);
+        return $this;
     }
 
     /**
@@ -252,8 +255,17 @@ abstract class TagQuery extends ModelCriteria
      */
     public function filterByPrimaryKeys($keys)
     {
+        if (empty($keys)) {
+            return $this->add(null, '1<>1', Criteria::CUSTOM);
+        }
+        foreach ($keys as $key) {
+            $cton0 = $this->getNewCriterion(TagTableMap::COL_ID, $key[0], Criteria::EQUAL);
+            $cton1 = $this->getNewCriterion(TagTableMap::COL_USER_ID, $key[1], Criteria::EQUAL);
+            $cton0->addAnd($cton1);
+            $this->addOr($cton0);
+        }
 
-        return $this->addUsingAlias(TagTableMap::COL_ID, $keys, Criteria::IN);
+        return $this;
     }
 
     /**
@@ -679,6 +691,23 @@ abstract class TagQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query by a related User object
+     * using the tagsXquestions table as cross reference
+     *
+     * @param User $user the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildTagQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = Criteria::EQUAL)
+    {
+        return $this
+            ->useTaggedQuestionQuery()
+            ->filterByUser($user, $comparison)
+            ->endUse();
+    }
+
+    /**
      * Filter the query by a related Question object
      * using the tagsXquestions table as cross reference
      *
@@ -692,6 +721,23 @@ abstract class TagQuery extends ModelCriteria
         return $this
             ->useTaggedQuestionQuery()
             ->filterByQuestion($question, $comparison)
+            ->endUse();
+    }
+
+    /**
+     * Filter the query by a related User object
+     * using the tagsXelements table as cross reference
+     *
+     * @param User $user the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildTagQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = Criteria::EQUAL)
+    {
+        return $this
+            ->useTaggedElementQuery()
+            ->filterByUser($user, $comparison)
             ->endUse();
     }
 
@@ -722,7 +768,9 @@ abstract class TagQuery extends ModelCriteria
     public function prune($tag = null)
     {
         if ($tag) {
-            $this->addUsingAlias(TagTableMap::COL_ID, $tag->getId(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond0', $this->getAliasedColName(TagTableMap::COL_ID), $tag->getId(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond1', $this->getAliasedColName(TagTableMap::COL_USER_ID), $tag->getUserId(), Criteria::NOT_EQUAL);
+            $this->combine(array('pruneCond0', 'pruneCond1'), Criteria::LOGICAL_OR);
         }
 
         return $this;

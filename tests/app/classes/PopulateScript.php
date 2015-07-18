@@ -19,14 +19,14 @@ require ('DbTestAids.php');
 \App\classes\DbTestAids::populate_all();
 echo 'Populate ran';
    //
-        DbTestAids::populate_item_assignments2();
-        DbTestAids::populate_restrictors();
-        DbTestAids::populate_students();
-        DbTestAids::populate_classes();
+//        DbTestAids::populate_item_assignments2();
+//        DbTestAids::populate_restrictors();
+//        DbTestAids::populate_students();
+//        DbTestAids::populate_classes();
 //\classes\DbTestAids::populate_scores();
-        DbTestAids::populate_element_scores();
-        DbTestAids::populate_question_scores();
-        DbTestAids::populate_pseudoids();
-        DbTestAids::populate_times();
+//        DbTestAids::populate_element_scores();
+//        DbTestAids::populate_question_scores();
+//        DbTestAids::populate_pseudoids();
+//        DbTestAids::populate_times();
 
 //\classes\DbTestAids::populate_tags();

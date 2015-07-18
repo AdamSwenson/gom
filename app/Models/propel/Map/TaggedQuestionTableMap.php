@@ -149,7 +149,7 @@ class TaggedQuestionTableMap extends TableMap
         // columns
         $this->addForeignPrimaryKey('tag_id', 'TagId', 'INTEGER' , 'tags', 'id', true, null, null);
         $this->addForeignPrimaryKey('question_id', 'QuestionId', 'INTEGER' , 'questions', 'id', true, null, null);
-        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'users', 'id', true, null, null);
+        $this->addForeignPrimaryKey('user_id', 'UserId', 'INTEGER' , 'users', 'id', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -210,7 +210,7 @@ class TaggedQuestionTableMap extends TableMap
     {
         if (Propel::isInstancePoolingEnabled()) {
             if (null === $key) {
-                $key = serialize(array((string) $obj->getTagId(), (string) $obj->getQuestionId()));
+                $key = serialize(array((string) $obj->getTagId(), (string) $obj->getQuestionId(), (string) $obj->getUserId()));
             } // if key === null
             self::$instances[$key] = $obj;
         }
@@ -230,11 +230,11 @@ class TaggedQuestionTableMap extends TableMap
     {
         if (Propel::isInstancePoolingEnabled() && null !== $value) {
             if (is_object($value) && $value instanceof \TaggedQuestion) {
-                $key = serialize(array((string) $value->getTagId(), (string) $value->getQuestionId()));
+                $key = serialize(array((string) $value->getTagId(), (string) $value->getQuestionId(), (string) $value->getUserId()));
 
-            } elseif (is_array($value) && count($value) === 2) {
+            } elseif (is_array($value) && count($value) === 3) {
                 // assume we've been passed a primary key";
-                $key = serialize(array((string) $value[0], (string) $value[1]));
+                $key = serialize(array((string) $value[0], (string) $value[1], (string) $value[2]));
             } elseif ($value instanceof Criteria) {
                 self::$instances = [];
 
@@ -264,11 +264,11 @@ class TaggedQuestionTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('TagId', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('QuestionId', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('TagId', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('QuestionId', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('TagId', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('QuestionId', TableMap::TYPE_PHPNAME, $indexType)]));
+        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('TagId', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('QuestionId', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)]));
     }
 
     /**
@@ -296,6 +296,11 @@ class TaggedQuestionTableMap extends TableMap
             $indexType == TableMap::TYPE_NUM
                 ? 1 + $offset
                 : self::translateFieldName('QuestionId', TableMap::TYPE_PHPNAME, $indexType)
+        ];
+        $pks[] = (int) $row[
+            $indexType == TableMap::TYPE_NUM
+                ? 2 + $offset
+                : self::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)
         ];
 
         return $pks;
@@ -469,6 +474,7 @@ class TaggedQuestionTableMap extends TableMap
             foreach ($values as $value) {
                 $criterion = $criteria->getNewCriterion(TaggedQuestionTableMap::COL_TAG_ID, $value[0]);
                 $criterion->addAnd($criteria->getNewCriterion(TaggedQuestionTableMap::COL_QUESTION_ID, $value[1]));
+                $criterion->addAnd($criteria->getNewCriterion(TaggedQuestionTableMap::COL_USER_ID, $value[2]));
                 $criteria->addOr($criterion);
             }
         }

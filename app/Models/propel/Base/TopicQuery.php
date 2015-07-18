@@ -16,7 +16,7 @@ use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\PropelException;
 
 /**
- * Base class that represents a query for the 'r_examTopics' table.
+ * Base class that represents a query for the 'r_topics' table.
  *
  *
  *
@@ -38,11 +38,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildTopicQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
  * @method     ChildTopicQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
  *
- * @method     ChildTopicQuery leftJoinExam($relationAlias = null) Adds a LEFT JOIN clause to the query using the Exam relation
- * @method     ChildTopicQuery rightJoinExam($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Exam relation
- * @method     ChildTopicQuery innerJoinExam($relationAlias = null) Adds a INNER JOIN clause to the query using the Exam relation
- *
- * @method     \UserQuery|\ExamQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \UserQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildTopic findOne(ConnectionInterface $con = null) Return the first ChildTopic matching the query
  * @method     ChildTopic findOneOrCreate(ConnectionInterface $con = null) Return the first ChildTopic matching the query, or a new ChildTopic object populated from the query conditions when no match is found
@@ -157,7 +153,7 @@ abstract class TopicQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT content, user_id, created_at, updated_at FROM r_examTopics WHERE content = :p0';
+        $sql = 'SELECT content, user_id, created_at, updated_at FROM r_topics WHERE content = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_STR);
@@ -483,79 +479,6 @@ abstract class TopicQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \Exam object
-     *
-     * @param \Exam|ObjectCollection $exam the related object to use as filter
-     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return ChildTopicQuery The current query, for fluid interface
-     */
-    public function filterByExam($exam, $comparison = null)
-    {
-        if ($exam instanceof \Exam) {
-            return $this
-                ->addUsingAlias(TopicTableMap::COL_CONTENT, $exam->getExamtopic(), $comparison);
-        } elseif ($exam instanceof ObjectCollection) {
-            return $this
-                ->useExamQuery()
-                ->filterByPrimaryKeys($exam->getPrimaryKeys())
-                ->endUse();
-        } else {
-            throw new PropelException('filterByExam() only accepts arguments of type \Exam or Collection');
-        }
-    }
-
-    /**
-     * Adds a JOIN clause to the query using the Exam relation
-     *
-     * @param     string $relationAlias optional alias for the relation
-     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-     *
-     * @return $this|ChildTopicQuery The current query, for fluid interface
-     */
-    public function joinExam($relationAlias = null, $joinType = Criteria::INNER_JOIN)
-    {
-        $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('Exam');
-
-        // create a ModelJoin object for this join
-        $join = new ModelJoin();
-        $join->setJoinType($joinType);
-        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
-        if ($previousJoin = $this->getPreviousJoin()) {
-            $join->setPreviousJoin($previousJoin);
-        }
-
-        // add the ModelJoin to the current object
-        if ($relationAlias) {
-            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
-            $this->addJoinObject($join, $relationAlias);
-        } else {
-            $this->addJoinObject($join, 'Exam');
-        }
-
-        return $this;
-    }
-
-    /**
-     * Use the Exam relation Exam object
-     *
-     * @see useQuery()
-     *
-     * @param     string $relationAlias optional alias for the relation,
-     *                                   to be used as main alias in the secondary query
-     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-     *
-     * @return \ExamQuery A secondary query class using the current class as primary query
-     */
-    public function useExamQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
-    {
-        return $this
-            ->joinExam($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'Exam', '\ExamQuery');
-    }
-
-    /**
      * Exclude object from result
      *
      * @param   ChildTopic $topic Object to remove from the list of results
@@ -572,7 +495,7 @@ abstract class TopicQuery extends ModelCriteria
     }
 
     /**
-     * Deletes all rows from the r_examTopics table.
+     * Deletes all rows from the r_topics table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).

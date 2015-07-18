@@ -3,10 +3,14 @@
 namespace Base;
 
 use \Element as ChildElement;
+use \ElementAssignment as ChildElementAssignment;
+use \ElementAssignmentQuery as ChildElementAssignmentQuery;
 use \ElementQuery as ChildElementQuery;
 use \ElementScore as ChildElementScore;
 use \ElementScoreQuery as ChildElementScoreQuery;
 use \Exam as ChildExam;
+use \ExamClassAssignment as ChildExamClassAssignment;
+use \ExamClassAssignmentQuery as ChildExamClassAssignmentQuery;
 use \ExamInfo as ChildExamInfo;
 use \ExamInfoQuery as ChildExamInfoQuery;
 use \ExamQuery as ChildExamQuery;
@@ -16,13 +20,21 @@ use \GroupTime as ChildGroupTime;
 use \GroupTimeQuery as ChildGroupTimeQuery;
 use \Kumi as ChildKumi;
 use \KumiQuery as ChildKumiQuery;
+use \Preferences as ChildPreferences;
+use \PreferencesQuery as ChildPreferencesQuery;
+use \PseudoID as ChildPseudoID;
+use \PseudoIDQuery as ChildPseudoIDQuery;
 use \Question as ChildQuestion;
+use \QuestionAssigner as ChildQuestionAssigner;
+use \QuestionAssignerQuery as ChildQuestionAssignerQuery;
 use \QuestionQuery as ChildQuestionQuery;
 use \QuestionScore as ChildQuestionScore;
 use \QuestionScoreQuery as ChildQuestionScoreQuery;
 use \StockText as ChildStockText;
 use \StockTextQuery as ChildStockTextQuery;
 use \Student as ChildStudent;
+use \StudentClassAssignment as ChildStudentClassAssignment;
+use \StudentClassAssignmentQuery as ChildStudentClassAssignmentQuery;
 use \StudentQuery as ChildStudentQuery;
 use \Term as ChildTerm;
 use \TermQuery as ChildTermQuery;
@@ -248,6 +260,30 @@ abstract class User implements ActiveRecordInterface
     protected $collExamInfosPartial;
 
     /**
+     * @var        ObjectCollection|ChildQuestionAssigner[] Collection to store aggregation of ChildQuestionAssigner objects.
+     */
+    protected $collQuestionAssigners;
+    protected $collQuestionAssignersPartial;
+
+    /**
+     * @var        ObjectCollection|ChildElementAssignment[] Collection to store aggregation of ChildElementAssignment objects.
+     */
+    protected $collElementAssignments;
+    protected $collElementAssignmentsPartial;
+
+    /**
+     * @var        ObjectCollection|ChildStudentClassAssignment[] Collection to store aggregation of ChildStudentClassAssignment objects.
+     */
+    protected $collStudentClassAssignments;
+    protected $collStudentClassAssignmentsPartial;
+
+    /**
+     * @var        ObjectCollection|ChildExamClassAssignment[] Collection to store aggregation of ChildExamClassAssignment objects.
+     */
+    protected $collExamClassAssignments;
+    protected $collExamClassAssignmentsPartial;
+
+    /**
      * @var        ObjectCollection|ChildGradingTime[] Collection to store aggregation of ChildGradingTime objects.
      */
     protected $collGradingTimes;
@@ -258,6 +294,18 @@ abstract class User implements ActiveRecordInterface
      */
     protected $collGroupTimes;
     protected $collGroupTimesPartial;
+
+    /**
+     * @var        ObjectCollection|ChildPreferences[] Collection to store aggregation of ChildPreferences objects.
+     */
+    protected $collPreferencess;
+    protected $collPreferencessPartial;
+
+    /**
+     * @var        ObjectCollection|ChildPseudoID[] Collection to store aggregation of ChildPseudoID objects.
+     */
+    protected $collPseudoIDs;
+    protected $collPseudoIDsPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -341,6 +389,30 @@ abstract class User implements ActiveRecordInterface
 
     /**
      * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildQuestionAssigner[]
+     */
+    protected $questionAssignersScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildElementAssignment[]
+     */
+    protected $elementAssignmentsScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildStudentClassAssignment[]
+     */
+    protected $studentClassAssignmentsScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildExamClassAssignment[]
+     */
+    protected $examClassAssignmentsScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
      * @var ObjectCollection|ChildGradingTime[]
      */
     protected $gradingTimesScheduledForDeletion = null;
@@ -350,6 +422,18 @@ abstract class User implements ActiveRecordInterface
      * @var ObjectCollection|ChildGroupTime[]
      */
     protected $groupTimesScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildPreferences[]
+     */
+    protected $preferencessScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildPseudoID[]
+     */
+    protected $pseudoIDsScheduledForDeletion = null;
 
     /**
      * Initializes internal state of Base\User object.
@@ -1184,9 +1268,21 @@ abstract class User implements ActiveRecordInterface
 
             $this->collExamInfos = null;
 
+            $this->collQuestionAssigners = null;
+
+            $this->collElementAssignments = null;
+
+            $this->collStudentClassAssignments = null;
+
+            $this->collExamClassAssignments = null;
+
             $this->collGradingTimes = null;
 
             $this->collGroupTimes = null;
+
+            $this->collPreferencess = null;
+
+            $this->collPseudoIDs = null;
 
         } // if (deep)
     }
@@ -1514,6 +1610,74 @@ abstract class User implements ActiveRecordInterface
                 }
             }
 
+            if ($this->questionAssignersScheduledForDeletion !== null) {
+                if (!$this->questionAssignersScheduledForDeletion->isEmpty()) {
+                    \QuestionAssignerQuery::create()
+                        ->filterByPrimaryKeys($this->questionAssignersScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->questionAssignersScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collQuestionAssigners !== null) {
+                foreach ($this->collQuestionAssigners as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->elementAssignmentsScheduledForDeletion !== null) {
+                if (!$this->elementAssignmentsScheduledForDeletion->isEmpty()) {
+                    \ElementAssignmentQuery::create()
+                        ->filterByPrimaryKeys($this->elementAssignmentsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->elementAssignmentsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collElementAssignments !== null) {
+                foreach ($this->collElementAssignments as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->studentClassAssignmentsScheduledForDeletion !== null) {
+                if (!$this->studentClassAssignmentsScheduledForDeletion->isEmpty()) {
+                    \StudentClassAssignmentQuery::create()
+                        ->filterByPrimaryKeys($this->studentClassAssignmentsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->studentClassAssignmentsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collStudentClassAssignments !== null) {
+                foreach ($this->collStudentClassAssignments as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->examClassAssignmentsScheduledForDeletion !== null) {
+                if (!$this->examClassAssignmentsScheduledForDeletion->isEmpty()) {
+                    \ExamClassAssignmentQuery::create()
+                        ->filterByPrimaryKeys($this->examClassAssignmentsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->examClassAssignmentsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collExamClassAssignments !== null) {
+                foreach ($this->collExamClassAssignments as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
             if ($this->gradingTimesScheduledForDeletion !== null) {
                 if (!$this->gradingTimesScheduledForDeletion->isEmpty()) {
                     \GradingTimeQuery::create()
@@ -1542,6 +1706,40 @@ abstract class User implements ActiveRecordInterface
 
             if ($this->collGroupTimes !== null) {
                 foreach ($this->collGroupTimes as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->preferencessScheduledForDeletion !== null) {
+                if (!$this->preferencessScheduledForDeletion->isEmpty()) {
+                    \PreferencesQuery::create()
+                        ->filterByPrimaryKeys($this->preferencessScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->preferencessScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collPreferencess !== null) {
+                foreach ($this->collPreferencess as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->pseudoIDsScheduledForDeletion !== null) {
+                if (!$this->pseudoIDsScheduledForDeletion->isEmpty()) {
+                    \PseudoIDQuery::create()
+                        ->filterByPrimaryKeys($this->pseudoIDsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->pseudoIDsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collPseudoIDs !== null) {
+                foreach ($this->collPseudoIDs as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -1860,7 +2058,7 @@ abstract class User implements ActiveRecordInterface
                         $key = 'topics';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'r_examTopicss';
+                        $key = 'r_topicss';
                         break;
                     default:
                         $key = 'Topics';
@@ -2018,6 +2216,66 @@ abstract class User implements ActiveRecordInterface
 
                 $result[$key] = $this->collExamInfos->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
+            if (null !== $this->collQuestionAssigners) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'questionAssigners';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'questionAssigners';
+                        break;
+                    default:
+                        $key = 'QuestionAssigners';
+                }
+
+                $result[$key] = $this->collQuestionAssigners->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collElementAssignments) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'elementAssignments';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'elementXquestionss';
+                        break;
+                    default:
+                        $key = 'ElementAssignments';
+                }
+
+                $result[$key] = $this->collElementAssignments->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collStudentClassAssignments) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'studentClassAssignments';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'studentsXclassess';
+                        break;
+                    default:
+                        $key = 'StudentClassAssignments';
+                }
+
+                $result[$key] = $this->collStudentClassAssignments->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collExamClassAssignments) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'examClassAssignments';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'examsXclassess';
+                        break;
+                    default:
+                        $key = 'ExamClassAssignments';
+                }
+
+                $result[$key] = $this->collExamClassAssignments->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
             if (null !== $this->collGradingTimes) {
 
                 switch ($keyType) {
@@ -2047,6 +2305,36 @@ abstract class User implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->collGroupTimes->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collPreferencess) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'preferencess';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'preferencess';
+                        break;
+                    default:
+                        $key = 'Preferencess';
+                }
+
+                $result[$key] = $this->collPreferencess->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collPseudoIDs) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'pseudoIDs';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'pseudoIDss';
+                        break;
+                    default:
+                        $key = 'PseudoIDs';
+                }
+
+                $result[$key] = $this->collPseudoIDs->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -2452,6 +2740,30 @@ abstract class User implements ActiveRecordInterface
                 }
             }
 
+            foreach ($this->getQuestionAssigners() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addQuestionAssigner($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getElementAssignments() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addElementAssignment($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getStudentClassAssignments() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addStudentClassAssignment($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getExamClassAssignments() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addExamClassAssignment($relObj->copy($deepCopy));
+                }
+            }
+
             foreach ($this->getGradingTimes() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addGradingTime($relObj->copy($deepCopy));
@@ -2461,6 +2773,18 @@ abstract class User implements ActiveRecordInterface
             foreach ($this->getGroupTimes() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addGroupTime($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getPreferencess() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addPreferences($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getPseudoIDs() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addPseudoID($relObj->copy($deepCopy));
                 }
             }
 
@@ -2541,11 +2865,29 @@ abstract class User implements ActiveRecordInterface
         if ('ExamInfo' == $relationName) {
             return $this->initExamInfos();
         }
+        if ('QuestionAssigner' == $relationName) {
+            return $this->initQuestionAssigners();
+        }
+        if ('ElementAssignment' == $relationName) {
+            return $this->initElementAssignments();
+        }
+        if ('StudentClassAssignment' == $relationName) {
+            return $this->initStudentClassAssignments();
+        }
+        if ('ExamClassAssignment' == $relationName) {
+            return $this->initExamClassAssignments();
+        }
         if ('GradingTime' == $relationName) {
             return $this->initGradingTimes();
         }
         if ('GroupTime' == $relationName) {
             return $this->initGroupTimes();
+        }
+        if ('Preferences' == $relationName) {
+            return $this->initPreferencess();
+        }
+        if ('PseudoID' == $relationName) {
+            return $this->initPseudoIDs();
         }
     }
 
@@ -3419,81 +3761,6 @@ abstract class User implements ActiveRecordInterface
         }
 
         return $this;
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this User is new, it will return
-     * an empty collection; or if this User has previously
-     * been saved, it will retrieve related Exams from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in User.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildExam[] List of ChildExam objects
-     */
-    public function getExamsJoinTerm(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildExamQuery::create(null, $criteria);
-        $query->joinWith('Term', $joinBehavior);
-
-        return $this->getExams($query, $con);
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this User is new, it will return
-     * an empty collection; or if this User has previously
-     * been saved, it will retrieve related Exams from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in User.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildExam[] List of ChildExam objects
-     */
-    public function getExamsJoinTopic(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildExamQuery::create(null, $criteria);
-        $query->joinWith('Topic', $joinBehavior);
-
-        return $this->getExams($query, $con);
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this User is new, it will return
-     * an empty collection; or if this User has previously
-     * been saved, it will retrieve related Exams from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in User.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildExam[] List of ChildExam objects
-     */
-    public function getExamsJoinYear(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildExamQuery::create(null, $criteria);
-        $query->joinWith('Year', $joinBehavior);
-
-        return $this->getExams($query, $con);
     }
 
     /**
@@ -5441,6 +5708,1103 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
+     * Clears out the collQuestionAssigners collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addQuestionAssigners()
+     */
+    public function clearQuestionAssigners()
+    {
+        $this->collQuestionAssigners = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collQuestionAssigners collection loaded partially.
+     */
+    public function resetPartialQuestionAssigners($v = true)
+    {
+        $this->collQuestionAssignersPartial = $v;
+    }
+
+    /**
+     * Initializes the collQuestionAssigners collection.
+     *
+     * By default this just sets the collQuestionAssigners collection to an empty array (like clearcollQuestionAssigners());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initQuestionAssigners($overrideExisting = true)
+    {
+        if (null !== $this->collQuestionAssigners && !$overrideExisting) {
+            return;
+        }
+        $this->collQuestionAssigners = new ObjectCollection();
+        $this->collQuestionAssigners->setModel('\QuestionAssigner');
+    }
+
+    /**
+     * Gets an array of ChildQuestionAssigner objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildQuestionAssigner[] List of ChildQuestionAssigner objects
+     * @throws PropelException
+     */
+    public function getQuestionAssigners(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collQuestionAssignersPartial && !$this->isNew();
+        if (null === $this->collQuestionAssigners || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collQuestionAssigners) {
+                // return empty collection
+                $this->initQuestionAssigners();
+            } else {
+                $collQuestionAssigners = ChildQuestionAssignerQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collQuestionAssignersPartial && count($collQuestionAssigners)) {
+                        $this->initQuestionAssigners(false);
+
+                        foreach ($collQuestionAssigners as $obj) {
+                            if (false == $this->collQuestionAssigners->contains($obj)) {
+                                $this->collQuestionAssigners->append($obj);
+                            }
+                        }
+
+                        $this->collQuestionAssignersPartial = true;
+                    }
+
+                    return $collQuestionAssigners;
+                }
+
+                if ($partial && $this->collQuestionAssigners) {
+                    foreach ($this->collQuestionAssigners as $obj) {
+                        if ($obj->isNew()) {
+                            $collQuestionAssigners[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collQuestionAssigners = $collQuestionAssigners;
+                $this->collQuestionAssignersPartial = false;
+            }
+        }
+
+        return $this->collQuestionAssigners;
+    }
+
+    /**
+     * Sets a collection of ChildQuestionAssigner objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $questionAssigners A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setQuestionAssigners(Collection $questionAssigners, ConnectionInterface $con = null)
+    {
+        /** @var ChildQuestionAssigner[] $questionAssignersToDelete */
+        $questionAssignersToDelete = $this->getQuestionAssigners(new Criteria(), $con)->diff($questionAssigners);
+
+
+        $this->questionAssignersScheduledForDeletion = $questionAssignersToDelete;
+
+        foreach ($questionAssignersToDelete as $questionAssignerRemoved) {
+            $questionAssignerRemoved->setUser(null);
+        }
+
+        $this->collQuestionAssigners = null;
+        foreach ($questionAssigners as $questionAssigner) {
+            $this->addQuestionAssigner($questionAssigner);
+        }
+
+        $this->collQuestionAssigners = $questionAssigners;
+        $this->collQuestionAssignersPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related QuestionAssigner objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related QuestionAssigner objects.
+     * @throws PropelException
+     */
+    public function countQuestionAssigners(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collQuestionAssignersPartial && !$this->isNew();
+        if (null === $this->collQuestionAssigners || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collQuestionAssigners) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getQuestionAssigners());
+            }
+
+            $query = ChildQuestionAssignerQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collQuestionAssigners);
+    }
+
+    /**
+     * Method called to associate a ChildQuestionAssigner object to this object
+     * through the ChildQuestionAssigner foreign key attribute.
+     *
+     * @param  ChildQuestionAssigner $l ChildQuestionAssigner
+     * @return $this|\User The current object (for fluent API support)
+     */
+    public function addQuestionAssigner(ChildQuestionAssigner $l)
+    {
+        if ($this->collQuestionAssigners === null) {
+            $this->initQuestionAssigners();
+            $this->collQuestionAssignersPartial = true;
+        }
+
+        if (!$this->collQuestionAssigners->contains($l)) {
+            $this->doAddQuestionAssigner($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildQuestionAssigner $questionAssigner The ChildQuestionAssigner object to add.
+     */
+    protected function doAddQuestionAssigner(ChildQuestionAssigner $questionAssigner)
+    {
+        $this->collQuestionAssigners[]= $questionAssigner;
+        $questionAssigner->setUser($this);
+    }
+
+    /**
+     * @param  ChildQuestionAssigner $questionAssigner The ChildQuestionAssigner object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removeQuestionAssigner(ChildQuestionAssigner $questionAssigner)
+    {
+        if ($this->getQuestionAssigners()->contains($questionAssigner)) {
+            $pos = $this->collQuestionAssigners->search($questionAssigner);
+            $this->collQuestionAssigners->remove($pos);
+            if (null === $this->questionAssignersScheduledForDeletion) {
+                $this->questionAssignersScheduledForDeletion = clone $this->collQuestionAssigners;
+                $this->questionAssignersScheduledForDeletion->clear();
+            }
+            $this->questionAssignersScheduledForDeletion[]= clone $questionAssigner;
+            $questionAssigner->setUser(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related QuestionAssigners from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildQuestionAssigner[] List of ChildQuestionAssigner objects
+     */
+    public function getQuestionAssignersJoinExam(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildQuestionAssignerQuery::create(null, $criteria);
+        $query->joinWith('Exam', $joinBehavior);
+
+        return $this->getQuestionAssigners($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related QuestionAssigners from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildQuestionAssigner[] List of ChildQuestionAssigner objects
+     */
+    public function getQuestionAssignersJoinQuestion(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildQuestionAssignerQuery::create(null, $criteria);
+        $query->joinWith('Question', $joinBehavior);
+
+        return $this->getQuestionAssigners($query, $con);
+    }
+
+    /**
+     * Clears out the collElementAssignments collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addElementAssignments()
+     */
+    public function clearElementAssignments()
+    {
+        $this->collElementAssignments = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collElementAssignments collection loaded partially.
+     */
+    public function resetPartialElementAssignments($v = true)
+    {
+        $this->collElementAssignmentsPartial = $v;
+    }
+
+    /**
+     * Initializes the collElementAssignments collection.
+     *
+     * By default this just sets the collElementAssignments collection to an empty array (like clearcollElementAssignments());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initElementAssignments($overrideExisting = true)
+    {
+        if (null !== $this->collElementAssignments && !$overrideExisting) {
+            return;
+        }
+        $this->collElementAssignments = new ObjectCollection();
+        $this->collElementAssignments->setModel('\ElementAssignment');
+    }
+
+    /**
+     * Gets an array of ChildElementAssignment objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildElementAssignment[] List of ChildElementAssignment objects
+     * @throws PropelException
+     */
+    public function getElementAssignments(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collElementAssignmentsPartial && !$this->isNew();
+        if (null === $this->collElementAssignments || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collElementAssignments) {
+                // return empty collection
+                $this->initElementAssignments();
+            } else {
+                $collElementAssignments = ChildElementAssignmentQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collElementAssignmentsPartial && count($collElementAssignments)) {
+                        $this->initElementAssignments(false);
+
+                        foreach ($collElementAssignments as $obj) {
+                            if (false == $this->collElementAssignments->contains($obj)) {
+                                $this->collElementAssignments->append($obj);
+                            }
+                        }
+
+                        $this->collElementAssignmentsPartial = true;
+                    }
+
+                    return $collElementAssignments;
+                }
+
+                if ($partial && $this->collElementAssignments) {
+                    foreach ($this->collElementAssignments as $obj) {
+                        if ($obj->isNew()) {
+                            $collElementAssignments[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collElementAssignments = $collElementAssignments;
+                $this->collElementAssignmentsPartial = false;
+            }
+        }
+
+        return $this->collElementAssignments;
+    }
+
+    /**
+     * Sets a collection of ChildElementAssignment objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $elementAssignments A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setElementAssignments(Collection $elementAssignments, ConnectionInterface $con = null)
+    {
+        /** @var ChildElementAssignment[] $elementAssignmentsToDelete */
+        $elementAssignmentsToDelete = $this->getElementAssignments(new Criteria(), $con)->diff($elementAssignments);
+
+
+        $this->elementAssignmentsScheduledForDeletion = $elementAssignmentsToDelete;
+
+        foreach ($elementAssignmentsToDelete as $elementAssignmentRemoved) {
+            $elementAssignmentRemoved->setUser(null);
+        }
+
+        $this->collElementAssignments = null;
+        foreach ($elementAssignments as $elementAssignment) {
+            $this->addElementAssignment($elementAssignment);
+        }
+
+        $this->collElementAssignments = $elementAssignments;
+        $this->collElementAssignmentsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related ElementAssignment objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related ElementAssignment objects.
+     * @throws PropelException
+     */
+    public function countElementAssignments(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collElementAssignmentsPartial && !$this->isNew();
+        if (null === $this->collElementAssignments || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collElementAssignments) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getElementAssignments());
+            }
+
+            $query = ChildElementAssignmentQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collElementAssignments);
+    }
+
+    /**
+     * Method called to associate a ChildElementAssignment object to this object
+     * through the ChildElementAssignment foreign key attribute.
+     *
+     * @param  ChildElementAssignment $l ChildElementAssignment
+     * @return $this|\User The current object (for fluent API support)
+     */
+    public function addElementAssignment(ChildElementAssignment $l)
+    {
+        if ($this->collElementAssignments === null) {
+            $this->initElementAssignments();
+            $this->collElementAssignmentsPartial = true;
+        }
+
+        if (!$this->collElementAssignments->contains($l)) {
+            $this->doAddElementAssignment($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildElementAssignment $elementAssignment The ChildElementAssignment object to add.
+     */
+    protected function doAddElementAssignment(ChildElementAssignment $elementAssignment)
+    {
+        $this->collElementAssignments[]= $elementAssignment;
+        $elementAssignment->setUser($this);
+    }
+
+    /**
+     * @param  ChildElementAssignment $elementAssignment The ChildElementAssignment object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removeElementAssignment(ChildElementAssignment $elementAssignment)
+    {
+        if ($this->getElementAssignments()->contains($elementAssignment)) {
+            $pos = $this->collElementAssignments->search($elementAssignment);
+            $this->collElementAssignments->remove($pos);
+            if (null === $this->elementAssignmentsScheduledForDeletion) {
+                $this->elementAssignmentsScheduledForDeletion = clone $this->collElementAssignments;
+                $this->elementAssignmentsScheduledForDeletion->clear();
+            }
+            $this->elementAssignmentsScheduledForDeletion[]= clone $elementAssignment;
+            $elementAssignment->setUser(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related ElementAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildElementAssignment[] List of ChildElementAssignment objects
+     */
+    public function getElementAssignmentsJoinQuestion(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildElementAssignmentQuery::create(null, $criteria);
+        $query->joinWith('Question', $joinBehavior);
+
+        return $this->getElementAssignments($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related ElementAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildElementAssignment[] List of ChildElementAssignment objects
+     */
+    public function getElementAssignmentsJoinElement(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildElementAssignmentQuery::create(null, $criteria);
+        $query->joinWith('Element', $joinBehavior);
+
+        return $this->getElementAssignments($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related ElementAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildElementAssignment[] List of ChildElementAssignment objects
+     */
+    public function getElementAssignmentsJoinExam(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildElementAssignmentQuery::create(null, $criteria);
+        $query->joinWith('Exam', $joinBehavior);
+
+        return $this->getElementAssignments($query, $con);
+    }
+
+    /**
+     * Clears out the collStudentClassAssignments collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addStudentClassAssignments()
+     */
+    public function clearStudentClassAssignments()
+    {
+        $this->collStudentClassAssignments = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collStudentClassAssignments collection loaded partially.
+     */
+    public function resetPartialStudentClassAssignments($v = true)
+    {
+        $this->collStudentClassAssignmentsPartial = $v;
+    }
+
+    /**
+     * Initializes the collStudentClassAssignments collection.
+     *
+     * By default this just sets the collStudentClassAssignments collection to an empty array (like clearcollStudentClassAssignments());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initStudentClassAssignments($overrideExisting = true)
+    {
+        if (null !== $this->collStudentClassAssignments && !$overrideExisting) {
+            return;
+        }
+        $this->collStudentClassAssignments = new ObjectCollection();
+        $this->collStudentClassAssignments->setModel('\StudentClassAssignment');
+    }
+
+    /**
+     * Gets an array of ChildStudentClassAssignment objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildStudentClassAssignment[] List of ChildStudentClassAssignment objects
+     * @throws PropelException
+     */
+    public function getStudentClassAssignments(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collStudentClassAssignmentsPartial && !$this->isNew();
+        if (null === $this->collStudentClassAssignments || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collStudentClassAssignments) {
+                // return empty collection
+                $this->initStudentClassAssignments();
+            } else {
+                $collStudentClassAssignments = ChildStudentClassAssignmentQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collStudentClassAssignmentsPartial && count($collStudentClassAssignments)) {
+                        $this->initStudentClassAssignments(false);
+
+                        foreach ($collStudentClassAssignments as $obj) {
+                            if (false == $this->collStudentClassAssignments->contains($obj)) {
+                                $this->collStudentClassAssignments->append($obj);
+                            }
+                        }
+
+                        $this->collStudentClassAssignmentsPartial = true;
+                    }
+
+                    return $collStudentClassAssignments;
+                }
+
+                if ($partial && $this->collStudentClassAssignments) {
+                    foreach ($this->collStudentClassAssignments as $obj) {
+                        if ($obj->isNew()) {
+                            $collStudentClassAssignments[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collStudentClassAssignments = $collStudentClassAssignments;
+                $this->collStudentClassAssignmentsPartial = false;
+            }
+        }
+
+        return $this->collStudentClassAssignments;
+    }
+
+    /**
+     * Sets a collection of ChildStudentClassAssignment objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $studentClassAssignments A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setStudentClassAssignments(Collection $studentClassAssignments, ConnectionInterface $con = null)
+    {
+        /** @var ChildStudentClassAssignment[] $studentClassAssignmentsToDelete */
+        $studentClassAssignmentsToDelete = $this->getStudentClassAssignments(new Criteria(), $con)->diff($studentClassAssignments);
+
+
+        $this->studentClassAssignmentsScheduledForDeletion = $studentClassAssignmentsToDelete;
+
+        foreach ($studentClassAssignmentsToDelete as $studentClassAssignmentRemoved) {
+            $studentClassAssignmentRemoved->setUser(null);
+        }
+
+        $this->collStudentClassAssignments = null;
+        foreach ($studentClassAssignments as $studentClassAssignment) {
+            $this->addStudentClassAssignment($studentClassAssignment);
+        }
+
+        $this->collStudentClassAssignments = $studentClassAssignments;
+        $this->collStudentClassAssignmentsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related StudentClassAssignment objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related StudentClassAssignment objects.
+     * @throws PropelException
+     */
+    public function countStudentClassAssignments(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collStudentClassAssignmentsPartial && !$this->isNew();
+        if (null === $this->collStudentClassAssignments || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collStudentClassAssignments) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getStudentClassAssignments());
+            }
+
+            $query = ChildStudentClassAssignmentQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collStudentClassAssignments);
+    }
+
+    /**
+     * Method called to associate a ChildStudentClassAssignment object to this object
+     * through the ChildStudentClassAssignment foreign key attribute.
+     *
+     * @param  ChildStudentClassAssignment $l ChildStudentClassAssignment
+     * @return $this|\User The current object (for fluent API support)
+     */
+    public function addStudentClassAssignment(ChildStudentClassAssignment $l)
+    {
+        if ($this->collStudentClassAssignments === null) {
+            $this->initStudentClassAssignments();
+            $this->collStudentClassAssignmentsPartial = true;
+        }
+
+        if (!$this->collStudentClassAssignments->contains($l)) {
+            $this->doAddStudentClassAssignment($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildStudentClassAssignment $studentClassAssignment The ChildStudentClassAssignment object to add.
+     */
+    protected function doAddStudentClassAssignment(ChildStudentClassAssignment $studentClassAssignment)
+    {
+        $this->collStudentClassAssignments[]= $studentClassAssignment;
+        $studentClassAssignment->setUser($this);
+    }
+
+    /**
+     * @param  ChildStudentClassAssignment $studentClassAssignment The ChildStudentClassAssignment object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removeStudentClassAssignment(ChildStudentClassAssignment $studentClassAssignment)
+    {
+        if ($this->getStudentClassAssignments()->contains($studentClassAssignment)) {
+            $pos = $this->collStudentClassAssignments->search($studentClassAssignment);
+            $this->collStudentClassAssignments->remove($pos);
+            if (null === $this->studentClassAssignmentsScheduledForDeletion) {
+                $this->studentClassAssignmentsScheduledForDeletion = clone $this->collStudentClassAssignments;
+                $this->studentClassAssignmentsScheduledForDeletion->clear();
+            }
+            $this->studentClassAssignmentsScheduledForDeletion[]= clone $studentClassAssignment;
+            $studentClassAssignment->setUser(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related StudentClassAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildStudentClassAssignment[] List of ChildStudentClassAssignment objects
+     */
+    public function getStudentClassAssignmentsJoinStudent(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildStudentClassAssignmentQuery::create(null, $criteria);
+        $query->joinWith('Student', $joinBehavior);
+
+        return $this->getStudentClassAssignments($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related StudentClassAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildStudentClassAssignment[] List of ChildStudentClassAssignment objects
+     */
+    public function getStudentClassAssignmentsJoinKumi(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildStudentClassAssignmentQuery::create(null, $criteria);
+        $query->joinWith('Kumi', $joinBehavior);
+
+        return $this->getStudentClassAssignments($query, $con);
+    }
+
+    /**
+     * Clears out the collExamClassAssignments collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addExamClassAssignments()
+     */
+    public function clearExamClassAssignments()
+    {
+        $this->collExamClassAssignments = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collExamClassAssignments collection loaded partially.
+     */
+    public function resetPartialExamClassAssignments($v = true)
+    {
+        $this->collExamClassAssignmentsPartial = $v;
+    }
+
+    /**
+     * Initializes the collExamClassAssignments collection.
+     *
+     * By default this just sets the collExamClassAssignments collection to an empty array (like clearcollExamClassAssignments());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initExamClassAssignments($overrideExisting = true)
+    {
+        if (null !== $this->collExamClassAssignments && !$overrideExisting) {
+            return;
+        }
+        $this->collExamClassAssignments = new ObjectCollection();
+        $this->collExamClassAssignments->setModel('\ExamClassAssignment');
+    }
+
+    /**
+     * Gets an array of ChildExamClassAssignment objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildExamClassAssignment[] List of ChildExamClassAssignment objects
+     * @throws PropelException
+     */
+    public function getExamClassAssignments(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collExamClassAssignmentsPartial && !$this->isNew();
+        if (null === $this->collExamClassAssignments || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collExamClassAssignments) {
+                // return empty collection
+                $this->initExamClassAssignments();
+            } else {
+                $collExamClassAssignments = ChildExamClassAssignmentQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collExamClassAssignmentsPartial && count($collExamClassAssignments)) {
+                        $this->initExamClassAssignments(false);
+
+                        foreach ($collExamClassAssignments as $obj) {
+                            if (false == $this->collExamClassAssignments->contains($obj)) {
+                                $this->collExamClassAssignments->append($obj);
+                            }
+                        }
+
+                        $this->collExamClassAssignmentsPartial = true;
+                    }
+
+                    return $collExamClassAssignments;
+                }
+
+                if ($partial && $this->collExamClassAssignments) {
+                    foreach ($this->collExamClassAssignments as $obj) {
+                        if ($obj->isNew()) {
+                            $collExamClassAssignments[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collExamClassAssignments = $collExamClassAssignments;
+                $this->collExamClassAssignmentsPartial = false;
+            }
+        }
+
+        return $this->collExamClassAssignments;
+    }
+
+    /**
+     * Sets a collection of ChildExamClassAssignment objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $examClassAssignments A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setExamClassAssignments(Collection $examClassAssignments, ConnectionInterface $con = null)
+    {
+        /** @var ChildExamClassAssignment[] $examClassAssignmentsToDelete */
+        $examClassAssignmentsToDelete = $this->getExamClassAssignments(new Criteria(), $con)->diff($examClassAssignments);
+
+
+        $this->examClassAssignmentsScheduledForDeletion = $examClassAssignmentsToDelete;
+
+        foreach ($examClassAssignmentsToDelete as $examClassAssignmentRemoved) {
+            $examClassAssignmentRemoved->setUser(null);
+        }
+
+        $this->collExamClassAssignments = null;
+        foreach ($examClassAssignments as $examClassAssignment) {
+            $this->addExamClassAssignment($examClassAssignment);
+        }
+
+        $this->collExamClassAssignments = $examClassAssignments;
+        $this->collExamClassAssignmentsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related ExamClassAssignment objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related ExamClassAssignment objects.
+     * @throws PropelException
+     */
+    public function countExamClassAssignments(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collExamClassAssignmentsPartial && !$this->isNew();
+        if (null === $this->collExamClassAssignments || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collExamClassAssignments) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getExamClassAssignments());
+            }
+
+            $query = ChildExamClassAssignmentQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collExamClassAssignments);
+    }
+
+    /**
+     * Method called to associate a ChildExamClassAssignment object to this object
+     * through the ChildExamClassAssignment foreign key attribute.
+     *
+     * @param  ChildExamClassAssignment $l ChildExamClassAssignment
+     * @return $this|\User The current object (for fluent API support)
+     */
+    public function addExamClassAssignment(ChildExamClassAssignment $l)
+    {
+        if ($this->collExamClassAssignments === null) {
+            $this->initExamClassAssignments();
+            $this->collExamClassAssignmentsPartial = true;
+        }
+
+        if (!$this->collExamClassAssignments->contains($l)) {
+            $this->doAddExamClassAssignment($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildExamClassAssignment $examClassAssignment The ChildExamClassAssignment object to add.
+     */
+    protected function doAddExamClassAssignment(ChildExamClassAssignment $examClassAssignment)
+    {
+        $this->collExamClassAssignments[]= $examClassAssignment;
+        $examClassAssignment->setUser($this);
+    }
+
+    /**
+     * @param  ChildExamClassAssignment $examClassAssignment The ChildExamClassAssignment object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removeExamClassAssignment(ChildExamClassAssignment $examClassAssignment)
+    {
+        if ($this->getExamClassAssignments()->contains($examClassAssignment)) {
+            $pos = $this->collExamClassAssignments->search($examClassAssignment);
+            $this->collExamClassAssignments->remove($pos);
+            if (null === $this->examClassAssignmentsScheduledForDeletion) {
+                $this->examClassAssignmentsScheduledForDeletion = clone $this->collExamClassAssignments;
+                $this->examClassAssignmentsScheduledForDeletion->clear();
+            }
+            $this->examClassAssignmentsScheduledForDeletion[]= clone $examClassAssignment;
+            $examClassAssignment->setUser(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related ExamClassAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildExamClassAssignment[] List of ChildExamClassAssignment objects
+     */
+    public function getExamClassAssignmentsJoinExam(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildExamClassAssignmentQuery::create(null, $criteria);
+        $query->joinWith('Exam', $joinBehavior);
+
+        return $this->getExamClassAssignments($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related ExamClassAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildExamClassAssignment[] List of ChildExamClassAssignment objects
+     */
+    public function getExamClassAssignmentsJoinKumi(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildExamClassAssignmentQuery::create(null, $criteria);
+        $query->joinWith('Kumi', $joinBehavior);
+
+        return $this->getExamClassAssignments($query, $con);
+    }
+
+    /**
      * Clears out the collGradingTimes collection
      *
      * This does not modify the database; however, it will remove any associated objects, causing
@@ -5557,7 +6921,10 @@ abstract class User implements ActiveRecordInterface
         $gradingTimesToDelete = $this->getGradingTimes(new Criteria(), $con)->diff($gradingTimes);
 
 
-        $this->gradingTimesScheduledForDeletion = $gradingTimesToDelete;
+        //since at least one column in the foreign key is at the same time a PK
+        //we can not just set a PK to NULL in the lines below. We have to store
+        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
+        $this->gradingTimesScheduledForDeletion = clone $gradingTimesToDelete;
 
         foreach ($gradingTimesToDelete as $gradingTimeRemoved) {
             $gradingTimeRemoved->setUser(null);
@@ -5825,7 +7192,10 @@ abstract class User implements ActiveRecordInterface
         $groupTimesToDelete = $this->getGroupTimes(new Criteria(), $con)->diff($groupTimes);
 
 
-        $this->groupTimesScheduledForDeletion = $groupTimesToDelete;
+        //since at least one column in the foreign key is at the same time a PK
+        //we can not just set a PK to NULL in the lines below. We have to store
+        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
+        $this->groupTimesScheduledForDeletion = clone $groupTimesToDelete;
 
         foreach ($groupTimesToDelete as $groupTimeRemoved) {
             $groupTimeRemoved->setUser(null);
@@ -5952,6 +7322,495 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
+     * Clears out the collPreferencess collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addPreferencess()
+     */
+    public function clearPreferencess()
+    {
+        $this->collPreferencess = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collPreferencess collection loaded partially.
+     */
+    public function resetPartialPreferencess($v = true)
+    {
+        $this->collPreferencessPartial = $v;
+    }
+
+    /**
+     * Initializes the collPreferencess collection.
+     *
+     * By default this just sets the collPreferencess collection to an empty array (like clearcollPreferencess());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initPreferencess($overrideExisting = true)
+    {
+        if (null !== $this->collPreferencess && !$overrideExisting) {
+            return;
+        }
+        $this->collPreferencess = new ObjectCollection();
+        $this->collPreferencess->setModel('\Preferences');
+    }
+
+    /**
+     * Gets an array of ChildPreferences objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildPreferences[] List of ChildPreferences objects
+     * @throws PropelException
+     */
+    public function getPreferencess(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPreferencessPartial && !$this->isNew();
+        if (null === $this->collPreferencess || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collPreferencess) {
+                // return empty collection
+                $this->initPreferencess();
+            } else {
+                $collPreferencess = ChildPreferencesQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collPreferencessPartial && count($collPreferencess)) {
+                        $this->initPreferencess(false);
+
+                        foreach ($collPreferencess as $obj) {
+                            if (false == $this->collPreferencess->contains($obj)) {
+                                $this->collPreferencess->append($obj);
+                            }
+                        }
+
+                        $this->collPreferencessPartial = true;
+                    }
+
+                    return $collPreferencess;
+                }
+
+                if ($partial && $this->collPreferencess) {
+                    foreach ($this->collPreferencess as $obj) {
+                        if ($obj->isNew()) {
+                            $collPreferencess[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collPreferencess = $collPreferencess;
+                $this->collPreferencessPartial = false;
+            }
+        }
+
+        return $this->collPreferencess;
+    }
+
+    /**
+     * Sets a collection of ChildPreferences objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $preferencess A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setPreferencess(Collection $preferencess, ConnectionInterface $con = null)
+    {
+        /** @var ChildPreferences[] $preferencessToDelete */
+        $preferencessToDelete = $this->getPreferencess(new Criteria(), $con)->diff($preferencess);
+
+
+        $this->preferencessScheduledForDeletion = $preferencessToDelete;
+
+        foreach ($preferencessToDelete as $preferencesRemoved) {
+            $preferencesRemoved->setUser(null);
+        }
+
+        $this->collPreferencess = null;
+        foreach ($preferencess as $preferences) {
+            $this->addPreferences($preferences);
+        }
+
+        $this->collPreferencess = $preferencess;
+        $this->collPreferencessPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Preferences objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Preferences objects.
+     * @throws PropelException
+     */
+    public function countPreferencess(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPreferencessPartial && !$this->isNew();
+        if (null === $this->collPreferencess || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collPreferencess) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getPreferencess());
+            }
+
+            $query = ChildPreferencesQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collPreferencess);
+    }
+
+    /**
+     * Method called to associate a ChildPreferences object to this object
+     * through the ChildPreferences foreign key attribute.
+     *
+     * @param  ChildPreferences $l ChildPreferences
+     * @return $this|\User The current object (for fluent API support)
+     */
+    public function addPreferences(ChildPreferences $l)
+    {
+        if ($this->collPreferencess === null) {
+            $this->initPreferencess();
+            $this->collPreferencessPartial = true;
+        }
+
+        if (!$this->collPreferencess->contains($l)) {
+            $this->doAddPreferences($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildPreferences $preferences The ChildPreferences object to add.
+     */
+    protected function doAddPreferences(ChildPreferences $preferences)
+    {
+        $this->collPreferencess[]= $preferences;
+        $preferences->setUser($this);
+    }
+
+    /**
+     * @param  ChildPreferences $preferences The ChildPreferences object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removePreferences(ChildPreferences $preferences)
+    {
+        if ($this->getPreferencess()->contains($preferences)) {
+            $pos = $this->collPreferencess->search($preferences);
+            $this->collPreferencess->remove($pos);
+            if (null === $this->preferencessScheduledForDeletion) {
+                $this->preferencessScheduledForDeletion = clone $this->collPreferencess;
+                $this->preferencessScheduledForDeletion->clear();
+            }
+            $this->preferencessScheduledForDeletion[]= clone $preferences;
+            $preferences->setUser(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Clears out the collPseudoIDs collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addPseudoIDs()
+     */
+    public function clearPseudoIDs()
+    {
+        $this->collPseudoIDs = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collPseudoIDs collection loaded partially.
+     */
+    public function resetPartialPseudoIDs($v = true)
+    {
+        $this->collPseudoIDsPartial = $v;
+    }
+
+    /**
+     * Initializes the collPseudoIDs collection.
+     *
+     * By default this just sets the collPseudoIDs collection to an empty array (like clearcollPseudoIDs());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initPseudoIDs($overrideExisting = true)
+    {
+        if (null !== $this->collPseudoIDs && !$overrideExisting) {
+            return;
+        }
+        $this->collPseudoIDs = new ObjectCollection();
+        $this->collPseudoIDs->setModel('\PseudoID');
+    }
+
+    /**
+     * Gets an array of ChildPseudoID objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildPseudoID[] List of ChildPseudoID objects
+     * @throws PropelException
+     */
+    public function getPseudoIDs(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPseudoIDsPartial && !$this->isNew();
+        if (null === $this->collPseudoIDs || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collPseudoIDs) {
+                // return empty collection
+                $this->initPseudoIDs();
+            } else {
+                $collPseudoIDs = ChildPseudoIDQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collPseudoIDsPartial && count($collPseudoIDs)) {
+                        $this->initPseudoIDs(false);
+
+                        foreach ($collPseudoIDs as $obj) {
+                            if (false == $this->collPseudoIDs->contains($obj)) {
+                                $this->collPseudoIDs->append($obj);
+                            }
+                        }
+
+                        $this->collPseudoIDsPartial = true;
+                    }
+
+                    return $collPseudoIDs;
+                }
+
+                if ($partial && $this->collPseudoIDs) {
+                    foreach ($this->collPseudoIDs as $obj) {
+                        if ($obj->isNew()) {
+                            $collPseudoIDs[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collPseudoIDs = $collPseudoIDs;
+                $this->collPseudoIDsPartial = false;
+            }
+        }
+
+        return $this->collPseudoIDs;
+    }
+
+    /**
+     * Sets a collection of ChildPseudoID objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $pseudoIDs A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setPseudoIDs(Collection $pseudoIDs, ConnectionInterface $con = null)
+    {
+        /** @var ChildPseudoID[] $pseudoIDsToDelete */
+        $pseudoIDsToDelete = $this->getPseudoIDs(new Criteria(), $con)->diff($pseudoIDs);
+
+
+        //since at least one column in the foreign key is at the same time a PK
+        //we can not just set a PK to NULL in the lines below. We have to store
+        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
+        $this->pseudoIDsScheduledForDeletion = clone $pseudoIDsToDelete;
+
+        foreach ($pseudoIDsToDelete as $pseudoIDRemoved) {
+            $pseudoIDRemoved->setUser(null);
+        }
+
+        $this->collPseudoIDs = null;
+        foreach ($pseudoIDs as $pseudoID) {
+            $this->addPseudoID($pseudoID);
+        }
+
+        $this->collPseudoIDs = $pseudoIDs;
+        $this->collPseudoIDsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related PseudoID objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related PseudoID objects.
+     * @throws PropelException
+     */
+    public function countPseudoIDs(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPseudoIDsPartial && !$this->isNew();
+        if (null === $this->collPseudoIDs || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collPseudoIDs) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getPseudoIDs());
+            }
+
+            $query = ChildPseudoIDQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collPseudoIDs);
+    }
+
+    /**
+     * Method called to associate a ChildPseudoID object to this object
+     * through the ChildPseudoID foreign key attribute.
+     *
+     * @param  ChildPseudoID $l ChildPseudoID
+     * @return $this|\User The current object (for fluent API support)
+     */
+    public function addPseudoID(ChildPseudoID $l)
+    {
+        if ($this->collPseudoIDs === null) {
+            $this->initPseudoIDs();
+            $this->collPseudoIDsPartial = true;
+        }
+
+        if (!$this->collPseudoIDs->contains($l)) {
+            $this->doAddPseudoID($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildPseudoID $pseudoID The ChildPseudoID object to add.
+     */
+    protected function doAddPseudoID(ChildPseudoID $pseudoID)
+    {
+        $this->collPseudoIDs[]= $pseudoID;
+        $pseudoID->setUser($this);
+    }
+
+    /**
+     * @param  ChildPseudoID $pseudoID The ChildPseudoID object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removePseudoID(ChildPseudoID $pseudoID)
+    {
+        if ($this->getPseudoIDs()->contains($pseudoID)) {
+            $pos = $this->collPseudoIDs->search($pseudoID);
+            $this->collPseudoIDs->remove($pos);
+            if (null === $this->pseudoIDsScheduledForDeletion) {
+                $this->pseudoIDsScheduledForDeletion = clone $this->collPseudoIDs;
+                $this->pseudoIDsScheduledForDeletion->clear();
+            }
+            $this->pseudoIDsScheduledForDeletion[]= clone $pseudoID;
+            $pseudoID->setUser(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related PseudoIDs from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildPseudoID[] List of ChildPseudoID objects
+     */
+    public function getPseudoIDsJoinExam(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildPseudoIDQuery::create(null, $criteria);
+        $query->joinWith('Exam', $joinBehavior);
+
+        return $this->getPseudoIDs($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related PseudoIDs from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildPseudoID[] List of ChildPseudoID objects
+     */
+    public function getPseudoIDsJoinStudent(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildPseudoIDQuery::create(null, $criteria);
+        $query->joinWith('Student', $joinBehavior);
+
+        return $this->getPseudoIDs($query, $con);
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
@@ -6050,6 +7909,26 @@ abstract class User implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collQuestionAssigners) {
+                foreach ($this->collQuestionAssigners as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collElementAssignments) {
+                foreach ($this->collElementAssignments as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collStudentClassAssignments) {
+                foreach ($this->collStudentClassAssignments as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collExamClassAssignments) {
+                foreach ($this->collExamClassAssignments as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collGradingTimes) {
                 foreach ($this->collGradingTimes as $o) {
                     $o->clearAllReferences($deep);
@@ -6057,6 +7936,16 @@ abstract class User implements ActiveRecordInterface
             }
             if ($this->collGroupTimes) {
                 foreach ($this->collGroupTimes as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collPreferencess) {
+                foreach ($this->collPreferencess as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collPseudoIDs) {
+                foreach ($this->collPseudoIDs as $o) {
                     $o->clearAllReferences($deep);
                 }
             }
@@ -6074,8 +7963,14 @@ abstract class User implements ActiveRecordInterface
         $this->collQuestionScores = null;
         $this->collElementScores = null;
         $this->collExamInfos = null;
+        $this->collQuestionAssigners = null;
+        $this->collElementAssignments = null;
+        $this->collStudentClassAssignments = null;
+        $this->collExamClassAssignments = null;
         $this->collGradingTimes = null;
         $this->collGroupTimes = null;
+        $this->collPreferencess = null;
+        $this->collPseudoIDs = null;
     }
 
     /**

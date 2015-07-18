@@ -38,11 +38,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildTermQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
  * @method     ChildTermQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
  *
- * @method     ChildTermQuery leftJoinExam($relationAlias = null) Adds a LEFT JOIN clause to the query using the Exam relation
- * @method     ChildTermQuery rightJoinExam($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Exam relation
- * @method     ChildTermQuery innerJoinExam($relationAlias = null) Adds a INNER JOIN clause to the query using the Exam relation
- *
- * @method     \UserQuery|\ExamQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \UserQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildTerm findOne(ConnectionInterface $con = null) Return the first ChildTerm matching the query
  * @method     ChildTerm findOneOrCreate(ConnectionInterface $con = null) Return the first ChildTerm matching the query, or a new ChildTerm object populated from the query conditions when no match is found
@@ -480,79 +476,6 @@ abstract class TermQuery extends ModelCriteria
         return $this
             ->joinUser($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
-    }
-
-    /**
-     * Filter the query by a related \Exam object
-     *
-     * @param \Exam|ObjectCollection $exam the related object to use as filter
-     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return ChildTermQuery The current query, for fluid interface
-     */
-    public function filterByExam($exam, $comparison = null)
-    {
-        if ($exam instanceof \Exam) {
-            return $this
-                ->addUsingAlias(TermTableMap::COL_CONTENT, $exam->getExamterm(), $comparison);
-        } elseif ($exam instanceof ObjectCollection) {
-            return $this
-                ->useExamQuery()
-                ->filterByPrimaryKeys($exam->getPrimaryKeys())
-                ->endUse();
-        } else {
-            throw new PropelException('filterByExam() only accepts arguments of type \Exam or Collection');
-        }
-    }
-
-    /**
-     * Adds a JOIN clause to the query using the Exam relation
-     *
-     * @param     string $relationAlias optional alias for the relation
-     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-     *
-     * @return $this|ChildTermQuery The current query, for fluid interface
-     */
-    public function joinExam($relationAlias = null, $joinType = Criteria::INNER_JOIN)
-    {
-        $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('Exam');
-
-        // create a ModelJoin object for this join
-        $join = new ModelJoin();
-        $join->setJoinType($joinType);
-        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
-        if ($previousJoin = $this->getPreviousJoin()) {
-            $join->setPreviousJoin($previousJoin);
-        }
-
-        // add the ModelJoin to the current object
-        if ($relationAlias) {
-            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
-            $this->addJoinObject($join, $relationAlias);
-        } else {
-            $this->addJoinObject($join, 'Exam');
-        }
-
-        return $this;
-    }
-
-    /**
-     * Use the Exam relation Exam object
-     *
-     * @see useQuery()
-     *
-     * @param     string $relationAlias optional alias for the relation,
-     *                                   to be used as main alias in the secondary query
-     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-     *
-     * @return \ExamQuery A secondary query class using the current class as primary query
-     */
-    public function useExamQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
-    {
-        return $this
-            ->joinExam($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'Exam', '\ExamQuery');
     }
 
     /**

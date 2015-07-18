@@ -48,7 +48,11 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildElementQuery rightJoinElementScore($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ElementScore relation
  * @method     ChildElementQuery innerJoinElementScore($relationAlias = null) Adds a INNER JOIN clause to the query using the ElementScore relation
  *
- * @method     \UserQuery|\ElementScoreQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildElementQuery leftJoinElementAssignment($relationAlias = null) Adds a LEFT JOIN clause to the query using the ElementAssignment relation
+ * @method     ChildElementQuery rightJoinElementAssignment($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ElementAssignment relation
+ * @method     ChildElementQuery innerJoinElementAssignment($relationAlias = null) Adds a INNER JOIN clause to the query using the ElementAssignment relation
+ *
+ * @method     \UserQuery|\ElementScoreQuery|\ElementAssignmentQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildElement findOne(ConnectionInterface $con = null) Return the first ChildElement matching the query
  * @method     ChildElement findOneOrCreate(ConnectionInterface $con = null) Return the first ChildElement matching the query, or a new ChildElement object populated from the query conditions when no match is found
@@ -667,6 +671,79 @@ abstract class ElementQuery extends ModelCriteria
         return $this
             ->joinElementScore($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'ElementScore', '\ElementScoreQuery');
+    }
+
+    /**
+     * Filter the query by a related \ElementAssignment object
+     *
+     * @param \ElementAssignment|ObjectCollection $elementAssignment the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildElementQuery The current query, for fluid interface
+     */
+    public function filterByElementAssignment($elementAssignment, $comparison = null)
+    {
+        if ($elementAssignment instanceof \ElementAssignment) {
+            return $this
+                ->addUsingAlias(ElementTableMap::COL_ID, $elementAssignment->getElementid(), $comparison);
+        } elseif ($elementAssignment instanceof ObjectCollection) {
+            return $this
+                ->useElementAssignmentQuery()
+                ->filterByPrimaryKeys($elementAssignment->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByElementAssignment() only accepts arguments of type \ElementAssignment or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the ElementAssignment relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildElementQuery The current query, for fluid interface
+     */
+    public function joinElementAssignment($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('ElementAssignment');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'ElementAssignment');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the ElementAssignment relation ElementAssignment object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \ElementAssignmentQuery A secondary query class using the current class as primary query
+     */
+    public function useElementAssignmentQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinElementAssignment($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'ElementAssignment', '\ElementAssignmentQuery');
     }
 
     /**

@@ -128,10 +128,10 @@ abstract class PseudoIDQuery extends ModelCriteria
      * Go fast if the query is untouched.
      *
      * <code>
-     * $obj = $c->findPk(array(12, 34), $con);
+     * $obj = $c->findPk(array(12, 34, 56), $con);
      * </code>
      *
-     * @param array[$studentID, $examID] $key Primary key to use for the query
+     * @param array[$studentID, $examID, $user_id] $key Primary key to use for the query
      * @param ConnectionInterface $con an optional connection object
      *
      * @return ChildPseudoID|array|mixed the result, formatted by the current formatter
@@ -141,7 +141,7 @@ abstract class PseudoIDQuery extends ModelCriteria
         if ($key === null) {
             return null;
         }
-        if ((null !== ($obj = PseudoIDTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && !$this->formatter) {
+        if ((null !== ($obj = PseudoIDTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1], (string) $key[2]))))) && !$this->formatter) {
             // the object is already in the instance pool
             return $obj;
         }
@@ -171,11 +171,12 @@ abstract class PseudoIDQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT studentID, examID, pseudoID, user_id, created_at, updated_at FROM pseudoIDs WHERE studentID = :p0 AND examID = :p1';
+        $sql = 'SELECT studentID, examID, pseudoID, user_id, created_at, updated_at FROM pseudoIDs WHERE studentID = :p0 AND examID = :p1 AND user_id = :p2';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
             $stmt->bindValue(':p1', $key[1], PDO::PARAM_INT);
+            $stmt->bindValue(':p2', $key[2], PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
             Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -186,7 +187,7 @@ abstract class PseudoIDQuery extends ModelCriteria
             /** @var ChildPseudoID $obj */
             $obj = new ChildPseudoID();
             $obj->hydrate($row);
-            PseudoIDTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1])));
+            PseudoIDTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1], (string) $key[2])));
         }
         $stmt->closeCursor();
 
@@ -247,6 +248,7 @@ abstract class PseudoIDQuery extends ModelCriteria
     {
         $this->addUsingAlias(PseudoIDTableMap::COL_STUDENTID, $key[0], Criteria::EQUAL);
         $this->addUsingAlias(PseudoIDTableMap::COL_EXAMID, $key[1], Criteria::EQUAL);
+        $this->addUsingAlias(PseudoIDTableMap::COL_USER_ID, $key[2], Criteria::EQUAL);
 
         return $this;
     }
@@ -267,6 +269,8 @@ abstract class PseudoIDQuery extends ModelCriteria
             $cton0 = $this->getNewCriterion(PseudoIDTableMap::COL_STUDENTID, $key[0], Criteria::EQUAL);
             $cton1 = $this->getNewCriterion(PseudoIDTableMap::COL_EXAMID, $key[1], Criteria::EQUAL);
             $cton0->addAnd($cton1);
+            $cton2 = $this->getNewCriterion(PseudoIDTableMap::COL_USER_ID, $key[2], Criteria::EQUAL);
+            $cton0->addAnd($cton2);
             $this->addOr($cton0);
         }
 
@@ -760,7 +764,8 @@ abstract class PseudoIDQuery extends ModelCriteria
         if ($pseudoID) {
             $this->addCond('pruneCond0', $this->getAliasedColName(PseudoIDTableMap::COL_STUDENTID), $pseudoID->getStudentid(), Criteria::NOT_EQUAL);
             $this->addCond('pruneCond1', $this->getAliasedColName(PseudoIDTableMap::COL_EXAMID), $pseudoID->getExamid(), Criteria::NOT_EQUAL);
-            $this->combine(array('pruneCond0', 'pruneCond1'), Criteria::LOGICAL_OR);
+            $this->addCond('pruneCond2', $this->getAliasedColName(PseudoIDTableMap::COL_USER_ID), $pseudoID->getUserId(), Criteria::NOT_EQUAL);
+            $this->combine(array('pruneCond0', 'pruneCond1', 'pruneCond2'), Criteria::LOGICAL_OR);
         }
 
         return $this;

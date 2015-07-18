@@ -123,10 +123,10 @@ abstract class TaggedQuestionQuery extends ModelCriteria
      * Go fast if the query is untouched.
      *
      * <code>
-     * $obj = $c->findPk(array(12, 34), $con);
+     * $obj = $c->findPk(array(12, 34, 56), $con);
      * </code>
      *
-     * @param array[$tag_id, $question_id] $key Primary key to use for the query
+     * @param array[$tag_id, $question_id, $user_id] $key Primary key to use for the query
      * @param ConnectionInterface $con an optional connection object
      *
      * @return ChildTaggedQuestion|array|mixed the result, formatted by the current formatter
@@ -136,7 +136,7 @@ abstract class TaggedQuestionQuery extends ModelCriteria
         if ($key === null) {
             return null;
         }
-        if ((null !== ($obj = TaggedQuestionTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && !$this->formatter) {
+        if ((null !== ($obj = TaggedQuestionTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1], (string) $key[2]))))) && !$this->formatter) {
             // the object is already in the instance pool
             return $obj;
         }
@@ -166,11 +166,12 @@ abstract class TaggedQuestionQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT tag_id, question_id, user_id, created_at, updated_at FROM tagsXquestions WHERE tag_id = :p0 AND question_id = :p1';
+        $sql = 'SELECT tag_id, question_id, user_id, created_at, updated_at FROM tagsXquestions WHERE tag_id = :p0 AND question_id = :p1 AND user_id = :p2';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
             $stmt->bindValue(':p1', $key[1], PDO::PARAM_INT);
+            $stmt->bindValue(':p2', $key[2], PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
             Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -181,7 +182,7 @@ abstract class TaggedQuestionQuery extends ModelCriteria
             /** @var ChildTaggedQuestion $obj */
             $obj = new ChildTaggedQuestion();
             $obj->hydrate($row);
-            TaggedQuestionTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1])));
+            TaggedQuestionTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1], (string) $key[2])));
         }
         $stmt->closeCursor();
 
@@ -242,6 +243,7 @@ abstract class TaggedQuestionQuery extends ModelCriteria
     {
         $this->addUsingAlias(TaggedQuestionTableMap::COL_TAG_ID, $key[0], Criteria::EQUAL);
         $this->addUsingAlias(TaggedQuestionTableMap::COL_QUESTION_ID, $key[1], Criteria::EQUAL);
+        $this->addUsingAlias(TaggedQuestionTableMap::COL_USER_ID, $key[2], Criteria::EQUAL);
 
         return $this;
     }
@@ -262,6 +264,8 @@ abstract class TaggedQuestionQuery extends ModelCriteria
             $cton0 = $this->getNewCriterion(TaggedQuestionTableMap::COL_TAG_ID, $key[0], Criteria::EQUAL);
             $cton1 = $this->getNewCriterion(TaggedQuestionTableMap::COL_QUESTION_ID, $key[1], Criteria::EQUAL);
             $cton0->addAnd($cton1);
+            $cton2 = $this->getNewCriterion(TaggedQuestionTableMap::COL_USER_ID, $key[2], Criteria::EQUAL);
+            $cton0->addAnd($cton2);
             $this->addOr($cton0);
         }
 
@@ -581,7 +585,7 @@ abstract class TaggedQuestionQuery extends ModelCriteria
             }
 
             return $this
-                ->addUsingAlias(TaggedQuestionTableMap::COL_TAG_ID, $tag->toKeyValue('PrimaryKey', 'Id'), $comparison);
+                ->addUsingAlias(TaggedQuestionTableMap::COL_TAG_ID, $tag->toKeyValue('Id', 'Id'), $comparison);
         } else {
             throw new PropelException('filterByTag() only accepts arguments of type \Tag or Collection');
         }
@@ -658,7 +662,7 @@ abstract class TaggedQuestionQuery extends ModelCriteria
             }
 
             return $this
-                ->addUsingAlias(TaggedQuestionTableMap::COL_QUESTION_ID, $question->toKeyValue('PrimaryKey', 'Id'), $comparison);
+                ->addUsingAlias(TaggedQuestionTableMap::COL_QUESTION_ID, $question->toKeyValue('Id', 'Id'), $comparison);
         } else {
             throw new PropelException('filterByQuestion() only accepts arguments of type \Question or Collection');
         }
@@ -726,7 +730,8 @@ abstract class TaggedQuestionQuery extends ModelCriteria
         if ($taggedQuestion) {
             $this->addCond('pruneCond0', $this->getAliasedColName(TaggedQuestionTableMap::COL_TAG_ID), $taggedQuestion->getTagId(), Criteria::NOT_EQUAL);
             $this->addCond('pruneCond1', $this->getAliasedColName(TaggedQuestionTableMap::COL_QUESTION_ID), $taggedQuestion->getQuestionId(), Criteria::NOT_EQUAL);
-            $this->combine(array('pruneCond0', 'pruneCond1'), Criteria::LOGICAL_OR);
+            $this->addCond('pruneCond2', $this->getAliasedColName(TaggedQuestionTableMap::COL_USER_ID), $taggedQuestion->getUserId(), Criteria::NOT_EQUAL);
+            $this->combine(array('pruneCond0', 'pruneCond1', 'pruneCond2'), Criteria::LOGICAL_OR);
         }
 
         return $this;

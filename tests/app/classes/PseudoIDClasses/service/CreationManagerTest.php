@@ -68,7 +68,7 @@ class CreationManagerTest extends \TestCase
     public function testLoad_student_dao()
     {
         $this->object->load_student_dao($this->student_dao);
-        $this->assertAttributeInstanceOf('App\classes\StudentClasses\dao\IStudentLoader', 'student_dao', $this->object);
+        $this->assertAttributeInstanceOf('App\classes\StudentClasses\dao\IStudentDao', 'student_dao', $this->object);
     }
 
     /**

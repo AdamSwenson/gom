@@ -178,6 +178,20 @@ class QuestionTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'QuestionScores', false);
+        $this->addRelation('QuestionAssigner', '\\QuestionAssigner', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':questionID',
+    1 => ':id',
+  ),
+), null, null, 'QuestionAssigners', false);
+        $this->addRelation('ElementAssignment', '\\ElementAssignment', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':questionID',
+    1 => ':id',
+  ),
+), null, null, 'ElementAssignments', false);
     } // buildRelations()
 
     /**

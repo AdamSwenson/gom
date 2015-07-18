@@ -296,6 +296,34 @@ class UserTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'ExamInfos', false);
+        $this->addRelation('QuestionAssigner', '\\QuestionAssigner', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, 'QuestionAssigners', false);
+        $this->addRelation('ElementAssignment', '\\ElementAssignment', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, 'ElementAssignments', false);
+        $this->addRelation('StudentClassAssignment', '\\StudentClassAssignment', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, 'StudentClassAssignments', false);
+        $this->addRelation('ExamClassAssignment', '\\ExamClassAssignment', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, 'ExamClassAssignments', false);
         $this->addRelation('GradingTime', '\\GradingTime', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
@@ -310,6 +338,20 @@ class UserTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'GroupTimes', false);
+        $this->addRelation('Preferences', '\\Preferences', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, 'Preferencess', false);
+        $this->addRelation('PseudoID', '\\PseudoID', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, 'PseudoIDs', false);
     } // buildRelations()
 
     /**

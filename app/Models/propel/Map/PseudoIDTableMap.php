@@ -154,7 +154,7 @@ class PseudoIDTableMap extends TableMap
         $this->addForeignPrimaryKey('studentID', 'Studentid', 'INTEGER' , 'students', 'id', true, null, null);
         $this->addForeignPrimaryKey('examID', 'Examid', 'INTEGER' , 'exams', 'id', true, null, null);
         $this->addColumn('pseudoID', 'Pseudoid', 'VARCHAR', true, 225, null);
-        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'users', 'id', true, null, null);
+        $this->addForeignPrimaryKey('user_id', 'UserId', 'INTEGER' , 'users', 'id', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -215,7 +215,7 @@ class PseudoIDTableMap extends TableMap
     {
         if (Propel::isInstancePoolingEnabled()) {
             if (null === $key) {
-                $key = serialize(array((string) $obj->getStudentid(), (string) $obj->getExamid()));
+                $key = serialize(array((string) $obj->getStudentid(), (string) $obj->getExamid(), (string) $obj->getUserId()));
             } // if key === null
             self::$instances[$key] = $obj;
         }
@@ -235,11 +235,11 @@ class PseudoIDTableMap extends TableMap
     {
         if (Propel::isInstancePoolingEnabled() && null !== $value) {
             if (is_object($value) && $value instanceof \PseudoID) {
-                $key = serialize(array((string) $value->getStudentid(), (string) $value->getExamid()));
+                $key = serialize(array((string) $value->getStudentid(), (string) $value->getExamid(), (string) $value->getUserId()));
 
-            } elseif (is_array($value) && count($value) === 2) {
+            } elseif (is_array($value) && count($value) === 3) {
                 // assume we've been passed a primary key";
-                $key = serialize(array((string) $value[0], (string) $value[1]));
+                $key = serialize(array((string) $value[0], (string) $value[1], (string) $value[2]));
             } elseif ($value instanceof Criteria) {
                 self::$instances = [];
 
@@ -269,11 +269,11 @@ class PseudoIDTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Studentid', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Studentid', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 3 + $offset : static::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Studentid', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)]));
+        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Studentid', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 3 + $offset : static::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)]));
     }
 
     /**
@@ -301,6 +301,11 @@ class PseudoIDTableMap extends TableMap
             $indexType == TableMap::TYPE_NUM
                 ? 1 + $offset
                 : self::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)
+        ];
+        $pks[] = (int) $row[
+            $indexType == TableMap::TYPE_NUM
+                ? 3 + $offset
+                : self::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)
         ];
 
         return $pks;
@@ -476,6 +481,7 @@ class PseudoIDTableMap extends TableMap
             foreach ($values as $value) {
                 $criterion = $criteria->getNewCriterion(PseudoIDTableMap::COL_STUDENTID, $value[0]);
                 $criterion->addAnd($criteria->getNewCriterion(PseudoIDTableMap::COL_EXAMID, $value[1]));
+                $criterion->addAnd($criteria->getNewCriterion(PseudoIDTableMap::COL_USER_ID, $value[2]));
                 $criteria->addOr($criterion);
             }
         }

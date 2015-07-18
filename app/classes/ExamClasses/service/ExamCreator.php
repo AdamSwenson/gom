@@ -70,7 +70,7 @@ class ExamCreator extends ExamServiceParent
         $term = $this->restrictor_dao->load_term($incoming['term']);
         $topic = $this->restrictor_dao->load_topic($incoming['examTopic']);
 
-        $exam = $this->exam_dao->save_new_exam($year, $term, $topic);
+        $exam = $this->exam_dao->save_new_exam($year->getContent(), $term->getContent(), $topic->getContent());
         $cnt = isset($exam) ? 1 : 0;
 
         if($cnt === 1)

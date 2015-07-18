@@ -59,7 +59,7 @@ class QuestionScoreTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 7;
+    const NUM_COLUMNS = 8;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,12 @@ class QuestionScoreTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 7;
+    const NUM_HYDRATE_COLUMNS = 8;
+
+    /**
+     * the column name for the id field
+     */
+    const COL_ID = 'questionScores.id';
 
     /**
      * the column name for the examID field
@@ -118,11 +123,11 @@ class QuestionScoreTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Examid', 'Questionid', 'Studentid', 'Questionscore', 'UserId', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('examid', 'questionid', 'studentid', 'questionscore', 'userId', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(QuestionScoreTableMap::COL_EXAMID, QuestionScoreTableMap::COL_QUESTIONID, QuestionScoreTableMap::COL_STUDENTID, QuestionScoreTableMap::COL_QUESTIONSCORE, QuestionScoreTableMap::COL_USER_ID, QuestionScoreTableMap::COL_CREATED_AT, QuestionScoreTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('examID', 'questionID', 'studentID', 'questionScore', 'user_id', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id', 'Examid', 'Questionid', 'Studentid', 'Questionscore', 'UserId', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'examid', 'questionid', 'studentid', 'questionscore', 'userId', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(QuestionScoreTableMap::COL_ID, QuestionScoreTableMap::COL_EXAMID, QuestionScoreTableMap::COL_QUESTIONID, QuestionScoreTableMap::COL_STUDENTID, QuestionScoreTableMap::COL_QUESTIONSCORE, QuestionScoreTableMap::COL_USER_ID, QuestionScoreTableMap::COL_CREATED_AT, QuestionScoreTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'examID', 'questionID', 'studentID', 'questionScore', 'user_id', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
     );
 
     /**
@@ -132,11 +137,11 @@ class QuestionScoreTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Examid' => 0, 'Questionid' => 1, 'Studentid' => 2, 'Questionscore' => 3, 'UserId' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, ),
-        self::TYPE_CAMELNAME     => array('examid' => 0, 'questionid' => 1, 'studentid' => 2, 'questionscore' => 3, 'userId' => 4, 'createdAt' => 5, 'updatedAt' => 6, ),
-        self::TYPE_COLNAME       => array(QuestionScoreTableMap::COL_EXAMID => 0, QuestionScoreTableMap::COL_QUESTIONID => 1, QuestionScoreTableMap::COL_STUDENTID => 2, QuestionScoreTableMap::COL_QUESTIONSCORE => 3, QuestionScoreTableMap::COL_USER_ID => 4, QuestionScoreTableMap::COL_CREATED_AT => 5, QuestionScoreTableMap::COL_UPDATED_AT => 6, ),
-        self::TYPE_FIELDNAME     => array('examID' => 0, 'questionID' => 1, 'studentID' => 2, 'questionScore' => 3, 'user_id' => 4, 'created_at' => 5, 'updated_at' => 6, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Examid' => 1, 'Questionid' => 2, 'Studentid' => 3, 'Questionscore' => 4, 'UserId' => 5, 'CreatedAt' => 6, 'UpdatedAt' => 7, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'examid' => 1, 'questionid' => 2, 'studentid' => 3, 'questionscore' => 4, 'userId' => 5, 'createdAt' => 6, 'updatedAt' => 7, ),
+        self::TYPE_COLNAME       => array(QuestionScoreTableMap::COL_ID => 0, QuestionScoreTableMap::COL_EXAMID => 1, QuestionScoreTableMap::COL_QUESTIONID => 2, QuestionScoreTableMap::COL_STUDENTID => 3, QuestionScoreTableMap::COL_QUESTIONSCORE => 4, QuestionScoreTableMap::COL_USER_ID => 5, QuestionScoreTableMap::COL_CREATED_AT => 6, QuestionScoreTableMap::COL_UPDATED_AT => 7, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'examID' => 1, 'questionID' => 2, 'studentID' => 3, 'questionScore' => 4, 'user_id' => 5, 'created_at' => 6, 'updated_at' => 7, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
     );
 
     /**
@@ -154,8 +159,9 @@ class QuestionScoreTableMap extends TableMap
         $this->setIdentifierQuoting(false);
         $this->setClassName('\\QuestionScore');
         $this->setPackage('');
-        $this->setUseIdGenerator(false);
+        $this->setUseIdGenerator(true);
         // columns
+        $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addForeignPrimaryKey('examID', 'Examid', 'INTEGER' , 'exams', 'id', true, null, null);
         $this->addForeignPrimaryKey('questionID', 'Questionid', 'INTEGER' , 'questions', 'id', true, null, null);
         $this->addForeignPrimaryKey('studentID', 'Studentid', 'INTEGER' , 'students', 'id', true, null, null);
@@ -228,7 +234,7 @@ class QuestionScoreTableMap extends TableMap
     {
         if (Propel::isInstancePoolingEnabled()) {
             if (null === $key) {
-                $key = serialize(array((string) $obj->getExamid(), (string) $obj->getQuestionid(), (string) $obj->getStudentid()));
+                $key = serialize(array((string) $obj->getId(), (string) $obj->getExamid(), (string) $obj->getQuestionid(), (string) $obj->getStudentid()));
             } // if key === null
             self::$instances[$key] = $obj;
         }
@@ -248,11 +254,11 @@ class QuestionScoreTableMap extends TableMap
     {
         if (Propel::isInstancePoolingEnabled() && null !== $value) {
             if (is_object($value) && $value instanceof \QuestionScore) {
-                $key = serialize(array((string) $value->getExamid(), (string) $value->getQuestionid(), (string) $value->getStudentid()));
+                $key = serialize(array((string) $value->getId(), (string) $value->getExamid(), (string) $value->getQuestionid(), (string) $value->getStudentid()));
 
-            } elseif (is_array($value) && count($value) === 3) {
+            } elseif (is_array($value) && count($value) === 4) {
                 // assume we've been passed a primary key";
-                $key = serialize(array((string) $value[0], (string) $value[1], (string) $value[2]));
+                $key = serialize(array((string) $value[0], (string) $value[1], (string) $value[2], (string) $value[3]));
             } elseif ($value instanceof Criteria) {
                 self::$instances = [];
 
@@ -282,11 +288,11 @@ class QuestionScoreTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Questionid', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Studentid', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Questionid', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 3 + $offset : static::translateFieldName('Studentid', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Questionid', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Studentid', TableMap::TYPE_PHPNAME, $indexType)]));
+        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Questionid', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 3 + $offset : static::translateFieldName('Studentid', TableMap::TYPE_PHPNAME, $indexType)]));
     }
 
     /**
@@ -308,16 +314,21 @@ class QuestionScoreTableMap extends TableMap
         $pks[] = (int) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 0 + $offset
-                : self::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)
+                : self::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)
         ];
         $pks[] = (int) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 1 + $offset
-                : self::translateFieldName('Questionid', TableMap::TYPE_PHPNAME, $indexType)
+                : self::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)
         ];
         $pks[] = (int) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 2 + $offset
+                : self::translateFieldName('Questionid', TableMap::TYPE_PHPNAME, $indexType)
+        ];
+        $pks[] = (int) $row[
+            $indexType == TableMap::TYPE_NUM
+                ? 3 + $offset
                 : self::translateFieldName('Studentid', TableMap::TYPE_PHPNAME, $indexType)
         ];
 
@@ -421,6 +432,7 @@ class QuestionScoreTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
+            $criteria->addSelectColumn(QuestionScoreTableMap::COL_ID);
             $criteria->addSelectColumn(QuestionScoreTableMap::COL_EXAMID);
             $criteria->addSelectColumn(QuestionScoreTableMap::COL_QUESTIONID);
             $criteria->addSelectColumn(QuestionScoreTableMap::COL_STUDENTID);
@@ -429,6 +441,7 @@ class QuestionScoreTableMap extends TableMap
             $criteria->addSelectColumn(QuestionScoreTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(QuestionScoreTableMap::COL_UPDATED_AT);
         } else {
+            $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.examID');
             $criteria->addSelectColumn($alias . '.questionID');
             $criteria->addSelectColumn($alias . '.studentID');
@@ -494,9 +507,10 @@ class QuestionScoreTableMap extends TableMap
                 $values = array($values);
             }
             foreach ($values as $value) {
-                $criterion = $criteria->getNewCriterion(QuestionScoreTableMap::COL_EXAMID, $value[0]);
-                $criterion->addAnd($criteria->getNewCriterion(QuestionScoreTableMap::COL_QUESTIONID, $value[1]));
-                $criterion->addAnd($criteria->getNewCriterion(QuestionScoreTableMap::COL_STUDENTID, $value[2]));
+                $criterion = $criteria->getNewCriterion(QuestionScoreTableMap::COL_ID, $value[0]);
+                $criterion->addAnd($criteria->getNewCriterion(QuestionScoreTableMap::COL_EXAMID, $value[1]));
+                $criterion->addAnd($criteria->getNewCriterion(QuestionScoreTableMap::COL_QUESTIONID, $value[2]));
+                $criterion->addAnd($criteria->getNewCriterion(QuestionScoreTableMap::COL_STUDENTID, $value[3]));
                 $criteria->addOr($criterion);
             }
         }
@@ -544,6 +558,10 @@ class QuestionScoreTableMap extends TableMap
             $criteria = clone $criteria; // rename for clarity
         } else {
             $criteria = $criteria->buildCriteria(); // build Criteria from QuestionScore object
+        }
+
+        if ($criteria->containsKey(QuestionScoreTableMap::COL_ID) && $criteria->keyContainsValue(QuestionScoreTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.QuestionScoreTableMap::COL_ID.')');
         }
 
 

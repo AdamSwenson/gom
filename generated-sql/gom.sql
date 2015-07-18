@@ -40,7 +40,7 @@ CREATE TABLE `r_terms`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`content`,`user_id`),
+    PRIMARY KEY (`content`),
     INDEX `r_terms_fi_69bd79` (`user_id`),
     CONSTRAINT `r_terms_fk_69bd79`
         FOREIGN KEY (`user_id`)
@@ -48,20 +48,20 @@ CREATE TABLE `r_terms`
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
--- r_examTopics
+-- r_topics
 -- ---------------------------------------------------------------------
 
-DROP TABLE IF EXISTS `r_examTopics`;
+DROP TABLE IF EXISTS `r_topics`;
 
-CREATE TABLE `r_examTopics`
+CREATE TABLE `r_topics`
 (
     `content` VARCHAR(100) NOT NULL,
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`content`,`user_id`),
-    INDEX `r_examTopics_fi_69bd79` (`user_id`),
-    CONSTRAINT `r_examTopics_fk_69bd79`
+    PRIMARY KEY (`content`),
+    INDEX `r_topics_fi_69bd79` (`user_id`),
+    CONSTRAINT `r_topics_fk_69bd79`
         FOREIGN KEY (`user_id`)
         REFERENCES `users` (`id`)
 ) ENGINE=InnoDB;
@@ -78,7 +78,7 @@ CREATE TABLE `r_years`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`content`,`user_id`),
+    PRIMARY KEY (`content`),
     INDEX `r_years_fi_69bd79` (`user_id`),
     CONSTRAINT `r_years_fk_69bd79`
         FOREIGN KEY (`user_id`)
@@ -97,28 +97,16 @@ CREATE TABLE `exams`
     `examTerm` VARCHAR(100) NOT NULL,
     `examTopic` VARCHAR(100) NOT NULL,
     `examYear` INTEGER(4) NOT NULL,
-    `locked` INTEGER(1) NOT NULL,
-    `released` INTEGER(1) NOT NULL,
+    `locked` INTEGER(1) DEFAULT 0 NOT NULL,
+    `released` INTEGER(1) DEFAULT 0 NOT NULL,
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`id`,`user_id`),
+    PRIMARY KEY (`id`),
     INDEX `exams_fi_69bd79` (`user_id`),
-    INDEX `exams_fi_159d06` (`examTerm`),
-    INDEX `exams_fi_6a54a1` (`examTopic`),
-    INDEX `exams_fi_b3505d` (`examYear`),
     CONSTRAINT `exams_fk_69bd79`
         FOREIGN KEY (`user_id`)
-        REFERENCES `users` (`id`),
-    CONSTRAINT `exams_fk_159d06`
-        FOREIGN KEY (`examTerm`)
-        REFERENCES `r_terms` (`content`),
-    CONSTRAINT `exams_fk_6a54a1`
-        FOREIGN KEY (`examTopic`)
-        REFERENCES `r_examTopics` (`content`),
-    CONSTRAINT `exams_fk_b3505d`
-        FOREIGN KEY (`examYear`)
-        REFERENCES `r_years` (`content`)
+        REFERENCES `users` (`id`)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
@@ -135,7 +123,7 @@ CREATE TABLE `questions`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`id`,`questionText`),
+    PRIMARY KEY (`id`),
     INDEX `questions_fi_69bd79` (`user_id`),
     CONSTRAINT `questions_fk_69bd79`
         FOREIGN KEY (`user_id`)
@@ -157,7 +145,7 @@ CREATE TABLE `elements`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`id`,`user_id`),
+    PRIMARY KEY (`id`),
     INDEX `elements_fi_69bd79` (`user_id`),
     CONSTRAINT `elements_fk_69bd79`
         FOREIGN KEY (`user_id`)
@@ -179,7 +167,7 @@ CREATE TABLE `students`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`id`,`user_id`),
+    PRIMARY KEY (`id`),
     UNIQUE INDEX `students_u_920f7a` (`sid`),
     INDEX `students_fi_69bd79` (`user_id`),
     CONSTRAINT `students_fk_69bd79`
@@ -201,7 +189,7 @@ CREATE TABLE `classes`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`id`,`user_id`),
+    PRIMARY KEY (`id`),
     INDEX `classes_fi_69bd79` (`user_id`),
     CONSTRAINT `classes_fk_69bd79`
         FOREIGN KEY (`user_id`)
@@ -223,7 +211,7 @@ CREATE TABLE `stockTexts`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`id`,`user_id`),
+    PRIMARY KEY (`id`),
     INDEX `stockTexts_fi_69bd79` (`user_id`),
     CONSTRAINT `stockTexts_fk_69bd79`
         FOREIGN KEY (`user_id`)
@@ -238,6 +226,7 @@ DROP TABLE IF EXISTS `questionScores`;
 
 CREATE TABLE `questionScores`
 (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `examID` INTEGER NOT NULL,
     `questionID` INTEGER NOT NULL,
     `studentID` INTEGER NOT NULL,
@@ -245,8 +234,9 @@ CREATE TABLE `questionScores`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`examID`,`questionID`,`studentID`,`user_id`),
+    PRIMARY KEY (`id`,`examID`,`questionID`,`studentID`),
     INDEX `questionScores_fi_69bd79` (`user_id`),
+    INDEX `questionScores_fi_71c1fe` (`examID`),
     INDEX `questionScores_fi_175030` (`studentID`),
     INDEX `questionScores_fi_048855` (`questionID`),
     CONSTRAINT `questionScores_fk_69bd79`
@@ -278,13 +268,10 @@ CREATE TABLE `elementScores`
     `elementScore` FLOAT,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`examID`,`elementID`,`studentID`,`user_id`),
-    INDEX `elementScores_fi_69bd79` (`user_id`),
+    PRIMARY KEY (`examID`,`elementID`,`studentID`),
     INDEX `elementScores_fi_fd5216` (`elementID`),
     INDEX `elementScores_fi_175030` (`studentID`),
-    CONSTRAINT `elementScores_fk_69bd79`
-        FOREIGN KEY (`user_id`)
-        REFERENCES `users` (`id`),
+    INDEX `elementScores_fi_69bd79` (`user_id`),
     CONSTRAINT `elementScores_fk_71c1fe`
         FOREIGN KEY (`examID`)
         REFERENCES `exams` (`id`),
@@ -293,7 +280,10 @@ CREATE TABLE `elementScores`
         REFERENCES `elements` (`id`),
     CONSTRAINT `elementScores_fk_175030`
         FOREIGN KEY (`studentID`)
-        REFERENCES `students` (`id`)
+        REFERENCES `students` (`id`),
+    CONSTRAINT `elementScores_fk_69bd79`
+        FOREIGN KEY (`user_id`)
+        REFERENCES `users` (`id`)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
@@ -313,18 +303,18 @@ CREATE TABLE `examInfo`
     `examGroupNumber` INTEGER,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`examID`,`studentID`,`user_id`),
-    INDEX `examInfo_fi_69bd79` (`user_id`),
+    PRIMARY KEY (`examID`,`studentID`),
     INDEX `examInfo_fi_175030` (`studentID`),
-    CONSTRAINT `examInfo_fk_69bd79`
-        FOREIGN KEY (`user_id`)
-        REFERENCES `users` (`id`),
+    INDEX `examInfo_fi_69bd79` (`user_id`),
     CONSTRAINT `examInfo_fk_71c1fe`
         FOREIGN KEY (`examID`)
         REFERENCES `exams` (`id`),
     CONSTRAINT `examInfo_fk_175030`
         FOREIGN KEY (`studentID`)
-        REFERENCES `students` (`id`)
+        REFERENCES `students` (`id`),
+    CONSTRAINT `examInfo_fk_69bd79`
+        FOREIGN KEY (`user_id`)
+        REFERENCES `users` (`id`)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
@@ -335,24 +325,26 @@ DROP TABLE IF EXISTS `questionAssigner`;
 
 CREATE TABLE `questionAssigner`
 (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `examID` INTEGER NOT NULL,
     `questionNumber` INTEGER(2) NOT NULL,
     `user_id` INTEGER NOT NULL,
     `questionID` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`examID`,`questionNumber`,`user_id`),
-    INDEX `questionAssigner_fi_69bd79` (`user_id`),
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `questionAssigner_u_7f7f88` (`user_id`, `examID`, `questionNumber`),
+    INDEX `questionAssigner_fi_71c1fe` (`examID`),
     INDEX `questionAssigner_fi_048855` (`questionID`),
-    CONSTRAINT `questionAssigner_fk_69bd79`
-        FOREIGN KEY (`user_id`)
-        REFERENCES `users` (`id`),
     CONSTRAINT `questionAssigner_fk_71c1fe`
         FOREIGN KEY (`examID`)
         REFERENCES `exams` (`id`),
     CONSTRAINT `questionAssigner_fk_048855`
         FOREIGN KEY (`questionID`)
-        REFERENCES `questions` (`id`)
+        REFERENCES `questions` (`id`),
+    CONSTRAINT `questionAssigner_fk_69bd79`
+        FOREIGN KEY (`user_id`)
+        REFERENCES `users` (`id`)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
@@ -363,6 +355,7 @@ DROP TABLE IF EXISTS `elementXquestions`;
 
 CREATE TABLE `elementXquestions`
 (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `examID` INTEGER NOT NULL,
     `questionID` INTEGER NOT NULL,
     `subtask` INTEGER(2) NOT NULL,
@@ -370,10 +363,11 @@ CREATE TABLE `elementXquestions`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`examID`,`questionID`,`subtask`,`user_id`),
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `elementXquestions_u_be554a` (`user_id`, `examID`, `questionID`, `subtask`),
     INDEX `elementXquestions_fi_048855` (`questionID`),
     INDEX `elementXquestions_fi_fd5216` (`elementID`),
-    INDEX `elementXquestions_fi_69bd79` (`user_id`),
+    INDEX `elementXquestions_fi_71c1fe` (`examID`),
     CONSTRAINT `elementXquestions_fk_048855`
         FOREIGN KEY (`questionID`)
         REFERENCES `questions` (`id`),
@@ -396,12 +390,14 @@ DROP TABLE IF EXISTS `studentsXclasses`;
 
 CREATE TABLE `studentsXclasses`
 (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `studentID` INTEGER NOT NULL,
     `classID` INTEGER NOT NULL,
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`studentID`,`classID`,`user_id`),
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `studentsXclasses_u_fdfd08` (`studentID`, `classID`, `user_id`),
     INDEX `studentsXclasses_fi_ab8f61` (`classID`),
     INDEX `studentsXclasses_fi_69bd79` (`user_id`),
     CONSTRAINT `studentsXclasses_fk_175030`
@@ -423,13 +419,15 @@ DROP TABLE IF EXISTS `examsXclasses`;
 
 CREATE TABLE `examsXclasses`
 (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `classID` INTEGER NOT NULL,
     `examID` INTEGER NOT NULL,
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`classID`,`examID`,`user_id`),
-    INDEX `examsXclasses_fi_71c1fe` (`examID`),
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `examsXclasses_u_6f397a` (`examID`, `classID`, `user_id`),
+    INDEX `examsXclasses_fi_ab8f61` (`classID`),
     INDEX `examsXclasses_fi_69bd79` (`user_id`),
     CONSTRAINT `examsXclasses_fk_71c1fe`
         FOREIGN KEY (`examID`)
@@ -504,6 +502,7 @@ DROP TABLE IF EXISTS `preferences`;
 
 CREATE TABLE `preferences`
 (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `jqueryTheme` VARCHAR(100),
     `autostartExam` TINYINT(1),
     `autostartGroup` TINYINT(1),
@@ -513,7 +512,8 @@ CREATE TABLE `preferences`
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`user_id`),
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `preferences_u_6ca017` (`user_id`),
     CONSTRAINT `preferences_fk_69bd79`
         FOREIGN KEY (`user_id`)
         REFERENCES `users` (`id`)
@@ -546,81 +546,6 @@ CREATE TABLE `pseudoIDs`
     CONSTRAINT `pseudoIDs_fk_175030`
         FOREIGN KEY (`studentID`)
         REFERENCES `students` (`id`)
-) ENGINE=InnoDB;
-
--- ---------------------------------------------------------------------
--- tags
--- ---------------------------------------------------------------------
-
-DROP TABLE IF EXISTS `tags`;
-
-CREATE TABLE `tags`
-(
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `tag` VARCHAR(225) NOT NULL,
-    `user_id` INTEGER NOT NULL,
-    `created_at` DATETIME,
-    `updated_at` DATETIME,
-    PRIMARY KEY (`id`,`user_id`),
-    UNIQUE INDEX `tags_u_24e05a` (`tag`),
-    INDEX `tags_fi_69bd79` (`user_id`),
-    CONSTRAINT `tags_fk_69bd79`
-        FOREIGN KEY (`user_id`)
-        REFERENCES `users` (`id`)
-) ENGINE=InnoDB;
-
--- ---------------------------------------------------------------------
--- tagsXquestions
--- ---------------------------------------------------------------------
-
-DROP TABLE IF EXISTS `tagsXquestions`;
-
-CREATE TABLE `tagsXquestions`
-(
-    `tag_id` INTEGER NOT NULL,
-    `question_id` INTEGER NOT NULL,
-    `user_id` INTEGER NOT NULL,
-    `created_at` DATETIME,
-    `updated_at` DATETIME,
-    PRIMARY KEY (`tag_id`,`question_id`,`user_id`),
-    INDEX `tagsXquestions_fi_69bd79` (`user_id`),
-    INDEX `tagsXquestions_fi_83fc93` (`question_id`),
-    CONSTRAINT `tagsXquestions_fk_69bd79`
-        FOREIGN KEY (`user_id`)
-        REFERENCES `users` (`id`),
-    CONSTRAINT `tagsXquestions_fk_6bac06`
-        FOREIGN KEY (`tag_id`)
-        REFERENCES `tags` (`id`),
-    CONSTRAINT `tagsXquestions_fk_83fc93`
-        FOREIGN KEY (`question_id`)
-        REFERENCES `questions` (`id`)
-) ENGINE=InnoDB;
-
--- ---------------------------------------------------------------------
--- tagsXelements
--- ---------------------------------------------------------------------
-
-DROP TABLE IF EXISTS `tagsXelements`;
-
-CREATE TABLE `tagsXelements`
-(
-    `tag_id` INTEGER NOT NULL,
-    `element_id` INTEGER NOT NULL,
-    `user_id` INTEGER NOT NULL,
-    `created_at` DATETIME,
-    `updated_at` DATETIME,
-    PRIMARY KEY (`tag_id`,`element_id`,`user_id`),
-    INDEX `tagsXelements_fi_69bd79` (`user_id`),
-    INDEX `tagsXelements_fi_88cff7` (`element_id`),
-    CONSTRAINT `tagsXelements_fk_69bd79`
-        FOREIGN KEY (`user_id`)
-        REFERENCES `users` (`id`),
-    CONSTRAINT `tagsXelements_fk_6bac06`
-        FOREIGN KEY (`tag_id`)
-        REFERENCES `tags` (`id`),
-    CONSTRAINT `tagsXelements_fk_88cff7`
-        FOREIGN KEY (`element_id`)
-        REFERENCES `elements` (`id`)
 ) ENGINE=InnoDB;
 
 # This restores the fkey checks, after having unset them earlier

@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'r_examTopics' table.
+ * This class defines the structure of the 'r_topics' table.
  *
  *
  *
@@ -44,7 +44,7 @@ class TopicTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'r_examTopics';
+    const TABLE_NAME = 'r_topics';
 
     /**
      * The related Propel class for this table
@@ -74,22 +74,22 @@ class TopicTableMap extends TableMap
     /**
      * the column name for the content field
      */
-    const COL_CONTENT = 'r_examTopics.content';
+    const COL_CONTENT = 'r_topics.content';
 
     /**
      * the column name for the user_id field
      */
-    const COL_USER_ID = 'r_examTopics.user_id';
+    const COL_USER_ID = 'r_topics.user_id';
 
     /**
      * the column name for the created_at field
      */
-    const COL_CREATED_AT = 'r_examTopics.created_at';
+    const COL_CREATED_AT = 'r_topics.created_at';
 
     /**
      * the column name for the updated_at field
      */
-    const COL_UPDATED_AT = 'r_examTopics.updated_at';
+    const COL_UPDATED_AT = 'r_topics.updated_at';
 
     /**
      * The default string format for model objects of the related table
@@ -134,7 +134,7 @@ class TopicTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('r_examTopics');
+        $this->setName('r_topics');
         $this->setPhpName('Topic');
         $this->setIdentifierQuoting(false);
         $this->setClassName('\\Topic');
@@ -159,13 +159,6 @@ class TopicTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, null, false);
-        $this->addRelation('Exam', '\\Exam', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':examTopic',
-    1 => ':content',
-  ),
-), null, null, 'Exams', false);
     } // buildRelations()
 
     /**
@@ -399,7 +392,7 @@ class TopicTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the r_examTopics table.
+     * Deletes all rows from the r_topics table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).

@@ -198,6 +198,13 @@ class StudentTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'ExamInfos', false);
+        $this->addRelation('StudentClassAssignment', '\\StudentClassAssignment', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':studentID',
+    1 => ':id',
+  ),
+), null, null, 'StudentClassAssignments', false);
         $this->addRelation('GradingTime', '\\GradingTime', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
@@ -205,6 +212,13 @@ class StudentTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'GradingTimes', false);
+        $this->addRelation('PseudoID', '\\PseudoID', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':studentID',
+    1 => ':id',
+  ),
+), null, null, 'PseudoIDs', false);
     } // buildRelations()
 
     /**

@@ -124,10 +124,10 @@ abstract class GroupTimeQuery extends ModelCriteria
      * Go fast if the query is untouched.
      *
      * <code>
-     * $obj = $c->findPk(array(12, 34), $con);
+     * $obj = $c->findPk(array(12, 34, 56), $con);
      * </code>
      *
-     * @param array[$examID, $groupID] $key Primary key to use for the query
+     * @param array[$examID, $groupID, $user_id] $key Primary key to use for the query
      * @param ConnectionInterface $con an optional connection object
      *
      * @return ChildGroupTime|array|mixed the result, formatted by the current formatter
@@ -137,7 +137,7 @@ abstract class GroupTimeQuery extends ModelCriteria
         if ($key === null) {
             return null;
         }
-        if ((null !== ($obj = GroupTimeTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && !$this->formatter) {
+        if ((null !== ($obj = GroupTimeTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1], (string) $key[2]))))) && !$this->formatter) {
             // the object is already in the instance pool
             return $obj;
         }
@@ -167,11 +167,12 @@ abstract class GroupTimeQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT examID, groupID, seconds, user_id, created_at, updated_at FROM time_group WHERE examID = :p0 AND groupID = :p1';
+        $sql = 'SELECT examID, groupID, seconds, user_id, created_at, updated_at FROM time_group WHERE examID = :p0 AND groupID = :p1 AND user_id = :p2';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
             $stmt->bindValue(':p1', $key[1], PDO::PARAM_INT);
+            $stmt->bindValue(':p2', $key[2], PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
             Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -182,7 +183,7 @@ abstract class GroupTimeQuery extends ModelCriteria
             /** @var ChildGroupTime $obj */
             $obj = new ChildGroupTime();
             $obj->hydrate($row);
-            GroupTimeTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1])));
+            GroupTimeTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1], (string) $key[2])));
         }
         $stmt->closeCursor();
 
@@ -243,6 +244,7 @@ abstract class GroupTimeQuery extends ModelCriteria
     {
         $this->addUsingAlias(GroupTimeTableMap::COL_EXAMID, $key[0], Criteria::EQUAL);
         $this->addUsingAlias(GroupTimeTableMap::COL_GROUPID, $key[1], Criteria::EQUAL);
+        $this->addUsingAlias(GroupTimeTableMap::COL_USER_ID, $key[2], Criteria::EQUAL);
 
         return $this;
     }
@@ -263,6 +265,8 @@ abstract class GroupTimeQuery extends ModelCriteria
             $cton0 = $this->getNewCriterion(GroupTimeTableMap::COL_EXAMID, $key[0], Criteria::EQUAL);
             $cton1 = $this->getNewCriterion(GroupTimeTableMap::COL_GROUPID, $key[1], Criteria::EQUAL);
             $cton0->addAnd($cton1);
+            $cton2 = $this->getNewCriterion(GroupTimeTableMap::COL_USER_ID, $key[2], Criteria::EQUAL);
+            $cton0->addAnd($cton2);
             $this->addOr($cton0);
         }
 
@@ -689,7 +693,8 @@ abstract class GroupTimeQuery extends ModelCriteria
         if ($groupTime) {
             $this->addCond('pruneCond0', $this->getAliasedColName(GroupTimeTableMap::COL_EXAMID), $groupTime->getExamid(), Criteria::NOT_EQUAL);
             $this->addCond('pruneCond1', $this->getAliasedColName(GroupTimeTableMap::COL_GROUPID), $groupTime->getGroupid(), Criteria::NOT_EQUAL);
-            $this->combine(array('pruneCond0', 'pruneCond1'), Criteria::LOGICAL_OR);
+            $this->addCond('pruneCond2', $this->getAliasedColName(GroupTimeTableMap::COL_USER_ID), $groupTime->getUserId(), Criteria::NOT_EQUAL);
+            $this->combine(array('pruneCond0', 'pruneCond1', 'pruneCond2'), Criteria::LOGICAL_OR);
         }
 
         return $this;

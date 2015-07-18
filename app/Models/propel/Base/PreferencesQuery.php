@@ -5,6 +5,7 @@ namespace Base;
 use \Preferences as ChildPreferences;
 use \PreferencesQuery as ChildPreferencesQuery;
 use \Exception;
+use \PDO;
 use Map\PreferencesTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
@@ -12,7 +13,6 @@ use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveQuery\ModelJoin;
 use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
-use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 
 /**
@@ -20,6 +20,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  *
  *
+ * @method     ChildPreferencesQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildPreferencesQuery orderByJquerytheme($order = Criteria::ASC) Order by the jqueryTheme column
  * @method     ChildPreferencesQuery orderByAutostartexam($order = Criteria::ASC) Order by the autostartExam column
  * @method     ChildPreferencesQuery orderByAutostartgroup($order = Criteria::ASC) Order by the autostartGroup column
@@ -30,6 +31,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPreferencesQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildPreferencesQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
+ * @method     ChildPreferencesQuery groupById() Group by the id column
  * @method     ChildPreferencesQuery groupByJquerytheme() Group by the jqueryTheme column
  * @method     ChildPreferencesQuery groupByAutostartexam() Group by the autostartExam column
  * @method     ChildPreferencesQuery groupByAutostartgroup() Group by the autostartGroup column
@@ -53,6 +55,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPreferences findOne(ConnectionInterface $con = null) Return the first ChildPreferences matching the query
  * @method     ChildPreferences findOneOrCreate(ConnectionInterface $con = null) Return the first ChildPreferences matching the query, or a new ChildPreferences object populated from the query conditions when no match is found
  *
+ * @method     ChildPreferences findOneById(int $id) Return the first ChildPreferences filtered by the id column
  * @method     ChildPreferences findOneByJquerytheme(string $jqueryTheme) Return the first ChildPreferences filtered by the jqueryTheme column
  * @method     ChildPreferences findOneByAutostartexam(boolean $autostartExam) Return the first ChildPreferences filtered by the autostartExam column
  * @method     ChildPreferences findOneByAutostartgroup(boolean $autostartGroup) Return the first ChildPreferences filtered by the autostartGroup column
@@ -66,6 +69,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPreferences requirePk($key, ConnectionInterface $con = null) Return the ChildPreferences by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPreferences requireOne(ConnectionInterface $con = null) Return the first ChildPreferences matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
+ * @method     ChildPreferences requireOneById(int $id) Return the first ChildPreferences filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPreferences requireOneByJquerytheme(string $jqueryTheme) Return the first ChildPreferences filtered by the jqueryTheme column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPreferences requireOneByAutostartexam(boolean $autostartExam) Return the first ChildPreferences filtered by the autostartExam column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPreferences requireOneByAutostartgroup(boolean $autostartGroup) Return the first ChildPreferences filtered by the autostartGroup column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -77,6 +81,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPreferences requireOneByUpdatedAt(string $updated_at) Return the first ChildPreferences filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildPreferences[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildPreferences objects based on current ModelCriteria
+ * @method     ChildPreferences[]|ObjectCollection findById(int $id) Return ChildPreferences objects filtered by the id column
  * @method     ChildPreferences[]|ObjectCollection findByJquerytheme(string $jqueryTheme) Return ChildPreferences objects filtered by the jqueryTheme column
  * @method     ChildPreferences[]|ObjectCollection findByAutostartexam(boolean $autostartExam) Return ChildPreferences objects filtered by the autostartExam column
  * @method     ChildPreferences[]|ObjectCollection findByAutostartgroup(boolean $autostartGroup) Return ChildPreferences objects filtered by the autostartGroup column
@@ -145,13 +150,83 @@ abstract class PreferencesQuery extends ModelCriteria
      */
     public function findPk($key, ConnectionInterface $con = null)
     {
-        throw new LogicException('The Preferences object has no primary key');
+        if ($key === null) {
+            return null;
+        }
+        if ((null !== ($obj = PreferencesTableMap::getInstanceFromPool((string) $key))) && !$this->formatter) {
+            // the object is already in the instance pool
+            return $obj;
+        }
+        if ($con === null) {
+            $con = Propel::getServiceContainer()->getReadConnection(PreferencesTableMap::DATABASE_NAME);
+        }
+        $this->basePreSelect($con);
+        if ($this->formatter || $this->modelAlias || $this->with || $this->select
+         || $this->selectColumns || $this->asColumns || $this->selectModifiers
+         || $this->map || $this->having || $this->joins) {
+            return $this->findPkComplex($key, $con);
+        } else {
+            return $this->findPkSimple($key, $con);
+        }
+    }
+
+    /**
+     * Find object by primary key using raw SQL to go fast.
+     * Bypass doSelect() and the object formatter by using generated code.
+     *
+     * @param     mixed $key Primary key to use for the query
+     * @param     ConnectionInterface $con A connection object
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildPreferences A model object, or null if the key is not found
+     */
+    protected function findPkSimple($key, ConnectionInterface $con)
+    {
+        $sql = 'SELECT id, jqueryTheme, autostartExam, autostartGroup, dashboard_num_exams, number_questions, number_subtasks, user_id, created_at, updated_at FROM preferences WHERE id = :p0';
+        try {
+            $stmt = $con->prepare($sql);
+            $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
+            $stmt->execute();
+        } catch (Exception $e) {
+            Propel::log($e->getMessage(), Propel::LOG_ERR);
+            throw new PropelException(sprintf('Unable to execute SELECT statement [%s]', $sql), 0, $e);
+        }
+        $obj = null;
+        if ($row = $stmt->fetch(\PDO::FETCH_NUM)) {
+            /** @var ChildPreferences $obj */
+            $obj = new ChildPreferences();
+            $obj->hydrate($row);
+            PreferencesTableMap::addInstanceToPool($obj, (string) $key);
+        }
+        $stmt->closeCursor();
+
+        return $obj;
+    }
+
+    /**
+     * Find object by primary key.
+     *
+     * @param     mixed $key Primary key to use for the query
+     * @param     ConnectionInterface $con A connection object
+     *
+     * @return ChildPreferences|array|mixed the result, formatted by the current formatter
+     */
+    protected function findPkComplex($key, ConnectionInterface $con)
+    {
+        // As the query uses a PK condition, no limit(1) is necessary.
+        $criteria = $this->isKeepQuery() ? clone $this : $this;
+        $dataFetcher = $criteria
+            ->filterByPrimaryKey($key)
+            ->doSelect($con);
+
+        return $criteria->getFormatter()->init($criteria)->formatOne($dataFetcher);
     }
 
     /**
      * Find objects by primary key
      * <code>
-     * $objs = $c->findPks(array(array(12, 56), array(832, 123), array(123, 456)), $con);
+     * $objs = $c->findPks(array(12, 56, 832), $con);
      * </code>
      * @param     array $keys Primary keys to use for the query
      * @param     ConnectionInterface $con an optional connection object
@@ -160,7 +235,16 @@ abstract class PreferencesQuery extends ModelCriteria
      */
     public function findPks($keys, ConnectionInterface $con = null)
     {
-        throw new LogicException('The Preferences object has no primary key');
+        if (null === $con) {
+            $con = Propel::getServiceContainer()->getReadConnection($this->getDbName());
+        }
+        $this->basePreSelect($con);
+        $criteria = $this->isKeepQuery() ? clone $this : $this;
+        $dataFetcher = $criteria
+            ->filterByPrimaryKeys($keys)
+            ->doSelect($con);
+
+        return $criteria->getFormatter()->init($criteria)->format($dataFetcher);
     }
 
     /**
@@ -172,7 +256,8 @@ abstract class PreferencesQuery extends ModelCriteria
      */
     public function filterByPrimaryKey($key)
     {
-        throw new LogicException('The Preferences object has no primary key');
+
+        return $this->addUsingAlias(PreferencesTableMap::COL_ID, $key, Criteria::EQUAL);
     }
 
     /**
@@ -184,7 +269,49 @@ abstract class PreferencesQuery extends ModelCriteria
      */
     public function filterByPrimaryKeys($keys)
     {
-        throw new LogicException('The Preferences object has no primary key');
+
+        return $this->addUsingAlias(PreferencesTableMap::COL_ID, $keys, Criteria::IN);
+    }
+
+    /**
+     * Filter the query on the id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterById(1234); // WHERE id = 1234
+     * $query->filterById(array(12, 34)); // WHERE id IN (12, 34)
+     * $query->filterById(array('min' => 12)); // WHERE id > 12
+     * </code>
+     *
+     * @param     mixed $id The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPreferencesQuery The current query, for fluid interface
+     */
+    public function filterById($id = null, $comparison = null)
+    {
+        if (is_array($id)) {
+            $useMinMax = false;
+            if (isset($id['min'])) {
+                $this->addUsingAlias(PreferencesTableMap::COL_ID, $id['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($id['max'])) {
+                $this->addUsingAlias(PreferencesTableMap::COL_ID, $id['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(PreferencesTableMap::COL_ID, $id, $comparison);
     }
 
     /**
@@ -609,8 +736,7 @@ abstract class PreferencesQuery extends ModelCriteria
     public function prune($preferences = null)
     {
         if ($preferences) {
-            throw new LogicException('Preferences object has no primary key');
-
+            $this->addUsingAlias(PreferencesTableMap::COL_ID, $preferences->getId(), Criteria::NOT_EQUAL);
         }
 
         return $this;
