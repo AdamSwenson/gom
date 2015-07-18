@@ -13,7 +13,7 @@
 </head>
 
 <body>
-@include('layouts.navbar')
+@include('navigation.nav_bar_main')
 <div id="container">
     @yield('body')
 
