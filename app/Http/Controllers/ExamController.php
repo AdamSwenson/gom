@@ -70,6 +70,7 @@ class ExamController extends Controller
     {
         // do something to get id from DB
         $exam = \ExamQuery::create()->findById($id);
+
         return view('setup/edit_exam', compact('exam'));
     }
 
