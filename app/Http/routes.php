@@ -95,7 +95,7 @@ Route::delete('exam/{id}/question/{id}', 'QuestionController@destroy');
 */
 
 /* Routes for Elements */
-
+Route::resource('element', 'ElementController');
 /*
 Route::get('exam/{id}/question/{id}/element', 'ElementController@index');
 Route::get('exam/{id}/question/{id}/element/create', 'ElementController@create');
