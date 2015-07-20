@@ -15,7 +15,6 @@
 @endsection
 
 @section('body')
-
     <div id="pageContainer">
         <div id="container" class="container">
             <div class="row">
@@ -35,25 +34,13 @@
             </div>
             <div class="row" >
                 <div class="col-xs-8">
-                    <!-- Something goes here -->
-
+                    <!-- Something goes here-->
+                    <h1> </h1>
                 </div>
-                <form method="POST" action="{{url('account/home')}}" accept-charset="UTF-8" class="col-xs-4">
-                    <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-                    <h3 class="text-left"> Log In:</h3>
-                    <div class="form-group ">
-                        <input class="form-control" type="email" name="email"  placeholder="Enter email">
-                    </div>
-                    <div class="form-group">
-                        <input class="form-control" type="password" name="password" placeholder="Enter password">
-                    </div>
-                    <div class="checkbox">
-                        <label><input type="checkbox"> Remember me</label>
-                        <label><a>Forgot Password</a></label>
-                    </div>
-                    <input class="btn btn-default" type="submit" >
-                    <a href="{{url('account/create')}}" class="btn btn-default" >Create Account</a>
-                </form>
+                <h1> Thanks ! {{ $email}}</h1>
+            </div>
+                   <!--include('navigation.nav_other')-->
+                </div>
             </div>
         </div>
     </div>

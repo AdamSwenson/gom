@@ -8,17 +8,20 @@
 
     <link href='inc/images/favicon.ico' rel='icon' type='image/x-icon'/>
 
+    <!--here is where bootstrap UI is linked -->
+    <link href="{{ asset('components/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
+
     @yield('cssLinks')
-    @include('layouts.js_jqueryCss')
+     @include('layouts.js_jqueryCss')
 </head>
 
 <body>
-@include('layouts.navbar')
+<!--include('layouts.navbar')-->
 
 <div id="container">
     @yield('body')
 
-    @include('layouts.footer')
+   @include('layouts.footer')
     <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
 </div>
 <div id="scriptBox">
