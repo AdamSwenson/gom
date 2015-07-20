@@ -12,6 +12,7 @@
 @extends('layouts.master')
 
 @section('pageTitle', 'Empty')
+@section('description', 'Upload or modify student roster')
 
 @section('cssLinks')
 
@@ -91,6 +92,8 @@
    </div>
   </div>
  </div>
+
+ @include('errors.list')
 
 @endsection
 

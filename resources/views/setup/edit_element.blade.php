@@ -12,6 +12,7 @@
 @extends('layouts.master')
 
 @section('pageTitle', 'Empty')
+@section('description', 'create or edit elements')
 
 @section('cssLinks')
 
@@ -35,11 +36,12 @@
     <h5>Each question is composed of one or more elements, representing individual items that the student should address.</h5>
 
     <!-- this Div will become the element template -->
+    <hr/>
     <div id="elementPane">
      <h4>Element #1</h4>
      <div class="input-group">
       <span class="input-group-addon" id="elementLabel">Element Name</span>
-      <input id="elementName" type="text" class="form-control input-lg"
+      <input id="elementName" type="text" class="form-control input"
              placeholder="(Optional) Enter a short reminder for this element, i.e. &quot;Economic causes of the Civil War&quot; "
              aria-describedby="basic-addon1">
      </div>
@@ -96,6 +98,7 @@
    </div>
   </div>
  </div>
+ @include('errors.list')
 
 @endsection
 

@@ -5,7 +5,7 @@
     <meta name=viewport content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <title>@yield('pageTitle')</title>
-
+    <meta name="description" content="@yield('description')">
     <link href='inc/images/favicon.ico' rel='icon' type='image/x-icon'/>
 
     @yield('cssLinks')
@@ -13,14 +13,14 @@
 </head>
 
 <body>
-@include('navigation.nav_bar_main')
-<div id="container">
+    @include('navigation.nav_bar_main')
+    <div id="container">
     @yield('body')
-
     @include('layouts.footer')
     <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
-</div>
-<div id="scriptBox">
+    </div>
+
+    <div id="scriptBox">
     @include('layouts.js_jqueryJs')
     @include('layouts.js_scriptloader')
     <script type="text/javascript">

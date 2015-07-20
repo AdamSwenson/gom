@@ -11,7 +11,9 @@
 
 @extends('layouts.master')
 
-@section('pageTitle', 'Empty')
+@section('pageTitle', 'Select Exam')
+
+@section('description', 'edit, create or clone an exam')
 
 @section('cssLinks')
 
@@ -30,7 +32,7 @@
     </nav>
     <p></p>
     <h2>Exam Setup</h2>
-    <p></p>
+    <p> </p>
     <div class="list-group">
      <a id="createExamLink" href="#" class="list-group-item">
       <h4><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create New Exam</h4>
@@ -41,8 +43,10 @@
      <div id="examListEdit" class="sublinks collapse">
 
       <div class="container">
-       <a class="list-group-item small"> English 101 Exam #1 (Fall 2014)</a>
-       <a class="list-group-item small"> English 101 Exam #2 (Fall 2014)</a>
+          <!-- add the data from exams here -->
+          @foreach($exams as $exam)
+              <a class="list-group-item small"> {{ $exam }} </a>
+          @endforeach
       </div>
      </div>
 
@@ -51,14 +55,18 @@
      <!-- this div should be replaced by real exams or a "No exams found" error popup -->
      <div id="examListClone" class="sublinks collapse">
       <div class="container">
-       <a class="list-group-item small"> English 101 Exam #1 (Fall 2014)</a>
-       <a class="list-group-item small"> English 101 Exam #2 (Fall 2014)</a>
+          @foreach($exams as $exam)
+              <a class="list-group-item small">{{ $exam }}  </a>
+          @endforeach
       </div>
      </div>
     </div>
    </div>
   </div>
  </div>
+
+ @include('errors.list')
+
 @endsection
 
 

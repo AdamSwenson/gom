@@ -13,6 +13,7 @@
 @extends('layouts.master')
 
 @section('pageTitle', 'Empty')
+@section('description', 'Add or edit questions')
 
 @section('cssLinks')
 
@@ -31,13 +32,15 @@
      </ul>
     </nav>
     <h2 id="examName">Exam Name: Add / Edit Questions</h2>
-    <h5>Add the questions that will appear on this exam. Press "done" when you're finished.</h5>
+    <h5>Add the questions that will appear on this exam. When you're finished, press "done".</h5>
+
     <!-- this Div will become the question template -->
+    <hr/>
     <div id="questionPane">
      <h4>Question #1</h4>
      <div class="input-group">
       <span class="input-group-addon" id="questionLabel">Question Name</span>
-      <input id="questionName" type="text" class="form-control input-lg" placeholder="Enter a brief description of the question, i.e. &quot;Causes of the Civil War&quot;"
+      <input id="questionName" type="text" class="form-control input" placeholder="Enter a brief description of the question, i.e. &quot;Causes of the Civil War&quot;"
              aria-describedby="basic-addon1">
      </div>
      <h5>Question Text</h5>
@@ -60,6 +63,9 @@
    </div>
   </div>
  </div>
+
+ @include('errors.list')
+
 @endsection
 
 

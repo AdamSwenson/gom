@@ -12,6 +12,7 @@
 @extends('layouts.master')
 
 @section('pageTitle', 'Empty')
+@section('description', 'Edit an exam')
 
 @section('cssLinks')
 
@@ -67,6 +68,8 @@
    </div>
   </div>
  </div>
+
+ @include('errors.list')
 
 @endsection
 
