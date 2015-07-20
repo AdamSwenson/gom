@@ -18,27 +18,14 @@ Route::get('/', function () {
 Route::post('api', array('uses' => 'AjaxController@handleRequest'));
 Route::post('setup/api', array('uses' => 'AjaxController@handleRequest'));
 
-Route::post('upload_students', array('uses' => 'StudentController@handleUpload'));
-
-
 Route::get('home', 'LandingController@showLanding');
+
 Route::get('landing', 'LandingController@showLanding');
 Route::get('index', 'LandingController@showLanding');
 
-Route::get('login', 'LandingController@showLandingLoggedIn');
-
-Route::post('account/home', 'LandingController@loggedIn');
 Route::get('account/home', function(){
     return "Account home page";
 });
-
-
-
-
-
-Route::get('account/create','LandingController@accountCreate');
-
-Route::post('account/confirm','LandingController@accountConfirm');
 
 
 Route::get('account/user_settings', function(){
@@ -83,4 +70,40 @@ Route::get('report/qualitycontrol', function(){
     return "This will eventually be the quality control page";
 });
 
+/* NEW routes for exam selection and creation below */
+Route::resource('exam', 'ExamController');
+/*
+Route::get('exam', 'ExamController@index');
+Route::get('exam/create', 'ExamController@create');
+Route::post('exam', 'ExamController@store');
+Route::get('exam/{id}', 'ExamController@show');
+Route::get('exam/{id}/edit', 'ExamController@edit');
+Route::patch('exam/{id}', 'ExamController@update');
+Route::delete('exam/{id}', 'ExamController@destroy');
+*/
 
+/* Routes for questions */
+Route::resource('question', 'QuestionController');
+/*
+Route::get('exam/{id}/question', 'QuestionController@index');
+Route::get('exam/{id}/question/create', 'QuestionController@create');
+Route::post('exam/{id}/question', 'QuestionController@store');
+Route::get('exam/{id}/question/{id}', 'QuestionController@show');
+Route::get('exam/{id}/question/edit', 'QuestionController@edit');
+Route::patch('exam/{id}/question/{id}', 'QuestionController@update');
+Route::delete('exam/{id}/question/{id}', 'QuestionController@destroy');
+*/
+
+/* Routes for Elements */
+Route::resource('element', 'ElementController');
+/*
+Route::get('exam/{id}/question/{id}/element', 'ElementController@index');
+Route::get('exam/{id}/question/{id}/element/create', 'ElementController@create');
+Route::post('exam/{id}/question/{id}/element', 'ElementController@store');
+Route::get('exam/{id}/question/{id}/element/{id}', 'ElementController@show');
+Route::get('exam/{id}/question/{id}/element/edit', 'ElementController@edit');
+Route::patch('exam/{id}/question/{id}/element/{id}', 'ElementController@update');
+Route::delete('exam/{id}/question/{id}/element/{id}', 'ElementController@destroy');
+*/
+
+/* Routes for Rosters */
