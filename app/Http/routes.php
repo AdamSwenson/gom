@@ -71,6 +71,8 @@ Route::get('report/qualitycontrol', function(){
 });
 
 /* NEW routes for exam selection and creation below */
+
+Route::get('select','ExamController@index');
 Route::resource('exam', 'ExamController');
 /*
 Route::get('exam', 'ExamController@index');
@@ -106,4 +108,5 @@ Route::patch('exam/{id}/question/{id}/element/{id}', 'ElementController@update')
 Route::delete('exam/{id}/question/{id}/element/{id}', 'ElementController@destroy');
 */
 
+Route::resource('roster', 'StudentController');
 /* Routes for Rosters */

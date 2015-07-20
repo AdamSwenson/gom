@@ -16,7 +16,7 @@ class QuestionController extends Controller
      */
     public function index()
     {
-        //
+        return view('setup/edit_question');
     }
 
     /**
