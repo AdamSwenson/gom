@@ -24,9 +24,9 @@ class Student extends Model
      * Junction for classes (kumi)
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function kumi()
+    public function kumis()
     {
-        return $this->belongsToMany('App\Kumi', 'kumi_student');
+        return $this->belongsToMany('App\Kumi', 'kumi_student')->withTimestamps();
     }
 
     /**

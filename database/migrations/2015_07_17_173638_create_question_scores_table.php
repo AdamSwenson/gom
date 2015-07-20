@@ -12,30 +12,35 @@ class CreateQuestionScoresTable extends Migration
      */
     public function up()
     {
-        Schema::create('question_scores', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('user_id')->unsigned()->index();
-            $table->integer('question_assign_id')->unsigned()->index();
-            $table->integer('student_id')->unsigned()->index();
-            $table->float('score');
-            $table->timestamps();
+        if(Schema::hasTable('questions') && Schema::hasTable('question_assignments'))
+        {
+            Schema::create('question_scores', function (Blueprint $table)
+            {
+                $table->increments('id');
+                $table->integer('user_id')->unsigned()->index();
+                $table->integer('question_assignment_id')->unsigned()->index();
+                $table->integer('student_id')->unsigned()->index();
+                $table->float('score')->nullable();
+                $table->timestamps();
 
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
-                ->onDelete('cascade');
+                $table->unique(['user_id', 'question_assignment_id', 'student_id']);
 
-            $table->foreign('question_assign_id')
-                ->references('id')
-                ->on('question_assignments')
-                ->onDelete('cascade');
+                $table->foreign('user_id')
+                    ->references('id')
+                    ->on('users')
+                    ->onDelete('cascade');
 
-            $table->foreign('student_id')
-                ->references('id')
-                ->on('students')
-                ->onDelete('cascade');
-        });
+                $table->foreign('question_assignment_id')
+                    ->references('id')
+                    ->on('question_assignments')
+                    ->onDelete('cascade');
 
+                $table->foreign('student_id')
+                    ->references('id')
+                    ->on('students')
+                    ->onDelete('cascade');
+            });
+        }
 
     }
 

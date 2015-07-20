@@ -28,9 +28,9 @@ class Kumi extends Model
     }
 
 #--------- Foreign keys
-    public function student()
+    public function students()
     {
-        return $this->belongsToMany('App\Kumi', 'kumi_student');
+        return $this->belongsToMany('App\Student', 'kumi_student')->withTimestamps();
     }
 
     public function user()
@@ -40,7 +40,7 @@ class Kumi extends Model
 
     public function exams()
     {
-        return $this->belongsToMany('App\Exam', 'exam_kumi');
+        return $this->belongsToMany('App\Exam', 'exam_kumi')->withTimestamps();
     }
 
 

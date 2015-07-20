@@ -2,6 +2,7 @@
 
 namespace Base;
 
+use App\Classes\ElementClasses\IElement;
 use \Element as ChildElement;
 use \ElementAssignment as ChildElementAssignment;
 use \ElementAssignmentQuery as ChildElementAssignmentQuery;
@@ -35,7 +36,7 @@ use Propel\Runtime\Util\PropelDateTime;
  *
 * @package    propel.generator..Base
 */
-abstract class Element implements ActiveRecordInterface
+abstract class Element implements ActiveRecordInterface, IElement
 {
     /**
      * TableMap class name

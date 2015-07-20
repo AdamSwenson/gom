@@ -12,29 +12,35 @@ class CreateElementScoresTable extends Migration
      */
     public function up()
     {
-        Schema::create('element_scores', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('user_id')->unsigned();
-            $table->integer('element_assign_id')->unsigned();
-            $table->integer('student_id')->unsigned();
-            $table->float('score');
-            $table->timestamps();
+        if(Schema::hasTable('elements') && Schema::hasTable('element_assignments'))
+        {
+            Schema::create('element_scores', function (Blueprint $table)
+            {
+                $table->increments('id');
+                $table->integer('user_id')->unsigned();
+                $table->integer('element_assignment_id')->unsigned();
+                $table->integer('student_id')->unsigned();
+                $table->float('score')->nullable();
+                $table->timestamps();
 
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
-                ->onDelete('cascade');
+                $table->unique(['user_id', 'element_assignment_id', 'student_id']);
 
-            $table->foreign('element_assign_id')
-                ->references('id')
-                ->on('element_assignments')
-                ->onDelete('cascade');
+                $table->foreign('user_id')
+                    ->references('id')
+                    ->on('users')
+                    ->onDelete('cascade');
 
-            $table->foreign('student_id')
-                ->references('id')
-                ->on('students')
-                ->onDelete('cascade');
-        });
+                $table->foreign('element_assignment_id')
+                    ->references('id')
+                    ->on('element_assignments')
+                    ->onDelete('cascade');
+
+                $table->foreign('student_id')
+                    ->references('id')
+                    ->on('students')
+                    ->onDelete('cascade');
+            });
+        }
     }
 
     /**

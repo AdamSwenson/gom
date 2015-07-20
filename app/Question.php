@@ -30,9 +30,15 @@ class Question extends Model
         $this->attributes['questionName'] = $questionName;
     }
 
+    #------------ foreign keys
     public function user()
     {
         return $this->belongsTo('App\User');
+    }
+
+    public function questionAssignments()
+    {
+        return $this->hasMany('App\QuestionAssignment');
     }
 
     public function exam()

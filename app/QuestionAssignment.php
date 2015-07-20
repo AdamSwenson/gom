@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class QuestionAssignment extends Model
 {
+    protected $fillable = [];
 
     /**
      * Associates with user
@@ -24,7 +25,12 @@ class QuestionAssignment extends Model
 
     public function exam()
     {
-        return $this->belongsToMany('App\Exam', 'question_assignments');
+        return $this->belongsTo('App\Exam', 'question_assignments');
+    }
+
+    public function question()
+    {
+        return $this->hasOne('App\Question');
     }
 
     public function questionScores()

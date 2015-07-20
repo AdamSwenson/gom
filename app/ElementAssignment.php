@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class ElementAssignment extends Model
 {
 
+    public function createAssignment(\App\Exam $exam, \App\Question $question, \App\Element $element, $score )
+    {}
+
+
     /**
      * Associates with user
      * @param $user_id

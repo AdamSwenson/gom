@@ -1,5 +1,6 @@
 <?php
 
+use App\QuestionAssignment;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,6 +21,11 @@ class DatabaseSeeder extends Seeder
         $this->call(ElementTableSeeder::class);
         $this->call(StudentTableSeeder::class);
         $this->call(KumiTableSeeder::class);
+        $this->call(QuestionAssignmentTableSeeder::class);
+        $this->call(QuestionScoresTableSeeder::class);
+        $this->call(ElementAssignmentTableSeeder::class);
+        $this->call(ElementScoresTableSeeder::class);
+        $this->call(KumiAssociationsSeeder::class);
         //$this->call('ItemSeeder');
         //$this->call('ItemAssignmentSeeder');
         Model::reguard();

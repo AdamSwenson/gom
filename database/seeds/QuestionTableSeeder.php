@@ -16,7 +16,7 @@ class QuestionTableSeeder extends Seeder
 {
     public $faker;
 
-    public function run($num = 10)
+    public function run($num = 20)
     {
         $this->faker = \Faker\Factory::create();
 
