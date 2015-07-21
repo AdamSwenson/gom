@@ -1,25 +1,33 @@
 <!-- this form describes the input form and buttons for an individual question -->
-<div id="questionPane">
+<div id="questionForm{{$q['qOrder']}}">
     <hr/>
-    <h4>Question #1</h4>
+    <h4>Question #<span id="questionNumber">{{ $q['qOrder'] }}</span></h4>
+
     <div class="input-group">
         <span class="input-group-addon" id="questionLabel">Question Name</span>
-        <input id="questionName" type="text" class="form-control input" placeholder="Enter a brief description of the question, i.e. &quot;Causes of the Civil War&quot;"
+        <input id="questionName{{$q['qOrder']}}" type="text" class="form-control input" value="{{ $q['qName'] }}"
+               placeholder="Enter a brief description of the question, i.e. &quot;Causes of the Civil War&quot;"
                aria-describedby="basic-addon1">
+
     </div>
     <h5>Question Text</h5>
+
     <div class="form-group">
-        <textarea class="form-control" rows="4" id="questionText" placeholder="Enter the full question text(optional)"></textarea>
+        <textarea class="form-control" rows="4" id="questionText{{$q['qOrder']}}"
+                  placeholder="Enter the full question text(optional)">{{ $q['qDesc'] }}
+        </textarea>
     </div>
 
-    <p></p>
-    <button class="btn btn-default" id="moveUp"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+    <button class="btn btn-sm" id="moveUp{{$q['qOrder']}}"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
     </button>
 
-    <button class="btn btn-default" id="moveDown"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+    <button class="btn btn-sm" id="moveDown{{$q['qOrder']}}"><span class="glyphicon glyphicon-arrow-down"
+                                                        aria-hidden="true"></span>
     </button>
 
-    <button class="btn btn-warning" id="deleteQuestion"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
-    Delete</button>
+    <button class="btn btn-warning btn-sm" id="deleteQuestion{{$q['qOrder']}}" onclick="deleteQuestion(this.parentNode.id)"><span
+                class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+        Delete
+    </button>
 
 </div>

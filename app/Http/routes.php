@@ -23,10 +23,10 @@ Route::get('home', 'LandingController@showLanding');
 Route::get('landing', 'LandingController@showLanding');
 Route::get('index', 'LandingController@showLanding');
 
+// Account-related routes
 Route::get('account/home', function(){
     return "Account home page";
 });
-
 
 Route::get('account/user_settings', function(){
     return "User settings page";
@@ -38,54 +38,42 @@ Route::get('account/logout', function(){
     return "Logout";
 });
 
-Route::get('exammanager', array('uses' => 'InputController@showExamManager'));
-
-
-Route::get('input', array('uses' => 'InputController@showInputPage'));
-
-
-Route::get('instructions', function(){
-   return 'instructions page';
-});
-
-Route::get('setup/exam', array('uses' => 'SetupController@showExamCreate', 'as' => 'examcreate'));
-
-Route::get('setup/question', array('uses' => 'SetupController@showQuestionCreate', 'as' => 'questionsetup'));
-
-Route::get('setup/element', array('uses' => 'SetupController@showElementCreate', 'as' => 'commentsetup' ));
-
-Route::get('studentmanager', array('uses' => 'StudentController@showStudentUploader'));
-
+// Public routes for students to view
 Route::get('studentview', function(){
     return 'student view';
 });
 
+// Reporting and analytics
 Route::get('report/analytics', function(){
     return "This will eventually be the analytics page";
 });
 
+// Grading
 Route::get('report/gradeassign', array('uses' => 'ReportController@showGradeAssign'));
 
+// other
 Route::get('report/qualitycontrol', function(){
     return "This will eventually be the quality control page";
 });
 
 /* NEW routes for exam selection and creation below */
-
+// Select exam page
 Route::get('select','ExamController@index');
+
+// Routes for exam controls
 Route::resource('exam', 'ExamController');
 /*
-Route::get('exam', 'ExamController@index');
-Route::get('exam/create', 'ExamController@create');
-Route::post('exam', 'ExamController@store');
-Route::get('exam/{id}', 'ExamController@show');
-Route::get('exam/{id}/edit', 'ExamController@edit');
-Route::patch('exam/{id}', 'ExamController@update');
-Route::delete('exam/{id}', 'ExamController@destroy');
+Route::get('exam', 'ExamController@index'); // get all exams for user
+Route::get('exam/create', 'ExamController@create'); // display the create exam form
+Route::post('exam', 'ExamController@store'); // save a new exam
+Route::get('exam/{exam}', 'ExamController@show'); // show exam given by {id}
+Route::get('exam/{exam}/edit', 'ExamController@edit'); // get form to edit element {id}
+Route::patch('exam/{exam}', 'ExamController@update'); // save changes to element {id}
+Route::delete('exam/{exam}', 'ExamController@destroy'); // delete element {id}
 */
 
 /* Routes for questions */
-Route::resource('question', 'QuestionController');
+Route::resource('exam.question', 'QuestionController');
 /*
 Route::get('exam/{id}/question', 'QuestionController@index');
 Route::get('exam/{id}/question/create', 'QuestionController@create');
@@ -97,7 +85,7 @@ Route::delete('exam/{id}/question/{question}', 'QuestionController@destroy');
 */
 
 /* Routes for Elements */
-Route::resource('element', 'ElementController');
+Route::resource('exam.question.element', 'ElementController');
 /*
 Route::get('exam/{id}/question/{id}/element', 'ElementController@index');
 Route::get('exam/{id}/question/{id}/element/create', 'ElementController@create');
@@ -111,6 +99,7 @@ Route::delete('exam/{id}/question/{id}/element/{id}', 'ElementController@destroy
 /* Routes for Students */
 Route::resource('roster', 'StudentController');
 
+/*
 Route::get('student', 'StudentController@index'); //get students
 Route::get('student/create', 'StudentController@create'); // request form to create student
 Route::post('student', 'StudentController@store'); // upload a new student
@@ -118,3 +107,4 @@ Route::get('student/{id}', 'StudentController@show'); // show student
 Route::get('student/{id}/edit', 'StudentController@edit'); // edit a student given by {id}
 Route::patch('student/{id}', 'StudentController@update'); //update given student
 Route::delete('student/{id}', 'StudentController@destroy'); // delete student
+*/

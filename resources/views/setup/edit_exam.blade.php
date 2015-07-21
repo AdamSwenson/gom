@@ -9,7 +9,7 @@
 
 @extends('layouts.master')
 
-@section('pageTitle', 'Empty')
+@section('pageTitle', 'Edit Exam')
 @section('description', 'Edit an exam')
 
 @section('cssLinks')
@@ -18,24 +18,24 @@
 
 @section('body')
 
- <div id="editExam">
-  <div class="section">
-   <div class="container">
-    <nav>
-     <ul class="pager">
-      <li class="next">
-       <a href="#">Next <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
-      </li>
-     </ul>
-    </nav>
-    <h2>Edit Exam</h2>
+    <div id="editExam">
+        <div class="section">
+            <div class="container">
+                <nav>
+                    <ul class="pager">
+                        <li class="next">
+                            <a href="#">Next <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+                        </li>
+                    </ul>
+                </nav>
+                <h2>Edit Exam</h2>
 
-    @include('setup.exam_form')
-   </div>
-  </div>
- </div>
+                @include('setup.exam_form')
+            </div>
+        </div>
+    </div>
 
- @include('errors.list')
+    @include('errors.list')
 
 @endsection
 
