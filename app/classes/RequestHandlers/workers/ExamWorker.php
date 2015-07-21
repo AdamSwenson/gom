@@ -13,6 +13,8 @@ use App\classes\ExamClasses\dao\ExamDAO;
 use App\classes\ExamClasses\service\CurrentExamManager;
 use App\classes\ExamClasses\service\ExamCreator;
 use App\classes\ExamClasses\service\LockManager;
+use App\classes\ExamClasses\service\ReleaseManager;
+use App\classes\PseudoIDClasses\service\ManagerFactory;
 use \App\classes\RequestHandlers\workers\IRequestWorker;
 use App\classes\RestrictorClasses\dao\RestrictorDAO;
 
@@ -82,19 +84,19 @@ class ExamWorker extends IRequestWorker
 
     public function releaseExam($request)
     {
-        $release_manager = new \App\classes\ExamClasses\service\ReleaseManager();
+        $release_manager = new ReleaseManager();
         $release_manager->set_response_handler($this->response_handler);
         $release_manager->load_exam_dao(new ExamDAO());
-        $release_manager->set_pseudoID_manager(new \App\classes\PseudoIDClasses\service\ManagerFactory());
+        $release_manager->set_pseudoID_manager(new ManagerFactory());
         $release_manager->execute($request);
     }
 
     public function unreleaseExam($request)
     {
-        $release_manager = new \App\classes\ExamClasses\service\ReleaseManager();
+        $release_manager = new ReleaseManager();
         $release_manager->set_response_handler($this->response_handler);
         $release_manager->load_exam_dao(new ExamDAO());
-        $release_manager->set_pseudoID_manager(new \App\classes\PseudoIDClasses\service\ManagerFactory());
+        $release_manager->set_pseudoID_manager(new ManagerFactory());
         $release_manager->execute($request);
     }
 

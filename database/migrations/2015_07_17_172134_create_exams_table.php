@@ -22,6 +22,8 @@ class CreateExamsTable extends Migration
             $table->boolean('released');
             $table->timestamps();
 
+            $table->unique(['user_id', 'term', 'topic', 'year']);
+
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')

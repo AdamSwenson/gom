@@ -47,4 +47,9 @@ class Element extends Model
     {
         return $this->belongsToMany('App\Exam', 'element_assignments');
     }
+
+    public function scores()
+    {
+        return $this->hasManyThrough('App\ElementScore', 'App\ElementAssignment');
+    }
 }

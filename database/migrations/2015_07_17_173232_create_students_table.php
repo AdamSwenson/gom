@@ -18,8 +18,10 @@ class CreateStudentsTable extends Migration
             $table->integer('studentId');
             $table->string('studentName');
             $table->string('email');
-
             $table->timestamps();
+
+            $table->unique(['user_id', 'studentId']);
+            $table->unique(['user_id', 'email']);
 
             $table->foreign('user_id')
                 ->references('id')

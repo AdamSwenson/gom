@@ -31,6 +31,11 @@ class Question extends Model
     }
 
     #------------ foreign keys
+    public function exam()
+    {
+        return $this->belongsToMany('App\Exam', 'question_assignments');
+    }
+
     public function user()
     {
         return $this->belongsTo('App\User');
@@ -41,8 +46,9 @@ class Question extends Model
         return $this->hasMany('App\QuestionAssignment');
     }
 
-    public function exam()
+    public function scores()
     {
-        return $this->belongsToMany('App\Exam', 'question_assignments');
+        return $this->hasMany('App\QuestionScore');
     }
+
 }

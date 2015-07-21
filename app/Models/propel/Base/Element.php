@@ -36,7 +36,7 @@ use Propel\Runtime\Util\PropelDateTime;
  *
 * @package    propel.generator..Base
 */
-abstract class Element implements ActiveRecordInterface, IElement
+abstract class Element implements ActiveRecordInterface, IElement, \ObjectInterfaces\IElement
 {
     /**
      * TableMap class name

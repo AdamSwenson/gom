@@ -50,6 +50,14 @@ class ExamDAO implements IExamDAO
      */
     public function save_new_exam($year, $term, $topic)
     {
+        $exam = \App\Exam::create(
+            [
+                'year' => $year,
+                'term' => $term,
+                'topic' => $topic
+            ]
+        );
+
         $exam = ExamQuery::create()
             ->filterByUser($this->user)
             ->filterByExamyear($year)
@@ -75,10 +83,11 @@ class ExamDAO implements IExamDAO
      */
     public function delete_exam(\Exam $exam)
     {
-        if($this->isLoggedIn())
+        if ($this->isLoggedIn())
         {
             return $exam->delete($this->connection);
-        }else{
+        } else
+        {
             throw new CredentialsException("delete exam");
         }
     }
@@ -92,6 +101,7 @@ class ExamDAO implements IExamDAO
         $exams = \ExamQuery::create()
             ->filterByUser($this->user)
             ->find($this->connection);
+
         return $exams;
     }
 
@@ -105,6 +115,7 @@ class ExamDAO implements IExamDAO
             ->filterByUser($this->user)
             ->filterByLocked(0)
             ->find();
+
         return $exams;
     }
 
@@ -117,6 +128,7 @@ class ExamDAO implements IExamDAO
     public function lock_exam(\Exam $exam)
     {
         $exam->setLocked(1);
+
         return $exam->save($this->connection);
     }
 
@@ -129,6 +141,7 @@ class ExamDAO implements IExamDAO
     public function unlock_exam(\Exam $exam)
     {
         $exam->setLocked(0);
+
         return $exam->save($this->connection);
     }
 
@@ -141,6 +154,7 @@ class ExamDAO implements IExamDAO
     public function mark_exam_released(\Exam $exam)
     {
         $exam->setReleased(1);
+
         return $exam->save($this->connection);
     }
 
@@ -153,10 +167,11 @@ class ExamDAO implements IExamDAO
     public function unmark_exam_released(\Exam $exam)
     {
         $exam->setReleased(0);
-        if(isset($this->connection))
+        if (isset($this->connection))
         {
             return $exam->save($this->connection);
-        }else{
+        } else
+        {
             return $exam->save();
         }
     }

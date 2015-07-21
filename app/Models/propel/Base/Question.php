@@ -37,7 +37,7 @@ use Propel\Runtime\Util\PropelDateTime;
  *
 * @package    propel.generator..Base
 */
-abstract class Question implements ActiveRecordInterface
+abstract class Question implements ActiveRecordInterface, IQuestion
 {
     /**
      * TableMap class name

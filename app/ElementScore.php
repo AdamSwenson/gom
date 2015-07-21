@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ElementScore extends Model
 {
-    protected $fillable =[];
+    protected $fillable = [];
 
     /**
      * Associates with user
@@ -19,7 +19,7 @@ class ElementScore extends Model
 
     public function setElementscore($score)
     {
-        $this->attributes['elementScore'] = $score;
+        $this->attributes['score'] = $score;
     }
 
 #---- foreign keys
@@ -28,6 +28,17 @@ class ElementScore extends Model
     {
         return $this->belongsTo('App\User');
     }
+
+    public function exam()
+    {
+        return $this->belongsTo('App\Exam');
+    }
+
+    public function element()
+    {
+        return $this->belongsTo('App\Element');
+    }
+
 
     public function elementAssignment()
     {

@@ -67,7 +67,7 @@ class Exam extends Model
 
     public function elementScores()
     {
-        return $this->hasMany('App\ElementScore', 'App\ElementAssignment');
+        return $this->hasManyThrough('App\ElementScore', 'App\ElementAssignment');
     }
 
     /**

@@ -3,9 +3,9 @@
  * Created by PhpStorm.
  * User: adam
  * Date: 7/20/15
- * Time: 9:11 AM
+ * Time: 5:18 PM
  */
-namespace App\Classes\ElementClasses;
+namespace ObjectInterfaces;
 
 use Base\Element;
 use DateTime;
@@ -31,21 +31,6 @@ use User as ChildUser;
  */
 interface IElement
 {
-
-    /**
-     * Export the current object properties to a string, using a given parser format
-     * <code>
-     * $book = BookQuery::create()->findPk(9012);
-     * echo $book->exportTo('JSON');
-     *  => {"Id":9012,"Title":"Don Juan","ISBN":"0140422161","Price":12.99,"PublisherId":1234,"AuthorId":5678}');
-     * </code>
-     *
-     * @param  mixed $parser A AbstractParser instance, or a format name ('XML', 'YAML', 'JSON', 'CSV')
-     * @param  boolean $includeLazyLoadColumns (optional) Whether to include lazy load(ed) columns. Defaults to TRUE.
-     * @return string  The exported data
-     */
-    public function exportTo($parser, $includeLazyLoadColumns = true);
-
     /**
      * Get the [id] column value.
      *
@@ -147,6 +132,34 @@ interface IElement
      */
     public function setUserId($v);
 
+    /**
+     * Sets the value of [created_at] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\Element The current object (for fluent API support)
+     */
+    public function setCreatedAt($v);
+
+    /**
+     * Sets the value of [updated_at] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\Element The current object (for fluent API support)
+     */
+    public function setUpdatedAt($v);
+    /**
+     * Reloads this object from datastore based on primary key and (optionally) resets all associated objects.
+     *
+     * This will only work if the object has been saved and has a valid primary key set.
+     *
+     * @param      boolean $deep (optional) Whether to also de-associated any related objects.
+     * @param      ConnectionInterface $con (optional) The ConnectionInterface connection to use.
+     * @return void
+     * @throws PropelException - if this object is deleted, unsaved or doesn't have pk match in db
+     */
+    public function reload($deep = false, ConnectionInterface $con = null);
 
     /**
      * Removes this object from datastore and sets delete attribute.
@@ -174,29 +187,16 @@ interface IElement
      */
     public function save(ConnectionInterface $con = null);
 
-
     /**
-     * Exports the object as an array.
+     * Retrieves a field from the object by name passed in as a string.
      *
-     * You can specify the key type of the array by passing one of the class
-     * type constants.
-     *
-     * @param     string $keyType (optional) One of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME,
-     *                    TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
-     *                    Defaults to TableMap::TYPE_PHPNAME.
-     * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
-     * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
-     * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
-     *
-     * @return array an associative array containing the field names (as keys) and field values
+     * @param      string $name name
+     * @param      string $type The type of fieldname the $name is of:
+     *                     one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
+     *                     TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
+     *                     Defaults to TableMap::TYPE_PHPNAME.
+     * @return mixed Value of field.
      */
-    public function toArray(
-        $keyType = TableMap::TYPE_PHPNAME,
-        $includeLazyLoadColumns = true,
-        $alreadyDumpedObjects = array(),
-        $includeForeignObjects = false
-    );
-
     /**
      * Makes a copy of this object that will be inserted as a new row in table when saved.
      * It creates a new object filling in the simple attributes, but skipping any primary
@@ -229,6 +229,16 @@ interface IElement
      */
     public function getUser(ConnectionInterface $con = null);
 
+    /**
+     * Clears out the collElementScores collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addElementScores()
+     */
+    public function clearElementScores();
 
     /**
      * Gets an array of ChildElementScore objects which contain a foreign key that references this object.
@@ -284,6 +294,16 @@ interface IElement
      */
     public function removeElementScore(ChildElementScore $elementScore);
 
+    /**
+     * Clears out the collElementAssignments collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addElementAssignments()
+     */
+    public function clearElementAssignments();
 
     /**
      * Gets an array of ChildElementAssignment objects which contain a foreign key that references this object.
@@ -343,28 +363,6 @@ interface IElement
      */
     public function removeElementAssignment(ChildElementAssignment $elementAssignment);
 
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Element is new, it will return
-     * an empty collection; or if this Element has previously
-     * been saved, it will retrieve related ElementAssignments from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Element.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildElementAssignment[] List of ChildElementAssignment objects
-     */
-    public function getElementAssignmentsJoinUser(
-        Criteria $criteria = null,
-        ConnectionInterface $con = null,
-        $joinBehavior = Criteria::LEFT_JOIN
-    );
 
     /**
      * Clears the current object, sets all attributes to their default values and removes

@@ -25,6 +25,10 @@ class QuestionScore extends Model
         $this->attributes['score'] = $score;
     }
 
+
+    public function exam()
+    {}
+
     /**
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -37,5 +41,10 @@ class QuestionScore extends Model
     public function questionAssignment()
     {
         return $this->belongsTo('App\QuestionAssignment');
+    }
+
+    public function question()
+    {
+        return $this->belongsTo('App\Question');
     }
 }
