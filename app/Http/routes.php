@@ -74,3 +74,52 @@ Route::get('report/qualitycontrol', function(){
 });
 
 
+//=======
+/* NEW routes for exam selection and creation below */
+
+Route::get('select','ExamController@index');
+Route::resource('exam', 'ExamController');
+/*
+Route::get('exam', 'ExamController@index');
+Route::get('exam/create', 'ExamController@create');
+Route::post('exam', 'ExamController@store');
+Route::get('exam/{id}', 'ExamController@show');
+Route::get('exam/{id}/edit', 'ExamController@edit');
+Route::patch('exam/{id}', 'ExamController@update');
+Route::delete('exam/{id}', 'ExamController@destroy');
+*/
+
+/* Routes for questions */
+Route::resource('question', 'QuestionController');
+/*
+Route::get('exam/{id}/question', 'QuestionController@index');
+Route::get('exam/{id}/question/create', 'QuestionController@create');
+Route::post('exam/{id}/question', 'QuestionController@store');
+Route::get('exam/{id}/question/{question}', 'QuestionController@show');
+Route::get('exam/{id}/question/edit', 'QuestionController@edit');
+Route::patch('exam/{id}/question/{question}', 'QuestionController@update');
+Route::delete('exam/{id}/question/{question}', 'QuestionController@destroy');
+*/
+
+/* Routes for Elements */
+Route::resource('element', 'ElementController');
+/*
+Route::get('exam/{id}/question/{id}/element', 'ElementController@index');
+Route::get('exam/{id}/question/{id}/element/create', 'ElementController@create');
+Route::post('exam/{id}/question/{id}/element', 'ElementController@store');
+Route::get('exam/{id}/question/{id}/element/{id}', 'ElementController@show');
+Route::get('exam/{id}/question/{id}/element/edit', 'ElementController@edit');
+Route::patch('exam/{id}/question/{id}/element/{id}', 'ElementController@update');
+Route::delete('exam/{id}/question/{id}/element/{id}', 'ElementController@destroy');
+*/
+
+/* Routes for Students */
+Route::resource('roster', 'StudentController');
+
+Route::get('student', 'StudentController@index'); //get students
+Route::get('student/create', 'StudentController@create'); // request form to create student
+Route::post('student', 'StudentController@store'); // upload a new student
+Route::get('student/{id}', 'StudentController@show'); // show student
+Route::get('student/{id}/edit', 'StudentController@edit'); // edit a student given by {id}
+Route::patch('student/{id}', 'StudentController@update'); //update given student
+Route::delete('student/{id}', 'StudentController@destroy'); // delete student

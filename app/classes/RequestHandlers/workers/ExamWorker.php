@@ -49,21 +49,21 @@ class ExamWorker extends IRequestWorker
         }
     }
 
-    /**
-     * Create new exam and restrictors
-     * @param $request
-     */
-    public function createExam($request)
-    {
-        $exam_creator = new ExamCreator();
-        $exam_creator->set_response_handler($this->response_handler);
-        $exam_creator->setCurrentExamManager(new CurrentExamManager());
-        $restrictor_dao = new RestrictorDAO();
-        $restrictor_dao->set_cleaner($this->cleaner);
-        $exam_creator->load_restrictor_dao($restrictor_dao);
-        $exam_creator->load_exam_dao(new ExamDAO());
-        $exam = $exam_creator->create_exam($request->http);
-    }
+//    /**
+//     * Create new exam and restrictors
+//     * @param $request
+//     */
+//    public function createExam($request)
+//    {
+//        $exam_creator = new ExamCreator();
+//        $exam_creator->set_response_handler($this->response_handler);
+//        $exam_creator->setCurrentExamManager(new CurrentExamManager());
+//        $restrictor_dao = new RestrictorDAO();
+//        $restrictor_dao->set_cleaner($this->cleaner);
+//        $exam_creator->load_restrictor_dao($restrictor_dao);
+//        $exam_creator->load_exam_dao(new ExamDAO());
+//        $exam = $exam_creator->create_exam($request->http);
+//    }
 
     public function lockExam($request)
     {
@@ -104,4 +104,33 @@ class ExamWorker extends IRequestWorker
     public function cloneExamination($request)
     {
     }
+
+    // new methods to handle exam operations
+    public function getExam($examId){
+
+    }
+
+    public function getAllExams($classId = null){
+        // if $classId = null, return all exams related to user
+    }
+
+    /**
+     * @param $examName
+     * @param $year
+     * @param $term
+     * @param $classId
+     */
+    public function createExam($examName, $year, $term, $classId)
+    {
+        $exam_creator = new ExamCreator();
+        $exam_creator->set_response_handler($this->response_handler);
+        $exam_creator->setCurrentExamManager(new CurrentExamManager());
+        $restrictor_dao = new RestrictorDAO();
+        $restrictor_dao->set_cleaner($this->cleaner);
+        $exam_creator->load_restrictor_dao($restrictor_dao);
+        $exam_creator->load_exam_dao(new ExamDAO());
+        $exam = $exam_creator->create_exam($request->http);
+    }
+
+    public function deleteExam($examId) {}
 }
