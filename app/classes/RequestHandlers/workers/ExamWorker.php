@@ -102,4 +102,17 @@ class ExamWorker extends IRequestWorker
     public function cloneExamination($request)
     {
     }
+
+    // new methods to handle exam operations
+    public function getExam($examId){
+
+    }
+
+    public function getAllExams($classId = null){
+        // if $classId = null, return all exams related to user
+    }
+
+    public function createExam($examName, $year, $term, $classId) {}
+
+    public function deleteExam($examId) {}
 }
