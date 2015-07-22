@@ -36,7 +36,7 @@ class ExamController extends Controller
     public function create()
     {
         //create new exam
-
+        return view('/setup/create_exam');
     }
 
     /**
@@ -46,7 +46,7 @@ class ExamController extends Controller
      */
     public function store()
     {
-        //
+
     }
 
     /**
@@ -57,7 +57,7 @@ class ExamController extends Controller
      */
     public function show($id)
     {
-        //
+        // Maybe write a view to show an exam without editing?
     }
 
     /**

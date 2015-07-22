@@ -21,12 +21,12 @@ class QuestionController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
+     * @param id
      * @return Response
      */
-    public function create()
+    public function create($exam)
     {
-        //
+
     }
 
     /**
@@ -53,12 +53,29 @@ class QuestionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int  $exam
      * @return Response
      */
-    public function edit($id)
+    public function edit($exam)
     {
-        //
+        // default data for dev purposes
+        $q1 = [ 'qName' => 'teat name #1',
+            'qDesc' => 'description 1 here',
+            'qOrder' => 1];
+
+        $q2 = [ 'qName' => 'test name #2',
+            'qDesc' => 'description 2 here',
+            'qOrder' => 2];
+
+
+        $questions = [ '0' => $q1,
+            '1' => $q2 ];
+
+        $examName = 'History 101 Exam 1, Fall 2015';
+
+        //return view('/setup/edit_question');
+        return view('setup.edit_question')->with('questions', $questions)->with('examName', $examName);
+
     }
 
     /**

@@ -9,9 +9,10 @@
 -->
 
 <!-- this Div will become the element template -->
-<hr/>
-<div id="elementPane">
-    <h4>Element #1</h4>
+
+<div id="elementForm">
+    <hr/>
+    <h4>Element #<span id="elementNumber">1</span></h4>
     <div class="input-group">
         <span class="input-group-addon" id="elementLabel">Element Name</span>
         <input id="elementName" type="text" class="form-control input"
@@ -22,11 +23,11 @@
     <div class="form-group">
         <textarea class="form-control" rows="4" id="questionText" placeholder="Explain in detail what needed to be done in order to fully answer this element. This will form the basis for the response seen by the student."></textarea>
     </div>
-    <button class="btn btn-default" id="moveUp"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+    <button class="btn btn-default btn-sml" id="moveUp"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
     </button>
-    <button class="btn btn-default" id="moveDown"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+    <button class="btn btn-default btn-sml" id="moveDown"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
     </button>
-    <button class="btn btn-info" id="customizeElement" data-toggle="modal" data-target="#customizeResponse">
+    <button class="btn btn-info btn-sml" id="customizeElement" data-toggle="modal" data-target="#customizeResponse">
         <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
         Customize Responses</button>
 
@@ -61,7 +62,7 @@
         </div>
     </div>
 
-    <button class="btn btn-warning" id="deleteElement"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+    <button class="btn btn-warning btn-sml" id="deleteElement" onclick="deleteElement(this.parentNode.id)"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
         Delete</button>
     <br>
 </div>
