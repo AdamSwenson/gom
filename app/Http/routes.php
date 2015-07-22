@@ -73,13 +73,15 @@ Route::delete('exam/{exam}', 'ExamController@destroy'); // delete element {id}
 */
 
 /* Routes for questions */
+Route::get('exam/{exam}/question/edit', 'QuestionController@edit');
 Route::resource('exam.question', 'QuestionController');
+
 /*
 Route::get('exam/{id}/question', 'QuestionController@index');
 Route::get('exam/{id}/question/create', 'QuestionController@create');
 Route::post('exam/{id}/question', 'QuestionController@store');
 Route::get('exam/{id}/question/{question}', 'QuestionController@show');
-Route::get('exam/{id}/question/edit', 'QuestionController@edit');
+Route::get('exam/{id}/question/{question}/edit', 'QuestionController@edit');
 Route::patch('exam/{id}/question/{question}', 'QuestionController@update');
 Route::delete('exam/{id}/question/{question}', 'QuestionController@destroy');
 */

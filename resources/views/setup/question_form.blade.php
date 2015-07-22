@@ -1,7 +1,7 @@
 <!-- this form describes the input form and buttons for an individual question -->
-<div id="questionForm{{$q['qOrder']}}">
+<div id="question{{ $q['qOrder'] }}">
     <hr/>
-    <h4>Question #<span id="questionNumber">{{ $q['qOrder'] }}</span></h4>
+    <h4>Question #<span id="questionNumber{{  $q['qOrder'] }}">{{ $q['qOrder'] }}</span></h4>
 
     <div class="input-group">
         <span class="input-group-addon" id="questionLabel">Question Name</span>
