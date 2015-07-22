@@ -10,7 +10,7 @@
 
 <div class="input-group">
     <span class="input-group-addon" id="basic-addon1">Exam Name</span>
-    <input type="text" class="form-control input-lg" placeholder="Enter a descriptive name for this test (i.e. English 101 Exam #1)"
+    <input type="text" class="form-control input-lg" name="examid" placeholder="Enter a descriptive name for this test (i.e. English 101 Exam #1)"
            aria-describedby="basic-addon1">
 </div>
 <p></p>

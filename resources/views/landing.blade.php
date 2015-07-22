@@ -38,12 +38,12 @@
                     <!-- Something goes here -->
 
                 </div>
-                <form method="POST" action="{{url('account/home')}}" accept-charset="UTF-8" class="col-xs-4">
-                    <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                <form method="get" action="{{url('select')}}" accept-charset="UTF-8" class="col-xs-4">
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <h3 class="text-left"> Log In:</h3>
                     <div class="form-group ">
                         <input class="form-control" type="email" name="email"  placeholder="Enter email">
-                    </div>
+
                     <div class="form-group">
                         <input class="form-control" type="password" name="password" placeholder="Enter password">
                     </div>

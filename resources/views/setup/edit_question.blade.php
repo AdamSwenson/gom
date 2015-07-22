@@ -49,7 +49,7 @@
             </div>
             <!-- this Div will become the question template -->
             <?php $num = 1; ?>
-            @foreach($numOfQuestions as $question)
+            @foreach($questions as $q)
                 @include('setup.question_form')
                 <?php $num += 1; ?>
             @endforeach
