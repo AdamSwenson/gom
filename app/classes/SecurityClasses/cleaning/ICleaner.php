@@ -22,12 +22,14 @@ interface ICleaner
      * @return Value or Boolean. Returns the thing passed in if it is valid. False otherwise
      */
     public function validate($to_validate);
-   
+
     /**
      * This cleans the input and returns a legitimate value or FALSEs
      * @param type $to_clean
+     * @param $max_length
+     * @return
      */
-    public function sanitize($to_clean);
+    public function sanitize($to_clean, $max_length);
     
     /**
      * Allows to set a custom max length for the thing being filtered and sanitized

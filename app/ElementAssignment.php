@@ -2,9 +2,8 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 
-class ElementAssignment extends Model
+class ElementAssignment extends BaseModel
 {
 
     public function createAssignment(\App\Exam $exam, \App\Question $question, \App\Element $element, $score )

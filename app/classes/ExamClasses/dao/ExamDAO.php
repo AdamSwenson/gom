@@ -9,8 +9,11 @@
 namespace App\classes\ExamClasses\dao;
 
 
+use App\classes\SecurityClasses\cleaning\CleanerFactory;
+use App\classes\SecurityClasses\cleaning\ICleanerFactory;
 use App\classes\Traits\UserTraits;
 use App\classes\UserManagement\errors\CredentialsException;
+use App\Exam;
 use Base\ExamQuery;
 use Propel\Runtime\Connection\ConnectionWrapper;
 
@@ -24,11 +27,22 @@ class ExamDAO implements IExamDAO
     /** @var \User */
     public $user;
 
+    /** @var  $cleaner ICleanerFactory */
+    public $cleaner;
+
     function __construct()
     {
         $this->user = $this->getUser();
     }
 
+    /**
+     * Loads the class which handles cleaning before query
+     * @param ICleanerFactory $cleanerFactory
+     */
+    public function set_cleaner(ICleanerFactory $cleanerFactory)
+    {
+        $this->cleaner = $cleanerFactory;
+    }
 
     /**
      * Sets a connection object for use with transactions
@@ -44,34 +58,43 @@ class ExamDAO implements IExamDAO
      * Creates a new exam object, saves it, then returns it
      * @param  integer $year
      * @param string $term
-     * @param string $topic
-     * @return \Exam
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @param string $name
+     * @return Exam
+     * @throws \Exception
      */
-    public function save_new_exam($year, $term, $topic)
+    public function save_new_exam($year, $term, $name)
     {
-        $exam = \App\Exam::create(
-            [
-                'year' => $year,
-                'term' => $term,
-                'topic' => $topic
-            ]
-        );
-
-        $exam = ExamQuery::create()
-            ->filterByUser($this->user)
-            ->filterByExamyear($year)
-            ->filterByExamterm($term)
-            ->filterByExamtopic($topic)
-            ->findOneOrCreate();
-        $exam->save($this->connection);
+        try
+        {
+            $year_int = $this->cleaner->sanitize($year, CleanerFactory::INTEGER, 4000);
+            $clean_term = $this->cleaner->sanitize($term, CleanerFactory::STRING, Exam::MAX_TERM_LENGTH);
+            $clean_name = $this->cleaner->sanitize($name, CleanerFactory::STRING, Exam::MAX_NAME_LENGTH);
+            $exam = new Exam();
+            $exam->setYear($year_int);
+            $exam->setTerm($clean_term);
+            $exam->setName($clean_name);
+            $exam->save();
+            return $exam;
+        } catch (\Exception $e)
+        {
+        throw $e;
+        }
+//
+//
+//        $exam = ExamQuery::create()
+//            ->filterByUser($this->user)
+//            ->filterByExamyear($year)
+//            ->filterByExamterm($term)
+//            ->filterByExamtopic($topic)
+//            ->findOneOrCreate();
+//        $exam->save($this->connection);
 //        $exam = new \Exam();
 //        $exam->setUser($this->user);
 //        $exam->setTopic($topic);
 //        $exam->setYear($year);
 //        $exam->setTerm($term);
 //        $exam->save();
-        return $exam;
+
     }
 
     /**

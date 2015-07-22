@@ -1,5 +1,5 @@
 <?php
-
+use Auth;
 class TestCase extends Illuminate\Foundation\Testing\TestCase
 {
     /**
@@ -9,6 +9,8 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      */
     protected $baseUrl = 'http://localhost';
 
+    public $faker;
+
     public static $userid = 1;
     /**
      * Creates the application.
@@ -17,12 +19,15 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      */
     public function createApplication()
     {
+        //        $this->user = \UserQuery::create()->filterById(self::$userid)->findOneOrCreate();
+        $this->faker = \Faker\Factory::create();
+
         $app = require __DIR__.'/../bootstrap/app.php';
 
         $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
         Auth::loginUsingId(self::$userid);
-        $this->user = \UserQuery::create()->filterById(self::$userid)->findOneOrCreate();
+
         return $app;
     }
 }

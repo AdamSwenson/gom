@@ -8,20 +8,47 @@
 
 namespace App\classes\RequestHandlers\workers;
 
-class ElementWorker extends IRequestWorker {
+use App\classes\RequestHandlers\dao\ElementDAO;
+
+class ElementWorker extends IRequestWorker
+{
 
 // NOTE: we may need a method to set the order that questions appear
+    public $dao;
 
-    public function getElement($elementId){
+    public function __construct()
+    {
+        $this->dao = new ElementDAO();
     }
 
-    public function getAllElements($questionId){
+    public function getElement($elementId)
+    {
+        $element = $this->dao->loadElementById($elementId);
+        return $element;
+    }
+
+    public function getAllElements($questionId)
+    {
         //
     }
 
-    public function createElement($elementName, $respGeneric, $respAbsent, $respPoor, $respFair, $respGood) {}
+    public function createElement($elementName, $respGeneric, $respAbsent, $respPoor, $respFair, $respGood)
+    {
+        $element = $this->dao->createElement($elementName, '', $respGeneric);
+        if(!empty($element))
+        {
+            $this->dao->addValencedContent($element->id, ElementDAO::VALENCE_ABSENT, $respAbsent);
+            $this->dao->addValencedContent($element->id, ElementDAO::VALENCE_POOR, $respPoor);
+            $this->dao->addValencedContent($element->id, ElementDAO::VALENCE_OK, $respFair);
+            $this->dao->addValencedContent($element->id, ElementDAO::VALENCE_EXCELLENT, $respGood);
+        }
 
-    public function deleteElement($elementId) {}
+    }
+
+    public function deleteElement($elementId)
+    {
+        return $this->dao->deleteElement($elementId);
+    }
 
     public function handle($request)
     {

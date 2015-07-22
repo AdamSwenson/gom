@@ -2,6 +2,12 @@
 
 <project name="gom" description="gradeomatic tasks" default="main">
 
+    <target name="refreshAndReseed" description="Runs artisan migrate:refresh and then seeds the database using laravel tools">
+
+        <exec command="composer dump-autoload" passthru="true"/>
+        <exec command="php artisan migrate:refresh --seed" passthru="true"/>
+    </target>
+
     <target name="rebuild" description="Updates the mysql schema and updates composer's autoloader (important if you have added classes)">
         <!--rebuild db with arbitrary data-->
         <echo message="Updating database" />

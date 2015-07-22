@@ -27,7 +27,7 @@ class StudentTableSeeder extends Seeder
                 'studentId' => $this->faker->numberBetween(100000000, 999999999),
                 'email' => $this->faker->email()
             ]);
-            $s->setUser(1);
+//            $s->setUser(1);
             $s->save();
         }
     }

@@ -2,9 +2,8 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 
-class ElementScore extends Model
+class ElementScore extends BaseModel
 {
     protected $fillable = [];
 

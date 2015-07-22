@@ -28,7 +28,7 @@ class QuestionAssignmentTableSeeder extends Seeder
                     $qa = \App\QuestionAssignment::create(
                         [
                             'exam_id' => $exam->id,
-                            'user_id' => $exam->user_id,
+//                            'user_id' => $exam->user_id,
                             'question_id' => $faker->randomElement($questionIds),
                             'question_number' => $qnum
                         ]);

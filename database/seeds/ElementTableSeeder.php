@@ -29,7 +29,7 @@ class ElementTableSeeder extends Seeder
                 'displayText' => $this->faker->text(200),
                 'commentText' => $this->faker->paragraph()
             ]);
-            $element->setUser(1);
+//            $element->setUser(1);
             $element->save();
         }
     }

@@ -20,7 +20,7 @@ class ICleanerFactoryMock extends MockParent implements ICleanerFactory
         return $this->response;
     }
 
-    public function sanitize($to_clean, $type)
+    public function sanitize($to_clean, $type, $max_length=null)
     {
         $this->record_call(__FUNCTION__, array($to_clean, $type));
         return $this->response;

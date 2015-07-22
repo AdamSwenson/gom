@@ -19,7 +19,7 @@ class FloatCleaner implements ICleaner
     
     protected $max_length;
     
-    public function sanitize($to_clean) {
+    public function sanitize($to_clean, $max_length) {
          if (is_numeric($to_clean)) {
             if (is_string($to_clean)) {
                 $to_clean = (float) $to_clean;

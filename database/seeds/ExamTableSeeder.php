@@ -32,11 +32,11 @@ class ExamTableSeeder extends Seeder
         for ($i = 0; $i < $num; $i++)
         {
             $exam = new \App\Exam([
-                'term' => \Faker\Factory::create()->word(),
-                'topic' => $this->faker->word(),
+                'term' => $this->faker->word(),
+                'name' => $this->faker->word(),
                 'year' => $this->faker->year()
             ]);
-            $exam->setUser(1);
+           // $exam->setUser(1);
             $exam->save();
 //            \App\Exam::create(
 //                [

@@ -26,7 +26,7 @@ class ElementScoresTableSeeder extends Seeder
                 try
                 {
                     \App\ElementScore::create([
-                        'user_id' => $qa->user_id,
+//                        'user_id' => $qa->user_id,
                         'element_assignment_id' => $qa->id,
                         'student_id' => $faker->randomElement($studentIds),
                         'score' => $faker->randomFloat(2, 0, 10)

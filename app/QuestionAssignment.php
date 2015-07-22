@@ -2,11 +2,13 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
-class QuestionAssignment extends Model
+class QuestionAssignment extends BaseModel
 {
     protected $fillable = [];
+
+    protected $casts = [
+      'questionNumber' => 'integer'
+    ];
 
     /**
      * Associates with user
@@ -15,6 +17,17 @@ class QuestionAssignment extends Model
     public function setUser($user_id)
     {
         $this->attributes['user_id'] = $user_id;
+    }
+
+#--------------- Queries
+    public function scopeOnExam($query, $examId)
+    {
+        return $query->whereExamId($examId);
+    }
+
+    public function scopeQuestionNumber($query, $questionNumber)
+    {
+        return $query->whereQuestionNumber($questionNumber);
     }
 
 # -------------- Foreign key associations

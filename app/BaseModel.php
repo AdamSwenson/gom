@@ -2,7 +2,9 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class BaseModel extends Model
 {
@@ -11,22 +13,47 @@ class BaseModel extends Model
     {
         parent::boot();
 
+        static::addGlobalScope(new \App\UserOnlyScope());
+
         static::creating(function($model)
         {
-            $user = Auth::user();
-            if ( ! $user->isValid()) return false;
-            $model->user_id = $user->id;
+            $user = \Auth::user();
             $model->user_id = $user->id;
         });
 
         static::updating(function($model)
         {
-            $user = Auth::user();
-            if ( ! $user->isValid()) return false;
+            $user = \Auth::user();
             $model->user_id = $user->id;
         });
+
+        static::deleting(function($model){
+            $user = \Auth::user();
+            $model->user_id = $user->id;
+        });
+
     }
 
+
+    /**
+     * Get the [id] column value.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->attributes['id'];
+    }
+
+//    /**
+//     * Get random models
+//     * @param $query
+//     * @return
+//     */
+//    public function scopeRandomObject($query, $table)
+//    {
+//        return $query->orderByRaw('RAND()');
+//    }
 
 
 }

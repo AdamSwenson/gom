@@ -26,7 +26,7 @@ class KumiTableSeeder extends Seeder
                 'year' => $this->faker->year(),
                 'nickname' => $this->faker->text()
             ]);
-            $s->setUser(1);
+//            $s->setUser(1);
             $s->save();
         }
     }

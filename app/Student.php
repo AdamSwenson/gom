@@ -2,21 +2,39 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Student extends Model
+/**
+ * Class Student
+ *
+ * A student who will take an exam.
+ *
+ * Each student can take an exam exactly once.
+ *
+ * The sid property is a unique integer provided by the user, it is not the same as the id.
+ *
+ * @package App
+ */
+class Student extends BaseModel
 {
-    protected $fillable = ['sid', 'studentName', 'email'];
+    /** Maximum length in digits of the sid field (used in sanitizing) */
+    const MAX_SID_LENGTH = 15;
 
+    /** Maximum length in utf-8 characters of the studentName field (used in sanitizing) */
+    const MAX_NAME_LENGTH = 200;
 
-    /**
-     * Associates with user
-     * @param $user_id
-     */
-    public function setUser($user_id)
-    {
-        $this->attributes['user_id'] = $user_id;
-    }
+    /** Maximum length in utf-8 characters of the email field (used in sanitizing) */
+    const MAX_EMAIL_LENGTH = 300;
+
+    protected $fillable = [
+        'sid',
+        'studentName',
+        'email'];
+
+    protected $casts = [
+        'sid' => 'integer',
+        'studentName' => 'string',
+        'email' => 'string'
+    ];
+
 
 #-------- foreign keys
 

@@ -10,11 +10,11 @@ use App\classes\DbTestAids;
 
 require_once 'vendor/autoload.php';
 
-
-$username = putenv("DB_USERNAME=testuser4");
-$password = putenv("DB_PASSWORD=testpass4");
-$host = putenv("DB_HOST=localhost");
-$database = putenv("DB_DATABASE=gom_propel");
+//
+//$username = putenv("DB_USERNAME=testuser4");
+//$password = putenv("DB_PASSWORD=testpass4");
+//$host = putenv("DB_HOST=localhost");
+//$database = putenv("DB_DATABASE=gom_lar");
 //
 
 //require_once 'app/propel_config/config.php';

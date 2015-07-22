@@ -6,7 +6,7 @@
  * Time: 4:37 PM
  */
 
-namespace Exceptions;
+namespace App\Exceptions;
 
 /**
  * Class CustomException

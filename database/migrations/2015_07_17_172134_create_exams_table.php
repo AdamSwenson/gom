@@ -17,12 +17,12 @@ class CreateExamsTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->string('term');
             $table->integer('year');
-            $table->string('topic');
+            $table->string('name');
             $table->boolean('locked');
             $table->boolean('released');
             $table->timestamps();
 
-            $table->unique(['user_id', 'term', 'topic', 'year']);
+            $table->unique(['user_id', 'term', 'name', 'year']);
 
             $table->foreign('user_id')
                 ->references('id')

@@ -8,6 +8,8 @@
 
 namespace App\classes\SecurityClasses\cleaning;
 
+use App\Exceptions\InputTypeException;
+
 /**
  * Cleaner for standard text. Pretty much a dummy right now
  * 
@@ -22,12 +24,19 @@ class TextCleaner implements ICleaner {
     protected $max_length;
 
     /**
-     * Cleans email address 
+     * Cleans email address
      * @param type $to_clean
-     * @return boolean
+     * @param $max_length
+     * @return bool
+     * @throws InputTypeException
      */
-    public function sanitize($to_clean) {
-        return $to_clean;
+    public function sanitize($to_clean, $max_length) {
+        $cleanish = \trim($to_clean);
+        if((!empty($max_length)) && (\mb_strlen($cleanish) > $max_length))
+        {
+            throw new InputTypeException(InputTypeException::STRING);
+        }
+        return $cleanish;
         
 //        if ($this->validate($to_clean)) {
 //            $email = \filter_var($to_clean, \FILTER_SANITIZE_EMAIL); //now has valid for email characters 

@@ -26,7 +26,7 @@ class ElementAssignmentTableSeeder extends Seeder
                 {
                     $ea = \App\ElementAssignment::create(
                         [
-                            'user_id' => $qa->user_id,
+//                            'user_id' => $qa->user_id,
                             'question_assignment_id' => $qa->id,
                             'element_id' => $faker->randomElement($elementIds),
                             'subtask' => $subtask

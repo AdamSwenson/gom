@@ -17,6 +17,6 @@ interface ICleanerFactory {
     public function validate($to_validate, $type);
     
     
-    public function sanitize($to_clean, $type);
+    public function sanitize($to_clean, $type, $max_length=null);
 
 }

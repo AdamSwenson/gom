@@ -27,7 +27,7 @@ class QuestionTableSeeder extends Seeder
                 'questionName' => $this->faker->text(20),
                 'questionText' => $this->faker->text(200),
             ]);
-            $question->setUser(1);
+//            $question->setUser(1);
             $question->save();
         }
     }

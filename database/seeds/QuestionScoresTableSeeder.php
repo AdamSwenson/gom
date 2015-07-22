@@ -27,7 +27,7 @@ public static $studentsPerQuestion = 5;
                 try
                 {
                     \App\QuestionScore::create([
-                        'user_id' => $qa->user_id,
+//                        'user_id' => $qa->user_id,
                         'question_assignment_id' => $qa->id,
                         'student_id' => $faker->randomElement($studentIds),
                         'score' => $faker->randomFloat(2, 0, 10)
