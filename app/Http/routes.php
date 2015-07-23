@@ -62,8 +62,9 @@ Route::get('report/qualitycontrol', function(){
 });
 
 /* NEW routes for exam selection and creation below */
-
+// Select exam page
 Route::get('select','ExamController@index');
+Route::post('select','ExamController@index');
 Route::resource('exam', 'ExamController');
 /*
 Route::get('exam', 'ExamController@index'); // get all exams for user

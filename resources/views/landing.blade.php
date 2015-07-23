@@ -39,18 +39,18 @@
                     <!-- Something goes here -->
 
                 </div>
-                <form method="get" action="{{url('select')}}" accept-charset="UTF-8" class="col-xs-4">
-                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                <form method="post" action="{{url('select')}}" accept-charset="UTF-8" class="col-xs-4">
+                    <input type="hidden" name="_token" value="{{csrf_token()}}">
                     <h3 class="text-left"> Log In:</h3>
                     <div class="form-group ">
                         <input class="form-control" type="email" name="email"  placeholder="Enter email">
-
+                    </div>
                     <div class="form-group">
                         <input class="form-control" type="password" name="password" placeholder="Enter password">
                     </div>
                     <div class="checkbox">
                         <label><input type="checkbox"> Remember me</label>
-                        <label><a href="{{url('account/retrieve')}}">Forgot Password</a></label>
+                        <label><a>Forgot Password</a></label>
                     </div>
                     <input class="btn btn-default" type="submit" >
                     <a href="{{url('account/create')}}" class="btn btn-default" >Create Account</a>
