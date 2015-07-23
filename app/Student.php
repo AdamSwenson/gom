@@ -25,15 +25,20 @@ class Student extends BaseModel
     const MAX_EMAIL_LENGTH = 300;
 
     protected $fillable = [
-        'sid',
+        'studentIdentifier',
         'studentName',
         'email'];
 
     protected $casts = [
-        'sid' => 'integer',
+        'studentIdentifier' => 'integer',
         'studentName' => 'string',
         'email' => 'string'
     ];
+
+    public function __construct()
+    {
+        parent::boot();
+    }
 
 
 #-------- foreign keys

@@ -15,7 +15,7 @@ namespace App\classes\RequestHandlers\dao;
  *
  * @package App\classes\RequestHandlers\dao
  */
-class ElementAssignmentDAO
+class ElementAssignmentDAO implements IElementAssignmentDAO
 {
 
 

@@ -18,6 +18,11 @@ class QuestionScore extends BaseModel
         'score' => 'float'
     ];
 
+    public function __construct()
+    {
+        parent::boot();
+    }
+
     /**
      * Get the score
      * @return float

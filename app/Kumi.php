@@ -28,6 +28,10 @@ class Kumi extends BaseModel
         'year'
     ];
 
+    public function __construct()
+    {
+        parent::boot();
+    }
 
     /**
      * Sets the name of the class (kumi)

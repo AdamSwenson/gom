@@ -10,6 +10,7 @@ namespace App\classes\RequestHandlers\workers;
 
 
 use App\classes\RequestHandlers\dao\IElementDAOMock;
+use App\Comment;
 use App\Element;
 use App\classes\RequestHandlers\dao\ElementDAO;
 
@@ -18,6 +19,7 @@ class ElementWorkerTest extends \TestCase
 
     public $object;
     public $dao;
+    public $element;
 
     public function setUp()
     {
@@ -36,7 +38,6 @@ class ElementWorkerTest extends \TestCase
 
         $this->assertEquals('loadElementById', $this->dao->called);
         $this->assertEquals($elementId, $this->dao->called_list[0][1][0]);
-
     }
 
     public function testGetAllElements()
@@ -70,22 +71,22 @@ class ElementWorkerTest extends \TestCase
         //check that called make valenced
         $this->assertEquals('addValencedContent', $this->dao->called_list[1][0]);
         $this->assertEquals($eid, $this->dao->called_list[1][1][0]);
-        $this->assertEquals(ElementDAO::VALENCE_ABSENT, $this->dao->called_list[1][1][1]);
+        $this->assertEquals(Comment::VALENCE_ABSENT, $this->dao->called_list[1][1][1]);
         $this->assertEquals($respAbsent, $this->dao->called_list[1][1][2]);
 
         $this->assertEquals('addValencedContent', $this->dao->called_list[2][0]);
         $this->assertEquals($eid, $this->dao->called_list[2][1][0]);
-        $this->assertEquals(ElementDAO::VALENCE_POOR, $this->dao->called_list[2][1][1]);
+        $this->assertEquals(Comment::VALENCE_POOR, $this->dao->called_list[2][1][1]);
         $this->assertEquals($respPoor, $this->dao->called_list[2][1][2]);
 
         $this->assertEquals('addValencedContent', $this->dao->called_list[3][0]);
         $this->assertEquals($eid, $this->dao->called_list[3][1][0]);
-        $this->assertEquals(ElementDAO::VALENCE_OK, $this->dao->called_list[3][1][1]);
+        $this->assertEquals(Comment::VALENCE_OK, $this->dao->called_list[3][1][1]);
         $this->assertEquals($respFair, $this->dao->called_list[3][1][2]);
 
         $this->assertEquals('addValencedContent', $this->dao->called_list[4][0]);
         $this->assertEquals($eid, $this->dao->called_list[4][1][0]);
-        $this->assertEquals(ElementDAO::VALENCE_EXCELLENT, $this->dao->called_list[4][1][1]);
+        $this->assertEquals(Comment::VALENCE_EXCELLENT, $this->dao->called_list[4][1][1]);
         $this->assertEquals($respGood, $this->dao->called_list[4][1][2]);
     }
 

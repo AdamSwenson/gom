@@ -24,13 +24,12 @@ class ElementAssignmentTableSeeder extends Seeder
             {
                 try
                 {
-                    $ea = \App\ElementAssignment::create(
-                        [
-//                            'user_id' => $qa->user_id,
-                            'question_assignment_id' => $qa->id,
-                            'element_id' => $faker->randomElement($elementIds),
-                            'subtask' => $subtask
-                        ]);
+                    $eid = $faker->randomElement($elementIds);
+                    $ea = new \App\ElementAssignment();
+                    $ea->question_assignment_id = $qa->id;
+                    $ea->element_id = $eid;
+                    $ea->subtask = $subtask;
+
                     $ea->save();
                 }catch (\Exception $e)
                 {

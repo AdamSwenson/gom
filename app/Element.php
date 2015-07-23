@@ -13,6 +13,11 @@ class Element extends BaseModel
     /** Maximum length in utf-8 characters of the commentText field (used in sanitizing) */
     const MAX_COMMENT_LENGTH = 3000;
 
+    public function __construct()
+    {
+        parent::boot();
+    }
+
     protected $fillable = [
         'elementName',
         'displayText',
@@ -130,5 +135,10 @@ class Element extends BaseModel
     public function scores()
     {
         return $this->hasManyThrough('App\ElementScore', 'App\ElementAssignment');
+    }
+
+    public function comments()
+    {
+        return $this->belongsToMany('App\Comment', 'comment_element')->withTimestamps();
     }
 }

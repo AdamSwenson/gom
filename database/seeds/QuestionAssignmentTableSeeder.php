@@ -25,17 +25,16 @@ class QuestionAssignmentTableSeeder extends Seeder
             {
                 try
                 {
-                    $qa = \App\QuestionAssignment::create(
-                        [
-                            'exam_id' => $exam->id,
-//                            'user_id' => $exam->user_id,
-                            'question_id' => $faker->randomElement($questionIds),
-                            'question_number' => $qnum
-                        ]);
+                    $eid = $faker->randomElement($questionIds);
+                    $qa = new \App\QuestionAssignment();
+                    $qa->exam_id = $exam->id;
+                    $qa->question_id = $eid;
+                    $qa->question_number = $qnum;
+
                     $qa->save();
                 }catch (\Exception $e)
                 {
-                    $qnum -= 1;
+                    //$qnum -= 1;
                 }
             }
         }

@@ -23,10 +23,12 @@ class QuestionTableSeeder extends Seeder
         DB::table('questions')->delete();
         for ($i = 0; $i < $num; $i++)
         {
-            $question = new \App\Question([
-                'questionName' => $this->faker->text(20),
-                'questionText' => $this->faker->text(200),
-            ]);
+            $name = $this->faker->text(20);
+            $text = $this->faker->text(200);
+            $question = new \App\Question();
+            $question->questionName = $name;
+            $question->questionText = $text;
+
 //            $question->setUser(1);
             $question->save();
         }

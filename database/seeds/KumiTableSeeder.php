@@ -22,11 +22,9 @@ class KumiTableSeeder extends Seeder
         DB::table('kumis')->delete();
         for ($i = 0; $i < $num; $i++)
         {
-            $s = new \App\Kumi([
-                'year' => $this->faker->year(),
-                'nickname' => $this->faker->text()
-            ]);
-//            $s->setUser(1);
+            $s = new \App\Kumi();
+            $s->year = $this->faker->year();
+            $s->nickname = $this->faker->text(8);
             $s->save();
         }
     }

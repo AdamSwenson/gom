@@ -16,11 +16,6 @@ use Propel\Runtime\Propel;
  */
 class ExamTableSeeder extends Seeder
 {
-//    use SeederTraits;
-
-//    public $questions;
-//    public $elements;
-//    public $exams;
 
     public $faker;
 
@@ -31,44 +26,19 @@ class ExamTableSeeder extends Seeder
         DB::table('exams')->delete();
         for ($i = 0; $i < $num; $i++)
         {
-            $exam = new \App\Exam([
-                'term' => $this->faker->word(),
-                'name' => $this->faker->word(),
-                'year' => $this->faker->year()
-            ]);
-           // $exam->setUser(1);
-            $exam->save();
-//            \App\Exam::create(
-//                [
-//                    'term' => \Faker\Factory::create()->word(),
-//                    'topic' => $this->faker->word(),
-//                    'year' => $this->faker->year()
-//                ])->setUser(1)->save();
+            try
+            {
+                $exam = new \App\Exam();
+                $exam->setTerm($this->faker->text(10));
+                $exam->setName($this->faker->text(10));
+                $exam->setYear($this->faker->year());
+                $exam->save();
+            } catch (\Exception $e)
+            {
+//                $i -= 1;
+            }
         }
-//        $this->setUp();
-//        $this->populate_exams();
-
     }
-//
-//    public function populate_exams($num = 10)
-//    {
-//        try
-//        {
-//            for ($i = 0; $i < $num; $i++)
-//            {
-//                $e = \ExamQuery::create()
-//                    ->filterByUser($this->user)
-//                    ->filterByExamyear($this->faker->year())
-//                    ->filterByExamterm($this->faker->word())
-//                    ->filterByExamtopic($this->faker->word())
-//                    ->findOneOrCreate();
-//                $e->save();
-//            }
-//        } catch (\Exception $e)
-//        {
-//            echo "\n Error with " . __FUNCTION__ . " " . $e->getMessage();
-//        }
-//    }
 
 
 }

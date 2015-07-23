@@ -7,6 +7,11 @@ class ElementScore extends BaseModel
 {
     protected $fillable = [];
 
+    public function __construct()
+    {
+        parent::boot();
+    }
+
     /**
      * Associates with user
      * @param $user_id

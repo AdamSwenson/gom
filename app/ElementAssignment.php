@@ -5,6 +5,10 @@ namespace App;
 
 class ElementAssignment extends BaseModel
 {
+    public function __construct()
+    {
+        parent::boot();
+    }
 
     public function createAssignment(\App\Exam $exam, \App\Question $question, \App\Element $element, $score )
     {}
@@ -23,6 +27,11 @@ class ElementAssignment extends BaseModel
     public function user()
     {
         return $this->belongsTo('App\User');
+    }
+
+    public function comments()
+    {
+        $this->hasMany('App\Comment', 'comment_element');
     }
 
     public function exam()

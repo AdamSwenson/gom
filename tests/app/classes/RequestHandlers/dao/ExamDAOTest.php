@@ -55,7 +55,6 @@ class ExamDAOTest extends \TestCase
     {
         $eid = $this->exam->id;
         $this->object->delete_exam($eid);
-//        $this->assertTrue($result);
         $this->assertEmpty(Exam::find($eid));
     }
 
@@ -86,11 +85,11 @@ class ExamDAOTest extends \TestCase
 #----------------------------------------------------- save exam
     public function testSave_new_exam()
     {
-        $examName = $this->faker->word();
-        $term = $this->faker->word();
+        $examName = $this->faker->text(5);
+        $term = $this->faker->text(5);
         $year = $this->faker->year();
         $classId = 4;
-        $result = $this->object->save_new_exam($examName, $year, $term, $classId);
+        $result = $this->object->save_new_exam($year, $term, $examName, $classId);
 
         $this->assertInstanceOf('\App\Exam', $result);
 

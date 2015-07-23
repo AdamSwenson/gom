@@ -22,6 +22,11 @@ class Question extends BaseModel
         'questionName' => 'string'
     ];
 
+    public function __construct()
+    {
+        parent::boot();
+    }
+
     /**
      * Sets the text of the question
      * @param string $questionText

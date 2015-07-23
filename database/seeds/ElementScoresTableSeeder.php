@@ -25,15 +25,18 @@ class ElementScoresTableSeeder extends Seeder
             {
                 try
                 {
-                    \App\ElementScore::create([
-//                        'user_id' => $qa->user_id,
-                        'element_assignment_id' => $qa->id,
-                        'student_id' => $faker->randomElement($studentIds),
-                        'score' => $faker->randomFloat(2, 0, 10)
-                    ]);
+                    $sid = $faker->randomElement($studentIds);;
+//                    var_dump($sid);
+                    $score = $faker->randomFloat(2, 0, 10);
+//                    var_dump($score);
+                    $e = new \App\ElementScore();
+                    $e->element_assignment_id = $qa->id;
+                    $e->student_id = $sid;
+                    $e->score = $score;
+                    $e->save();
                 }catch(\Exception $e)
                 {
-                    $i -= 1;
+                  //  $i -= 1;
                 }
             }
         }

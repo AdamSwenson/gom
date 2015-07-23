@@ -10,6 +10,11 @@ class QuestionAssignment extends BaseModel
       'questionNumber' => 'integer'
     ];
 
+    public function __construct()
+    {
+        parent::boot();
+    }
+
     /**
      * Associates with user
      * @param $user_id

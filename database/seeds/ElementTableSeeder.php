@@ -24,12 +24,14 @@ class ElementTableSeeder extends Seeder
         DB::table('elements')->delete();
         for ($i = 0; $i < $num; $i++)
         {
-            $element = new \App\Element([
-                'elementName' => $this->faker->text(20),
-                'displayText' => $this->faker->text(200),
-                'commentText' => $this->faker->paragraph()
-            ]);
-//            $element->setUser(1);
+            $name = $this->faker->text(20);
+            $display = $this->faker->text(200);
+            $text = $this->faker->paragraph();
+            $element = new \App\Element();
+            $element->elementName = $name;
+            $element->displayText = $display;
+            $element->commentText = $text;
+
             $element->save();
         }
     }

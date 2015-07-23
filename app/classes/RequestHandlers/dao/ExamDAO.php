@@ -85,18 +85,13 @@ class ExamDAO implements IExamDAO
 
             $clean_term = $term;
             $clean_name = $name;
-Exam::create([
-    'user_id' => 1,
-    'term' => $clean_term,
-    'name' => $clean_name,
-    'year' => $year_int
-]);
-//            $exam = new Exam();
-//            $exam->setYear($year_int);
-//            $exam->setTerm($clean_term);
-//            $exam->setName($clean_name);
-//            $exam->save();
-//            return $exam;
+
+            $exam = new Exam();
+            $exam->setYear($year_int);
+            $exam->setTerm($clean_term);
+            $exam->setName($clean_name);
+            $exam->save();
+            return $exam;
         } catch (\Exception $e)
         {
         throw $e;
@@ -124,7 +119,7 @@ Exam::create([
 
     /**
      * Returns exams for the class/kumi
-     * @param $classId
+     * @param integer $classId
      */
     public function load_exams_by_class($classId)
     {
@@ -148,43 +143,47 @@ Exam::create([
     {
         $exam = $this->load_exam($examId);
         $exam->setLocked(1);
-        $exam->save();
+        $exam->update();
+        return $exam;
     }
 
     /**
      * Marks the exam unlocked
-     * @param $examId
-     * @return bool
+     * @param integer $examId
+     * @return Exam
      */
     public function unlock_exam($examId)
     {
         $exam = $this->load_exam($examId);
         $exam->setLocked(0);
-        $exam->save();
+        $exam->update();
+        return $exam;
     }
 
     /**
      * Marks the exam released
-     * @param $examId
-     * @return bool
+     * @param integer $examId
+     * @return Exam
      */
     public function mark_exam_released($examId)
     {
         $exam = $this->load_exam($examId);
         $exam->setReleased(1);
-        $exam->save();
+        $exam->update();
+        return $exam;
     }
 
     /**
      * Marks the exam as unreleased
-     * @param $examId
-     * @return bool
+     * @param integer $examId
+     * @return Exam
      */
     public function unmark_exam_released($examId)
     {
         $exam = $this->load_exam($examId);
         $exam->setReleased(0);
-        $exam->save();
+        $exam->update();
+        return $exam;
     }
 
 }

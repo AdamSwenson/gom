@@ -30,6 +30,10 @@ class Exam extends BaseModel
         'released' => 'boolean'
     ];
 
+    public function __construct()
+    {
+        parent::boot();
+    }
 #------------------------------------------------------- Queries
 
     /**
@@ -68,7 +72,7 @@ class Exam extends BaseModel
      * @param $query
      * @return mixed
      */
-    public function scopeUnReleased($query)
+    public function scopeUnreleased($query)
     {
         return $query->whereReleased(0);
     }
