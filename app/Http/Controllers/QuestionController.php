@@ -53,10 +53,11 @@ class QuestionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $exam
+     * @param Request $request
      * @return Response
+     * @internal param int $exam
      */
-    public function edit($exam)
+    public function edit(Request $request)
     {
         // default data for dev purposes
         $q1 = [ 'qName' => 'teat name #1',
@@ -73,9 +74,15 @@ class QuestionController extends Controller
 
         $examName = 'History 101 Exam 1, Fall 2015';
 
-        //return view('/setup/edit_question');
-        return view('setup.edit_question')->with('questions', $questions)->with('examName', $examName);
+        $examid = $request->input('examid');
+        $numOfQuestions = array( 0 => [0 => 'blah'], 1 => [ 1 => 'glah'], 2 => [ 2 => 'vlah']);
 
+        //return view('/setup/edit_question');
+        return view('setup.edit_question')->with('questions', $questions)->with([
+                'examName'=> $examName,
+                'examid' => $examid,
+                'numOfQuestions' => $numOfQuestions,
+        ]);
     }
 
     /**

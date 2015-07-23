@@ -23,10 +23,15 @@ Route::get('home', 'LandingController@showLanding');
 Route::get('landing', 'LandingController@showLanding');
 Route::get('index', 'LandingController@showLanding');
 
-// Account-related routes
-Route::get('account/home', function(){
-    return "Account home page";
-});
+Route::post('account/home', 'LandingController@loggedIn');
+Route::get('account/home', 'LandingController@loggedIn');
+
+
+Route::get('account/create','LandingController@accountCreate');
+
+Route::post('account/confirm','LandingController@accountConfirm');
+Route::get('account/retrieve','LandingController@retrievePassword');
+
 
 Route::get('account/user_settings', function(){
     return "User settings page";
@@ -59,8 +64,7 @@ Route::get('report/qualitycontrol', function(){
 /* NEW routes for exam selection and creation below */
 // Select exam page
 Route::get('select','ExamController@index');
-
-// Routes for exam controls
+Route::post('select','ExamController@index');
 Route::resource('exam', 'ExamController');
 /*
 Route::get('exam', 'ExamController@index'); // get all exams for user
@@ -99,7 +103,6 @@ Route::patch('exam/{id}/question/{id}/element/{id}', 'ElementController@update')
 Route::delete('exam/{id}/question/{id}/element/{id}', 'ElementController@destroy');
 */
 
-/* Routes for Students */
 Route::resource('roster', 'StudentController');
 
 /*

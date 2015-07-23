@@ -6,7 +6,7 @@
  * Time: 10:52 AM
  */
 
-namespace UserManagement\maker;
+namespace App\classes\UserManagement\maker;
 
 
 interface ISetupWatcher 

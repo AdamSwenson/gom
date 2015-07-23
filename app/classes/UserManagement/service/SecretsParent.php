@@ -6,7 +6,7 @@
  * Time: 5:41 PM
  */
 
-namespace UserManagement\service;
+namespace App\classes\UserManagement\service;
 
 
 abstract class SecretsParent implements ISecrets

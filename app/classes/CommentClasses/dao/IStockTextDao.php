@@ -6,7 +6,7 @@
  * Time: 5:06 PM
  */
 
-namespace App\classes\CommentClassesdao;
+namespace App\classes\CommentClasses\dao;
 
 
 interface IStockTextDao 

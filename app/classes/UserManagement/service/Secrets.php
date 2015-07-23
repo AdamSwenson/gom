@@ -6,8 +6,10 @@
  * Time: 5:28 PM
  */
 
-namespace UserManagement\service;
+namespace App\classes\UserManagement\service;
 
+
+use App\classes\UserManagement\service\SecretsParent;
 
 class Secrets
 {
@@ -101,10 +103,10 @@ class Secrets
         $env = self::check("LOCATION");
         switch ($env) {
             case 'local':
-                return \UserManagement\service\SecretsParent::LOCATION_LOCAL;
+                return SecretsParent::LOCATION_LOCAL;
                 break;
             case 'remote':
-                return \UserManagement\service\SecretsParent::LOCATION_REMOTE;
+                return SecretsParent::LOCATION_REMOTE;
                 break;
             default:
                 throw new \Exception();
@@ -138,10 +140,10 @@ class Secrets
         switch($env)
         {
             case "development":
-                return \UserManagement\service\SecretsParent::STATE_DEVELOPMENT;
+                return \App\classes\UserManagement\service\SecretsParent::STATE_DEVELOPMENT;
                 break;
             case "live":
-                return \UserManagement\service\SecretsParent::STATE_LIVE;
+                return \App\classes\UserManagement\service\SecretsParent::STATE_LIVE;
                 break;
             default:
                 throw new \Exception();

@@ -35,25 +35,43 @@
                 <h2 id="examName">{{ $examName }}: Add / Edit Questions</h2>
                 <h5>Add the questions that will appear on this exam. When you're finished, press "done".</h5>
 
-                <!-- this Div will become the question template -->
-                <div id="elementContainer">
-                    @foreach($questions as $q)
-                        @include('setup.question_form')
-                    @endforeach
-                </div>
-                <br>
-                <button class="btn btn-primary" id="addQuestion" onclick="duplicateQuestion()"><span
-                            class="glyphicon glyphicon-plus"
-                            aria-hidden="true"></span>
-                    Add Question
-                </button>
-                <button class="btn btn-primary" id="importQuestion"><span class="glyphicon glyphicon-import"
-                                                                          aria-hidden="true"></span>
-                    Import Question
-                </button>
+
+            <nav>
+                <ul class="pager">
+                    <li class="next">
+                            <form method="GET" action="{{url('/element')}}" accept-charset="UTF-8" class="col-xs-8">
+                            <div class="col-sm-11">
+                            </div>
+
+                            <div class="col-sm-1">
+                                    <!-- <input type="submit" name="examid" value="$examid}}"> -->
+                                <button type="submit" name="examid" value="{{$examid}}" class="btn btn-default btn-lg"> Next
+                                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                            </form>
+                    </li>
+                </ul>
+            </nav>
+            <div>
+            <h2 id="examName"> {{ $examid}}  : Add / Edit Questions</h2>
+            <h5>Add the questions that will appear on this exam. When you're finished, press "done".</h5>
             </div>
+            <!-- this Div will become the question template -->
+            <?php $num = 1; ?>
+            @foreach($questions as $q)
+                @include('setup.question_form')
+                <?php $num += 1; ?>
+            @endforeach
+            <br>
+            <a class="btn btn-primary" id="addQuestion"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+             Add Question</a>
+
+            <button class="btn btn-primary" id="importQuestion"><span class="glyphicon glyphicon-import" aria-hidden="true"></span>
+             Import Question</button>
         </div>
     </div>
+ </div>
 
     @include('errors.list')
 

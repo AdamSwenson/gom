@@ -6,7 +6,7 @@
  *
  */
 
-namespace ScoreClasses;
+namespace App\classes\ScoreClasses;
 
 /**
  * Handles all calls to the db for a student's scores

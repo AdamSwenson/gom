@@ -6,12 +6,12 @@
  * Time: 3:17 PM
  */
 
-namespace UserManagement\dao;
+namespace App\classes\UserManagement\dao;
 
 
-use UserManagement\errors\NewDbSetupException;
+use App\classes\UserManagement\errors\NewDbSetupException;
 
-class DatabaseCreationDao extends UsersDbConnection
+class DatabaseCreationDao extends App\classes\UserManagement\dao\UsersDbConnection
 {
     static protected $users_db_pdo;
 

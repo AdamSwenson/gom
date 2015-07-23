@@ -6,10 +6,10 @@
  * Time: 2:46 PM
  */
 
-namespace App\classes\CommentClassesdao;
+namespace App\classes\CommentClasses\dao;
 
 
-use App\classes\CommentClasseserrors\CommentException;
+use App\classes\CommentClasses\errors\CommentException;
 
 class StockTextDao implements IStockTextDao
 {

@@ -1,10 +1,10 @@
 <!-- this form describes the input form and buttons for an individual question -->
-<div id="question{{ $q['qOrder'] }}">
+<div id="questionForm{{$q['qOrder']}}">
     <hr/>
-    <h4>Question #<span id="questionNumber{{  $q['qOrder'] }}">{{ $q['qOrder'] }}</span></h4>
+    <h4>Question #<span id="questionNumber">{{ $q['qOrder'] }}</span></h4>
 
     <div class="input-group">
-        <span class="input-group-addon" >Question Name</span>
+        <span class="input-group-addon" id="questionLabel">Question Name</span>
         <input id="questionName{{$q['qOrder']}}" type="text" class="form-control input" value="{{ $q['qName'] }}"
                placeholder="Enter a brief description of the question, i.e. &quot;Causes of the Civil War&quot;"
                aria-describedby="basic-addon1">

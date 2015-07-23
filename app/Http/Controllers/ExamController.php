@@ -22,31 +22,33 @@ class ExamController extends Controller
      */
 
     public function index() {
-        // display all exams
-
-        $exams = \ExamQuery::create()->find();
+        $exams = ['Exam1', 'Exam2'];
         return view('/setup/select_exam')->with('exams', $exams);
     }
 
     /**
      * Show the form for creating a new resource.
      *
+     * @param Request $request
      * @return Response
      */
-    public function create()
+    public function create(Request $request)
     {
         //create new exam
-        return view('/setup/create_exam');
+
+        $examid = "New Exam";
+        return view('setup/create_exam')->with(['examid'=>$examid]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
+     * @param Request $request
      * @return Response
      */
-    public function store()
+    public function store(Request $request)
     {
-
+        //
     }
 
     /**
@@ -57,21 +59,23 @@ class ExamController extends Controller
      */
     public function show($id)
     {
-        // Maybe write a view to show an exam without editing?
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
+     * @param Request $request
      * @return Response
      */
-    public function edit($id)
+    public function edit($id, Request $request)
     {
         // do something to get id from DB
-        $exam = \ExamQuery::create()->findById($id);
-
-        return view('setup/edit_exam', compact('exam'));
+       // $exam = \ExamQuery::create()->findById($id);
+        $exam = [];
+        $examid = $request->get('examid');
+        return view('setup/edit_exam', compact('exam'))->with(['examid' => $examid]);
     }
 
     /**

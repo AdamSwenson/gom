@@ -6,7 +6,7 @@
  * Time: 4:06 PM
  */
 
-namespace ScoreClasses;
+namespace App\classes\ScoreClasses;
 
 
 class QuestionScoreHandler implements IQuestionScoreHandler

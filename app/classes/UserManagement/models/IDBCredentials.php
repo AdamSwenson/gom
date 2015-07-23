@@ -6,7 +6,7 @@
  * 
  */
 
-namespace UserManagement\models;
+namespace App\classes\UserManagement\models;
 
 /**
  *
