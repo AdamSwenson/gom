@@ -22,7 +22,7 @@ class ExamController extends Controller
      */
 
     public function index() {
-        $exams = ['Exam1', 'Exam2'];
+        $exams = ['1', '2'];
         return view('/setup/select_exam')->with('exams', $exams);
     }
 
@@ -98,6 +98,7 @@ class ExamController extends Controller
     public function destroy($id)
     {
         //
+        return ('you have successfully destroyed '.$id.'. Good work.');
     }
 
 }

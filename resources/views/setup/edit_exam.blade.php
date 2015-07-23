@@ -18,34 +18,44 @@
 
 @section('body')
 
- <div id="editExam">
-  <div class="section">
-   <div class="container">
+    <div id="editExam">
+        <div class="section">
+            <div class="container">
+                <form id="examForm" method="GET" action=""
+                      accept-charset="UTF-8">
+                    <nav>
+                        <ul class="pager">
+                            <li class="next">
+                                <a href="{{url('exam/' .$examId.'/question/edit')}}" id="submitLink">Done <span
+                                            class="glyphicon glyphicon-chevron-right"
+                                            aria-hidden="true"></span></a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <h2>Edit Exam</h2>
+                    @include('setup.exam_form')
+                </form>
 
-    <form method="GET" action="{{url('exam/' .$examid.'/question/edit')}}" accept-charset="UTF-8" class="col-xs-8">
-    <nav>
-     <ul class="pager">
-      <li class="next">
-       <button type="submit" value="{{$examid}}"> Next
-        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-      </li>
-     </ul>
-    </nav>
-    <h2>Edit Exam</h2>
+            </div>
+        </div>
+    </div>
 
-    @include('setup.exam_form')
-    </form>
-
-   </div>
-  </div>
- </div>
-
- @include('errors.list')
+    @include('errors.list')
 
 @endsection
 
 
 @section('jsArea')
+    <script type="text/javascript">
+        window.onload = function () {
+            var btnDone = document.getElementById("submitLink");
+
+            btnDone.onclick = function () {
+                document.getElementById("examForm").submit();
+            }
+        };
+
+    </script>
 
 
 @endsection

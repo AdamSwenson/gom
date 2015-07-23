@@ -24,54 +24,44 @@
     <div id="editQuestion">
         <div class="section">
             <div class="container">
-                <nav>
-                    <ul class="pager">
-                        <li class="next">
-                            <a href="#" method="post">Done <span class="glyphicon glyphicon-chevron-right"
-                                                                 aria-hidden="true"></span></a>
-                        </li>
-                    </ul>
-                </nav>
-                <h2 id="examName">{{ $examName }}: Add / Edit Questions</h2>
-                <h5>Add the questions that will appear on this exam. When you're finished, press "done".</h5>
+                <form>
+                    <nav>
+                        <ul class="pager">
+                            <li class="next">
+                                <a href="{{url('exam/'.$examId.'/question/1/edit')}}" id="submitLink">Done <span
+                                            class="glyphicon glyphicon-chevron-right"
+                                            aria-hidden="true"></span></a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <h2 id="examName">{{ $examName }}: Add / Edit Questions</h2>
+                    <h5>Add the questions that will appear on this exam. When you're finished, press "done".</h5>
+                    <nav>
+                        <ul class="pager">
+                            <li class="next">
 
+                            </li>
+                        </ul>
+                    </nav>
+                    <!-- this Div will become the question template -->
+                    <?php $num = 1; ?>
+                    @foreach($questions as $q)
+                        @include('setup.question_form')
+                        <?php $num += 1; ?>
+                    @endforeach
+                    <br>
+                    <a class="btn btn-primary" id="addQuestion"><span class="glyphicon glyphicon-plus"
+                                                                      aria-hidden="true"></span>
+                        Add Question</a>
 
-            <nav>
-                <ul class="pager">
-                    <li class="next">
-                            <form method="GET" action="{{url('/element')}}" accept-charset="UTF-8" class="col-xs-8">
-                            <div class="col-sm-11">
-                            </div>
-
-                            <div class="col-sm-1">
-                                    <!-- <input type="submit" name="examid" value="$examid}}"> -->
-                                <button type="submit" name="examid" value="{{$examid}}" class="btn btn-default btn-lg"> Next
-                                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                                </button>
-                            </div>
-                            </form>
-                    </li>
-                </ul>
-            </nav>
-            <div>
-            <h2 id="examName"> {{ $examid}}  : Add / Edit Questions</h2>
-            <h5>Add the questions that will appear on this exam. When you're finished, press "done".</h5>
+                    <button class="btn btn-primary" id="importQuestion"><span class="glyphicon glyphicon-import"
+                                                                              aria-hidden="true"></span>
+                        Import Question
+                    </button>
+                </form>
             </div>
-            <!-- this Div will become the question template -->
-            <?php $num = 1; ?>
-            @foreach($questions as $q)
-                @include('setup.question_form')
-                <?php $num += 1; ?>
-            @endforeach
-            <br>
-            <a class="btn btn-primary" id="addQuestion"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-             Add Question</a>
-
-            <button class="btn btn-primary" id="importQuestion"><span class="glyphicon glyphicon-import" aria-hidden="true"></span>
-             Import Question</button>
         </div>
     </div>
- </div>
 
     @include('errors.list')
 
@@ -186,7 +176,7 @@
         }
 
         function addNew() {
-            elements.push(new Element(elements.length+1));
+            elements.push(new Element(elements.length + 1));
             // set HTML tags for item and append to div
         }
 
@@ -199,20 +189,20 @@
         // moves an element towards beginning of list
         function moveUp(index) {
             if (index == 0) return;
-            swap(index, index-1);
+            swap(index, index - 1);
             // update all ids
             // refresh view with new layout
         }
 
         // moves an element down towards the bottom of the list
         function moveDown(index) {
-            if (index+1 >= elements.length ) return;
-            swap(index, index+1);
+            if (index + 1 >= elements.length) return;
+            swap(index, index + 1);
             // update all ids
             // refresh view with new layout
         }
 
-        function swap(a, b){
+        function swap(a, b) {
             var hold = elements[a].getPos();
             elements[a].setPos(elements[b].getPos());
             elements[b].setPos(hold);
@@ -262,15 +252,26 @@
             }
         }
 
+        function submitForm() {
+            document.getElementById("myForm").submit();
+        }
+
         function onLoad() {
             // create some test elements
             for (var i = 0; i < 2; i++) {
-                elements.push(new Element((i+1), (i+1)));
-                elements[i].setDesc = "test desc #" + (i+1);
-                elements[i].setName = "test name #" + (i+1);
+                elements.push(new Element((i + 1), (i + 1)));
+                elements[i].setDesc = "test desc #" + (i + 1);
+                elements[i].setName = "test name #" + (i + 1);
             }
         }
-        onLoad();
+        window.onload = function () {
+            var btnDone = document.getElementById("submitLink");
+
+            btnDone.onclick = function () {
+                document.getElementById("examForm").submit();
+            }
+        };
+
     </script>
 
 @endsection

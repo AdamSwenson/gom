@@ -30,16 +30,22 @@
     <div id="editExam">
         <div class="section">
             <div class="container">
-                <nav>
-                    <ul class="pager">
-                        <li class="next">
-                            <a href="#">Next <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
-                        </li>
-                    </ul>
-                </nav>
-                <h2>Create Exam</h2>
+                <form id="examForm" method="GET" action=""
+                      accept-charset="UTF-8">
+                    <nav>
+                        <ul class="pager">
+                            <li class="next">
+                                <a href="{{url('exam/' .$examId.'/question/edit')}}" id="submitLink">Done <span
+                                            class="glyphicon glyphicon-chevron-right"
+                                            aria-hidden="true"></span></a>
+                            </li>
+                        </ul>
+                    </nav>
 
-                @include('setup.exam_form')
+                    <h2>Create Exam</h2>
+
+                    @include('setup.exam_form')
+                </form>
             </div>
         </div>
     </div>
@@ -50,6 +56,16 @@
 
 
 @section('jsArea')
+    <script type="text/javascript">
+
+        window.onload(
+        var btnDone = document.getElementById("submitLink");
+
+        btnDone.onclick = function () {
+            document.getElementById("examForm").submit();
+        }
+        )
+    </script>
 
 
 @endsection
