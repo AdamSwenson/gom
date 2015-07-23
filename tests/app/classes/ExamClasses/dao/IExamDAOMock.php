@@ -10,6 +10,7 @@ namespace App\classes\ExamClasses\dao;
 
 
 use App\classes\MockParent;
+use App\classes\SecurityClasses\cleaning\ICleanerFactory;
 use Propel\Runtime\Connection\ConnectionWrapper;
 
 class IExamDAOMock extends MockParent implements IExamDAO
@@ -143,5 +144,13 @@ class IExamDAOMock extends MockParent implements IExamDAO
     {
         $this->record_call(__FUNCTION__, array($exam));
         return $this->response;
+    }
+
+    /**
+     * Loads the class which handles cleaning before query
+     * @param ICleanerFactory $cleanerFactory
+     */
+    public function set_cleaner(ICleanerFactory $cleanerFactory)
+    {
     }
 }
