@@ -4,7 +4,7 @@
     <h4>Question #<span id="questionNumber{{  $q['qOrder'] }}">{{ $q['qOrder'] }}</span></h4>
 
     <div class="input-group">
-        <span class="input-group-addon" id="questionLabel">Question Name</span>
+        <span class="input-group-addon" >Question Name</span>
         <input id="questionName{{$q['qOrder']}}" type="text" class="form-control input" value="{{ $q['qName'] }}"
                placeholder="Enter a brief description of the question, i.e. &quot;Causes of the Civil War&quot;"
                aria-describedby="basic-addon1">
@@ -21,7 +21,7 @@
     <button class="btn btn-sm" id="moveUp{{$q['qOrder']}}"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
     </button>
 
-    <button class="btn btn-sm" id="moveDown{{$q['qOrder']}}"><span class="glyphicon glyphicon-arrow-down"
+    <button class="btn btn-sm " id="moveDown{{$q['qOrder']}}"><span class="glyphicon glyphicon-arrow-down"
                                                         aria-hidden="true"></span>
     </button>
 

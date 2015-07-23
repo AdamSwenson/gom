@@ -27,7 +27,8 @@
                 <nav>
                     <ul class="pager">
                         <li class="next">
-                            <a href="#" method="post">Done <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+                            <a href="#" method="post">Done <span class="glyphicon glyphicon-chevron-right"
+                                                                 aria-hidden="true"></span></a>
                         </li>
                     </ul>
                 </nav>
@@ -36,13 +37,14 @@
 
                 <!-- this Div will become the question template -->
                 <div id="elementContainer">
-                     @foreach($questions as $q)
+                    @foreach($questions as $q)
                         @include('setup.question_form')
-                     @endforeach
+                    @endforeach
                 </div>
                 <br>
-                <button class="btn btn-primary" id="addQuestion" onclick="duplicateQuestion()"><span class="glyphicon glyphicon-plus"
-                                                                       aria-hidden="true"></span>
+                <button class="btn btn-primary" id="addQuestion" onclick="duplicateQuestion()"><span
+                            class="glyphicon glyphicon-plus"
+                            aria-hidden="true"></span>
                     Add Question
                 </button>
                 <button class="btn btn-primary" id="importQuestion"><span class="glyphicon glyphicon-import"
@@ -60,7 +62,22 @@
 
 @section('jsArea')
     <script type="text/javascript">
+
+        /*
+         *   Build javascript structure to hold objects.
+         *   1. walk document to fill structure
+         *
+         *   constructor:
+         *   element(int id, int order)
+         *
+         *   element.moveUp
+         *   Create ajax requests when creating new elements
+         *   later: create requests when re-ordering elements
+         *
+         */
+
         // i should be set to # of elements passed in
+        var elements = [];
         var i = 0;
         var original = document.getElementById('question1');
 
@@ -82,33 +99,37 @@
 
         function duplicateQuestion() {
             /*
-            var clone = original.cloneNode(true);
-            clone.id = 'item' + ++i;
-            original.parentNode.appendChild(clone);
-            */
+             var clone = original.cloneNode(true);
+             clone.id = 'item' + ++i;
+             original.parentNode.appendChild(clone);
+             */
 
             var $div = $('div[id^="question"]:last');
 
-// Read the Number from that DIV's ID (i.e: 3 from "klon3")
-// And increment that number by 1
-            var num = parseInt( $div.prop("id").match(/\d+/g), 10 ) +1;
+            // Read the Number from that DIV's ID (i.e: 3 from "klon3")
+            // And increment that number by 1
+            var num = parseInt($div.prop("id").match(/\d+/g), 10) + 1;
 
-// Clone it and assign the new ID (i.e: from num 4 to ID "klon4")
-            var newNum = 'question'+num;
-            var $klon = $div.clone().prop('id', newNum );
+            // Clone it and assign the new ID (i.e: from num 4 to ID "klon4")
+            var newNum = 'question' + num;
+            var $klon = $div.clone().prop('id', newNum);
 //
             var $clone = $klon;
             //var $clone = $(id).clone();    // Create your clone
 
             // Get the number at the end of the ID, increment it, and replace the old id
-            $clone.attr('id',$clone.attr('id').replace(/\d+$/, function(str) { return parseInt(str) + 1; }) );
+            $clone.attr('id', $clone.attr('id').replace(/\d+$/, function (str) {
+                return parseInt(str) + 1;
+            }));
 
             // Find all elements in $clone that have an ID, and iterate using each()
-            $clone.find('[id]').each(function() {
+            $clone.find('[id]').each(function () {
 
                 //Perform the same replace as above
                 var $th = $(this);
-                var newID = $th.attr('id').replace(/\d+$/, function(str) { return parseInt(str) + 1; });
+                var newID = $th.attr('id').replace(/\d+$/, function (str) {
+                    return parseInt(str) + 1;
+                });
                 $th.attr('id', newID);
             });
             $("#elementContainer").append($klon);
@@ -119,8 +140,12 @@
             $('#questionName3').val("");
             $('#questionText3').val("");
 
-
-
+            /*
+             Create:
+             Build new element object
+             Build new div, set position to +1
+             attach div to view
+             */
 
             logDuplicates();
 
@@ -137,10 +162,97 @@
             // loop through remaining and rename as needed
             var elements = document.querySelectorAll('[id^=question]');
 
-            for(var i = 0; i < elements.length; i++) {
+            for (var i = 0; i < elements.length; i++) {
                 //document.write(elements[i].toString());
             }
         }
+
+        function addNew() {
+            elements.push(new Element(elements.length+1));
+            // set HTML tags for item and append to div
+        }
+
+        function remove(index) {
+            elements.splice(index, 1);
+            // remove item from display
+            // set all tags to new values
+        }
+
+        // moves an element towards beginning of list
+        function moveUp(index) {
+            if (index == 0) return;
+            swap(index, index-1);
+            // update all ids
+            // refresh view with new layout
+        }
+
+        // moves an element down towards the bottom of the list
+        function moveDown(index) {
+            if (index+1 >= elements.length ) return;
+            swap(index, index+1);
+            // update all ids
+            // refresh view with new layout
+        }
+
+        function swap(a, b){
+            var hold = elements[a].getPos();
+            elements[a].setPos(elements[b].getPos());
+            elements[b].setPos(hold);
+            var temp = a;
+            elements[a] = elements[b];
+            elements[b] = temp;
+        }
+        // class to facilitate questions
+        class Element {
+            function Element(passedPos) {
+                var id;
+                var pos = passedPos;
+                var name = '';
+                var desc = '';
+            }
+
+            function getId() {
+                return this.id;
+            }
+
+            function setId(newId) {
+                this.id = newId;
+            }
+
+            function getPos() {
+                return this.pos;
+            }
+
+            function setPos(position) {
+                this.pos = position;
+            }
+
+            function getName() {
+                return this.name;
+            }
+
+            function setName(newName) {
+                this.name = newName;
+            }
+
+            function getDesc() {
+                return this.desc;
+            }
+
+            function setDesc(newDesc) {
+                this.desc = setDesc;
+            }
+        }
+
+        function onLoad() {
+            // create some test elements
+            for (var i = 0; i < 2; i++) {
+                elements.push(new Element((i+1), (i+1)));
+                elements[i].setDesc = "test desc #" + (i+1);
+                elements[i].setName = "test name #" + (i+1);
+            }
+        }
+        onLoad();
     </script>
 
 @endsection
