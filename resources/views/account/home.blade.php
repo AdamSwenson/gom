@@ -25,6 +25,7 @@
             <div class="row">
                 <div class="col-xs-10 btn-group">
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Home</a>
+                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Payment</a>
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Guides</a>
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Features</a>
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg ">News</a>
@@ -34,12 +35,18 @@
             </div>
             <div class="row" >
                 <div class="col-xs-8">
-                    <!-- Something goes here-->
-                    <h1> </h1>
+                    <a href="#" class="list-group-item" data-toggle="collapse" data-target="#examListClone" data-parent="#examAction">
+                        <h4>Preferences</h4></a>
+                    <!-- this div should be replaced by real exams or a "No exams found" error popup -->
+                    <div id="examListClone" class="sublinks collapse">
+                        <div class="container">
+                                <a class="list-group-item large"> Security </a>
+                                <a class="list-group-item large"> Payment </a>
+                        </div>
+                    </div>
+
                 </div>
-                <h1> Thanks ! {{ $email}}</h1>
             </div>
-                   <!--include('navigation.nav_other')-->
                 </div>
             </div>
         </div>

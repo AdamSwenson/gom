@@ -47,4 +47,8 @@ class LandingController extends Controller
         return view('account.confirm');
     }
 
+    public function retrievePassword(){
+        return view('account.retrieve');
+    }
+
 }

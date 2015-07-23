@@ -24,15 +24,13 @@ Route::get('landing', 'LandingController@showLanding');
 Route::get('index', 'LandingController@showLanding');
 
 Route::post('account/home', 'LandingController@loggedIn');
-Route::get('account/home', function(){
-    return "Account home page";
-});
+Route::get('account/home', 'LandingController@loggedIn');
 
 
 Route::get('account/create','LandingController@accountCreate');
 
 Route::post('account/confirm','LandingController@accountConfirm');
-
+Route::get('account/retrieve','LandingController@retrievePassword');
 
 
 Route::get('account/user_settings', function(){

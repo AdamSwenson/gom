@@ -26,6 +26,7 @@
             <div class="row">
                 <div class="col-xs-10 btn-group">
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Home</a>
+                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Payment</a>
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Guides</a>
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Features</a>
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg ">News</a>
@@ -49,7 +50,7 @@
                     </div>
                     <div class="checkbox">
                         <label><input type="checkbox"> Remember me</label>
-                        <label><a>Forgot Password</a></label>
+                        <label><a href="{{url('account/retrieve')}}">Forgot Password</a></label>
                     </div>
                     <input class="btn btn-default" type="submit" >
                     <a href="{{url('account/create')}}" class="btn btn-default" >Create Account</a>
