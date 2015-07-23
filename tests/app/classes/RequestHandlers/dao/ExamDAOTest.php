@@ -240,19 +240,11 @@ class ExamDAOTest extends \TestCase
 
     public function testLock_exam()
     {
-
-        $examName = $this->faker->word();
-        $term = $this->faker->word();
-        $year = $this->faker->year();
-        $classId = 4;
-        $result = Exam::create(['term' => $term,
-            'name' => $examName,
-            'year' => $year
-        ]);
-//        $result = $this->object->save_new_exam($examName, $year, $term, $classId);
-        $this->assertInstanceOf('\App\Exam', $result);
-
-        $knownUnlocked = $result->id;
+        $ex = Exam::all()->random(1);
+        $ex->locked = 0;
+        $ex->update();
+        $this->assertInstanceOf('\App\Exam', $ex);
+        $knownUnlocked = $ex->id;
 
         $result = $this->object->lock_exam($knownUnlocked);
         $this->assertInstanceOf('\App\Exam', $result, "returns exam");

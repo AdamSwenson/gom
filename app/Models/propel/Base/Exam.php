@@ -9,7 +9,7 @@ use \ElementScoreQuery as ChildElementScoreQuery;
 use \Exam as ChildExam;
 use \ExamClassAssignment as ChildExamClassAssignment;
 use \ExamClassAssignmentQuery as ChildExamClassAssignmentQuery;
-use ExamClasses\IExam;
+use \ExamClasses\IExam;
 use \ExamInfo as ChildExamInfo;
 use \ExamInfoQuery as ChildExamInfoQuery;
 use \ExamQuery as ChildExamQuery;
@@ -50,7 +50,7 @@ use Propel\Runtime\Util\PropelDateTime;
  *
 * @package    propel.generator..Base
 */
-abstract class Exam implements ActiveRecordInterface, IExam
+abstract class Exam implements ActiveRecordInterface
 {
     /**
      * TableMap class name

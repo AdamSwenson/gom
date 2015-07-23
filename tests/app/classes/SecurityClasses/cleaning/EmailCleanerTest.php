@@ -27,15 +27,32 @@ class EmailCleanerTest extends \TestCase {
         $this->assertEquals('testemail@email.com', $this->object->sanitize($dirty));
     }
 
+
     /**
+     * @expectedException \App\Exceptions\InputTypeException
      * @covers \App\classes\SecurityClasses\cleaning\EmailCleaner::sanitize
      */
-    public function testSanitize_invalid_address()
+    public function testSanitize_invalid_addressExceptionEmptyString()
     {
-        $this->assertFalse($this->object->sanitize(' \testemail@email '));
-        $this->assertFalse($this->object->sanitize(''));
-        $this->assertFalse($this->object->sanitize('4'));
-        $this->assertFalse($this->object->sanitize(44444444));
+        $this->object->sanitize('');
+    }
+
+    /**
+     * @expectedException \App\Exceptions\InputTypeException
+     * @covers \App\classes\SecurityClasses\cleaning\EmailCleaner::sanitize
+     */
+    public function testSanitize_invalid_addressExceptionIntegerInsteadOfAdress()
+    {
+        $this->object->sanitize(44444444);
+    }
+
+    /**
+     * @expectedException \App\Exceptions\InputTypeException
+     * @covers \App\classes\SecurityClasses\cleaning\EmailCleaner::sanitize
+     */
+    public function testSanitize_invalid_addressExceptionBadAddress()
+    {
+        $this->object->sanitize(' \testemail@email ');
     }
 
     /**

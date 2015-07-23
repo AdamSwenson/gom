@@ -10,6 +10,8 @@ namespace App\classes\RequestHandlers\dao;
 
 
 
+use App\classes\SecurityClasses\cleaning\CleanerFactory;
+use App\classes\SecurityClasses\cleaning\ICleanerFactory;
 use App\Exam;
 use App\Question;
 use App\QuestionAssignment;
@@ -22,6 +24,19 @@ use App\QuestionAssignment;
  */
 class QuestionAssignmentDAO implements IQuestionAssignmentDAO
 {
+    /** @var CleanerFactory  */
+    public $cleaner;
+
+    public function __construct()
+    {
+        $this->cleaner = new CleanerFactory();
+    }
+
+    public function setCleaner(ICleanerFactory $cleanerFactory)
+    {
+        $this->cleaner = $cleanerFactory;
+    }
+
 
     /**
      * Loads and returns a question assignment
@@ -34,6 +49,11 @@ class QuestionAssignmentDAO implements IQuestionAssignmentDAO
     public function load($examId, $question_number)
     {
         return QuestionAssignment::onExam($examId)->questionNumber($question_number)->get();
+    }
+
+    public function loadByIds($examId, $questionId)
+    {
+        return QuestionAssignment::onExam($examId)->onQuestionId($questionId)->get();
     }
 
     /**
@@ -62,7 +82,7 @@ class QuestionAssignmentDAO implements IQuestionAssignmentDAO
      */
     public function load_all_for_exam($examId)
     {
-        return QuestionAssignment::onExam($examId)->orderBy('questionNumber')->get();
+        return QuestionAssignment::onExam($examId)->orderBy('question_number')->get();
     }
 
     /**

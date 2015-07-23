@@ -22,11 +22,11 @@ use Exceptions\InputTypeException;
 class CleanerFactory implements ICleanerFactory
 {
 
-    const INTEGER = 100;
-    const FLOAT = 101;
-    const STRING = 102;
-    const TEXT = 103;
-    const EMAIL = 104;
+    const INTEGER = 'integer';
+    const FLOAT = 'float';
+    const STRING = 'string';
+    const TEXT = 'text';
+    const EMAIL = 'email';
 
     public function validate($to_validate, $type)
     {

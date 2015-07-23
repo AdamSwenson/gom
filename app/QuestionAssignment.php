@@ -15,19 +15,24 @@ class QuestionAssignment extends BaseModel
         parent::boot();
     }
 
-    /**
-     * Associates with user
-     * @param $user_id
-     */
-    public function setUser($user_id)
-    {
-        $this->attributes['user_id'] = $user_id;
-    }
+//    /**
+//     * Associates with user
+//     * @param $user_id
+//     */
+//    public function setUser($user_id)
+//    {
+//        $this->attributes['user_id'] = $user_id;
+//    }
 
 #--------------- Queries
     public function scopeOnExam($query, $examId)
     {
         return $query->whereExamId($examId);
+    }
+
+    public function scopeOnQuestionId($query, $questionId)
+    {
+        return $query->whereQuestionId($questionId);
     }
 
     public function scopeQuestionNumber($query, $questionNumber)

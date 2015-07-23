@@ -9,10 +9,12 @@
 namespace App\classes\RequestHandlers\workers;
 
 
+use App\classes\RequestHandlers\dao\IElementAssignmentDAOMock;
 use App\classes\RequestHandlers\dao\IElementDAOMock;
 use App\Comment;
 use App\Element;
 use App\classes\RequestHandlers\dao\ElementDAO;
+use App\Exam;
 
 class ElementWorkerTest extends \TestCase
 {
@@ -20,13 +22,16 @@ class ElementWorkerTest extends \TestCase
     public $object;
     public $dao;
     public $element;
+    public $assignmentDao;
 
     public function setUp()
     {
         parent::setUp();
         $this->object = new ElementWorker;
         $this->dao = new IElementDAOMock();
+        $this->assignmentDao = new IElementAssignmentDAOMock();
         $this->object->dao = $this->dao;
+        $this->object->assignmentDao = $this->assignmentDao;
         $this->element = Element::all()->random();
     }
 
@@ -55,12 +60,16 @@ class ElementWorkerTest extends \TestCase
         $respFair = $this->faker->text(5);
         $respGood = $this->faker->text(5);
 
+        $examId = 345;
+        $questionNumber = 3;
+        $subtask = 2;
+
         $eid = 45;
         $e = new Element();
         $e->id = $eid;
 
         $this->dao->set_response($e);
-        $this->object->createElement($elementName, $respGeneric, $respAbsent, $respPoor, $respFair, $respGood);
+        $this->object->createElement($examId, $questionNumber, $subtask, $elementName, $respGeneric, $respAbsent, $respPoor, $respFair, $respGood);
 
         //check that first called create element
         $this->assertEquals('createElement', $this->dao->called_list[0][0]);
@@ -88,6 +97,14 @@ class ElementWorkerTest extends \TestCase
         $this->assertEquals($eid, $this->dao->called_list[4][1][0]);
         $this->assertEquals(Comment::VALENCE_EXCELLENT, $this->dao->called_list[4][1][1]);
         $this->assertEquals($respGood, $this->dao->called_list[4][1][2]);
+
+        $this->assertEquals('record', $this->assignmentDao->called_list[0][0]);
+        $this->assertEquals($examId, $this->assignmentDao->called_list[0][1][0]);
+        $this->assertEquals($questionNumber, $this->assignmentDao->called_list[0][1][1]);
+        $this->assertEquals($eid, $this->assignmentDao->called_list[0][1][2]);
+        $this->assertEquals($subtask, $this->assignmentDao->called_list[0][1][3]);
+
+
     }
 
     public function testDeleteElement()

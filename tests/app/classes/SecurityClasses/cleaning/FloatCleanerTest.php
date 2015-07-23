@@ -27,8 +27,27 @@ class FloatCleanerTest extends \TestCase {
     {
         $this->assertEquals(9.3, $this->object->sanitize(9.3));
         $this->assertEquals(9.3, $this->object->sanitize('9.3'));
-        $this->assertFalse($this->object->sanitize('taco'));
     }
+
+    /**
+     * @expectedException \App\Exceptions\InputTypeException
+     */
+    public function testSanitizeExceptionTooBig()
+    {
+        $test = 10.98;
+        $this->object->sanitize($test, 10);
+    }
+
+    /**
+     * @expectedException \App\Exceptions\InputTypeException
+     */
+    public function testSanitizeExceptionNonNumeric()
+    {
+        $this->object->sanitize('taco');
+    }
+
+
+
 
     /**
      * @covers \App\classes\SecurityClasses\cleaning\FloatCleaner::validate
@@ -37,8 +56,10 @@ class FloatCleanerTest extends \TestCase {
     {
         $this->assertEquals(9.3, $this->object->validate(9.3));
         $this->assertEquals(9.3, $this->object->validate('9.3'));
-        $this->assertFalse($this->object->validate('taco'));
+
     }
+
+
 
     /**
      * @covers \App\classes\SecurityClasses\cleaning\FloatCleaner::set_max_length

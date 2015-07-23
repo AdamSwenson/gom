@@ -18,6 +18,18 @@ use App\classes\QuestionClasses\dao\QuestionAssignmentDAO;
 use App\classes\QuestionClasses\dao\QuestionDAO;
 use App\classes\QuestionClasses\service\QuestionAssigner;
 
+/**
+ * Class ItemWorker
+ *
+ *
+ * DEPRECATED.
+ *
+ *
+ *
+ * @deprecated
+ *
+ * @package App\classes\RequestHandlers\workers
+ */
 class ItemWorker extends IRequestWorker
 {
 

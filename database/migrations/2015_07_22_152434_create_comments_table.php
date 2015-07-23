@@ -8,6 +8,8 @@ class CreateCommentsTable extends Migration
     /**
      * Run the migrations.
      *
+     * See note in App\Comment about the use of the junction table.
+     *
      * @return void
      */
     public function up()

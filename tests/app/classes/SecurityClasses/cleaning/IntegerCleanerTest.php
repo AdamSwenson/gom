@@ -25,7 +25,26 @@ class IntegerCleanerTest extends \TestCase {
     {
         $this->assertEquals(9, $this->object->sanitize(9));
         $this->assertEquals(9, $this->object->sanitize('9'));
-        $this->assertFalse($this->object->sanitize('taco'));
+        $this->assertEquals(9, $this->object->sanitize(9, 100));
+        $this->assertEquals(9, $this->object->sanitize('9', 100));
+        $this->assertEquals(9, $this->object->sanitize(-9));
+        $this->assertEquals(9, $this->object->sanitize('-9'));
+    }
+
+    /**
+     * @expectedException \App\Exceptions\InputTypeException
+     */
+    public function testSanitizeExceptionOnInvalid()
+    {
+        $this->object->sanitize('taco');
+    }
+
+    /**
+     * @expectedException \App\Exceptions\InputTypeException
+     */
+    public function testSanitizeExceptionOnTooLong()
+    {
+        $this->object->sanitize('200', 199);
     }
 
     /**

@@ -9,7 +9,7 @@ class ElementScoresTableSeeder extends Seeder
      *
      * @param int $studentsPerQuestion
      */
-    public function run($studentsPerQuestion=5)
+    public function run($studentsPerQuestion=2)
     {
 
         DB::table('element_scores')->delete();
