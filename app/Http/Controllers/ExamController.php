@@ -65,10 +65,7 @@ class ExamController extends Controller
      */
     public function show(Exam $exam)
     {
-        //TODO: Add view here
-        return view('', compact('exam'));
         // Maybe write a view to show an exam without editing?
-//        $exam = Exam::findOrFail($id);
     }
 
     /**
@@ -80,7 +77,7 @@ class ExamController extends Controller
     public function edit(Exam $exam)
     {
         // do something to get id from DB
-//        $exam = \ExamQuery::create()->findById($id);
+        $exam = \ExamQuery::create()->findById($id);
 
         return view('setup/edit_exam', compact('exam'));
     }
@@ -110,6 +107,8 @@ class ExamController extends Controller
      */
     public function destroy(Exam $exam)
     {
+        //
+        return ('you have successfully destroyed '.$exam.'. Good work.');
         $exam->delete();
 
         //Todo: add redirect or view

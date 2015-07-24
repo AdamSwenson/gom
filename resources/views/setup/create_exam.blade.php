@@ -1,45 +1,26 @@
-<!--
-/**
- * Created by PhpStorm.
- * User: Brian
- * Date: 7/20/2015
- * Time: 5:05 PM
- */
- -->
-
-<!--
-/**
- * Created by PhpStorm.
- * User: Brian
- * Date: 7/17/2015
- * Time: 4:59 PM
- */
- -->
-
 @extends('layouts.master')
-
 @section('pageTitle', 'Create Exam')
 @section('description', 'create an exam')
-
 @section('cssLinks')
-
 @endsection
 
 @section('body')
-
-    <div id="editExam">
+    <div id="createExam">
         <div class="section">
             <div class="container">
-                <nav>
+                <form id="examForm" method="POST" action="{{url('exam')}}"
+                      accept-charset="UTF-8">
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <ul class="pager">
                         <li class="next">
-                            <a href="#">Next <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+                        <span id="submitLink" style="cursor:pointer;">Create <span class="glyphicon glyphicon-chevron-right"
+                                                           aria-hidden="true"></span></span>
+
                         </li>
                     </ul>
-                </nav>
-                <h2>Create Exam</h2>
-
-                @include('setup.exam_form')
+                    <h2>Create Exam</h2>
+                    @include('setup.exam_form')
+                </form>
             </div>
         </div>
     </div>
@@ -50,8 +31,29 @@
 
 
 @section('jsArea')
+    <script type="text/javascript">
+
+        $(document).ready(function() {
 
 
+            $('#termList li').on('click', function () {
+                //$('#term').html('TEST');
+                $('#term').html($(this).text());
+            });
+
+            $('#yearList li').on('click', function () {
+                $('#year').html($(this).text());
+
+            });
+            var btnDone = document.getElementById("submitLink");
+
+            btnDone.onclick = function () {
+                document.getElementById("examForm").submit();
+            }
+
+            return false;
+        });
+    </script>
 @endsection
 
 

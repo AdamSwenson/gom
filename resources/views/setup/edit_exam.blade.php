@@ -9,7 +9,7 @@
 
 @extends('layouts.master')
 
-@section('pageTitle', 'Empty')
+@section('pageTitle', 'Edit Exam')
 @section('description', 'Edit an exam')
 
 @section('cssLinks')
@@ -18,29 +18,61 @@
 
 @section('body')
 
- <div id="editExam">
-  <div class="section">
-   <div class="container">
-    <nav>
-     <ul class="pager">
-      <li class="next">
-       <a href="#">Next <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
-      </li>
-     </ul>
-    </nav>
-    <h2>Edit Exam</h2>
+    <div id="editExam">
+        <div class="section">
+            <div class="container">
+                <form id="examForm" method="post" action="{{ url('exam/'.$exam['examId']) }}"
+                      accept-charset="UTF-8">
+                    <input type="hidden" name="_method" value="patch">
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <nav>
+                        <ul class="pager">
+                            <li class="next">
+                                <span id="submitLink" style="cursor:pointer;">Next <span class="glyphicon glyphicon-chevron-right"
+                                                                   aria-hidden="true"></span></span>
+                                <!--
+                                <a href="{{ url('exam/'.$exam['examId']) }}" id="submitLink">Done <span
+                                            class="glyphicon glyphicon-chevron-right"
+                                            aria-hidden="true"></span></a>
+                                            -->
+                            </li>
+                        </ul>
+                    </nav>
+                    <h2>Edit Exam</h2>
+                    @include('setup.exam_form')
+                </form>
 
-    @include('setup.exam_form')
-   </div>
-  </div>
- </div>
+            </div>
+        </div>
+    </div>
 
- @include('errors.list')
+    @include('errors.list')
 
 @endsection
 
 
 @section('jsArea')
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+
+            $('#termList li').on('click', function () {
+                $('#term').html($(this).text());
+            });
+
+            $('#yearList li').on('click', function () {
+                $('#year').html($(this).text());
+
+            });
+            var btnDone = document.getElementById("submitLink");
+
+            btnDone.onclick = function () {
+                document.getElementById("examForm").submit();
+            }
+
+            return false;
+        });
+    </script>
 
 
 @endsection

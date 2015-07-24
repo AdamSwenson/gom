@@ -10,35 +10,39 @@
 
 <div class="input-group">
     <span class="input-group-addon" id="basic-addon1">Exam Name</span>
-    <input type="text" class="form-control input-lg" placeholder="Enter a descriptive name for this test (i.e. English 101 Exam #1)"
+    <input type="text" class="form-control input-lg" name="examName" default="" value="{{ isset($exam['examName']) ?
+            $exam['examName'] : '' }}"
+           placeholder="Enter a descriptive name for this test (i.e. English 101 Exam #1)"
            aria-describedby="basic-addon1">
 </div>
 <p></p>
 <div class="btn-group btn-group">
-    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Term <span class="glyphicon glyphicon-menu-down"></span></a>
-    <ul class="dropdown-menu" role="menu">
+    <a class="btn btn-primary dropdown-toggle" id="term" name="term" data-toggle="dropdown">{{ isset($exam['examTerm']) ?
+            $exam['examTerm'].' ' : 'Term' }}<span class="glyphicon glyphicon-menu-down"></span></a>
+    <ul class="dropdown-menu" id="termList" role="menu">
         <li>
-            <a href="#">Winter</a>
+            <a >Winter</a>
         </li>
         <li>
-            <a href="#">Spring</a>
+            <a >Spring</a>
         </li>
         <li>
-            <a href="#">Summer</a>
+            <a >Summer</a>
         </li>
         <li>
-            <a href="#">Fall</a>
+            <a >Fall</a>
         </li>
     </ul>
 </div>
 <div class="btn-group btn-group">
-    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Year <span class="glyphicon glyphicon-menu-down"></span></a>
-    <ul class="dropdown-menu" role="menu">
+    <a class="btn btn-primary dropdown-toggle" id="year" name="year" data-toggle="dropdown">{{ isset($exam['examTerm']) ?
+            $exam['examYear'].' ' : 'Year' }}<span class="glyphicon glyphicon-menu-down"></span></a>
+    <ul class="dropdown-menu" id="yearList" role="menu">
         <li>
-            <a href="#">2015</a>
+            <a >2015</a>
         </li>
         <li>
-            <a href="#">2016</a>
+            <a >2016</a>
         </li>
     </ul>
 </div>

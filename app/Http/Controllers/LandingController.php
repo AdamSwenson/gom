@@ -8,13 +8,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests;
+use Illuminate\Http\Request;
+
 
 class LandingController extends Controller
 {
 
     public function showLanding()
     {
-     //   return "landing page";
         return view('landing');
     }
 
@@ -22,4 +24,31 @@ class LandingController extends Controller
     {
         return view('landing');
     }
+
+    public function loggedIn(Request $request)
+    {
+
+        $email = $request->get('email');
+        $password = $request->get('password');
+
+        return view("account.home")->with([
+            'email' => $email,
+            'password' => $password,
+        ]);
+    }
+
+    public function accountCreate()
+    {
+        return view('account.create');
+    }
+
+
+    public function accountConfirm(){
+        return view('account.confirm');
+    }
+
+    public function retrievePassword(){
+        return view('account.retrieve');
+    }
+
 }

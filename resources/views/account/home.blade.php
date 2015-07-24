@@ -15,7 +15,6 @@
 @endsection
 
 @section('body')
-
     <div id="pageContainer">
         <div id="container" class="container">
             <div class="row">
@@ -36,26 +35,19 @@
             </div>
             <div class="row" >
                 <div class="col-xs-8">
-
-                    <!-- Something goes here -->
+                    <a href="#" class="list-group-item" data-toggle="collapse" data-target="#examListClone" data-parent="#examAction">
+                        <h4>Preferences</h4></a>
+                    <!-- this div should be replaced by real exams or a "No exams found" error popup -->
+                    <div id="examListClone" class="sublinks collapse">
+                        <div class="container">
+                                <a class="list-group-item large"> Security </a>
+                                <a class="list-group-item large"> Payment </a>
+                        </div>
+                    </div>
 
                 </div>
-                <form method="post" action="{{url('select')}}" accept-charset="UTF-8" class="col-xs-4">
-                    <input type="hidden" name="_token" value="{{csrf_token()}}">
-                    <h3 class="text-left"> Log In:</h3>
-                    <div class="form-group ">
-                        <input class="form-control" type="email" name="email"  placeholder="Enter email">
-                    </div>
-                    <div class="form-group">
-                        <input class="form-control" type="password" name="password" placeholder="Enter password">
-                    </div>
-                    <div class="checkbox">
-                        <label><input type="checkbox"> Remember me</label>
-                        <label><a href={{url('account/retrieve')}}>Forgot Password</a></label>
-                    </div>
-                    <input class="btn btn-default" type="submit" >
-                    <a href="{{url('account/create')}}" class="btn btn-default" >Create Account</a>
-                </form>
+            </div>
+                </div>
             </div>
         </div>
     </div>

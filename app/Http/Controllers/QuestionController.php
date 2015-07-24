@@ -14,22 +14,22 @@ class QuestionController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
+     * @param id $exam
      * @return Response
      */
-    public function index()
+    public function index($exam)
     {
-        return view('setup/edit_question');
+        return ('List of all questions for exam #'.$exam);
     }
 
     /**
      * Show the form for creating a new resource.
-     *
+     * @param id $exam
      * @return Response
      */
-    public function create()
+    public function create($exam)
     {
-        //
+        // $exam from URL: questions must know which exam to be associated with(?)
     }
 
     /**
@@ -72,6 +72,26 @@ class QuestionController extends Controller
      */
     public function edit(Question $question)
     {
+        //dd($request);
+        // default data for dev purposes
+        $q1 = [ 'qName' => 'teat name #1',
+            'qDesc' => 'description 1 here',
+            'qOrder' => 1];
+
+        $q2 = [ 'qName' => 'test name #2',
+            'qDesc' => 'description 2 here',
+            'qOrder' => 2];
+
+        $questions = [ $q1, $q2 ];
+
+        $examName = 'History 101 Exam 1, Fall 2015';
+
+        //return view('/setup/edit_question');
+        return view('setup.edit_question')->with([
+                'questions' => $questions,
+                'examName'=> $examName,
+                'examId' => $exam
+        ]);
         //TODO: Add view here
         return view('', compact('question'));
     }
@@ -83,13 +103,26 @@ class QuestionController extends Controller
      * @param QuestionRequest $request
      * @return Response
      */
-    public function update(Question $question, QuestionRequest $request)
+    public function update($id)
     {
         $question->update($request->all());
 
         //TODO: Add view here
         return view('', compact('question'));
 
+    }
+
+    public function updateAll($exam) {
+        // this function will take a request and process all the questions therein.
+        /* it will:
+            -Create a new question if the id is empty
+            -update an existing question if the id exists
+            -set the order property for each question
+            -pass the first questionId and examId to ElementController@
+        */
+        $data['examId'] = $exam;
+        $data['questionId'] = 1;
+        return view('setup.edit_element')->with(['data' => $data]);
     }
 
     /**

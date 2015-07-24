@@ -17,6 +17,84 @@ use App\Http\Controllers\helpers\ExamSelectorHelper;
 
 class StudentController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * We'll co-op this to display the roster editing page
+     *
+     * @return Response
+     */
+    public function index()
+    {
+        return view('setup/edit_roster');
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @return Response
+     */
+    public function store()
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function update($id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+}
+
+/* commenting the old StudentController out for reference
+{
     public $exam;
 
     public $examSelectorHelper;
