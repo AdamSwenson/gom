@@ -22,15 +22,16 @@ class StudentTableSeeder extends Seeder
         DB::table('students')->delete();
         for ($i = 0; $i < $num; $i++)
         {
+            $lastName = $this->faker->lastName();
+            $firstName = $this->faker->firstName();
+            $studentId = $this->faker->unique()->randomNumber(9);
+
             $student = new \App\Student();
-            $student->studentName = $this->faker->unique()->name();
-            $student->studentIdentifier = $this->faker->randomNumber(9);
-            $student->email = $this->faker->email();
+            $student->last_name = $lastName;
+            $student->first_name = $firstName;
+            $student->student_identifier = $studentId;
+            $student->email = $this->faker->unique()->email();
             $student->save();
-//
-//            ]);
-////            $s->setUser(1);
-//            $s->save();
         }
     }
 }

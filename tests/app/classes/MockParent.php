@@ -72,6 +72,11 @@ class MockParent
         $this->response = $response;
     }
 
+    public function setResponse($response)
+    {
+        $this->set_response($response);
+    }
+
     public function throwExceptionOnCall($string_exception_type)
     {
         $this->pleaseThrow = $string_exception_type;

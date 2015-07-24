@@ -15,12 +15,13 @@ class CreateStudentsTable extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
-            $table->integer('studentIdentifier')->unsigned();
-            $table->string('studentName');
-            $table->string('email');
+            $table->integer('student_identifier')->unsigned()->nullable();
+            $table->string('last_name');
+            $table->string('first_name');
+            $table->string('email')->nullable();
             $table->timestamps();
 
-            $table->unique(['user_id', 'studentIdentifier']);
+            $table->unique(['user_id', 'student_identifier']);
 //            $table->unique(['user_id', 'studentId', 'email']);
 
             $table->foreign('user_id')

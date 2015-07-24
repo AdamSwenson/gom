@@ -40,6 +40,14 @@ class Student extends BaseModel
         parent::boot();
     }
 
+    /**
+     * Change email address for student
+     * @param string $email
+     */
+    public function setEmail($email)
+    {
+        $this->attributes['email'] = $email;
+    }
 
 #-------- foreign keys
 

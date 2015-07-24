@@ -16,11 +16,6 @@ use App\Element;
 
 class ElementDAO
 {
-    const VALENCE_ABSENT = 100;
-    const VALENCE_POOR = 101;
-    const VALENCE_OK = 102;
-    const VALENCE_EXCELLENT = 103;
-
     const MAX_NAME_LENGTH = 200;
     const MAX_DISPLAY_LENGTH = 200;
     const MAX_COMMENT_LENGTH = 2000;
