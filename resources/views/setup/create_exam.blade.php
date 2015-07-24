@@ -50,6 +50,8 @@
             btnDone.onclick = function () {
                 document.getElementById("examForm").submit();
             }
+
+            return false;
         });
     </script>
 @endsection

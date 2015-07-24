@@ -82,12 +82,12 @@ class ExamController extends Controller
     public function edit($exam, Request $request)
     {
         // do something to get id from DB
-
+        // pass values into $data for view
         $data['examId'] = $exam;
         $data['examName'] = 'Test Name';
+        $data['examTerm'] = 'Fall';
+        $data['examYear'] = '2014';
 
-        //$examId = $request->get('examId');
-        //dd($request);
         return view('setup/edit_exam')->with('exam', $data);
     }
 

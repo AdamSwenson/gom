@@ -17,30 +17,32 @@
 </div>
 <p></p>
 <div class="btn-group btn-group">
-    <a class="btn btn-primary dropdown-toggle" id="term" name="term" data-toggle="dropdown">Term <span class="glyphicon glyphicon-menu-down"></span></a>
+    <a class="btn btn-primary dropdown-toggle" id="term" name="term" data-toggle="dropdown">{{ isset($exam['examTerm']) ?
+            $exam['examTerm'].' ' : 'Term' }}<span class="glyphicon glyphicon-menu-down"></span></a>
     <ul class="dropdown-menu" id="termList" role="menu">
         <li>
-            <a href="#">Winter</a>
+            <a >Winter</a>
         </li>
         <li>
-            <a href="#">Spring</a>
+            <a >Spring</a>
         </li>
         <li>
-            <a href="#">Summer</a>
+            <a >Summer</a>
         </li>
         <li>
-            <a href="#">Fall</a>
+            <a >Fall</a>
         </li>
     </ul>
 </div>
 <div class="btn-group btn-group">
-    <a class="btn btn-primary dropdown-toggle" id="year" name="year" data-toggle="dropdown">Year <span class="glyphicon glyphicon-menu-down"></span></a>
+    <a class="btn btn-primary dropdown-toggle" id="year" name="year" data-toggle="dropdown">{{ isset($exam['examTerm']) ?
+            $exam['examYear'].' ' : 'Year' }}<span class="glyphicon glyphicon-menu-down"></span></a>
     <ul class="dropdown-menu" id="yearList" role="menu">
         <li>
-            <a href="#">2015</a>
+            <a >2015</a>
         </li>
         <li>
-            <a href="#">2016</a>
+            <a >2016</a>
         </li>
     </ul>
 </div>

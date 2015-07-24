@@ -28,7 +28,7 @@
                     <nav>
                         <ul class="pager">
                             <li class="next">
-                                <span id="submitLink" style="cursor:pointer;">Create <span class="glyphicon glyphicon-chevron-right"
+                                <span id="submitLink" style="cursor:pointer;">Next <span class="glyphicon glyphicon-chevron-right"
                                                                    aria-hidden="true"></span></span>
                                 <!--
                                 <a href="{{ url('exam/'.$exam['examId']) }}" id="submitLink">Done <span
@@ -57,7 +57,6 @@
 
 
             $('#termList li').on('click', function () {
-                //$('#term').html('TEST');
                 $('#term').html($(this).text());
             });
 
@@ -70,6 +69,8 @@
             btnDone.onclick = function () {
                 document.getElementById("examForm").submit();
             }
+
+            return false;
         });
     </script>
 
