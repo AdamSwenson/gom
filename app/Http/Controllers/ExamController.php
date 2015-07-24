@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 /*
     ExamController routes requests to appropriate page of the create exam workflow
@@ -24,9 +25,12 @@ class ExamController extends Controller
      */
     public function index()
     {
+        Auth::loginUsingId(1);
+//        return "j";
         $exams = Exam::all();
-//        $exams = \ExamQuery::create()->find();
-        return view('/setup/select_exam')->with('exams', $exams);
+////        $exams = \ExamQuery::create()->find();
+      //  return $exams;
+        return view('/setup/select_exam', compact('exams'));
     }
 
     /**
@@ -50,6 +54,9 @@ class ExamController extends Controller
     {
 
         Exam::create($request->all());
+
+        //TODO Redirect to view
+
 //        $exam = new Exam();
 //        $exam->setYear($year_int);
 //        $exam->setTerm($clean_term);
@@ -76,8 +83,6 @@ class ExamController extends Controller
      */
     public function edit(Exam $exam)
     {
-        // do something to get id from DB
-        $exam = \ExamQuery::create()->findById($id);
 
         return view('setup/edit_exam', compact('exam'));
     }

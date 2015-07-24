@@ -82,6 +82,11 @@ class Exam extends BaseModel
     }
 
 #----------------------------------------------------------- Setters and getters
+public function __get($name){
+    if($name == "examName"){
+        return $this->attributes['name'];
+    }
+}
 
     /**
      * Set the term in which the exam occurs

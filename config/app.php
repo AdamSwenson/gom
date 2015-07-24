@@ -1,4 +1,7 @@
 <?php
+
+
+//TODO remove this once propel is refactored out
 require_once app_path().'/propel_config/config.php';
 
 return [

@@ -51,11 +51,11 @@
                             <div class="container">
                                 @foreach($exams as $exam)
                                     <div class="row">
-                                        <form method="GET" action="{{url('exam/'. $exam['examId'] . '/edit')}}"
+                                        <form method="GET" action="{{url('exam/'. $exam->getId() . '/edit')}}"
                                               accept-charset="UTF-8">
                                             <div style="width:97%">
                                                 <button type="submit"
-                                                        class="list-group-item">{{ $exam['examName'] }}</button>
+                                                        class="list-group-item">{{ $exam->getName() }}</button>
                                             </div>
                                         </form>
                                     </div>
@@ -72,11 +72,11 @@
                                 @foreach($exams as $exam)
                                     <div class="row">
                                         <!-- pass in examId so it can be cloned -->
-                                        <form method="GET" action="{{url('exam/'. $exam['examId'] . '/edit')}}"
+                                        <form method="GET" action="{{url('exam/'. $exam->getId() . '/edit')}}"
                                               accept-charset="UTF-8">
                                             <div style="width:97%">
                                                 <button type="submit" name="cloneExamName"
-                                                        class="list-group-item">{{ $exam['examName'] }}</button>
+                                                        class="list-group-item">{{ $exam->getName() }}</button>
                                             </div>
                                         </form>
                                     </div>
@@ -92,14 +92,14 @@
                             <div class="container">
                                 @foreach($exams as $exam)
                                     <div class="row">
-                                        <form method="POST" action="{{url('exam/'. $exam['examId'] )}}"
+                                        <form method="POST" action="{{url('exam/'. $exam->getId() )}}"
                                               accept-charset="UTF-8">
                                             <input type="hidden" name="_method" value="DELETE">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
                                             <div style="width:97%">
                                                 <button type="submit" name="deleteExamName"
-                                                        class="list-group-item">{{ $exam['examName'] }}</button>
+                                                        class="list-group-item">{{ $exam->getName() }}</button>
                                             </div>
                                         </form>
                                     </div>
