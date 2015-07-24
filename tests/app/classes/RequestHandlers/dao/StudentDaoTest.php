@@ -10,6 +10,7 @@ namespace App\classes\RequestHandlers\dao;
 
 
 use App\Exam;
+use App\Kumi;
 use App\Student;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,7 +32,20 @@ class StudentDaoTest extends \TestCase
      * @covers \App\classes\RequestHandlers\dao\StudentDao::load_students_by_exam
      */
     public function testLoad_students_by_exam()
-    {}
+    {
+        $kumi = Kumi::all()->random();
+        $kumi->exams()->attach($this->exam);
+        $kumi->students()->attach($this->student);
+        $kumi->push();
+
+        $result = $this->object->load_students_by_exam($this->exam->getId());
+        $this->assertNotEmpty($result);
+        $this->assertInstanceOf('\App\Student', $result, "returns a student object");
+
+//        $kumiIds = DB::table('kumi_student')->lists('kumi_id');
+  //      DB::table('exam_kumi')->where('kumi_id', $kumiIds)->lists('exam_id');
+
+    }
 
     public function testCreate_student()
     {

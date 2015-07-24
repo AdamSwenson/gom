@@ -11,6 +11,7 @@ namespace App\classes\RequestHandlers\dao;
 
 use App\classes\SecurityClasses\cleaning\ICleanerFactory;
 use App\classes\Traits\UserTraits;
+use App\Exam;
 use App\Student;
 use classes\StudentClasses\errors\StudentException;
 use Illuminate\Support\Collection;
@@ -95,6 +96,12 @@ class StudentDao implements IStudentDao
      */
     public function load_students_by_exam($examId)
     {
+        $exam = Exam::findOrFail($examId);
+        $classes = $exam->classes()->get();
+        if(count($classes) > 0)
+        {
+         return $classes->students()->get();
+        }
     }
 
     /**

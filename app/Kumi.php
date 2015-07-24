@@ -58,7 +58,7 @@ class Kumi extends BaseModel
      */
     public function students()
     {
-        return $this->belongsToMany('App\Student', 'kumi_student')->withTimestamps();
+        return $this->hasMany('App\Student')->withTimestamps();
     }
 
     /**

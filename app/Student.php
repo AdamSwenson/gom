@@ -57,7 +57,12 @@ class Student extends BaseModel
      */
     public function kumis()
     {
-        return $this->belongsToMany('App\Kumi', 'kumi_student')->withTimestamps();
+        return $this->hasMany('App\Kumi'); //, 'kumi_student'); //removed belongsToMany
+    }
+
+    public function exams()
+    {
+        return $this->hasManyThrough('App\Exam', 'App\Kumi');
     }
 
     /**

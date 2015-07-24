@@ -141,4 +141,9 @@ class Element extends BaseModel
     {
         return $this->belongsToMany('App\Comment', 'comment_element')->withTimestamps();
     }
+
+    public function questions()
+    {
+        return $this->belongsToMany('App\Question', 'App\QuestionAssignment')->withTimestamps();
+    }
 }
