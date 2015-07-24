@@ -7,9 +7,13 @@ class Question extends BaseModel
 {
     /** Maximum length in utf-8 characters of the name field (used in sanitizing) */
     const MAX_NAME_LENGTH = 200;
+    /** Minimum length in utf-8 characters of the name field (used in sanitizing) */
+    const MIN_NAME_LENGTH = 2;
 
     /** Maximum length in utf-8 characters of the text field (used in sanitizing)  */
     const MAX_TEXT_LENGTH = 2000;
+    /** Minimum length in utf-8 characters of the text field (used in sanitizing)  */
+    const MIN_TEXT_LENGTH = 2;
 
     /** @var array Fields that are mass assignable */
     protected $fillable = [
@@ -21,6 +25,7 @@ class Question extends BaseModel
         'questionText' => 'string',
         'questionName' => 'string'
     ];
+
 
     public function __construct()
     {

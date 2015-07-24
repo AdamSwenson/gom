@@ -9,8 +9,12 @@ class Exam extends BaseModel
     /** Maximum length in utf-8 characters of the term field (used in sanitizing) */
     const MAX_TERM_LENGTH = 100;
 
+    const MIN_TERM_LENGTH = 2;
+
     /** Maximum length in utf-8 characters of the name field (used in sanitizing) */
     const MAX_NAME_LENGTH = 100;
+
+    const MIN_NAME_LENGTH = 2;
 
     /** Maximum length in digits of the year field (used in sanitizing) */
     const MAX_YEAR_LENGTH = 4;
@@ -46,16 +50,6 @@ class Exam extends BaseModel
     {
         return $query->where('kumi_id = ?', $kumiId);
     }
-
-//    /**
-//     * Get random models
-//     * @param $query
-//     * @return
-//     */
-//    public function scopeRandomObject($query)
-//    {
-//        return $query->orderBy(Exam::raw('RAND()'));
-//    }
 
     /**
      * Limits the query to unlocked exams

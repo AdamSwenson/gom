@@ -9,12 +9,12 @@
 namespace Http\Controllers;
 
 
-use App\Http\Requests\CreateExamRequest;
+use App\Http\Requests\ExamRequest;
 
 class NewExamController
 {
 
-    public function store(CreateExamRequest $request)
+    public function store(ExamRequest $request)
     {
 
     }

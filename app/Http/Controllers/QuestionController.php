@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\classes\RequestHandlers\workers\QuestionWorker;
+use App\Http\Requests\QuestionRequest;
+use App\Question;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -34,52 +37,73 @@ class QuestionController extends Controller
      *
      * @return Response
      */
-    public function store()
+    public function store(QuestionRequest $request)
     {
-        //
+        $worker = new QuestionWorker();
+        $question = $worker->createQuestion($request['questionName'], $request['questionDesc'], $request['order'], $request['examId']);
+
+        //TODO: Add view here
+        return view('', compact('question'));
+
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified question.
      *
-     * @param  int  $id
+     * The model is bound to the route so the id does not
+     * need to be specified as an argument here (though it still
+     * needs to be in the route).
+     *
+     * @param Question $question
      * @return Response
      */
-    public function show($id)
+    public function show(Question $question)
     {
-        //
+
+        //TODO: Add view here
+        return view('', compact('question'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified question.
      *
-     * @param  int  $id
+     * @param Question $question
      * @return Response
      */
-    public function edit($id)
+    public function edit(Question $question)
     {
-        //
+        //TODO: Add view here
+        return view('', compact('question'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified question in storage.
      *
-     * @param  int  $id
+     * @param Question $question
+     * @param QuestionRequest $request
      * @return Response
      */
-    public function update($id)
+    public function update(Question $question, QuestionRequest $request)
     {
-        //
+        $question->update($request->all());
+
+        //TODO: Add view here
+        return view('', compact('question'));
+
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified question from storage.
      *
-     * @param  int  $id
+     * @param Question $question
      * @return Response
+     * @throws \Exception
      */
-    public function destroy($id)
+    public function destroy(Question $question)
     {
-        //
+        $question->delete();
+        //TODO: Add view here
+        return view('', compact('question'));
+
     }
 }

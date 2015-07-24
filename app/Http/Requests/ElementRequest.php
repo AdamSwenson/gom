@@ -5,13 +5,13 @@ namespace App\Http\Requests;
 use App\Http\Requests\Request;
 
 /**
- * Class CreateExamRequest
+ * Class ElementRequest
  *
- * Handles creating a new exam
+ * TODO Setup element request
  *
  * @package App\Http\Requests
  */
-class CreateExamRequest extends Request
+class ElementRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -31,9 +31,7 @@ class CreateExamRequest extends Request
     public function rules()
     {
         return [
-            'term' => 'required',
-            'topic' => 'required',
-            'year' => ['required', min(4), max(4)]
+            //
         ];
     }
 }
