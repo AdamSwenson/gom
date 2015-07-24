@@ -11,22 +11,22 @@ class QuestionController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
+     * @param id $exam
      * @return Response
      */
-    public function index()
+    public function index($exam)
     {
-        return view('setup/edit_question');
+        return ('List of all questions for exam #'.$exam);
     }
 
     /**
      * Show the form for creating a new resource.
-     * @param id
+     * @param id $exam
      * @return Response
      */
     public function create($exam)
     {
-
+        // $exam from URL: questions must know which exam to be associated with(?)
     }
 
     /**
@@ -42,10 +42,11 @@ class QuestionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int  $exam
+     * @param  int $question
      * @return Response
      */
-    public function show($id)
+    public function show($exam, $question)
     {
         //
     }
@@ -54,11 +55,13 @@ class QuestionController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param Request $request
+     * @param int $exam
      * @return Response
      * @internal param int $exam
      */
-    public function edit(Request $request)
+    public function edit($exam, Request $request)
     {
+        //dd($request);
         // default data for dev purposes
         $q1 = [ 'qName' => 'teat name #1',
             'qDesc' => 'description 1 here',
@@ -68,41 +71,49 @@ class QuestionController extends Controller
             'qDesc' => 'description 2 here',
             'qOrder' => 2];
 
-
-        $questions = [ '0' => $q1,
-            '1' => $q2 ];
+        $questions = [ $q1, $q2 ];
 
         $examName = 'History 101 Exam 1, Fall 2015';
 
-        $examid = $request->input('examid');
-        $numOfQuestions = array( 0 => [0 => 'blah'], 1 => [ 1 => 'glah'], 2 => [ 2 => 'vlah']);
-
         //return view('/setup/edit_question');
-        return view('setup.edit_question')->with('questions', $questions)->with([
+        return view('setup.edit_question')->with([
+                'questions' => $questions,
                 'examName'=> $examName,
-                'examid' => $examid,
-                'numOfQuestions' => $numOfQuestions,
+                'examId' => $exam
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  int  $id
+     * @param  int  $question
      * @return Response
      */
-    public function update($id)
+    public function update($question)
     {
         //
+    }
+
+    public function updateAll($exam) {
+        // this function will take a request and process all the questions therein.
+        /* it will:
+            -Create a new question if the id is empty
+            -update an existing question if the id exists
+            -set the order property for each question
+            -pass the first questionId and examId to ElementController@
+        */
+        $data['examId'] = $exam;
+        $data['questionId'] = 1;
+        return view('setup.edit_element')->with(['data' => $data]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int  $question
      * @return Response
      */
-    public function destroy($id)
+    public function destroy($question)
     {
         //
     }

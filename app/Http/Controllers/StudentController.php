@@ -20,6 +20,7 @@ class StudentController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * We'll co-op this to display the roster editing page
      *
      * @return Response
      */

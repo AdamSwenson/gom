@@ -11,12 +11,12 @@ class ElementController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
+     * @param  $question
      * @return Response
      */
-    public function index()
+    public function index($question)
     {
-        return view('setup/edit_element');
+        return ('List of elements for question id: '.$question);
     }
 
     /**
@@ -53,23 +53,23 @@ class ElementController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int  $exam
      * @return Response
      */
-    public function edit($id)
+    public function edit($exam)
     {
-        //
+
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  int  $id
+     * @param  int  $exam
      * @return Response
      */
-    public function update($id)
+    public function update($exam)
     {
-        //
+
     }
 
     /**

@@ -31,14 +31,11 @@
                     </ul>
                 </nav>
                 <p></p>
-
                 <h2>Exam Setup</h2>
-
                 <p></p>
-
                 <div class="list-group">
-                    <a id="createExamLink" href="{{url('exam/create')}}" class="list-group-item">
-                        <h4><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Create Exam</h4>
+                    <a id="createExamLink" href="{{url('exam/create')}}" class="list-group-item"  >
+                        <h4><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create Exam</h4>
                     </a>
                     <a id="editExamLink" href="#" class="list-group-item" data-toggle="collapse"
                        data-target="#examListEdit" data-parent="#examAction">
@@ -48,13 +45,14 @@
 
                         <div class="container">
                             <!-- add the data from exams here -->
+
                             @foreach($exams as $exam)
                                 <div class="row">
-                                    <form method="GET" action="{{url('exam/'. $exam . '/edit')}}" accept-charset="UTF-8"
+                                    <form method="GET" action="{{url('exam/'. $exam['examId'] . '/edit')}}" accept-charset="UTF-8"
                                           class="col-xs-4">
                                         <div class="row">
-                                            <button type="submit" name="examid" value="{{ $exam }}"
-                                                    class="list-group-item small">{{ $exam }}</button>
+                                            <button type="submit"
+                                                    class="list-group-item small">{{ $exam['examName'] }}</button>
                                         </div>
                                     </form>
                                 </div>
@@ -71,11 +69,11 @@
                             @foreach($exams as $exam)
                                 <div class="row">
                                     <!-- pass in examId so it can be cloned -->
-                                    <form method="GET" action="{{url('exam/'. $exam . '/edit')}}" accept-charset="UTF-8"
+                                    <form method="GET" action="{{url('exam/'. $exam['examId'] . '/edit')}}" accept-charset="UTF-8"
                                           class="col-xs-4">
                                         <div class="col-lg-12">
-                                            <button type="submit" name="examid" value="{{ $exam }}"
-                                                    class="list-group-item small">{{ $exam }}</button>
+                                            <button type="submit" name="cloneExamName"
+                                                    class="list-group-item small">{{ $exam['examName'] }}</button>
                                         </div>
                                     </form>
                                 </div>
@@ -91,13 +89,13 @@
                         <div class="container">
                             @foreach($exams as $exam)
                                 <div class="row">
-                                    <form method="POST" action="{{url('exam/'. $exam )}}" accept-charset="UTF-8"
+                                    <form method="POST" action="{{url('exam/'. $exam['examId'] )}}" accept-charset="UTF-8"
                                           class="col-xs-4">
                                         <input type="hidden" name="_method" value="DELETE">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <div class="col-lg-22">
-                                            <button type="submit" name="examid" value="{{ $exam }}"
-                                                    class="list-group-item small">{{ $exam }}</button>
+                                            <button type="submit" name="deleteExamName"
+                                                    class="list-group-item small">{{ $exam['examName'] }}</button>
                                         </div>
                                     </form>
                                 </div>
@@ -107,7 +105,7 @@
                 </div>
             </div>
         </div>
-
+    </div>
     @include('errors.list')
 
 @endsection

@@ -43,10 +43,6 @@ Route::get('account/logout', function(){
     return "Logout";
 });
 
-// Public routes for students to view
-Route::get('studentview', function(){
-    return 'student view';
-});
 
 // Reporting and analytics
 Route::get('report/analytics', function(){
@@ -63,8 +59,9 @@ Route::get('report/qualitycontrol', function(){
 
 /* NEW routes for exam selection and creation below */
 // Select exam page
+
 Route::get('select','ExamController@index');
-Route::post('select','ExamController@index');
+//Route::post('select','ExamController@index');
 Route::resource('exam', 'ExamController');
 /*
 Route::get('exam', 'ExamController@index'); // get all exams for user
@@ -77,7 +74,9 @@ Route::delete('exam/{exam}', 'ExamController@destroy'); // delete element {id}
 */
 
 /* Routes for questions */
+
 Route::get('exam/{exam}/question/edit', 'QuestionController@edit');
+Route::get('exam/{exam}/question/updateAll', 'QuestionController@updateAll'); // updates all questions for the exam w data in request
 Route::resource('exam.question', 'QuestionController');
 
 /*
@@ -91,26 +90,25 @@ Route::delete('exam/{id}/question/{question}', 'QuestionController@destroy');
 */
 
 /* Routes for Elements */
-Route::get('exam/{exam}/question/{question}/element/edit', 'QuestionController@edit');
+Route::get('exam/{exam}/question/{question}/element/updateAll', 'ElementController@updateAll'); // update all elements for question
 Route::resource('exam.question.element', 'ElementController');
 /*
 Route::get('exam/{id}/question/{id}/element', 'ElementController@index');
 Route::get('exam/{id}/question/{id}/element/create', 'ElementController@create');
 Route::post('exam/{id}/question/{id}/element', 'ElementController@store');
 Route::get('exam/{id}/question/{id}/element/{id}', 'ElementController@show');
-Route::get('exam/{id}/question/{id}/element/edit', 'ElementController@edit');
+Route::get('exam/{id}/question/{id}/element/{id}/edit', 'ElementController@edit');
 Route::patch('exam/{id}/question/{id}/element/{id}', 'ElementController@update');
 Route::delete('exam/{id}/question/{id}/element/{id}', 'ElementController@destroy');
 */
 
-Route::resource('roster', 'StudentController');
-
+Route::resource('exam.student', 'StudentController');
 /*
-Route::get('student', 'StudentController@index'); //get students
-Route::get('student/create', 'StudentController@create'); // request form to create student
-Route::post('student', 'StudentController@store'); // upload a new student
-Route::get('student/{id}', 'StudentController@show'); // show student
-Route::get('student/{id}/edit', 'StudentController@edit'); // edit a student given by {id}
-Route::patch('student/{id}', 'StudentController@update'); //update given student
-Route::delete('student/{id}', 'StudentController@destroy'); // delete student
+Route::get('exam/{exam}/student', 'StudentController@index'); //gets list of students for import / editing
+Route::get('exam/{exam}/student/create', 'StudentController@create'); // request form to create a student
+Route::post('exam/{exam}/student', 'StudentController@store'); // upload a new student
+Route::get('exam/{exam}/student/{id}', 'StudentController@show'); // show student
+Route::get('exam/{exam}/student/{id}/edit', 'StudentController@edit'); // edit a student given by {id}
+Route::patch('exam/{exam}/student/{id}', 'StudentController@update'); //update given student
+Route::delete('exam/{exam}/student/{id}', 'StudentController@destroy'); // delete student
 */

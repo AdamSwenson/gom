@@ -9,7 +9,7 @@
 
 @extends('layouts.master')
 
-@section('pageTitle', 'Empty')
+@section('pageTitle', 'Edit Exam')
 @section('description', 'Edit an exam')
 
 @section('cssLinks')
@@ -21,14 +21,20 @@
     <div id="editExam">
         <div class="section">
             <div class="container">
-                <form id="examForm" method="GET" action=""
+                <form id="examForm" method="post" action="{{ url('exam/'.$exam['examId']) }}"
                       accept-charset="UTF-8">
+                    <input type="hidden" name="_method" value="patch">
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <nav>
                         <ul class="pager">
                             <li class="next">
-                                <a href="{{url('exam/' .$examId.'/question/edit')}}" id="submitLink">Done <span
+                                <span id="submitLink" style="cursor:pointer;">Create <span class="glyphicon glyphicon-chevron-right"
+                                                                   aria-hidden="true"></span></span>
+                                <!--
+                                <a href="{{ url('exam/'.$exam['examId']) }}" id="submitLink">Done <span
                                             class="glyphicon glyphicon-chevron-right"
                                             aria-hidden="true"></span></a>
+                                            -->
                             </li>
                         </ul>
                     </nav>
@@ -47,14 +53,24 @@
 
 @section('jsArea')
     <script type="text/javascript">
-        window.onload = function () {
+        $(document).ready(function() {
+
+
+            $('#termList li').on('click', function () {
+                //$('#term').html('TEST');
+                $('#term').html($(this).text());
+            });
+
+            $('#yearList li').on('click', function () {
+                $('#year').html($(this).text());
+
+            });
             var btnDone = document.getElementById("submitLink");
 
             btnDone.onclick = function () {
                 document.getElementById("examForm").submit();
             }
-        };
-
+        });
     </script>
 
 
