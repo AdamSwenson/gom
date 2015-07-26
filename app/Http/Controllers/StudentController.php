@@ -14,7 +14,9 @@ use App\classes\ImportExportClasses\StudentUpload\StudentCsvProcessor;
 use App\classes\ImportExportClasses\dao\Uploader;
 use App\classes\RequestClasses\FileRequest;
 use App\Http\Controllers\helpers\ExamSelectorHelper;
+use App\Http\Requests\StudentRequest;
 use App\Repositories\Student\IStudentRepository;
+use App\Student;
 
 class StudentController extends Controller
 {
@@ -30,9 +32,10 @@ class StudentController extends Controller
      * Display a listing of the resource.
      * We'll co-op this to display the roster editing page
      *
+     * @param StudentRequest $request
      * @return Response
      */
-    public function index()
+    public function index(StudentRequest $request)
     {
         return view('setup/edit_roster');
     }
@@ -42,7 +45,7 @@ class StudentController extends Controller
      *
      * @return Response
      */
-    public function create()
+    public function create(StudentRequest $request)
     {
         //
     }
@@ -52,8 +55,8 @@ class StudentController extends Controller
      *
      * @return Response
      */
-    public function store()
-    {
+    public function store(StudentRequest $request)
+    {        return $this->dao->create_student($lastName, $firstName, $studentId, $email);
         //
     }
 
@@ -63,18 +66,24 @@ class StudentController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function show($id)
+    public function show(Student $student)
     {
+        return $this->dao->load_student_by_id($studentId);
         //
+
+
+        return $this->dao->load_all_students();
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param Student $student
+     * @param StudentRequest $request
      * @return Response
+     *
      */
-    public function edit($id)
+    public function edit(Student $student, StudentRequest $request)
     {
         //
     }
@@ -85,7 +94,7 @@ class StudentController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function update($id)
+    public function update(Student $student, StudentRequest $request)
     {
         //
     }
@@ -96,8 +105,9 @@ class StudentController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function destroy($id)
+    public function destroy(Student $student)
     {
+        return $this->dao->delete_student_by_object($student);
         //
     }
 }

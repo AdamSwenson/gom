@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Element;
+use App\Http\Requests\ElementRequest;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
 use Illuminate\Http\Request;
@@ -33,11 +35,13 @@ class ElementController extends Controller
 
     /**
      * Display a listing of the resource.
-     * @param  $question
+     * @param ElementRequest $request
      * @return Response
      */
-    public function index($question)
+    public function index(ElementRequest $request)
     {
+        //for question number
+        return $this->dao->load_element_assignments_by_question_number($examId, $questionNumber);
         return ('List of elements for question id: '.$question);
     }
 
@@ -46,9 +50,20 @@ class ElementController extends Controller
      *
      * @return Response
      */
-    public function create()
+    public function create(ElementRequest $request)
     {
         //
+        $element = $this->dao->createElement($elementName, '', $respGeneric);
+        if(!empty($element))
+        {
+            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_ABSENT, $respAbsent);
+            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_POOR, $respPoor);
+            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_OK, $respFair);
+            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_EXCELLENT, $respGood);
+
+            $this->assignmentDao->record($examId, $questionNumber, $element->getId(), $subtask);
+        }
+        return $element;
     }
 
     /**
@@ -56,7 +71,7 @@ class ElementController extends Controller
      *
      * @return Response
      */
-    public function store()
+    public function store(ElementRequest $request)
     {
         //
     }
@@ -67,18 +82,23 @@ class ElementController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function show($id)
+    public function show(Element $element)
     {
+        $element = $this->dao->loadElementById($elementId);
+        return $element;
+
+
         //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $exam
+     * @param Element $element
+     * @param ElementRequest $request
      * @return Response
      */
-    public function edit($exam)
+    public function edit(Element $element, ElementRequest $request)
     {
 
     }
@@ -86,10 +106,11 @@ class ElementController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  int  $exam
+     * @param Element $element
+     * @param ElementRequest $request
      * @return Response
      */
-    public function update($exam)
+    public function update(Element $element, ElementRequest $request)
     {
 
     }
@@ -100,8 +121,9 @@ class ElementController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function destroy($id)
+    public function destroy(Element $element)
     {
+        return $this->elementDao->deleteElement($elementId);
         //
     }
 }

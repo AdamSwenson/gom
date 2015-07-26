@@ -201,4 +201,9 @@ class StudentRepository implements IStudentRepository
         $student = $this->load_student_by_sid($sid);
         return $student->delete();
     }
+
+    public function delete_student_by_object(Student $student)
+    {
+        return $student->delete();
+    }
 }
