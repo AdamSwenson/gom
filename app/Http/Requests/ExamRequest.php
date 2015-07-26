@@ -21,7 +21,7 @@ class ExamRequest extends Request
     public function authorize()
     {
         //TODO Update to use authorization
-        return false;
+        return true;
     }
 
     /**
@@ -32,9 +32,19 @@ class ExamRequest extends Request
     public function rules()
     {
         return [
-            'term' => ['required', min(Exam::MIN_TERM_LENGTH), max(Exam::MAX_TERM_LENGTH)],
-            'name' => ['required', min(2), max(200)],
-            'year' => ['required', min(4), max(4)]
+//            'term' => 'required|min:1|max:225',
+//            'name' => 'required|min:1|max:225',
+//            'year' => 'required|integer|min:2000|max:3000'
         ];
+//
+//        $minTerm = Exam::MIN_TERM_LENGTH;
+//        $maxTerm = Exam::MAX_TERM_LENGTH;
+//        $minName = Exam::MIN_NAME_LENGTH;
+//        $maxName = Exam::MAX_NAME_LENGTH;
+//        return [
+//            'term' => ['required', min($minTerm), max($maxTerm)],
+//            'name' => ['required', min($minName), max($maxName)],
+//            'year' => ['required', min(4), max(4)]
+//        ];
     }
 }

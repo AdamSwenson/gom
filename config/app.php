@@ -148,7 +148,17 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-        //TODO: Remove this or put it somewhere nice for production
+        /*
+         * Custom service providers
+         */
+        App\Providers\StorageServiceProvider::class,
+
+
+        /*
+         * Development
+         * TODO: Remove this or put it somewhere nice for production
+         */
+        //
         Laracasts\Generators\GeneratorsServiceProvider::class
     ],
 

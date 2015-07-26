@@ -8,12 +8,10 @@ class Exam extends BaseModel
 {
     /** Maximum length in utf-8 characters of the term field (used in sanitizing) */
     const MAX_TERM_LENGTH = 100;
-
     const MIN_TERM_LENGTH = 2;
 
     /** Maximum length in utf-8 characters of the name field (used in sanitizing) */
     const MAX_NAME_LENGTH = 100;
-
     const MIN_NAME_LENGTH = 2;
 
     /** Maximum length in digits of the year field (used in sanitizing) */
@@ -243,6 +241,15 @@ public function __get($name){
     public function getUserId()
     {
         // TODO: Implement getUserId() method.
+    }
+
+    /**
+     * Get the name column value
+     * @return string
+     */
+    public function getYear()
+    {
+        return $this->attributes['year'];
     }
 
     /**

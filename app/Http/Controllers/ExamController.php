@@ -3,14 +3,17 @@
 namespace App\Http\Controllers;
 
 
-use App\classes\ExamClasses\display\PublicNameFormatter;
+
 use App\Exam;
 use App\Http\Requests\ExamRequest;
+use App\Repositories\Exam\IExamRepository;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\View;
 
 /*
     ExamController routes requests to appropriate page of the create exam workflow
@@ -18,6 +21,26 @@ use Illuminate\Support\Facades\Auth;
 
 class ExamController extends Controller
 {
+    const SUCCESS_FLASH_NAME = "flash_message_success";
+    const FAIL_FLASH_NAME = "flash_message_fail";
+
+    const CREATE_SUCCESS = "Successfully created exam";
+    const CREATE_FAIL = "There was a problem creating the exam";
+
+    const UPDATE_SUCCESS = "Successfully updated the exam";
+    const UPDATE_FAIL = "There was a problem updating the exam";
+
+    const DELETE_SUCCESS = 'you have successfully destroyed an exam. I hope you are proud of yourself.';
+    const DELETE_FAIL = 'There was a problem deleting the exam';
+
+    /**@var IExamRepository */
+    protected $examDao;
+
+    public function __construct(IExamRepository $examDao)
+    {
+        $this->examDao = $examDao;
+    }
+
     /**
      * Display all exams for the user.
      *
@@ -25,12 +48,11 @@ class ExamController extends Controller
      */
     public function index()
     {
+        //TODO Remove this once the login system is working
         Auth::loginUsingId(1);
-//        return "j";
-        $exams = Exam::all();
-////        $exams = \ExamQuery::create()->find();
-      //  return $exams;
-        return view('/setup/select_exam', compact('exams'));
+        $exams = $this->examDao->load_all_exams();
+
+        return View::make('setup.select_exam', compact('exams'));
     }
 
     /**
@@ -47,21 +69,16 @@ class ExamController extends Controller
     /**
      * Store a newly created exam in storage.
      *
+     * TODO Add error handling
+     *
      * @param ExamRequest $request
      * @return Response
      */
     public function store(ExamRequest $request)
     {
-
-        Exam::create($request->all());
-
-        //TODO Redirect to view
-
-//        $exam = new Exam();
-//        $exam->setYear($year_int);
-//        $exam->setTerm($clean_term);
-//        $exam->setName($clean_name);
-//        $exam->save();
+        $this->examDao->save_new_exam($request->input('year'), $request->input('term'), $request->input('name'));
+        Session::flash(self::SUCCESS_FLASH_NAME, self::CREATE_SUCCESS);
+        return view('/setup/create_exam');
     }
 
     /**
@@ -96,8 +113,9 @@ class ExamController extends Controller
      */
     public function update(Exam $exam, ExamRequest $request)
     {
-        $exam->update($request->all());
-
+        $exam = $this->examDao->update_exam_object($exam, $request->input('year'), $request->input('term'), $request->input('name'));
+        Session::flash(self::SUCCESS_FLASH_NAME, self::UPDATE_SUCCESS);
+        return view('setup/edit_exam', compact('exam'));
         //Todo: add redirect or view
     }
 
@@ -112,11 +130,12 @@ class ExamController extends Controller
      */
     public function destroy(Exam $exam)
     {
-        //
-        return ('you have successfully destroyed '.$exam.'. Good work.');
-        $exam->delete();
-
-        //Todo: add redirect or view
+        $result = $this->examDao->delete_exam($exam->getId());
+        if (!empty($result))
+        {
+            Session::flash(self::SUCCESS_FLASH_NAME, self::DELETE_SUCCESS);
+        }
+        return view('/setup/create_exam');
     }
 
 }

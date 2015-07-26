@@ -20,6 +20,9 @@
                     </ul>
                     <h2>Create Exam</h2>
                     @include('setup.exam_form')
+
+                    <input type="text" name="year" value="2015"/>
+                    <input type="text" name="term" value="fall"/>
                 </form>
             </div>
         </div>

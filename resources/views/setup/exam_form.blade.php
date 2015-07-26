@@ -10,15 +10,15 @@
 
 <div class="input-group">
     <span class="input-group-addon" id="basic-addon1">Exam Name</span>
-    <input type="text" class="form-control input-lg" name="examName" default="" value="{{ isset($exam['examName']) ?
-            $exam['examName'] : '' }}"
+    <input type="text" class="form-control input-lg" name="name" default="" value="{{ isset($exam) ?
+            $exam->getName() : '' }}"
            placeholder="Enter a descriptive name for this test (i.e. English 101 Exam #1)"
            aria-describedby="basic-addon1">
 </div>
 <p></p>
 <div class="btn-group btn-group">
-    <a class="btn btn-primary dropdown-toggle" id="term" name="term" data-toggle="dropdown">{{ isset($exam['examTerm']) ?
-            $exam['examTerm'].' ' : 'Term' }}<span class="glyphicon glyphicon-menu-down"></span></a>
+    <a class="btn btn-primary dropdown-toggle" id="term" name="term" data-toggle="dropdown">{{ isset($exam) ?
+            $exam->getTerm().' ' : 'Term' }}<span class="glyphicon glyphicon-menu-down"></span></a>
     <ul class="dropdown-menu" id="termList" role="menu">
         <li>
             <a >Winter</a>
@@ -35,8 +35,8 @@
     </ul>
 </div>
 <div class="btn-group btn-group">
-    <a class="btn btn-primary dropdown-toggle" id="year" name="year" data-toggle="dropdown">{{ isset($exam['examTerm']) ?
-            $exam['examYear'].' ' : 'Year' }}<span class="glyphicon glyphicon-menu-down"></span></a>
+    <a class="btn btn-primary dropdown-toggle" id="year" name="year" data-toggle="dropdown">{{ isset($exam) ?
+            $exam->getYear().' ' : 'Year' }}<span class="glyphicon glyphicon-menu-down"></span></a>
     <ul class="dropdown-menu" id="yearList" role="menu">
         <li>
             <a >2015</a>

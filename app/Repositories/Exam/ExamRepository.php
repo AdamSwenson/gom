@@ -2,22 +2,18 @@
 /**
  * Created by PhpStorm.
  * User: adam
- * Date: 4/4/15
- * Time: 1:14 PM
+ * Date: 7/25/15
+ * Time: 1:10 PM
  */
 
-namespace App\classes\RequestHandlers\dao;
-
-
+namespace App\Repositories\Exam;
+use App\Repositories\Exam\IExamRepository;
 use App\classes\SecurityClasses\cleaning\CleanerFactory;
 use App\classes\SecurityClasses\cleaning\ICleanerFactory;
-
-use App\classes\UserManagement\errors\CredentialsException;
 use App\Exam;
 
-use Propel\Runtime\Connection\ConnectionWrapper;
 
-class ExamDAO implements IExamDAO
+class ExamRepository implements IExamRepository
 {
 
     public $connection = null;
@@ -56,7 +52,8 @@ class ExamDAO implements IExamDAO
         try{
             $clean_id = $this->cleaner->sanitize($examId, CleanerFactory::INTEGER);
             $toDelete = $this->load_exam($clean_id);
-            return $toDelete->delete();
+            return $this->delete_exam_object($toDelete);
+//            return $toDelete->delete();
 //            return Exam::destroy($clean_id);
         }catch(\Exception $e)
         {
@@ -65,6 +62,15 @@ class ExamDAO implements IExamDAO
     }
 
     /**
+     * Deletes the exam
+     * @param Exam $exam
+     * @return boolean
+     */
+    public function delete_exam_object(Exam $exam)
+    {
+        return $exam->delete();
+    }
+        /**
      * Creates a new exam object, saves it, then returns it
      * @param  integer $year
      * @param string $term
@@ -93,7 +99,7 @@ class ExamDAO implements IExamDAO
             return $exam;
         } catch (\Exception $e)
         {
-        throw $e;
+            throw $e;
         }
     }
 
@@ -182,6 +188,37 @@ class ExamDAO implements IExamDAO
         $exam = $this->load_exam($examId);
         $exam->setReleased(0);
         $exam->update();
+        return $exam;
+    }
+
+    /**
+     * Updates an exam by examId, saves it, then returns it
+     * @param $examId
+     * @param  integer $year
+     * @param string $term
+     * @param string $name
+     * @return Exam
+     */
+    public function update_exam($examId, $year, $term, $name)
+    {
+        $exam = $this->load_exam($examId);
+        return $this->update_exam_object($exam, $year, $term, $name);
+    }
+
+    /**
+     * Updates an exam object, saves it, then returns it
+     * @param Exam $exam
+     * @param  integer $year
+     * @param string $term
+     * @param string $name
+     * @return Exam
+     */
+    public function update_exam_object(Exam $exam, $year, $term, $name)
+    {
+        $exam->setYear($year);
+        $exam->setTerm($term);
+        $exam->setName($name);
+        $exam->save();
         return $exam;
     }
 
