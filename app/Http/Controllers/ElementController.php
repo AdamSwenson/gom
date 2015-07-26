@@ -40,30 +40,27 @@ class ElementController extends Controller
      */
     public function index(ElementRequest $request)
     {
+        if(!empty($questionId))
+        {}
+        else{
+            return Element::all();
+        }
+        $element = $this->dao->loadElementById($elementId);
+        return $element;
         //for question number
-        return $this->dao->load_element_assignments_by_question_number($examId, $questionNumber);
-        return ('List of elements for question id: '.$question);
+        return $this->dao->load_element_assignments_by_question_number($request->input('exam_id'), $request->input('question_number'));
+       // return ('List of elements for question id: '.$question);
     }
 
     /**
      * Show the form for creating a new resource.
      *
+     * @param ElementRequest $request
      * @return Response
      */
     public function create(ElementRequest $request)
     {
-        //
-        $element = $this->dao->createElement($elementName, '', $respGeneric);
-        if(!empty($element))
-        {
-            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_ABSENT, $respAbsent);
-            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_POOR, $respPoor);
-            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_OK, $respFair);
-            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_EXCELLENT, $respGood);
-
-            $this->assignmentDao->record($examId, $questionNumber, $element->getId(), $subtask);
-        }
-        return $element;
+        //todo add view
     }
 
     /**
@@ -73,7 +70,22 @@ class ElementController extends Controller
      */
     public function store(ElementRequest $request)
     {
-        //
+
+        $elementName = $request->input('elementName');
+        $respGeneric = $request->input('respGeneric');
+        $element = $this->dao->createElement($elementName, '', $respGeneric);
+
+        if(!empty($element))
+        {
+            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_ABSENT, $request->input('respAbsent'));
+            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_POOR, $request->input('respPoor'));
+            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_OK, $request->input('respFair'));
+            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_EXCELLENT, $request->input('respGood'));
+
+            $this->assignmentDao->record($request->input('examId'), $request->input('questionNumber'), $element->getId(), $request->input('subtask'));
+        }
+        return $element;
+//todo: add view
     }
 
     /**
@@ -118,12 +130,12 @@ class ElementController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Element $element
      * @return Response
+     * @internal param int $id
      */
     public function destroy(Element $element)
     {
-        return $this->elementDao->deleteElement($elementId);
-        //
+        return $this->elementDao->deleteElement($element);
     }
 }

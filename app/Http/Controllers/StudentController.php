@@ -43,6 +43,7 @@ class StudentController extends Controller
     /**
      * Show the form for creating a new resource.
      *
+     * @param StudentRequest $request
      * @return Response
      */
     public function create(StudentRequest $request)
@@ -53,26 +54,25 @@ class StudentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
+     * @param StudentRequest $request
      * @return Response
      */
     public function store(StudentRequest $request)
-    {        return $this->dao->create_student($lastName, $firstName, $studentId, $email);
-        //
+    {
+        $student = $this->dao->create_student($request->input('lastName'), $request->input('firstName'), $request->input('studentId'), $request->input('email'));
+        //todo add view to return
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param Student $student
      * @return Response
      */
     public function show(Student $student)
     {
-        return $this->dao->load_student_by_id($studentId);
-        //
 
-
-        return $this->dao->load_all_students();
+        //todo add view for model bound
     }
 
     /**
@@ -102,13 +102,14 @@ class StudentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Student $student
      * @return Response
      */
     public function destroy(Student $student)
     {
-        return $this->dao->delete_student_by_object($student);
-        //
+        $result = $this->dao->delete_student_by_object($student);
+
+        //TODO Add view
     }
 }
 

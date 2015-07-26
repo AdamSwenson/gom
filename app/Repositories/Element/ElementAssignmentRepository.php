@@ -9,8 +9,10 @@
 namespace App\Repositories\Element;
 
 
+use App\classes\SecurityClasses\cleaning\CleanerFactory;
 use App\classes\SecurityClasses\cleaning\ICleanerFactory;
 use App\ElementAssignment;
+use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Question\QuestionAssignmentRepository;
 
 class ElementAssignmentRepository implements IElementAssignmentRepository
@@ -18,18 +20,26 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
 
     public $assignments;
 
-    /** @var ICleanerFactory  */
+    /** @var ICleanerFactory */
     public $cleaner;
 
     /** @var  IQuestionAssignmentDAO */
     public $questionAssignmentDao;
 
-    public function __construct(QuestionAssignmentRepository $questionAssignmentDao, ICleanerFactory $cleaner)
+    /**
+     * TODO Fix dependency injection
+     */
+    public function __construct()
     {
-
-    $this->questionAssignmentDao = $questionAssignmentDao;
-        $this->cleaner = $cleaner;
+        $this->questionAssignmentDao = new QuestionAssignmentRepository();
+        $this->cleaner = new CleanerFactory();
     }
+
+//    public function __construct(IQuestionAssignmentRepository $questionAssignmentDao, ICleanerFactory $cleaner)
+//    {
+//        $this->questionAssignmentDao = $questionAssignmentDao;
+//        $this->cleaner = $cleaner;
+//    }
 
     public function setCleaner(ICleanerFactory $cleanerFactory)
     {
@@ -48,10 +58,11 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
 //        $this->assignments = ElementAssignment::where('question_assignment_id', $questionAssignment[0]->id)->get();
         $this->load_element_assignments_by_question_number($examId, $questionNumber);
         $elements = array();
-        foreach($this->assignments as $assign)
+        foreach ($this->assignments as $assign)
         {
             array_push($elements, $assign->element()->first());
         }
+
         return $elements;
     }
 
@@ -59,17 +70,19 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
     {
         $questionAssignment = $this->questionAssignmentDao->load($examId, $questionNumber);
 
-        if(empty($questionAssignment))
+        if (empty($questionAssignment))
         {
             //TODO: Add error handling
         }
         $this->assignments = ElementAssignment::where('question_assignment_id', $questionAssignment[0]->id)->get();
+
         return $this->assignments;
     }
 
     public function load_by_exam($examId)
     {
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($examId);
+
         return ElementAssignment::where('question_assignment_id', $questionAssignments)->get();
     }
 
@@ -81,6 +94,7 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
         $assign->questionAssignment()->associate($questionAssignment[0]);
         $assign->setSubtask($subtask);
         $assign->save();
+
         return $assign;
     }
 }

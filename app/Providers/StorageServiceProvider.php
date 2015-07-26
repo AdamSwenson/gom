@@ -24,8 +24,9 @@ class StorageServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->app->bind('\App\Repositories\Exam\IExamRepository', '\App\Repositories\Exam\ExamRepository');
+
         $this->app->bind('\App\Repositories\Question\IQuestionRepository', '\App\Repositories\Question\QuestionRepository');
-        $this->app->bind('\App\Repositories\Question\IQuestionAssignmentRepository', '\App\Repositories\Question\QuestionAssignmentRepository');
+        $this->app->bind('App\Repositories\Question\IQuestionAssignmentRepository', 'App\Repositories\Question\QuestionAssignmentRepository');
 
         $this->app->bind('\App\Repositories\Element\IElementRepository', '\App\Repositories\Element\ElementRepository');
         $this->app->bind('\App\Repositories\Element\IElementAssignmentRepository', '\App\Repositories\Element\ElementAssignmentRepository');

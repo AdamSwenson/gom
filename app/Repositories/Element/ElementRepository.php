@@ -8,7 +8,7 @@
 
 namespace App\Repositories\Element;
 
-
+use App\classes\SecurityClasses\cleaning\ICleanerFactory;
 use App\classes\SecurityClasses\cleaning\CleanerFactory;
 use App\Comment;
 use App\Element;
@@ -38,7 +38,8 @@ class ElementRepository implements IElementRepository
     public function loadElementById($elementId)
     {
         $clean_id = $this->cleaner->sanitize($elementId, CleanerFactory::INTEGER);
-        if(!empty($clean_id)){
+        if (!empty($clean_id))
+        {
             return Element::findOrFail($clean_id);
         }
     }
@@ -62,21 +63,30 @@ class ElementRepository implements IElementRepository
         $element->setCommentText($clean_comment);
 
         $element->save();
+
         return $element;
     }
 
     /**
      * Remove an element
-     * @param $elementId
+     * @param Element|integer $element
+     * @return bool|null
      */
-    public function deleteElement($elementId)
+    public function deleteElement($element)
     {
-        $clean_id = $this->cleaner->sanitize($elementId, CleanerFactory::INTEGER);
-        if(!empty($clean_id)){
-            $element = Element::findOrFail($clean_id);
+        if (!($element instanceof Element))
+        {
+            $clean_id = $this->cleaner->sanitize($elementId, CleanerFactory::INTEGER);
+            if (!empty($clean_id))
+            {
+                $element = Element::findOrFail($clean_id);
+            }
             return $element->delete();
         }
     }
+
+    public function updateElement($elementId, $elementName, $displayText, $commentText)
+    {}
 
     /**
      * Alter the content of an existing element
@@ -98,6 +108,7 @@ class ElementRepository implements IElementRepository
         $element->setCommentText($clean_comment);
 
         $element->update();
+
         return $element;
     }
 
@@ -113,12 +124,13 @@ class ElementRepository implements IElementRepository
      */
     public function addValencedContent($elementId, $valence, $content)
     {
-        $clean_body = $this->cleaner->sanitize($content, CleanerFactory::TEXT,Comment::MAX_BODY_LENGTH);
+        $clean_body = $this->cleaner->sanitize($content, CleanerFactory::TEXT, Comment::MAX_BODY_LENGTH);
         $comment = new Comment();
         $comment->setValence($valence);
         $comment->setBody($clean_body);
 //        $element = $this->loadElementById($elementId);
         $comment->element()->save($elementId);
+
         return $comment;
     }
 
