@@ -15,6 +15,26 @@ use App\classes\ExamClasses\service\CurrentExamManager;
 use App\classes\JsonOutputClasses\encoders\DirectJsonOutput;
 use App\Http\Controllers\helpers\ExamSelectorHelper;
 
+/**
+ * DEPRECATED
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * @deprecated
+ * Class SetupController
+ * @package App\Http\Controllers
+ */
 class SetupController extends Controller
 {
 

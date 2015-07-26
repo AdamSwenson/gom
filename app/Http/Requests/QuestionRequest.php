@@ -15,7 +15,7 @@ class QuestionRequest extends Request
     public function authorize()
     {
         //TODO Set up authorization
-        return false;
+        return true;
     }
 
     /**
@@ -26,11 +26,12 @@ class QuestionRequest extends Request
     public function rules()
     {
         return [
-            'questionName' => ['required', min(Question::MIN_NAME_LENGTH), max(Question::MAX_NAME_LENGTH)],
-            'questionText' => [min(Question::MIN_TEXT_LENGTH), max(Question::MAX_TEXT_LENGTH)],
-            'questionDesc' => [min(Question::MIN_TEXT_LENGTH), max(Question::MAX_TEXT_LENGTH)],
-            'order' => 'integer',
-            'examId' => 'integer'
+//            'questionName' => ['required', min(Question::MIN_NAME_LENGTH), max(Question::MAX_NAME_LENGTH)],
+//            'questionText' => [min(Question::MIN_TEXT_LENGTH), max(Question::MAX_TEXT_LENGTH)],
+//            'questionDesc' => [min(Question::MIN_TEXT_LENGTH), max(Question::MAX_TEXT_LENGTH)],
+//            'order' => 'integer',
+//            'examId' => 'integer',
+//            'classId' => 'integer'
         ];
     }
 }

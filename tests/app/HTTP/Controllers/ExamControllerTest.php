@@ -55,7 +55,8 @@ class ExamControllerTest extends \TestCase
 
     public function tearDown()
     {
-        //   Mockery::close();
+          // \Mockery::close();
+
     }
 
     public function testIndex()
@@ -66,7 +67,7 @@ class ExamControllerTest extends \TestCase
 //        $view='/setup/select_exam';
 //        $this->registerNestedView($view);
 
-        $response = $this->action('POST', 'ExamController@index');
+        $response = $this->action('GET', 'ExamController@index');
         $this->assertNotNull($response);
 
 //        $this->assertNestedViewHas($view, '/setup/select_exam');

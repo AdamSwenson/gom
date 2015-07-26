@@ -2,32 +2,72 @@
 
 namespace App\Http\Controllers;
 
-use App\classes\RequestHandlers\workers\QuestionWorker;
 use App\Http\Requests\QuestionRequest;
 use App\Question;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Session;
+use App\Repositories\Question\IQuestionAssignmentRepository;
+use App\Repositories\Question\IQuestionRepository;
 
 class QuestionController extends Controller
 {
+    const SUCCESS_FLASH_NAME = "flash_message_success";
+    const FAIL_FLASH_NAME = "flash_message_fail";
+
+    const CREATE_SUCCESS = "Successfully created question";
+    const CREATE_FAIL = "There was a problem creating the question";
+
+    const UPDATE_SUCCESS = "Successfully updated the question";
+    const UPDATE_FAIL = "There was a problem updating the question";
+
+    const DELETE_SUCCESS = 'you have successfully destroyed a question. I hope you are proud of yourself.';
+    const DELETE_FAIL = 'There was a problem deleting the question';
+
+    /**@var IQuestionRepository */
+    protected $questionDao;
+
+    /** @var IQuestionAssignmentRepository */
+    private $assignmentDao;
+
+    public function __construct(IQuestionRepository $questionDao, IQuestionAssignmentRepository $assignmentDao)
+    {
+        $this->questionDao = $questionDao;
+        $this->assignmentDao = $assignmentDao;
+    }
+
     /**
      * Display a listing of the resource.
-     * @param id $exam
+     * @param QuestionRequest $request
      * @return Response
      */
-    public function index($exam)
+public function index(QuestionRequest $request)
     {
-        return ('List of all questions for exam #'.$exam);
+
+        if($request->has('examId'))
+        {
+            $questions = $this->assignmentDao->load_all_for_exam($request->input('examId'));
+        }
+        elseif ($request->has('classId'))
+        {
+            $questions = $this->questionDao->loadQuestionsByClassId($request->input('classId'));
+        }else{
+            $questions = $this->questionDao->loadAll();
+        }
+        return $questions;
+
+        //Todo View receiving questions
+//        return ('List of all questions for exam #'.$exam);
     }
 
     /**
      * Show the form for creating a new resource.
-     * @param id $exam
+     * @param QuestionRequest $request
      * @return Response
      */
-    public function create($exam)
+    public function create(QuestionRequest $request)
     {
         // $exam from URL: questions must know which exam to be associated with(?)
     }
@@ -35,16 +75,19 @@ class QuestionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
+     * @param QuestionRequest $request
      * @return Response
      */
     public function store(QuestionRequest $request)
     {
-        $worker = new QuestionWorker();
-        $question = $worker->createQuestion($request['questionName'], $request['questionDesc'], $request['order'], $request['examId']);
+        //store and return the question
+        $question = $this->questionDao->createQuestion($request->input('questionName'), $request->input('questionDesc'));
+
+        //associate it with the exam
+        $questionAssignment = $this->assignmentDao->record($request->input('examId'), $question->getId(), $request->input('questionNumber'));
 
         //TODO: Add view here
-        return view('', compact('question'));
-
+        return view('', compact('questionAssignment'));
     }
 
     /**
@@ -59,7 +102,6 @@ class QuestionController extends Controller
      */
     public function show(Question $question)
     {
-
         //TODO: Add view here
         return view('', compact('question'));
     }
@@ -85,15 +127,15 @@ class QuestionController extends Controller
         $questions = [ $q1, $q2 ];
 
         $examName = 'History 101 Exam 1, Fall 2015';
-
+        $exam =3;
         //return view('/setup/edit_question');
         return view('setup.edit_question')->with([
                 'questions' => $questions,
                 'examName'=> $examName,
                 'examId' => $exam
         ]);
-        //TODO: Add view here
-        return view('', compact('question'));
+
+//        return view('', compact('question'));
     }
 
     /**
@@ -103,13 +145,11 @@ class QuestionController extends Controller
      * @param QuestionRequest $request
      * @return Response
      */
-    public function update($id)
+    public function update(Question $question, QuestionRequest $request)
     {
-        $question->update($request->all());
-
-        //TODO: Add view here
+        $question = $this->questionDao->updateQuestionObject($question, $request->input('questionName'), $request->input('questionText'));
+         //TODO: Add view here
         return view('', compact('question'));
-
     }
 
     public function updateAll($exam) {
@@ -134,9 +174,15 @@ class QuestionController extends Controller
      */
     public function destroy(Question $question)
     {
-        $question->delete();
-        //TODO: Add view here
-        return view('', compact('question'));
+        $result = $this->questionDao->deleteQuestionObject($question);
+
+        if(!empty($result)){
+            Session::flash(self::SUCCESS_FLASH_NAME, self::DELETE_SUCCESS);
+        }else{
+            Session::flash(self::FAIL_FLASH_NAME, self::DELETE_FAIL);
+        }
+
+        return view('');
 
     }
 }

@@ -2,19 +2,18 @@
 /**
  * Created by PhpStorm.
  * User: adam
- * Date: 7/22/15
- * Time: 9:55 AM
+ * Date: 7/25/15
+ * Time: 7:47 PM
  */
 
-namespace App\classes\RequestHandlers\dao;
+namespace App\Repositories\Element;
 
 
 use App\classes\SecurityClasses\cleaning\CleanerFactory;
-use App\classes\SecurityClasses\cleaning\ICleanerFactory;
 use App\Comment;
 use App\Element;
 
-class ElementDAO
+class ElementRepository implements IElementRepository
 {
     const MAX_COMMENT_LENGTH = 2000;
     const MAX_NAME_LENGTH = 200;
@@ -114,7 +113,7 @@ class ElementDAO
      */
     public function addValencedContent($elementId, $valence, $content)
     {
-        $clean_body = $this->cleaner->sanitize($content, CleanerFactory::TEXT, Comment::MAX_BODY_LENGTH);
+        $clean_body = $this->cleaner->sanitize($content, CleanerFactory::TEXT,Comment::MAX_BODY_LENGTH);
         $comment = new Comment();
         $comment->setValence($valence);
         $comment->setBody($clean_body);
@@ -122,5 +121,6 @@ class ElementDAO
         $comment->element()->save($elementId);
         return $comment;
     }
+
 
 }

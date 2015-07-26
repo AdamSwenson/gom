@@ -6,10 +6,10 @@
  * Time: 2:56 PM
  */
 
-namespace Repositories\Exam;
+namespace App\Repositories\Exam;
 use App\classes\SecurityClasses\cleaning\CleanerFactory;
 use App\Exam;
-
+use Illuminate\Support\Facades\DB;
 
 
 class ExamRepositoryTest extends \TestCase
@@ -21,9 +21,8 @@ class ExamRepositoryTest extends \TestCase
     {
         parent::setUp();
         $this->object = new ExamRepository;
-        $this->object->set_cleaner(new CleanerFactory());
+
         //random exam
-//        $this->exam = Exam::find($this->faker->randomNumber(1));
         $this->exam = Exam::all()->random();
 
         //ensure at least one exam is locked and released

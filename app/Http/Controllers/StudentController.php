@@ -14,9 +14,18 @@ use App\classes\ImportExportClasses\StudentUpload\StudentCsvProcessor;
 use App\classes\ImportExportClasses\dao\Uploader;
 use App\classes\RequestClasses\FileRequest;
 use App\Http\Controllers\helpers\ExamSelectorHelper;
+use App\Repositories\Student\IStudentRepository;
 
 class StudentController extends Controller
 {
+    /** @var IStudentRepository  */
+    protected $dao;
+
+    public function __construct(IStudentRepository $studentRepository)
+    {
+        $this->dao = $studentRepository;
+    }
+
     /**
      * Display a listing of the resource.
      * We'll co-op this to display the roster editing page

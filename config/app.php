@@ -152,7 +152,7 @@ return [
          * Custom service providers
          */
         App\Providers\StorageServiceProvider::class,
-
+        App\Providers\UtilitiesServiceProvider::class,
 
         /*
          * Development

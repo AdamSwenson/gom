@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Repositories\Element\IElementAssignmentRepository;
+use App\Repositories\Element\IElementRepository;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -9,6 +11,26 @@ use App\Http\Controllers\Controller;
 
 class ElementController extends Controller
 {
+    /**
+     * @var IElementRepository
+     */
+    private $elementDao;
+    /**
+     * @var IElementAssignmentRepository
+     */
+    private $assignmentDao;
+
+    /**
+     * ElementController constructor.
+     * @param IElementRepository $elementDao
+     * @param IElementAssignmentRepository $assignmentDao
+     */
+    public function __construct(IElementRepository $elementDao, IElementAssignmentRepository $assignmentDao)
+    {
+        $this->elementDao = $elementDao;
+        $this->assignmentDao = $assignmentDao;
+    }
+
     /**
      * Display a listing of the resource.
      * @param  $question
