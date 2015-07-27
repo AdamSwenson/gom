@@ -87,9 +87,9 @@ class StudentTableMap extends TableMap
     const COL_STUDENTNAME = 'students.studentName';
 
     /**
-     * the column name for the email field
+     * the column name for the emails field
      */
-    const COL_EMAIL = 'students.email';
+    const COL_EMAIL = 'students.emails';
 
     /**
      * the column name for the created_at field
@@ -114,9 +114,9 @@ class StudentTableMap extends TableMap
      */
     protected static $fieldNames = array (
         self::TYPE_PHPNAME       => array('Id', 'Sid', 'Studentname', 'Email', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'sid', 'studentname', 'email', 'createdAt', 'updatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'sid', 'studentname', 'emails', 'createdAt', 'updatedAt', ),
         self::TYPE_COLNAME       => array(StudentTableMap::COL_ID, StudentTableMap::COL_SID, StudentTableMap::COL_STUDENTNAME, StudentTableMap::COL_EMAIL, StudentTableMap::COL_CREATED_AT, StudentTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'sid', 'studentName', 'email', 'created_at', 'updated_at', ),
+        self::TYPE_FIELDNAME     => array('id', 'sid', 'studentName', 'emails', 'created_at', 'updated_at', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
@@ -128,9 +128,9 @@ class StudentTableMap extends TableMap
      */
     protected static $fieldKeys = array (
         self::TYPE_PHPNAME       => array('Id' => 0, 'Sid' => 1, 'Studentname' => 2, 'Email' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'sid' => 1, 'studentname' => 2, 'email' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'sid' => 1, 'studentname' => 2, 'emails' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
         self::TYPE_COLNAME       => array(StudentTableMap::COL_ID => 0, StudentTableMap::COL_SID => 1, StudentTableMap::COL_STUDENTNAME => 2, StudentTableMap::COL_EMAIL => 3, StudentTableMap::COL_CREATED_AT => 4, StudentTableMap::COL_UPDATED_AT => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'sid' => 1, 'studentName' => 2, 'email' => 3, 'created_at' => 4, 'updated_at' => 5, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'sid' => 1, 'studentName' => 2, 'emails' => 3, 'created_at' => 4, 'updated_at' => 5, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
@@ -154,7 +154,7 @@ class StudentTableMap extends TableMap
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('sid', 'Sid', 'INTEGER', true, null, null);
         $this->addColumn('studentName', 'Studentname', 'VARCHAR', false, 200, null);
-        $this->addColumn('email', 'Email', 'VARCHAR', false, 225, null);
+        $this->addColumn('emails', 'Email', 'VARCHAR', false, 225, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -373,7 +373,7 @@ class StudentTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.sid');
             $criteria->addSelectColumn($alias . '.studentName');
-            $criteria->addSelectColumn($alias . '.email');
+            $criteria->addSelectColumn($alias . '.emails');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }

@@ -72,7 +72,7 @@ class StudentTableMaker
             'class_nickname' => $class_name,
             'student_id' => $student->getSid(),
             'student_name' => $student->getStudentname(),
-            'email' => $student->getEmail()
+            'emails' => $student->getEmail()
         );
         array_push($this->students, $out);
     }

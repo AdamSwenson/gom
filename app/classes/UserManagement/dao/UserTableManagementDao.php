@@ -94,7 +94,7 @@ Q;
 
     /**
      * This retrieves the userID for the newly activated account from the activation token. It loads the user id for use in the next steps.
-     * @param  string $token The activation token sent via email
+     * @param  string $token The activation token sent via emails
      * @throws \Exception
      */
     public function retrieve_userid_from_token($token)

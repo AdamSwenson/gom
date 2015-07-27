@@ -51,7 +51,7 @@ class CleanerFactoryTest extends \TestCase {
      * @covers App\classes\SecurityClasses\cleaning\CleanerFactory::make
      */
     public function testMake() {
-        $this->assertInstanceOf('\App\classes\SecurityClasses\cleaning\EmailCleaner', $this->object->make('email'));
+        $this->assertInstanceOf('\App\classes\SecurityClasses\cleaning\EmailCleaner', $this->object->make('emails'));
         $this->assertInstanceOf('\App\classes\SecurityClasses\cleaning\FloatCleaner', $this->object->make('float'));
         $this->assertInstanceOf('\App\classes\SecurityClasses\cleaning\IntegerCleaner', $this->object->make('integer'));
         $this->assertInstanceOf('\App\classes\SecurityClasses\cleaning\TextCleaner', $this->object->make('string'));

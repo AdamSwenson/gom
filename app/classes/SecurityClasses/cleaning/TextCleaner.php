@@ -22,7 +22,7 @@ class TextCleaner implements ICleaner {
     protected $max_length;
 
     /**
-     * Cleans email address 
+     * Cleans emails address
      * @param type $to_clean
      * @return boolean
      */
@@ -30,8 +30,8 @@ class TextCleaner implements ICleaner {
         return $to_clean;
         
 //        if ($this->validate($to_clean)) {
-//            $email = \filter_var($to_clean, \FILTER_SANITIZE_EMAIL); //now has valid for email characters 
-//            return \trim($email);
+//            $emails = \filter_var($to_clean, \FILTER_SANITIZE_EMAIL); //now has valid for emails characters
+//            return \trim($emails);
 //        } else {
 //            return FALSE;
 //        }

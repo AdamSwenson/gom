@@ -9,7 +9,7 @@
  */
 
 /**
- * Redirects all email to a single recipient.
+ * Redirects all emails to a single recipient.
  *
  * @author Fabien Potencier
  */

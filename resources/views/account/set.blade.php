@@ -35,14 +35,7 @@
             </div>
             <div class="row" >
                 <div class="col-xs-8">
-                    <form role="form" method="POST" action="" accept-charset="UTF-8" class="col-xs-4">
-                        <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-                        <h3 class="text-left"> Enter Email:</h3>
-                        <div class="form-group ">
-                            <input class="form-control" type="email" name="email"  placeholder="Enter email">
-                        </div>
-                        <input class="btn btn-default" type="submit" >
-                    </form>
+                   <h1> Check Your Email</h1>
                 </div>
             </div>
         </div>

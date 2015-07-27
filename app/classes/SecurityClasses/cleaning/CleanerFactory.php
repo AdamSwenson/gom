@@ -19,7 +19,7 @@ class CleanerFactory implements ICleanerFactory {
     const FLOAT = 'float';
     const STRING = 'string';
     const TEXT = 'text';
-    const EMAIL = 'email';
+    const EMAIL = 'emails';
 
     public function validate($to_validate, $type) {
         $cleaner = $this->make($type);

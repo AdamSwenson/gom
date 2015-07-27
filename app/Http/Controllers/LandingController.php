@@ -8,6 +8,8 @@
 
 namespace App\Http\Controllers;
 
+
+use Illuminate\Support\Facades\Mail;
 use App\Http\Requests;
 use Illuminate\Http\Request;
 
@@ -17,6 +19,7 @@ class LandingController extends Controller
 
     public function showLanding()
     {
+
         return view('landing');
     }
 
@@ -28,11 +31,11 @@ class LandingController extends Controller
     public function loggedIn(Request $request)
     {
 
-        $email = $request->get('email');
+        $email = $request->get('emails');
         $password = $request->get('password');
 
         return view("account.home")->with([
-            'email' => $email,
+            'emails' => $email,
             'password' => $password,
         ]);
     }
@@ -50,5 +53,25 @@ class LandingController extends Controller
     public function retrievePassword(){
         return view('account.retrieve');
     }
+
+    public function sendEmail(){
+
+        return view('account.set');
+    }
+
+    public function sendEmailReminder(Request $request, $id)
+    {
+        $user = "jerrysmash17@gmail.com";
+
+        $data = $request->only('name', 'emails', 'phone');
+        $data['messageLines'] = explode("\n", $request->get('message'));
+
+       Mail::send('emails.reminder', $data, function ($m) use ($data) {
+           $m->subject('Blog Contact Form: '.$data['name'])
+               ->to(config('blog.contact_email'))
+               ->replyTo($data['emails']);
+        });
+    }
+
 
 }

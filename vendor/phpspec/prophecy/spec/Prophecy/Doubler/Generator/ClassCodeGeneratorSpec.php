@@ -24,7 +24,7 @@ class ClassCodeGeneratorSpec extends ObjectBehavior
         $class->getInterfaces()->willReturn(array(
             'Prophecy\Doubler\Generator\MirroredInterface', 'ArrayAccess', 'ArrayIterator'
         ));
-        $class->getProperties()->willReturn(array('name' => 'public', 'email' => 'private'));
+        $class->getProperties()->willReturn(array('name' => 'public', 'emails' => 'private'));
         $class->getMethods()->willReturn(array($method1, $method2, $method3));
 
         $method1->getName()->willReturn('getName');
@@ -39,7 +39,7 @@ class ClassCodeGeneratorSpec extends ObjectBehavior
         $method2->returnsReference()->willReturn(false);
         $method2->isStatic()->willReturn(false);
         $method2->getArguments()->willReturn(array($argument21));
-        $method2->getCode()->willReturn('return $this->email;');
+        $method2->getCode()->willReturn('return $this->emails;');
 
         $method3->getName()->willReturn('getRefValue');
         $method3->getVisibility()->willReturn('public');
@@ -76,13 +76,13 @@ class ClassCodeGeneratorSpec extends ObjectBehavior
 namespace  {
 class CustomClass extends \RuntimeException implements \Prophecy\Doubler\Generator\MirroredInterface, \ArrayAccess, \ArrayIterator {
 public $name;
-private $email;
+private $emails;
 
 public static function getName(array $fullname = NULL, \ReflectionClass $class) {
 return $this->name;
 }
 protected  function getEmail( $default = 'ever.zet@gmail.com') {
-return $this->email;
+return $this->emails;
 }
 public  function &getRefValue( $refValue) {
 return $this->refValue;

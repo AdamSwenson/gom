@@ -81,7 +81,7 @@ class Swift_Mime_Headers_MailboxHeader extends Swift_Mime_Headers_AbstractHeader
      * Set a list of mailboxes to be shown in this Header.
      *
      * The mailboxes can be a simple array of addresses, or an array of
-     * key=>value pairs where (email => personalName).
+     * key=>value pairs where (emails => personalName).
      * Example:
      * <code>
      * <?php
@@ -167,12 +167,12 @@ class Swift_Mime_Headers_MailboxHeader extends Swift_Mime_Headers_AbstractHeader
     }
 
     /**
-     * Makes this Header represent a list of plain email addresses with no names.
+     * Makes this Header represent a list of plain emails addresses with no names.
      *
      * Example:
      * <code>
      * <?php
-     * //Sets three email addresses as the Header data
+     * //Sets three emails addresses as the Header data
      * $header->setAddresses(
      *  array('one@domain.tld', 'two@domain.tld', 'three@domain.tld')
      *  );
@@ -192,7 +192,7 @@ class Swift_Mime_Headers_MailboxHeader extends Swift_Mime_Headers_AbstractHeader
     }
 
     /**
-     * Get all email addresses in this Header.
+     * Get all emails addresses in this Header.
      *
      * @see getNameAddresses()
      *
@@ -253,7 +253,7 @@ class Swift_Mime_Headers_MailboxHeader extends Swift_Mime_Headers_AbstractHeader
 
         foreach ($mailboxes as $key => $value) {
             if (is_string($key)) {
-                //key is email addr
+                //key is emails addr
                 $address = $key;
                 $name = $value;
             } else {

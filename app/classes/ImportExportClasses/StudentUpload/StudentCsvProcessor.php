@@ -23,9 +23,9 @@ class StudentCsvProcessor implements IStudentCsvProcessor
 
     public $mandatory_headers = array( 'class_nickname', 'student_id', 'student_name');
 
-    public $optional_headers = array('email');
+    public $optional_headers = array('emails');
 
-    public $correct_order_all = array('class_nickname', 'student_id', 'student_name', 'email');
+    public $correct_order_all = array('class_nickname', 'student_id', 'student_name', 'emails');
 
     /** @var  String Error description for an error which prevents the file from being used */
     public $file_error;
@@ -64,7 +64,7 @@ class StudentCsvProcessor implements IStudentCsvProcessor
     public function check_header_order(array $headers)
     {
         if (count($headers) >= count($this->mandatory_headers)) {
-            //$correct_order = array('student_id', 'student_name', 'email');
+            //$correct_order = array('student_id', 'student_name', 'emails');
             for ($index = 0; $index < count($headers); $index++) {
                 $ref = strval($this->correct_order_all[$index]);
                 $input = strval($headers[$index]);
@@ -104,7 +104,7 @@ class StudentCsvProcessor implements IStudentCsvProcessor
                         'student_name' => $data[2]
                         );
                     if(isset($data[3])){
-                        $student['email'] = $data[3];
+                        $student['emails'] = $data[3];
                     }
                     array_push($this->students, $student);
                 }

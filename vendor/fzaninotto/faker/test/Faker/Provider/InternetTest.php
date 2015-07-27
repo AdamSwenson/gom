@@ -38,7 +38,7 @@ class InternetTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @link http://stackoverflow.com/questions/12026842/how-to-validate-an-email-address-in-php
+     * @link http://stackoverflow.com/questions/12026842/how-to-validate-an-emails-address-in-php
      *
      * @requires PHP 5.4
      * @dataProvider localeDataProvider

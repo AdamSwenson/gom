@@ -23,8 +23,8 @@ class EmailCleanerTest extends \TestCase {
      * @covers \App\classes\SecurityClasses\cleaning\EmailCleaner::sanitize
      */
     public function testSanitize() {
-        $dirty = 'testemail@email.com';
-        $this->assertEquals('testemail@email.com', $this->object->sanitize($dirty));
+        $dirty = 'testemail@emails.com';
+        $this->assertEquals('testemail@emails.com', $this->object->sanitize($dirty));
     }
 
     /**
@@ -32,7 +32,7 @@ class EmailCleanerTest extends \TestCase {
      */
     public function testSanitize_invalid_address()
     {
-        $this->assertFalse($this->object->sanitize(' \testemail@email '));
+        $this->assertFalse($this->object->sanitize(' \testemail@emails '));
         $this->assertFalse($this->object->sanitize(''));
         $this->assertFalse($this->object->sanitize('4'));
         $this->assertFalse($this->object->sanitize(44444444));
@@ -43,7 +43,7 @@ class EmailCleanerTest extends \TestCase {
      * @covers \App\classes\SecurityClasses\cleaning\EmailCleaner::validate
      */
     public function testValidate() {
-        $this->assertFalse($this->object->validate(' \testemail@email '));
+        $this->assertFalse($this->object->validate(' \testemail@emails '));
         $this->assertFalse($this->object->validate(''));
         $this->assertFalse($this->object->validate('4'));
         $this->assertFalse($this->object->validate(44444444));

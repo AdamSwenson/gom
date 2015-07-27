@@ -34,14 +34,13 @@
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Help</a>
                 </div>
             </div>
+
             <div class="row" >
                 <div class="col-xs-8">
-
                     <!-- Something goes here -->
-
                 </div>
-                <form method="post" action="{{url('select')}}" accept-charset="UTF-8" class="col-xs-4">
-                    <input type="hidden" name="_token" value="{{csrf_token()}}">
+                <form method="POST" action="{{url('/account/home')}}" accept-charset="UTF-8" class="col-xs-4">
+                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <h3 class="text-left"> Log In:</h3>
                     <div class="form-group ">
                         <input class="form-control" type="email" name="email"  placeholder="Enter email">
@@ -56,6 +55,7 @@
                     <input class="btn btn-default" type="submit" >
                     <a href="{{url('account/create')}}" class="btn btn-default" >Create Account</a>
                 </form>
+
             </div>
         </div>
     </div>

@@ -29,14 +29,14 @@ class AuthorTag extends Tag
     const REGEX_AUTHOR_NAME = '[^\<]*';
 
     /**
-     * PCRE regular expression matching any valid value for the email component.
+     * PCRE regular expression matching any valid value for the emails component.
      */
     const REGEX_AUTHOR_EMAIL = '[^\>]*';
 
     /** @var string The name of the author */
     protected $authorName = '';
 
-    /** @var string The email of the author */
+    /** @var string The emails of the author */
     protected $authorEmail = '';
     
     public function getContent()
@@ -102,9 +102,9 @@ class AuthorTag extends Tag
     }
 
     /**
-     * Gets the author's email.
+     * Gets the author's emails.
      * 
-     * @return string The author's email.
+     * @return string The author's emails.
      */
     public function getAuthorEmail()
     {
@@ -112,9 +112,9 @@ class AuthorTag extends Tag
     }
     
     /**
-     * Sets the author's email.
+     * Sets the author's emails.
      * 
-     * @param string $authorEmail The new author email.
+     * @param string $authorEmail The new author emails.
      *     An invalid value will set an empty string.
      * 
      * @return $this

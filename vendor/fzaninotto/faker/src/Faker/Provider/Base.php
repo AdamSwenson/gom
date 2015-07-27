@@ -384,11 +384,11 @@ class Base
      *
      * This method is also VERY slow. Use it only when no other formatter
      * can generate the fake data you want. For instance, prefer calling
-     * `$faker->email` rather than `regexify` with the previous regular
+     * `$faker->emails` rather than `regexify` with the previous regular
      * expression.
      *
      * Also note than `bothify` can probably do most of what this method does,
-     * but much faster. For instance, for a dummy email generation, try
+     * but much faster. For instance, for a dummy emails generation, try
      * `$faker->bothify('?????????@???.???')`.
      *
      * @see https://github.com/icomefromthenet/ReverseRegex for a more robust implementation

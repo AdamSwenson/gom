@@ -9,7 +9,7 @@
 namespace App\classes\SecurityClasses\cleaning;
 
 /**
- * Validates and or cleans email strings 
+ * Validates and or cleans emails strings
  *
  * @author adam
  */
@@ -20,13 +20,13 @@ class EmailCleaner implements ICleaner {
     protected $max_length;
 
     /**
-     * Cleans email address 
+     * Cleans emails address
      * @param type $to_clean
      * @return boolean
      */
     public function sanitize($to_clean) {
         if ($this->validate($to_clean)) {
-            $email = \filter_var($to_clean, \FILTER_SANITIZE_EMAIL); //now has valid for email characters 
+            $email = \filter_var($to_clean, \FILTER_SANITIZE_EMAIL); //now has valid for emails characters
             return \trim($email);
         } else {
             return FALSE;

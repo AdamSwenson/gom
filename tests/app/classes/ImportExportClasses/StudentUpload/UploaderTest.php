@@ -53,19 +53,19 @@ class UploaderTest extends \TestCase
                 'student_id' => 999997,
                 'student_name' => 'testname',
                 'class_nickname' => 'classname1',
-                'email' => 'fake@fake.com'
+                'emails' => 'fake@fake.com'
             ),
             array(
                 'student_id' => 999998,
                 'student_name' => 'testname2',
                 'class_nickname' => 'classname1',
-                'email' => 'fake2@fake.com'
+                'emails' => 'fake2@fake.com'
             ),
             array(
                 'student_id' => 999996,
                 'student_name' => 'testname3',
                 'class_nickname' => 'classname3',
-                'email' => 'fake3@fake.com'
+                'emails' => 'fake3@fake.com'
             ),
         );
         $this->file_processor->students = $this->students;
@@ -106,7 +106,7 @@ class UploaderTest extends \TestCase
                 $this->assertInstanceOf('\Student', $student);
                 $this->assertEquals($s['student_id'], $student->getSid());
                 $this->assertEquals($s['student_name'], $student->getStudentname());
-                $this->assertEquals($s['email'], $student->getEmail());
+                $this->assertEquals($s['emails'], $student->getEmail());
 
                 $class = \KumiQuery::create()->filterByNickname($s['class_nickname'])->findOne();
                 $this->assertEquals($s['class_nickname'], $class->getNickname());

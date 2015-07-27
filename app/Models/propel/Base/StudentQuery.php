@@ -23,14 +23,14 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStudentQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildStudentQuery orderBySid($order = Criteria::ASC) Order by the sid column
  * @method     ChildStudentQuery orderByStudentname($order = Criteria::ASC) Order by the studentName column
- * @method     ChildStudentQuery orderByEmail($order = Criteria::ASC) Order by the email column
+ * @method     ChildStudentQuery orderByEmail($order = Criteria::ASC) Order by the emails column
  * @method     ChildStudentQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildStudentQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildStudentQuery groupById() Group by the id column
  * @method     ChildStudentQuery groupBySid() Group by the sid column
  * @method     ChildStudentQuery groupByStudentname() Group by the studentName column
- * @method     ChildStudentQuery groupByEmail() Group by the email column
+ * @method     ChildStudentQuery groupByEmail() Group by the emails column
  * @method     ChildStudentQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildStudentQuery groupByUpdatedAt() Group by the updated_at column
  *
@@ -70,7 +70,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStudent findOneById(int $id) Return the first ChildStudent filtered by the id column
  * @method     ChildStudent findOneBySid(int $sid) Return the first ChildStudent filtered by the sid column
  * @method     ChildStudent findOneByStudentname(string $studentName) Return the first ChildStudent filtered by the studentName column
- * @method     ChildStudent findOneByEmail(string $email) Return the first ChildStudent filtered by the email column
+ * @method     ChildStudent findOneByEmail(string $emails) Return the first ChildStudent filtered by the emails column
  * @method     ChildStudent findOneByCreatedAt(string $created_at) Return the first ChildStudent filtered by the created_at column
  * @method     ChildStudent findOneByUpdatedAt(string $updated_at) Return the first ChildStudent filtered by the updated_at column *
 
@@ -80,7 +80,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStudent requireOneById(int $id) Return the first ChildStudent filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStudent requireOneBySid(int $sid) Return the first ChildStudent filtered by the sid column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStudent requireOneByStudentname(string $studentName) Return the first ChildStudent filtered by the studentName column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildStudent requireOneByEmail(string $email) Return the first ChildStudent filtered by the email column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildStudent requireOneByEmail(string $emails) Return the first ChildStudent filtered by the emails column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStudent requireOneByCreatedAt(string $created_at) Return the first ChildStudent filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStudent requireOneByUpdatedAt(string $updated_at) Return the first ChildStudent filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
@@ -88,7 +88,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStudent[]|ObjectCollection findById(int $id) Return ChildStudent objects filtered by the id column
  * @method     ChildStudent[]|ObjectCollection findBySid(int $sid) Return ChildStudent objects filtered by the sid column
  * @method     ChildStudent[]|ObjectCollection findByStudentname(string $studentName) Return ChildStudent objects filtered by the studentName column
- * @method     ChildStudent[]|ObjectCollection findByEmail(string $email) Return ChildStudent objects filtered by the email column
+ * @method     ChildStudent[]|ObjectCollection findByEmail(string $emails) Return ChildStudent objects filtered by the emails column
  * @method     ChildStudent[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildStudent objects filtered by the created_at column
  * @method     ChildStudent[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildStudent objects filtered by the updated_at column
  * @method     ChildStudent[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -183,7 +183,7 @@ abstract class StudentQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, sid, studentName, email, created_at, updated_at FROM students WHERE id = :p0';
+        $sql = 'SELECT id, sid, studentName, emails, created_at, updated_at FROM students WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -385,12 +385,12 @@ abstract class StudentQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the email column
+     * Filter the query on the emails column
      *
      * Example usage:
      * <code>
-     * $query->filterByEmail('fooValue');   // WHERE email = 'fooValue'
-     * $query->filterByEmail('%fooValue%'); // WHERE email LIKE '%fooValue%'
+     * $query->filterByEmail('fooValue');   // WHERE emails = 'fooValue'
+     * $query->filterByEmail('%fooValue%'); // WHERE emails LIKE '%fooValue%'
      * </code>
      *
      * @param     string $email The value to use as filter.

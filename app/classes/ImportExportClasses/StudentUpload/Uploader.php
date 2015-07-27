@@ -92,8 +92,8 @@ class Uploader
         try {
             foreach($this->processor->students as $row)
             {
-                if(isset($row['email'])){
-                    $this->add_record($row['student_id'], $row['student_name'], $row['class_nickname'], $row['email']);
+                if(isset($row['emails'])){
+                    $this->add_record($row['student_id'], $row['student_name'], $row['class_nickname'], $row['emails']);
                 }else{
                     $this->add_record($row['student_id'], $row['student_name'], $row['class_nickname']);
                 }
@@ -107,7 +107,7 @@ class Uploader
 
     /**
      * Does actual recording of each student.
-     * TODO Check whether the email part will lead to duplicate a student if now email added.
+     * TODO Check whether the emails part will lead to duplicate a student if now emails added.
      * @param $sid
      * @param $student_name
      * @param $kumi_name
@@ -132,7 +132,7 @@ class Uploader
                     ->filterByStudentname($student_name)
                     ->filterByEmail($email)
                     ->findOneOrCreate($this->connection);
-//                $student->setEmail($email);
+//                $student->setEmail($emails);
             }else{
                 $student = \StudentQuery::create()
                     ->filterBySid($sid)

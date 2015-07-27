@@ -192,7 +192,7 @@ class ParameterBagTest extends \PHPUnit_Framework_TestCase
     {
         $bag = new ParameterBag(array(
             'digits' => '0123ab',
-            'email' => 'example@example.com',
+            'emails' => 'example@example.com',
             'url' => 'http://example.com/foo',
             'dec' => '256',
             'hex' => '0x100',
@@ -203,7 +203,7 @@ class ParameterBagTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('0123', $bag->filter('digits', '', false, FILTER_SANITIZE_NUMBER_INT), '->filter() gets a value of parameter as integer filtering out invalid characters');
 
-        $this->assertEquals('example@example.com', $bag->filter('email', '', false, FILTER_VALIDATE_EMAIL), '->filter() gets a value of parameter as email');
+        $this->assertEquals('example@example.com', $bag->filter('emails', '', false, FILTER_VALIDATE_EMAIL), '->filter() gets a value of parameter as emails');
 
         $this->assertEquals('http://example.com/foo', $bag->filter('url', '', false, FILTER_VALIDATE_URL, array('flags' => FILTER_FLAG_PATH_REQUIRED)), '->filter() gets a value of parameter as URL with a path');
 

@@ -22,7 +22,7 @@ class IUserTableManagementDaoMock extends MockParent implements \App\classes\Use
 
     /**
      * This retrieves the userID for the newly activated account from the activation token. It loads the user id for use in the next steps.
-     * @param  string $token The activation token sent via email
+     * @param  string $token The activation token sent via emails
      * @return \App\classes\The|bool
      * @throws \Exception
      */

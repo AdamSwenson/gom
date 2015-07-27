@@ -33,7 +33,7 @@ class Email extends Constraint
         self::HOST_CHECK_FAILED_ERROR => 'HOST_CHECK_FAILED_ERROR',
     );
 
-    public $message = 'This value is not a valid email address.';
+    public $message = 'This value is not a valid emails address.';
     public $checkMX = false;
     public $checkHost = false;
     public $strict;

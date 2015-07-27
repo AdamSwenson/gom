@@ -199,7 +199,7 @@
                                 {"data": "class_nickname"},
                                 {"data": "student_id"},
                                 {"data": "student_name"},
-                                {"data": "email"}
+                                {"data": "emails"}
                             ]
                         });
                         console.log('onload called');
