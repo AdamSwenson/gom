@@ -9,6 +9,7 @@
 namespace App\Repositories\Student;
 
 
+use App\Exam;
 use App\Student;
 
 class StudentRepository implements IStudentRepository
@@ -55,15 +56,6 @@ class StudentRepository implements IStudentRepository
             $student->email = $cleanEmail;
         }
         $student->save();
-
-//        $student = Student::firstOrCreate(
-//            [
-//                'last_name' => $cleanLastName,
-//                'first_name' => $cleanFirstName,
-//                'student_identifier' => $cleanStudentId
-//            ]
-//        );
-//        $student->save();
         return $student;
     }
 
