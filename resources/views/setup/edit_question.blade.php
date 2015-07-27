@@ -5,9 +5,6 @@
  * Date: 7/17/2015
  * Time: 4:59 PM
  */
-
-    Handles editing, adding, importing, deleting and reordering questions
-
  -->
 
 @extends('layouts.master')
@@ -23,9 +20,9 @@
             <nav>
                 <ul class="pager">
                     <li class="next">
-                                <a id="submit-span" style="cursor:pointer;">Done <span
-                                            class="glyphicon glyphicon-chevron-right"
-                                            aria-hidden="true"></span></a>
+                        <a id="submit-span" style="cursor:pointer;">Done <span
+                                    class="glyphicon glyphicon-chevron-right"
+                                    aria-hidden="true"></span></a>
                     </li>
                 </ul>
             </nav>
@@ -38,9 +35,13 @@
 
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <ul class="form-group" id="questionList">
-                    @foreach($questions as $q)
+                    @if (isset($questions))
+                        @foreach($questions as $q)
+                            @include('setup.question_form')
+                        @endforeach
+                    @else
                         @include('setup.question_form')
-                    @endforeach
+                    @endif
 
                 </ul>
             </form>
@@ -127,7 +128,7 @@
                 }
             });
 
-            function deleteQuestionFromDB(el){
+            function deleteQuestionFromDB(el) {
                 var id = $(el).find('#questionId').attr('value');
                 // If question already exists in DB, remove from DB
                 if (id > 0) {
@@ -139,11 +140,12 @@
                             alert('Success!');
                         },
                         error: function (result) {
-                            alert('failed to delete id:'+id);
+                            alert('failed to delete id:' + id);
                         }
                     });
                 }
             }
+
             // handle addQuestion button
             document.getElementById("addQuestion").onclick = function () {
                 // copy empty form

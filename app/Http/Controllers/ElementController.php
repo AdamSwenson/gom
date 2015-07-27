@@ -58,10 +58,11 @@ class ElementController extends Controller
      */
     public function edit($exam, $question)
     {
-        $data['examId'] = 1;
-        $data['questionId'] = 1;
+        $data['examId'] = $exam;
+        $data['qId'] = $question;
         // shows all elements for a given question
-        return view('setup.edit_element')->with(['data' => $data]);
+        return view('setup.edit_element')->with( ['examId' => $exam,
+                'qId' => $question ]);
     }
 
     /**
