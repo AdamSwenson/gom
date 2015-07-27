@@ -43,19 +43,20 @@ class QuestionController extends Controller
      * @param QuestionRequest $request
      * @return Response
      */
-public function index(QuestionRequest $request)
+    public function index(QuestionRequest $request)
     {
 
-        if($request->has('examId'))
+        if ($request->has('examId'))
         {
             $questions = $this->assignmentDao->load_all_for_exam($request->input('examId'));
-        }
-        elseif ($request->has('classId'))
+        } elseif ($request->has('classId'))
         {
             $questions = $this->questionDao->loadQuestionsByClassId($request->input('classId'));
-        }else{
+        } else
+        {
             $questions = $this->questionDao->loadAll();
         }
+
         return $questions;
 
         //Todo View receiving questions
@@ -81,10 +82,12 @@ public function index(QuestionRequest $request)
     public function store(QuestionRequest $request)
     {
         //store and return the question
-        $question = $this->questionDao->createQuestion($request->input('questionName'), $request->input('questionDesc'));
+        $question = $this->questionDao->createQuestion($request->input('questionName'),
+            $request->input('questionDesc'));
 
         //associate it with the exam
-        $questionAssignment = $this->assignmentDao->record($request->input('examId'), $question->getId(), $request->input('questionNumber'));
+        $questionAssignment = $this->assignmentDao->record($request->input('examId'), $question->getId(),
+            $request->input('questionNumber'));
 
         //TODO: Add view here
         return view('', compact('questionAssignment'));
@@ -116,25 +119,30 @@ public function index(QuestionRequest $request)
     {
         //dd($request);
         // default data for dev purposes
-        $q1 = [ 'qName' => 'teat name #1',
+        $q1 = [
+            'qName' => 'teat name #1',
             'qDesc' => 'description 1 here',
             'qOrder' => 1,
-            'qId' => 123 ];
+            'qId' => 123
+        ];
 
-        $q2 = [ 'qName' => 'test name #2',
+        $q2 = [
+            'qName' => 'test name #2',
             'qDesc' => 'description 2 here',
             'qOrder' => 2,
-            'qId' => 234 ];
+            'qId' => 234
+        ];
 
-        $questions = [ $q1, $q2 ];
+        $questions = [$q1, $q2];
 
         $examName = 'History 101 Exam 1, Fall 2015';
-        $exam =3;
+        $exam = 3;
+
         //return view('/setup/edit_question');
         return view('setup.edit_question')->with([
-                'questions' => $questions,
-                'examName'=> $examName,
-                'examId' => $exam
+            'questions' => $questions,
+            'examName' => $examName,
+            'examId' => $exam
         ]);
 
 //        return view('', compact('question'));
@@ -149,12 +157,15 @@ public function index(QuestionRequest $request)
      */
     public function update(Question $question, QuestionRequest $request)
     {
-        $question = $this->questionDao->updateQuestionObject($question, $request->input('questionName'), $request->input('questionText'));
-         //TODO: Add view here
+        $question = $this->questionDao->updateQuestionObject($question, $request->input('questionName'),
+            $request->input('questionText'));
+
+        //TODO: Add view here
         return view('', compact('question'));
     }
 
-    public function updateAll($exam, Request $request) {
+    public function updateAll($exam, Request $request)
+    {
         // this function will take a request and process all the questions therein.
         /* it will:
             -Create a new question if the id is empty
@@ -182,9 +193,11 @@ public function index(QuestionRequest $request)
     {
         $result = $this->questionDao->deleteQuestionObject($question);
 
-        if(!empty($result)){
+        if (!empty($result))
+        {
             Session::flash(self::SUCCESS_FLASH_NAME, self::DELETE_SUCCESS);
-        }else{
+        } else
+        {
             Session::flash(self::FAIL_FLASH_NAME, self::DELETE_FAIL);
         }
 

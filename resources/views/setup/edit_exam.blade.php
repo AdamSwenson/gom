@@ -21,7 +21,7 @@
     <div id="editExam">
         <div class="section">
             <div class="container">
-                <form id="examForm" method="post" action="{{ url('exam/'.$exam['examId']) }}"
+                <form id="examForm" method="post" action="{{ url('exam/'.$exam->getId()) }}"
                       accept-charset="UTF-8">
                     <input type="hidden" name="_method" value="patch">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
