@@ -95,12 +95,14 @@ class ExamController extends Controller
      * Update the specified resource in storage.
      *
      * @param  int  $exam
+     * @param Request $request
      * @return Response
      */
-    public function update($exam)
+    public function update($exam, Request $request)
     {
         //update given exam in DB
-        return ('you have upadted exam #'.$exam);
+        //dd($request);
+        return ('you have updated exam #'.$exam);
     }
 
     /**

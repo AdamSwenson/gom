@@ -65,11 +65,13 @@ class QuestionController extends Controller
         // default data for dev purposes
         $q1 = [ 'qName' => 'teat name #1',
             'qDesc' => 'description 1 here',
-            'qOrder' => 1];
+            'qOrder' => 1,
+            'qId' => 123 ];
 
         $q2 = [ 'qName' => 'test name #2',
             'qDesc' => 'description 2 here',
-            'qOrder' => 2];
+            'qOrder' => 2,
+            'qId' => 234 ];
 
         $questions = [ $q1, $q2 ];
 
@@ -94,7 +96,7 @@ class QuestionController extends Controller
         //
     }
 
-    public function updateAll($exam) {
+    public function updateAll($exam, Request $request) {
         // this function will take a request and process all the questions therein.
         /* it will:
             -Create a new question if the id is empty
@@ -102,9 +104,13 @@ class QuestionController extends Controller
             -set the order property for each question
             -pass the first questionId and examId to ElementController@
         */
+        dd($request);
+
         $data['examId'] = $exam;
         $data['questionId'] = 1;
-        return view('setup.edit_element')->with(['data' => $data]);
+
+        return ('this is the edit element view for question #');
+        //return view('setup.edit_element')->with(['data' => $data]);
     }
 
     /**
@@ -115,6 +121,7 @@ class QuestionController extends Controller
      */
     public function destroy($question)
     {
-        //
+        dd($question);
+        return ('You have deleted question #'.$question);
     }
 }

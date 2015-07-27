@@ -18,39 +18,73 @@
 
 @section('body')
 
-    <div id="editQuestion">
-        <div class="section">
-            <div class="container">
-                <form id="questionForm" method="post" action="" accept-charset="UTF-8">
-                    <nav>
-                        <ul class="pager">
-                            <li class="next">
-                                <a href="{{url('exam/'.$examId.'/question/element/edit')}}" id="submitLink">Done <span
+    <div class="section">
+        <div class="container">
+            <nav>
+                <ul class="pager">
+                    <li class="next">
+                                <a id="submit-span" style="cursor:pointer;">Done <span
                                             class="glyphicon glyphicon-chevron-right"
                                             aria-hidden="true"></span></a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <h2 id="examName">{{ $examName }}: Add / Edit Questions</h2>
-                    <h5>Add the questions that will appear on this exam. When you're finished, press "done".</h5>
+                    </li>
+                </ul>
+            </nav>
+            <h2 id="examName">{{ $examName }}: Add / Edit Questions</h2>
+            <h5>Add the questions that will appear on this exam. When you're finished, press "done".</h5>
+            <!-- form will update all given questions and create new ones where required -->
+            <form id="questionForm" name="questionForm" method="post" role="form"
+                  action="{{ url('exam/'.$examId.'/question/updateAll') }}"
+                  accept-charset="UTF-8">
 
-                    <!-- this Div will become the question template -->
+                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                <ul class="form-group" id="questionList">
                     @foreach($questions as $q)
                         @include('setup.question_form')
                     @endforeach
-                    <br>
-                    <a class="btn btn-primary" id="addQuestion"><span class="glyphicon glyphicon-plus"
-                                                                      aria-hidden="true"></span>
-                        Add Question</a>
 
-                    <button class="btn btn-primary" id="importQuestion"><span class="glyphicon glyphicon-import"
-                                                                              aria-hidden="true"></span>
-                        Import Question
-                    </button>
-                </form>
-            </div>
+                </ul>
+            </form>
+            <a class="btn btn-primary" id="addQuestion"><span
+                        class="glyphicon glyphicon-plus"
+                        aria-hidden="true"></span>
+                Add Question</a>
+            <button class="btn btn-primary" id="importQuestion"><span class="glyphicon glyphicon-import"
+                                                                      aria-hidden="true"></span>Import Question
+            </button>
         </div>
     </div>
+
+    <!-- a blank question form to use for clones -->
+    <ul style="display: none" id="hiddenQuestionList">
+        <li class="list-group-item" id="emptyQuestionItem">
+            <h4 id="displayNumber">Question #0</h4>
+
+            <div class="input-group">
+                <span class="input-group-addon">Question Name</span>
+                <input id="questionName0" name="questionName0" type="text" class="form-control input" value=""
+                       placeholder="Enter a brief description of the question, i.e. &quot;Causes of the Civil War&quot;"
+                       aria-describedby="basic-addon1">
+
+            </div>
+            <h5>Question Text</h5>
+
+            <div class="form-group">
+        <textarea class="form-control" rows="3" id="questionText0" name="questionText0"
+                  placeholder="Enter the full question text(optional)"></textarea>
+            </div>
+            <div class="form-group">
+        <span class="btn btn-info btn-sm"><span class="handle" aria-hidden="true">
+                <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
+             Move</span>
+                </span>
+                <button class="btn btn-warning btn-sm"><span class="js-remove"><span
+                                class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete</span>
+                </button>
+            </div>
+            <input type="hidden" id="questionId" name="questionId0" value="0"/>
+        </li>
+    </ul>
+
 
     @include('errors.list')
 
@@ -60,209 +94,105 @@
 @section('jsArea')
     <script type="text/javascript">
 
-        /*
-         *   Build javascript structure to hold objects.
-         *   1. walk document to fill structure
-         *
-         *   constructor:
-         *   element(int id, int order)
-         *
-         *   element.moveUp
-         *   Create ajax requests when creating new elements
-         *   later: create requests when re-ordering elements
-         *
-         */
+        // Sortable is the lib for deag and drop elements
+        // create an editable list and set up some filters to handle callbacks
+        $(document).ready(function () {
+            var qList = document.getElementById('questionList');
+            var editableList = Sortable.create(qList, {
+                filter: '.js-remove',
+                animation: 150,
+                handle: '.handle',
+                ghostClass: "sortable-ghost",
+                onFilter: function (evt) {
+                    var el = editableList.closest(evt.item); // get dragged item
+                    // TODO: on delete confirmation
+                    deleteQuestionFromDB(el);
+                    el && el.parentNode.removeChild(el);
+                    updateNumbers();
+                },
+                store: {
+                    // store the ordering to localStorage
+                    get: function (sortable) {
+                        var order = localStorage.getItem(sortable.options.group);
+                        window.console.log(localStorage.getItem(sortable.options.group));
+                        return order ? order.split('|') : [];
+                    },
 
-        // i should be set to # of elements passed in
-        var elements = [];
-        var i = 0;
-        var original = document.getElementById('question1');
 
-        function logDuplicates() {
-            var nodes = document.querySelectorAll('[id]');
-            var ids = {};
-            var totalNodes = nodes.length;
-
-            for (var i = 0; i < totalNodes; i++) {
-                var currentId = nodes[i].id ? nodes[i].id : "undefined";
-                if (isNaN(ids[currentId])) {
-                    ids[currentId] = 0;
+                    set: function (sortable) {
+                        var order = sortable.toArray();
+                        localStorage.setItem(sortable.options.group, order.join('|'));
+                        updateNumbers();
+                    }
                 }
-                ids[currentId]++;
-            }
-            console.log(ids);
-        }
-
-
-        function duplicateQuestion() {
-            /*
-             var clone = original.cloneNode(true);
-             clone.id = 'item' + ++i;
-             original.parentNode.appendChild(clone);
-             */
-
-            var $div = $('div[id^="question"]:last');
-
-            // Read the Number from that DIV's ID (i.e: 3 from "klon3")
-            // And increment that number by 1
-            var num = parseInt($div.prop("id").match(/\d+/g), 10) + 1;
-
-            // Clone it and assign the new ID (i.e: from num 4 to ID "klon4")
-            var newNum = 'question' + num;
-            var $klon = $div.clone().prop('id', newNum);
-//
-            var $clone = $klon;
-            //var $clone = $(id).clone();    // Create your clone
-
-            // Get the number at the end of the ID, increment it, and replace the old id
-            $clone.attr('id', $clone.attr('id').replace(/\d+$/, function (str) {
-                return parseInt(str) + 1;
-            }));
-
-            // Find all elements in $clone that have an ID, and iterate using each()
-            $clone.find('[id]').each(function () {
-
-                //Perform the same replace as above
-                var $th = $(this);
-                var newID = $th.attr('id').replace(/\d+$/, function (str) {
-                    return parseInt(str) + 1;
-                });
-                $th.attr('id', newID);
             });
-            $("#elementContainer").append($klon);
 
-            var qName = 'questionNumber' + newNum;
-            // set the question number field
-            $('#' + qName).text("CHECK");
-            $('#questionName3').val("");
-            $('#questionText3').val("");
-
-            /*
-             Create:
-             Build new element object
-             Build new div, set position to +1
-             attach div to view
-             */
-
-            logDuplicates();
-
-        }
-
-        function deleteQuestion(elementId) {
-
-            // send delete request to server
-
-            // remove from page
-            var element = document.getElementById(elementId);
-            element.parentNode.removeChild(element);
-
-            // loop through remaining and rename as needed
-            var elements = document.querySelectorAll('[id^=question]');
-
-            for (var i = 0; i < elements.length; i++) {
-                //document.write(elements[i].toString());
+            function deleteQuestionFromDB(el){
+                var id = $(el).find('#questionId').attr('value');
+                // If question already exists in DB, remove from DB
+                if (id > 0) {
+                    $.ajax({
+                        url: "{{ url('exam/'.$examId.'/question') }}" + "/" + id,
+                        type: 'DELETE',
+                        success: function (result) {
+                            // Do something with the result
+                            alert('Success!');
+                        },
+                        error: function (result) {
+                            alert('failed to delete id:'+id);
+                        }
+                    });
+                }
             }
-        }
+            // handle addQuestion button
+            document.getElementById("addQuestion").onclick = function () {
+                // copy empty form
+                var order = getQuestionCount() + 1;
+                var myClone = $('#emptyQuestionItem').clone();
+                // set values
 
-        function addNew() {
-            elements.push(new Element(elements.length + 1));
-            // set HTML tags for item and append to div
-        }
+                // add to editableList and refresh
+                myClone.appendTo($("#questionList"));
+                updateListItemData(myClone, order);
+                updateNumbers();
+            };
 
-        function remove(index) {
-            elements.splice(index, 1);
-            // remove item from display
-            // set all tags to new values
-        }
+            // update all questions
+            function updateNumbers() {
 
-        // moves an element towards beginning of list
-        function moveUp(index) {
-            if (index == 0) return;
-            swap(index, index - 1);
-            // update all ids
-            // refresh view with new layout
-        }
-
-        // moves an element down towards the bottom of the list
-        function moveDown(index) {
-            if (index + 1 >= elements.length) return;
-            swap(index, index + 1);
-            // update all ids
-            // refresh view with new layout
-        }
-
-        function swap(a, b) {
-            var hold = elements[a].getPos();
-            elements[a].setPos(elements[b].getPos());
-            elements[b].setPos(hold);
-            var temp = a;
-            elements[a] = elements[b];
-            elements[b] = temp;
-        }
-        // class to facilitate questions
-        class Element {
-            function Element(passedPos) {
-                var id;
-                var pos = passedPos;
-                var name = '';
-                var desc = '';
+                $("[id^=questionItem]").each(function (index, el) {
+                    updateListItemData(el, (index + 1));
+                });
             }
 
-            function getId() {
-                return this.id;
+            // set all relevant names and ids of [item] to value [order]
+            function updateListItemData(item, order) {
+                $(item).attr('id', 'questionItem' + order);
+                $(item).find('#displayNumber').text('Question #' + (order));
+                $(item).find("[id^='questionName']").attr('id', 'questionName' + order);
+                $(item).find("[id^='questionName']").attr('name', 'questionName' + order);
+                $(item).find('textarea').attr('id', 'questionText' + order);
+                $(item).find('textarea').attr('name', 'questionText' + order);
+                $(item).find('#questionId').attr('name', 'questionId' + order);
             }
 
-            function setId(newId) {
-                this.id = newId;
+            function getQuestionCount() {
+                // return number of questions currently in the questionList
+                return $("[id^=questionItem]").length;
             }
 
-            function getPos() {
-                return this.pos;
-            }
-
-            function setPos(position) {
-                this.pos = position;
-            }
-
-            function getName() {
-                return this.name;
-            }
-
-            function setName(newName) {
-                this.name = newName;
-            }
-
-            function getDesc() {
-                return this.desc;
-            }
-
-            function setDesc(newDesc) {
-                this.desc = setDesc;
-            }
-        }
-
-        function submitForm() {
-            document.getElementById("myForm").submit();
-        }
-
-        function onLoad() {
-            // create some test elements
-            for (var i = 0; i < 2; i++) {
-                elements.push(new Element((i + 1), (i + 1)));
-                elements[i].setDesc = "test desc #" + (i + 1);
-                elements[i].setName = "test name #" + (i + 1);
-            }
-        }
-        window.onload = function () {
-            var btnDone = document.getElementById("submitLink");
+            // handle form submission
+            var btnDone = document.getElementById('submit-span');
 
             btnDone.onclick = function () {
                 document.getElementById("questionForm").submit();
             }
-        };
+
+            return false;
+        });
+
 
     </script>
-
 @endsection
 
 

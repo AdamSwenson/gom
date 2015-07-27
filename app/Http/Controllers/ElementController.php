@@ -56,9 +56,12 @@ class ElementController extends Controller
      * @param  int  $exam
      * @return Response
      */
-    public function edit($exam)
+    public function edit($exam, $question)
     {
-
+        $data['examId'] = 1;
+        $data['questionId'] = 1;
+        // shows all elements for a given question
+        return view('setup.edit_element')->with(['data' => $data]);
     }
 
     /**
