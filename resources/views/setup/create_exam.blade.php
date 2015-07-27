@@ -9,12 +9,12 @@
         <div class="section">
             <div class="container">
                 <form id="examForm" method="POST" action="{{url('exam')}}"
-                      accept-charset="UTF-8">
+                      accept-charset="UTF-8" role="form">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <ul class="pager">
                         <li class="next">
-                        <span id="submitLink" style="cursor:pointer;">Create <span class="glyphicon glyphicon-chevron-right"
-                                                           aria-hidden="true"></span></span>
+                        <a id="submitLink" style="cursor:pointer;">Create <span class="glyphicon glyphicon-chevron-right"
+                                                           aria-hidden="true"></span></a>
 
                         </li>
                     </ul>
@@ -35,19 +35,18 @@
 
 @section('jsArea')
     <script type="text/javascript">
-
         $(document).ready(function() {
 
-
             $('#termList li').on('click', function () {
-                //$('#term').html('TEST');
-                $('#term').html($(this).text());
+                $('#hiddenTerm').val($(this).text());
+                $('#term').text($(this).text());
             });
 
             $('#yearList li').on('click', function () {
-                $('#year').html($(this).text());
-
+                $('#hiddenYear').val($(this).text());
+                $('#year').text($(this).text());
             });
+
             var btnDone = document.getElementById("submitLink");
 
             btnDone.onclick = function () {

@@ -21,7 +21,7 @@
     <div id="editExam">
         <div class="section">
             <div class="container">
-                <form id="examForm" method="post" action="{{ url('exam/'. $exam->getId()) }}"
+                <form id="examForm" method="post" action="{{ url('exam/'.$exam['examId']) }}"
                       accept-charset="UTF-8">
                     <input type="hidden" name="_method" value="patch">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -35,6 +35,8 @@
                                             class="glyphicon glyphicon-chevron-right"
                                             aria-hidden="true"></span></a>
                                             -->
+                                <a id="submitLink" style="cursor:pointer;">Next <span class="glyphicon glyphicon-chevron-right"
+                                                                   aria-hidden="true"></span></a>
                             </li>
                         </ul>
                     </nav>
@@ -57,17 +59,20 @@
 
 
             $('#termList li').on('click', function () {
-                $('#term').html($(this).text());
+                $('#hiddenTerm').val($(this).text());
+                window.console.log('hiddenTerm:'+$(this).text());
+                $('#term').text($(this).text());
             });
 
             $('#yearList li').on('click', function () {
-                $('#year').html($(this).text());
-
+                $('#hiddenYear').val($(this).text());
+                $('#year').text($(this).text());
             });
+
             var btnDone = document.getElementById("submitLink");
 
             btnDone.onclick = function () {
-                document.getElementById("examForm").submit();
+                document.getElementById("submitForm").submit();
             }
 
             return false;

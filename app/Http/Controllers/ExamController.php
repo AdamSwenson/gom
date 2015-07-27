@@ -58,12 +58,17 @@ class ExamController extends Controller
     /**
      * Show the form for creating a new resource.
      *
+     * @param Request $request
      * @return Response
      */
     public function create()
     {
         //create new exam
-        return view('/setup/create_exam');
+
+        // probably handle cloning here:
+        // If the request includes an examId, send to clone() function
+        //$data['examName'] = '';
+        return view('setup/create_exam');//->with('exam', $data);
     }
 
     /**
@@ -100,6 +105,12 @@ class ExamController extends Controller
      */
     public function edit(Exam $exam)
     {
+        // do something to get id from DB
+        // pass values into $data for view
+        $data['examId'] = $exam;
+        $data['examName'] = 'Test Name';
+        $data['examTerm'] = 'Fall';
+        $data['examYear'] = '2014';
 
         return view('setup/edit_exam', compact('exam'));
     }
@@ -111,7 +122,7 @@ class ExamController extends Controller
      * @param ExamRequest $request
      * @return Response
      */
-    public function update(Exam $exam, ExamRequest $request)
+    public function update($exam)
     {
         $exam = $this->examDao->update_exam_object($exam, $request->input('year'), $request->input('term'), $request->input('name'));
         Session::flash(self::SUCCESS_FLASH_NAME, self::UPDATE_SUCCESS);

@@ -76,7 +76,7 @@ Route::delete('exam/{exam}', 'ExamController@destroy'); // delete element {id}
 /* Routes for questions */
 
 Route::get('exam/{exam}/question/edit', 'QuestionController@edit');
-Route::get('exam/{exam}/question/updateAll', 'QuestionController@updateAll'); // updates all questions for the exam w data in request
+Route::post('exam/{exam}/question/updateAll', 'QuestionController@updateAll'); // updates all questions for the exam w data in request
 Route::resource('exam.question', 'QuestionController');
 
 /*
@@ -90,7 +90,9 @@ Route::delete('exam/{id}/question/{question}', 'QuestionController@destroy');
 */
 
 /* Routes for Elements */
-Route::get('exam/{exam}/question/{question}/element/updateAll', 'ElementController@updateAll'); // update all elements for question
+Route::get('exam/{exam}/question/{question}/element/edit', 'ElementController@edit');
+Route::post('exam/{exam}/question/{question}/element/updateAll', 'ElementController@updateAll'); // update all elements for question
+Route::post('exam/{exam}/question/{question}/element/done', 'ElementController@updateAll');
 Route::resource('exam.question.element', 'ElementController');
 /*
 Route::get('exam/{id}/question/{id}/element', 'ElementController@index');

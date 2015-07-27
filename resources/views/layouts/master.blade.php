@@ -8,6 +8,8 @@
     <meta name="description" content="@yield('description')">
     <link href='inc/images/favicon.ico' rel='icon' type='image/x-icon'/>
 
+
+
     @yield('cssLinks')
     @include('layouts.js_jqueryCss')
 </head>
@@ -21,8 +23,19 @@
 </div>
 
 <div id="scriptBox">
+
+    <!-- moved these to test responsiveness -->
     @include('layouts.js_jqueryJs')
     @include('layouts.js_scriptloader')
+            <!-- bootstrap -->
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+
+            <!-- Testing rubaXA Sortable list class for questions and elements -->
+    <script src="http://rubaxa.github.io/Sortable/Sortable.js"></script>
+
+
     <script type="text/javascript">
         $.ajaxSetup({
             headers: {

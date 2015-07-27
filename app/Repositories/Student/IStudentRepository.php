@@ -101,4 +101,6 @@ interface IStudentRepository
      * @return boolean
      */
     public function delete_student_by_sid($sid);
+
+    public function delete_student_by_object(Student $student);
 }
