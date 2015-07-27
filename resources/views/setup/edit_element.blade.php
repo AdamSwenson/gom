@@ -1,81 +1,3 @@
-<!--
-/**
- * Created by PhpStorm.
- * User: Brian
- * Date: 7/17/2015
- * Time: 4:59 PM
- */
- -->
-<!--
-@extends('layouts.master')
-
-@section('pageTitle', 'Edit Elements')
-@section('description', 'create or edit elements')
-
-@section('cssLinks')
-
-@endsection
-
-@section('body')
-    <div id="editElement">
-        <div class="section">
-            <div class="container">
-                <nav>
-                    <ul class="pager">
-                        <li class="previous">
-                            <a href="#"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                                Previous Question</a>
-                        </li>
-                        <li class="next">
-                            <a href="#">Next Question <span class="glyphicon glyphicon-chevron-right"
-                                                            aria-hidden="true"></span></a>
-                        </li>
-                    </ul>
-                </nav>
-                <h2>Question #<span id="questionNumber">1</span>: Add / Edit Elements</h2>
-                <h5>Each question is composed of one or more elements, representing individual items that the student
-                    should address.</h5>
-                <div id="container">
-                @include('setup.element_form')
-                </div>
-
-                        <!-- Add element button will sit below all current elements-->
-                <br>
-                <button class="btn btn-primary" id="addElement" onclick="duplicateElement()"><span
-                            class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                    Add Element
-                </button>
-            </div>
-        </div>
-    </div>
-    @include('errors.list')
-
-@endsection
-
-
-@section('jsArea')
-    <script type="text/javascript">
-        // i should be set to # of elements passed in
-        var i = 0;
-        var original = document.getElementById('elementForm');
-
-        function duplicateElement() {
-            var clone = original.cloneNode(true);
-            var newId = 'addElement' + ++i;
-            clone.id = newId;
-            original.parentNode.appendChild(clone);
-            clone.querySelector('elementNumber').style.display = 14;
-
-        }
-
-        function deleteElement(elementId) {
-            var element = document.getElementById(elementId);
-            element.parentNode.removeChild(element);
-        }
-    </script>
-
-@endsection
-
 <!-- EDIT QUESTION -->
 
     <!--
@@ -87,7 +9,7 @@
      */
      -->
 
-    @extends('layouts.master')
+@extends('layouts.master')
 @section('pageTitle', 'Edit Questions')
 @section('description', 'Add or edit questions')
 @section('cssLinks')
@@ -100,12 +22,12 @@
             <nav>
                 <ul class="pager">
                     <li class="previous">
-                        <a id="prev-element" style="cursor:pointer;" > <span class="glyphicon glyphicon-chevron-left"
+                        <a id="prev-question" data-prevQ="{{ $prevqId }}" style="cursor:pointer;" > <span class="glyphicon glyphicon-chevron-left"
                                                                              aria-hidden="true"></span>
                             Previous Question</a>
                     </li>
                     <li class="next">
-                        <a id="next-element" style="cursor:pointer;">Next Question <span
+                        <a id="next-question" data-nextQ="{{ $nextqId }}" style="cursor:pointer;">Next Question <span
                                     class="glyphicon glyphicon-chevron-right"
                                     aria-hidden="true"></span></a>
                     </li>
@@ -220,7 +142,7 @@
                 // If question already exists in DB, remove from DB
                 if (id > 0) {
                     $.ajax({
-                        url: "{{ url('exam/'.$examId.'/question') }}" + "/" + id,
+                        url: "{{ url('exam/'.$examId.'/question/'.$qId.'/element') }}" + "/" + id,
                         type: 'DELETE',
                         success: function (result) {
                             // Do something with the result
@@ -256,7 +178,7 @@
             // set all relevant names and ids of [item] to value [order]
             function updateListItemData(item, order) {
                 $(item).attr('id', 'questionItem' + order);
-                $(item).find('#displayNumber').text('Question #' + (order));
+                $(item).find('#displayNumber').text('Element #' + (order));
                 $(item).find("[id^='questionName']").attr('id', 'questionName' + order);
                 $(item).find("[id^='questionName']").attr('name', 'questionName' + order);
                 $(item).find('textarea').attr('id', 'questionText' + order);
@@ -269,11 +191,33 @@
                 return $("[id^=questionItem]").length;
             }
 
-            // handle form submission
-            var btnDone = document.getElementById('submit-span');
+            // Previous Question button
+            var btnPrevious = document.getElementById('prev-question');
+            var prevQuestion = btnPrevious.dataset.prevQ;
+            if ((!prevQuestion) || (prevQuestion === 0)) {
+                // set text to "Edit Questions"
+            }
+            btnPrevious.onclick = function () {
+                if (prevQuestion > 0) {
+                    // go to previous question
+                } else {
+                    // go back to edit questions
+                }
+            }
 
-            btnDone.onclick = function () {
-                document.getElementById("questionForm").submit();
+            // Next Question button
+            var btnNext = document.getElementById('next-question');
+            var nextQuestion = btnNext.dataset.nextQ;
+            if ((!prevQuestion) || (prevQuestion === 0)) {
+                // set text to "done"
+            }
+            btnNext.onclick = function () {
+                if (nextQuestion > 0) {
+                    // go to next question
+                } else {
+                    // submit and go to student editor
+                    document.getElementById("questionForm").submit();
+                }
             }
 
             return false;

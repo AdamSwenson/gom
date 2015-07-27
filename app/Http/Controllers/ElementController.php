@@ -60,9 +60,14 @@ class ElementController extends Controller
     {
         $data['examId'] = $exam;
         $data['qId'] = $question;
+
+        $nextqId = 2;
+        $prevqId = 0;
         // shows all elements for a given question
         return view('setup.edit_element')->with( ['examId' => $exam,
-                'qId' => $question ]);
+                'qId' => $question,
+                'nextqId' => $nextqId,
+                'prevqId' => $prevqId]);
     }
 
     /**
@@ -85,5 +90,12 @@ class ElementController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Saves the elements for the question and redirects to StudentController
+     */
+    public function done() {
+        return ('this connects to the edit students page');
     }
 }
