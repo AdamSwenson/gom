@@ -32,7 +32,7 @@
 
         @include('setup.response_form')
 
-                <!-- delete -->
+                <!-- delete button -->
         <button class="btn btn-warning btn-sm" type="button"><span class="js-remove"><span
                         class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete</span>
         </button>

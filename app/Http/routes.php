@@ -90,9 +90,10 @@ Route::delete('exam/{id}/question/{question}', 'QuestionController@destroy');
 */
 
 /* Routes for Elements */
-Route::get('exam/{exam}/question/{question}/element/edit', 'ElementController@edit');
+Route::get('exam/{exam}/question/{question}/element/edit', 'ElementController@edit'); // edit elements for {question}
 Route::post('exam/{exam}/question/{question}/element/updateAll', 'ElementController@updateAll'); // update all elements for question
-Route::post('exam/{exam}/question/{question}/element/done', 'ElementController@updateAll');
+Route::post('exam/{exam}/question/{question}/element/done', 'ElementController@done'); // update question and go to StudentController
+Route::post('exam/{exam}/question/{question}/element/back', 'ElementController@back'); // update question and move back to edit questions
 Route::resource('exam.question.element', 'ElementController');
 /*
 Route::get('exam/{id}/question/{id}/element', 'ElementController@index');
