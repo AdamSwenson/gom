@@ -83,9 +83,9 @@ class ExamController extends Controller
      */
     public function store(ExamRequest $request)
     {
-        $this->examDao->save_new_exam($request->input('examYear'), $request->input('examTerm'), $request->input('name'));
+        $exam = $this->examDao->save_new_exam($request->input('examYear'), $request->input('examTerm'), $request->input('name'));
         Session::flash(self::SUCCESS_FLASH_NAME, self::CREATE_SUCCESS);
-        return view('/setup/create_exam');
+        return redirect()->route('editAllQuestions', $exam);
     }
 
     /**
