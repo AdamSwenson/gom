@@ -53,13 +53,22 @@
 
             $('#termList li').on('click', function () {
                 $('#hiddenTerm').val($(this).text());
-                window.console.log('hiddenTerm:'+$(this).text());
-                $('#term').text($(this).text());
+
+                var $icon = $('#term').find('span');
+                $('#term').html($(this).text());
+                $('#term').append(" ");
+                $('#term').append($icon);
+
+
             });
 
             $('#yearList li').on('click', function () {
                 $('#hiddenYear').val($(this).text());
+
+                var $icon = $('#year').find('span');
                 $('#year').text($(this).text());
+                $('#year').append(" ");
+                $('#year').append($icon);
             });
 
             var btnDone = document.getElementById("submitLink");

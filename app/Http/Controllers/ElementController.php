@@ -112,16 +112,22 @@ class ElementController extends Controller
      */
     public function edit(Element $element, ElementRequest $request)
     {
-        $data['examId'] = $exam;
-        $data['qId'] = $question;
 
+    }
+
+    /** Edit all elements associated with given question
+     *
+     */
+    public function editAll() {
+        $exam = 1;
+        $question = 1;
         $nextqId = 2;
         $prevqId = 0;
         // shows all elements for a given question
         return view('setup.edit_element')->with( ['examId' => $exam,
-                'qId' => $question,
-                'nextqId' => $nextqId,
-                'prevqId' => $prevqId]);
+            'qId' => $question,
+            'nextqId' => $nextqId,
+            'prevqId' => $prevqId]);
     }
 
     /**

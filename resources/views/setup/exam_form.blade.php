@@ -19,8 +19,7 @@
 <input name="examTerm" type="hidden" id="hiddenTerm" value="{{ isset($exam) ? $exam->getTerm() : '' }}"/>
 <div class="btn-group btn-group">
     <button class="btn btn-primary dropdown-toggle" id="term"
-            data-toggle="dropdown">{{ isset($exam) ? $exam->getTerm() : 'Term' }}
-        <span class="glyphicon glyphicon-menu-down"></span></button>
+            data-toggle="dropdown">{{ isset($exam) ? $exam->getTerm() : 'Term' }} <span class="glyphicon glyphicon-menu-down"></span></button>
     <ul class="dropdown-menu" id="termList" role="menu">
         <li><a>Winter</a></li>
         <li><a>Spring</a></li>
