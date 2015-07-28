@@ -112,6 +112,8 @@ class ElementController extends Controller
      */
     public function edit(Element $element, ElementRequest $request)
     {
+        $exam = 1;
+        $question =1;
         $data['examId'] = $exam;
         $data['qId'] = $question;
 

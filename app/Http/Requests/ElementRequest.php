@@ -20,7 +20,8 @@ class ElementRequest extends Request
      */
     public function authorize()
     {
-        return false;
+        //todo authorization
+        return true;
     }
 
     /**
