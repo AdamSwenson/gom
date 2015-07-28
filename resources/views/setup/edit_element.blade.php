@@ -51,6 +51,8 @@
                         @include('setup.element_form')
                     @endif
                 </ul>
+                <!-- Holds data for next question-->
+                <input type="hidden" id="nextqId" name="nextqId" value="0"/>
             </form>
             <a class="btn btn-primary" id="addQuestion"><span
                         class="glyphicon glyphicon-plus"
@@ -92,6 +94,7 @@
             <input type="hidden" id="questionId" name="questionId0" value="0"/>
         </li>
     </ul>
+
 
 
     @include('errors.list')
@@ -191,31 +194,43 @@
 
             // Previous Question button
             var btnPrevious = document.getElementById('prev-question');
-            var prevQuestion = btnPrevious.dataset.prevQ;
-            if ((!prevQuestion) || (prevQuestion === 0)) {
+            var prevQuestion = parseInt(btnPrevious.getAttribute('data-prevQ'));
+            if ( (prevQuestion === 0) ) {
                 // set text to "Edit Questions"
+                $('#prev-question').text('Edit Questions');
             }
+
             btnPrevious.onclick = function () {
                 if (prevQuestion > 0) {
-                    // go to previous question
-                } else {
+                    // set hidden data field and submit
+                    $('.nextqId').attr('val', prevQuestion );
+                } else if (prevQuestion == 0) {
                     // go back to edit questions
+                    // TODO: alter form submission - route to edit questions
                 }
             }
 
             // Next Question button
             var btnNext = document.getElementById('next-question');
-            var nextQuestion = btnNext.dataset.nextQ;
-            if ((!prevQuestion) || (prevQuestion === 0)) {
+            var nextQuestion = parseInt(btnNext.getAttribute('data-nextQ'));
+            if ( (nextQuestion === 0) ) {
                 // set text to "done"
+                $('#next-question').text('Done');
             }
+
             btnNext.onclick = function () {
                 if (nextQuestion > 0) {
-                    // go to next question
-                } else {
+                    // set hidden, go to nextqId
+                    $('.nextqId').attr('val', nextQuestion);
+                } else if (nextQuestion == 0){
                     // submit and go to student editor
+                    // TODO: alter form submission - route to editStudents
                     document.getElementById("questionForm").submit();
                 }
+            }
+
+            function submitForm() {
+                document.getElementById("questionForm").submit();
             }
 
             return false;

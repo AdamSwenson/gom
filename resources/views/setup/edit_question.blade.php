@@ -40,7 +40,7 @@
                             @include('setup.question_form')
                         @endforeach
                     @else
-                        @include('setup.question_form')
+                        include('setup.question_form')
                     @endif
 
                 </ul>

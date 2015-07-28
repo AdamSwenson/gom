@@ -138,7 +138,7 @@ class QuestionController extends Controller
         $examName = 'History 101 Exam 1, Fall 2015';
         $exam = 3;
 
-        //return view('/setup/edit_question');
+
         return view('setup.edit_question')->with([
             'questions' => $questions,
             'examName' => $examName,
