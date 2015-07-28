@@ -28,13 +28,6 @@
                     <nav>
                         <ul class="pager">
                             <li class="next">
-                                <span id="submitLink" style="cursor:pointer;">Next <span class="glyphicon glyphicon-chevron-right"
-                                                                   aria-hidden="true"></span></span>
-                                <!--
-                                <a href="{{ url('exam/'.$exam->getId()) }}" id="submitLink">Done <span
-                                            class="glyphicon glyphicon-chevron-right"
-                                            aria-hidden="true"></span></a>
-                                            -->
                                 <a id="submitLink" style="cursor:pointer;">Next <span class="glyphicon glyphicon-chevron-right"
                                                                    aria-hidden="true"></span></a>
                             </li>
@@ -72,7 +65,7 @@
             var btnDone = document.getElementById("submitLink");
 
             btnDone.onclick = function () {
-                document.getElementById("submitForm").submit();
+                document.getElementById("examForm").submit();
             }
 
             return false;

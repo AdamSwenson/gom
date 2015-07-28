@@ -75,7 +75,7 @@ Route::delete('exam/{exam}', 'ExamController@destroy'); // delete element {id}
 
 /* Routes for questions */
 
-Route::get('exam/{exam}/question/edit', 'QuestionController@edit');
+Route::get('exam/{exam}/question/editAll', array('as' =>'editAllQuestions', 'uses' => 'QuestionController@editAll'));
 Route::post('exam/{exam}/question/updateAll', 'QuestionController@updateAll'); // updates all questions for the exam w data in request
 Route::resource('exam.question', 'QuestionController');
 

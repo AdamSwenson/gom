@@ -155,13 +155,15 @@ class QuestionController extends Controller
      * @param QuestionRequest $request
      * @return Response
      */
-    public function update(Question $question, QuestionRequest $request)
+    public function update(Question $question, QuestionRequest $request, $returnView=true)
     {
         $question = $this->questionDao->updateQuestionObject($question, $request->input('questionName'),
             $request->input('questionText'));
-
-        //TODO: Add view here
-        return view('', compact('question'));
+        if ($returnView)
+        {
+            //TODO: Add view here
+            return view('', compact('question'));
+        }
     }
 
     public function updateAll($exam, Request $request)
@@ -180,6 +182,11 @@ class QuestionController extends Controller
 
         return ('this is the edit element view for question #');
         //return view('setup.edit_element')->with(['data' => $data]);
+    }
+
+    public function editAll($exam)
+    {
+        return $exam . "Remember to make this non-sucky, Brian";
     }
 
     /**

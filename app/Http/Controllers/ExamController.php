@@ -11,7 +11,9 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 
@@ -81,7 +83,7 @@ class ExamController extends Controller
      */
     public function store(ExamRequest $request)
     {
-        $this->examDao->save_new_exam($request->input('year'), $request->input('term'), $request->input('name'));
+        $this->examDao->save_new_exam($request->input('examYear'), $request->input('examTerm'), $request->input('name'));
         Session::flash(self::SUCCESS_FLASH_NAME, self::CREATE_SUCCESS);
         return view('/setup/create_exam');
     }
@@ -122,12 +124,12 @@ class ExamController extends Controller
      * @param ExamRequest $request
      * @return Response
      */
-    public function update($exam)
+    public function update(Exam $exam, ExamRequest $request)
     {
-        $exam = $this->examDao->update_exam_object($exam, $request->input('year'), $request->input('term'), $request->input('name'));
+        $exam = $this->examDao->update_exam_object($exam, $request->input('examYear'), $request->input('examTerm'), $request->input('name'));
         Session::flash(self::SUCCESS_FLASH_NAME, self::UPDATE_SUCCESS);
-        return view('setup/edit_exam', compact('exam'));
-        //Todo: add redirect or view
+        $eid = $exam->getId();
+        return redirect()->route('editAllQuestions', $eid);
     }
 
     /**

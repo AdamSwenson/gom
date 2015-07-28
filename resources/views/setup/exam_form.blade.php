@@ -18,8 +18,6 @@
 <p></p>
 <input name="examTerm" type="hidden" id="hiddenTerm" value="{{ isset($exam) ? $exam->getTerm() : '' }}"/>
 <div class="btn-group btn-group">
-    <a class="btn btn-primary dropdown-toggle" id="term" name="term" data-toggle="dropdown">{{ isset($exam) ?
-            $exam->getTerm().' ' : 'Term' }}<span class="glyphicon glyphicon-menu-down"></span></a>
     <button class="btn btn-primary dropdown-toggle" id="term"
             data-toggle="dropdown">{{ isset($exam) ? $exam->getTerm() : 'Term' }}
         <span class="glyphicon glyphicon-menu-down"></span></button>
@@ -32,8 +30,6 @@
 </div>
 <input name="examYear" type="hidden" id="hiddenYear" value="{{ isset($exam) ? $exam->getYear() : '' }}"/>
 <div class="btn-group btn-group">
-    <a class="btn btn-primary dropdown-toggle" id="year" name="year" data-toggle="dropdown">{{ isset($exam) ?
-            $exam->getYear().' ' : 'Year' }}<span class="glyphicon glyphicon-menu-down"></span></a>
     <button class="btn btn-primary dropdown-toggle" id="year"
             data-toggle="dropdown">{{ isset($exam) ? $exam->getYear() : 'Year' }}
         <span class="glyphicon glyphicon-menu-down"></span></button>

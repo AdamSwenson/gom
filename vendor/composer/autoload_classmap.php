@@ -444,7 +444,7 @@ return array(
     'IncludePathTask' => $vendorDir . '/phing/phing/classes/phing/tasks/system/IncludePathTask.php',
     'IniFileTokenReader' => $vendorDir . '/phing/phing/classes/phing/filters/util/IniFileTokenReader.php',
     'InputHandler' => $vendorDir . '/phing/phing/classes/phing/input/InputHandler.php',
-    'GradingRequest' => $vendorDir . '/phing/phing/classes/phing/input/GradingRequest.php',
+    'InputRequest' => $vendorDir . '/phing/phing/classes/phing/input/InputRequest.php',
     'InputStream' => $vendorDir . '/phing/phing/classes/phing/system/io/InputStream.php',
     'InputStreamReader' => $vendorDir . '/phing/phing/classes/phing/system/io/InputStreamReader.php',
     'InputTask' => $vendorDir . '/phing/phing/classes/phing/tasks/system/InputTask.php',
