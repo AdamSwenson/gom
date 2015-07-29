@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.master2')
 
 @section('pageTitle', 'Welcome to the gradeomatic')
 
@@ -26,12 +26,11 @@
             <div class="row">
                 <div class="col-xs-10 btn-group">
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Home</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Payment</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Guides</a>
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Features</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg ">News</a>
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">About Us</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Help</a>
+                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg ">News</a>
+                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Pricing</a>
+                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Contact Us</a>
                 </div>
             </div>
 
@@ -52,7 +51,7 @@
                         <label><input type="checkbox"> Remember me</label>
                         <label><a href={{url('account/retrieve')}}>Forgot Password</a></label>
                     </div>
-                    <input class="btn btn-default" type="submit" >
+                    <input class="btn btn-default" value="Log In" type="submit" >
                     <a href="{{url('account/create')}}" class="btn btn-default" >Create Account</a>
                 </form>
 
@@ -61,8 +60,10 @@
     </div>
 @endsection
 
+
 @section('jsArea')
-    <script type="text/javascript" src="<?php echo asset("inc/js/common.js");?>"></script>
+    <!--
+    <script type="text/javascript" src="<php echo asset("inc/js/common.js");?>"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             var scripts = [
@@ -85,6 +86,6 @@
 //                    scriptLoader(scripts.length, 0);
         });
     </script>
-
+-->
 @endsection
 @endsection
