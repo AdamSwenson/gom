@@ -1,11 +1,11 @@
 <!-- this form describes the input form and buttons for an individual question -->
-<li class="list-group-item" id="questionItem{{ isset($q['qOrder']) ? $q['qOrder'] : 1 }}">
-    <h4 id="displayNumber">Element #{{ isset($q['qOrder']) ? $q['qOrder'] : 1 }}</h4>
+<li class="list-group-item" id="questionItem{{ isset($counter) ? $counter : 1 }}">
+    <h4 id="displayNumber">Element #{{ isset($counter) ? $counter : 1 }}</h4>
 
     <div class="input-group">
         <span class="input-group-addon">Element Name</span>
-        <input id="questionName{{ isset($q['qOrder']) ? $q['qOrder'] : 1 }}"
-               name="questionName{{ isset($q['qOrder']) ? $q['qOrder'] : 1 }}" type="text" class="form-control input"
+        <input id="questionName{{ isset($counter) ? $counter : 1 }}"
+               name="questionName{{ isset($counter) ? $counter : 1 }}" type="text" class="form-control input"
                value="{{ isset($q['qName']) ? $q['qName'] : '' }}"
                placeholder="(Optional) Enter a short reminder for this element, i.e. &quot;Economic causes of the Civil War&quot; "
                aria-describedby="basic-addon1">
@@ -13,8 +13,8 @@
     <h5>Element Response</h5>
 
     <div class="form-group">
-        <textarea class="form-control" rows="3" id="questionText{{ isset($q['qOrder']) ? $q['qOrder'] : 1 }}"
-                  name="questionText{{ isset($q['qOrder']) ? $q['qOrder'] : 1 }}"
+        <textarea class="form-control" rows="3" id="questionText{{ isset($counter) ? $counter : 1 }}"
+                  name="questionText{{ isset($counter) ? $counter : 1 }}"
                   placeholder="Explain in detail what needed to be done in order to fully answer this element. This will form the basis for the response seen by the student."
                 >{{ isset($q['qDesc']) ? $q['qDesc'] : '' }}</textarea>
     </div>
@@ -37,6 +37,6 @@
                         class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete</span>
         </button>
     </div>
-    <input type="hidden" id="questionId" name="questionId{{isset($q['qOrder']) ? $q['qOrder'] : 0}}"
-           value="{{ isset($q['qId']) ? $q['qId'] : '0' }}"/>
+    <input type="hidden" id="questionId" name="questionId{{isset($counter) ? $counter : 1}}"
+           value="{{ isset($q) ? $q['qObj']->getId() : '0' }}"/>
 </li>

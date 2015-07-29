@@ -32,15 +32,16 @@
             <form id="questionForm" name="questionForm" method="post" role="form"
                   action="{{ url('exam/'.$examId.'/question/updateAll') }}"
                   accept-charset="UTF-8">
-
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                <input type="hidden" id="token" name="_token" value="{{ csrf_token() }}">
                 <ul class="form-group" id="questionList">
                     @if (isset($questions))
+                        <?php $counter = 1; ?>
                         @foreach($questions as $q)
                             @include('setup.question_form')
+                            <?php $counter++; ?>
                         @endforeach
                     @else
-                        include('setup.question_form')
+                        @include('setup.question_form')
                     @endif
 
                 </ul>
@@ -54,41 +55,8 @@
             </button>
         </div>
     </div>
-
-    <!-- a blank question form to use for clones -->
-    <ul style="display: none" id="hiddenQuestionList">
-        <li class="list-group-item" id="emptyQuestionItem">
-            <h4 id="displayNumber">Question #0</h4>
-
-            <div class="input-group">
-                <span class="input-group-addon">Question Name</span>
-                <input id="questionName0" name="questionName0" type="text" class="form-control input" value=""
-                       placeholder="Enter a brief description of the question, i.e. &quot;Causes of the Civil War&quot;"
-                       aria-describedby="basic-addon1">
-
-            </div>
-            <h5>Question Text</h5>
-
-            <div class="form-group">
-        <textarea class="form-control" rows="3" id="questionText0" name="questionText0"
-                  placeholder="Enter the full question text(optional)"></textarea>
-            </div>
-            <div class="form-group">
-        <span class="btn btn-info btn-sm"><span class="handle" aria-hidden="true">
-                <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
-             Move</span>
-                </span>
-                <button class="btn btn-warning btn-sm"><span class="js-remove"><span
-                                class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete</span>
-                </button>
-            </div>
-            <input type="hidden" id="questionId" name="questionId0" value="0"/>
-        </li>
-    </ul>
-
-
+    @include('setup.question_form_empty')
     @include('errors.list')
-
 @endsection
 
 
@@ -105,11 +73,11 @@
                 handle: '.handle',
                 ghostClass: "sortable-ghost",
                 onFilter: function (evt) {
+                    // handle deletion - items will be deleted once the form is submitted
                     var el = editableList.closest(evt.item); // get dragged item
                     // TODO: on delete confirmation
-                    deleteQuestionFromDB(el);
-                    el && el.parentNode.removeChild(el);
-                    updateNumbers();
+                    if ( el && el.parentNode.removeChild(el) )
+                        updateNumbers();
                 },
                 store: {
                     // store the ordering to localStorage
@@ -127,24 +95,6 @@
                     }
                 }
             });
-
-            function deleteQuestionFromDB(el) {
-                var id = $(el).find('#questionId').attr('value');
-                // If question already exists in DB, remove from DB
-                if (id > 0) {
-                    $.ajax({
-                        url: "{{ url('exam/'.$examId.'/question') }}" + "/" + id,
-                        type: 'DELETE',
-                        success: function (result) {
-                            // Do something with the result
-                            alert('Success!');
-                        },
-                        error: function (result) {
-                            alert('failed to delete id:' + id);
-                        }
-                    });
-                }
-            }
 
             // handle addQuestion button
             document.getElementById("addQuestion").onclick = function () {

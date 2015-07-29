@@ -123,11 +123,12 @@ class ElementController extends Controller
         $question = 1;
         $nextqId = 2;
         $prevqId = 0;
+;
         // shows all elements for a given question
         return view('setup.edit_element')->with( ['examId' => $exam,
             'qId' => $question,
             'nextqId' => $nextqId,
-            'prevqId' => $prevqId]);
+            'prevqId' => $prevqId] );
     }
 
     /**

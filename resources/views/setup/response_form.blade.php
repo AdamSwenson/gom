@@ -21,7 +21,9 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Save</button>
+                <!-- added data-token to try csrf token -->
+                <button type="button" class="btn btn-default confirm-btn" data-token="{{ csrf_token() }}"
+                        data-dismiss="modal">Save</button>
             </div>
         </div>
     </div>

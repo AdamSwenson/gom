@@ -1,13 +1,13 @@
 <!-- EDIT QUESTION -->
 
-    <!--
-    /**
-     * Created by PhpStorm.
-     * User: Brian
-     * Date: 7/17/2015
-     * Time: 4:59 PM
-     */
-     -->
+<!--
+/**
+ * Created by PhpStorm.
+ * User: Brian
+ * Date: 7/17/2015
+ * Time: 4:59 PM
+ */
+ -->
 
 @extends('layouts.master')
 @section('pageTitle', 'Edit Questions')
@@ -22,8 +22,9 @@
             <nav>
                 <ul class="pager">
                     <li class="previous">
-                        <a id="prev-question" data-prevQ="{{ $prevqId }}" style="cursor:pointer;" > <span class="glyphicon glyphicon-chevron-left"
-                                                                             aria-hidden="true"></span>
+                        <a id="prev-question" data-prevQ="{{ $prevqId }}" style="cursor:pointer;"> <span
+                                    class="glyphicon glyphicon-chevron-left"
+                                    aria-hidden="true"></span>
                             Previous Question</a>
                     </li>
                     <li class="next">
@@ -43,9 +44,11 @@
 
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <ul class="form-group" id="questionList">
-                    @if(isset($elements))
+                    @if( isset($elements) )
+                        <?php $counter = 1; ?>
                         @foreach($elements as $q)
-                            @include('setup.element_form')
+                            @include('setup.question_form')
+                            <?php $counter++; ?>
                         @endforeach
                     @else
                         @include('setup.element_form')
@@ -60,45 +63,8 @@
                 Add Element</a>
         </div>
     </div>
-
-    <!-- a blank question form to use for clones -->
-    <ul style="display: none" id="hiddenQuestionList">
-        <li class="list-group-item" id="emptyQuestionItem">
-            <h4 id="displayNumber">Question #0</h4>
-
-            <div class="input-group">
-                <span class="input-group-addon">Element Name</span>
-                <input id="questionName0" name="questionName0" type="text" class="form-control input" value=""
-                       placeholder="(Optional) Enter a short reminder for this element, i.e. &quot;Economic causes of the Civil War&quot; "
-                       aria-describedby="basic-addon1">
-
-            </div>
-            <h5>Element Response</h5>
-
-            <div class="form-group">
-        <textarea class="form-control" rows="3" id="questionText0" name="questionText0"
-                 placeholder="Explain in detail what needed to be done in order to fully answer this element. This will form the basis for the response seen by the student."></textarea>
-            </div>
-            <div class="form-group">
-        <span class="btn btn-info btn-sm"><span class="handle" aria-hidden="true">
-                <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
-             Move</span>
-                </span>
-                <button class="btn btn-info btn-sm" id="customizeElement" data-toggle="modal" data-target="#customizeResponse">
-                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-                    Customize Responses</button>
-                <button class="btn btn-warning btn-sm"><span class="js-remove"><span
-                                class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete</span>
-                </button>
-            </div>
-            <input type="hidden" id="questionId" name="questionId0" value="0"/>
-        </li>
-    </ul>
-
-
-
+    @include('setup.element_form_empty')
     @include('errors.list')
-
 @endsection
 
 
@@ -138,7 +104,7 @@
                 }
             });
 
-            function deleteQuestionFromDB(el){
+            function deleteQuestionFromDB(el) {
                 var id = $(el).find('#questionId').attr('value');
                 // If question already exists in DB, remove from DB
                 if (id > 0) {
@@ -150,11 +116,12 @@
                             alert('Success!');
                         },
                         error: function (result) {
-                            alert('failed to delete id:'+id);
+                            alert('failed to delete id:' + id);
                         }
                     });
                 }
             }
+
             // handle addQuestion button
             document.getElementById("addQuestion").onclick = function () {
                 // copy empty form
@@ -195,7 +162,7 @@
             // Previous Question button
             var btnPrevious = document.getElementById('prev-question');
             var prevQuestion = parseInt(btnPrevious.getAttribute('data-prevQ'));
-            if ( (prevQuestion === 0) ) {
+            if ((prevQuestion === 0)) {
                 // set text to "Edit Questions"
                 $('#prev-question').text('Edit Questions');
             }
@@ -203,7 +170,7 @@
             btnPrevious.onclick = function () {
                 if (prevQuestion > 0) {
                     // set hidden data field and submit
-                    $('.nextqId').attr('val', prevQuestion );
+                    $('.nextqId').attr('val', prevQuestion);
                 } else if (prevQuestion == 0) {
                     // go back to edit questions
                     // TODO: alter form submission - route to edit questions
@@ -213,7 +180,7 @@
             // Next Question button
             var btnNext = document.getElementById('next-question');
             var nextQuestion = parseInt(btnNext.getAttribute('data-nextQ'));
-            if ( (nextQuestion === 0) ) {
+            if ((nextQuestion === 0)) {
                 // set text to "done"
                 $('#next-question').text('Done');
             }
@@ -222,7 +189,7 @@
                 if (nextQuestion > 0) {
                     // set hidden, go to nextqId
                     $('.nextqId').attr('val', nextQuestion);
-                } else if (nextQuestion == 0){
+                } else if (nextQuestion == 0) {
                     // submit and go to student editor
                     // TODO: alter form submission - route to editStudents
                     document.getElementById("questionForm").submit();

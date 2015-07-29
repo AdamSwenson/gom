@@ -20,7 +20,8 @@ class CreateQuestionAssignmentTable extends Migration
             $table->integer('question_number')->unsigned();
             $table->timestamps();
 
-            $table->unique(['user_id', 'exam_id', 'question_number']);
+            // TODO: Fix: updating question order causes integrity constraint violation
+            //$table->unique(['user_id', 'exam_id', 'question_number']);
             $table->unique(['user_id', 'exam_id', 'question_id']);
 
             $table->foreign('user_id')
