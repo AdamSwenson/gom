@@ -59,19 +59,7 @@ class LandingController extends Controller
         return view('account.set');
     }
 
-    public function sendEmailReminder(Request $request, $id)
-    {
-        $user = "jerrysmash17@gmail.com";
 
-        $data = $request->only('name', 'emails', 'phone');
-        $data['messageLines'] = explode("\n", $request->get('message'));
-
-       Mail::send('emails.reminder', $data, function ($m) use ($data) {
-           $m->subject('Blog Contact Form: '.$data['name'])
-               ->to(config('blog.contact_email'))
-               ->replyTo($data['emails']);
-        });
-    }
 
 
 }
