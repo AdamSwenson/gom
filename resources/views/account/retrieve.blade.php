@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.primalMaster')
 
 @section('pageTitle', 'Welcome to the gradeomatic')
 
@@ -25,23 +25,22 @@
             <div class="row">
                 <div class="col-xs-10 btn-group">
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Home</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Payment</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Guides</a>
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Features</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg ">News</a>
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">About Us</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Help</a>
+                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg ">News</a>
+                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Pricing</a>
                 </div>
             </div>
             <div class="row" >
                 <div class="col-xs-8">
                     <form role="form" method="POST" action="{{url('account/sent')}}" accept-charset="UTF-8" class="col-xs-4">
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-                        <h3 class="text-left"> Enter Email:</h3>
+                        <h4>Enter your email and click "Send Email" to receive a confirmation email</h4><br>
                         <div class="form-group ">
+                            <label>Enter Email:</label>
                             <input class="form-control" type="email" name="email"  placeholder="Enter email">
                         </div>
-                        <input class="btn btn-default" type="submit" >
+                        <input class="btn btn-default" type="submit" value="Send Email" >
                     </form>
                 </div>
             </div>

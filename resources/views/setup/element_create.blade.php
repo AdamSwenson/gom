@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.primalMaster')
 
 @section('pageTitle', 'Create and setup tasks')
 

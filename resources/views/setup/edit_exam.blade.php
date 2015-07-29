@@ -7,7 +7,7 @@
  */
  -->
 
-@extends('layouts.master')
+@extends('layouts.primalMaster')
 
 @section('pageTitle', 'Empty')
 @section('description', 'Edit an exam')

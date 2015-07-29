@@ -1,4 +1,4 @@
-@extends('layouts.master2')
+@extends('layouts.primalMaster')
 
 @section('pageTitle', 'Welcome to the gradeomatic')
 
@@ -30,7 +30,6 @@
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">About Us</a>
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg ">News</a>
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Pricing</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Contact Us</a>
                 </div>
             </div>
 

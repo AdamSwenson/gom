@@ -16,7 +16,7 @@
  */
  -->
 
-@extends('layouts.master')
+@extends('layouts.primalMaster')
 
 @section('pageTitle', 'Create Exam')
 @section('description', 'create an exam')

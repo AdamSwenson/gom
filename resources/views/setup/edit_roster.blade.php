@@ -9,7 +9,7 @@
 
  -->
 
-@extends('layouts.master')
+@extends('layouts.primalMaster')
 
 @section('pageTitle', 'Edit Roster')
 @section('description', 'Upload or modify student roster')
