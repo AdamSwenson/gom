@@ -27,6 +27,12 @@
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <nav>
                         <ul class="pager">
+                            <li class="previous">
+                                <a href="{{ url('exam/') }}" id="prev-question" style="cursor:pointer;"> <span
+                                            class="glyphicon glyphicon-chevron-left"
+                                            aria-hidden="true"></span>
+                                    Setup</a>
+                            </li>
                             <li class="next">
                                 <a id="submitLink" style="cursor:pointer;">Next <span class="glyphicon glyphicon-chevron-right"
                                                                    aria-hidden="true"></span></a>

@@ -21,7 +21,7 @@
                 <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
              Move</span>
         </span>
-        <button class="btn btn-warning btn-sm" type="button"><span class="js-remove"><span
+        <button class="btn btn-warning btn-sm" type="button" ><span class="js-remove"><span
                         class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete</span>
         </button>
     </div>

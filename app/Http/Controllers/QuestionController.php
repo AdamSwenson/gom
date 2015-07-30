@@ -46,18 +46,13 @@ class QuestionController extends Controller
     public function index(QuestionRequest $request)
     {
         //load all questions for exam
-        if ($request->has('examId'))
-        {
+        if ($request->has('examId')) {
             $questions = $this->assignmentDao->load_all_for_exam($request->input('examId'));
-        }
-        // load all questions for class
-        elseif ($request->has('classId'))
-        {
+        } // load all questions for class
+        elseif ($request->has('classId')) {
             $questions = $this->questionDao->loadQuestionsByClassId($request->input('classId'));
-        }
-        // load all questions for session user
-        else
-        {
+        } // load all questions for session user
+        else {
             $questions = $this->questionDao->loadAll();
         }
 
@@ -133,12 +128,11 @@ class QuestionController extends Controller
      * @param QuestionRequest $request
      * @return Response
      */
-    public function update(Question $question, QuestionRequest $request, $returnView=true)
+    public function update(Question $question, QuestionRequest $request, $returnView = true)
     {
         $question = $this->questionDao->updateQuestionObject($question, $request->input('questionName'),
             $request->input('questionText'));
-        if ($returnView)
-        {
+        if ($returnView) {
             //TODO: Add view here
             return view('', compact('question'));
         }
@@ -160,43 +154,56 @@ class QuestionController extends Controller
         $examId = $exam->getId();
         $i = 1;
         $currentQuestions = [];
-        while($request->input('questionName'.$i)) {
-            if( ($request->input('questionId'.$i)) == 0) {
-                // create new question
-                $question = $this->questionDao->createQuestion($request->input('questionName'.$i),
-                    $request->input('questionText'.$i));
-                echo('examId:'.$examId.' question_number: '.$i);
+        /*
+        while ($request->input('questionName' . $i)) {
+            // new questions arrive with id == 0
+            if (($request->input('questionId' . $i)) == 0) {
+                $question = $this->questionDao->createQuestion($request->input('questionName' . $i),
+                    $request->input('questionText' . $i));
                 $assignment = $this->assignmentDao->record($examId, $question->getId(), $i);
-            } else {
-                $question = $this->questionDao->updateQuestion($request->input('questionId'.$i),
-                    $request->input('questionName'.$i), $request->input('questionText'.$i) );
+            } else
+            // the rest already exist and should be updated
+            {
+                $question = $this->questionDao->updateQuestion($request->input('questionId' . $i),
+                    $request->input('questionName' . $i), $request->input('questionText' . $i));
                 $q[$i] = $question;
-                $assignment = $this->assignmentDao->record($examId, $request->input('questionId'.$i) , $i);
+                $assignment = $this->assignmentDao->record($examId, $request->input('questionId' . $i), $i);
             }
-            $currentQuestions[] = $question;
-            $data['q'.$i] = $question;
-            $data['a'.$i] = $assignment;
+            // store our new questions in a an array with: [ questionId => question ]
+            // this is used to find
+            $currentQuestions[$question->getId()] = $question;
+            $data['q' . $i] = $question;
+            $data['a' . $i] = $assignment;
             $i++;
         }
+        */
 
         // Handle item deletion
 
+        // NOTE: any questions associated with this exam that weren't submitted with the form are deleted.
+
         $oldQuestions = $this->assignmentDao->load_all_for_exam($examId);
-        foreach($oldQuestions as $oldQuestion) {
-            // convert questionAssignment to a Question
-            $toFind = $this->questionDao->loadQuestionById($oldQuestion['question_id'] );
-            if ( !in_array($toFind, $currentQuestions) ) {
-                $this->questionDao->deleteQuestionObject($toFind);
+        if (!count($oldQuestions)) {
+            foreach ($oldQuestions as $oldQuestion) {
+                $qIdToFind = $oldQuestion->question->getId();
+                if (!array_key_exists($qIdToFind, $currentQuestions)) {
+                    echo('deleting question:' . $qIdToFind . '<br/>');
+                    $this->questionDao->deleteQuestion($qIdToFind);
+                }
             }
         }
 
-
-        dd($data);
-
-        $firstQuestionObj = $this->assignmentDao->load($examId, 1);
+        // If someone deletes all questions and defeat checks, redirect back to exam select...
+        $checkIfEmpty = $this->assignmentDao->load_all_for_exam($examId);
+        if ( !count($checkIfEmpty) ) {
+            return redirect()->action('ExamController@index');
+        }
+        // ...because this line will crash if there is no question #1
+        $firstQuestionAssign = $this->assignmentDao->load($examId, 1);
+        $firstQuestionObj = $firstQuestionAssign->question;
 
         return redirect()->action('ElementController@editAll', array('examId' => $examId,
-                            'question' => $firstQuestionObj) );
+            'question' => $firstQuestionObj));
 
     }
 
@@ -209,19 +216,19 @@ class QuestionController extends Controller
         $assignments = $this->assignmentDao->load_all_for_exam($exam->getId());
         $questions = [];
         $counter = 0;
-        foreach($assignments as $ass) {
+        foreach ($assignments as $ass) {
             $id = $ass['question_id'];
             // load the question with given id by its index: ['0','1', ...]
             $q['qObj'] = $this->questionDao->loadQuestionById($id);
             $questions[$counter++] = $q;
         }
-        $eName = $exam->getName();
-        $eId = $exam->getId();
+        $examName = $exam->getName();
+        $examId = $exam->getId();
 
         return view('setup.edit_question')->with([
             'questions' => $questions,
-            'examName' => $eName,
-            'examId' => $eId ]);
+            'examName' => $examName,
+            'examId' => $examId]);
     }
 
     /**
@@ -236,15 +243,13 @@ class QuestionController extends Controller
         $questionObj = $this->questionDao->loadQuestionById($question);
         $result = $this->questionDao->deleteQuestionObject($questionObj);
 
-        if (!empty($result))
-        {
+        if (!empty($result)) {
             Session::flash(self::SUCCESS_FLASH_NAME, self::DELETE_SUCCESS);
-        } else
-        {
+        } else {
             Session::flash(self::FAIL_FLASH_NAME, self::DELETE_FAIL);
         }
 
-        return view('Destroyed Question #'.$result);
+        return view('Destroyed Question #' . $result);
 
     }
 }

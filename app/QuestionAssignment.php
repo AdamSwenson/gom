@@ -53,7 +53,7 @@ class QuestionAssignment extends BaseModel
 
     public function question()
     {
-        return $this->hasOne('App\Question');
+        return $this->belongsTo('App\Question');
     }
 
     public function questionScores()

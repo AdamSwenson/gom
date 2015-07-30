@@ -34,7 +34,8 @@
                     </li>
                 </ul>
             </nav>
-            <h2>Question #{{ isset($qNumber) ? $qNumber : '1'}}: Add / Edit Elements</h2>
+            <h2>Question #{{ isset($qNumber) ? $qNumber : '1'}}: "{{ isset($questionName) ? $questionName : '' }}": Add
+                / Edit Elements</h2>
             <h5>Each question is composed of one or more elements, representing individual items that the student
                 should address.</h5>
             <!-- form will update all given questions and create new ones where required -->
@@ -54,8 +55,7 @@
                         @include('setup.element_form')
                     @endif
                 </ul>
-                <!-- Holds data for next question-->
-                <input type="hidden" id="nextqId" name="nextqId" value="0"/>
+                <input type="hidden" id="questionDirection" name="questionDirection" value="0"/>
             </form>
             <a class="btn btn-primary" id="addQuestion"><span
                         class="glyphicon glyphicon-plus"
@@ -81,11 +81,11 @@
                 handle: '.handle',
                 ghostClass: "sortable-ghost",
                 onFilter: function (evt) {
+                    // handle deletion - items will be deleted once the form is submitted
                     var el = editableList.closest(evt.item); // get dragged item
                     // TODO: on delete confirmation
-                    deleteQuestionFromDB(el);
-                    el && el.parentNode.removeChild(el);
-                    updateNumbers();
+                    if (el && el.parentNode.removeChild(el))
+                        updateNumbers();
                 },
                 store: {
                     // store the ordering to localStorage
@@ -103,24 +103,6 @@
                     }
                 }
             });
-
-            function deleteQuestionFromDB(el) {
-                var id = $(el).find('#questionId').attr('value');
-                // If question already exists in DB, remove from DB
-                if (id > 0) {
-                    $.ajax({
-                        url: "{{ url('exam/'.$examId.'/question/'.$qId.'/element') }}" + "/" + id,
-                        type: 'DELETE',
-                        success: function (result) {
-                            // Do something with the result
-                            alert('Success!');
-                        },
-                        error: function (result) {
-                            alert('failed to delete id:' + id);
-                        }
-                    });
-                }
-            }
 
             // handle addQuestion button
             document.getElementById("addQuestion").onclick = function () {
@@ -168,32 +150,31 @@
             }
 
             btnPrevious.onclick = function () {
-                if (prevQuestion > 0) {
-                    // set hidden data field and submit
-                    $('.nextqId').attr('val', prevQuestion);
-                } else if (prevQuestion == 0) {
-                    // go back to edit questions
-                    // TODO: alter form submission - route to edit questions
+                if (prevQuestion === 0) {
+                    // set the hidden field to either the questionId to view next, or 'back'
+                    $('#questionDirection').attr('value', 'back');
+                } else {
+                    $('#questionDirection').attr('value', prevQuestion);
                 }
+                submitForm();
             }
 
             // Next Question button
             var btnNext = document.getElementById('next-question');
             var nextQuestion = parseInt(btnNext.getAttribute('data-nextQ'));
+            // If we're at the last question, set text to "done"
             if ((nextQuestion === 0)) {
-                // set text to "done"
                 $('#next-question').text('Done');
             }
 
             btnNext.onclick = function () {
-                if (nextQuestion > 0) {
-                    // set hidden, go to nextqId
-                    $('.nextqId').attr('val', nextQuestion);
-                } else if (nextQuestion == 0) {
-                    // submit and go to student editor
-                    // TODO: alter form submission - route to editStudents
-                    document.getElementById("questionForm").submit();
+                if (nextQuestion === 0) {
+                    // set the hidden field to either the questionId to view next, or 'previous'
+                    $('#questionDirection').attr('value', 'forward');
+                } else {
+                    $('#questionDirection').attr('value', nextQuestion);
                 }
+                submitForm();
             }
 
             function submitForm() {
