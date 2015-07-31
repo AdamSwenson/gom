@@ -59,7 +59,12 @@ class StudentController extends Controller
      */
     public function store(StudentRequest $request)
     {
-        $student = $this->dao->create_student($request->input('lastName'), $request->input('firstName'), $request->input('studentId'), $request->input('email'));
+        $student = $this->dao->create_student(
+            $request->input('lastName'),
+            $request->input('firstName'),
+            $request->input('studentId'),
+            $request->input('email')
+        );
         //todo add view to return
     }
 

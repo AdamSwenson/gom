@@ -10,10 +10,14 @@ namespace App\HTTP\Controllers;
 
 
 use App\Student;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class StudentControllerTest extends \TestCase
 {
+    use WithoutMiddleware;
 
+    public $student;
+    public $dao;
     protected $object;
 
     public function setUp()
@@ -21,7 +25,7 @@ class StudentControllerTest extends \TestCase
         parent::setUp();
         $this->student = Student::all()->random();
         $this->dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
-        $this->object = new StudentController($this->dao);
+       // $this->object = new StudentController($this->dao);
     }
 
 //
@@ -30,26 +34,28 @@ class StudentControllerTest extends \TestCase
 //
 //    }
 
-
+//
 //    public function testCreate()
 //    {
 //        //
 //    }
 
 
-    public function testStore()
-    {
-        $data = [
-            'lastName' => $this->faker->lastName(),
-            'firstName' => $this->faker->firstName(),
-            'studentId' => $this->faker->randomNumber(9),
-            'email' => $this->faker->email()
-        ];
-        $this->dao->shouldReceive('create_student')->with($data)->andReturn($this->student);
-
-        $response = $this->action('POST', 'StudentController@store', $data);
-        $this->assertNotNull($response);
-    }
+//    public function testStore()
+//    {
+//        $data = [
+//            'lastName' => $this->faker->lastName(),
+//            'firstName' => $this->faker->firstName(),
+//            'studentId' => $this->faker->randomNumber(9),
+//            'email' => $this->faker->email()
+//        ];
+//
+//        $dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
+//        $dao->shouldReceive('create_student')->with($data)->andReturn($this->student);
+//
+//        $response = $this->action('POST', 'StudentController@store', $data);
+//        $this->assertNotNull($response);
+//    }
 
 
     public function testShow()
