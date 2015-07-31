@@ -74,12 +74,23 @@ class StudentRepository implements IStudentRepository
      */
     public function load_students_by_exam($examId)
     {
+        $students = [];
         $exam = Exam::findOrFail($examId);
-        $classes = $exam->classes()->get();
-        if(count($classes) > 0)
+        $classes = $exam->classes;
+        foreach($classes as $c)
         {
-            return $classes->students()->get();
+            foreach($c->students as $s)
+            {
+                array_push($students, $s);
+            }
         }
+        return $students;
+//        return $students;
+//        $classes = $exam->classes;
+//        if(count($classes) > 0)
+//        {
+//            return $classes->students;
+//        }
     }
 
     /**

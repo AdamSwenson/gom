@@ -48,10 +48,15 @@ class ElementAssignmentRepositoryTest extends \TestCase
 
     public function testRecord()
     {
-
-        $result = $this->object->record($this->questionAssignment->exam_id, $this->questionAssignment->question_id,
-            $this->element->getId(), 4);
-        $this->assertInstanceOf('\App\ElementAssignment', $result);
+        $subtask = $this->faker->randomNumber(3);
+        $result = $this->object->record($this->questionAssignment->exam_id, $this->questionAssignment->question_id, $this->element->id, $subtask);
+        $this->assertInstanceOf('\App\Element', $result);
+        $this->seeInDatabase('element_assignments',
+            [
+                'question_assignment_id' => $this->questionAssignment->getId(),
+                'element_id' => $this->element->id,
+                'subtask' => $subtask
+            ]);
     }
 
     public function testLoad_elements()

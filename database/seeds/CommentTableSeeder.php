@@ -39,7 +39,7 @@ class CommentTableSeeder extends Seeder
     $this->loadElement($num);
 
         DB::table('comments')->delete();
-        DB::table('comment_element')->delete();
+//        DB::table('comment_element')->delete();
 
         for ($i = 0; $i < $num; $i++)
         {
@@ -52,8 +52,9 @@ $body = $this->faker->text();
                     $comment = new Comment();
                     $comment->setValence($valence);
                     $comment->setBody($body);
+                    $comment->element()->associate($e);
                     $comment->save();
-                    $comment->element()->save($e);
+//                    $comment->element()->save($e);
 
 
 

@@ -14,7 +14,6 @@
         <!--<exec command="vendor/bin/propel sql:insert"/>-->
         <!--refresh the autoloader-->
         <echo message="Updating laravel and autoloader" />
-        <exec command="php artisan dump-autoload"/>
         <exec command="composer dump-autoload"/>
     </target>
 

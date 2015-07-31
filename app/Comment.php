@@ -95,8 +95,20 @@ class Comment extends BaseModel
      */
     public function getValence()
     {
-        $this->attributes['valence'];
+        return $this->attributes['valence'];
     }
+
+    #---------------------------------------- queries
+    public function scopeOnValence($query, $valence)
+    {
+        return $query->where('valence', $valence);
+    }
+//
+//    public function scopeOnElement($query, $elementId)
+//    {
+//        return $query->element->where('element_id', $elementId);
+//    }
+
 
 #----------------- foreign keys
     public function user()
@@ -111,6 +123,7 @@ class Comment extends BaseModel
      */
     public function element()
     {
-        return $this->belongsToMany('App\Element', 'comment_element')->withTimestamps();
+        return $this->belongsTo('App\Element');
+//        return $this->belongsToMany('App\Element', 'comment_element')->withTimestamps();
     }
 }

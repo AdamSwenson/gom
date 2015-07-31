@@ -184,11 +184,11 @@ class ExamRepositoryTest extends \TestCase
 
     public function testLoad_exam()
     {
-
-        $eid = $this->exam->id;
+        $exam = Exam::all()->random();
+        $eid = $exam->getId();
         $result = $this->object->load_exam($eid);
         $this->assertInstanceOf('\App\Exam', $result);
-        $this->assertEquals($eid, $result->id);
+        $this->assertEquals($eid, $result->getId());
     }
 
     /**
@@ -248,13 +248,13 @@ class ExamRepositoryTest extends \TestCase
         $ex->locked = 0;
         $ex->update();
         $this->assertInstanceOf('\App\Exam', $ex);
-        $knownUnlocked = $ex->id;
+        $knownUnlocked = $ex->getId();
 
         $result = $this->object->lock_exam($knownUnlocked);
         $this->assertInstanceOf('\App\Exam', $result, "returns exam");
-
-        $check = Exam::find($knownUnlocked);
-        $this->assertEquals(1, $check->locked);
+        $this->seeInDatabase('exams', ['id' => $knownUnlocked, 'locked' => 1]);
+//        $check = Exam::find($knownUnlocked);
+//        $this->assertEquals(1, $check->locked);
     }
 
 
@@ -266,13 +266,13 @@ class ExamRepositoryTest extends \TestCase
         $toUnlock->locked = 1;
         $toUnlock->save();
 
-        $check = Exam::find($eid);
-        $this->assertEquals(1, $check->locked);
+//        $check = Exam::find($eid);
+//        $this->assertEquals(1, $check->locked);
 
         //unlock and test
         $result = $this->object->unlock_exam($eid);
         $this->assertInstanceOf('\App\Exam', $result, "returns exam");
-
+        $this->seeInDatabase('exams', ['id' => $eid, 'locked' => 0]);
         $this->assertEquals(0, $result->locked);
     }
 

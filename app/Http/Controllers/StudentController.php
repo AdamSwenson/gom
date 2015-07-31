@@ -59,7 +59,12 @@ class StudentController extends Controller
      */
     public function store(StudentRequest $request)
     {
-        $student = $this->dao->create_student($request->input('lastName'), $request->input('firstName'), $request->input('studentId'), $request->input('email'));
+        $student = $this->dao->create_student(
+            $request->input('lastName'),
+            $request->input('firstName'),
+            $request->input('studentId'),
+            $request->input('email')
+        );
         //todo add view to return
     }
 
@@ -98,7 +103,8 @@ class StudentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  int  $id
+     * @param Student $student
+     * @param StudentRequest $request
      * @return Response
      */
     public function update(Student $student, StudentRequest $request)
@@ -163,4 +169,5 @@ class StudentController extends Controller
             }
         }
     }
-}
+
+}*/

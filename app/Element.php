@@ -33,6 +33,51 @@ class Element extends BaseModel
 # -------------- getters and setters
 
     /**
+     * Records the element as a subtask of an assigned question
+     * @param $examId
+     * @param $questionId
+     * @param $elementId
+     * @param $subtask
+     * @return $this
+     */
+    public function setAsQuestionTask($examId, $questionId, $subtask)
+    {
+        $questionAssignment = QuestionAssignment::where('exam_id', $examId)->where('question_id',
+            $questionId)->firstOrFail();
+
+        $pre_existing = ElementAssignment::where('subtask', $subtask)->where('question_assignment_id',
+            $questionAssignment->getId());
+        if ($pre_existing)
+        {
+            $pre_existing->delete();
+        }
+
+
+//    $pre_assigned = ElementAssignment::where('exam_id', $examId)->where('question_id', $this->getId());
+//    if($pre_assigned)
+//    {
+//        $pre_assigned->delete();
+//    }
+        $this->questionAssignments()->attach($questionAssignment->getId(), ['subtask' => $subtask]);
+
+        return $this;
+    }
+
+    /**
+     * Returns integer subtask
+     * @param $questionAssignmentId
+     * @return mixed
+     * @internal param $examId
+     * @internal param $questionId
+     */
+    public function getQuestionTaskNumber($questionAssignmentId)
+    {
+        $e = $this->questionAssignments()->where('question_assignment_id', $questionAssignmentId)->first();
+        return $e->pivot->subtask;
+    }
+
+
+    /**
      * Sets the name of the element
      * @param string $elementName
      */
@@ -127,23 +172,35 @@ class Element extends BaseModel
         return $this->belongsTo('App\User');
     }
 
-    public function exam()
+//    public function exam()
+//    {
+//        return $this->belongsToMany('App\Exam', 'element_assignments');
+//    }
+
+    public function elementAssignments()
     {
-        return $this->belongsToMany('App\Exam', 'element_assignments');
+        return $this->questionAssignments();
+    }
+
+    public function questionAssignments()
+    {
+        return $this->belongsToMany('App\QuestionAssignment',
+            'element_assignments')->withPivot('subtask')->withTimestamps();
     }
 
     public function scores()
     {
-        return $this->hasManyThrough('App\ElementScore', 'App\ElementAssignment');
+        return $this->hasManyThrough('App\ElementScore', 'App\ElementAssignment', 'element_id',
+            'element_assignment_id');
     }
 
     public function comments()
     {
-        return $this->belongsToMany('App\Comment', 'comment_element')->withTimestamps();
+        return $this->hasMany('App\Comment');
     }
 
-    public function questions()
-    {
-        return $this->belongsToMany('App\Question', 'App\QuestionAssignment')->withTimestamps();
-    }
+//    public function questions()
+//    {
+//        return $this->hasManyThrough('App\Question', 'App\QuestionAssignment', 'element_id');//App\QuestionAssignment')->withTimestamps();
+//    }
 }

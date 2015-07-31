@@ -38,7 +38,11 @@ class StudentRepositoryTest extends \TestCase
 
         $result = $this->object->load_students_by_exam($this->exam->getId());
         $this->assertNotEmpty($result);
-        $this->assertInstanceOf('\App\Student', $result, "returns a student object");
+        foreach($result as $r)
+        {
+            $this->assertInstanceOf('\App\Student', $r, "returns a student object");
+        }
+
 
 //        $kumiIds = DB::table('kumi_student')->lists('kumi_id');
         //      DB::table('exam_kumi')->where('kumi_id', $kumiIds)->lists('exam_id');

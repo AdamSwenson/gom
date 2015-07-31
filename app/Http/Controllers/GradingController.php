@@ -16,6 +16,16 @@ use App\classes\StudentClasses\service\AutocompleteService;
 use App\Http\Requests\GradingRequest;
 use App\Repositories\Student\IStudentRepository;
 
+/**
+ * Class GradingController
+ *
+ * Front controller for grading operations
+ *
+ *
+ * Note: May be easiest if store question_assignment_id and element_assignment_id in the form
+ *
+ * @package App\Http\Controllers
+ */
 class GradingController extends Controller
 {
 

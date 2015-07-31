@@ -40,6 +40,11 @@ Route::get('report/qualitycontrol', function(){
     return "This will eventually be the quality control page";
 });
 
+/* If arrived via link in email to student */
+Route::get('feedback', 'StudentAccessController@show');
+/* If arrived via feedback login page */
+Route::post('feedback/login', 'StudentAccessController@show');
+
 /* NEW routes for exam selection and creation below */
 // Select exam page
 

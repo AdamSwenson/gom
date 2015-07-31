@@ -37,11 +37,12 @@ class ElementRepository implements IElementRepository
      */
     public function loadElementById($elementId)
     {
-        $clean_id = $this->cleaner->sanitize($elementId, CleanerFactory::INTEGER);
-        if (!empty($clean_id))
-        {
-            return Element::findOrFail($clean_id);
-        }
+        return Element::findOrFail($elementId);
+//        $clean_id = $this->cleaner->sanitize($elementId, CleanerFactory::INTEGER);
+//        if (!empty($clean_id))
+//        {
+//            return Element::findOrFail($clean_id);
+//        }
     }
 
     /**
@@ -53,10 +54,14 @@ class ElementRepository implements IElementRepository
      */
     public function createElement($elementName, $displayText, $commentText)
     {
-        $clean_name = $this->cleaner->sanitize($elementName, CleanerFactory::TEXT, self::MAX_NAME_LENGTH);
-        $clean_display = $this->cleaner->sanitize($displayText, CleanerFactory::TEXT, self::MAX_DISPLAY_LENGTH);
-        $clean_comment = $this->cleaner->sanitize($commentText, CleanerFactory::TEXT, self::MAX_COMMENT_LENGTH);
+        $clean_name = $elementName;
+        $clean_display = $displayText;
+        $clean_comment = $commentText;
 
+//        $clean_name = $this->cleaner->sanitize($elementName, CleanerFactory::TEXT, self::MAX_NAME_LENGTH);
+//        $clean_display = $this->cleaner->sanitize($displayText, CleanerFactory::TEXT, self::MAX_DISPLAY_LENGTH);
+//        $clean_comment = $this->cleaner->sanitize($commentText, CleanerFactory::TEXT, self::MAX_COMMENT_LENGTH);
+//
         $element = new Element();
         $element->setElementName($clean_name);
         $element->setDisplayText($clean_display);
@@ -76,20 +81,25 @@ class ElementRepository implements IElementRepository
     {
         if (!($element instanceof Element))
         {
-            $clean_id = $this->cleaner->sanitize($elementId, CleanerFactory::INTEGER);
-            if (!empty($clean_id))
-            {
-                $element = Element::findOrFail($clean_id);
-            }
-            return $element->delete();
+            $element = Element::findOrFail($element);
         }
+//            $clean_id = $this->cleaner->sanitize($element, CleanerFactory::INTEGER);
+//            if (!empty($clean_id))
+//            {
+//                $element = Element::findOrFail($clean_id);
+//            }
+        return $element->delete();
+
     }
 
     public function updateElement($elementId, $elementName, $displayText, $commentText)
-    {}
+    {
+        return $this->editElement($elementId, $elementName, $displayText, $commentText);
+    }
 
     /**
      * Alter the content of an existing element
+     * TODO Refactor out displayText
      * @param $elementId
      * @param $elementName
      * @param $displayText

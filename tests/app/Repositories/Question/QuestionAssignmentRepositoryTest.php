@@ -12,6 +12,7 @@ namespace App\Repositories\Question;
 use App\Exam;
 use App\Question;
 use App\QuestionAssignment;
+use Illuminate\Support\Facades\DB;
 
 class QuestionAssignmentRepositoryTest extends \TestCase
 {
@@ -45,8 +46,8 @@ class QuestionAssignmentRepositoryTest extends \TestCase
     {
         $qid = $this->assignment->question_id;
         $eid = $this->assignment->exam_id;
-        $result = $this->object->load($eid, $qid);
-        $this->assertInstanceOf('App\QuestionAssignment', $result);
+        $result = $this->object->loadByIds($eid, $qid);
+        $this->assertTrue(is_integer($result));
     }
 
 
@@ -54,9 +55,26 @@ class QuestionAssignmentRepositoryTest extends \TestCase
     {
         $qnum = 4;
         $result = $this->object->record($this->exam->getId(), $this->question->getId(), $qnum);
-        $this->assertInstanceOf('App\QuestionAssignment', $result);
+      //  $this->assertInstanceOf('App\QuestionAssignment', $result);
         $this->seeInDatabase('question_assignments',
             ['exam_id' => $this->exam->getId(), 'question_id' => $this->question->getId(), 'question_number' => $qnum]);
+    }
+
+    public function testRecordUpdatePreexisting()
+    {
+        $preexisting = DB::table('question_assignments')->first();
+        $eid = $preexisting->exam_id;
+        $qnum = $preexisting->question_number;
+        $questionId = $preexisting->question_id;
+        $qid = $this->question->getId();
+        if($this->question->getId() == $questionId){
+            $this->question = Question::where('id', '!=', $questionId);
+            $qid = $this->question['id'];
+        }
+        $result = $this->object->record($eid, $qid, $qnum); //going directly to id because may be query builder object
+        //  $this->assertInstanceOf('App\QuestionAssignment', $result);
+        $this->seeInDatabase('question_assignments',
+            ['exam_id' => $eid, 'question_id' => $this->question->id, 'question_number' => $qnum]);
     }
 
 

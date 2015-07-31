@@ -80,11 +80,11 @@ class Exam extends BaseModel
     }
 
 #----------------------------------------------------------- Setters and getters
-public function __get($name){
-    if($name == "examName"){
-        return $this->attributes['name'];
-    }
-}
+//public function __get($name){
+//    if($name == "examName"){
+//        return $this->attributes['name'];
+//    }
+//}
 
     /**
      * Set the term in which the exam occurs
@@ -116,6 +116,11 @@ public function __get($name){
         $this->attributes['year'] = $year;
     }
 
+    public function getQuestion($questionNumber)
+    {
+     //   return $this->questions->pivot->wherePivot('question_number', $questionNumber)->first();
+    }
+
 
     #------------------------------------------------------ foreign keys
 
@@ -128,14 +133,14 @@ public function __get($name){
         return $this->belongsToMany('App\Kumi', 'exam_kumi')->withTimestamps();
     }
 
-    /**
-     * Elements comprising the exam
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
-     */
-    public function elements()
-    {
-        return $this->hasManyThrough('App\Element', 'App\ElementAssignment');
-    }
+//    /**
+//     * Elements comprising the exam
+//     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+//     */
+//    public function elements()
+//    {
+//        return $this->hasManyThrough('App\Element', 'App\ElementAssignment');
+//    }
 
     /**
      * Associated elements and their subtask numbers
@@ -143,17 +148,17 @@ public function __get($name){
      */
     public function elementAssignments()
     {
-        return $this->hasMany('App\ElementAssignment', 'element_assignments');
+        return $this->hasManyThrough('App\ElementAssignment', 'App\QuestionAssignment');
     }
 
-    /**
-     * Associated element scores
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
-     */
-    public function elementScores()
-    {
-        return $this->hasManyThrough('App\ElementScore', 'App\ElementAssignment');
-    }
+//    /**
+//     * Associated element scores
+//     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+//     */
+//    public function elementScores()
+//    {
+//        return $this->hasManyThrough('App\ElementScore', 'App\ElementAssignment');
+//    }
 
     /**
      * Junction to all questions associated with the exam
@@ -164,11 +169,19 @@ public function __get($name){
         return $this->hasManyThrough('App\Question', 'App\QuestionAssignment');
     }
 
+    /**
+     * Junction to assignments of questions to the exam
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function questionAssignments()
     {
-        return $this->hasMany('App\QuestionAssignment', 'question_assignments');
+        return $this->belongsToMany('App\Question', 'question_assignments')->withPivot('question_number')->withTimestamps();
     }
 
+    /**
+     * Junction to assignments of question scores
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
     public function questionScores()
     {
         return $this->hasManyThrough('App\QuestionScore', 'App\QuestionAssignment');

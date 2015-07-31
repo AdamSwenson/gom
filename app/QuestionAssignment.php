@@ -10,9 +10,32 @@ class QuestionAssignment extends BaseModel
       'questionNumber' => 'integer'
     ];
 
+//    public static function boot()
+//    {
+//        static::addGlobalScope(new \App\UserOnlyJunctionScope());
+//
+//        static::creating(function($model)
+//        {
+//            $user = \Auth::user();
+//            $model->owner_id = $user->id;
+//        });
+//
+//        static::updating(function($model)
+//        {
+//            $user = \Auth::user();
+//            $model->owner_id = $user->id;
+//        });
+//
+//        static::deleting(function($model){
+//            $user = \Auth::user();
+//            $model->owner_id = $user->id;
+//        });
+//    }
+
     public function __construct()
     {
-        parent::boot();
+//self::boot();
+//        parent::junctionBoot();
     }
 
 //    /**
@@ -41,23 +64,24 @@ class QuestionAssignment extends BaseModel
     }
 
 # -------------- Foreign key associations
-    public function user()
-    {
-        return $this->belongsTo('App\User');
-    }
+//    public function user()
+//    {
+//        return $this->belongsTo('App\User', 'owner_id', 'id');
+//    }
 
     public function exam()
     {
-        return $this->belongsTo('App\Exam', 'question_assignments');
+        return $this->belongsToMany('App\Exam', 'question_assignments', 'exam_id');
     }
 
     public function question()
     {
-        return $this->belongsTo('App\Question');
+        return $this->belongsToMany('App\Question', 'question_assignments', 'question_id');
     }
 
     public function questionScores()
     {
         return $this->hasMany('App\QuestionScore');
     }
+
 }
