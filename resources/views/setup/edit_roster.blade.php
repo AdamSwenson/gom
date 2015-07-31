@@ -21,7 +21,7 @@
     <div id="editRoster">
         <div class="section">
             <div class="container">
-                <form>
+                <form >
                 <nav>
                     <ul class="pager">
                         <li class="next">
