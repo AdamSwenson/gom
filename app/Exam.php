@@ -169,11 +169,19 @@ class Exam extends BaseModel
         return $this->hasManyThrough('App\Question', 'App\QuestionAssignment');
     }
 
+    /**
+     * Junction to assignments of questions to the exam
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function questionAssignments()
     {
         return $this->belongsToMany('App\Question', 'question_assignments')->withPivot('question_number')->withTimestamps();
     }
 
+    /**
+     * Junction to assignments of question scores
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
     public function questionScores()
     {
         return $this->hasManyThrough('App\QuestionScore', 'App\QuestionAssignment');

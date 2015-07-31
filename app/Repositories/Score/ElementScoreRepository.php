@@ -6,7 +6,7 @@
  * Time: 10:57 AM
  */
 
-namespace Repositories\Score;
+namespace App\Repositories\Score;
 
 
 use App\ElementScore;

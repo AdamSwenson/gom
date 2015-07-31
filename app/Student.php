@@ -57,7 +57,7 @@ class Student extends BaseModel
      */
     public function kumis()
     {
-        return $this->hasMany('App\Kumi'); //, 'kumi_student'); //removed belongsToMany
+        return $this->belongsToMany('App\Kumi', 'kumi_student'); //removed belongsToMany
     }
 
     public function exams()

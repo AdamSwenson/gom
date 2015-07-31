@@ -66,10 +66,12 @@ class QuestionAssignmentRepositoryTest extends \TestCase
         $eid = $preexisting->exam_id;
         $qnum = $preexisting->question_number;
         $questionId = $preexisting->question_id;
+        $qid = $this->question->getId();
         if($this->question->getId() == $questionId){
             $this->question = Question::where('id', '!=', $questionId);
+            $qid = $this->question['id'];
         }
-        $result = $this->object->record($eid, $this->question->id, $qnum); //going directly to id because may be query builder object
+        $result = $this->object->record($eid, $qid, $qnum); //going directly to id because may be query builder object
         //  $this->assertInstanceOf('App\QuestionAssignment', $result);
         $this->seeInDatabase('question_assignments',
             ['exam_id' => $eid, 'question_id' => $this->question->id, 'question_number' => $qnum]);

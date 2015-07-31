@@ -6,7 +6,7 @@
  * Time: 3:20 PM
  */
 
-namespace App\Repositories\Comment;
+namespace App\Repositories\Element;
 
 
 use App\Comment;
