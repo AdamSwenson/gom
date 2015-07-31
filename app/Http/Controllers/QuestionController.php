@@ -154,7 +154,7 @@ class QuestionController extends Controller
         $examId = $exam->getId();
         $i = 1;
         $currentQuestions = [];
-        /*
+
         while ($request->input('questionName' . $i)) {
             // new questions arrive with id == 0
             if (($request->input('questionId' . $i)) == 0) {
@@ -176,7 +176,7 @@ class QuestionController extends Controller
             $data['a' . $i] = $assignment;
             $i++;
         }
-        */
+
 
         // Handle item deletion
 
@@ -187,7 +187,7 @@ class QuestionController extends Controller
             foreach ($oldQuestions as $oldQuestion) {
                 $qIdToFind = $oldQuestion->question->getId();
                 if (!array_key_exists($qIdToFind, $currentQuestions)) {
-                    echo('deleting question:' . $qIdToFind . '<br/>');
+                    //echo('deleting question:' . $qIdToFind . '<br/>');
                     $this->questionDao->deleteQuestion($qIdToFind);
                 }
             }
@@ -200,10 +200,12 @@ class QuestionController extends Controller
         }
         // ...because this line will crash if there is no question #1
         $firstQuestionAssign = $this->assignmentDao->load($examId, 1);
-        $firstQuestionObj = $firstQuestionAssign->question;
+        //$firstQuestionObj = $firstQuestionAssign->question;
+        $firstQId = $firstQuestionAssign->question_id;
+        $firstQuestionObject = $this->questionDao->loadQuestionById($firstQId);
 
         return redirect()->action('ElementController@editAll', array('examId' => $examId,
-            'question' => $firstQuestionObj));
+            'question' => $firstQuestionObject));
 
     }
 
@@ -216,8 +218,9 @@ class QuestionController extends Controller
         $assignments = $this->assignmentDao->load_all_for_exam($exam->getId());
         $questions = [];
         $counter = 0;
+
         foreach ($assignments as $ass) {
-            $id = $ass['question_id'];
+            $id = $ass->question_id;
             // load the question with given id by its index: ['0','1', ...]
             $q['qObj'] = $this->questionDao->loadQuestionById($id);
             $questions[$counter++] = $q;
