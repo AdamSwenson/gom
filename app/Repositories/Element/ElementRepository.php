@@ -76,7 +76,7 @@ class ElementRepository implements IElementRepository
     {
         if (!($element instanceof Element))
         {
-            $clean_id = $this->cleaner->sanitize($elementId, CleanerFactory::INTEGER);
+            $clean_id = $this->cleaner->sanitize($element, CleanerFactory::INTEGER);
             if (!empty($clean_id))
             {
                 $element = Element::findOrFail($clean_id);
@@ -90,6 +90,7 @@ class ElementRepository implements IElementRepository
 
     /**
      * Alter the content of an existing element
+     * TODO Refactor out displayText
      * @param $elementId
      * @param $elementName
      * @param $displayText

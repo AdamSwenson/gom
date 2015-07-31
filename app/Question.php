@@ -77,6 +77,86 @@ class Question extends BaseModel
         return $this->attributes['questionName'];
     }
 
+    /**
+     * Gets the question number of the present question on the specified exam
+     * @param integer $examId
+     * @return integer|null
+     */
+    public function getQuestionNumber($examId)
+    {
+        $exam = $this->exam()->where('exam_id', $examId)->first();
+
+        return $exam->pivot->question_number;
+    }
+
+    /**
+     * Assigns this question to an exam as the specified question number
+     * @param integer $examId
+     * @param integer $questionNumber
+     * @return Question
+     */
+    public function setQuestionNumber($examId, $questionNumber)
+    {
+        $pre_existing = QuestionAssignment::where('exam_id', $examId)->where('question_number', $questionNumber);
+        if ($pre_existing)
+        {
+            $pre_existing->delete();
+        }
+        $pre_assigned = QuestionAssignment::where('exam_id', $examId)->where('question_id', $this->getId());
+        if ($pre_assigned)
+        {
+            $pre_assigned->delete();
+        }
+        $this->exam()->attach($examId, ['question_number' => $questionNumber]);
+
+        return $this;
+    }
+
+
+    #------------ foreign keys
+    /**
+     * Returns associated exams. Returns exam object collection
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function exam()
+    {
+        return $this->belongsToMany('App\Exam', 'question_assignments')->withPivot('question_number')->withTimestamps();
+    }
+
+    /**
+     * Returns associated user
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
+
+    /**
+     * Returns associated exams. Returns exam object collection
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function questionAssignments()
+    {
+        return $this->belongsToMany('App\Exam', 'question_assignments')->withPivot('question_number')->withTimestamps();
+    }
+
+    /**
+     * Returns associated scores
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function scores()
+    {
+        return $this->hasManyThrough('App\QuestionScore', 'App\QuestionAssignment', 'question_id',
+            'question_assignment_id');
+    }
+
+    //    public function elements()
+//    {
+//        $this->hasManyThrough('App\Element', 'App\Q')
+//    }
+
+
 //    /**
 //     * Handles legacy and alias method names.
 //     *
@@ -118,26 +198,5 @@ class Question extends BaseModel
 //        }
 //    }
 
-
-    #------------ foreign keys
-    public function exam()
-    {
-        return $this->belongsToMany('App\Exam', 'question_assignments');
-    }
-
-    public function user()
-    {
-        return $this->belongsTo('App\User');
-    }
-
-    public function questionAssignments()
-    {
-        return $this->hasMany('App\QuestionAssignment');
-    }
-
-    public function scores()
-    {
-        return $this->hasMany('App\QuestionScore');
-    }
 
 }

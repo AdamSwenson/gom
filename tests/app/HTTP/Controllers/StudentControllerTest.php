@@ -19,22 +19,22 @@ class StudentControllerTest extends \TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->object = new StudentControllerTest;
         $this->student = Student::all()->random();
         $this->dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
+        $this->object = new StudentController($this->dao);
     }
 
+//
+//    public function testIndex()
+//    {
+//
+//    }
 
-    public function testIndex()
-    {
 
-    }
-
-
-    public function testCreate()
-    {
-        //
-    }
+//    public function testCreate()
+//    {
+//        //
+//    }
 
 
     public function testStore()
@@ -45,7 +45,7 @@ class StudentControllerTest extends \TestCase
             'studentId' => $this->faker->randomNumber(9),
             'email' => $this->faker->email()
         ];
-        $this->dao->shouldReceive('create_student')->with($data)->shouldReturn($this->student);
+        $this->dao->shouldReceive('create_student')->with($data)->andReturn($this->student);
 
         $response = $this->action('POST', 'StudentController@store', $data);
         $this->assertNotNull($response);
@@ -54,26 +54,26 @@ class StudentControllerTest extends \TestCase
 
     public function testShow()
     {
-        $this->dao->shouldReceive('load_student_by_id')->with($this->student)->shouldReturn($this->student);
+        $this->dao->shouldReceive('load_student_by_id')->with($this->student)->andReturn($this->student);
         $response = $this->action('POST', 'StudentController@show', $this->student);
         $this->assertNotNull($response);
     }
 
-
-    public function testEdit()
-    {
-        //
-    }
-
-
-    public function testUpdate()
-    {
-        //
-    }
+//
+//    public function testEdit()
+//    {
+//        //
+//    }
+//
+//
+//    public function testUpdate()
+//    {
+//        //
+//    }
 
     public function testDestroy()
     {
-        $this->dao->shouldReceive('delete_student_by_object')->with($this->student)->shouldReturn(true);
+        $this->dao->shouldReceive('delete_student_by_object')->with($this->student)->andReturn(true);
         $response = $this->action('POST', 'StudentController@destroy', $this->student);
         $this->assertNotNull($response);
     }

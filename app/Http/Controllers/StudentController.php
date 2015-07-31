@@ -91,7 +91,8 @@ class StudentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  int  $id
+     * @param Student $student
+     * @param StudentRequest $request
      * @return Response
      */
     public function update(Student $student, StudentRequest $request)
@@ -156,4 +157,5 @@ class StudentController extends Controller
             }
         }
     }
-}
+
+}*/

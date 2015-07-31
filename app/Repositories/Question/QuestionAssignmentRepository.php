@@ -10,6 +10,7 @@ namespace App\Repositories\Question;
 
 use App\classes\SecurityClasses\cleaning\CleanerFactory;
 use App\classes\SecurityClasses\cleaning\ICleanerFactory;
+use App\Exam;
 use App\Question;
 use App\QuestionAssignment;
 
@@ -53,14 +54,24 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
         return QuestionAssignment::onExam($examId)->questionNumber($question_number)->firstOrFail();
     }
 
+    /**
+     * Returns the integer number that the question is on the exam
+     * @param $examId
+     * @param $questionId
+     * @return mixed
+     */
     public function loadByIds($examId, $questionId)
     {
-        return QuestionAssignment::onExam($examId)->onQuestionId($questionId)->firstOrFail();
+        $q = Question::findOrFail($questionId);
+        $questionNumber = $q->getQuestionNumber($examId);
+     return $questionNumber;
+     //   return QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->firstOrFail();
+//        return QuestionAssignment::onExam($examId)->onQuestionId($questionId)->firstOrFail();
     }
 
     /**
      * Assigns a question to an exam as the specified question number
-     * TODO: Add eager loading of question
+     *
      * @param integer $examId
      * @param integer $questionId
      * @param integer $question_number
@@ -68,11 +79,20 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
      */
     public function record($examId, $questionId, $question_number)
     {
-//        $question = Question::find($questionId);
-        $qa = QuestionAssignment::firstOrNew(['exam_id' => $examId, 'question_number' => $question_number]);
-        $qa->question_id = $questionId;
-        $qa->save();
-        return $qa;
+        $q = Question::find($questionId);
+        $q->setQuestionNumber($examId, $question_number);
+//
+//        $qa = QuestionAssignment::where('exam_id', $examId)->where('question_number', $question_number)->first();
+////        $qa = QuestionAssignment::firstOrNew(['exam_id' => $examId, 'question_number' => $question_number]);
+//        if(empty($qa)){
+//            $qa = new QuestionAssignment();
+//            $qa->exam_id = $examId;
+//            //$qa->exam()->attach($examId);
+//        }
+////        $qa->question()->attach($questionId);
+//        $qa->question_id = $questionId;
+//        $qa->save();
+//        return $qa;
     }
 
     /**

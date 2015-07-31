@@ -9,6 +9,13 @@ namespace App;
  * a questionNumber on the exam), and a subtask (which determines the order of
  * elements for the question).
  *
+ * The corresponding table ('element_assignments') has the following fields
+ *
+ * id: integer
+ * user_id: integer
+ * question_assignment_id: integer
+ * element_id: integer
+ * subtask: integer
  *
  * @package App
  */
@@ -23,7 +30,8 @@ class ElementAssignment extends BaseModel
 
     public function __construct()
     {
-        parent::boot();
+//        parent::junctionBoot();
+//        parent::boot();
     }
 
     public function setSubtask($subtask)
@@ -72,10 +80,14 @@ class ElementAssignment extends BaseModel
         return $this->belongsTo('App\User');
     }
 
-    public function comments()
-    {
-        $this->hasMany('App\Comment', 'comment_element');
-    }
+//    /**
+//     * Get comments associated with element
+//     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+//     */
+//    public function comments()
+//    {
+//        return $this->hasManyThrough('App\Comment', 'App\Element');
+//    }
 
     /**
      * Link to the exam which partially comprises the assignment
@@ -83,7 +95,7 @@ class ElementAssignment extends BaseModel
      */
     public function exam()
     {
-        return $this->hasManyThrough('App\Exam', 'App\QuestionAssignment');
+        return $this->hasManyThrough('App\Exam', 'App\QuestionAssignment', 'exam_id', 'question_assignment_id' );
     }
 
     /**
@@ -99,10 +111,10 @@ class ElementAssignment extends BaseModel
         return $this->hasMany('App\ElementScore');
     }
 
-    public function question()
-    {
-        return $this->belongsTo('App\Question', 'question_assignments');
-    }
+//    public function question()
+//    {
+//        return $this->belongsTo('App\Question', 'question_assignments');
+//    }
 
     public function questionAssignment()
     {

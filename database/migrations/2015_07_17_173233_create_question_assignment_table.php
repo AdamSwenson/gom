@@ -14,19 +14,21 @@ class CreateQuestionAssignmentTable extends Migration
     {
         Schema::create('question_assignments', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->unsigned();
+//            $table->integer('owner_id')->unsigned();
             $table->integer('exam_id')->unsigned();
             $table->integer('question_id')->unsigned();
             $table->integer('question_number')->unsigned();
             $table->timestamps();
 
-            $table->unique(['user_id', 'exam_id', 'question_number']);
-            $table->unique(['user_id', 'exam_id', 'question_id']);
+            $table->unique(['exam_id', 'question_number']);
+            $table->unique(['exam_id', 'question_id']);
+//            $table->unique(['owner_id', 'exam_id', 'question_number']);
+//            $table->unique(['owner_id', 'exam_id', 'question_id']);
 
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
-                ->onDelete('cascade');
+//            $table->foreign('owner_id')
+//                ->references('id')
+//                ->on('users')
+//                ->onDelete('cascade');
 
             $table->foreign('exam_id')
                 ->references('id')

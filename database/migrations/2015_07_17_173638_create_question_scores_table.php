@@ -17,18 +17,18 @@ class CreateQuestionScoresTable extends Migration
             Schema::create('question_scores', function (Blueprint $table)
             {
                 $table->increments('id');
-                $table->integer('user_id')->unsigned()->index();
+//                $table->integer('owner_id')->unsigned()->index();
                 $table->integer('question_assignment_id')->unsigned()->index();
                 $table->integer('student_id')->unsigned()->index();
                 $table->float('score')->nullable();
                 $table->timestamps();
 
-                $table->unique(['user_id', 'question_assignment_id', 'student_id']);
-
-                $table->foreign('user_id')
-                    ->references('id')
-                    ->on('users')
-                    ->onDelete('cascade');
+//                $table->unique(['owner_id', 'question_assignment_id', 'student_id'], 'qassign_unique');
+                $table->unique(['question_assignment_id', 'student_id']);
+//                $table->foreign('owner_id')
+//                    ->references('id')
+//                    ->on('users')
+//                    ->onDelete('cascade');
 
                 $table->foreign('question_assignment_id')
                     ->references('id')

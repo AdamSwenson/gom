@@ -53,7 +53,7 @@ class ElementControllerTest extends \TestCase
     }
 
 
-    public function testStore(ElementRequest $request)
+    public function testStore()
     {
 
         $element = new Element();
@@ -88,13 +88,13 @@ class ElementControllerTest extends \TestCase
         $response = $this->action('POST', 'ElementController@show', $data);
     }
 
-    public function testEdit(Element $element, ElementRequest $request)
+    public function testEdit()
     {
 
     }
 
 
-    public function testUpdate(Element $element, ElementRequest $request)
+    public function testUpdate()
     {
 
     }

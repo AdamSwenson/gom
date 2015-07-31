@@ -34,6 +34,27 @@ class BaseModel extends Model
 
     }
 
+    public static function junctionBoot()
+    {
+        static::addGlobalScope(new \App\UserOnlyJunctionScope());
+
+        static::creating(function($model)
+        {
+            $user = \Auth::user();
+            $model->owner_id = $user->id;
+        });
+
+        static::updating(function($model)
+        {
+            $user = \Auth::user();
+            $model->owner_id = $user->id;
+        });
+
+        static::deleting(function($model){
+            $user = \Auth::user();
+            $model->owner_id = $user->id;
+        });
+    }
 
     /**
      * Get the [id] column value.
