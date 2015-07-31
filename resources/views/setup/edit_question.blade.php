@@ -10,7 +10,7 @@
 
  -->
 
-@extends('layouts.primalMaster')
+@extends('layouts.master')
 
 @section('pageTitle', 'Empty')
 @section('description', 'Add or edit questions')

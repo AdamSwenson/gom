@@ -9,9 +9,14 @@
 namespace App\Http\Controllers;
 
 
-use Illuminate\Support\Facades\Mail;
+use Swift_Message;
+use Swift_Mime_Message;
+use Swift_Mailer;
+use Swift_SmtpTransport;
+
 use App\Http\Requests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 
 class LandingController extends Controller
@@ -47,6 +52,7 @@ class LandingController extends Controller
 
 
     public function accountConfirm(){
+
         return view('account.confirm');
     }
 
@@ -55,6 +61,11 @@ class LandingController extends Controller
     }
 
     public function sendEmail(){
+
+        Mail::send('emails.test',[], function($message){
+            $message->to('jerrysmash17@gmail.com','')->subject('Welcome to the Laravel 4 Auth App!');
+        });
+
 
         return view('account.set');
     }

@@ -2,7 +2,7 @@
 Just an empty blade, waiting for a purpose.
  -->
 
-@extends('layouts.primalMaster')
+@extends('layouts.master')
 
 @section('pageTitle', 'Empty')
 

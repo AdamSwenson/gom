@@ -9,7 +9,7 @@
 
  -->
 
-@extends('layouts.primalMaster')
+@extends('layouts.master')
 
 @section('pageTitle', 'Edit Elements')
 @section('description', 'create or edit elements')

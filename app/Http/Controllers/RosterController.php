@@ -16,7 +16,6 @@ class RosterController extends Controller
      */
     public function index()
     {
-        //
     }
 
     /**

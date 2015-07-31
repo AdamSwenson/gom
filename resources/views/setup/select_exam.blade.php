@@ -9,7 +9,7 @@
 
 -->
 
-@extends('layouts.primalMaster')
+@extends('layouts.master')
 
 @section('pageTitle', 'Select Exam')
 
