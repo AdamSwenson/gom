@@ -8,6 +8,7 @@ use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use Illuminate\Http\Request;
+use App\Comment;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -101,8 +102,6 @@ class ElementController extends Controller
         $element = $this->dao->loadElementById($elementId);
         return $element;
 
-
-        //
     }
 
     /**
@@ -122,23 +121,26 @@ class ElementController extends Controller
      */
     public function editAll($exam, $question)
     {
+        // element->comments  <- gets a collection of comments to work on
+
         // given the current $question, find previous and next
         $qId = $question->getId();
         $examId = $exam->getId();
-        // get a sorted list of questionAssignments
-        $allQuestionAss = $this->questionAssignmentDAO->load_all_for_exam($examId);
-        // loadByIds() will cause loop if the same questionId appears several times on the same exam,
-        // as it matches with the first Id found in order.
-        $thisQuestionAss = $this->questionAssignmentDAO->loadByIds($examId, $qId);
-        $qNumber = $thisQuestionAss->question_number;
-        $item = 0;
-        // .. look through it to find the index that our question appears
-        foreach($allQuestionAss as $questionAss) {
-            if($thisQuestionAss->getId() == $questionAss->getId()) {
-                break;
-            }
-            $item++;
 
+        $allQuestionAss = $this->questionAssignmentDAO->load_all_for_exam($examId);
+        // loadByIds() will loop if the same questionId appears several times on the same exam,
+        // as it matches with the first Id found in the ordered Assignments.
+        $qNumber = $this->questionAssignmentDAO->loadByIds($examId, $qId);
+        $index = 0;
+        // .. look through it to find the index that our question appears
+
+        foreach ($allQuestionAss as $questionAss) {
+              if ($qId === $questionAss->question_id) {
+
+                break;
+            } else {
+                $index++;
+            }
         }
 
         // once we found the index, get the question IDs for the previous and next questions
@@ -146,37 +148,32 @@ class ElementController extends Controller
 
         $pQId = 0;
         $nQId = 0;
-        if (isset($item)) {
-            if($item < count($allQuestionAss) -1 ) {
-                $next = $allQuestionAss[$item+1];
-                //dd($next);
+        if (isset($index)) {
+            if ($index < count($allQuestionAss) - 1) {
+                $next = $allQuestionAss[$index + 1];
                 $nQId = $next->question_id;
             }
-            if($item > 0) {
-                $prev = $allQuestionAss[$item-1];
+            if ($index > 0) {
+                $prev = $allQuestionAss[$index - 1];
                 $pQId = $prev->question_id;
             }
         }
-
         // load data for any existing elements
-
-
         $elements = [];
-        $counter = 0;
+
         /*
         $assignments = $this->assignmentDao->load_element_assignments_by_question_number($examId, $qNumber);
+        $numValences = sizeof(Comment::$valences);
+        $counter = 0;
         foreach ($assignments as $ass) {
-            $id = $ass['question_id'];
-            // load the question with given id by its index: ['0','1', ...]
-            $q['qObj'] = $this->questionDao->loadQuestionById($id);
-            $elements[$counter++] = $q;
+            $elementId = $ass->element_id;
+            $elements['eObj'] = this->elementDao->loadElementById($elementId);
+            $valences['eValence'] =
+
+        }
+        $elements[$counter++] = $q;
         }
         */
-
-        // load comments for elements
-        /*      $comments =
-        $q['comments'] = $comments;
-*/
 
         // shows all elements for a given question along with the ids for 'next' and 'previous'
         return view('setup.edit_element')->with(['examId' => $examId,
@@ -185,7 +182,7 @@ class ElementController extends Controller
             'prevqId' => $pQId,
             'questionName' => $question->getQuestionName(),
             'qNumber' => $qNumber,
-            'questions' => $elements ]);
+            'questions' => $elements]);
     }
 
     /**
@@ -209,14 +206,15 @@ class ElementController extends Controller
     function updateAll($exam, $question, ElementRequest $request)
     {
         $nextAction = $request->input('questionDirection');
+        $examId = $exam->getId();
 
         if ($nextAction === 'back') {
-            return redirect()->route('editAllQuestions', $exam->getId());
+            return redirect()->route('editAllQuestions', $examId);
         } else if ($nextAction === 'forward') {
-            return redirect()->route('editAllStudents', $exam->getId());
+            return redirect()->route('editAllStudents', $examId);
         } else {
-            return redirect()->action('ElementController@editAll', array('examId' => $exam->getId(),
-                'question' => $nextAction ));
+            return redirect()->action('ElementController@editAll', array('examId' => $examId,
+                'question' => $nextAction));
         }
     }
 

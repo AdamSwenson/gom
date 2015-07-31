@@ -38,7 +38,7 @@
             <h5>Each question is composed of one or more elements, representing individual items that the student
                 should address.</h5>
             <!-- form will update all given questions and create new ones where required -->
-            <form id="questionForm" name="questionForm" method="post" role="form"
+            <form id="elementForm" name="elementForm" method="post" role="form"
                   action="{{ url('exam/'.$examId.'/question/'.$qId.'/element/updateAll') }}"
                   accept-charset="UTF-8">
 
@@ -177,8 +177,16 @@
             }
 
             function submitForm() {
-                document.getElementById("questionForm").submit();
+                document.getElementById("elementForm").submit();
             }
+
+            $('#elementForm').on('keyup keypress', function(e) {
+                var code = e.keyCode || e.which;
+                if (code == 13) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
 
             return false;
         });
