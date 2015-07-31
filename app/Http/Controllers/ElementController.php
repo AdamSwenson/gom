@@ -127,6 +127,8 @@ class ElementController extends Controller
         $examId = $exam->getId();
         // get a sorted list of questionAssignments
         $allQuestionAss = $this->questionAssignmentDAO->load_all_for_exam($examId);
+        // loadByIds() will cause loop if the same questionId appears several times on the same exam,
+        // as it matches with the first Id found in order.
         $thisQuestionAss = $this->questionAssignmentDAO->loadByIds($examId, $qId);
         $qNumber = $thisQuestionAss->question_number;
         $item = 0;
@@ -136,10 +138,12 @@ class ElementController extends Controller
                 break;
             }
             $item++;
+
         }
 
         // once we found the index, get the question IDs for the previous and next questions
         // if previous or next does not exist, set to 0.
+
         $pQId = 0;
         $nQId = 0;
         if (isset($item)) {
@@ -154,13 +158,34 @@ class ElementController extends Controller
             }
         }
 
+        // load data for any existing elements
+
+
+        $elements = [];
+        $counter = 0;
+        /*
+        $assignments = $this->assignmentDao->load_element_assignments_by_question_number($examId, $qNumber);
+        foreach ($assignments as $ass) {
+            $id = $ass['question_id'];
+            // load the question with given id by its index: ['0','1', ...]
+            $q['qObj'] = $this->questionDao->loadQuestionById($id);
+            $elements[$counter++] = $q;
+        }
+        */
+
+        // load comments for elements
+        /*      $comments =
+        $q['comments'] = $comments;
+*/
+
         // shows all elements for a given question along with the ids for 'next' and 'previous'
         return view('setup.edit_element')->with(['examId' => $examId,
             'qId' => $qId,
             'nextqId' => $nQId,
             'prevqId' => $pQId,
             'questionName' => $question->getQuestionName(),
-            'qNumber' => $qNumber ]);
+            'qNumber' => $qNumber,
+            'questions' => $elements ]);
     }
 
     /**

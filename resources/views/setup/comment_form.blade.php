@@ -16,8 +16,11 @@
                     <li role="presentation"><a href="#">Fair</a></li>
                     <li role="presentation"><a href="#">Good</a></li>
                 </ul>
-                <div id="customResponse">
-                    <textarea class="form-control" rows="3" id="questionText" placeholder="Write your custom response here."></textarea>
+                <div id="comments">
+                    <textarea class="form-control" rows="3" id="comment0" placeholder="Write your custom response here."></textarea>
+                    <textarea class="form-control" rows="3" id="comment1" placeholder="Write your custom response here."></textarea>
+                    <textarea class="form-control" rows="3" id="comment2" placeholder="Write your custom response here."></textarea>
+                    <textarea class="form-control" rows="3" id="comment3" placeholder="Write your custom response here."></textarea>
                 </div>
             </div>
             <div class="modal-footer">

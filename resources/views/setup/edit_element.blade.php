@@ -34,8 +34,7 @@
                     </li>
                 </ul>
             </nav>
-            <h2>Question #{{ isset($qNumber) ? $qNumber : '1'}}: "{{ isset($questionName) ? $questionName : '' }}": Add
-                / Edit Elements</h2>
+            <h2>Add / Edit Elements: Question #{{ isset($qNumber) ? $qNumber : '1'}} "{{ isset($questionName) ? $questionName : '' }}"</h2>
             <h5>Each question is composed of one or more elements, representing individual items that the student
                 should address.</h5>
             <!-- form will update all given questions and create new ones where required -->
