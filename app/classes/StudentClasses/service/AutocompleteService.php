@@ -8,11 +8,14 @@
 
 namespace App\classes\StudentClasses\service;
 
+use App\classes\JsonOutputClasses\controllers\IResponseChooser;
+use App\classes\RequestClasses\IRequest;
+use App\classes\StudentClasses\dao\StudentDao;
 use \Propel\Runtime\Propel;
 
 /**
  * Class AutocompleteService
- * Handles lookup of student id
+ * Handles lookup of student id from autocomplete on main input page
  * @package App\classes\StudentClasses\service
  */
 class AutocompleteService
@@ -20,24 +23,32 @@ class AutocompleteService
 
     const INCOMING_KEY = 'term';
 
+    /** @var  StudentDao */
+    public $dao;
+
     public $results;
 
-    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
+    /** @var  $response_handler IResponseChooser */
     public $response_handler;
 
+    public function __construct()
+    {
+        $this->dao = new StudentDao();
+    }
+
     /**
-     * @param \App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler
+     * @param IResponseChooser $response_handler
      */
-    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    public function set_response_handler(IResponseChooser $response_handler)
     {
         $this->response_handler = $response_handler;
     }
 
     /**
      * @param \Exam $exam
-     * @param \App\classes\RequestClasses\IRequest $request
+     * @param IRequest $request
      */
-    public function process(\Exam $exam, \App\classes\RequestClasses\IRequest $request)
+    public function process(\Exam $exam, IRequest $request)
     {
         if (isset($request->http[self::INCOMING_KEY])) {
             $param = $request->http[self::INCOMING_KEY];
@@ -49,24 +60,7 @@ class AutocompleteService
 
     public function lookup(\Exam $exam, $param)
     {
-        try {
-            $examid = $exam->getId();
-            $query = "SELECT s.studentName, s.sid
-		          FROM students s
-                  INNER JOIN studentsXclasses sxc ON s.id = sxc.studentID
-                  INNER JOIN examsXclasses exc ON exc.classID = sxc.classID
-                  WHERE examID = :examID AND sid REGEXP '^{$param}'";
-
-            $con = Propel::getWriteConnection(\Map\StudentTableMap::DATABASE_NAME);
-            $stmt = $con->prepare($query);
-            $stmt->execute(array(':examID' => $examid));
-            $stmt->setFetchMode(\PDO::FETCH_ASSOC);
-            $this->results = $stmt->fetchAll();
-            return $this->results;
-        } catch (\PDOException $e) {
-            throw new \Exception('error');
-
-        }
+        $this->results = $this->dao->lookup_autocomplete($exam, $param);
     }
 
     /**

@@ -8,6 +8,9 @@
 
 namespace App\classes\GradingStats\dao;
 
+use App\classes\ExamClasses\service\INumberExamsManager;
+use App\classes\Traits\UserTraits;
+
 /**
  * Class GradingStatsDAO
  * This handles all database requests for statistical features of the dashboard
@@ -17,6 +20,15 @@ namespace App\classes\GradingStats\dao;
  */
 class GradingStatsDAO implements IGradingStatsDAO
 {
+    use UserTraits;
+
+    /** @var \User */
+    public $user;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
 
     /** @var $exam \Exam Holds the \Exam object */
     protected $exam;
@@ -26,7 +38,7 @@ class GradingStatsDAO implements IGradingStatsDAO
     /** @var  $total_exams Total number of exams to grade  */
     public $total_exams;
 
-    public function set_number_exams(\App\classes\ExamClasses\service\INumberExamsManager $num_exam_manager)
+    public function set_number_exams(INumberExamsManager $num_exam_manager)
     {
         $this->total_exams = $num_exam_manager->get_number_exams();
     }
@@ -43,7 +55,12 @@ class GradingStatsDAO implements IGradingStatsDAO
      */
     public function getPagesPerMinute($limit)
     {
-        $ei = \ExamInfoQuery::create()->filterByExam($this->exam)->orderByUpdatedAt()->joinWith('time_grading.seconds')->find();
+        $ei = \ExamInfoQuery::create()
+            ->filterByUser($this->user)
+            ->filterByExam($this->exam)
+            ->orderByUpdatedAt()
+            ->joinWith('time_grading.seconds')
+            ->find();
         foreach($ei as $e){
 //            $e->getPages() / $e->g
         }
@@ -86,7 +103,10 @@ class GradingStatsDAO implements IGradingStatsDAO
      */
     public function getPercentageComplete()
     {
-        $graded_exams = \ExamInfoQuery::create()->filterByExam($this->exam)->count();
+        $graded_exams = \ExamInfoQuery::create()
+            ->filterByUser($this->user)
+            ->filterByExam($this->exam)
+            ->count();
         $ungraded = $this->total_exams - $graded_exams;
         $pct_complete = $graded_exams / $this->total_exams;
         return array('examsGraded' => $graded_exams, 'examsUngraded' => $ungraded, 'pctComplete' => $pct_complete);

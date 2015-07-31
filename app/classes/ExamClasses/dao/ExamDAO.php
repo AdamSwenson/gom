@@ -9,13 +9,40 @@
 namespace App\classes\ExamClasses\dao;
 
 
+use App\classes\SecurityClasses\cleaning\CleanerFactory;
+use App\classes\SecurityClasses\cleaning\ICleanerFactory;
+use App\classes\Traits\UserTraits;
+use App\classes\UserManagement\errors\CredentialsException;
+use App\Exam;
+use Base\ExamQuery;
 use Propel\Runtime\Connection\ConnectionWrapper;
 
 class ExamDAO implements IExamDAO
 {
+    use UserTraits;
 
     /** @var  PropelPDO */
-    public $connection;
+    public $connection = null;
+
+    /** @var \User */
+    public $user;
+
+    /** @var  $cleaner ICleanerFactory */
+    public $cleaner;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
+
+    /**
+     * Loads the class which handles cleaning before query
+     * @param ICleanerFactory $cleanerFactory
+     */
+    public function set_cleaner(ICleanerFactory $cleanerFactory)
+    {
+        $this->cleaner = $cleanerFactory;
+    }
 
     /**
      * Sets a connection object for use with transactions
@@ -29,19 +56,63 @@ class ExamDAO implements IExamDAO
 
     /**
      * Creates a new exam object, saves it, then returns it
-     * @param \Year $year
-     * @param \Term $term
-     * @param \Topic $topic
-     * @return \Exam
+     * @param  integer $year
+     * @param string $term
+     * @param string $name
+     * @return Exam
+     * @throws \Exception
      */
-    public function save_new_exam(\Year $year, \Term $term, \Topic $topic)
+    public function save_new_exam($year, $term, $name)
     {
-        $exam = new \Exam();
-        $exam->setTopic($topic);
-        $exam->setYear($year);
-        $exam->setTerm($term);
-        $exam->save();
-        return $exam;
+        try
+        {
+            $year_int = $this->cleaner->sanitize($year, CleanerFactory::INTEGER, 4000);
+            $clean_term = $this->cleaner->sanitize($term, CleanerFactory::STRING, Exam::MAX_TERM_LENGTH);
+            $clean_name = $this->cleaner->sanitize($name, CleanerFactory::STRING, Exam::MAX_NAME_LENGTH);
+            $exam = new Exam();
+            $exam->setYear($year_int);
+            $exam->setTerm($clean_term);
+            $exam->setName($clean_name);
+            $exam->save();
+            return $exam;
+        } catch (\Exception $e)
+        {
+        throw $e;
+        }
+//
+//
+//        $exam = ExamQuery::create()
+//            ->filterByUser($this->user)
+//            ->filterByExamyear($year)
+//            ->filterByExamterm($term)
+//            ->filterByExamtopic($topic)
+//            ->findOneOrCreate();
+//        $exam->save($this->connection);
+//        $exam = new \Exam();
+//        $exam->setUser($this->user);
+//        $exam->setTopic($topic);
+//        $exam->setYear($year);
+//        $exam->setTerm($term);
+//        $exam->save();
+
+    }
+
+    /**
+     * Deletes the exam
+     * @param \Exam $exam
+     * @return mixed|void
+     * @throws CredentialsException
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public function delete_exam(\Exam $exam)
+    {
+        if ($this->isLoggedIn())
+        {
+            return $exam->delete($this->connection);
+        } else
+        {
+            throw new CredentialsException("delete exam");
+        }
     }
 
     /**
@@ -50,7 +121,10 @@ class ExamDAO implements IExamDAO
      */
     public function load_all_exams()
     {
-        $exams = \ExamQuery::create()->find();
+        $exams = \ExamQuery::create()
+            ->filterByUser($this->user)
+            ->find($this->connection);
+
         return $exams;
     }
 
@@ -60,7 +134,11 @@ class ExamDAO implements IExamDAO
      */
     public function load_unlocked_exams()
     {
-        $exams = \ExamQuery::create()->filterByLocked(0)->find();
+        $exams = \ExamQuery::create()
+            ->filterByUser($this->user)
+            ->filterByLocked(0)
+            ->find();
+
         return $exams;
     }
 
@@ -73,7 +151,8 @@ class ExamDAO implements IExamDAO
     public function lock_exam(\Exam $exam)
     {
         $exam->setLocked(1);
-        return $exam->save();
+
+        return $exam->save($this->connection);
     }
 
     /**
@@ -85,7 +164,8 @@ class ExamDAO implements IExamDAO
     public function unlock_exam(\Exam $exam)
     {
         $exam->setLocked(0);
-        return $exam->save();
+
+        return $exam->save($this->connection);
     }
 
     /**
@@ -97,7 +177,8 @@ class ExamDAO implements IExamDAO
     public function mark_exam_released(\Exam $exam)
     {
         $exam->setReleased(1);
-        return $exam->save();
+
+        return $exam->save($this->connection);
     }
 
     /**
@@ -109,10 +190,11 @@ class ExamDAO implements IExamDAO
     public function unmark_exam_released(\Exam $exam)
     {
         $exam->setReleased(0);
-        if(isset($this->connection))
+        if (isset($this->connection))
         {
             return $exam->save($this->connection);
-        }else{
+        } else
+        {
             return $exam->save();
         }
     }

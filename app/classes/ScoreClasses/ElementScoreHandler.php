@@ -10,6 +10,7 @@ namespace App\classes\ScoreClasses;
 
 
 use App\classes\JsonOutputClasses\controllers\IResponseChooser;
+use App\classes\Traits\UserTraits;
 
 class ElementScoreHandler implements IElementScoreHandler
 {
@@ -20,6 +21,15 @@ class ElementScoreHandler implements IElementScoreHandler
     /** @var  $score_obj \ElementScore */
     public $score_obj;
 
+    use UserTraits;
+
+    /** @var \User */
+    public $user;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
     /**
      * @param IResponseChooser $response_handler
      */
@@ -39,6 +49,7 @@ class ElementScoreHandler implements IElementScoreHandler
     public function load(\Exam $exam, \Element $element, \Student $student)
     {
         $this->score_obj = \ElementScoreQuery::create()
+            ->filterByUser($this->user)
             ->filterByExam($exam)
             ->filterByElement($element)
             ->filterByStudent($student)

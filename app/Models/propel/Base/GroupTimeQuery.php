@@ -23,12 +23,14 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildGroupTimeQuery orderByExamid($order = Criteria::ASC) Order by the examID column
  * @method     ChildGroupTimeQuery orderByGroupid($order = Criteria::ASC) Order by the groupID column
  * @method     ChildGroupTimeQuery orderBySeconds($order = Criteria::ASC) Order by the seconds column
+ * @method     ChildGroupTimeQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildGroupTimeQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildGroupTimeQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildGroupTimeQuery groupByExamid() Group by the examID column
  * @method     ChildGroupTimeQuery groupByGroupid() Group by the groupID column
  * @method     ChildGroupTimeQuery groupBySeconds() Group by the seconds column
+ * @method     ChildGroupTimeQuery groupByUserId() Group by the user_id column
  * @method     ChildGroupTimeQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildGroupTimeQuery groupByUpdatedAt() Group by the updated_at column
  *
@@ -36,11 +38,15 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildGroupTimeQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildGroupTimeQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
+ * @method     ChildGroupTimeQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildGroupTimeQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildGroupTimeQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
+ *
  * @method     ChildGroupTimeQuery leftJoinExam($relationAlias = null) Adds a LEFT JOIN clause to the query using the Exam relation
  * @method     ChildGroupTimeQuery rightJoinExam($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Exam relation
  * @method     ChildGroupTimeQuery innerJoinExam($relationAlias = null) Adds a INNER JOIN clause to the query using the Exam relation
  *
- * @method     \ExamQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \UserQuery|\ExamQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildGroupTime findOne(ConnectionInterface $con = null) Return the first ChildGroupTime matching the query
  * @method     ChildGroupTime findOneOrCreate(ConnectionInterface $con = null) Return the first ChildGroupTime matching the query, or a new ChildGroupTime object populated from the query conditions when no match is found
@@ -48,6 +54,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildGroupTime findOneByExamid(int $examID) Return the first ChildGroupTime filtered by the examID column
  * @method     ChildGroupTime findOneByGroupid(int $groupID) Return the first ChildGroupTime filtered by the groupID column
  * @method     ChildGroupTime findOneBySeconds(double $seconds) Return the first ChildGroupTime filtered by the seconds column
+ * @method     ChildGroupTime findOneByUserId(int $user_id) Return the first ChildGroupTime filtered by the user_id column
  * @method     ChildGroupTime findOneByCreatedAt(string $created_at) Return the first ChildGroupTime filtered by the created_at column
  * @method     ChildGroupTime findOneByUpdatedAt(string $updated_at) Return the first ChildGroupTime filtered by the updated_at column *
 
@@ -57,6 +64,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildGroupTime requireOneByExamid(int $examID) Return the first ChildGroupTime filtered by the examID column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildGroupTime requireOneByGroupid(int $groupID) Return the first ChildGroupTime filtered by the groupID column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildGroupTime requireOneBySeconds(double $seconds) Return the first ChildGroupTime filtered by the seconds column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildGroupTime requireOneByUserId(int $user_id) Return the first ChildGroupTime filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildGroupTime requireOneByCreatedAt(string $created_at) Return the first ChildGroupTime filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildGroupTime requireOneByUpdatedAt(string $updated_at) Return the first ChildGroupTime filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
@@ -64,6 +72,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildGroupTime[]|ObjectCollection findByExamid(int $examID) Return ChildGroupTime objects filtered by the examID column
  * @method     ChildGroupTime[]|ObjectCollection findByGroupid(int $groupID) Return ChildGroupTime objects filtered by the groupID column
  * @method     ChildGroupTime[]|ObjectCollection findBySeconds(double $seconds) Return ChildGroupTime objects filtered by the seconds column
+ * @method     ChildGroupTime[]|ObjectCollection findByUserId(int $user_id) Return ChildGroupTime objects filtered by the user_id column
  * @method     ChildGroupTime[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildGroupTime objects filtered by the created_at column
  * @method     ChildGroupTime[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildGroupTime objects filtered by the updated_at column
  * @method     ChildGroupTime[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -115,10 +124,10 @@ abstract class GroupTimeQuery extends ModelCriteria
      * Go fast if the query is untouched.
      *
      * <code>
-     * $obj = $c->findPk(array(12, 34), $con);
+     * $obj = $c->findPk(array(12, 34, 56), $con);
      * </code>
      *
-     * @param array[$examID, $groupID] $key Primary key to use for the query
+     * @param array[$examID, $groupID, $user_id] $key Primary key to use for the query
      * @param ConnectionInterface $con an optional connection object
      *
      * @return ChildGroupTime|array|mixed the result, formatted by the current formatter
@@ -128,7 +137,7 @@ abstract class GroupTimeQuery extends ModelCriteria
         if ($key === null) {
             return null;
         }
-        if ((null !== ($obj = GroupTimeTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && !$this->formatter) {
+        if ((null !== ($obj = GroupTimeTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1], (string) $key[2]))))) && !$this->formatter) {
             // the object is already in the instance pool
             return $obj;
         }
@@ -158,11 +167,12 @@ abstract class GroupTimeQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT examID, groupID, seconds, created_at, updated_at FROM time_group WHERE examID = :p0 AND groupID = :p1';
+        $sql = 'SELECT examID, groupID, seconds, user_id, created_at, updated_at FROM time_group WHERE examID = :p0 AND groupID = :p1 AND user_id = :p2';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
             $stmt->bindValue(':p1', $key[1], PDO::PARAM_INT);
+            $stmt->bindValue(':p2', $key[2], PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
             Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -173,7 +183,7 @@ abstract class GroupTimeQuery extends ModelCriteria
             /** @var ChildGroupTime $obj */
             $obj = new ChildGroupTime();
             $obj->hydrate($row);
-            GroupTimeTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1])));
+            GroupTimeTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1], (string) $key[2])));
         }
         $stmt->closeCursor();
 
@@ -234,6 +244,7 @@ abstract class GroupTimeQuery extends ModelCriteria
     {
         $this->addUsingAlias(GroupTimeTableMap::COL_EXAMID, $key[0], Criteria::EQUAL);
         $this->addUsingAlias(GroupTimeTableMap::COL_GROUPID, $key[1], Criteria::EQUAL);
+        $this->addUsingAlias(GroupTimeTableMap::COL_USER_ID, $key[2], Criteria::EQUAL);
 
         return $this;
     }
@@ -254,6 +265,8 @@ abstract class GroupTimeQuery extends ModelCriteria
             $cton0 = $this->getNewCriterion(GroupTimeTableMap::COL_EXAMID, $key[0], Criteria::EQUAL);
             $cton1 = $this->getNewCriterion(GroupTimeTableMap::COL_GROUPID, $key[1], Criteria::EQUAL);
             $cton0->addAnd($cton1);
+            $cton2 = $this->getNewCriterion(GroupTimeTableMap::COL_USER_ID, $key[2], Criteria::EQUAL);
+            $cton0->addAnd($cton2);
             $this->addOr($cton0);
         }
 
@@ -386,6 +399,49 @@ abstract class GroupTimeQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the user_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUserId(1234); // WHERE user_id = 1234
+     * $query->filterByUserId(array(12, 34)); // WHERE user_id IN (12, 34)
+     * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
+     * </code>
+     *
+     * @see       filterByUser()
+     *
+     * @param     mixed $userId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildGroupTimeQuery The current query, for fluid interface
+     */
+    public function filterByUserId($userId = null, $comparison = null)
+    {
+        if (is_array($userId)) {
+            $useMinMax = false;
+            if (isset($userId['min'])) {
+                $this->addUsingAlias(GroupTimeTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($userId['max'])) {
+                $this->addUsingAlias(GroupTimeTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(GroupTimeTableMap::COL_USER_ID, $userId, $comparison);
+    }
+
+    /**
      * Filter the query on the created_at column
      *
      * Example usage:
@@ -469,6 +525,83 @@ abstract class GroupTimeQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(GroupTimeTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \User object
+     *
+     * @param \User|ObjectCollection $user The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildGroupTimeQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = null)
+    {
+        if ($user instanceof \User) {
+            return $this
+                ->addUsingAlias(GroupTimeTableMap::COL_USER_ID, $user->getId(), $comparison);
+        } elseif ($user instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(GroupTimeTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByUser() only accepts arguments of type \User or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the User relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildGroupTimeQuery The current query, for fluid interface
+     */
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('User');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'User');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the User relation User object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \UserQuery A secondary query class using the current class as primary query
+     */
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
     }
 
     /**
@@ -560,7 +693,8 @@ abstract class GroupTimeQuery extends ModelCriteria
         if ($groupTime) {
             $this->addCond('pruneCond0', $this->getAliasedColName(GroupTimeTableMap::COL_EXAMID), $groupTime->getExamid(), Criteria::NOT_EQUAL);
             $this->addCond('pruneCond1', $this->getAliasedColName(GroupTimeTableMap::COL_GROUPID), $groupTime->getGroupid(), Criteria::NOT_EQUAL);
-            $this->combine(array('pruneCond0', 'pruneCond1'), Criteria::LOGICAL_OR);
+            $this->addCond('pruneCond2', $this->getAliasedColName(GroupTimeTableMap::COL_USER_ID), $groupTime->getUserId(), Criteria::NOT_EQUAL);
+            $this->combine(array('pruneCond0', 'pruneCond1', 'pruneCond2'), Criteria::LOGICAL_OR);
         }
 
         return $this;

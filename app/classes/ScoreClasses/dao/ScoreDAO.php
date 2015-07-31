@@ -8,6 +8,7 @@
 
 namespace App\classes\ScoreClasses\dao;
 
+use App\classes\Traits\UserTraits;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
 
 /**
@@ -74,6 +75,16 @@ class ScoreDAO implements IScoreDAO
 
     public $results = array();
 
+
+    use UserTraits;
+
+    /** @var \User */
+    public $user;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
     /**
      * @param \Student $student
      */
@@ -193,11 +204,17 @@ class ScoreDAO implements IScoreDAO
             switch ($this->worker->type)
             {
                 case self::WORKER_QUESTION:
-                    $item = \QuestionQuery::create()->filterById($by)->findOne();
+                    $item = \QuestionQuery::create()
+                        ->filterByUser($this->user)
+                        ->filterById($by)
+                        ->findOne();
                     break;
 
                 case self::WORKER_ELEMENT:
-                    $item = \ElementQuery::create()->filterById($by)->findOne();
+                    $item = \ElementQuery::create()
+                        ->filterByUser($this->user)
+                        ->filterById($by)
+                        ->findOne();
                     break;
                 default:
                     throw new \Exception();
@@ -319,6 +336,7 @@ class ScoreDAO implements IScoreDAO
         if (!empty($question->getId()))
         {
             $question_score_obj = \QuestionScoreQuery::create()
+                ->filterByUser($this->user)
                 ->filterByExam($exam)
                 ->filterByQuestion($question)
                 ->filterByStudent($student)
@@ -326,6 +344,7 @@ class ScoreDAO implements IScoreDAO
         } else
         {
             $question_score_obj = \QuestionScoreQuery::create()
+                ->filterByUser($this->user)
                 ->filterByExam($exam)
                 ->filterByStudent($student)
                 ->findOneOrCreate();

@@ -8,6 +8,9 @@
 
 namespace App\classes\TimerClasses;
 
+use App\classes\JsonOutputClasses\controllers\IResponseChooser;
+use classes\TimerClasses\dao\TimerDao;
+
 /**
  * Class ExamTimerHandler
  * Handles interaction with exam time db
@@ -16,19 +19,25 @@ namespace App\classes\TimerClasses;
  */
 class ExamTimerHandler
 {
+    public $dao;
 
     /** @var $time_handler \GradingTime */
     public $time_handler;
 
-    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
+    /** @var  $response_handler IResponseChooser */
     public $response_handler;
 
     /**
-     * @param \App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler
+     * @param IResponseChooser $response_handler
      */
-    public function set_response_handler(\App\classes\JsonOutputClasses\controllers\IResponseChooser $response_handler)
+    public function set_response_handler(IResponseChooser $response_handler)
     {
         $this->response_handler = $response_handler;
+    }
+
+    public function __construct()
+    {
+     $this->dao = new TimerDao();
     }
 
     /**
@@ -86,7 +95,8 @@ class ExamTimerHandler
      */
     protected function load(\Exam $exam, \Student $student)
     {
-        $this->time_handler =  \GradingTimeQuery::create()->filterByExam($exam)->filterByStudent($student)->findOneOrCreate();
+        $this->time_handler =  $this->dao->loadGradingTime($exam, $student);
+        //\GradingTimeQuery::create()->filterByExam($exam)->filterByStudent($student)->findOneOrCreate();
         return $this->time_handler;
     }
 

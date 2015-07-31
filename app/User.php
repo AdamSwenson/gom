@@ -32,4 +32,80 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      * @var array
      */
     protected $hidden = ['password', 'remember_token'];
+
+    /**
+     * Get all exams belonging to user
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function getAllExams()
+    {
+        return $this->hasMany('App\Exam');
+    }
+
+    /**
+     * Get all elements belonging to user
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function getAllElements()
+    {
+        return $this->hasMany('App\Element');
+    }
+
+    /**
+     * Get all element assignments belonging to user
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function getAllElementAssignments()
+    {
+        return $this->hasMany('App\ElementAssignment');
+    }
+
+    /**
+     * Get all element scores belonging to user
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function getAllElementScores()
+    {
+        return $this->hasMany('App\ElementScore');
+    }
+
+    /**
+     * Get all questions belonging to user
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function getAllQuestions()
+    {
+        return $this->hasMany('App\Question');
+    }
+
+    /**
+     * Get all question assignments belonging to user
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function getAllQuestionAssignments()
+    {
+        return $this->hasMany('App\QuestionAssignment');
+    }
+
+    /**
+     * Get all question scores belonging to user
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function getAllQuestionScores()
+    {
+        return $this->hasMany('App\QuestionScore');
+    }
+
+    /**
+     * Gets all students belonging to user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function getAllStudents()
+    {
+        return $this->hasMany('App\Student');
+
+    }
+
+
 }

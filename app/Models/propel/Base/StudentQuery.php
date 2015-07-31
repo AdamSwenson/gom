@@ -23,20 +23,26 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStudentQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildStudentQuery orderBySid($order = Criteria::ASC) Order by the sid column
  * @method     ChildStudentQuery orderByStudentname($order = Criteria::ASC) Order by the studentName column
- * @method     ChildStudentQuery orderByEmail($order = Criteria::ASC) Order by the emails column
+ * @method     ChildStudentQuery orderByEmail($order = Criteria::ASC) Order by the email column
+ * @method     ChildStudentQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildStudentQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildStudentQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildStudentQuery groupById() Group by the id column
  * @method     ChildStudentQuery groupBySid() Group by the sid column
  * @method     ChildStudentQuery groupByStudentname() Group by the studentName column
- * @method     ChildStudentQuery groupByEmail() Group by the emails column
+ * @method     ChildStudentQuery groupByEmail() Group by the email column
+ * @method     ChildStudentQuery groupByUserId() Group by the user_id column
  * @method     ChildStudentQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildStudentQuery groupByUpdatedAt() Group by the updated_at column
  *
  * @method     ChildStudentQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildStudentQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildStudentQuery innerJoin($relation) Adds a INNER JOIN clause to the query
+ *
+ * @method     ChildStudentQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildStudentQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildStudentQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
  *
  * @method     ChildStudentQuery leftJoinQuestionScore($relationAlias = null) Adds a LEFT JOIN clause to the query using the QuestionScore relation
  * @method     ChildStudentQuery rightJoinQuestionScore($relationAlias = null) Adds a RIGHT JOIN clause to the query using the QuestionScore relation
@@ -62,7 +68,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStudentQuery rightJoinPseudoID($relationAlias = null) Adds a RIGHT JOIN clause to the query using the PseudoID relation
  * @method     ChildStudentQuery innerJoinPseudoID($relationAlias = null) Adds a INNER JOIN clause to the query using the PseudoID relation
  *
- * @method     \QuestionScoreQuery|\ElementScoreQuery|\ExamInfoQuery|\StudentClassAssignmentQuery|\GradingTimeQuery|\PseudoIDQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \UserQuery|\QuestionScoreQuery|\ElementScoreQuery|\ExamInfoQuery|\StudentClassAssignmentQuery|\GradingTimeQuery|\PseudoIDQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildStudent findOne(ConnectionInterface $con = null) Return the first ChildStudent matching the query
  * @method     ChildStudent findOneOrCreate(ConnectionInterface $con = null) Return the first ChildStudent matching the query, or a new ChildStudent object populated from the query conditions when no match is found
@@ -70,7 +76,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStudent findOneById(int $id) Return the first ChildStudent filtered by the id column
  * @method     ChildStudent findOneBySid(int $sid) Return the first ChildStudent filtered by the sid column
  * @method     ChildStudent findOneByStudentname(string $studentName) Return the first ChildStudent filtered by the studentName column
- * @method     ChildStudent findOneByEmail(string $emails) Return the first ChildStudent filtered by the emails column
+ * @method     ChildStudent findOneByEmail(string $email) Return the first ChildStudent filtered by the email column
+ * @method     ChildStudent findOneByUserId(int $user_id) Return the first ChildStudent filtered by the user_id column
  * @method     ChildStudent findOneByCreatedAt(string $created_at) Return the first ChildStudent filtered by the created_at column
  * @method     ChildStudent findOneByUpdatedAt(string $updated_at) Return the first ChildStudent filtered by the updated_at column *
 
@@ -80,7 +87,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStudent requireOneById(int $id) Return the first ChildStudent filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStudent requireOneBySid(int $sid) Return the first ChildStudent filtered by the sid column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStudent requireOneByStudentname(string $studentName) Return the first ChildStudent filtered by the studentName column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildStudent requireOneByEmail(string $emails) Return the first ChildStudent filtered by the emails column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildStudent requireOneByEmail(string $email) Return the first ChildStudent filtered by the email column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildStudent requireOneByUserId(int $user_id) Return the first ChildStudent filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStudent requireOneByCreatedAt(string $created_at) Return the first ChildStudent filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStudent requireOneByUpdatedAt(string $updated_at) Return the first ChildStudent filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
@@ -88,7 +96,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStudent[]|ObjectCollection findById(int $id) Return ChildStudent objects filtered by the id column
  * @method     ChildStudent[]|ObjectCollection findBySid(int $sid) Return ChildStudent objects filtered by the sid column
  * @method     ChildStudent[]|ObjectCollection findByStudentname(string $studentName) Return ChildStudent objects filtered by the studentName column
- * @method     ChildStudent[]|ObjectCollection findByEmail(string $emails) Return ChildStudent objects filtered by the emails column
+ * @method     ChildStudent[]|ObjectCollection findByEmail(string $email) Return ChildStudent objects filtered by the email column
+ * @method     ChildStudent[]|ObjectCollection findByUserId(int $user_id) Return ChildStudent objects filtered by the user_id column
  * @method     ChildStudent[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildStudent objects filtered by the created_at column
  * @method     ChildStudent[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildStudent objects filtered by the updated_at column
  * @method     ChildStudent[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -183,7 +192,7 @@ abstract class StudentQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, sid, studentName, emails, created_at, updated_at FROM students WHERE id = :p0';
+        $sql = 'SELECT id, sid, studentName, email, user_id, created_at, updated_at FROM students WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -385,12 +394,12 @@ abstract class StudentQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the emails column
+     * Filter the query on the email column
      *
      * Example usage:
      * <code>
-     * $query->filterByEmail('fooValue');   // WHERE emails = 'fooValue'
-     * $query->filterByEmail('%fooValue%'); // WHERE emails LIKE '%fooValue%'
+     * $query->filterByEmail('fooValue');   // WHERE email = 'fooValue'
+     * $query->filterByEmail('%fooValue%'); // WHERE email LIKE '%fooValue%'
      * </code>
      *
      * @param     string $email The value to use as filter.
@@ -411,6 +420,49 @@ abstract class StudentQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(StudentTableMap::COL_EMAIL, $email, $comparison);
+    }
+
+    /**
+     * Filter the query on the user_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUserId(1234); // WHERE user_id = 1234
+     * $query->filterByUserId(array(12, 34)); // WHERE user_id IN (12, 34)
+     * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
+     * </code>
+     *
+     * @see       filterByUser()
+     *
+     * @param     mixed $userId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildStudentQuery The current query, for fluid interface
+     */
+    public function filterByUserId($userId = null, $comparison = null)
+    {
+        if (is_array($userId)) {
+            $useMinMax = false;
+            if (isset($userId['min'])) {
+                $this->addUsingAlias(StudentTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($userId['max'])) {
+                $this->addUsingAlias(StudentTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(StudentTableMap::COL_USER_ID, $userId, $comparison);
     }
 
     /**
@@ -497,6 +549,83 @@ abstract class StudentQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(StudentTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \User object
+     *
+     * @param \User|ObjectCollection $user The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildStudentQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = null)
+    {
+        if ($user instanceof \User) {
+            return $this
+                ->addUsingAlias(StudentTableMap::COL_USER_ID, $user->getId(), $comparison);
+        } elseif ($user instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(StudentTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByUser() only accepts arguments of type \User or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the User relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildStudentQuery The current query, for fluid interface
+     */
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('User');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'User');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the User relation User object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \UserQuery A secondary query class using the current class as primary query
+     */
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
     }
 
     /**
@@ -935,23 +1064,6 @@ abstract class StudentQuery extends ModelCriteria
         return $this
             ->joinPseudoID($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'PseudoID', '\PseudoIDQuery');
-    }
-
-    /**
-     * Filter the query by a related Kumi object
-     * using the studentsXclasses table as cross reference
-     *
-     * @param Kumi $kumi the related object to use as filter
-     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return ChildStudentQuery The current query, for fluid interface
-     */
-    public function filterByKumi($kumi, $comparison = Criteria::EQUAL)
-    {
-        return $this
-            ->useStudentClassAssignmentQuery()
-            ->filterByKumi($kumi, $comparison)
-            ->endUse();
     }
 
     /**

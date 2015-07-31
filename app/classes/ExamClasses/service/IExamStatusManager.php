@@ -8,6 +8,8 @@
 
 namespace App\classes\ExamClasses\service;
 
+use App\classes\RequestClasses\IRequest;
+
 /**
  * Interface IExamStatusManager
  * Managers for locked and released status changes on exams
@@ -16,6 +18,6 @@ namespace App\classes\ExamClasses\service;
 interface IExamStatusManager
 {
 
-    public function execute(\App\classes\RequestClasses\IRequest $request);
+    public function execute(IRequest $request);
 
 }

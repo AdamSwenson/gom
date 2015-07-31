@@ -9,6 +9,7 @@ use \ElementScoreQuery as ChildElementScoreQuery;
 use \Exam as ChildExam;
 use \ExamClassAssignment as ChildExamClassAssignment;
 use \ExamClassAssignmentQuery as ChildExamClassAssignmentQuery;
+use \ExamClasses\IExam;
 use \ExamInfo as ChildExamInfo;
 use \ExamInfoQuery as ChildExamInfoQuery;
 use \ExamQuery as ChildExamQuery;
@@ -16,20 +17,14 @@ use \GradingTime as ChildGradingTime;
 use \GradingTimeQuery as ChildGradingTimeQuery;
 use \GroupTime as ChildGroupTime;
 use \GroupTimeQuery as ChildGroupTimeQuery;
-use \Kumi as ChildKumi;
-use \KumiQuery as ChildKumiQuery;
 use \PseudoID as ChildPseudoID;
 use \PseudoIDQuery as ChildPseudoIDQuery;
 use \QuestionAssigner as ChildQuestionAssigner;
 use \QuestionAssignerQuery as ChildQuestionAssignerQuery;
 use \QuestionScore as ChildQuestionScore;
 use \QuestionScoreQuery as ChildQuestionScoreQuery;
-use \Term as ChildTerm;
-use \TermQuery as ChildTermQuery;
-use \Topic as ChildTopic;
-use \TopicQuery as ChildTopicQuery;
-use \Year as ChildYear;
-use \YearQuery as ChildYearQuery;
+use \User as ChildUser;
+use \UserQuery as ChildUserQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
@@ -115,15 +110,23 @@ abstract class Exam implements ActiveRecordInterface
 
     /**
      * The value for the locked field.
+     * Note: this column has a database default value of: 0
      * @var        int
      */
     protected $locked;
 
     /**
      * The value for the released field.
+     * Note: this column has a database default value of: 0
      * @var        int
      */
     protected $released;
+
+    /**
+     * The value for the user_id field.
+     * @var        int
+     */
+    protected $user_id;
 
     /**
      * The value for the created_at field.
@@ -138,19 +141,9 @@ abstract class Exam implements ActiveRecordInterface
     protected $updated_at;
 
     /**
-     * @var        ChildTerm
+     * @var        ChildUser
      */
-    protected $aTerm;
-
-    /**
-     * @var        ChildTopic
-     */
-    protected $aTopic;
-
-    /**
-     * @var        ChildYear
-     */
-    protected $aYear;
+    protected $aUser;
 
     /**
      * @var        ObjectCollection|ChildQuestionScore[] Collection to store aggregation of ChildQuestionScore objects.
@@ -207,28 +200,12 @@ abstract class Exam implements ActiveRecordInterface
     protected $collPseudoIDsPartial;
 
     /**
-     * @var        ObjectCollection|ChildKumi[] Cross Collection to store aggregation of ChildKumi objects.
-     */
-    protected $collKumis;
-
-    /**
-     * @var bool
-     */
-    protected $collKumisPartial;
-
-    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
      * @var boolean
      */
     protected $alreadyInSave = false;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildKumi[]
-     */
-    protected $kumisScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -285,10 +262,24 @@ abstract class Exam implements ActiveRecordInterface
     protected $pseudoIDsScheduledForDeletion = null;
 
     /**
+     * Applies default values to this object.
+     * This method should be called from the object's constructor (or
+     * equivalent initialization method).
+     * @see __construct()
+     */
+    public function applyDefaultValues()
+    {
+        $this->locked = 0;
+        $this->released = 0;
+    }
+
+    /**
      * Initializes internal state of Base\Exam object.
+     * @see applyDefaults()
      */
     public function __construct()
     {
+        $this->applyDefaultValues();
     }
 
     /**
@@ -562,6 +553,16 @@ abstract class Exam implements ActiveRecordInterface
     }
 
     /**
+     * Get the [user_id] column value.
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [created_at] column value.
      *
      *
@@ -638,10 +639,6 @@ abstract class Exam implements ActiveRecordInterface
             $this->modifiedColumns[ExamTableMap::COL_EXAMTERM] = true;
         }
 
-        if ($this->aTerm !== null && $this->aTerm->getContent() !== $v) {
-            $this->aTerm = null;
-        }
-
         return $this;
     } // setExamterm()
 
@@ -662,10 +659,6 @@ abstract class Exam implements ActiveRecordInterface
             $this->modifiedColumns[ExamTableMap::COL_EXAMTOPIC] = true;
         }
 
-        if ($this->aTopic !== null && $this->aTopic->getContent() !== $v) {
-            $this->aTopic = null;
-        }
-
         return $this;
     } // setExamtopic()
 
@@ -684,10 +677,6 @@ abstract class Exam implements ActiveRecordInterface
         if ($this->examyear !== $v) {
             $this->examyear = $v;
             $this->modifiedColumns[ExamTableMap::COL_EXAMYEAR] = true;
-        }
-
-        if ($this->aYear !== null && $this->aYear->getContent() !== $v) {
-            $this->aYear = null;
         }
 
         return $this;
@@ -732,6 +721,30 @@ abstract class Exam implements ActiveRecordInterface
 
         return $this;
     } // setReleased()
+
+    /**
+     * Set the value of [user_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\Exam The current object (for fluent API support)
+     */
+    public function setUserId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[ExamTableMap::COL_USER_ID] = true;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
+        }
+
+        return $this;
+    } // setUserId()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
@@ -783,6 +796,14 @@ abstract class Exam implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
+            if ($this->locked !== 0) {
+                return false;
+            }
+
+            if ($this->released !== 0) {
+                return false;
+            }
+
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -827,13 +848,16 @@ abstract class Exam implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ExamTableMap::translateFieldName('Released', TableMap::TYPE_PHPNAME, $indexType)];
             $this->released = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ExamTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ExamTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->user_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : ExamTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : ExamTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : ExamTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -846,7 +870,7 @@ abstract class Exam implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 8; // 8 = ExamTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 9; // 9 = ExamTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Exam'), 0, $e);
@@ -868,14 +892,8 @@ abstract class Exam implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aTerm !== null && $this->examterm !== $this->aTerm->getContent()) {
-            $this->aTerm = null;
-        }
-        if ($this->aTopic !== null && $this->examtopic !== $this->aTopic->getContent()) {
-            $this->aTopic = null;
-        }
-        if ($this->aYear !== null && $this->examyear !== $this->aYear->getContent()) {
-            $this->aYear = null;
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
         }
     } // ensureConsistency
 
@@ -916,9 +934,7 @@ abstract class Exam implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aTerm = null;
-            $this->aTopic = null;
-            $this->aYear = null;
+            $this->aUser = null;
             $this->collQuestionScores = null;
 
             $this->collElementScores = null;
@@ -937,7 +953,6 @@ abstract class Exam implements ActiveRecordInterface
 
             $this->collPseudoIDs = null;
 
-            $this->collKumis = null;
         } // if (deep)
     }
 
@@ -1054,25 +1069,11 @@ abstract class Exam implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aTerm !== null) {
-                if ($this->aTerm->isModified() || $this->aTerm->isNew()) {
-                    $affectedRows += $this->aTerm->save($con);
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
                 }
-                $this->setTerm($this->aTerm);
-            }
-
-            if ($this->aTopic !== null) {
-                if ($this->aTopic->isModified() || $this->aTopic->isNew()) {
-                    $affectedRows += $this->aTopic->save($con);
-                }
-                $this->setTopic($this->aTopic);
-            }
-
-            if ($this->aYear !== null) {
-                if ($this->aYear->isModified() || $this->aYear->isNew()) {
-                    $affectedRows += $this->aYear->save($con);
-                }
-                $this->setYear($this->aYear);
+                $this->setUser($this->aUser);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -1085,35 +1086,6 @@ abstract class Exam implements ActiveRecordInterface
                 }
                 $this->resetModified();
             }
-
-            if ($this->kumisScheduledForDeletion !== null) {
-                if (!$this->kumisScheduledForDeletion->isEmpty()) {
-                    $pks = array();
-                    foreach ($this->kumisScheduledForDeletion as $entry) {
-                        $entryPk = [];
-
-                        $entryPk[1] = $this->getId();
-                        $entryPk[0] = $entry->getId();
-                        $pks[] = $entryPk;
-                    }
-
-                    \ExamClassAssignmentQuery::create()
-                        ->filterByPrimaryKeys($pks)
-                        ->delete($con);
-
-                    $this->kumisScheduledForDeletion = null;
-                }
-
-            }
-
-            if ($this->collKumis) {
-                foreach ($this->collKumis as $kumi) {
-                    if (!$kumi->isDeleted() && ($kumi->isNew() || $kumi->isModified())) {
-                        $kumi->save($con);
-                    }
-                }
-            }
-
 
             if ($this->questionScoresScheduledForDeletion !== null) {
                 if (!$this->questionScoresScheduledForDeletion->isEmpty()) {
@@ -1312,6 +1284,9 @@ abstract class Exam implements ActiveRecordInterface
         if ($this->isColumnModified(ExamTableMap::COL_RELEASED)) {
             $modifiedColumns[':p' . $index++]  = 'released';
         }
+        if ($this->isColumnModified(ExamTableMap::COL_USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'user_id';
+        }
         if ($this->isColumnModified(ExamTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
@@ -1346,6 +1321,9 @@ abstract class Exam implements ActiveRecordInterface
                         break;
                     case 'released':
                         $stmt->bindValue($identifier, $this->released, PDO::PARAM_INT);
+                        break;
+                    case 'user_id':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1434,9 +1412,12 @@ abstract class Exam implements ActiveRecordInterface
                 return $this->getReleased();
                 break;
             case 6:
-                return $this->getCreatedAt();
+                return $this->getUserId();
                 break;
             case 7:
+                return $this->getCreatedAt();
+                break;
+            case 8:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1475,21 +1456,22 @@ abstract class Exam implements ActiveRecordInterface
             $keys[3] => $this->getExamyear(),
             $keys[4] => $this->getLocked(),
             $keys[5] => $this->getReleased(),
-            $keys[6] => $this->getCreatedAt(),
-            $keys[7] => $this->getUpdatedAt(),
+            $keys[6] => $this->getUserId(),
+            $keys[7] => $this->getCreatedAt(),
+            $keys[8] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[6]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[6]];
-            $result[$keys[6]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[7]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[7]];
             $result[$keys[7]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[8]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[8]];
+            $result[$keys[8]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1498,50 +1480,20 @@ abstract class Exam implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aTerm) {
+            if (null !== $this->aUser) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'term';
+                        $key = 'user';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'r_terms';
+                        $key = 'users';
                         break;
                     default:
-                        $key = 'Term';
+                        $key = 'User';
                 }
 
-                $result[$key] = $this->aTerm->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
-            if (null !== $this->aTopic) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'topic';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'r_examTopics';
-                        break;
-                    default:
-                        $key = 'Topic';
-                }
-
-                $result[$key] = $this->aTopic->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
-            if (null !== $this->aYear) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'year';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'r_years';
-                        break;
-                    default:
-                        $key = 'Year';
-                }
-
-                $result[$key] = $this->aYear->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
             if (null !== $this->collQuestionScores) {
 
@@ -1731,9 +1683,12 @@ abstract class Exam implements ActiveRecordInterface
                 $this->setReleased($value);
                 break;
             case 6:
-                $this->setCreatedAt($value);
+                $this->setUserId($value);
                 break;
             case 7:
+                $this->setCreatedAt($value);
+                break;
+            case 8:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1781,10 +1736,13 @@ abstract class Exam implements ActiveRecordInterface
             $this->setReleased($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setCreatedAt($arr[$keys[6]]);
+            $this->setUserId($arr[$keys[6]]);
         }
         if (array_key_exists($keys[7], $arr)) {
-            $this->setUpdatedAt($arr[$keys[7]]);
+            $this->setCreatedAt($arr[$keys[7]]);
+        }
+        if (array_key_exists($keys[8], $arr)) {
+            $this->setUpdatedAt($arr[$keys[8]]);
         }
     }
 
@@ -1844,6 +1802,9 @@ abstract class Exam implements ActiveRecordInterface
         }
         if ($this->isColumnModified(ExamTableMap::COL_RELEASED)) {
             $criteria->add(ExamTableMap::COL_RELEASED, $this->released);
+        }
+        if ($this->isColumnModified(ExamTableMap::COL_USER_ID)) {
+            $criteria->add(ExamTableMap::COL_USER_ID, $this->user_id);
         }
         if ($this->isColumnModified(ExamTableMap::COL_CREATED_AT)) {
             $criteria->add(ExamTableMap::COL_CREATED_AT, $this->created_at);
@@ -1942,6 +1903,7 @@ abstract class Exam implements ActiveRecordInterface
         $copyObj->setExamyear($this->getExamyear());
         $copyObj->setLocked($this->getLocked());
         $copyObj->setReleased($this->getReleased());
+        $copyObj->setUserId($this->getUserId());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
 
@@ -2035,24 +1997,24 @@ abstract class Exam implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildTerm object.
+     * Declares an association between this object and a ChildUser object.
      *
-     * @param  ChildTerm $v
+     * @param  ChildUser $v
      * @return $this|\Exam The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setTerm(ChildTerm $v = null)
+    public function setUser(ChildUser $v = null)
     {
         if ($v === null) {
-            $this->setExamterm(NULL);
+            $this->setUserId(NULL);
         } else {
-            $this->setExamterm($v->getContent());
+            $this->setUserId($v->getId());
         }
 
-        $this->aTerm = $v;
+        $this->aUser = $v;
 
         // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildTerm object, it will not be re-added.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
         if ($v !== null) {
             $v->addExam($this);
         }
@@ -2063,128 +2025,26 @@ abstract class Exam implements ActiveRecordInterface
 
 
     /**
-     * Get the associated ChildTerm object
+     * Get the associated ChildUser object
      *
      * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildTerm The associated ChildTerm object.
+     * @return ChildUser The associated ChildUser object.
      * @throws PropelException
      */
-    public function getTerm(ConnectionInterface $con = null)
+    public function getUser(ConnectionInterface $con = null)
     {
-        if ($this->aTerm === null && (($this->examterm !== "" && $this->examterm !== null))) {
-            $this->aTerm = ChildTermQuery::create()->findPk($this->examterm, $con);
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aTerm->addExams($this);
+                $this->aUser->addExams($this);
              */
         }
 
-        return $this->aTerm;
-    }
-
-    /**
-     * Declares an association between this object and a ChildTopic object.
-     *
-     * @param  ChildTopic $v
-     * @return $this|\Exam The current object (for fluent API support)
-     * @throws PropelException
-     */
-    public function setTopic(ChildTopic $v = null)
-    {
-        if ($v === null) {
-            $this->setExamtopic(NULL);
-        } else {
-            $this->setExamtopic($v->getContent());
-        }
-
-        $this->aTopic = $v;
-
-        // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildTopic object, it will not be re-added.
-        if ($v !== null) {
-            $v->addExam($this);
-        }
-
-
-        return $this;
-    }
-
-
-    /**
-     * Get the associated ChildTopic object
-     *
-     * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildTopic The associated ChildTopic object.
-     * @throws PropelException
-     */
-    public function getTopic(ConnectionInterface $con = null)
-    {
-        if ($this->aTopic === null && (($this->examtopic !== "" && $this->examtopic !== null))) {
-            $this->aTopic = ChildTopicQuery::create()->findPk($this->examtopic, $con);
-            /* The following can be used additionally to
-                guarantee the related object contains a reference
-                to this object.  This level of coupling may, however, be
-                undesirable since it could result in an only partially populated collection
-                in the referenced object.
-                $this->aTopic->addExams($this);
-             */
-        }
-
-        return $this->aTopic;
-    }
-
-    /**
-     * Declares an association between this object and a ChildYear object.
-     *
-     * @param  ChildYear $v
-     * @return $this|\Exam The current object (for fluent API support)
-     * @throws PropelException
-     */
-    public function setYear(ChildYear $v = null)
-    {
-        if ($v === null) {
-            $this->setExamyear(NULL);
-        } else {
-            $this->setExamyear($v->getContent());
-        }
-
-        $this->aYear = $v;
-
-        // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildYear object, it will not be re-added.
-        if ($v !== null) {
-            $v->addExam($this);
-        }
-
-
-        return $this;
-    }
-
-
-    /**
-     * Get the associated ChildYear object
-     *
-     * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildYear The associated ChildYear object.
-     * @throws PropelException
-     */
-    public function getYear(ConnectionInterface $con = null)
-    {
-        if ($this->aYear === null && ($this->examyear !== null)) {
-            $this->aYear = ChildYearQuery::create()->findPk($this->examyear, $con);
-            /* The following can be used additionally to
-                guarantee the related object contains a reference
-                to this object.  This level of coupling may, however, be
-                undesirable since it could result in an only partially populated collection
-                in the referenced object.
-                $this->aYear->addExams($this);
-             */
-        }
-
-        return $this->aYear;
+        return $this->aUser;
     }
 
 
@@ -2446,6 +2306,31 @@ abstract class Exam implements ActiveRecordInterface
         }
 
         return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Exam is new, it will return
+     * an empty collection; or if this Exam has previously
+     * been saved, it will retrieve related QuestionScores from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Exam.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildQuestionScore[] List of ChildQuestionScore objects
+     */
+    public function getQuestionScoresJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildQuestionScoreQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getQuestionScores($query, $con);
     }
 
 
@@ -2769,6 +2654,31 @@ abstract class Exam implements ActiveRecordInterface
         return $this->getElementScores($query, $con);
     }
 
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Exam is new, it will return
+     * an empty collection; or if this Exam has previously
+     * been saved, it will retrieve related ElementScores from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Exam.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildElementScore[] List of ChildElementScore objects
+     */
+    public function getElementScoresJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildElementScoreQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getElementScores($query, $con);
+    }
+
     /**
      * Clears out the collExamInfos collection
      *
@@ -3015,6 +2925,31 @@ abstract class Exam implements ActiveRecordInterface
         return $this->getExamInfos($query, $con);
     }
 
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Exam is new, it will return
+     * an empty collection; or if this Exam has previously
+     * been saved, it will retrieve related ExamInfos from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Exam.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildExamInfo[] List of ChildExamInfo objects
+     */
+    public function getExamInfosJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildExamInfoQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getExamInfos($query, $con);
+    }
+
     /**
      * Clears out the collQuestionAssigners collection
      *
@@ -3132,10 +3067,7 @@ abstract class Exam implements ActiveRecordInterface
         $questionAssignersToDelete = $this->getQuestionAssigners(new Criteria(), $con)->diff($questionAssigners);
 
 
-        //since at least one column in the foreign key is at the same time a PK
-        //we can not just set a PK to NULL in the lines below. We have to store
-        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
-        $this->questionAssignersScheduledForDeletion = clone $questionAssignersToDelete;
+        $this->questionAssignersScheduledForDeletion = $questionAssignersToDelete;
 
         foreach ($questionAssignersToDelete as $questionAssignerRemoved) {
             $questionAssignerRemoved->setExam(null);
@@ -3261,6 +3193,31 @@ abstract class Exam implements ActiveRecordInterface
         return $this->getQuestionAssigners($query, $con);
     }
 
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Exam is new, it will return
+     * an empty collection; or if this Exam has previously
+     * been saved, it will retrieve related QuestionAssigners from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Exam.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildQuestionAssigner[] List of ChildQuestionAssigner objects
+     */
+    public function getQuestionAssignersJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildQuestionAssignerQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getQuestionAssigners($query, $con);
+    }
+
     /**
      * Clears out the collElementAssignments collection
      *
@@ -3378,10 +3335,7 @@ abstract class Exam implements ActiveRecordInterface
         $elementAssignmentsToDelete = $this->getElementAssignments(new Criteria(), $con)->diff($elementAssignments);
 
 
-        //since at least one column in the foreign key is at the same time a PK
-        //we can not just set a PK to NULL in the lines below. We have to store
-        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
-        $this->elementAssignmentsScheduledForDeletion = clone $elementAssignmentsToDelete;
+        $this->elementAssignmentsScheduledForDeletion = $elementAssignmentsToDelete;
 
         foreach ($elementAssignmentsToDelete as $elementAssignmentRemoved) {
             $elementAssignmentRemoved->setExam(null);
@@ -3532,6 +3486,31 @@ abstract class Exam implements ActiveRecordInterface
         return $this->getElementAssignments($query, $con);
     }
 
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Exam is new, it will return
+     * an empty collection; or if this Exam has previously
+     * been saved, it will retrieve related ElementAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Exam.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildElementAssignment[] List of ChildElementAssignment objects
+     */
+    public function getElementAssignmentsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildElementAssignmentQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getElementAssignments($query, $con);
+    }
+
     /**
      * Clears out the collExamClassAssignments collection
      *
@@ -3649,10 +3628,7 @@ abstract class Exam implements ActiveRecordInterface
         $examClassAssignmentsToDelete = $this->getExamClassAssignments(new Criteria(), $con)->diff($examClassAssignments);
 
 
-        //since at least one column in the foreign key is at the same time a PK
-        //we can not just set a PK to NULL in the lines below. We have to store
-        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
-        $this->examClassAssignmentsScheduledForDeletion = clone $examClassAssignmentsToDelete;
+        $this->examClassAssignmentsScheduledForDeletion = $examClassAssignmentsToDelete;
 
         foreach ($examClassAssignmentsToDelete as $examClassAssignmentRemoved) {
             $examClassAssignmentRemoved->setExam(null);
@@ -3774,6 +3750,31 @@ abstract class Exam implements ActiveRecordInterface
     {
         $query = ChildExamClassAssignmentQuery::create(null, $criteria);
         $query->joinWith('Kumi', $joinBehavior);
+
+        return $this->getExamClassAssignments($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Exam is new, it will return
+     * an empty collection; or if this Exam has previously
+     * been saved, it will retrieve related ExamClassAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Exam.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildExamClassAssignment[] List of ChildExamClassAssignment objects
+     */
+    public function getExamClassAssignmentsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildExamClassAssignmentQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
 
         return $this->getExamClassAssignments($query, $con);
     }
@@ -3994,6 +3995,31 @@ abstract class Exam implements ActiveRecordInterface
         }
 
         return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Exam is new, it will return
+     * an empty collection; or if this Exam has previously
+     * been saved, it will retrieve related GradingTimes from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Exam.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildGradingTime[] List of ChildGradingTime objects
+     */
+    public function getGradingTimesJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildGradingTimeQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getGradingTimes($query, $con);
     }
 
 
@@ -4242,6 +4268,31 @@ abstract class Exam implements ActiveRecordInterface
         return $this;
     }
 
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Exam is new, it will return
+     * an empty collection; or if this Exam has previously
+     * been saved, it will retrieve related GroupTimes from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Exam.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildGroupTime[] List of ChildGroupTime objects
+     */
+    public function getGroupTimesJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildGroupTimeQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getGroupTimes($query, $con);
+    }
+
     /**
      * Clears out the collPseudoIDs collection
      *
@@ -4480,6 +4531,31 @@ abstract class Exam implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildPseudoID[] List of ChildPseudoID objects
      */
+    public function getPseudoIDsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildPseudoIDQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getPseudoIDs($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Exam is new, it will return
+     * an empty collection; or if this Exam has previously
+     * been saved, it will retrieve related PseudoIDs from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Exam.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildPseudoID[] List of ChildPseudoID objects
+     */
     public function getPseudoIDsJoinStudent(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildPseudoIDQuery::create(null, $criteria);
@@ -4489,262 +4565,14 @@ abstract class Exam implements ActiveRecordInterface
     }
 
     /**
-     * Clears out the collKumis collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addKumis()
-     */
-    public function clearKumis()
-    {
-        $this->collKumis = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Initializes the collKumis crossRef collection.
-     *
-     * By default this just sets the collKumis collection to an empty collection (like clearKumis());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @return void
-     */
-    public function initKumis()
-    {
-        $this->collKumis = new ObjectCollection();
-        $this->collKumisPartial = true;
-
-        $this->collKumis->setModel('\Kumi');
-    }
-
-    /**
-     * Checks if the collKumis collection is loaded.
-     *
-     * @return bool
-     */
-    public function isKumisLoaded()
-    {
-        return null !== $this->collKumis;
-    }
-
-    /**
-     * Gets a collection of ChildKumi objects related by a many-to-many relationship
-     * to the current object by way of the examsXclasses cross-reference table.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildExam is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria Optional query object to filter the query
-     * @param      ConnectionInterface $con Optional connection object
-     *
-     * @return ObjectCollection|ChildKumi[] List of ChildKumi objects
-     */
-    public function getKumis(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collKumisPartial && !$this->isNew();
-        if (null === $this->collKumis || null !== $criteria || $partial) {
-            if ($this->isNew()) {
-                // return empty collection
-                if (null === $this->collKumis) {
-                    $this->initKumis();
-                }
-            } else {
-
-                $query = ChildKumiQuery::create(null, $criteria)
-                    ->filterByExam($this);
-                $collKumis = $query->find($con);
-                if (null !== $criteria) {
-                    return $collKumis;
-                }
-
-                if ($partial && $this->collKumis) {
-                    //make sure that already added objects gets added to the list of the database.
-                    foreach ($this->collKumis as $obj) {
-                        if (!$collKumis->contains($obj)) {
-                            $collKumis[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collKumis = $collKumis;
-                $this->collKumisPartial = false;
-            }
-        }
-
-        return $this->collKumis;
-    }
-
-    /**
-     * Sets a collection of Kumi objects related by a many-to-many relationship
-     * to the current object by way of the examsXclasses cross-reference table.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param  Collection $kumis A Propel collection.
-     * @param  ConnectionInterface $con Optional connection object
-     * @return $this|ChildExam The current object (for fluent API support)
-     */
-    public function setKumis(Collection $kumis, ConnectionInterface $con = null)
-    {
-        $this->clearKumis();
-        $currentKumis = $this->getKumis();
-
-        $kumisScheduledForDeletion = $currentKumis->diff($kumis);
-
-        foreach ($kumisScheduledForDeletion as $toDelete) {
-            $this->removeKumi($toDelete);
-        }
-
-        foreach ($kumis as $kumi) {
-            if (!$currentKumis->contains($kumi)) {
-                $this->doAddKumi($kumi);
-            }
-        }
-
-        $this->collKumisPartial = false;
-        $this->collKumis = $kumis;
-
-        return $this;
-    }
-
-    /**
-     * Gets the number of Kumi objects related by a many-to-many relationship
-     * to the current object by way of the examsXclasses cross-reference table.
-     *
-     * @param      Criteria $criteria Optional query object to filter the query
-     * @param      boolean $distinct Set to true to force count distinct
-     * @param      ConnectionInterface $con Optional connection object
-     *
-     * @return int the number of related Kumi objects
-     */
-    public function countKumis(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collKumisPartial && !$this->isNew();
-        if (null === $this->collKumis || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collKumis) {
-                return 0;
-            } else {
-
-                if ($partial && !$criteria) {
-                    return count($this->getKumis());
-                }
-
-                $query = ChildKumiQuery::create(null, $criteria);
-                if ($distinct) {
-                    $query->distinct();
-                }
-
-                return $query
-                    ->filterByExam($this)
-                    ->count($con);
-            }
-        } else {
-            return count($this->collKumis);
-        }
-    }
-
-    /**
-     * Associate a ChildKumi to this object
-     * through the examsXclasses cross reference table.
-     *
-     * @param ChildKumi $kumi
-     * @return ChildExam The current object (for fluent API support)
-     */
-    public function addKumi(ChildKumi $kumi)
-    {
-        if ($this->collKumis === null) {
-            $this->initKumis();
-        }
-
-        if (!$this->getKumis()->contains($kumi)) {
-            // only add it if the **same** object is not already associated
-            $this->collKumis->push($kumi);
-            $this->doAddKumi($kumi);
-        }
-
-        return $this;
-    }
-
-    /**
-     *
-     * @param ChildKumi $kumi
-     */
-    protected function doAddKumi(ChildKumi $kumi)
-    {
-        $examClassAssignment = new ChildExamClassAssignment();
-
-        $examClassAssignment->setKumi($kumi);
-
-        $examClassAssignment->setExam($this);
-
-        $this->addExamClassAssignment($examClassAssignment);
-
-        // set the back reference to this object directly as using provided method either results
-        // in endless loop or in multiple relations
-        if (!$kumi->isExamsLoaded()) {
-            $kumi->initExams();
-            $kumi->getExams()->push($this);
-        } elseif (!$kumi->getExams()->contains($this)) {
-            $kumi->getExams()->push($this);
-        }
-
-    }
-
-    /**
-     * Remove kumi of this object
-     * through the examsXclasses cross reference table.
-     *
-     * @param ChildKumi $kumi
-     * @return ChildExam The current object (for fluent API support)
-     */
-    public function removeKumi(ChildKumi $kumi)
-    {
-        if ($this->getKumis()->contains($kumi)) { $examClassAssignment = new ChildExamClassAssignment();
-
-            $examClassAssignment->setKumi($kumi);
-            if ($kumi->isExamsLoaded()) {
-                //remove the back reference if available
-                $kumi->getExams()->removeObject($this);
-            }
-
-            $examClassAssignment->setExam($this);
-            $this->removeExamClassAssignment(clone $examClassAssignment);
-            $examClassAssignment->clear();
-
-            $this->collKumis->remove($this->collKumis->search($kumi));
-
-            if (null === $this->kumisScheduledForDeletion) {
-                $this->kumisScheduledForDeletion = clone $this->collKumis;
-                $this->kumisScheduledForDeletion->clear();
-            }
-
-            $this->kumisScheduledForDeletion->push($kumi);
-        }
-
-
-        return $this;
-    }
-
-    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
      */
     public function clear()
     {
-        if (null !== $this->aTerm) {
-            $this->aTerm->removeExam($this);
-        }
-        if (null !== $this->aTopic) {
-            $this->aTopic->removeExam($this);
-        }
-        if (null !== $this->aYear) {
-            $this->aYear->removeExam($this);
+        if (null !== $this->aUser) {
+            $this->aUser->removeExam($this);
         }
         $this->id = null;
         $this->examterm = null;
@@ -4752,10 +4580,12 @@ abstract class Exam implements ActiveRecordInterface
         $this->examyear = null;
         $this->locked = null;
         $this->released = null;
+        $this->user_id = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
+        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);
@@ -4817,11 +4647,6 @@ abstract class Exam implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
-            if ($this->collKumis) {
-                foreach ($this->collKumis as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
         } // if ($deep)
 
         $this->collQuestionScores = null;
@@ -4833,10 +4658,7 @@ abstract class Exam implements ActiveRecordInterface
         $this->collGradingTimes = null;
         $this->collGroupTimes = null;
         $this->collPseudoIDs = null;
-        $this->collKumis = null;
-        $this->aTerm = null;
-        $this->aTopic = null;
-        $this->aYear = null;
+        $this->aUser = null;
     }
 
     /**

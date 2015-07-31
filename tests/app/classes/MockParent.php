@@ -31,6 +31,15 @@ class MockParent
         $this->response = TRUE;
     }
 
+    function __get($name){
+        switch($name)
+        {
+            case 'calledList':
+                return $this->called_list;
+            break;
+        }
+    }
+
     /**
      * Records the call to the called_list array
      * @param $function_name String Usually easiest to input with __FUNCTION__
@@ -61,6 +70,11 @@ class MockParent
     public function set_response($response)
     {
         $this->response = $response;
+    }
+
+    public function setResponse($response)
+    {
+        $this->set_response($response);
     }
 
     public function throwExceptionOnCall($string_exception_type)

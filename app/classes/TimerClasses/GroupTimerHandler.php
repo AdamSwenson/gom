@@ -9,6 +9,7 @@
 namespace TimerClasses;
 
 use App\classes\JsonOutputClasses\controllers\IResponseChooser;
+use classes\TimerClasses\dao\TimerDao;
 
 /**
  * Class GroupTimerHandler
@@ -20,11 +21,18 @@ use App\classes\JsonOutputClasses\controllers\IResponseChooser;
  */
 class GroupTimerHandler
 {
+    public $dao;
+
     /** @var $time_handler \GroupTime */
     public $time_handler;
 
     /** @var  $response_handler IResponseChooser */
     public $response_handler;
+
+    public function __construct()
+    {
+        $this->dao = new TimerDao();
+    }
 
     /**
      * @param IResponseChooser $response_handler
@@ -87,11 +95,12 @@ class GroupTimerHandler
      */
     protected function load(\Exam $exam, $groupID)
     {
-        $this->time_handler = \GroupTimeQuery::create()
-            ->filterByExam($exam)
-            ->filterByGroupid($groupID)
-            ->findOneOrCreate();
-        $this->time_handler->save();
+        $this->time_handler = $this->dao->loadGroupTime($exam, $groupID);
+//        $this->time_handler = \GroupTimeQuery::create()
+//            ->filterByExam($exam)
+//            ->filterByGroupid($groupID)
+//            ->findOneOrCreate();
+//        $this->time_handler->save();
 
         return $this->time_handler;
     }

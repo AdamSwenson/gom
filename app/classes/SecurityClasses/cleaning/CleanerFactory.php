@@ -8,12 +8,19 @@
 
 namespace App\classes\SecurityClasses\cleaning;
 
+use App\classes\SecurityClasses\cleaning\EmailCleaner;
+use App\classes\SecurityClasses\cleaning\FloatCleaner;
+use App\classes\SecurityClasses\cleaning\IntegerCleaner;
+use App\classes\SecurityClasses\cleaning\TextCleaner;
+use Exceptions\InputTypeException;
+
 /**
  * This will perform a validation or sanitization as needed
  *
  * @author adam
  */
-class CleanerFactory implements ICleanerFactory {
+class CleanerFactory implements ICleanerFactory
+{
 
     const INTEGER = 'integer';
     const FLOAT = 'float';
@@ -21,21 +28,39 @@ class CleanerFactory implements ICleanerFactory {
     const TEXT = 'text';
     const EMAIL = 'emails';
 
-    public function validate($to_validate, $type) {
-        $cleaner = $this->make($type);
-        if ($cleaner) {
-            return $cleaner->validate($to_validate);
-        } else {
-            return FALSE;
+    public function validate($to_validate, $type)
+    {
+        try
+        {
+            $cleaner = $this->make($type);
+            if ($cleaner)
+            {
+                return $cleaner->validate($to_validate);
+            } else
+            {
+                return false;
+            }
+        } catch (\Exception $e)
+        {
+            throw $e;
         }
     }
 
-    public function sanitize($to_clean, $type) {
-        $cleaner = $this->make($type);
-        if ($cleaner) {
-            return $cleaner->sanitize($to_clean);
-        } else {
-            return FALSE;
+    public function sanitize($to_clean, $type, $max_length=null)
+    {
+        try
+        {
+            $cleaner = $this->make($type);
+            if ($cleaner)
+            {
+                return $cleaner->sanitize($to_clean, $max_length);
+            } else
+            {
+                return false;
+            }
+        } catch (\Exception $e)
+        {
+            throw $e;
         }
     }
 
@@ -44,26 +69,44 @@ class CleanerFactory implements ICleanerFactory {
      * @param type $type
      * @return bool|EmailCleaner|FloatCleaner|IntegerCleaner|TextCleaner
      */
-    public function make($type) {
-        switch ($type) {
+    public function make($type)
+    {
+        switch ($type)
+        {
             case self::INTEGER:
-                $cleaner = new \App\classes\SecurityClasses\cleaning\IntegerCleaner();
+                $cleaner = new IntegerCleaner();
+                break;
+            case 'integer':
+                $cleaner = new IntegerCleaner();
                 break;
             case self::FLOAT:
-                $cleaner = new \App\classes\SecurityClasses\cleaning\FloatCleaner();
+                $cleaner = new FloatCleaner();
+                break;
+            case 'float':
+                $cleaner = new FloatCleaner();
                 break;
             case self::STRING:
-                $cleaner = new \App\classes\SecurityClasses\cleaning\TextCleaner();
+                $cleaner = new TextCleaner();
+                break;
+            case 'string':
+                $cleaner = new TextCleaner();
                 break;
             case self::TEXT:
-                $cleaner = new \App\classes\SecurityClasses\cleaning\TextCleaner();
+                $cleaner = new TextCleaner();
+                break;
+            case 'text':
+                $cleaner = new TextCleaner();
                 break;
             case self::EMAIL:
-                $cleaner = new \App\classes\SecurityClasses\cleaning\EmailCleaner();
+                $cleaner = new EmailCleaner();
+                break;
+            case 'email':
+                $cleaner = new EmailCleaner();
                 break;
             default:
-                return FALSE;
+                return false;
         }
+
         return $cleaner;
     }
 

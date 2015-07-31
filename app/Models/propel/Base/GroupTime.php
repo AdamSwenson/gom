@@ -6,6 +6,8 @@ use \Exam as ChildExam;
 use \ExamQuery as ChildExamQuery;
 use \GroupTime as ChildGroupTime;
 use \GroupTimeQuery as ChildGroupTimeQuery;
+use \User as ChildUser;
+use \UserQuery as ChildUserQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
@@ -83,6 +85,12 @@ abstract class GroupTime implements ActiveRecordInterface
     protected $seconds;
 
     /**
+     * The value for the user_id field.
+     * @var        int
+     */
+    protected $user_id;
+
+    /**
      * The value for the created_at field.
      * @var        \DateTime
      */
@@ -93,6 +101,11 @@ abstract class GroupTime implements ActiveRecordInterface
      * @var        \DateTime
      */
     protected $updated_at;
+
+    /**
+     * @var        ChildUser
+     */
+    protected $aUser;
 
     /**
      * @var        ChildExam
@@ -355,6 +368,16 @@ abstract class GroupTime implements ActiveRecordInterface
     }
 
     /**
+     * Get the [user_id] column value.
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [created_at] column value.
      *
      *
@@ -459,6 +482,30 @@ abstract class GroupTime implements ActiveRecordInterface
     } // setSeconds()
 
     /**
+     * Set the value of [user_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\GroupTime The current object (for fluent API support)
+     */
+    public function setUserId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[GroupTimeTableMap::COL_USER_ID] = true;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
+        }
+
+        return $this;
+    } // setUserId()
+
+    /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
@@ -543,13 +590,16 @@ abstract class GroupTime implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : GroupTimeTableMap::translateFieldName('Seconds', TableMap::TYPE_PHPNAME, $indexType)];
             $this->seconds = (null !== $col) ? (double) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : GroupTimeTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : GroupTimeTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->user_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : GroupTimeTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : GroupTimeTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : GroupTimeTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -562,7 +612,7 @@ abstract class GroupTime implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 5; // 5 = GroupTimeTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 6; // 6 = GroupTimeTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\GroupTime'), 0, $e);
@@ -586,6 +636,9 @@ abstract class GroupTime implements ActiveRecordInterface
     {
         if ($this->aExam !== null && $this->examid !== $this->aExam->getId()) {
             $this->aExam = null;
+        }
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
         }
     } // ensureConsistency
 
@@ -626,6 +679,7 @@ abstract class GroupTime implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aUser = null;
             $this->aExam = null;
         } // if (deep)
     }
@@ -743,6 +797,13 @@ abstract class GroupTime implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
+            }
+
             if ($this->aExam !== null) {
                 if ($this->aExam->isModified() || $this->aExam->isNew()) {
                     $affectedRows += $this->aExam->save($con);
@@ -792,6 +853,9 @@ abstract class GroupTime implements ActiveRecordInterface
         if ($this->isColumnModified(GroupTimeTableMap::COL_SECONDS)) {
             $modifiedColumns[':p' . $index++]  = 'seconds';
         }
+        if ($this->isColumnModified(GroupTimeTableMap::COL_USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'user_id';
+        }
         if ($this->isColumnModified(GroupTimeTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
@@ -817,6 +881,9 @@ abstract class GroupTime implements ActiveRecordInterface
                         break;
                     case 'seconds':
                         $stmt->bindValue($identifier, $this->seconds, PDO::PARAM_STR);
+                        break;
+                    case 'user_id':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -889,9 +956,12 @@ abstract class GroupTime implements ActiveRecordInterface
                 return $this->getSeconds();
                 break;
             case 3:
-                return $this->getCreatedAt();
+                return $this->getUserId();
                 break;
             case 4:
+                return $this->getCreatedAt();
+                break;
+            case 5:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -927,21 +997,22 @@ abstract class GroupTime implements ActiveRecordInterface
             $keys[0] => $this->getExamid(),
             $keys[1] => $this->getGroupid(),
             $keys[2] => $this->getSeconds(),
-            $keys[3] => $this->getCreatedAt(),
-            $keys[4] => $this->getUpdatedAt(),
+            $keys[3] => $this->getUserId(),
+            $keys[4] => $this->getCreatedAt(),
+            $keys[5] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[3]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[3]];
-            $result[$keys[3]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[4]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[4]];
             $result[$keys[4]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[5]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[5]];
+            $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -950,6 +1021,21 @@ abstract class GroupTime implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
+            if (null !== $this->aUser) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'user';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'users';
+                        break;
+                    default:
+                        $key = 'User';
+                }
+
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
             if (null !== $this->aExam) {
 
                 switch ($keyType) {
@@ -1009,9 +1095,12 @@ abstract class GroupTime implements ActiveRecordInterface
                 $this->setSeconds($value);
                 break;
             case 3:
-                $this->setCreatedAt($value);
+                $this->setUserId($value);
                 break;
             case 4:
+                $this->setCreatedAt($value);
+                break;
+            case 5:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1050,10 +1139,13 @@ abstract class GroupTime implements ActiveRecordInterface
             $this->setSeconds($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setCreatedAt($arr[$keys[3]]);
+            $this->setUserId($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setUpdatedAt($arr[$keys[4]]);
+            $this->setCreatedAt($arr[$keys[4]]);
+        }
+        if (array_key_exists($keys[5], $arr)) {
+            $this->setUpdatedAt($arr[$keys[5]]);
         }
     }
 
@@ -1105,6 +1197,9 @@ abstract class GroupTime implements ActiveRecordInterface
         if ($this->isColumnModified(GroupTimeTableMap::COL_SECONDS)) {
             $criteria->add(GroupTimeTableMap::COL_SECONDS, $this->seconds);
         }
+        if ($this->isColumnModified(GroupTimeTableMap::COL_USER_ID)) {
+            $criteria->add(GroupTimeTableMap::COL_USER_ID, $this->user_id);
+        }
         if ($this->isColumnModified(GroupTimeTableMap::COL_CREATED_AT)) {
             $criteria->add(GroupTimeTableMap::COL_CREATED_AT, $this->created_at);
         }
@@ -1130,6 +1225,7 @@ abstract class GroupTime implements ActiveRecordInterface
         $criteria = ChildGroupTimeQuery::create();
         $criteria->add(GroupTimeTableMap::COL_EXAMID, $this->examid);
         $criteria->add(GroupTimeTableMap::COL_GROUPID, $this->groupid);
+        $criteria->add(GroupTimeTableMap::COL_USER_ID, $this->user_id);
 
         return $criteria;
     }
@@ -1143,10 +1239,18 @@ abstract class GroupTime implements ActiveRecordInterface
     public function hashCode()
     {
         $validPk = null !== $this->getExamid() &&
-            null !== $this->getGroupid();
+            null !== $this->getGroupid() &&
+            null !== $this->getUserId();
 
-        $validPrimaryKeyFKs = 1;
+        $validPrimaryKeyFKs = 2;
         $primaryKeyFKs = [];
+
+        //relation time_group_fk_69bd79 to table users
+        if ($this->aUser && $hash = spl_object_hash($this->aUser)) {
+            $primaryKeyFKs[] = $hash;
+        } else {
+            $validPrimaryKeyFKs = false;
+        }
 
         //relation time_group_fk_71c1fe to table exams
         if ($this->aExam && $hash = spl_object_hash($this->aExam)) {
@@ -1174,6 +1278,7 @@ abstract class GroupTime implements ActiveRecordInterface
         $pks = array();
         $pks[0] = $this->getExamid();
         $pks[1] = $this->getGroupid();
+        $pks[2] = $this->getUserId();
 
         return $pks;
     }
@@ -1188,6 +1293,7 @@ abstract class GroupTime implements ActiveRecordInterface
     {
         $this->setExamid($keys[0]);
         $this->setGroupid($keys[1]);
+        $this->setUserId($keys[2]);
     }
 
     /**
@@ -1196,7 +1302,7 @@ abstract class GroupTime implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return (null === $this->getExamid()) && (null === $this->getGroupid());
+        return (null === $this->getExamid()) && (null === $this->getGroupid()) && (null === $this->getUserId());
     }
 
     /**
@@ -1215,6 +1321,7 @@ abstract class GroupTime implements ActiveRecordInterface
         $copyObj->setExamid($this->getExamid());
         $copyObj->setGroupid($this->getGroupid());
         $copyObj->setSeconds($this->getSeconds());
+        $copyObj->setUserId($this->getUserId());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
@@ -1242,6 +1349,57 @@ abstract class GroupTime implements ActiveRecordInterface
         $this->copyInto($copyObj, $deepCopy);
 
         return $copyObj;
+    }
+
+    /**
+     * Declares an association between this object and a ChildUser object.
+     *
+     * @param  ChildUser $v
+     * @return $this|\GroupTime The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUser(ChildUser $v = null)
+    {
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
+        }
+
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
+        if ($v !== null) {
+            $v->addGroupTime($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildUser object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUser The associated ChildUser object.
+     * @throws PropelException
+     */
+    public function getUser(ConnectionInterface $con = null)
+    {
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addGroupTimes($this);
+             */
+        }
+
+        return $this->aUser;
     }
 
     /**
@@ -1302,12 +1460,16 @@ abstract class GroupTime implements ActiveRecordInterface
      */
     public function clear()
     {
+        if (null !== $this->aUser) {
+            $this->aUser->removeGroupTime($this);
+        }
         if (null !== $this->aExam) {
             $this->aExam->removeGroupTime($this);
         }
         $this->examid = null;
         $this->groupid = null;
         $this->seconds = null;
+        $this->user_id = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -1330,6 +1492,7 @@ abstract class GroupTime implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
+        $this->aUser = null;
         $this->aExam = null;
     }
 

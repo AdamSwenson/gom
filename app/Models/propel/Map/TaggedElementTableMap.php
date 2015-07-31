@@ -59,7 +59,7 @@ class TaggedElementTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 4;
+    const NUM_COLUMNS = 5;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class TaggedElementTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 4;
+    const NUM_HYDRATE_COLUMNS = 5;
 
     /**
      * the column name for the tag_id field
@@ -80,6 +80,11 @@ class TaggedElementTableMap extends TableMap
      * the column name for the element_id field
      */
     const COL_ELEMENT_ID = 'tagsXelements.element_id';
+
+    /**
+     * the column name for the user_id field
+     */
+    const COL_USER_ID = 'tagsXelements.user_id';
 
     /**
      * the column name for the created_at field
@@ -103,11 +108,11 @@ class TaggedElementTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('TagId', 'ElementId', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('tagId', 'elementId', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(TaggedElementTableMap::COL_TAG_ID, TaggedElementTableMap::COL_ELEMENT_ID, TaggedElementTableMap::COL_CREATED_AT, TaggedElementTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('tag_id', 'element_id', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, )
+        self::TYPE_PHPNAME       => array('TagId', 'ElementId', 'UserId', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('tagId', 'elementId', 'userId', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(TaggedElementTableMap::COL_TAG_ID, TaggedElementTableMap::COL_ELEMENT_ID, TaggedElementTableMap::COL_USER_ID, TaggedElementTableMap::COL_CREATED_AT, TaggedElementTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('tag_id', 'element_id', 'user_id', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
     );
 
     /**
@@ -117,11 +122,11 @@ class TaggedElementTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('TagId' => 0, 'ElementId' => 1, 'CreatedAt' => 2, 'UpdatedAt' => 3, ),
-        self::TYPE_CAMELNAME     => array('tagId' => 0, 'elementId' => 1, 'createdAt' => 2, 'updatedAt' => 3, ),
-        self::TYPE_COLNAME       => array(TaggedElementTableMap::COL_TAG_ID => 0, TaggedElementTableMap::COL_ELEMENT_ID => 1, TaggedElementTableMap::COL_CREATED_AT => 2, TaggedElementTableMap::COL_UPDATED_AT => 3, ),
-        self::TYPE_FIELDNAME     => array('tag_id' => 0, 'element_id' => 1, 'created_at' => 2, 'updated_at' => 3, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, )
+        self::TYPE_PHPNAME       => array('TagId' => 0, 'ElementId' => 1, 'UserId' => 2, 'CreatedAt' => 3, 'UpdatedAt' => 4, ),
+        self::TYPE_CAMELNAME     => array('tagId' => 0, 'elementId' => 1, 'userId' => 2, 'createdAt' => 3, 'updatedAt' => 4, ),
+        self::TYPE_COLNAME       => array(TaggedElementTableMap::COL_TAG_ID => 0, TaggedElementTableMap::COL_ELEMENT_ID => 1, TaggedElementTableMap::COL_USER_ID => 2, TaggedElementTableMap::COL_CREATED_AT => 3, TaggedElementTableMap::COL_UPDATED_AT => 4, ),
+        self::TYPE_FIELDNAME     => array('tag_id' => 0, 'element_id' => 1, 'user_id' => 2, 'created_at' => 3, 'updated_at' => 4, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
     );
 
     /**
@@ -144,6 +149,7 @@ class TaggedElementTableMap extends TableMap
         // columns
         $this->addForeignPrimaryKey('tag_id', 'TagId', 'INTEGER' , 'tags', 'id', true, null, null);
         $this->addForeignPrimaryKey('element_id', 'ElementId', 'INTEGER' , 'elements', 'id', true, null, null);
+        $this->addForeignPrimaryKey('user_id', 'UserId', 'INTEGER' , 'users', 'id', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -153,6 +159,13 @@ class TaggedElementTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('User', '\\User', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, null, false);
         $this->addRelation('Tag', '\\Tag', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
@@ -197,7 +210,7 @@ class TaggedElementTableMap extends TableMap
     {
         if (Propel::isInstancePoolingEnabled()) {
             if (null === $key) {
-                $key = serialize(array((string) $obj->getTagId(), (string) $obj->getElementId()));
+                $key = serialize(array((string) $obj->getTagId(), (string) $obj->getElementId(), (string) $obj->getUserId()));
             } // if key === null
             self::$instances[$key] = $obj;
         }
@@ -217,11 +230,11 @@ class TaggedElementTableMap extends TableMap
     {
         if (Propel::isInstancePoolingEnabled() && null !== $value) {
             if (is_object($value) && $value instanceof \TaggedElement) {
-                $key = serialize(array((string) $value->getTagId(), (string) $value->getElementId()));
+                $key = serialize(array((string) $value->getTagId(), (string) $value->getElementId(), (string) $value->getUserId()));
 
-            } elseif (is_array($value) && count($value) === 2) {
+            } elseif (is_array($value) && count($value) === 3) {
                 // assume we've been passed a primary key";
-                $key = serialize(array((string) $value[0], (string) $value[1]));
+                $key = serialize(array((string) $value[0], (string) $value[1], (string) $value[2]));
             } elseif ($value instanceof Criteria) {
                 self::$instances = [];
 
@@ -251,11 +264,11 @@ class TaggedElementTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('TagId', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('ElementId', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('TagId', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('ElementId', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('TagId', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('ElementId', TableMap::TYPE_PHPNAME, $indexType)]));
+        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('TagId', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('ElementId', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)]));
     }
 
     /**
@@ -283,6 +296,11 @@ class TaggedElementTableMap extends TableMap
             $indexType == TableMap::TYPE_NUM
                 ? 1 + $offset
                 : self::translateFieldName('ElementId', TableMap::TYPE_PHPNAME, $indexType)
+        ];
+        $pks[] = (int) $row[
+            $indexType == TableMap::TYPE_NUM
+                ? 2 + $offset
+                : self::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)
         ];
 
         return $pks;
@@ -387,11 +405,13 @@ class TaggedElementTableMap extends TableMap
         if (null === $alias) {
             $criteria->addSelectColumn(TaggedElementTableMap::COL_TAG_ID);
             $criteria->addSelectColumn(TaggedElementTableMap::COL_ELEMENT_ID);
+            $criteria->addSelectColumn(TaggedElementTableMap::COL_USER_ID);
             $criteria->addSelectColumn(TaggedElementTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(TaggedElementTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.tag_id');
             $criteria->addSelectColumn($alias . '.element_id');
+            $criteria->addSelectColumn($alias . '.user_id');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }
@@ -454,6 +474,7 @@ class TaggedElementTableMap extends TableMap
             foreach ($values as $value) {
                 $criterion = $criteria->getNewCriterion(TaggedElementTableMap::COL_TAG_ID, $value[0]);
                 $criterion->addAnd($criteria->getNewCriterion(TaggedElementTableMap::COL_ELEMENT_ID, $value[1]));
+                $criterion->addAnd($criteria->getNewCriterion(TaggedElementTableMap::COL_USER_ID, $value[2]));
                 $criteria->addOr($criterion);
             }
         }

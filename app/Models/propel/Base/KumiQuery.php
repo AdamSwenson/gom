@@ -23,18 +23,24 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildKumiQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildKumiQuery orderByYear($order = Criteria::ASC) Order by the year column
  * @method     ChildKumiQuery orderByNickname($order = Criteria::ASC) Order by the nickname column
+ * @method     ChildKumiQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildKumiQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildKumiQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildKumiQuery groupById() Group by the id column
  * @method     ChildKumiQuery groupByYear() Group by the year column
  * @method     ChildKumiQuery groupByNickname() Group by the nickname column
+ * @method     ChildKumiQuery groupByUserId() Group by the user_id column
  * @method     ChildKumiQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildKumiQuery groupByUpdatedAt() Group by the updated_at column
  *
  * @method     ChildKumiQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildKumiQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildKumiQuery innerJoin($relation) Adds a INNER JOIN clause to the query
+ *
+ * @method     ChildKumiQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildKumiQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildKumiQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
  *
  * @method     ChildKumiQuery leftJoinStudentClassAssignment($relationAlias = null) Adds a LEFT JOIN clause to the query using the StudentClassAssignment relation
  * @method     ChildKumiQuery rightJoinStudentClassAssignment($relationAlias = null) Adds a RIGHT JOIN clause to the query using the StudentClassAssignment relation
@@ -44,7 +50,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildKumiQuery rightJoinExamClassAssignment($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ExamClassAssignment relation
  * @method     ChildKumiQuery innerJoinExamClassAssignment($relationAlias = null) Adds a INNER JOIN clause to the query using the ExamClassAssignment relation
  *
- * @method     \StudentClassAssignmentQuery|\ExamClassAssignmentQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \UserQuery|\StudentClassAssignmentQuery|\ExamClassAssignmentQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildKumi findOne(ConnectionInterface $con = null) Return the first ChildKumi matching the query
  * @method     ChildKumi findOneOrCreate(ConnectionInterface $con = null) Return the first ChildKumi matching the query, or a new ChildKumi object populated from the query conditions when no match is found
@@ -52,6 +58,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildKumi findOneById(int $id) Return the first ChildKumi filtered by the id column
  * @method     ChildKumi findOneByYear(int $year) Return the first ChildKumi filtered by the year column
  * @method     ChildKumi findOneByNickname(string $nickname) Return the first ChildKumi filtered by the nickname column
+ * @method     ChildKumi findOneByUserId(int $user_id) Return the first ChildKumi filtered by the user_id column
  * @method     ChildKumi findOneByCreatedAt(string $created_at) Return the first ChildKumi filtered by the created_at column
  * @method     ChildKumi findOneByUpdatedAt(string $updated_at) Return the first ChildKumi filtered by the updated_at column *
 
@@ -61,6 +68,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildKumi requireOneById(int $id) Return the first ChildKumi filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildKumi requireOneByYear(int $year) Return the first ChildKumi filtered by the year column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildKumi requireOneByNickname(string $nickname) Return the first ChildKumi filtered by the nickname column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildKumi requireOneByUserId(int $user_id) Return the first ChildKumi filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildKumi requireOneByCreatedAt(string $created_at) Return the first ChildKumi filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildKumi requireOneByUpdatedAt(string $updated_at) Return the first ChildKumi filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
@@ -68,6 +76,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildKumi[]|ObjectCollection findById(int $id) Return ChildKumi objects filtered by the id column
  * @method     ChildKumi[]|ObjectCollection findByYear(int $year) Return ChildKumi objects filtered by the year column
  * @method     ChildKumi[]|ObjectCollection findByNickname(string $nickname) Return ChildKumi objects filtered by the nickname column
+ * @method     ChildKumi[]|ObjectCollection findByUserId(int $user_id) Return ChildKumi objects filtered by the user_id column
  * @method     ChildKumi[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildKumi objects filtered by the created_at column
  * @method     ChildKumi[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildKumi objects filtered by the updated_at column
  * @method     ChildKumi[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -162,7 +171,7 @@ abstract class KumiQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, year, nickname, created_at, updated_at FROM classes WHERE id = :p0';
+        $sql = 'SELECT id, year, nickname, user_id, created_at, updated_at FROM classes WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -364,6 +373,49 @@ abstract class KumiQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the user_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUserId(1234); // WHERE user_id = 1234
+     * $query->filterByUserId(array(12, 34)); // WHERE user_id IN (12, 34)
+     * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
+     * </code>
+     *
+     * @see       filterByUser()
+     *
+     * @param     mixed $userId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildKumiQuery The current query, for fluid interface
+     */
+    public function filterByUserId($userId = null, $comparison = null)
+    {
+        if (is_array($userId)) {
+            $useMinMax = false;
+            if (isset($userId['min'])) {
+                $this->addUsingAlias(KumiTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($userId['max'])) {
+                $this->addUsingAlias(KumiTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(KumiTableMap::COL_USER_ID, $userId, $comparison);
+    }
+
+    /**
      * Filter the query on the created_at column
      *
      * Example usage:
@@ -447,6 +499,83 @@ abstract class KumiQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(KumiTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \User object
+     *
+     * @param \User|ObjectCollection $user The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildKumiQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = null)
+    {
+        if ($user instanceof \User) {
+            return $this
+                ->addUsingAlias(KumiTableMap::COL_USER_ID, $user->getId(), $comparison);
+        } elseif ($user instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(KumiTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByUser() only accepts arguments of type \User or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the User relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildKumiQuery The current query, for fluid interface
+     */
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('User');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'User');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the User relation User object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \UserQuery A secondary query class using the current class as primary query
+     */
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
     }
 
     /**
@@ -593,40 +722,6 @@ abstract class KumiQuery extends ModelCriteria
         return $this
             ->joinExamClassAssignment($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'ExamClassAssignment', '\ExamClassAssignmentQuery');
-    }
-
-    /**
-     * Filter the query by a related Student object
-     * using the studentsXclasses table as cross reference
-     *
-     * @param Student $student the related object to use as filter
-     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return ChildKumiQuery The current query, for fluid interface
-     */
-    public function filterByStudent($student, $comparison = Criteria::EQUAL)
-    {
-        return $this
-            ->useStudentClassAssignmentQuery()
-            ->filterByStudent($student, $comparison)
-            ->endUse();
-    }
-
-    /**
-     * Filter the query by a related Exam object
-     * using the examsXclasses table as cross reference
-     *
-     * @param Exam $exam the related object to use as filter
-     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return ChildKumiQuery The current query, for fluid interface
-     */
-    public function filterByExam($exam, $comparison = Criteria::EQUAL)
-    {
-        return $this
-            ->useExamClassAssignmentQuery()
-            ->filterByExam($exam, $comparison)
-            ->endUse();
     }
 
     /**

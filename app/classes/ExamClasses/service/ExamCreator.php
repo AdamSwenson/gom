@@ -8,6 +8,9 @@
 
 namespace App\classes\ExamClasses\service;
 
+use App\classes\ExamClasses\service\CurrentExamManager;
+use App\classes\RestrictorClasses\dao\IRestrictorDAO;
+
 /**
  * Class ExamCreator
  * Handles creating a new exam from incoming request
@@ -18,7 +21,7 @@ class ExamCreator extends ExamServiceParent
 //    /** @var  $response_handler \App\classes\JsonOutputClasses\controllers\IResponseChooser */
 //    public $response_handler;
 
-    /** @var  $restrictor_dao \App\classes\RestrictorClasses\dao\IRestrictorDAO */
+    /** @var  $restrictor_dao IRestrictorDAO */
     public $restrictor_dao;
 
     public $current_exam_manager;
@@ -26,7 +29,7 @@ class ExamCreator extends ExamServiceParent
     /**
      * @param mixed $current_exam_manager
      */
-    public function setCurrentExamManager(\App\classes\ExamClasses\service\CurrentExamManager $current_exam_manager)
+    public function setCurrentExamManager(CurrentExamManager $current_exam_manager)
     {
         $this->current_exam_manager = $current_exam_manager;
     }
@@ -48,9 +51,9 @@ class ExamCreator extends ExamServiceParent
 //    }
 
     /**
-     * @param \App\classes\RestrictorClasses\dao\IRestrictorDAO $restrictor_dao
+     * @param IRestrictorDAO $restrictor_dao
      */
-    public function load_restrictor_dao(\App\classes\RestrictorClasses\dao\IRestrictorDAO $restrictor_dao)
+    public function load_restrictor_dao(IRestrictorDAO $restrictor_dao)
     {
         $this->restrictor_dao = $restrictor_dao;
     }
@@ -67,7 +70,7 @@ class ExamCreator extends ExamServiceParent
         $term = $this->restrictor_dao->load_term($incoming['term']);
         $topic = $this->restrictor_dao->load_topic($incoming['examTopic']);
 
-        $exam = $this->exam_dao->save_new_exam($year, $term, $topic);
+        $exam = $this->exam_dao->save_new_exam($year->getContent(), $term->getContent(), $topic->getContent());
         $cnt = isset($exam) ? 1 : 0;
 
         if($cnt === 1)

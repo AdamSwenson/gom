@@ -4,6 +4,8 @@ namespace Base;
 
 use \Preferences as ChildPreferences;
 use \PreferencesQuery as ChildPreferencesQuery;
+use \User as ChildUser;
+use \UserQuery as ChildUserQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
@@ -63,6 +65,12 @@ abstract class Preferences implements ActiveRecordInterface
     protected $virtualColumns = array();
 
     /**
+     * The value for the id field.
+     * @var        int
+     */
+    protected $id;
+
+    /**
      * The value for the jquerytheme field.
      * @var        string
      */
@@ -99,6 +107,12 @@ abstract class Preferences implements ActiveRecordInterface
     protected $number_subtasks;
 
     /**
+     * The value for the user_id field.
+     * @var        int
+     */
+    protected $user_id;
+
+    /**
      * The value for the created_at field.
      * @var        \DateTime
      */
@@ -109,6 +123,11 @@ abstract class Preferences implements ActiveRecordInterface
      * @var        \DateTime
      */
     protected $updated_at;
+
+    /**
+     * @var        ChildUser
+     */
+    protected $aUser;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -336,6 +355,16 @@ abstract class Preferences implements ActiveRecordInterface
     }
 
     /**
+     * Get the [id] column value.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * Get the [jquerytheme] column value.
      *
      * @return string
@@ -416,6 +445,16 @@ abstract class Preferences implements ActiveRecordInterface
     }
 
     /**
+     * Get the [user_id] column value.
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [created_at] column value.
      *
      *
@@ -454,6 +493,26 @@ abstract class Preferences implements ActiveRecordInterface
             return $this->updated_at instanceof \DateTime ? $this->updated_at->format($format) : null;
         }
     }
+
+    /**
+     * Set the value of [id] column.
+     *
+     * @param int $v new value
+     * @return $this|\Preferences The current object (for fluent API support)
+     */
+    public function setId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->id !== $v) {
+            $this->id = $v;
+            $this->modifiedColumns[PreferencesTableMap::COL_ID] = true;
+        }
+
+        return $this;
+    } // setId()
 
     /**
      * Set the value of [jquerytheme] column.
@@ -592,6 +651,30 @@ abstract class Preferences implements ActiveRecordInterface
     } // setNumberSubtasks()
 
     /**
+     * Set the value of [user_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\Preferences The current object (for fluent API support)
+     */
+    public function setUserId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[PreferencesTableMap::COL_USER_ID] = true;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
+        }
+
+        return $this;
+    } // setUserId()
+
+    /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
@@ -667,31 +750,37 @@ abstract class Preferences implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : PreferencesTableMap::translateFieldName('Jquerytheme', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : PreferencesTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : PreferencesTableMap::translateFieldName('Jquerytheme', TableMap::TYPE_PHPNAME, $indexType)];
             $this->jquerytheme = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : PreferencesTableMap::translateFieldName('Autostartexam', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : PreferencesTableMap::translateFieldName('Autostartexam', TableMap::TYPE_PHPNAME, $indexType)];
             $this->autostartexam = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : PreferencesTableMap::translateFieldName('Autostartgroup', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : PreferencesTableMap::translateFieldName('Autostartgroup', TableMap::TYPE_PHPNAME, $indexType)];
             $this->autostartgroup = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : PreferencesTableMap::translateFieldName('DashboardNumExams', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : PreferencesTableMap::translateFieldName('DashboardNumExams', TableMap::TYPE_PHPNAME, $indexType)];
             $this->dashboard_num_exams = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : PreferencesTableMap::translateFieldName('NumberQuestions', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : PreferencesTableMap::translateFieldName('NumberQuestions', TableMap::TYPE_PHPNAME, $indexType)];
             $this->number_questions = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : PreferencesTableMap::translateFieldName('NumberSubtasks', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : PreferencesTableMap::translateFieldName('NumberSubtasks', TableMap::TYPE_PHPNAME, $indexType)];
             $this->number_subtasks = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : PreferencesTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : PreferencesTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->user_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : PreferencesTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : PreferencesTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : PreferencesTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -704,7 +793,7 @@ abstract class Preferences implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 8; // 8 = PreferencesTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 10; // 10 = PreferencesTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Preferences'), 0, $e);
@@ -726,6 +815,9 @@ abstract class Preferences implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
+        }
     } // ensureConsistency
 
     /**
@@ -765,6 +857,7 @@ abstract class Preferences implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aUser = null;
         } // if (deep)
     }
 
@@ -876,6 +969,18 @@ abstract class Preferences implements ActiveRecordInterface
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
 
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -907,8 +1012,15 @@ abstract class Preferences implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
+        $this->modifiedColumns[PreferencesTableMap::COL_ID] = true;
+        if (null !== $this->id) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . PreferencesTableMap::COL_ID . ')');
+        }
 
          // check the columns in natural order for more readable SQL queries
+        if ($this->isColumnModified(PreferencesTableMap::COL_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'id';
+        }
         if ($this->isColumnModified(PreferencesTableMap::COL_JQUERYTHEME)) {
             $modifiedColumns[':p' . $index++]  = 'jqueryTheme';
         }
@@ -927,6 +1039,9 @@ abstract class Preferences implements ActiveRecordInterface
         if ($this->isColumnModified(PreferencesTableMap::COL_NUMBER_SUBTASKS)) {
             $modifiedColumns[':p' . $index++]  = 'number_subtasks';
         }
+        if ($this->isColumnModified(PreferencesTableMap::COL_USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'user_id';
+        }
         if ($this->isColumnModified(PreferencesTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
@@ -944,6 +1059,9 @@ abstract class Preferences implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
+                    case 'id':
+                        $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
+                        break;
                     case 'jqueryTheme':
                         $stmt->bindValue($identifier, $this->jquerytheme, PDO::PARAM_STR);
                         break;
@@ -962,6 +1080,9 @@ abstract class Preferences implements ActiveRecordInterface
                     case 'number_subtasks':
                         $stmt->bindValue($identifier, $this->number_subtasks, PDO::PARAM_INT);
                         break;
+                    case 'user_id':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
+                        break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
                         break;
@@ -975,6 +1096,13 @@ abstract class Preferences implements ActiveRecordInterface
             Propel::log($e->getMessage(), Propel::LOG_ERR);
             throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), 0, $e);
         }
+
+        try {
+            $pk = $con->lastInsertId();
+        } catch (Exception $e) {
+            throw new PropelException('Unable to get autoincrement id.', 0, $e);
+        }
+        $this->setId($pk);
 
         $this->setNew(false);
     }
@@ -1024,27 +1152,33 @@ abstract class Preferences implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                return $this->getJquerytheme();
+                return $this->getId();
                 break;
             case 1:
-                return $this->getAutostartexam();
+                return $this->getJquerytheme();
                 break;
             case 2:
-                return $this->getAutostartgroup();
+                return $this->getAutostartexam();
                 break;
             case 3:
-                return $this->getDashboardNumExams();
+                return $this->getAutostartgroup();
                 break;
             case 4:
-                return $this->getNumberQuestions();
+                return $this->getDashboardNumExams();
                 break;
             case 5:
-                return $this->getNumberSubtasks();
+                return $this->getNumberQuestions();
                 break;
             case 6:
-                return $this->getCreatedAt();
+                return $this->getNumberSubtasks();
                 break;
             case 7:
+                return $this->getUserId();
+                break;
+            case 8:
+                return $this->getCreatedAt();
+                break;
+            case 9:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1064,10 +1198,11 @@ abstract class Preferences implements ActiveRecordInterface
      *                    Defaults to TableMap::TYPE_PHPNAME.
      * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
      * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
+     * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
      *
      * @return array an associative array containing the field names (as keys) and field values
      */
-    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array())
+    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
         if (isset($alreadyDumpedObjects['Preferences'][$this->hashCode()])) {
@@ -1076,27 +1211,29 @@ abstract class Preferences implements ActiveRecordInterface
         $alreadyDumpedObjects['Preferences'][$this->hashCode()] = true;
         $keys = PreferencesTableMap::getFieldNames($keyType);
         $result = array(
-            $keys[0] => $this->getJquerytheme(),
-            $keys[1] => $this->getAutostartexam(),
-            $keys[2] => $this->getAutostartgroup(),
-            $keys[3] => $this->getDashboardNumExams(),
-            $keys[4] => $this->getNumberQuestions(),
-            $keys[5] => $this->getNumberSubtasks(),
-            $keys[6] => $this->getCreatedAt(),
-            $keys[7] => $this->getUpdatedAt(),
+            $keys[0] => $this->getId(),
+            $keys[1] => $this->getJquerytheme(),
+            $keys[2] => $this->getAutostartexam(),
+            $keys[3] => $this->getAutostartgroup(),
+            $keys[4] => $this->getDashboardNumExams(),
+            $keys[5] => $this->getNumberQuestions(),
+            $keys[6] => $this->getNumberSubtasks(),
+            $keys[7] => $this->getUserId(),
+            $keys[8] => $this->getCreatedAt(),
+            $keys[9] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[6]] instanceof \DateTime) {
+        if ($result[$keys[8]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[6]];
-            $result[$keys[6]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+            $dateTime = clone $result[$keys[8]];
+            $result[$keys[8]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
-        if ($result[$keys[7]] instanceof \DateTime) {
+        if ($result[$keys[9]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[7]];
-            $result[$keys[7]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+            $dateTime = clone $result[$keys[9]];
+            $result[$keys[9]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1104,6 +1241,23 @@ abstract class Preferences implements ActiveRecordInterface
             $result[$key] = $virtualColumn;
         }
 
+        if ($includeForeignObjects) {
+            if (null !== $this->aUser) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'user';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'users';
+                        break;
+                    default:
+                        $key = 'User';
+                }
+
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+        }
 
         return $result;
     }
@@ -1138,27 +1292,33 @@ abstract class Preferences implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                $this->setJquerytheme($value);
+                $this->setId($value);
                 break;
             case 1:
-                $this->setAutostartexam($value);
+                $this->setJquerytheme($value);
                 break;
             case 2:
-                $this->setAutostartgroup($value);
+                $this->setAutostartexam($value);
                 break;
             case 3:
-                $this->setDashboardNumExams($value);
+                $this->setAutostartgroup($value);
                 break;
             case 4:
-                $this->setNumberQuestions($value);
+                $this->setDashboardNumExams($value);
                 break;
             case 5:
-                $this->setNumberSubtasks($value);
+                $this->setNumberQuestions($value);
                 break;
             case 6:
-                $this->setCreatedAt($value);
+                $this->setNumberSubtasks($value);
                 break;
             case 7:
+                $this->setUserId($value);
+                break;
+            case 8:
+                $this->setCreatedAt($value);
+                break;
+            case 9:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1188,28 +1348,34 @@ abstract class Preferences implements ActiveRecordInterface
         $keys = PreferencesTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
-            $this->setJquerytheme($arr[$keys[0]]);
+            $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setAutostartexam($arr[$keys[1]]);
+            $this->setJquerytheme($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setAutostartgroup($arr[$keys[2]]);
+            $this->setAutostartexam($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setDashboardNumExams($arr[$keys[3]]);
+            $this->setAutostartgroup($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setNumberQuestions($arr[$keys[4]]);
+            $this->setDashboardNumExams($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setNumberSubtasks($arr[$keys[5]]);
+            $this->setNumberQuestions($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setCreatedAt($arr[$keys[6]]);
+            $this->setNumberSubtasks($arr[$keys[6]]);
         }
         if (array_key_exists($keys[7], $arr)) {
-            $this->setUpdatedAt($arr[$keys[7]]);
+            $this->setUserId($arr[$keys[7]]);
+        }
+        if (array_key_exists($keys[8], $arr)) {
+            $this->setCreatedAt($arr[$keys[8]]);
+        }
+        if (array_key_exists($keys[9], $arr)) {
+            $this->setUpdatedAt($arr[$keys[9]]);
         }
     }
 
@@ -1252,6 +1418,9 @@ abstract class Preferences implements ActiveRecordInterface
     {
         $criteria = new Criteria(PreferencesTableMap::DATABASE_NAME);
 
+        if ($this->isColumnModified(PreferencesTableMap::COL_ID)) {
+            $criteria->add(PreferencesTableMap::COL_ID, $this->id);
+        }
         if ($this->isColumnModified(PreferencesTableMap::COL_JQUERYTHEME)) {
             $criteria->add(PreferencesTableMap::COL_JQUERYTHEME, $this->jquerytheme);
         }
@@ -1269,6 +1438,9 @@ abstract class Preferences implements ActiveRecordInterface
         }
         if ($this->isColumnModified(PreferencesTableMap::COL_NUMBER_SUBTASKS)) {
             $criteria->add(PreferencesTableMap::COL_NUMBER_SUBTASKS, $this->number_subtasks);
+        }
+        if ($this->isColumnModified(PreferencesTableMap::COL_USER_ID)) {
+            $criteria->add(PreferencesTableMap::COL_USER_ID, $this->user_id);
         }
         if ($this->isColumnModified(PreferencesTableMap::COL_CREATED_AT)) {
             $criteria->add(PreferencesTableMap::COL_CREATED_AT, $this->created_at);
@@ -1292,7 +1464,8 @@ abstract class Preferences implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        throw new LogicException('The Preferences object has no primary key');
+        $criteria = ChildPreferencesQuery::create();
+        $criteria->add(PreferencesTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1305,7 +1478,7 @@ abstract class Preferences implements ActiveRecordInterface
      */
     public function hashCode()
     {
-        $validPk = false;
+        $validPk = null !== $this->getId();
 
         $validPrimaryKeyFKs = 0;
         $primaryKeyFKs = [];
@@ -1320,27 +1493,23 @@ abstract class Preferences implements ActiveRecordInterface
     }
 
     /**
-     * Returns NULL since this table doesn't have a primary key.
-     * This method exists only for BC and is deprecated!
-     * @return null
+     * Returns the primary key for this object (row).
+     * @return int
      */
     public function getPrimaryKey()
     {
-        return null;
+        return $this->getId();
     }
 
     /**
-     * Dummy primary key setter.
+     * Generic method to set the primary key (id column).
      *
-     * This function only exists to preserve backwards compatibility.  It is no longer
-     * needed or required by the Persistent interface.  It will be removed in next BC-breaking
-     * release of Propel.
-     *
-     * @deprecated
+     * @param       int $key Primary key.
+     * @return void
      */
-    public function setPrimaryKey($pk)
+    public function setPrimaryKey($key)
     {
-        // do nothing, because this object doesn't have any primary keys
+        $this->setId($key);
     }
 
     /**
@@ -1349,7 +1518,7 @@ abstract class Preferences implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return ;
+        return null === $this->getId();
     }
 
     /**
@@ -1371,10 +1540,12 @@ abstract class Preferences implements ActiveRecordInterface
         $copyObj->setDashboardNumExams($this->getDashboardNumExams());
         $copyObj->setNumberQuestions($this->getNumberQuestions());
         $copyObj->setNumberSubtasks($this->getNumberSubtasks());
+        $copyObj->setUserId($this->getUserId());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
             $copyObj->setNew(true);
+            $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
         }
     }
 
@@ -1401,18 +1572,74 @@ abstract class Preferences implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a ChildUser object.
+     *
+     * @param  ChildUser $v
+     * @return $this|\Preferences The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUser(ChildUser $v = null)
+    {
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
+        }
+
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
+        if ($v !== null) {
+            $v->addPreferences($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildUser object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUser The associated ChildUser object.
+     * @throws PropelException
+     */
+    public function getUser(ConnectionInterface $con = null)
+    {
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addPreferencess($this);
+             */
+        }
+
+        return $this->aUser;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
      */
     public function clear()
     {
+        if (null !== $this->aUser) {
+            $this->aUser->removePreferences($this);
+        }
+        $this->id = null;
         $this->jquerytheme = null;
         $this->autostartexam = null;
         $this->autostartgroup = null;
         $this->dashboard_num_exams = null;
         $this->number_questions = null;
         $this->number_subtasks = null;
+        $this->user_id = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -1435,6 +1662,7 @@ abstract class Preferences implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
+        $this->aUser = null;
     }
 
     /**

@@ -21,7 +21,7 @@
         <div class="collapse navbar-collapse" id="navbar-ex-collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li class="active">
-                    <a href="{{url('select')}}">Setup</a>
+                    <a href="{{url('setup')}}">Setup</a>
                 </li>
                 <li>
                     <a href="#">Grade</a>

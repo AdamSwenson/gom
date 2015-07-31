@@ -10,6 +10,8 @@ use \QuestionScore as ChildQuestionScore;
 use \QuestionScoreQuery as ChildQuestionScoreQuery;
 use \Student as ChildStudent;
 use \StudentQuery as ChildStudentQuery;
+use \User as ChildUser;
+use \UserQuery as ChildUserQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
@@ -34,7 +36,7 @@ use Propel\Runtime\Util\PropelDateTime;
  *
 * @package    propel.generator..Base
 */
-abstract class QuestionScore implements ActiveRecordInterface
+abstract class QuestionScore implements ActiveRecordInterface, IQuestionScore
 {
     /**
      * TableMap class name
@@ -69,6 +71,12 @@ abstract class QuestionScore implements ActiveRecordInterface
     protected $virtualColumns = array();
 
     /**
+     * The value for the id field.
+     * @var        int
+     */
+    protected $id;
+
+    /**
      * The value for the examid field.
      * @var        int
      */
@@ -93,6 +101,12 @@ abstract class QuestionScore implements ActiveRecordInterface
     protected $questionscore;
 
     /**
+     * The value for the user_id field.
+     * @var        int
+     */
+    protected $user_id;
+
+    /**
      * The value for the created_at field.
      * @var        \DateTime
      */
@@ -103,6 +117,11 @@ abstract class QuestionScore implements ActiveRecordInterface
      * @var        \DateTime
      */
     protected $updated_at;
+
+    /**
+     * @var        ChildUser
+     */
+    protected $aUser;
 
     /**
      * @var        ChildExam
@@ -345,6 +364,16 @@ abstract class QuestionScore implements ActiveRecordInterface
     }
 
     /**
+     * Get the [id] column value.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * Get the [examid] column value.
      *
      * @return int
@@ -382,6 +411,16 @@ abstract class QuestionScore implements ActiveRecordInterface
     public function getQuestionscore()
     {
         return $this->questionscore;
+    }
+
+    /**
+     * Get the [user_id] column value.
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
     }
 
     /**
@@ -423,6 +462,26 @@ abstract class QuestionScore implements ActiveRecordInterface
             return $this->updated_at instanceof \DateTime ? $this->updated_at->format($format) : null;
         }
     }
+
+    /**
+     * Set the value of [id] column.
+     *
+     * @param int $v new value
+     * @return $this|\QuestionScore The current object (for fluent API support)
+     */
+    public function setId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->id !== $v) {
+            $this->id = $v;
+            $this->modifiedColumns[QuestionScoreTableMap::COL_ID] = true;
+        }
+
+        return $this;
+    } // setId()
 
     /**
      * Set the value of [examid] column.
@@ -517,6 +576,30 @@ abstract class QuestionScore implements ActiveRecordInterface
     } // setQuestionscore()
 
     /**
+     * Set the value of [user_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\QuestionScore The current object (for fluent API support)
+     */
+    public function setUserId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[QuestionScoreTableMap::COL_USER_ID] = true;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
+        }
+
+        return $this;
+    } // setUserId()
+
+    /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
@@ -592,25 +675,31 @@ abstract class QuestionScore implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : QuestionScoreTableMap::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : QuestionScoreTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : QuestionScoreTableMap::translateFieldName('Examid', TableMap::TYPE_PHPNAME, $indexType)];
             $this->examid = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : QuestionScoreTableMap::translateFieldName('Questionid', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : QuestionScoreTableMap::translateFieldName('Questionid', TableMap::TYPE_PHPNAME, $indexType)];
             $this->questionid = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : QuestionScoreTableMap::translateFieldName('Studentid', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : QuestionScoreTableMap::translateFieldName('Studentid', TableMap::TYPE_PHPNAME, $indexType)];
             $this->studentid = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : QuestionScoreTableMap::translateFieldName('Questionscore', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : QuestionScoreTableMap::translateFieldName('Questionscore', TableMap::TYPE_PHPNAME, $indexType)];
             $this->questionscore = (null !== $col) ? (double) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : QuestionScoreTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : QuestionScoreTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->user_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : QuestionScoreTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : QuestionScoreTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : QuestionScoreTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -623,7 +712,7 @@ abstract class QuestionScore implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = QuestionScoreTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 8; // 8 = QuestionScoreTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\QuestionScore'), 0, $e);
@@ -653,6 +742,9 @@ abstract class QuestionScore implements ActiveRecordInterface
         }
         if ($this->aStudent !== null && $this->studentid !== $this->aStudent->getId()) {
             $this->aStudent = null;
+        }
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
         }
     } // ensureConsistency
 
@@ -693,6 +785,7 @@ abstract class QuestionScore implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aUser = null;
             $this->aExam = null;
             $this->aStudent = null;
             $this->aQuestion = null;
@@ -812,6 +905,13 @@ abstract class QuestionScore implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
+            }
+
             if ($this->aExam !== null) {
                 if ($this->aExam->isModified() || $this->aExam->isNew()) {
                     $affectedRows += $this->aExam->save($con);
@@ -864,8 +964,15 @@ abstract class QuestionScore implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
+        $this->modifiedColumns[QuestionScoreTableMap::COL_ID] = true;
+        if (null !== $this->id) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . QuestionScoreTableMap::COL_ID . ')');
+        }
 
          // check the columns in natural order for more readable SQL queries
+        if ($this->isColumnModified(QuestionScoreTableMap::COL_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'id';
+        }
         if ($this->isColumnModified(QuestionScoreTableMap::COL_EXAMID)) {
             $modifiedColumns[':p' . $index++]  = 'examID';
         }
@@ -877,6 +984,9 @@ abstract class QuestionScore implements ActiveRecordInterface
         }
         if ($this->isColumnModified(QuestionScoreTableMap::COL_QUESTIONSCORE)) {
             $modifiedColumns[':p' . $index++]  = 'questionScore';
+        }
+        if ($this->isColumnModified(QuestionScoreTableMap::COL_USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'user_id';
         }
         if ($this->isColumnModified(QuestionScoreTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
@@ -895,6 +1005,9 @@ abstract class QuestionScore implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
+                    case 'id':
+                        $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
+                        break;
                     case 'examID':
                         $stmt->bindValue($identifier, $this->examid, PDO::PARAM_INT);
                         break;
@@ -906,6 +1019,9 @@ abstract class QuestionScore implements ActiveRecordInterface
                         break;
                     case 'questionScore':
                         $stmt->bindValue($identifier, $this->questionscore, PDO::PARAM_STR);
+                        break;
+                    case 'user_id':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -920,6 +1036,13 @@ abstract class QuestionScore implements ActiveRecordInterface
             Propel::log($e->getMessage(), Propel::LOG_ERR);
             throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), 0, $e);
         }
+
+        try {
+            $pk = $con->lastInsertId();
+        } catch (Exception $e) {
+            throw new PropelException('Unable to get autoincrement id.', 0, $e);
+        }
+        $this->setId($pk);
 
         $this->setNew(false);
     }
@@ -969,21 +1092,27 @@ abstract class QuestionScore implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                return $this->getExamid();
+                return $this->getId();
                 break;
             case 1:
-                return $this->getQuestionid();
+                return $this->getExamid();
                 break;
             case 2:
-                return $this->getStudentid();
+                return $this->getQuestionid();
                 break;
             case 3:
-                return $this->getQuestionscore();
+                return $this->getStudentid();
                 break;
             case 4:
-                return $this->getCreatedAt();
+                return $this->getQuestionscore();
                 break;
             case 5:
+                return $this->getUserId();
+                break;
+            case 6:
+                return $this->getCreatedAt();
+                break;
+            case 7:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1016,25 +1145,27 @@ abstract class QuestionScore implements ActiveRecordInterface
         $alreadyDumpedObjects['QuestionScore'][$this->hashCode()] = true;
         $keys = QuestionScoreTableMap::getFieldNames($keyType);
         $result = array(
-            $keys[0] => $this->getExamid(),
-            $keys[1] => $this->getQuestionid(),
-            $keys[2] => $this->getStudentid(),
-            $keys[3] => $this->getQuestionscore(),
-            $keys[4] => $this->getCreatedAt(),
-            $keys[5] => $this->getUpdatedAt(),
+            $keys[0] => $this->getId(),
+            $keys[1] => $this->getExamid(),
+            $keys[2] => $this->getQuestionid(),
+            $keys[3] => $this->getStudentid(),
+            $keys[4] => $this->getQuestionscore(),
+            $keys[5] => $this->getUserId(),
+            $keys[6] => $this->getCreatedAt(),
+            $keys[7] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[4]] instanceof \DateTime) {
+        if ($result[$keys[6]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[4]];
-            $result[$keys[4]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+            $dateTime = clone $result[$keys[6]];
+            $result[$keys[6]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
-        if ($result[$keys[5]] instanceof \DateTime) {
+        if ($result[$keys[7]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[5]];
-            $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+            $dateTime = clone $result[$keys[7]];
+            $result[$keys[7]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1043,6 +1174,21 @@ abstract class QuestionScore implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
+            if (null !== $this->aUser) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'user';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'users';
+                        break;
+                    default:
+                        $key = 'User';
+                }
+
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
             if (null !== $this->aExam) {
 
                 switch ($keyType) {
@@ -1123,21 +1269,27 @@ abstract class QuestionScore implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                $this->setExamid($value);
+                $this->setId($value);
                 break;
             case 1:
-                $this->setQuestionid($value);
+                $this->setExamid($value);
                 break;
             case 2:
-                $this->setStudentid($value);
+                $this->setQuestionid($value);
                 break;
             case 3:
-                $this->setQuestionscore($value);
+                $this->setStudentid($value);
                 break;
             case 4:
-                $this->setCreatedAt($value);
+                $this->setQuestionscore($value);
                 break;
             case 5:
+                $this->setUserId($value);
+                break;
+            case 6:
+                $this->setCreatedAt($value);
+                break;
+            case 7:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1167,22 +1319,28 @@ abstract class QuestionScore implements ActiveRecordInterface
         $keys = QuestionScoreTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
-            $this->setExamid($arr[$keys[0]]);
+            $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setQuestionid($arr[$keys[1]]);
+            $this->setExamid($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setStudentid($arr[$keys[2]]);
+            $this->setQuestionid($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setQuestionscore($arr[$keys[3]]);
+            $this->setStudentid($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setCreatedAt($arr[$keys[4]]);
+            $this->setQuestionscore($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setUpdatedAt($arr[$keys[5]]);
+            $this->setUserId($arr[$keys[5]]);
+        }
+        if (array_key_exists($keys[6], $arr)) {
+            $this->setCreatedAt($arr[$keys[6]]);
+        }
+        if (array_key_exists($keys[7], $arr)) {
+            $this->setUpdatedAt($arr[$keys[7]]);
         }
     }
 
@@ -1225,6 +1383,9 @@ abstract class QuestionScore implements ActiveRecordInterface
     {
         $criteria = new Criteria(QuestionScoreTableMap::DATABASE_NAME);
 
+        if ($this->isColumnModified(QuestionScoreTableMap::COL_ID)) {
+            $criteria->add(QuestionScoreTableMap::COL_ID, $this->id);
+        }
         if ($this->isColumnModified(QuestionScoreTableMap::COL_EXAMID)) {
             $criteria->add(QuestionScoreTableMap::COL_EXAMID, $this->examid);
         }
@@ -1236,6 +1397,9 @@ abstract class QuestionScore implements ActiveRecordInterface
         }
         if ($this->isColumnModified(QuestionScoreTableMap::COL_QUESTIONSCORE)) {
             $criteria->add(QuestionScoreTableMap::COL_QUESTIONSCORE, $this->questionscore);
+        }
+        if ($this->isColumnModified(QuestionScoreTableMap::COL_USER_ID)) {
+            $criteria->add(QuestionScoreTableMap::COL_USER_ID, $this->user_id);
         }
         if ($this->isColumnModified(QuestionScoreTableMap::COL_CREATED_AT)) {
             $criteria->add(QuestionScoreTableMap::COL_CREATED_AT, $this->created_at);
@@ -1260,6 +1424,7 @@ abstract class QuestionScore implements ActiveRecordInterface
     public function buildPkeyCriteria()
     {
         $criteria = ChildQuestionScoreQuery::create();
+        $criteria->add(QuestionScoreTableMap::COL_ID, $this->id);
         $criteria->add(QuestionScoreTableMap::COL_EXAMID, $this->examid);
         $criteria->add(QuestionScoreTableMap::COL_QUESTIONID, $this->questionid);
         $criteria->add(QuestionScoreTableMap::COL_STUDENTID, $this->studentid);
@@ -1275,7 +1440,8 @@ abstract class QuestionScore implements ActiveRecordInterface
      */
     public function hashCode()
     {
-        $validPk = null !== $this->getExamid() &&
+        $validPk = null !== $this->getId() &&
+            null !== $this->getExamid() &&
             null !== $this->getQuestionid() &&
             null !== $this->getStudentid();
 
@@ -1320,9 +1486,10 @@ abstract class QuestionScore implements ActiveRecordInterface
     public function getPrimaryKey()
     {
         $pks = array();
-        $pks[0] = $this->getExamid();
-        $pks[1] = $this->getQuestionid();
-        $pks[2] = $this->getStudentid();
+        $pks[0] = $this->getId();
+        $pks[1] = $this->getExamid();
+        $pks[2] = $this->getQuestionid();
+        $pks[3] = $this->getStudentid();
 
         return $pks;
     }
@@ -1335,9 +1502,10 @@ abstract class QuestionScore implements ActiveRecordInterface
      */
     public function setPrimaryKey($keys)
     {
-        $this->setExamid($keys[0]);
-        $this->setQuestionid($keys[1]);
-        $this->setStudentid($keys[2]);
+        $this->setId($keys[0]);
+        $this->setExamid($keys[1]);
+        $this->setQuestionid($keys[2]);
+        $this->setStudentid($keys[3]);
     }
 
     /**
@@ -1346,7 +1514,7 @@ abstract class QuestionScore implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return (null === $this->getExamid()) && (null === $this->getQuestionid()) && (null === $this->getStudentid());
+        return (null === $this->getId()) && (null === $this->getExamid()) && (null === $this->getQuestionid()) && (null === $this->getStudentid());
     }
 
     /**
@@ -1366,10 +1534,12 @@ abstract class QuestionScore implements ActiveRecordInterface
         $copyObj->setQuestionid($this->getQuestionid());
         $copyObj->setStudentid($this->getStudentid());
         $copyObj->setQuestionscore($this->getQuestionscore());
+        $copyObj->setUserId($this->getUserId());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
             $copyObj->setNew(true);
+            $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
         }
     }
 
@@ -1393,6 +1563,57 @@ abstract class QuestionScore implements ActiveRecordInterface
         $this->copyInto($copyObj, $deepCopy);
 
         return $copyObj;
+    }
+
+    /**
+     * Declares an association between this object and a ChildUser object.
+     *
+     * @param  ChildUser $v
+     * @return $this|\QuestionScore The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUser(ChildUser $v = null)
+    {
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
+        }
+
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
+        if ($v !== null) {
+            $v->addQuestionScore($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildUser object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUser The associated ChildUser object.
+     * @throws PropelException
+     */
+    public function getUser(ConnectionInterface $con = null)
+    {
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addQuestionScores($this);
+             */
+        }
+
+        return $this->aUser;
     }
 
     /**
@@ -1555,6 +1776,9 @@ abstract class QuestionScore implements ActiveRecordInterface
      */
     public function clear()
     {
+        if (null !== $this->aUser) {
+            $this->aUser->removeQuestionScore($this);
+        }
         if (null !== $this->aExam) {
             $this->aExam->removeQuestionScore($this);
         }
@@ -1564,10 +1788,12 @@ abstract class QuestionScore implements ActiveRecordInterface
         if (null !== $this->aQuestion) {
             $this->aQuestion->removeQuestionScore($this);
         }
+        $this->id = null;
         $this->examid = null;
         $this->questionid = null;
         $this->studentid = null;
         $this->questionscore = null;
+        $this->user_id = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -1590,6 +1816,7 @@ abstract class QuestionScore implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
+        $this->aUser = null;
         $this->aExam = null;
         $this->aStudent = null;
         $this->aQuestion = null;

@@ -2,16 +2,14 @@
 
 namespace Base;
 
-use \Exam as ChildExam;
 use \ExamClassAssignment as ChildExamClassAssignment;
 use \ExamClassAssignmentQuery as ChildExamClassAssignmentQuery;
-use \ExamQuery as ChildExamQuery;
 use \Kumi as ChildKumi;
 use \KumiQuery as ChildKumiQuery;
-use \Student as ChildStudent;
 use \StudentClassAssignment as ChildStudentClassAssignment;
 use \StudentClassAssignmentQuery as ChildStudentClassAssignmentQuery;
-use \StudentQuery as ChildStudentQuery;
+use \User as ChildUser;
+use \UserQuery as ChildUserQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
@@ -90,6 +88,12 @@ abstract class Kumi implements ActiveRecordInterface
     protected $nickname;
 
     /**
+     * The value for the user_id field.
+     * @var        int
+     */
+    protected $user_id;
+
+    /**
      * The value for the created_at field.
      * @var        \DateTime
      */
@@ -100,6 +104,11 @@ abstract class Kumi implements ActiveRecordInterface
      * @var        \DateTime
      */
     protected $updated_at;
+
+    /**
+     * @var        ChildUser
+     */
+    protected $aUser;
 
     /**
      * @var        ObjectCollection|ChildStudentClassAssignment[] Collection to store aggregation of ChildStudentClassAssignment objects.
@@ -114,44 +123,12 @@ abstract class Kumi implements ActiveRecordInterface
     protected $collExamClassAssignmentsPartial;
 
     /**
-     * @var        ObjectCollection|ChildStudent[] Cross Collection to store aggregation of ChildStudent objects.
-     */
-    protected $collStudents;
-
-    /**
-     * @var bool
-     */
-    protected $collStudentsPartial;
-
-    /**
-     * @var        ObjectCollection|ChildExam[] Cross Collection to store aggregation of ChildExam objects.
-     */
-    protected $collExams;
-
-    /**
-     * @var bool
-     */
-    protected $collExamsPartial;
-
-    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
      * @var boolean
      */
     protected $alreadyInSave = false;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildStudent[]
-     */
-    protected $studentsScheduledForDeletion = null;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildExam[]
-     */
-    protected $examsScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -413,6 +390,16 @@ abstract class Kumi implements ActiveRecordInterface
     }
 
     /**
+     * Get the [user_id] column value.
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [created_at] column value.
      *
      *
@@ -513,6 +500,30 @@ abstract class Kumi implements ActiveRecordInterface
     } // setNickname()
 
     /**
+     * Set the value of [user_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\Kumi The current object (for fluent API support)
+     */
+    public function setUserId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[KumiTableMap::COL_USER_ID] = true;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
+        }
+
+        return $this;
+    } // setUserId()
+
+    /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
@@ -597,13 +608,16 @@ abstract class Kumi implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : KumiTableMap::translateFieldName('Nickname', TableMap::TYPE_PHPNAME, $indexType)];
             $this->nickname = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : KumiTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : KumiTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->user_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : KumiTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : KumiTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : KumiTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -616,7 +630,7 @@ abstract class Kumi implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 5; // 5 = KumiTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 6; // 6 = KumiTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Kumi'), 0, $e);
@@ -638,6 +652,9 @@ abstract class Kumi implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
+        }
     } // ensureConsistency
 
     /**
@@ -677,12 +694,11 @@ abstract class Kumi implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aUser = null;
             $this->collStudentClassAssignments = null;
 
             $this->collExamClassAssignments = null;
 
-            $this->collStudents = null;
-            $this->collExams = null;
         } // if (deep)
     }
 
@@ -794,6 +810,18 @@ abstract class Kumi implements ActiveRecordInterface
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
 
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -804,64 +832,6 @@ abstract class Kumi implements ActiveRecordInterface
                 }
                 $this->resetModified();
             }
-
-            if ($this->studentsScheduledForDeletion !== null) {
-                if (!$this->studentsScheduledForDeletion->isEmpty()) {
-                    $pks = array();
-                    foreach ($this->studentsScheduledForDeletion as $entry) {
-                        $entryPk = [];
-
-                        $entryPk[1] = $this->getId();
-                        $entryPk[0] = $entry->getId();
-                        $pks[] = $entryPk;
-                    }
-
-                    \StudentClassAssignmentQuery::create()
-                        ->filterByPrimaryKeys($pks)
-                        ->delete($con);
-
-                    $this->studentsScheduledForDeletion = null;
-                }
-
-            }
-
-            if ($this->collStudents) {
-                foreach ($this->collStudents as $student) {
-                    if (!$student->isDeleted() && ($student->isNew() || $student->isModified())) {
-                        $student->save($con);
-                    }
-                }
-            }
-
-
-            if ($this->examsScheduledForDeletion !== null) {
-                if (!$this->examsScheduledForDeletion->isEmpty()) {
-                    $pks = array();
-                    foreach ($this->examsScheduledForDeletion as $entry) {
-                        $entryPk = [];
-
-                        $entryPk[0] = $this->getId();
-                        $entryPk[1] = $entry->getId();
-                        $pks[] = $entryPk;
-                    }
-
-                    \ExamClassAssignmentQuery::create()
-                        ->filterByPrimaryKeys($pks)
-                        ->delete($con);
-
-                    $this->examsScheduledForDeletion = null;
-                }
-
-            }
-
-            if ($this->collExams) {
-                foreach ($this->collExams as $exam) {
-                    if (!$exam->isDeleted() && ($exam->isNew() || $exam->isModified())) {
-                        $exam->save($con);
-                    }
-                }
-            }
-
 
             if ($this->studentClassAssignmentsScheduledForDeletion !== null) {
                 if (!$this->studentClassAssignmentsScheduledForDeletion->isEmpty()) {
@@ -932,6 +902,9 @@ abstract class Kumi implements ActiveRecordInterface
         if ($this->isColumnModified(KumiTableMap::COL_NICKNAME)) {
             $modifiedColumns[':p' . $index++]  = 'nickname';
         }
+        if ($this->isColumnModified(KumiTableMap::COL_USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'user_id';
+        }
         if ($this->isColumnModified(KumiTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
@@ -957,6 +930,9 @@ abstract class Kumi implements ActiveRecordInterface
                         break;
                     case 'nickname':
                         $stmt->bindValue($identifier, $this->nickname, PDO::PARAM_STR);
+                        break;
+                    case 'user_id':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1036,9 +1012,12 @@ abstract class Kumi implements ActiveRecordInterface
                 return $this->getNickname();
                 break;
             case 3:
-                return $this->getCreatedAt();
+                return $this->getUserId();
                 break;
             case 4:
+                return $this->getCreatedAt();
+                break;
+            case 5:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1074,21 +1053,22 @@ abstract class Kumi implements ActiveRecordInterface
             $keys[0] => $this->getId(),
             $keys[1] => $this->getYear(),
             $keys[2] => $this->getNickname(),
-            $keys[3] => $this->getCreatedAt(),
-            $keys[4] => $this->getUpdatedAt(),
+            $keys[3] => $this->getUserId(),
+            $keys[4] => $this->getCreatedAt(),
+            $keys[5] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[3]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[3]];
-            $result[$keys[3]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[4]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[4]];
             $result[$keys[4]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[5]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[5]];
+            $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1097,6 +1077,21 @@ abstract class Kumi implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
+            if (null !== $this->aUser) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'user';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'users';
+                        break;
+                    default:
+                        $key = 'User';
+                }
+
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
             if (null !== $this->collStudentClassAssignments) {
 
                 switch ($keyType) {
@@ -1171,9 +1166,12 @@ abstract class Kumi implements ActiveRecordInterface
                 $this->setNickname($value);
                 break;
             case 3:
-                $this->setCreatedAt($value);
+                $this->setUserId($value);
                 break;
             case 4:
+                $this->setCreatedAt($value);
+                break;
+            case 5:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1212,10 +1210,13 @@ abstract class Kumi implements ActiveRecordInterface
             $this->setNickname($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setCreatedAt($arr[$keys[3]]);
+            $this->setUserId($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setUpdatedAt($arr[$keys[4]]);
+            $this->setCreatedAt($arr[$keys[4]]);
+        }
+        if (array_key_exists($keys[5], $arr)) {
+            $this->setUpdatedAt($arr[$keys[5]]);
         }
     }
 
@@ -1266,6 +1267,9 @@ abstract class Kumi implements ActiveRecordInterface
         }
         if ($this->isColumnModified(KumiTableMap::COL_NICKNAME)) {
             $criteria->add(KumiTableMap::COL_NICKNAME, $this->nickname);
+        }
+        if ($this->isColumnModified(KumiTableMap::COL_USER_ID)) {
+            $criteria->add(KumiTableMap::COL_USER_ID, $this->user_id);
         }
         if ($this->isColumnModified(KumiTableMap::COL_CREATED_AT)) {
             $criteria->add(KumiTableMap::COL_CREATED_AT, $this->created_at);
@@ -1361,6 +1365,7 @@ abstract class Kumi implements ActiveRecordInterface
     {
         $copyObj->setYear($this->getYear());
         $copyObj->setNickname($this->getNickname());
+        $copyObj->setUserId($this->getUserId());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
 
@@ -1409,6 +1414,57 @@ abstract class Kumi implements ActiveRecordInterface
         $this->copyInto($copyObj, $deepCopy);
 
         return $copyObj;
+    }
+
+    /**
+     * Declares an association between this object and a ChildUser object.
+     *
+     * @param  ChildUser $v
+     * @return $this|\Kumi The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUser(ChildUser $v = null)
+    {
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
+        }
+
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
+        if ($v !== null) {
+            $v->addKumi($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildUser object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUser The associated ChildUser object.
+     * @throws PropelException
+     */
+    public function getUser(ConnectionInterface $con = null)
+    {
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addKumis($this);
+             */
+        }
+
+        return $this->aUser;
     }
 
 
@@ -1547,10 +1603,7 @@ abstract class Kumi implements ActiveRecordInterface
         $studentClassAssignmentsToDelete = $this->getStudentClassAssignments(new Criteria(), $con)->diff($studentClassAssignments);
 
 
-        //since at least one column in the foreign key is at the same time a PK
-        //we can not just set a PK to NULL in the lines below. We have to store
-        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
-        $this->studentClassAssignmentsScheduledForDeletion = clone $studentClassAssignmentsToDelete;
+        $this->studentClassAssignmentsScheduledForDeletion = $studentClassAssignmentsToDelete;
 
         foreach ($studentClassAssignmentsToDelete as $studentClassAssignmentRemoved) {
             $studentClassAssignmentRemoved->setKumi(null);
@@ -1676,6 +1729,31 @@ abstract class Kumi implements ActiveRecordInterface
         return $this->getStudentClassAssignments($query, $con);
     }
 
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Kumi is new, it will return
+     * an empty collection; or if this Kumi has previously
+     * been saved, it will retrieve related StudentClassAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Kumi.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildStudentClassAssignment[] List of ChildStudentClassAssignment objects
+     */
+    public function getStudentClassAssignmentsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildStudentClassAssignmentQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getStudentClassAssignments($query, $con);
+    }
+
     /**
      * Clears out the collExamClassAssignments collection
      *
@@ -1793,10 +1871,7 @@ abstract class Kumi implements ActiveRecordInterface
         $examClassAssignmentsToDelete = $this->getExamClassAssignments(new Criteria(), $con)->diff($examClassAssignments);
 
 
-        //since at least one column in the foreign key is at the same time a PK
-        //we can not just set a PK to NULL in the lines below. We have to store
-        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
-        $this->examClassAssignmentsScheduledForDeletion = clone $examClassAssignmentsToDelete;
+        $this->examClassAssignmentsScheduledForDeletion = $examClassAssignmentsToDelete;
 
         foreach ($examClassAssignmentsToDelete as $examClassAssignmentRemoved) {
             $examClassAssignmentRemoved->setKumi(null);
@@ -1922,488 +1997,29 @@ abstract class Kumi implements ActiveRecordInterface
         return $this->getExamClassAssignments($query, $con);
     }
 
-    /**
-     * Clears out the collStudents collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addStudents()
-     */
-    public function clearStudents()
-    {
-        $this->collStudents = null; // important to set this to NULL since that means it is uninitialized
-    }
 
     /**
-     * Initializes the collStudents crossRef collection.
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Kumi is new, it will return
+     * an empty collection; or if this Kumi has previously
+     * been saved, it will retrieve related ExamClassAssignments from storage.
      *
-     * By default this just sets the collStudents collection to an empty collection (like clearStudents());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Kumi.
      *
-     * @return void
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildExamClassAssignment[] List of ChildExamClassAssignment objects
      */
-    public function initStudents()
+    public function getExamClassAssignmentsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
-        $this->collStudents = new ObjectCollection();
-        $this->collStudentsPartial = true;
+        $query = ChildExamClassAssignmentQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
 
-        $this->collStudents->setModel('\Student');
-    }
-
-    /**
-     * Checks if the collStudents collection is loaded.
-     *
-     * @return bool
-     */
-    public function isStudentsLoaded()
-    {
-        return null !== $this->collStudents;
-    }
-
-    /**
-     * Gets a collection of ChildStudent objects related by a many-to-many relationship
-     * to the current object by way of the studentsXclasses cross-reference table.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildKumi is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria Optional query object to filter the query
-     * @param      ConnectionInterface $con Optional connection object
-     *
-     * @return ObjectCollection|ChildStudent[] List of ChildStudent objects
-     */
-    public function getStudents(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collStudentsPartial && !$this->isNew();
-        if (null === $this->collStudents || null !== $criteria || $partial) {
-            if ($this->isNew()) {
-                // return empty collection
-                if (null === $this->collStudents) {
-                    $this->initStudents();
-                }
-            } else {
-
-                $query = ChildStudentQuery::create(null, $criteria)
-                    ->filterByKumi($this);
-                $collStudents = $query->find($con);
-                if (null !== $criteria) {
-                    return $collStudents;
-                }
-
-                if ($partial && $this->collStudents) {
-                    //make sure that already added objects gets added to the list of the database.
-                    foreach ($this->collStudents as $obj) {
-                        if (!$collStudents->contains($obj)) {
-                            $collStudents[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collStudents = $collStudents;
-                $this->collStudentsPartial = false;
-            }
-        }
-
-        return $this->collStudents;
-    }
-
-    /**
-     * Sets a collection of Student objects related by a many-to-many relationship
-     * to the current object by way of the studentsXclasses cross-reference table.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param  Collection $students A Propel collection.
-     * @param  ConnectionInterface $con Optional connection object
-     * @return $this|ChildKumi The current object (for fluent API support)
-     */
-    public function setStudents(Collection $students, ConnectionInterface $con = null)
-    {
-        $this->clearStudents();
-        $currentStudents = $this->getStudents();
-
-        $studentsScheduledForDeletion = $currentStudents->diff($students);
-
-        foreach ($studentsScheduledForDeletion as $toDelete) {
-            $this->removeStudent($toDelete);
-        }
-
-        foreach ($students as $student) {
-            if (!$currentStudents->contains($student)) {
-                $this->doAddStudent($student);
-            }
-        }
-
-        $this->collStudentsPartial = false;
-        $this->collStudents = $students;
-
-        return $this;
-    }
-
-    /**
-     * Gets the number of Student objects related by a many-to-many relationship
-     * to the current object by way of the studentsXclasses cross-reference table.
-     *
-     * @param      Criteria $criteria Optional query object to filter the query
-     * @param      boolean $distinct Set to true to force count distinct
-     * @param      ConnectionInterface $con Optional connection object
-     *
-     * @return int the number of related Student objects
-     */
-    public function countStudents(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collStudentsPartial && !$this->isNew();
-        if (null === $this->collStudents || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collStudents) {
-                return 0;
-            } else {
-
-                if ($partial && !$criteria) {
-                    return count($this->getStudents());
-                }
-
-                $query = ChildStudentQuery::create(null, $criteria);
-                if ($distinct) {
-                    $query->distinct();
-                }
-
-                return $query
-                    ->filterByKumi($this)
-                    ->count($con);
-            }
-        } else {
-            return count($this->collStudents);
-        }
-    }
-
-    /**
-     * Associate a ChildStudent to this object
-     * through the studentsXclasses cross reference table.
-     *
-     * @param ChildStudent $student
-     * @return ChildKumi The current object (for fluent API support)
-     */
-    public function addStudent(ChildStudent $student)
-    {
-        if ($this->collStudents === null) {
-            $this->initStudents();
-        }
-
-        if (!$this->getStudents()->contains($student)) {
-            // only add it if the **same** object is not already associated
-            $this->collStudents->push($student);
-            $this->doAddStudent($student);
-        }
-
-        return $this;
-    }
-
-    /**
-     *
-     * @param ChildStudent $student
-     */
-    protected function doAddStudent(ChildStudent $student)
-    {
-        $studentClassAssignment = new ChildStudentClassAssignment();
-
-        $studentClassAssignment->setStudent($student);
-
-        $studentClassAssignment->setKumi($this);
-
-        $this->addStudentClassAssignment($studentClassAssignment);
-
-        // set the back reference to this object directly as using provided method either results
-        // in endless loop or in multiple relations
-        if (!$student->isKumisLoaded()) {
-            $student->initKumis();
-            $student->getKumis()->push($this);
-        } elseif (!$student->getKumis()->contains($this)) {
-            $student->getKumis()->push($this);
-        }
-
-    }
-
-    /**
-     * Remove student of this object
-     * through the studentsXclasses cross reference table.
-     *
-     * @param ChildStudent $student
-     * @return ChildKumi The current object (for fluent API support)
-     */
-    public function removeStudent(ChildStudent $student)
-    {
-        if ($this->getStudents()->contains($student)) { $studentClassAssignment = new ChildStudentClassAssignment();
-
-            $studentClassAssignment->setStudent($student);
-            if ($student->isKumisLoaded()) {
-                //remove the back reference if available
-                $student->getKumis()->removeObject($this);
-            }
-
-            $studentClassAssignment->setKumi($this);
-            $this->removeStudentClassAssignment(clone $studentClassAssignment);
-            $studentClassAssignment->clear();
-
-            $this->collStudents->remove($this->collStudents->search($student));
-
-            if (null === $this->studentsScheduledForDeletion) {
-                $this->studentsScheduledForDeletion = clone $this->collStudents;
-                $this->studentsScheduledForDeletion->clear();
-            }
-
-            $this->studentsScheduledForDeletion->push($student);
-        }
-
-
-        return $this;
-    }
-
-    /**
-     * Clears out the collExams collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addExams()
-     */
-    public function clearExams()
-    {
-        $this->collExams = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Initializes the collExams crossRef collection.
-     *
-     * By default this just sets the collExams collection to an empty collection (like clearExams());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @return void
-     */
-    public function initExams()
-    {
-        $this->collExams = new ObjectCollection();
-        $this->collExamsPartial = true;
-
-        $this->collExams->setModel('\Exam');
-    }
-
-    /**
-     * Checks if the collExams collection is loaded.
-     *
-     * @return bool
-     */
-    public function isExamsLoaded()
-    {
-        return null !== $this->collExams;
-    }
-
-    /**
-     * Gets a collection of ChildExam objects related by a many-to-many relationship
-     * to the current object by way of the examsXclasses cross-reference table.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildKumi is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria Optional query object to filter the query
-     * @param      ConnectionInterface $con Optional connection object
-     *
-     * @return ObjectCollection|ChildExam[] List of ChildExam objects
-     */
-    public function getExams(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collExamsPartial && !$this->isNew();
-        if (null === $this->collExams || null !== $criteria || $partial) {
-            if ($this->isNew()) {
-                // return empty collection
-                if (null === $this->collExams) {
-                    $this->initExams();
-                }
-            } else {
-
-                $query = ChildExamQuery::create(null, $criteria)
-                    ->filterByKumi($this);
-                $collExams = $query->find($con);
-                if (null !== $criteria) {
-                    return $collExams;
-                }
-
-                if ($partial && $this->collExams) {
-                    //make sure that already added objects gets added to the list of the database.
-                    foreach ($this->collExams as $obj) {
-                        if (!$collExams->contains($obj)) {
-                            $collExams[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collExams = $collExams;
-                $this->collExamsPartial = false;
-            }
-        }
-
-        return $this->collExams;
-    }
-
-    /**
-     * Sets a collection of Exam objects related by a many-to-many relationship
-     * to the current object by way of the examsXclasses cross-reference table.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param  Collection $exams A Propel collection.
-     * @param  ConnectionInterface $con Optional connection object
-     * @return $this|ChildKumi The current object (for fluent API support)
-     */
-    public function setExams(Collection $exams, ConnectionInterface $con = null)
-    {
-        $this->clearExams();
-        $currentExams = $this->getExams();
-
-        $examsScheduledForDeletion = $currentExams->diff($exams);
-
-        foreach ($examsScheduledForDeletion as $toDelete) {
-            $this->removeExam($toDelete);
-        }
-
-        foreach ($exams as $exam) {
-            if (!$currentExams->contains($exam)) {
-                $this->doAddExam($exam);
-            }
-        }
-
-        $this->collExamsPartial = false;
-        $this->collExams = $exams;
-
-        return $this;
-    }
-
-    /**
-     * Gets the number of Exam objects related by a many-to-many relationship
-     * to the current object by way of the examsXclasses cross-reference table.
-     *
-     * @param      Criteria $criteria Optional query object to filter the query
-     * @param      boolean $distinct Set to true to force count distinct
-     * @param      ConnectionInterface $con Optional connection object
-     *
-     * @return int the number of related Exam objects
-     */
-    public function countExams(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collExamsPartial && !$this->isNew();
-        if (null === $this->collExams || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collExams) {
-                return 0;
-            } else {
-
-                if ($partial && !$criteria) {
-                    return count($this->getExams());
-                }
-
-                $query = ChildExamQuery::create(null, $criteria);
-                if ($distinct) {
-                    $query->distinct();
-                }
-
-                return $query
-                    ->filterByKumi($this)
-                    ->count($con);
-            }
-        } else {
-            return count($this->collExams);
-        }
-    }
-
-    /**
-     * Associate a ChildExam to this object
-     * through the examsXclasses cross reference table.
-     *
-     * @param ChildExam $exam
-     * @return ChildKumi The current object (for fluent API support)
-     */
-    public function addExam(ChildExam $exam)
-    {
-        if ($this->collExams === null) {
-            $this->initExams();
-        }
-
-        if (!$this->getExams()->contains($exam)) {
-            // only add it if the **same** object is not already associated
-            $this->collExams->push($exam);
-            $this->doAddExam($exam);
-        }
-
-        return $this;
-    }
-
-    /**
-     *
-     * @param ChildExam $exam
-     */
-    protected function doAddExam(ChildExam $exam)
-    {
-        $examClassAssignment = new ChildExamClassAssignment();
-
-        $examClassAssignment->setExam($exam);
-
-        $examClassAssignment->setKumi($this);
-
-        $this->addExamClassAssignment($examClassAssignment);
-
-        // set the back reference to this object directly as using provided method either results
-        // in endless loop or in multiple relations
-        if (!$exam->isKumisLoaded()) {
-            $exam->initKumis();
-            $exam->getKumis()->push($this);
-        } elseif (!$exam->getKumis()->contains($this)) {
-            $exam->getKumis()->push($this);
-        }
-
-    }
-
-    /**
-     * Remove exam of this object
-     * through the examsXclasses cross reference table.
-     *
-     * @param ChildExam $exam
-     * @return ChildKumi The current object (for fluent API support)
-     */
-    public function removeExam(ChildExam $exam)
-    {
-        if ($this->getExams()->contains($exam)) { $examClassAssignment = new ChildExamClassAssignment();
-
-            $examClassAssignment->setExam($exam);
-            if ($exam->isKumisLoaded()) {
-                //remove the back reference if available
-                $exam->getKumis()->removeObject($this);
-            }
-
-            $examClassAssignment->setKumi($this);
-            $this->removeExamClassAssignment(clone $examClassAssignment);
-            $examClassAssignment->clear();
-
-            $this->collExams->remove($this->collExams->search($exam));
-
-            if (null === $this->examsScheduledForDeletion) {
-                $this->examsScheduledForDeletion = clone $this->collExams;
-                $this->examsScheduledForDeletion->clear();
-            }
-
-            $this->examsScheduledForDeletion->push($exam);
-        }
-
-
-        return $this;
+        return $this->getExamClassAssignments($query, $con);
     }
 
     /**
@@ -2413,9 +2029,13 @@ abstract class Kumi implements ActiveRecordInterface
      */
     public function clear()
     {
+        if (null !== $this->aUser) {
+            $this->aUser->removeKumi($this);
+        }
         $this->id = null;
         $this->year = null;
         $this->nickname = null;
+        $this->user_id = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -2446,22 +2066,11 @@ abstract class Kumi implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
-            if ($this->collStudents) {
-                foreach ($this->collStudents as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
-            if ($this->collExams) {
-                foreach ($this->collExams as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
         } // if ($deep)
 
         $this->collStudentClassAssignments = null;
         $this->collExamClassAssignments = null;
-        $this->collStudents = null;
-        $this->collExams = null;
+        $this->aUser = null;
     }
 
     /**

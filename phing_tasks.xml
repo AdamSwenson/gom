@@ -2,23 +2,33 @@
 
 <project name="gom" description="gradeomatic tasks" default="main">
 
+    <target name="refreshAndReseed" description="Runs artisan migrate:refresh and then seeds the database using laravel tools">
+
+        <exec command="composer dump-autoload" passthru="true"/>
+        <exec command="php artisan migrate:refresh --seed" passthru="true"/>
+    </target>
+
     <target name="rebuild" description="Updates the mysql schema and updates composer's autoloader (important if you have added classes)">
         <!--rebuild db with arbitrary data-->
         <echo message="Updating database" />
-        <exec command="vendor/bin/propel sql:insert"/>
+        <!--<exec command="vendor/bin/propel sql:insert"/>-->
         <!--refresh the autoloader-->
-        <echo message="Updating autoloader" />
+        <echo message="Updating laravel and autoloader" />
         <exec command="composer dump-autoload"/>
+    </target>
+
+    <target name="addData" description="add data to db">
+        <exec command="php PopulateScript.php" dir="tests/app/classes/" passthru="true"/>
     </target>
 
     <target name="completelyRebuildModel" description="Completely rebuilds the generated sql and classes from schema.xml">
         <echo message="Rebuilding sql model"/>
-        <exec command="export LOCATION=local; vendor/bin/propel sql:build --overwrite" />
-        <exec command="export LOCATION=local; vendor/bin/propel model:build" />
+        <exec command="../../vendor/bin/propel model:build" dir="config/propel" passthru="true"/>
+        <exec command="../../vendor/bin/propel sql:build --overwrite" dir="config/propel" passthru="true" />
         <echo message="Inserting new schema into db"/>
-        <exec command="export LOCATION=local; vendor/bin/propel sql:insert" />
+        <exec command="../../vendor/bin/propel sql:insert" dir="config/propel" passthru="true"/>
         <echo message="Refreshing autoload"/>
-        <exec command="composer dump-autoload" />
+        <exec command="php artisan dump-autoload" />
     </target>
 
     <target name="refreshLogs">

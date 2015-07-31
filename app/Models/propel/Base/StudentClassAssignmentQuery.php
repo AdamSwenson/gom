@@ -20,13 +20,17 @@ use Propel\Runtime\Exception\PropelException;
  *
  *
  *
+ * @method     ChildStudentClassAssignmentQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildStudentClassAssignmentQuery orderByStudentid($order = Criteria::ASC) Order by the studentID column
  * @method     ChildStudentClassAssignmentQuery orderByClassid($order = Criteria::ASC) Order by the classID column
+ * @method     ChildStudentClassAssignmentQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildStudentClassAssignmentQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildStudentClassAssignmentQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
+ * @method     ChildStudentClassAssignmentQuery groupById() Group by the id column
  * @method     ChildStudentClassAssignmentQuery groupByStudentid() Group by the studentID column
  * @method     ChildStudentClassAssignmentQuery groupByClassid() Group by the classID column
+ * @method     ChildStudentClassAssignmentQuery groupByUserId() Group by the user_id column
  * @method     ChildStudentClassAssignmentQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildStudentClassAssignmentQuery groupByUpdatedAt() Group by the updated_at column
  *
@@ -42,27 +46,37 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildStudentClassAssignmentQuery rightJoinKumi($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Kumi relation
  * @method     ChildStudentClassAssignmentQuery innerJoinKumi($relationAlias = null) Adds a INNER JOIN clause to the query using the Kumi relation
  *
- * @method     \StudentQuery|\KumiQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildStudentClassAssignmentQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildStudentClassAssignmentQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildStudentClassAssignmentQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
+ *
+ * @method     \StudentQuery|\KumiQuery|\UserQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildStudentClassAssignment findOne(ConnectionInterface $con = null) Return the first ChildStudentClassAssignment matching the query
  * @method     ChildStudentClassAssignment findOneOrCreate(ConnectionInterface $con = null) Return the first ChildStudentClassAssignment matching the query, or a new ChildStudentClassAssignment object populated from the query conditions when no match is found
  *
+ * @method     ChildStudentClassAssignment findOneById(int $id) Return the first ChildStudentClassAssignment filtered by the id column
  * @method     ChildStudentClassAssignment findOneByStudentid(int $studentID) Return the first ChildStudentClassAssignment filtered by the studentID column
  * @method     ChildStudentClassAssignment findOneByClassid(int $classID) Return the first ChildStudentClassAssignment filtered by the classID column
+ * @method     ChildStudentClassAssignment findOneByUserId(int $user_id) Return the first ChildStudentClassAssignment filtered by the user_id column
  * @method     ChildStudentClassAssignment findOneByCreatedAt(string $created_at) Return the first ChildStudentClassAssignment filtered by the created_at column
  * @method     ChildStudentClassAssignment findOneByUpdatedAt(string $updated_at) Return the first ChildStudentClassAssignment filtered by the updated_at column *
 
  * @method     ChildStudentClassAssignment requirePk($key, ConnectionInterface $con = null) Return the ChildStudentClassAssignment by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStudentClassAssignment requireOne(ConnectionInterface $con = null) Return the first ChildStudentClassAssignment matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
+ * @method     ChildStudentClassAssignment requireOneById(int $id) Return the first ChildStudentClassAssignment filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStudentClassAssignment requireOneByStudentid(int $studentID) Return the first ChildStudentClassAssignment filtered by the studentID column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStudentClassAssignment requireOneByClassid(int $classID) Return the first ChildStudentClassAssignment filtered by the classID column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildStudentClassAssignment requireOneByUserId(int $user_id) Return the first ChildStudentClassAssignment filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStudentClassAssignment requireOneByCreatedAt(string $created_at) Return the first ChildStudentClassAssignment filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildStudentClassAssignment requireOneByUpdatedAt(string $updated_at) Return the first ChildStudentClassAssignment filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildStudentClassAssignment[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildStudentClassAssignment objects based on current ModelCriteria
+ * @method     ChildStudentClassAssignment[]|ObjectCollection findById(int $id) Return ChildStudentClassAssignment objects filtered by the id column
  * @method     ChildStudentClassAssignment[]|ObjectCollection findByStudentid(int $studentID) Return ChildStudentClassAssignment objects filtered by the studentID column
  * @method     ChildStudentClassAssignment[]|ObjectCollection findByClassid(int $classID) Return ChildStudentClassAssignment objects filtered by the classID column
+ * @method     ChildStudentClassAssignment[]|ObjectCollection findByUserId(int $user_id) Return ChildStudentClassAssignment objects filtered by the user_id column
  * @method     ChildStudentClassAssignment[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildStudentClassAssignment objects filtered by the created_at column
  * @method     ChildStudentClassAssignment[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildStudentClassAssignment objects filtered by the updated_at column
  * @method     ChildStudentClassAssignment[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -114,10 +128,10 @@ abstract class StudentClassAssignmentQuery extends ModelCriteria
      * Go fast if the query is untouched.
      *
      * <code>
-     * $obj = $c->findPk(array(12, 34), $con);
+     * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param array[$studentID, $classID] $key Primary key to use for the query
+     * @param mixed $key Primary key to use for the query
      * @param ConnectionInterface $con an optional connection object
      *
      * @return ChildStudentClassAssignment|array|mixed the result, formatted by the current formatter
@@ -127,7 +141,7 @@ abstract class StudentClassAssignmentQuery extends ModelCriteria
         if ($key === null) {
             return null;
         }
-        if ((null !== ($obj = StudentClassAssignmentTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && !$this->formatter) {
+        if ((null !== ($obj = StudentClassAssignmentTableMap::getInstanceFromPool((string) $key))) && !$this->formatter) {
             // the object is already in the instance pool
             return $obj;
         }
@@ -157,11 +171,10 @@ abstract class StudentClassAssignmentQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT studentID, classID, created_at, updated_at FROM studentsXclasses WHERE studentID = :p0 AND classID = :p1';
+        $sql = 'SELECT id, studentID, classID, user_id, created_at, updated_at FROM studentsXclasses WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
-            $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
-            $stmt->bindValue(':p1', $key[1], PDO::PARAM_INT);
+            $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
             Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -172,7 +185,7 @@ abstract class StudentClassAssignmentQuery extends ModelCriteria
             /** @var ChildStudentClassAssignment $obj */
             $obj = new ChildStudentClassAssignment();
             $obj->hydrate($row);
-            StudentClassAssignmentTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1])));
+            StudentClassAssignmentTableMap::addInstanceToPool($obj, (string) $key);
         }
         $stmt->closeCursor();
 
@@ -201,7 +214,7 @@ abstract class StudentClassAssignmentQuery extends ModelCriteria
     /**
      * Find objects by primary key
      * <code>
-     * $objs = $c->findPks(array(array(12, 56), array(832, 123), array(123, 456)), $con);
+     * $objs = $c->findPks(array(12, 56, 832), $con);
      * </code>
      * @param     array $keys Primary keys to use for the query
      * @param     ConnectionInterface $con an optional connection object
@@ -231,10 +244,8 @@ abstract class StudentClassAssignmentQuery extends ModelCriteria
      */
     public function filterByPrimaryKey($key)
     {
-        $this->addUsingAlias(StudentClassAssignmentTableMap::COL_STUDENTID, $key[0], Criteria::EQUAL);
-        $this->addUsingAlias(StudentClassAssignmentTableMap::COL_CLASSID, $key[1], Criteria::EQUAL);
 
-        return $this;
+        return $this->addUsingAlias(StudentClassAssignmentTableMap::COL_ID, $key, Criteria::EQUAL);
     }
 
     /**
@@ -246,17 +257,49 @@ abstract class StudentClassAssignmentQuery extends ModelCriteria
      */
     public function filterByPrimaryKeys($keys)
     {
-        if (empty($keys)) {
-            return $this->add(null, '1<>1', Criteria::CUSTOM);
-        }
-        foreach ($keys as $key) {
-            $cton0 = $this->getNewCriterion(StudentClassAssignmentTableMap::COL_STUDENTID, $key[0], Criteria::EQUAL);
-            $cton1 = $this->getNewCriterion(StudentClassAssignmentTableMap::COL_CLASSID, $key[1], Criteria::EQUAL);
-            $cton0->addAnd($cton1);
-            $this->addOr($cton0);
+
+        return $this->addUsingAlias(StudentClassAssignmentTableMap::COL_ID, $keys, Criteria::IN);
+    }
+
+    /**
+     * Filter the query on the id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterById(1234); // WHERE id = 1234
+     * $query->filterById(array(12, 34)); // WHERE id IN (12, 34)
+     * $query->filterById(array('min' => 12)); // WHERE id > 12
+     * </code>
+     *
+     * @param     mixed $id The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildStudentClassAssignmentQuery The current query, for fluid interface
+     */
+    public function filterById($id = null, $comparison = null)
+    {
+        if (is_array($id)) {
+            $useMinMax = false;
+            if (isset($id['min'])) {
+                $this->addUsingAlias(StudentClassAssignmentTableMap::COL_ID, $id['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($id['max'])) {
+                $this->addUsingAlias(StudentClassAssignmentTableMap::COL_ID, $id['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
         }
 
-        return $this;
+        return $this->addUsingAlias(StudentClassAssignmentTableMap::COL_ID, $id, $comparison);
     }
 
     /**
@@ -343,6 +386,49 @@ abstract class StudentClassAssignmentQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(StudentClassAssignmentTableMap::COL_CLASSID, $classid, $comparison);
+    }
+
+    /**
+     * Filter the query on the user_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUserId(1234); // WHERE user_id = 1234
+     * $query->filterByUserId(array(12, 34)); // WHERE user_id IN (12, 34)
+     * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
+     * </code>
+     *
+     * @see       filterByUser()
+     *
+     * @param     mixed $userId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildStudentClassAssignmentQuery The current query, for fluid interface
+     */
+    public function filterByUserId($userId = null, $comparison = null)
+    {
+        if (is_array($userId)) {
+            $useMinMax = false;
+            if (isset($userId['min'])) {
+                $this->addUsingAlias(StudentClassAssignmentTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($userId['max'])) {
+                $this->addUsingAlias(StudentClassAssignmentTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(StudentClassAssignmentTableMap::COL_USER_ID, $userId, $comparison);
     }
 
     /**
@@ -586,6 +672,83 @@ abstract class StudentClassAssignmentQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query by a related \User object
+     *
+     * @param \User|ObjectCollection $user The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildStudentClassAssignmentQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = null)
+    {
+        if ($user instanceof \User) {
+            return $this
+                ->addUsingAlias(StudentClassAssignmentTableMap::COL_USER_ID, $user->getId(), $comparison);
+        } elseif ($user instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(StudentClassAssignmentTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByUser() only accepts arguments of type \User or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the User relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildStudentClassAssignmentQuery The current query, for fluid interface
+     */
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('User');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'User');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the User relation User object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \UserQuery A secondary query class using the current class as primary query
+     */
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
+    }
+
+    /**
      * Exclude object from result
      *
      * @param   ChildStudentClassAssignment $studentClassAssignment Object to remove from the list of results
@@ -595,9 +758,7 @@ abstract class StudentClassAssignmentQuery extends ModelCriteria
     public function prune($studentClassAssignment = null)
     {
         if ($studentClassAssignment) {
-            $this->addCond('pruneCond0', $this->getAliasedColName(StudentClassAssignmentTableMap::COL_STUDENTID), $studentClassAssignment->getStudentid(), Criteria::NOT_EQUAL);
-            $this->addCond('pruneCond1', $this->getAliasedColName(StudentClassAssignmentTableMap::COL_CLASSID), $studentClassAssignment->getClassid(), Criteria::NOT_EQUAL);
-            $this->combine(array('pruneCond0', 'pruneCond1'), Criteria::LOGICAL_OR);
+            $this->addUsingAlias(StudentClassAssignmentTableMap::COL_ID, $studentClassAssignment->getId(), Criteria::NOT_EQUAL);
         }
 
         return $this;

@@ -19,15 +19,19 @@ interface ICleaner
     /**
      * This checks whether the input is a valid member of the type
      * @param type $to_validate
+     * @param $max_length
      * @return Value or Boolean. Returns the thing passed in if it is valid. False otherwise
      */
-    public function validate($to_validate);
-   
+    public function validate($to_validate, $max_length=null);
+
     /**
-     * This cleans the input and returns a legitimate value or FALSEs
+     * This cleans the input and returns a legitimate value or throws
+     * an exception if that's not possible
      * @param type $to_clean
+     * @param $max_length
+     * @return
      */
-    public function sanitize($to_clean);
+    public function sanitize($to_clean, $max_length=null);
     
     /**
      * Allows to set a custom max length for the thing being filtered and sanitized

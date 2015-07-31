@@ -16,15 +16,17 @@ use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\PropelException;
 
 /**
- * Base class that represents a query for the 'r_examTopics' table.
+ * Base class that represents a query for the 'r_topics' table.
  *
  *
  *
  * @method     ChildTopicQuery orderByContent($order = Criteria::ASC) Order by the content column
+ * @method     ChildTopicQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildTopicQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildTopicQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildTopicQuery groupByContent() Group by the content column
+ * @method     ChildTopicQuery groupByUserId() Group by the user_id column
  * @method     ChildTopicQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildTopicQuery groupByUpdatedAt() Group by the updated_at column
  *
@@ -32,16 +34,17 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildTopicQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildTopicQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
- * @method     ChildTopicQuery leftJoinExam($relationAlias = null) Adds a LEFT JOIN clause to the query using the Exam relation
- * @method     ChildTopicQuery rightJoinExam($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Exam relation
- * @method     ChildTopicQuery innerJoinExam($relationAlias = null) Adds a INNER JOIN clause to the query using the Exam relation
+ * @method     ChildTopicQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildTopicQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildTopicQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
  *
- * @method     \ExamQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \UserQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildTopic findOne(ConnectionInterface $con = null) Return the first ChildTopic matching the query
  * @method     ChildTopic findOneOrCreate(ConnectionInterface $con = null) Return the first ChildTopic matching the query, or a new ChildTopic object populated from the query conditions when no match is found
  *
  * @method     ChildTopic findOneByContent(string $content) Return the first ChildTopic filtered by the content column
+ * @method     ChildTopic findOneByUserId(int $user_id) Return the first ChildTopic filtered by the user_id column
  * @method     ChildTopic findOneByCreatedAt(string $created_at) Return the first ChildTopic filtered by the created_at column
  * @method     ChildTopic findOneByUpdatedAt(string $updated_at) Return the first ChildTopic filtered by the updated_at column *
 
@@ -49,11 +52,13 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildTopic requireOne(ConnectionInterface $con = null) Return the first ChildTopic matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildTopic requireOneByContent(string $content) Return the first ChildTopic filtered by the content column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildTopic requireOneByUserId(int $user_id) Return the first ChildTopic filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTopic requireOneByCreatedAt(string $created_at) Return the first ChildTopic filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTopic requireOneByUpdatedAt(string $updated_at) Return the first ChildTopic filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildTopic[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildTopic objects based on current ModelCriteria
  * @method     ChildTopic[]|ObjectCollection findByContent(string $content) Return ChildTopic objects filtered by the content column
+ * @method     ChildTopic[]|ObjectCollection findByUserId(int $user_id) Return ChildTopic objects filtered by the user_id column
  * @method     ChildTopic[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildTopic objects filtered by the created_at column
  * @method     ChildTopic[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildTopic objects filtered by the updated_at column
  * @method     ChildTopic[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -148,7 +153,7 @@ abstract class TopicQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT content, created_at, updated_at FROM r_examTopics WHERE content = :p0';
+        $sql = 'SELECT content, user_id, created_at, updated_at FROM r_topics WHERE content = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_STR);
@@ -268,6 +273,49 @@ abstract class TopicQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the user_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUserId(1234); // WHERE user_id = 1234
+     * $query->filterByUserId(array(12, 34)); // WHERE user_id IN (12, 34)
+     * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
+     * </code>
+     *
+     * @see       filterByUser()
+     *
+     * @param     mixed $userId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildTopicQuery The current query, for fluid interface
+     */
+    public function filterByUserId($userId = null, $comparison = null)
+    {
+        if (is_array($userId)) {
+            $useMinMax = false;
+            if (isset($userId['min'])) {
+                $this->addUsingAlias(TopicTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($userId['max'])) {
+                $this->addUsingAlias(TopicTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(TopicTableMap::COL_USER_ID, $userId, $comparison);
+    }
+
+    /**
      * Filter the query on the created_at column
      *
      * Example usage:
@@ -354,40 +402,44 @@ abstract class TopicQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \Exam object
+     * Filter the query by a related \User object
      *
-     * @param \Exam|ObjectCollection $exam the related object to use as filter
+     * @param \User|ObjectCollection $user The related object(s) to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
      *
      * @return ChildTopicQuery The current query, for fluid interface
      */
-    public function filterByExam($exam, $comparison = null)
+    public function filterByUser($user, $comparison = null)
     {
-        if ($exam instanceof \Exam) {
+        if ($user instanceof \User) {
             return $this
-                ->addUsingAlias(TopicTableMap::COL_CONTENT, $exam->getExamtopic(), $comparison);
-        } elseif ($exam instanceof ObjectCollection) {
+                ->addUsingAlias(TopicTableMap::COL_USER_ID, $user->getId(), $comparison);
+        } elseif ($user instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
             return $this
-                ->useExamQuery()
-                ->filterByPrimaryKeys($exam->getPrimaryKeys())
-                ->endUse();
+                ->addUsingAlias(TopicTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByExam() only accepts arguments of type \Exam or Collection');
+            throw new PropelException('filterByUser() only accepts arguments of type \User or Collection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the Exam relation
+     * Adds a JOIN clause to the query using the User relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return $this|ChildTopicQuery The current query, for fluid interface
      */
-    public function joinExam($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('Exam');
+        $relationMap = $tableMap->getRelation('User');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -402,14 +454,14 @@ abstract class TopicQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'Exam');
+            $this->addJoinObject($join, 'User');
         }
 
         return $this;
     }
 
     /**
-     * Use the Exam relation Exam object
+     * Use the User relation User object
      *
      * @see useQuery()
      *
@@ -417,13 +469,13 @@ abstract class TopicQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \ExamQuery A secondary query class using the current class as primary query
+     * @return \UserQuery A secondary query class using the current class as primary query
      */
-    public function useExamQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
-            ->joinExam($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'Exam', '\ExamQuery');
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
     }
 
     /**
@@ -443,7 +495,7 @@ abstract class TopicQuery extends ModelCriteria
     }
 
     /**
-     * Deletes all rows from the r_examTopics table.
+     * Deletes all rows from the r_topics table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).

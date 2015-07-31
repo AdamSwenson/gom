@@ -9,10 +9,18 @@
 namespace App\classes\ExamClasses\dao;
 
 
+use App\classes\SecurityClasses\cleaning\ICleanerFactory;
 use Propel\Runtime\Connection\ConnectionWrapper;
 
 interface IExamDAO
 {
+
+    /**
+     * Loads the class which handles cleaning before query
+     * @param ICleanerFactory $cleanerFactory
+     */
+    public function set_cleaner(ICleanerFactory $cleanerFactory);
+
     /**
      * Sets a connection object for use with transactions
      * @param ConnectionWrapper $conn
@@ -22,12 +30,19 @@ interface IExamDAO
 
     /**
      * Creates a new exam object, saves it, then returns it
-     * @param \Year $year
-     * @param \Term $term
-     * @param \Topic $topic
-     * @return \Exam
+     * @param  integer $year
+     * @param string $term
+     * @param string $name
+     * @return Exam
+     * @throws \Exception
      */
-    public function save_new_exam(\Year $year, \Term $term, \Topic $topic);
+    public function save_new_exam($year, $term, $name);
+    /**
+     * Deletes the exam after checking that the user is authenticated
+     * @param \Exam $exam
+     * @return mixed
+     */
+    public function delete_exam(\Exam $exam);
 
     /**
      * Returns all exams

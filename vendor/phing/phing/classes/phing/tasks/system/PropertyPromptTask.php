@@ -20,7 +20,7 @@
  */
 
 require_once 'phing/Task.php';
-include_once 'phing/input/InputRequest.php';
+include_once 'phing/input/GradingRequest.php';
 
 /**
  * Deprecated task that uses console to prompt user for property values.

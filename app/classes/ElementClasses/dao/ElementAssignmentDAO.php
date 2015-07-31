@@ -9,29 +9,72 @@
 namespace App\classes\ElementClasses\dao;
 
 
+use App\classes\Traits\UserTraits;
+
+/**
+ * Class ElementAssignmentDAO
+ * Handles almost all database interactions with the elementsXquestions table
+ *
+ * @package App\classes\ElementClasses\dao
+ */
 class ElementAssignmentDAO
 {
+    use UserTraits;
+
+    /** @var \User */
+    public $user;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
 
     /**
      * Loads the elements for a given question
+     * (returns an array of question objects)
      * @param \Exam $exam
      * @param \Question $question
      * @return \ElementAssignment[]|\Propel\Runtime\Collection\ObjectCollection
      */
     public function load_elements(\Exam $exam, \Question $question)
     {
-        $e = array();
-        $eq = \ElementQuery::create()->useElementAssignmentQuery()->filterByExam($exam)->filterByQuestion($question)->endUse()->find();
-        foreach($eq as $j){
-        array_push($e, $j);
-    }
-        return $e;
+//        $assignments = \ElementAssignmentQuery::create()
+//            ->filterByUser($this->user)
+//            ->filterByExam($exam)
+//            ->filterByQuestion($question)
+//            ->find();
+//
+//        $e = array();
+    return \ElementQuery::create()
+            ->filterByUser($this->user)
+                ->useElementAssignmentQuery()
+                    ->filterByExam($exam)
+                    ->filterByQuestion($question)
+                ->endUse()
+            ->find();
+//        foreach ($assignments as $j)
+//        {
+//            array_push($e, $j);
+//        }
+
+//        return $e;
 //        return \ElementAssignmentQuery::create()->filterByExam($exam)->filterByQuestion($question)->find();
     }
+
+//    /**
+//     *
+//     * @param \Exam $exam
+//     * @param \Question $question
+//     */
+//    public function load_element_assignments(\Exam $exam, \Question $question)
+//    {
+//
+//    }
 
     public function load_by_exam(\Exam $exam)
     {
         $element_assign = \ElementAssignmentQuery::create()
+            ->filterByUser($this->user)
             ->filterByExam($exam)
                 ->useQuestionQuery()
                     ->useQuestionAssignerQuery()
@@ -39,6 +82,7 @@ class ElementAssignmentDAO
                     ->endUse()->with('QuestionAssigner')
                 ->endUse()->with('Question')
             ->find();
+
         return $element_assign;
     }
 
@@ -51,10 +95,16 @@ class ElementAssignmentDAO
      */
     public function record(\Exam $exam, \Question $question, \Element $element, $subtask)
     {
-        $eq = \ElementAssignmentQuery::create()->filterByExam($exam)->filterByQuestion($question)->findOneOrCreate();
+        $eq = \ElementAssignmentQuery::create()
+            ->filterByUser($this->user)
+            ->filterByExam($exam)
+            ->filterByQuestion($question)
+            ->filterBySubtask($subtask)
+            ->findOneOrCreate();
         $eq->setElement($element);
-        $eq->setSubtask($subtask);
+//        $eq->setSubtask($subtask);
         $eq->save();
+
         return $eq;
     }
 }

@@ -3,15 +3,15 @@
 namespace Base;
 
 use \Element as ChildElement;
-use \ElementQuery as ChildElementQuery;
 use \Question as ChildQuestion;
-use \QuestionQuery as ChildQuestionQuery;
 use \Tag as ChildTag;
 use \TagQuery as ChildTagQuery;
 use \TaggedElement as ChildTaggedElement;
 use \TaggedElementQuery as ChildTaggedElementQuery;
 use \TaggedQuestion as ChildTaggedQuestion;
 use \TaggedQuestionQuery as ChildTaggedQuestionQuery;
+use \User as ChildUser;
+use \UserQuery as ChildUserQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
@@ -22,6 +22,7 @@ use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
 use Propel\Runtime\Collection\ObjectCollection;
+use Propel\Runtime\Collection\ObjectCombinationCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
@@ -84,6 +85,12 @@ abstract class Tag implements ActiveRecordInterface
     protected $tag;
 
     /**
+     * The value for the user_id field.
+     * @var        int
+     */
+    protected $user_id;
+
+    /**
      * The value for the created_at field.
      * @var        \DateTime
      */
@@ -94,6 +101,11 @@ abstract class Tag implements ActiveRecordInterface
      * @var        \DateTime
      */
     protected $updated_at;
+
+    /**
+     * @var        ChildUser
+     */
+    protected $aUser;
 
     /**
      * @var        ObjectCollection|ChildTaggedQuestion[] Collection to store aggregation of ChildTaggedQuestion objects.
@@ -108,6 +120,26 @@ abstract class Tag implements ActiveRecordInterface
     protected $collTaggedElementsPartial;
 
     /**
+     * @var ObjectCombinationCollection Cross CombinationCollection to store aggregation of ChildUser, ChildQuestion combination combinations.
+     */
+    protected $combinationCollUserQuestions;
+
+    /**
+     * @var bool
+     */
+    protected $combinationCollUserQuestionsPartial;
+
+    /**
+     * @var        ObjectCollection|ChildUser[] Cross Collection to store aggregation of ChildUser objects.
+     */
+    protected $collUsers;
+
+    /**
+     * @var bool
+     */
+    protected $collUsersPartial;
+
+    /**
      * @var        ObjectCollection|ChildQuestion[] Cross Collection to store aggregation of ChildQuestion objects.
      */
     protected $collQuestions;
@@ -116,6 +148,26 @@ abstract class Tag implements ActiveRecordInterface
      * @var bool
      */
     protected $collQuestionsPartial;
+
+    /**
+     * @var ObjectCombinationCollection Cross CombinationCollection to store aggregation of ChildUser, ChildElement combination combinations.
+     */
+    protected $combinationCollUserElements;
+
+    /**
+     * @var bool
+     */
+    protected $combinationCollUserElementsPartial;
+
+    /**
+     * @var        ObjectCollection|ChildUser[] Cross Collection to store aggregation of ChildUser objects.
+     */
+    protected $collUsers;
+
+    /**
+     * @var bool
+     */
+    protected $collUsersPartial;
 
     /**
      * @var        ObjectCollection|ChildElement[] Cross Collection to store aggregation of ChildElement objects.
@@ -136,16 +188,14 @@ abstract class Tag implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildQuestion[]
+     * @var ObjectCombinationCollection Cross CombinationCollection to store aggregation of ChildUser, ChildQuestion combination combinations.
      */
-    protected $questionsScheduledForDeletion = null;
+    protected $combinationCollUserQuestionsScheduledForDeletion = null;
 
     /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildElement[]
+     * @var ObjectCombinationCollection Cross CombinationCollection to store aggregation of ChildUser, ChildElement combination combinations.
      */
-    protected $elementsScheduledForDeletion = null;
+    protected $combinationCollUserElementsScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -397,6 +447,16 @@ abstract class Tag implements ActiveRecordInterface
     }
 
     /**
+     * Get the [user_id] column value.
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [created_at] column value.
      *
      *
@@ -475,6 +535,30 @@ abstract class Tag implements ActiveRecordInterface
 
         return $this;
     } // setTag()
+
+    /**
+     * Set the value of [user_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\Tag The current object (for fluent API support)
+     */
+    public function setUserId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[TagTableMap::COL_USER_ID] = true;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
+        }
+
+        return $this;
+    } // setUserId()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
@@ -558,13 +642,16 @@ abstract class Tag implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : TagTableMap::translateFieldName('Tag', TableMap::TYPE_PHPNAME, $indexType)];
             $this->tag = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : TagTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : TagTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->user_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : TagTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : TagTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : TagTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -577,7 +664,7 @@ abstract class Tag implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 4; // 4 = TagTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 5; // 5 = TagTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Tag'), 0, $e);
@@ -599,6 +686,9 @@ abstract class Tag implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
+        }
     } // ensureConsistency
 
     /**
@@ -638,12 +728,13 @@ abstract class Tag implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aUser = null;
             $this->collTaggedQuestions = null;
 
             $this->collTaggedElements = null;
 
-            $this->collQuestions = null;
-            $this->collElements = null;
+            $this->collUserQuestions = null;
+            $this->collUserElements = null;
         } // if (deep)
     }
 
@@ -755,6 +846,18 @@ abstract class Tag implements ActiveRecordInterface
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
 
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -766,14 +869,16 @@ abstract class Tag implements ActiveRecordInterface
                 $this->resetModified();
             }
 
-            if ($this->questionsScheduledForDeletion !== null) {
-                if (!$this->questionsScheduledForDeletion->isEmpty()) {
+            if ($this->combinationCollUserQuestionsScheduledForDeletion !== null) {
+                if (!$this->combinationCollUserQuestionsScheduledForDeletion->isEmpty()) {
                     $pks = array();
-                    foreach ($this->questionsScheduledForDeletion as $entry) {
+                    foreach ($this->combinationCollUserQuestionsScheduledForDeletion as $combination) {
                         $entryPk = [];
 
                         $entryPk[0] = $this->getId();
-                        $entryPk[1] = $entry->getId();
+                        $entryPk[2] = $combination[0]->getId();
+                        $entryPk[1] = $combination[1]->getId();
+
                         $pks[] = $entryPk;
                     }
 
@@ -781,28 +886,38 @@ abstract class Tag implements ActiveRecordInterface
                         ->filterByPrimaryKeys($pks)
                         ->delete($con);
 
-                    $this->questionsScheduledForDeletion = null;
+                    $this->combinationCollUserQuestionsScheduledForDeletion = null;
                 }
 
             }
 
-            if ($this->collQuestions) {
-                foreach ($this->collQuestions as $question) {
-                    if (!$question->isDeleted() && ($question->isNew() || $question->isModified())) {
-                        $question->save($con);
+            if (null !== $this->combinationCollUserQuestions) {
+                foreach ($this->combinationCollUserQuestions as $combination) {
+
+                    //$combination[0] = User (tagsXquestions_fk_69bd79)
+                    if (!$combination[0]->isDeleted() && ($combination[0]->isNew() || $combination[0]->isModified())) {
+                        $combination[0]->save($con);
                     }
+
+                    //$combination[1] = Question (tagsXquestions_fk_83fc93)
+                    if (!$combination[1]->isDeleted() && ($combination[1]->isNew() || $combination[1]->isModified())) {
+                        $combination[1]->save($con);
+                    }
+
                 }
             }
 
 
-            if ($this->elementsScheduledForDeletion !== null) {
-                if (!$this->elementsScheduledForDeletion->isEmpty()) {
+            if ($this->combinationCollUserElementsScheduledForDeletion !== null) {
+                if (!$this->combinationCollUserElementsScheduledForDeletion->isEmpty()) {
                     $pks = array();
-                    foreach ($this->elementsScheduledForDeletion as $entry) {
+                    foreach ($this->combinationCollUserElementsScheduledForDeletion as $combination) {
                         $entryPk = [];
 
                         $entryPk[0] = $this->getId();
-                        $entryPk[1] = $entry->getId();
+                        $entryPk[2] = $combination[0]->getId();
+                        $entryPk[1] = $combination[1]->getId();
+
                         $pks[] = $entryPk;
                     }
 
@@ -810,16 +925,24 @@ abstract class Tag implements ActiveRecordInterface
                         ->filterByPrimaryKeys($pks)
                         ->delete($con);
 
-                    $this->elementsScheduledForDeletion = null;
+                    $this->combinationCollUserElementsScheduledForDeletion = null;
                 }
 
             }
 
-            if ($this->collElements) {
-                foreach ($this->collElements as $element) {
-                    if (!$element->isDeleted() && ($element->isNew() || $element->isModified())) {
-                        $element->save($con);
+            if (null !== $this->combinationCollUserElements) {
+                foreach ($this->combinationCollUserElements as $combination) {
+
+                    //$combination[0] = User (tagsXelements_fk_69bd79)
+                    if (!$combination[0]->isDeleted() && ($combination[0]->isNew() || $combination[0]->isModified())) {
+                        $combination[0]->save($con);
                     }
+
+                    //$combination[1] = Element (tagsXelements_fk_88cff7)
+                    if (!$combination[1]->isDeleted() && ($combination[1]->isNew() || $combination[1]->isModified())) {
+                        $combination[1]->save($con);
+                    }
+
                 }
             }
 
@@ -890,6 +1013,9 @@ abstract class Tag implements ActiveRecordInterface
         if ($this->isColumnModified(TagTableMap::COL_TAG)) {
             $modifiedColumns[':p' . $index++]  = 'tag';
         }
+        if ($this->isColumnModified(TagTableMap::COL_USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'user_id';
+        }
         if ($this->isColumnModified(TagTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
@@ -912,6 +1038,9 @@ abstract class Tag implements ActiveRecordInterface
                         break;
                     case 'tag':
                         $stmt->bindValue($identifier, $this->tag, PDO::PARAM_STR);
+                        break;
+                    case 'user_id':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -988,9 +1117,12 @@ abstract class Tag implements ActiveRecordInterface
                 return $this->getTag();
                 break;
             case 2:
-                return $this->getCreatedAt();
+                return $this->getUserId();
                 break;
             case 3:
+                return $this->getCreatedAt();
+                break;
+            case 4:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1025,21 +1157,22 @@ abstract class Tag implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getTag(),
-            $keys[2] => $this->getCreatedAt(),
-            $keys[3] => $this->getUpdatedAt(),
+            $keys[2] => $this->getUserId(),
+            $keys[3] => $this->getCreatedAt(),
+            $keys[4] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[2]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[2]];
-            $result[$keys[2]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[3]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[3]];
             $result[$keys[3]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[4]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[4]];
+            $result[$keys[4]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1048,6 +1181,21 @@ abstract class Tag implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
+            if (null !== $this->aUser) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'user';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'users';
+                        break;
+                    default:
+                        $key = 'User';
+                }
+
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
             if (null !== $this->collTaggedQuestions) {
 
                 switch ($keyType) {
@@ -1119,9 +1267,12 @@ abstract class Tag implements ActiveRecordInterface
                 $this->setTag($value);
                 break;
             case 2:
-                $this->setCreatedAt($value);
+                $this->setUserId($value);
                 break;
             case 3:
+                $this->setCreatedAt($value);
+                break;
+            case 4:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1157,10 +1308,13 @@ abstract class Tag implements ActiveRecordInterface
             $this->setTag($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setCreatedAt($arr[$keys[2]]);
+            $this->setUserId($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setUpdatedAt($arr[$keys[3]]);
+            $this->setCreatedAt($arr[$keys[3]]);
+        }
+        if (array_key_exists($keys[4], $arr)) {
+            $this->setUpdatedAt($arr[$keys[4]]);
         }
     }
 
@@ -1209,6 +1363,9 @@ abstract class Tag implements ActiveRecordInterface
         if ($this->isColumnModified(TagTableMap::COL_TAG)) {
             $criteria->add(TagTableMap::COL_TAG, $this->tag);
         }
+        if ($this->isColumnModified(TagTableMap::COL_USER_ID)) {
+            $criteria->add(TagTableMap::COL_USER_ID, $this->user_id);
+        }
         if ($this->isColumnModified(TagTableMap::COL_CREATED_AT)) {
             $criteria->add(TagTableMap::COL_CREATED_AT, $this->created_at);
         }
@@ -1233,6 +1390,7 @@ abstract class Tag implements ActiveRecordInterface
     {
         $criteria = ChildTagQuery::create();
         $criteria->add(TagTableMap::COL_ID, $this->id);
+        $criteria->add(TagTableMap::COL_USER_ID, $this->user_id);
 
         return $criteria;
     }
@@ -1245,10 +1403,18 @@ abstract class Tag implements ActiveRecordInterface
      */
     public function hashCode()
     {
-        $validPk = null !== $this->getId();
+        $validPk = null !== $this->getId() &&
+            null !== $this->getUserId();
 
-        $validPrimaryKeyFKs = 0;
+        $validPrimaryKeyFKs = 1;
         $primaryKeyFKs = [];
+
+        //relation tags_fk_69bd79 to table users
+        if ($this->aUser && $hash = spl_object_hash($this->aUser)) {
+            $primaryKeyFKs[] = $hash;
+        } else {
+            $validPrimaryKeyFKs = false;
+        }
 
         if ($validPk) {
             return crc32(json_encode($this->getPrimaryKey(), JSON_UNESCAPED_UNICODE));
@@ -1260,23 +1426,29 @@ abstract class Tag implements ActiveRecordInterface
     }
 
     /**
-     * Returns the primary key for this object (row).
-     * @return int
+     * Returns the composite primary key for this object.
+     * The array elements will be in same order as specified in XML.
+     * @return array
      */
     public function getPrimaryKey()
     {
-        return $this->getId();
+        $pks = array();
+        $pks[0] = $this->getId();
+        $pks[1] = $this->getUserId();
+
+        return $pks;
     }
 
     /**
-     * Generic method to set the primary key (id column).
+     * Set the [composite] primary key.
      *
-     * @param       int $key Primary key.
+     * @param      array $keys The elements of the composite key (order must match the order in XML file).
      * @return void
      */
-    public function setPrimaryKey($key)
+    public function setPrimaryKey($keys)
     {
-        $this->setId($key);
+        $this->setId($keys[0]);
+        $this->setUserId($keys[1]);
     }
 
     /**
@@ -1285,7 +1457,7 @@ abstract class Tag implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return null === $this->getId();
+        return (null === $this->getId()) && (null === $this->getUserId());
     }
 
     /**
@@ -1302,6 +1474,7 @@ abstract class Tag implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setTag($this->getTag());
+        $copyObj->setUserId($this->getUserId());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
 
@@ -1350,6 +1523,57 @@ abstract class Tag implements ActiveRecordInterface
         $this->copyInto($copyObj, $deepCopy);
 
         return $copyObj;
+    }
+
+    /**
+     * Declares an association between this object and a ChildUser object.
+     *
+     * @param  ChildUser $v
+     * @return $this|\Tag The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUser(ChildUser $v = null)
+    {
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
+        }
+
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
+        if ($v !== null) {
+            $v->addTag($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildUser object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUser The associated ChildUser object.
+     * @throws PropelException
+     */
+    public function getUser(ConnectionInterface $con = null)
+    {
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addTags($this);
+             */
+        }
+
+        return $this->aUser;
     }
 
 
@@ -1590,6 +1814,31 @@ abstract class Tag implements ActiveRecordInterface
         }
 
         return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Tag is new, it will return
+     * an empty collection; or if this Tag has previously
+     * been saved, it will retrieve related TaggedQuestions from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Tag.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildTaggedQuestion[] List of ChildTaggedQuestion objects
+     */
+    public function getTaggedQuestionsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildTaggedQuestionQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getTaggedQuestions($query, $con);
     }
 
 
@@ -1855,6 +2104,31 @@ abstract class Tag implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildTaggedElement[] List of ChildTaggedElement objects
      */
+    public function getTaggedElementsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildTaggedElementQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getTaggedElements($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Tag is new, it will return
+     * an empty collection; or if this Tag has previously
+     * been saved, it will retrieve related TaggedElements from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Tag.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildTaggedElement[] List of ChildTaggedElement objects
+     */
     public function getTaggedElementsJoinElement(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildTaggedElementQuery::create(null, $criteria);
@@ -1864,48 +2138,47 @@ abstract class Tag implements ActiveRecordInterface
     }
 
     /**
-     * Clears out the collQuestions collection
+     * Clears out the collUserQuestions collection
      *
      * This does not modify the database; however, it will remove any associated objects, causing
      * them to be refetched by subsequent calls to accessor method.
      *
      * @return void
-     * @see        addQuestions()
+     * @see        addUserQuestions()
      */
-    public function clearQuestions()
+    public function clearUserQuestions()
     {
-        $this->collQuestions = null; // important to set this to NULL since that means it is uninitialized
+        $this->collUserQuestions = null; // important to set this to NULL since that means it is uninitialized
     }
 
     /**
-     * Initializes the collQuestions crossRef collection.
+     * Initializes the combinationCollUserQuestions crossRef collection.
      *
-     * By default this just sets the collQuestions collection to an empty collection (like clearQuestions());
+     * By default this just sets the combinationCollUserQuestions collection to an empty collection (like clearUserQuestions());
      * however, you may wish to override this method in your stub class to provide setting appropriate
      * to your application -- for example, setting the initial array to the values stored in database.
      *
      * @return void
      */
-    public function initQuestions()
+    public function initUserQuestions()
     {
-        $this->collQuestions = new ObjectCollection();
-        $this->collQuestionsPartial = true;
+        $this->combinationCollUserQuestions = new ObjectCombinationCollection();
+        $this->combinationCollUserQuestionsPartial = true;
 
-        $this->collQuestions->setModel('\Question');
     }
 
     /**
-     * Checks if the collQuestions collection is loaded.
+     * Checks if the combinationCollUserQuestions collection is loaded.
      *
      * @return bool
      */
-    public function isQuestionsLoaded()
+    public function isUserQuestionsLoaded()
     {
-        return null !== $this->collQuestions;
+        return null !== $this->combinationCollUserQuestions;
     }
 
     /**
-     * Gets a collection of ChildQuestion objects related by a many-to-many relationship
+     * Gets a combined collection of ChildUser, ChildQuestion objects related by a many-to-many relationship
      * to the current object by way of the tagsXquestions cross-reference table.
      *
      * If the $criteria is not null, it is used to always fetch the results from the database.
@@ -1917,99 +2190,128 @@ abstract class Tag implements ActiveRecordInterface
      * @param      Criteria $criteria Optional query object to filter the query
      * @param      ConnectionInterface $con Optional connection object
      *
-     * @return ObjectCollection|ChildQuestion[] List of ChildQuestion objects
+     * @return ObjectCombinationCollection Combination list of ChildUser, ChildQuestion objects
      */
-    public function getQuestions(Criteria $criteria = null, ConnectionInterface $con = null)
+    public function getUserQuestions($criteria = null, ConnectionInterface $con = null)
     {
-        $partial = $this->collQuestionsPartial && !$this->isNew();
-        if (null === $this->collQuestions || null !== $criteria || $partial) {
+        $partial = $this->combinationCollUserQuestionsPartial && !$this->isNew();
+        if (null === $this->combinationCollUserQuestions || null !== $criteria || $partial) {
             if ($this->isNew()) {
                 // return empty collection
-                if (null === $this->collQuestions) {
-                    $this->initQuestions();
+                if (null === $this->combinationCollUserQuestions) {
+                    $this->initUserQuestions();
                 }
             } else {
 
-                $query = ChildQuestionQuery::create(null, $criteria)
-                    ->filterByTag($this);
-                $collQuestions = $query->find($con);
-                if (null !== $criteria) {
-                    return $collQuestions;
+                $query = ChildTaggedQuestionQuery::create(null, $criteria)
+                    ->filterByTag($this)
+                    ->joinUser()
+                    ->joinQuestion()
+                ;
+
+                $items = $query->find($con);
+                $combinationCollUserQuestions = new ObjectCombinationCollection();
+                foreach ($items as $item) {
+                    $combination = [];
+
+                    $combination[] = $item->getUser();
+                    $combination[] = $item->getQuestion();
+                    $combinationCollUserQuestions[] = $combination;
                 }
 
-                if ($partial && $this->collQuestions) {
+                if (null !== $criteria) {
+                    return $combinationCollUserQuestions;
+                }
+
+                if ($partial && $this->combinationCollUserQuestions) {
                     //make sure that already added objects gets added to the list of the database.
-                    foreach ($this->collQuestions as $obj) {
-                        if (!$collQuestions->contains($obj)) {
-                            $collQuestions[] = $obj;
+                    foreach ($this->combinationCollUserQuestions as $obj) {
+                        if (!call_user_func_array([$combinationCollUserQuestions, 'contains'], $obj)) {
+                            $combinationCollUserQuestions[] = $obj;
                         }
                     }
                 }
 
-                $this->collQuestions = $collQuestions;
-                $this->collQuestionsPartial = false;
+                $this->combinationCollUserQuestions = $combinationCollUserQuestions;
+                $this->combinationCollUserQuestionsPartial = false;
             }
         }
 
-        return $this->collQuestions;
+        return $this->combinationCollUserQuestions;
     }
 
     /**
-     * Sets a collection of Question objects related by a many-to-many relationship
+     * Returns a not cached ObjectCollection of ChildUser objects. This will hit always the databases.
+     * If you have attached new ChildUser object to this object you need to call `save` first to get
+     * the correct return value. Use getUserQuestions() to get the current internal state.
+     *
+     * @param ChildQuestion $question
+     * @param Criteria $criteria
+     * @param ConnectionInterface $con
+     *
+     * @return ChildUser[]|ObjectCollection
+     */
+    public function getUsers(ChildQuestion $question = null, Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        return $this->createUsersQuery($question, $criteria)->find($con);
+    }
+
+    /**
+     * Sets a collection of ChildUser, ChildQuestion combination objects related by a many-to-many relationship
      * to the current object by way of the tagsXquestions cross-reference table.
      * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
      * and new objects from the given Propel collection.
      *
-     * @param  Collection $questions A Propel collection.
+     * @param  Collection $userQuestions A Propel collection.
      * @param  ConnectionInterface $con Optional connection object
      * @return $this|ChildTag The current object (for fluent API support)
      */
-    public function setQuestions(Collection $questions, ConnectionInterface $con = null)
+    public function setUserQuestions(Collection $userQuestions, ConnectionInterface $con = null)
     {
-        $this->clearQuestions();
-        $currentQuestions = $this->getQuestions();
+        $this->clearUserQuestions();
+        $currentUserQuestions = $this->getUserQuestions();
 
-        $questionsScheduledForDeletion = $currentQuestions->diff($questions);
+        $combinationCollUserQuestionsScheduledForDeletion = $currentUserQuestions->diff($userQuestions);
 
-        foreach ($questionsScheduledForDeletion as $toDelete) {
-            $this->removeQuestion($toDelete);
+        foreach ($combinationCollUserQuestionsScheduledForDeletion as $toDelete) {
+            call_user_func_array([$this, 'removeUserQuestion'], $toDelete);
         }
 
-        foreach ($questions as $question) {
-            if (!$currentQuestions->contains($question)) {
-                $this->doAddQuestion($question);
+        foreach ($userQuestions as $userQuestion) {
+            if (!call_user_func_array([$currentUserQuestions, 'contains'], $userQuestion)) {
+                call_user_func_array([$this, 'doAddUserQuestion'], $userQuestion);
             }
         }
 
-        $this->collQuestionsPartial = false;
-        $this->collQuestions = $questions;
+        $this->combinationCollUserQuestionsPartial = false;
+        $this->combinationCollUserQuestions = $userQuestions;
 
         return $this;
     }
 
     /**
-     * Gets the number of Question objects related by a many-to-many relationship
+     * Gets the number of ChildUser, ChildQuestion combination objects related by a many-to-many relationship
      * to the current object by way of the tagsXquestions cross-reference table.
      *
      * @param      Criteria $criteria Optional query object to filter the query
      * @param      boolean $distinct Set to true to force count distinct
      * @param      ConnectionInterface $con Optional connection object
      *
-     * @return int the number of related Question objects
+     * @return int the number of related ChildUser, ChildQuestion combination objects
      */
-    public function countQuestions(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    public function countUserQuestions(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
     {
-        $partial = $this->collQuestionsPartial && !$this->isNew();
-        if (null === $this->collQuestions || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collQuestions) {
+        $partial = $this->combinationCollUserQuestionsPartial && !$this->isNew();
+        if (null === $this->combinationCollUserQuestions || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->combinationCollUserQuestions) {
                 return 0;
             } else {
 
                 if ($partial && !$criteria) {
-                    return count($this->getQuestions());
+                    return count($this->getUserQuestions());
                 }
 
-                $query = ChildQuestionQuery::create(null, $criteria);
+                $query = ChildTaggedQuestionQuery::create(null, $criteria);
                 if ($distinct) {
                     $query->distinct();
                 }
@@ -2019,27 +2321,67 @@ abstract class Tag implements ActiveRecordInterface
                     ->count($con);
             }
         } else {
-            return count($this->collQuestions);
+            return count($this->combinationCollUserQuestions);
         }
+    }
+
+    /**
+     * Returns the not cached count of ChildUser objects. This will hit always the databases.
+     * If you have attached new ChildUser object to this object you need to call `save` first to get
+     * the correct return value. Use getUserQuestions() to get the current internal state.
+     *
+     * @param ChildQuestion $question
+     * @param Criteria $criteria
+     * @param ConnectionInterface $con
+     *
+     * @return integer
+     */
+    public function countUsers(ChildQuestion $question = null, Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        return $this->createUsersQuery($question, $criteria)->count($con);
+    }
+
+    /**
+     * Associate a ChildUser to this object
+     * through the tagsXquestions cross reference table.
+     *
+     * @param ChildUser $user,
+     * @param ChildQuestion $question
+     * @return ChildTag The current object (for fluent API support)
+     */
+    public function addUser(ChildUser $user, ChildQuestion $question)
+    {
+        if ($this->combinationCollUserQuestions === null) {
+            $this->initUserQuestions();
+        }
+
+        if (!$this->getUserQuestions()->contains($user, $question)) {
+            // only add it if the **same** object is not already associated
+            $this->combinationCollUserQuestions->push($user, $question);
+            $this->doAddUserQuestion($user, $question);
+        }
+
+        return $this;
     }
 
     /**
      * Associate a ChildQuestion to this object
      * through the tagsXquestions cross reference table.
      *
-     * @param ChildQuestion $question
+     * @param ChildQuestion $question,
+     * @param ChildUser $user
      * @return ChildTag The current object (for fluent API support)
      */
-    public function addQuestion(ChildQuestion $question)
+    public function addQuestion(ChildQuestion $question, ChildUser $user)
     {
-        if ($this->collQuestions === null) {
-            $this->initQuestions();
+        if ($this->combinationCollUserQuestions === null) {
+            $this->initUserQuestions();
         }
 
-        if (!$this->getQuestions()->contains($question)) {
+        if (!$this->getUserQuestions()->contains($question, $user)) {
             // only add it if the **same** object is not already associated
-            $this->collQuestions->push($question);
-            $this->doAddQuestion($question);
+            $this->combinationCollUserQuestions->push($question, $user);
+            $this->doAddUserQuestion($question, $user);
         }
 
         return $this;
@@ -2047,12 +2389,14 @@ abstract class Tag implements ActiveRecordInterface
 
     /**
      *
+     * @param ChildUser $user,
      * @param ChildQuestion $question
      */
-    protected function doAddQuestion(ChildQuestion $question)
+    protected function doAddUserQuestion(ChildUser $user, ChildQuestion $question)
     {
         $taggedQuestion = new ChildTaggedQuestion();
 
+        $taggedQuestion->setUser($user);
         $taggedQuestion->setQuestion($question);
 
         $taggedQuestion->setTag($this);
@@ -2061,44 +2405,60 @@ abstract class Tag implements ActiveRecordInterface
 
         // set the back reference to this object directly as using provided method either results
         // in endless loop or in multiple relations
-        if (!$question->isTagsLoaded()) {
-            $question->initTags();
-            $question->getTags()->push($this);
-        } elseif (!$question->getTags()->contains($this)) {
-            $question->getTags()->push($this);
+        if ($user->isTagQuestionsLoaded()) {
+            $user->initTagQuestions();
+            $user->getTagQuestions()->push($this, $question);
+        } elseif (!$user->getTagQuestions()->contains($this, $question)) {
+            $user->getTagQuestions()->push($this, $question);
+        }
+
+        // set the back reference to this object directly as using provided method either results
+        // in endless loop or in multiple relations
+        if ($question->isUserTagsLoaded()) {
+            $question->initUserTags();
+            $question->getUserTags()->push($user, $this);
+        } elseif (!$question->getUserTags()->contains($user, $this)) {
+            $question->getUserTags()->push($user, $this);
         }
 
     }
 
     /**
-     * Remove question of this object
+     * Remove user, question of this object
      * through the tagsXquestions cross reference table.
      *
+     * @param ChildUser $user,
      * @param ChildQuestion $question
      * @return ChildTag The current object (for fluent API support)
      */
-    public function removeQuestion(ChildQuestion $question)
+    public function removeUserQuestion(ChildUser $user, ChildQuestion $question)
     {
-        if ($this->getQuestions()->contains($question)) { $taggedQuestion = new ChildTaggedQuestion();
+        if ($this->getUserQuestions()->contains($user, $question)) { $taggedQuestion = new ChildTaggedQuestion();
+
+            $taggedQuestion->setUser($user);
+            if ($user->isTagQuestionsLoaded()) {
+                //remove the back reference if available
+                $user->getTagQuestions()->removeObject($this, $question);
+            }
 
             $taggedQuestion->setQuestion($question);
-            if ($question->isTagsLoaded()) {
+            if ($question->isUserTagsLoaded()) {
                 //remove the back reference if available
-                $question->getTags()->removeObject($this);
+                $question->getUserTags()->removeObject($user, $this);
             }
 
             $taggedQuestion->setTag($this);
             $this->removeTaggedQuestion(clone $taggedQuestion);
             $taggedQuestion->clear();
 
-            $this->collQuestions->remove($this->collQuestions->search($question));
+            $this->combinationCollUserQuestions->remove($this->combinationCollUserQuestions->search($user, $question));
 
-            if (null === $this->questionsScheduledForDeletion) {
-                $this->questionsScheduledForDeletion = clone $this->collQuestions;
-                $this->questionsScheduledForDeletion->clear();
+            if (null === $this->combinationCollUserQuestionsScheduledForDeletion) {
+                $this->combinationCollUserQuestionsScheduledForDeletion = clone $this->combinationCollUserQuestions;
+                $this->combinationCollUserQuestionsScheduledForDeletion->clear();
             }
 
-            $this->questionsScheduledForDeletion->push($question);
+            $this->combinationCollUserQuestionsScheduledForDeletion->push($user, $question);
         }
 
 
@@ -2106,48 +2466,47 @@ abstract class Tag implements ActiveRecordInterface
     }
 
     /**
-     * Clears out the collElements collection
+     * Clears out the collUserElements collection
      *
      * This does not modify the database; however, it will remove any associated objects, causing
      * them to be refetched by subsequent calls to accessor method.
      *
      * @return void
-     * @see        addElements()
+     * @see        addUserElements()
      */
-    public function clearElements()
+    public function clearUserElements()
     {
-        $this->collElements = null; // important to set this to NULL since that means it is uninitialized
+        $this->collUserElements = null; // important to set this to NULL since that means it is uninitialized
     }
 
     /**
-     * Initializes the collElements crossRef collection.
+     * Initializes the combinationCollUserElements crossRef collection.
      *
-     * By default this just sets the collElements collection to an empty collection (like clearElements());
+     * By default this just sets the combinationCollUserElements collection to an empty collection (like clearUserElements());
      * however, you may wish to override this method in your stub class to provide setting appropriate
      * to your application -- for example, setting the initial array to the values stored in database.
      *
      * @return void
      */
-    public function initElements()
+    public function initUserElements()
     {
-        $this->collElements = new ObjectCollection();
-        $this->collElementsPartial = true;
+        $this->combinationCollUserElements = new ObjectCombinationCollection();
+        $this->combinationCollUserElementsPartial = true;
 
-        $this->collElements->setModel('\Element');
     }
 
     /**
-     * Checks if the collElements collection is loaded.
+     * Checks if the combinationCollUserElements collection is loaded.
      *
      * @return bool
      */
-    public function isElementsLoaded()
+    public function isUserElementsLoaded()
     {
-        return null !== $this->collElements;
+        return null !== $this->combinationCollUserElements;
     }
 
     /**
-     * Gets a collection of ChildElement objects related by a many-to-many relationship
+     * Gets a combined collection of ChildUser, ChildElement objects related by a many-to-many relationship
      * to the current object by way of the tagsXelements cross-reference table.
      *
      * If the $criteria is not null, it is used to always fetch the results from the database.
@@ -2159,99 +2518,128 @@ abstract class Tag implements ActiveRecordInterface
      * @param      Criteria $criteria Optional query object to filter the query
      * @param      ConnectionInterface $con Optional connection object
      *
-     * @return ObjectCollection|ChildElement[] List of ChildElement objects
+     * @return ObjectCombinationCollection Combination list of ChildUser, ChildElement objects
      */
-    public function getElements(Criteria $criteria = null, ConnectionInterface $con = null)
+    public function getUserElements($criteria = null, ConnectionInterface $con = null)
     {
-        $partial = $this->collElementsPartial && !$this->isNew();
-        if (null === $this->collElements || null !== $criteria || $partial) {
+        $partial = $this->combinationCollUserElementsPartial && !$this->isNew();
+        if (null === $this->combinationCollUserElements || null !== $criteria || $partial) {
             if ($this->isNew()) {
                 // return empty collection
-                if (null === $this->collElements) {
-                    $this->initElements();
+                if (null === $this->combinationCollUserElements) {
+                    $this->initUserElements();
                 }
             } else {
 
-                $query = ChildElementQuery::create(null, $criteria)
-                    ->filterByTag($this);
-                $collElements = $query->find($con);
-                if (null !== $criteria) {
-                    return $collElements;
+                $query = ChildTaggedElementQuery::create(null, $criteria)
+                    ->filterByTag($this)
+                    ->joinUser()
+                    ->joinElement()
+                ;
+
+                $items = $query->find($con);
+                $combinationCollUserElements = new ObjectCombinationCollection();
+                foreach ($items as $item) {
+                    $combination = [];
+
+                    $combination[] = $item->getUser();
+                    $combination[] = $item->getElement();
+                    $combinationCollUserElements[] = $combination;
                 }
 
-                if ($partial && $this->collElements) {
+                if (null !== $criteria) {
+                    return $combinationCollUserElements;
+                }
+
+                if ($partial && $this->combinationCollUserElements) {
                     //make sure that already added objects gets added to the list of the database.
-                    foreach ($this->collElements as $obj) {
-                        if (!$collElements->contains($obj)) {
-                            $collElements[] = $obj;
+                    foreach ($this->combinationCollUserElements as $obj) {
+                        if (!call_user_func_array([$combinationCollUserElements, 'contains'], $obj)) {
+                            $combinationCollUserElements[] = $obj;
                         }
                     }
                 }
 
-                $this->collElements = $collElements;
-                $this->collElementsPartial = false;
+                $this->combinationCollUserElements = $combinationCollUserElements;
+                $this->combinationCollUserElementsPartial = false;
             }
         }
 
-        return $this->collElements;
+        return $this->combinationCollUserElements;
     }
 
     /**
-     * Sets a collection of Element objects related by a many-to-many relationship
+     * Returns a not cached ObjectCollection of ChildUser objects. This will hit always the databases.
+     * If you have attached new ChildUser object to this object you need to call `save` first to get
+     * the correct return value. Use getUserElements() to get the current internal state.
+     *
+     * @param ChildElement $element
+     * @param Criteria $criteria
+     * @param ConnectionInterface $con
+     *
+     * @return ChildUser[]|ObjectCollection
+     */
+    public function getUsers(ChildElement $element = null, Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        return $this->createUsersQuery($element, $criteria)->find($con);
+    }
+
+    /**
+     * Sets a collection of ChildUser, ChildElement combination objects related by a many-to-many relationship
      * to the current object by way of the tagsXelements cross-reference table.
      * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
      * and new objects from the given Propel collection.
      *
-     * @param  Collection $elements A Propel collection.
+     * @param  Collection $userElements A Propel collection.
      * @param  ConnectionInterface $con Optional connection object
      * @return $this|ChildTag The current object (for fluent API support)
      */
-    public function setElements(Collection $elements, ConnectionInterface $con = null)
+    public function setUserElements(Collection $userElements, ConnectionInterface $con = null)
     {
-        $this->clearElements();
-        $currentElements = $this->getElements();
+        $this->clearUserElements();
+        $currentUserElements = $this->getUserElements();
 
-        $elementsScheduledForDeletion = $currentElements->diff($elements);
+        $combinationCollUserElementsScheduledForDeletion = $currentUserElements->diff($userElements);
 
-        foreach ($elementsScheduledForDeletion as $toDelete) {
-            $this->removeElement($toDelete);
+        foreach ($combinationCollUserElementsScheduledForDeletion as $toDelete) {
+            call_user_func_array([$this, 'removeUserElement'], $toDelete);
         }
 
-        foreach ($elements as $element) {
-            if (!$currentElements->contains($element)) {
-                $this->doAddElement($element);
+        foreach ($userElements as $userElement) {
+            if (!call_user_func_array([$currentUserElements, 'contains'], $userElement)) {
+                call_user_func_array([$this, 'doAddUserElement'], $userElement);
             }
         }
 
-        $this->collElementsPartial = false;
-        $this->collElements = $elements;
+        $this->combinationCollUserElementsPartial = false;
+        $this->combinationCollUserElements = $userElements;
 
         return $this;
     }
 
     /**
-     * Gets the number of Element objects related by a many-to-many relationship
+     * Gets the number of ChildUser, ChildElement combination objects related by a many-to-many relationship
      * to the current object by way of the tagsXelements cross-reference table.
      *
      * @param      Criteria $criteria Optional query object to filter the query
      * @param      boolean $distinct Set to true to force count distinct
      * @param      ConnectionInterface $con Optional connection object
      *
-     * @return int the number of related Element objects
+     * @return int the number of related ChildUser, ChildElement combination objects
      */
-    public function countElements(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    public function countUserElements(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
     {
-        $partial = $this->collElementsPartial && !$this->isNew();
-        if (null === $this->collElements || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collElements) {
+        $partial = $this->combinationCollUserElementsPartial && !$this->isNew();
+        if (null === $this->combinationCollUserElements || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->combinationCollUserElements) {
                 return 0;
             } else {
 
                 if ($partial && !$criteria) {
-                    return count($this->getElements());
+                    return count($this->getUserElements());
                 }
 
-                $query = ChildElementQuery::create(null, $criteria);
+                $query = ChildTaggedElementQuery::create(null, $criteria);
                 if ($distinct) {
                     $query->distinct();
                 }
@@ -2261,27 +2649,67 @@ abstract class Tag implements ActiveRecordInterface
                     ->count($con);
             }
         } else {
-            return count($this->collElements);
+            return count($this->combinationCollUserElements);
         }
+    }
+
+    /**
+     * Returns the not cached count of ChildUser objects. This will hit always the databases.
+     * If you have attached new ChildUser object to this object you need to call `save` first to get
+     * the correct return value. Use getUserElements() to get the current internal state.
+     *
+     * @param ChildElement $element
+     * @param Criteria $criteria
+     * @param ConnectionInterface $con
+     *
+     * @return integer
+     */
+    public function countUsers(ChildElement $element = null, Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        return $this->createUsersQuery($element, $criteria)->count($con);
+    }
+
+    /**
+     * Associate a ChildUser to this object
+     * through the tagsXelements cross reference table.
+     *
+     * @param ChildUser $user,
+     * @param ChildElement $element
+     * @return ChildTag The current object (for fluent API support)
+     */
+    public function addUser(ChildUser $user, ChildElement $element)
+    {
+        if ($this->combinationCollUserElements === null) {
+            $this->initUserElements();
+        }
+
+        if (!$this->getUserElements()->contains($user, $element)) {
+            // only add it if the **same** object is not already associated
+            $this->combinationCollUserElements->push($user, $element);
+            $this->doAddUserElement($user, $element);
+        }
+
+        return $this;
     }
 
     /**
      * Associate a ChildElement to this object
      * through the tagsXelements cross reference table.
      *
-     * @param ChildElement $element
+     * @param ChildElement $element,
+     * @param ChildUser $user
      * @return ChildTag The current object (for fluent API support)
      */
-    public function addElement(ChildElement $element)
+    public function addElement(ChildElement $element, ChildUser $user)
     {
-        if ($this->collElements === null) {
-            $this->initElements();
+        if ($this->combinationCollUserElements === null) {
+            $this->initUserElements();
         }
 
-        if (!$this->getElements()->contains($element)) {
+        if (!$this->getUserElements()->contains($element, $user)) {
             // only add it if the **same** object is not already associated
-            $this->collElements->push($element);
-            $this->doAddElement($element);
+            $this->combinationCollUserElements->push($element, $user);
+            $this->doAddUserElement($element, $user);
         }
 
         return $this;
@@ -2289,12 +2717,14 @@ abstract class Tag implements ActiveRecordInterface
 
     /**
      *
+     * @param ChildUser $user,
      * @param ChildElement $element
      */
-    protected function doAddElement(ChildElement $element)
+    protected function doAddUserElement(ChildUser $user, ChildElement $element)
     {
         $taggedElement = new ChildTaggedElement();
 
+        $taggedElement->setUser($user);
         $taggedElement->setElement($element);
 
         $taggedElement->setTag($this);
@@ -2303,44 +2733,60 @@ abstract class Tag implements ActiveRecordInterface
 
         // set the back reference to this object directly as using provided method either results
         // in endless loop or in multiple relations
-        if (!$element->isTagsLoaded()) {
-            $element->initTags();
-            $element->getTags()->push($this);
-        } elseif (!$element->getTags()->contains($this)) {
-            $element->getTags()->push($this);
+        if ($user->isTagElementsLoaded()) {
+            $user->initTagElements();
+            $user->getTagElements()->push($this, $element);
+        } elseif (!$user->getTagElements()->contains($this, $element)) {
+            $user->getTagElements()->push($this, $element);
+        }
+
+        // set the back reference to this object directly as using provided method either results
+        // in endless loop or in multiple relations
+        if ($element->isUserTagsLoaded()) {
+            $element->initUserTags();
+            $element->getUserTags()->push($user, $this);
+        } elseif (!$element->getUserTags()->contains($user, $this)) {
+            $element->getUserTags()->push($user, $this);
         }
 
     }
 
     /**
-     * Remove element of this object
+     * Remove user, element of this object
      * through the tagsXelements cross reference table.
      *
+     * @param ChildUser $user,
      * @param ChildElement $element
      * @return ChildTag The current object (for fluent API support)
      */
-    public function removeElement(ChildElement $element)
+    public function removeUserElement(ChildUser $user, ChildElement $element)
     {
-        if ($this->getElements()->contains($element)) { $taggedElement = new ChildTaggedElement();
+        if ($this->getUserElements()->contains($user, $element)) { $taggedElement = new ChildTaggedElement();
+
+            $taggedElement->setUser($user);
+            if ($user->isTagElementsLoaded()) {
+                //remove the back reference if available
+                $user->getTagElements()->removeObject($this, $element);
+            }
 
             $taggedElement->setElement($element);
-            if ($element->isTagsLoaded()) {
+            if ($element->isUserTagsLoaded()) {
                 //remove the back reference if available
-                $element->getTags()->removeObject($this);
+                $element->getUserTags()->removeObject($user, $this);
             }
 
             $taggedElement->setTag($this);
             $this->removeTaggedElement(clone $taggedElement);
             $taggedElement->clear();
 
-            $this->collElements->remove($this->collElements->search($element));
+            $this->combinationCollUserElements->remove($this->combinationCollUserElements->search($user, $element));
 
-            if (null === $this->elementsScheduledForDeletion) {
-                $this->elementsScheduledForDeletion = clone $this->collElements;
-                $this->elementsScheduledForDeletion->clear();
+            if (null === $this->combinationCollUserElementsScheduledForDeletion) {
+                $this->combinationCollUserElementsScheduledForDeletion = clone $this->combinationCollUserElements;
+                $this->combinationCollUserElementsScheduledForDeletion->clear();
             }
 
-            $this->elementsScheduledForDeletion->push($element);
+            $this->combinationCollUserElementsScheduledForDeletion->push($user, $element);
         }
 
 
@@ -2354,8 +2800,12 @@ abstract class Tag implements ActiveRecordInterface
      */
     public function clear()
     {
+        if (null !== $this->aUser) {
+            $this->aUser->removeTag($this);
+        }
         $this->id = null;
         $this->tag = null;
+        $this->user_id = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -2386,13 +2836,13 @@ abstract class Tag implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
-            if ($this->collQuestions) {
-                foreach ($this->collQuestions as $o) {
+            if ($this->combinationCollUserQuestions) {
+                foreach ($this->combinationCollUserQuestions as $o) {
                     $o->clearAllReferences($deep);
                 }
             }
-            if ($this->collElements) {
-                foreach ($this->collElements as $o) {
+            if ($this->combinationCollUserElements) {
+                foreach ($this->combinationCollUserElements as $o) {
                     $o->clearAllReferences($deep);
                 }
             }
@@ -2400,8 +2850,9 @@ abstract class Tag implements ActiveRecordInterface
 
         $this->collTaggedQuestions = null;
         $this->collTaggedElements = null;
-        $this->collQuestions = null;
-        $this->collElements = null;
+        $this->combinationCollUserQuestions = null;
+        $this->combinationCollUserElements = null;
+        $this->aUser = null;
     }
 
     /**

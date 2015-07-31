@@ -1,0 +1,126 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: adam
+ * Date: 7/22/15
+ * Time: 9:55 AM
+ */
+
+namespace App\classes\RequestHandlers\dao;
+
+
+use App\classes\SecurityClasses\cleaning\CleanerFactory;
+use App\classes\SecurityClasses\cleaning\ICleanerFactory;
+use App\Comment;
+use App\Element;
+
+class ElementDAO
+{
+    const MAX_COMMENT_LENGTH = 2000;
+    const MAX_NAME_LENGTH = 200;
+    const MAX_DISPLAY_LENGTH = 200;
+
+    /** @var  $cleaner ICleanerFactory */
+    public $cleaner;
+
+    /**
+     * Loads the class which handles cleaning before query
+     * @param ICleanerFactory $cleanerFactory
+     */
+    public function set_cleaner(ICleanerFactory $cleanerFactory)
+    {
+        $this->cleaner = $cleanerFactory;
+    }
+
+    /**
+     * Load an element object by its id
+     * @param $elementId
+     */
+    public function loadElementById($elementId)
+    {
+        $clean_id = $this->cleaner->sanitize($elementId, CleanerFactory::INTEGER);
+        if(!empty($clean_id)){
+            return Element::findOrFail($clean_id);
+        }
+    }
+
+    /**
+     * Create a new element
+     * @param $elementName
+     * @param $displayText
+     * @param $commentText
+     * @return Element
+     */
+    public function createElement($elementName, $displayText, $commentText)
+    {
+        $clean_name = $this->cleaner->sanitize($elementName, CleanerFactory::TEXT, self::MAX_NAME_LENGTH);
+        $clean_display = $this->cleaner->sanitize($displayText, CleanerFactory::TEXT, self::MAX_DISPLAY_LENGTH);
+        $clean_comment = $this->cleaner->sanitize($commentText, CleanerFactory::TEXT, self::MAX_COMMENT_LENGTH);
+
+        $element = new Element();
+        $element->setElementName($clean_name);
+        $element->setDisplayText($clean_display);
+        $element->setCommentText($clean_comment);
+
+        $element->save();
+        return $element;
+    }
+
+    /**
+     * Remove an element
+     * @param $elementId
+     */
+    public function deleteElement($elementId)
+    {
+        $clean_id = $this->cleaner->sanitize($elementId, CleanerFactory::INTEGER);
+        if(!empty($clean_id)){
+            $element = Element::findOrFail($clean_id);
+            return $element->delete();
+        }
+    }
+
+    /**
+     * Alter the content of an existing element
+     * @param $elementId
+     * @param $elementName
+     * @param $displayText
+     * @param $commentText
+     */
+    public function editElement($elementId, $elementName, $displayText, $commentText)
+    {
+        $clean_id = $this->cleaner->sanitize($elementId, CleanerFactory::INTEGER);
+        $clean_name = $this->cleaner->sanitize($elementName, CleanerFactory::TEXT, self::MAX_NAME_LENGTH);
+        $clean_display = $this->cleaner->sanitize($displayText, CleanerFactory::TEXT, self::MAX_DISPLAY_LENGTH);
+        $clean_comment = $this->cleaner->sanitize($commentText, CleanerFactory::TEXT, self::MAX_COMMENT_LENGTH);
+
+        $element = Element::findOrFail($clean_id);;
+        $element->setElementName($clean_name);
+        $element->setDisplayText($clean_display);
+        $element->setCommentText($clean_comment);
+
+        $element->update();
+        return $element;
+    }
+
+    /**
+     * Adds a comment to the comments table and associates it with an
+     * element assignment.
+     *
+     * @param $elementId
+     * @param $valence
+     * @param $content
+     * @return Comment
+     * @throws \Exception
+     */
+    public function addValencedContent($elementId, $valence, $content)
+    {
+        $clean_body = $this->cleaner->sanitize($content, CleanerFactory::TEXT, Comment::MAX_BODY_LENGTH);
+        $comment = new Comment();
+        $comment->setValence($valence);
+        $comment->setBody($clean_body);
+//        $element = $this->loadElementById($elementId);
+        $comment->element()->save($elementId);
+        return $comment;
+    }
+
+}

@@ -11,6 +11,16 @@ namespace App\classes\ExamInfoClasses\dao;
 
 class ExamInfoDAO implements IExamInfoDAO
 {
+    use UserTraits;
+
+    /** @var \User */
+    public $user;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
+
     /** @var  $exam_info_obj \ExamInfo */
     public $exam_info_obj;
 

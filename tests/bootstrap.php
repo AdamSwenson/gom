@@ -10,28 +10,15 @@ use App\classes\DbTestAids;
 
 require_once 'vendor/autoload.php';
 
+//
+//$username = putenv("DB_USERNAME=testuser4");
+//$password = putenv("DB_PASSWORD=testpass4");
+//$host = putenv("DB_HOST=localhost");
+//$database = putenv("DB_DATABASE=gom_lar");
+//
 
-$username = putenv("DB_USERNAME=testuser4");
-$password = putenv("DB_PASSWORD=testpass4");
-$host = putenv("DB_HOST=localhost");
-$database = putenv("DB_DATABASE=gom_propel");
 //require_once 'app/propel_config/config.php';
-
-# initialize propel
-//require_once("bootstrap/app.php");
-//require_once("src/lib/generated-conf/config.php");
-//require_once('vendor/propel/propel/tests/bootstrap.php');
-
-//building
-$originalinclude = ini_get('include_path');
-
-//ini_set('include_path', '../vendor/');
-
-//ini_set('include_path', '/Users/adam/.composer/vendor');
-
-//ini_set('include_path', $originalinclude);
-
-
+//
 //DbTestAids::populate_item_assignments2();
 //DbTestAids::populate_restrictors();
 //DbTestAids::populate_students();
@@ -42,5 +29,26 @@ $originalinclude = ini_get('include_path');
 //DbTestAids::populate_pseudoids();
 //DbTestAids::populate_times();
 
-//\classes\DbTestAids::populate_tags();
+
+////\classes\DbTestAids::populate_tags();
+
+
+
+
+
+# initialize propel
+//require_once("bootstrap/app.php");
+//require_once("src/lib/generated-conf/config.php");
+//require_once('vendor/propel/propel/tests/bootstrap.php');
+
+//building
+//$originalinclude = ini_get('include_path');
+
+//ini_set('include_path', '../vendor/');
+
+//ini_set('include_path', '/Users/adam/.composer/vendor');
+
+//ini_set('include_path', $originalinclude);
+
+
 

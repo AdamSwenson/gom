@@ -4,18 +4,14 @@ namespace Base;
 
 use \ElementAssignment as ChildElementAssignment;
 use \ElementAssignmentQuery as ChildElementAssignmentQuery;
-use \Exam as ChildExam;
-use \ExamQuery as ChildExamQuery;
 use \Question as ChildQuestion;
 use \QuestionAssigner as ChildQuestionAssigner;
 use \QuestionAssignerQuery as ChildQuestionAssignerQuery;
 use \QuestionQuery as ChildQuestionQuery;
 use \QuestionScore as ChildQuestionScore;
 use \QuestionScoreQuery as ChildQuestionScoreQuery;
-use \Tag as ChildTag;
-use \TagQuery as ChildTagQuery;
-use \TaggedQuestion as ChildTaggedQuestion;
-use \TaggedQuestionQuery as ChildTaggedQuestionQuery;
+use \User as ChildUser;
+use \UserQuery as ChildUserQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
@@ -26,7 +22,6 @@ use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
 use Propel\Runtime\Collection\ObjectCollection;
-use Propel\Runtime\Collection\ObjectCombinationCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
@@ -95,6 +90,12 @@ abstract class Question implements ActiveRecordInterface
     protected $questionname;
 
     /**
+     * The value for the user_id field.
+     * @var        int
+     */
+    protected $user_id;
+
+    /**
      * The value for the created_at field.
      * @var        \DateTime
      */
@@ -105,6 +106,11 @@ abstract class Question implements ActiveRecordInterface
      * @var        \DateTime
      */
     protected $updated_at;
+
+    /**
+     * @var        ChildUser
+     */
+    protected $aUser;
 
     /**
      * @var        ObjectCollection|ChildQuestionScore[] Collection to store aggregation of ChildQuestionScore objects.
@@ -125,59 +131,12 @@ abstract class Question implements ActiveRecordInterface
     protected $collElementAssignmentsPartial;
 
     /**
-     * @var        ObjectCollection|ChildTaggedQuestion[] Collection to store aggregation of ChildTaggedQuestion objects.
-     */
-    protected $collTaggedQuestions;
-    protected $collTaggedQuestionsPartial;
-
-    /**
-     * @var ObjectCombinationCollection Cross CombinationCollection to store aggregation of ChildExam combinations.
-     */
-    protected $combinationCollExamQuestionnumbers;
-
-    /**
-     * @var bool
-     */
-    protected $combinationCollExamQuestionnumbersPartial;
-
-    /**
-     * @var        ObjectCollection|ChildExam[] Cross Collection to store aggregation of ChildExam objects.
-     */
-    protected $collExams;
-
-    /**
-     * @var bool
-     */
-    protected $collExamsPartial;
-
-    /**
-     * @var        ObjectCollection|ChildTag[] Cross Collection to store aggregation of ChildTag objects.
-     */
-    protected $collTags;
-
-    /**
-     * @var bool
-     */
-    protected $collTagsPartial;
-
-    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
      * @var boolean
      */
     protected $alreadyInSave = false;
-
-    /**
-     * @var ObjectCombinationCollection Cross CombinationCollection to store aggregation of ChildExam combinations.
-     */
-    protected $combinationCollExamQuestionnumbersScheduledForDeletion = null;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildTag[]
-     */
-    protected $tagsScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -196,12 +155,6 @@ abstract class Question implements ActiveRecordInterface
      * @var ObjectCollection|ChildElementAssignment[]
      */
     protected $elementAssignmentsScheduledForDeletion = null;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildTaggedQuestion[]
-     */
-    protected $taggedQuestionsScheduledForDeletion = null;
 
     /**
      * Initializes internal state of Base\Question object.
@@ -451,6 +404,16 @@ abstract class Question implements ActiveRecordInterface
     }
 
     /**
+     * Get the [user_id] column value.
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [created_at] column value.
      *
      *
@@ -551,6 +514,30 @@ abstract class Question implements ActiveRecordInterface
     } // setQuestionname()
 
     /**
+     * Set the value of [user_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\Question The current object (for fluent API support)
+     */
+    public function setUserId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[QuestionTableMap::COL_USER_ID] = true;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
+        }
+
+        return $this;
+    } // setUserId()
+
+    /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
@@ -635,13 +622,16 @@ abstract class Question implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : QuestionTableMap::translateFieldName('Questionname', TableMap::TYPE_PHPNAME, $indexType)];
             $this->questionname = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : QuestionTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : QuestionTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->user_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : QuestionTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : QuestionTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : QuestionTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -654,7 +644,7 @@ abstract class Question implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 5; // 5 = QuestionTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 6; // 6 = QuestionTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Question'), 0, $e);
@@ -676,6 +666,9 @@ abstract class Question implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
+        }
     } // ensureConsistency
 
     /**
@@ -715,16 +708,13 @@ abstract class Question implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aUser = null;
             $this->collQuestionScores = null;
 
             $this->collQuestionAssigners = null;
 
             $this->collElementAssignments = null;
 
-            $this->collTaggedQuestions = null;
-
-            $this->collExamQuestionnumbers = null;
-            $this->collTags = null;
         } // if (deep)
     }
 
@@ -836,6 +826,18 @@ abstract class Question implements ActiveRecordInterface
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
 
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -846,71 +848,6 @@ abstract class Question implements ActiveRecordInterface
                 }
                 $this->resetModified();
             }
-
-            if ($this->combinationCollExamQuestionnumbersScheduledForDeletion !== null) {
-                if (!$this->combinationCollExamQuestionnumbersScheduledForDeletion->isEmpty()) {
-                    $pks = array();
-                    foreach ($this->combinationCollExamQuestionnumbersScheduledForDeletion as $combination) {
-                        $entryPk = [];
-
-                        $entryPk[] = $this->getId();
-                        $entryPk[0] = $combination[0]->getId();
-                        //$combination[1] = Questionnumber;
-                        $entryPk[1] = $combination[1];
-
-                        $pks[] = $entryPk;
-                    }
-
-                    \QuestionAssignerQuery::create()
-                        ->filterByPrimaryKeys($pks)
-                        ->delete($con);
-
-                    $this->combinationCollExamQuestionnumbersScheduledForDeletion = null;
-                }
-
-            }
-
-            if (null !== $this->combinationCollExamQuestionnumbers) {
-                foreach ($this->combinationCollExamQuestionnumbers as $combination) {
-
-                    //$combination[0] = Exam (questionAssigner_fk_71c1fe)
-                    if (!$combination[0]->isDeleted() && ($combination[0]->isNew() || $combination[0]->isModified())) {
-                        $combination[0]->save($con);
-                    }
-
-                    //$combination[1] = Questionnumber; Nothing to save.
-                }
-            }
-
-
-            if ($this->tagsScheduledForDeletion !== null) {
-                if (!$this->tagsScheduledForDeletion->isEmpty()) {
-                    $pks = array();
-                    foreach ($this->tagsScheduledForDeletion as $entry) {
-                        $entryPk = [];
-
-                        $entryPk[1] = $this->getId();
-                        $entryPk[0] = $entry->getId();
-                        $pks[] = $entryPk;
-                    }
-
-                    \TaggedQuestionQuery::create()
-                        ->filterByPrimaryKeys($pks)
-                        ->delete($con);
-
-                    $this->tagsScheduledForDeletion = null;
-                }
-
-            }
-
-            if ($this->collTags) {
-                foreach ($this->collTags as $tag) {
-                    if (!$tag->isDeleted() && ($tag->isNew() || $tag->isModified())) {
-                        $tag->save($con);
-                    }
-                }
-            }
-
 
             if ($this->questionScoresScheduledForDeletion !== null) {
                 if (!$this->questionScoresScheduledForDeletion->isEmpty()) {
@@ -963,23 +900,6 @@ abstract class Question implements ActiveRecordInterface
                 }
             }
 
-            if ($this->taggedQuestionsScheduledForDeletion !== null) {
-                if (!$this->taggedQuestionsScheduledForDeletion->isEmpty()) {
-                    \TaggedQuestionQuery::create()
-                        ->filterByPrimaryKeys($this->taggedQuestionsScheduledForDeletion->getPrimaryKeys(false))
-                        ->delete($con);
-                    $this->taggedQuestionsScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collTaggedQuestions !== null) {
-                foreach ($this->collTaggedQuestions as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
             $this->alreadyInSave = false;
 
         }
@@ -1015,6 +935,9 @@ abstract class Question implements ActiveRecordInterface
         if ($this->isColumnModified(QuestionTableMap::COL_QUESTIONNAME)) {
             $modifiedColumns[':p' . $index++]  = 'questionName';
         }
+        if ($this->isColumnModified(QuestionTableMap::COL_USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'user_id';
+        }
         if ($this->isColumnModified(QuestionTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
@@ -1040,6 +963,9 @@ abstract class Question implements ActiveRecordInterface
                         break;
                     case 'questionName':
                         $stmt->bindValue($identifier, $this->questionname, PDO::PARAM_STR);
+                        break;
+                    case 'user_id':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1119,9 +1045,12 @@ abstract class Question implements ActiveRecordInterface
                 return $this->getQuestionname();
                 break;
             case 3:
-                return $this->getCreatedAt();
+                return $this->getUserId();
                 break;
             case 4:
+                return $this->getCreatedAt();
+                break;
+            case 5:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1157,21 +1086,22 @@ abstract class Question implements ActiveRecordInterface
             $keys[0] => $this->getId(),
             $keys[1] => $this->getQuestiontext(),
             $keys[2] => $this->getQuestionname(),
-            $keys[3] => $this->getCreatedAt(),
-            $keys[4] => $this->getUpdatedAt(),
+            $keys[3] => $this->getUserId(),
+            $keys[4] => $this->getCreatedAt(),
+            $keys[5] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[3]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[3]];
-            $result[$keys[3]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[4]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[4]];
             $result[$keys[4]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[5]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[5]];
+            $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1180,6 +1110,21 @@ abstract class Question implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
+            if (null !== $this->aUser) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'user';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'users';
+                        break;
+                    default:
+                        $key = 'User';
+                }
+
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
             if (null !== $this->collQuestionScores) {
 
                 switch ($keyType) {
@@ -1225,21 +1170,6 @@ abstract class Question implements ActiveRecordInterface
 
                 $result[$key] = $this->collElementAssignments->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
-            if (null !== $this->collTaggedQuestions) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'taggedQuestions';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'tagsXquestionss';
-                        break;
-                    default:
-                        $key = 'TaggedQuestions';
-                }
-
-                $result[$key] = $this->collTaggedQuestions->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
-            }
         }
 
         return $result;
@@ -1284,9 +1214,12 @@ abstract class Question implements ActiveRecordInterface
                 $this->setQuestionname($value);
                 break;
             case 3:
-                $this->setCreatedAt($value);
+                $this->setUserId($value);
                 break;
             case 4:
+                $this->setCreatedAt($value);
+                break;
+            case 5:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1325,10 +1258,13 @@ abstract class Question implements ActiveRecordInterface
             $this->setQuestionname($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setCreatedAt($arr[$keys[3]]);
+            $this->setUserId($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setUpdatedAt($arr[$keys[4]]);
+            $this->setCreatedAt($arr[$keys[4]]);
+        }
+        if (array_key_exists($keys[5], $arr)) {
+            $this->setUpdatedAt($arr[$keys[5]]);
         }
     }
 
@@ -1379,6 +1315,9 @@ abstract class Question implements ActiveRecordInterface
         }
         if ($this->isColumnModified(QuestionTableMap::COL_QUESTIONNAME)) {
             $criteria->add(QuestionTableMap::COL_QUESTIONNAME, $this->questionname);
+        }
+        if ($this->isColumnModified(QuestionTableMap::COL_USER_ID)) {
+            $criteria->add(QuestionTableMap::COL_USER_ID, $this->user_id);
         }
         if ($this->isColumnModified(QuestionTableMap::COL_CREATED_AT)) {
             $criteria->add(QuestionTableMap::COL_CREATED_AT, $this->created_at);
@@ -1474,6 +1413,7 @@ abstract class Question implements ActiveRecordInterface
     {
         $copyObj->setQuestiontext($this->getQuestiontext());
         $copyObj->setQuestionname($this->getQuestionname());
+        $copyObj->setUserId($this->getUserId());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
 
@@ -1497,12 +1437,6 @@ abstract class Question implements ActiveRecordInterface
             foreach ($this->getElementAssignments() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addElementAssignment($relObj->copy($deepCopy));
-                }
-            }
-
-            foreach ($this->getTaggedQuestions() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addTaggedQuestion($relObj->copy($deepCopy));
                 }
             }
 
@@ -1536,6 +1470,57 @@ abstract class Question implements ActiveRecordInterface
         return $copyObj;
     }
 
+    /**
+     * Declares an association between this object and a ChildUser object.
+     *
+     * @param  ChildUser $v
+     * @return $this|\Question The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUser(ChildUser $v = null)
+    {
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
+        }
+
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
+        if ($v !== null) {
+            $v->addQuestion($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildUser object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUser The associated ChildUser object.
+     * @throws PropelException
+     */
+    public function getUser(ConnectionInterface $con = null)
+    {
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addQuestions($this);
+             */
+        }
+
+        return $this->aUser;
+    }
+
 
     /**
      * Initializes a collection based on the name of a relation.
@@ -1555,9 +1540,6 @@ abstract class Question implements ActiveRecordInterface
         }
         if ('ElementAssignment' == $relationName) {
             return $this->initElementAssignments();
-        }
-        if ('TaggedQuestion' == $relationName) {
-            return $this->initTaggedQuestions();
         }
     }
 
@@ -1780,6 +1762,31 @@ abstract class Question implements ActiveRecordInterface
         }
 
         return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Question is new, it will return
+     * an empty collection; or if this Question has previously
+     * been saved, it will retrieve related QuestionScores from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Question.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildQuestionScore[] List of ChildQuestionScore objects
+     */
+    public function getQuestionScoresJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildQuestionScoreQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getQuestionScores($query, $con);
     }
 
 
@@ -2075,6 +2082,31 @@ abstract class Question implements ActiveRecordInterface
         return $this->getQuestionAssigners($query, $con);
     }
 
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Question is new, it will return
+     * an empty collection; or if this Question has previously
+     * been saved, it will retrieve related QuestionAssigners from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Question.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildQuestionAssigner[] List of ChildQuestionAssigner objects
+     */
+    public function getQuestionAssignersJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildQuestionAssignerQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getQuestionAssigners($query, $con);
+    }
+
     /**
      * Clears out the collElementAssignments collection
      *
@@ -2192,10 +2224,7 @@ abstract class Question implements ActiveRecordInterface
         $elementAssignmentsToDelete = $this->getElementAssignments(new Criteria(), $con)->diff($elementAssignments);
 
 
-        //since at least one column in the foreign key is at the same time a PK
-        //we can not just set a PK to NULL in the lines below. We have to store
-        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
-        $this->elementAssignmentsScheduledForDeletion = clone $elementAssignmentsToDelete;
+        $this->elementAssignmentsScheduledForDeletion = $elementAssignmentsToDelete;
 
         foreach ($elementAssignmentsToDelete as $elementAssignmentRemoved) {
             $elementAssignmentRemoved->setQuestion(null);
@@ -2313,6 +2342,31 @@ abstract class Question implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildElementAssignment[] List of ChildElementAssignment objects
      */
+    public function getElementAssignmentsJoinElement(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildElementAssignmentQuery::create(null, $criteria);
+        $query->joinWith('Element', $joinBehavior);
+
+        return $this->getElementAssignments($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Question is new, it will return
+     * an empty collection; or if this Question has previously
+     * been saved, it will retrieve related ElementAssignments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Question.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildElementAssignment[] List of ChildElementAssignment objects
+     */
     public function getElementAssignmentsJoinExam(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildElementAssignmentQuery::create(null, $criteria);
@@ -2338,815 +2392,12 @@ abstract class Question implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildElementAssignment[] List of ChildElementAssignment objects
      */
-    public function getElementAssignmentsJoinElement(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getElementAssignmentsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildElementAssignmentQuery::create(null, $criteria);
-        $query->joinWith('Element', $joinBehavior);
+        $query->joinWith('User', $joinBehavior);
 
         return $this->getElementAssignments($query, $con);
-    }
-
-    /**
-     * Clears out the collTaggedQuestions collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addTaggedQuestions()
-     */
-    public function clearTaggedQuestions()
-    {
-        $this->collTaggedQuestions = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collTaggedQuestions collection loaded partially.
-     */
-    public function resetPartialTaggedQuestions($v = true)
-    {
-        $this->collTaggedQuestionsPartial = $v;
-    }
-
-    /**
-     * Initializes the collTaggedQuestions collection.
-     *
-     * By default this just sets the collTaggedQuestions collection to an empty array (like clearcollTaggedQuestions());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initTaggedQuestions($overrideExisting = true)
-    {
-        if (null !== $this->collTaggedQuestions && !$overrideExisting) {
-            return;
-        }
-        $this->collTaggedQuestions = new ObjectCollection();
-        $this->collTaggedQuestions->setModel('\TaggedQuestion');
-    }
-
-    /**
-     * Gets an array of ChildTaggedQuestion objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildQuestion is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildTaggedQuestion[] List of ChildTaggedQuestion objects
-     * @throws PropelException
-     */
-    public function getTaggedQuestions(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collTaggedQuestionsPartial && !$this->isNew();
-        if (null === $this->collTaggedQuestions || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collTaggedQuestions) {
-                // return empty collection
-                $this->initTaggedQuestions();
-            } else {
-                $collTaggedQuestions = ChildTaggedQuestionQuery::create(null, $criteria)
-                    ->filterByQuestion($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collTaggedQuestionsPartial && count($collTaggedQuestions)) {
-                        $this->initTaggedQuestions(false);
-
-                        foreach ($collTaggedQuestions as $obj) {
-                            if (false == $this->collTaggedQuestions->contains($obj)) {
-                                $this->collTaggedQuestions->append($obj);
-                            }
-                        }
-
-                        $this->collTaggedQuestionsPartial = true;
-                    }
-
-                    return $collTaggedQuestions;
-                }
-
-                if ($partial && $this->collTaggedQuestions) {
-                    foreach ($this->collTaggedQuestions as $obj) {
-                        if ($obj->isNew()) {
-                            $collTaggedQuestions[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collTaggedQuestions = $collTaggedQuestions;
-                $this->collTaggedQuestionsPartial = false;
-            }
-        }
-
-        return $this->collTaggedQuestions;
-    }
-
-    /**
-     * Sets a collection of ChildTaggedQuestion objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $taggedQuestions A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildQuestion The current object (for fluent API support)
-     */
-    public function setTaggedQuestions(Collection $taggedQuestions, ConnectionInterface $con = null)
-    {
-        /** @var ChildTaggedQuestion[] $taggedQuestionsToDelete */
-        $taggedQuestionsToDelete = $this->getTaggedQuestions(new Criteria(), $con)->diff($taggedQuestions);
-
-
-        //since at least one column in the foreign key is at the same time a PK
-        //we can not just set a PK to NULL in the lines below. We have to store
-        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
-        $this->taggedQuestionsScheduledForDeletion = clone $taggedQuestionsToDelete;
-
-        foreach ($taggedQuestionsToDelete as $taggedQuestionRemoved) {
-            $taggedQuestionRemoved->setQuestion(null);
-        }
-
-        $this->collTaggedQuestions = null;
-        foreach ($taggedQuestions as $taggedQuestion) {
-            $this->addTaggedQuestion($taggedQuestion);
-        }
-
-        $this->collTaggedQuestions = $taggedQuestions;
-        $this->collTaggedQuestionsPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related TaggedQuestion objects.
-     *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related TaggedQuestion objects.
-     * @throws PropelException
-     */
-    public function countTaggedQuestions(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collTaggedQuestionsPartial && !$this->isNew();
-        if (null === $this->collTaggedQuestions || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collTaggedQuestions) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getTaggedQuestions());
-            }
-
-            $query = ChildTaggedQuestionQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByQuestion($this)
-                ->count($con);
-        }
-
-        return count($this->collTaggedQuestions);
-    }
-
-    /**
-     * Method called to associate a ChildTaggedQuestion object to this object
-     * through the ChildTaggedQuestion foreign key attribute.
-     *
-     * @param  ChildTaggedQuestion $l ChildTaggedQuestion
-     * @return $this|\Question The current object (for fluent API support)
-     */
-    public function addTaggedQuestion(ChildTaggedQuestion $l)
-    {
-        if ($this->collTaggedQuestions === null) {
-            $this->initTaggedQuestions();
-            $this->collTaggedQuestionsPartial = true;
-        }
-
-        if (!$this->collTaggedQuestions->contains($l)) {
-            $this->doAddTaggedQuestion($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildTaggedQuestion $taggedQuestion The ChildTaggedQuestion object to add.
-     */
-    protected function doAddTaggedQuestion(ChildTaggedQuestion $taggedQuestion)
-    {
-        $this->collTaggedQuestions[]= $taggedQuestion;
-        $taggedQuestion->setQuestion($this);
-    }
-
-    /**
-     * @param  ChildTaggedQuestion $taggedQuestion The ChildTaggedQuestion object to remove.
-     * @return $this|ChildQuestion The current object (for fluent API support)
-     */
-    public function removeTaggedQuestion(ChildTaggedQuestion $taggedQuestion)
-    {
-        if ($this->getTaggedQuestions()->contains($taggedQuestion)) {
-            $pos = $this->collTaggedQuestions->search($taggedQuestion);
-            $this->collTaggedQuestions->remove($pos);
-            if (null === $this->taggedQuestionsScheduledForDeletion) {
-                $this->taggedQuestionsScheduledForDeletion = clone $this->collTaggedQuestions;
-                $this->taggedQuestionsScheduledForDeletion->clear();
-            }
-            $this->taggedQuestionsScheduledForDeletion[]= clone $taggedQuestion;
-            $taggedQuestion->setQuestion(null);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Question is new, it will return
-     * an empty collection; or if this Question has previously
-     * been saved, it will retrieve related TaggedQuestions from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Question.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildTaggedQuestion[] List of ChildTaggedQuestion objects
-     */
-    public function getTaggedQuestionsJoinTag(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildTaggedQuestionQuery::create(null, $criteria);
-        $query->joinWith('Tag', $joinBehavior);
-
-        return $this->getTaggedQuestions($query, $con);
-    }
-
-    /**
-     * Clears out the collExamQuestionnumbers collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addExamQuestionnumbers()
-     */
-    public function clearExamQuestionnumbers()
-    {
-        $this->collExamQuestionnumbers = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Initializes the combinationCollExamQuestionnumbers crossRef collection.
-     *
-     * By default this just sets the combinationCollExamQuestionnumbers collection to an empty collection (like clearExamQuestionnumbers());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @return void
-     */
-    public function initExamQuestionnumbers()
-    {
-        $this->combinationCollExamQuestionnumbers = new ObjectCombinationCollection();
-        $this->combinationCollExamQuestionnumbersPartial = true;
-
-    }
-
-    /**
-     * Checks if the combinationCollExamQuestionnumbers collection is loaded.
-     *
-     * @return bool
-     */
-    public function isExamQuestionnumbersLoaded()
-    {
-        return null !== $this->combinationCollExamQuestionnumbers;
-    }
-
-    /**
-     * Returns a new query object pre configured with filters from current object and given arguments to query the database.
-     *
-     * @param int $questionnumber
-     * @param Criteria $criteria
-     *
-     * @return ChildExamQuery
-     */
-    public function createExamsQuery($questionnumber = null, Criteria $criteria = null)
-    {
-        $criteria = ChildExamQuery::create($criteria)
-            ->filterByQuestion($this);
-
-        $questionAssignerQuery = $criteria->useQuestionAssignerQuery();
-
-        if (null !== $questionnumber) {
-            $questionAssignerQuery->filterByQuestionnumber($questionnumber);
-        }
-
-        $questionAssignerQuery->endUse();
-
-        return $criteria;
-    }
-
-    /**
-     * Gets a combined collection of ChildExam objects related by a many-to-many relationship
-     * to the current object by way of the questionAssigner cross-reference table.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildQuestion is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria Optional query object to filter the query
-     * @param      ConnectionInterface $con Optional connection object
-     *
-     * @return ObjectCombinationCollection Combination list of ChildExam objects
-     */
-    public function getExamQuestionnumbers($criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->combinationCollExamQuestionnumbersPartial && !$this->isNew();
-        if (null === $this->combinationCollExamQuestionnumbers || null !== $criteria || $partial) {
-            if ($this->isNew()) {
-                // return empty collection
-                if (null === $this->combinationCollExamQuestionnumbers) {
-                    $this->initExamQuestionnumbers();
-                }
-            } else {
-
-                $query = ChildQuestionAssignerQuery::create(null, $criteria)
-                    ->filterByQuestion($this)
-                    ->joinExam()
-                ;
-
-                $items = $query->find($con);
-                $combinationCollExamQuestionnumbers = new ObjectCombinationCollection();
-                foreach ($items as $item) {
-                    $combination = [];
-
-                    $combination[] = $item->getExam();
-                    $combination[] = $item->getQuestionnumber();
-                    $combinationCollExamQuestionnumbers[] = $combination;
-                }
-
-                if (null !== $criteria) {
-                    return $combinationCollExamQuestionnumbers;
-                }
-
-                if ($partial && $this->combinationCollExamQuestionnumbers) {
-                    //make sure that already added objects gets added to the list of the database.
-                    foreach ($this->combinationCollExamQuestionnumbers as $obj) {
-                        if (!call_user_func_array([$combinationCollExamQuestionnumbers, 'contains'], $obj)) {
-                            $combinationCollExamQuestionnumbers[] = $obj;
-                        }
-                    }
-                }
-
-                $this->combinationCollExamQuestionnumbers = $combinationCollExamQuestionnumbers;
-                $this->combinationCollExamQuestionnumbersPartial = false;
-            }
-        }
-
-        return $this->combinationCollExamQuestionnumbers;
-    }
-
-    /**
-     * Returns a not cached ObjectCollection of ChildExam objects. This will hit always the databases.
-     * If you have attached new ChildExam object to this object you need to call `save` first to get
-     * the correct return value. Use getExamQuestionnumbers() to get the current internal state.
-     *
-     * @param int $questionnumber
-     * @param Criteria $criteria
-     * @param ConnectionInterface $con
-     *
-     * @return ChildExam[]|ObjectCollection
-     */
-    public function getExams($questionnumber = null, Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        return $this->createExamsQuery($questionnumber, $criteria)->find($con);
-    }
-
-    /**
-     * Sets a collection of ChildExam objects related by a many-to-many relationship
-     * to the current object by way of the questionAssigner cross-reference table.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param  Collection $examQuestionnumbers A Propel collection.
-     * @param  ConnectionInterface $con Optional connection object
-     * @return $this|ChildQuestion The current object (for fluent API support)
-     */
-    public function setExamQuestionnumbers(Collection $examQuestionnumbers, ConnectionInterface $con = null)
-    {
-        $this->clearExamQuestionnumbers();
-        $currentExamQuestionnumbers = $this->getExamQuestionnumbers();
-
-        $combinationCollExamQuestionnumbersScheduledForDeletion = $currentExamQuestionnumbers->diff($examQuestionnumbers);
-
-        foreach ($combinationCollExamQuestionnumbersScheduledForDeletion as $toDelete) {
-            call_user_func_array([$this, 'removeExamQuestionnumber'], $toDelete);
-        }
-
-        foreach ($examQuestionnumbers as $examQuestionnumber) {
-            if (!call_user_func_array([$currentExamQuestionnumbers, 'contains'], $examQuestionnumber)) {
-                call_user_func_array([$this, 'doAddExamQuestionnumber'], $examQuestionnumber);
-            }
-        }
-
-        $this->combinationCollExamQuestionnumbersPartial = false;
-        $this->combinationCollExamQuestionnumbers = $examQuestionnumbers;
-
-        return $this;
-    }
-
-    /**
-     * Gets the number of ChildExam objects related by a many-to-many relationship
-     * to the current object by way of the questionAssigner cross-reference table.
-     *
-     * @param      Criteria $criteria Optional query object to filter the query
-     * @param      boolean $distinct Set to true to force count distinct
-     * @param      ConnectionInterface $con Optional connection object
-     *
-     * @return int the number of related ChildExam objects
-     */
-    public function countExamQuestionnumbers(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->combinationCollExamQuestionnumbersPartial && !$this->isNew();
-        if (null === $this->combinationCollExamQuestionnumbers || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->combinationCollExamQuestionnumbers) {
-                return 0;
-            } else {
-
-                if ($partial && !$criteria) {
-                    return count($this->getExamQuestionnumbers());
-                }
-
-                $query = ChildQuestionAssignerQuery::create(null, $criteria);
-                if ($distinct) {
-                    $query->distinct();
-                }
-
-                return $query
-                    ->filterByQuestion($this)
-                    ->count($con);
-            }
-        } else {
-            return count($this->combinationCollExamQuestionnumbers);
-        }
-    }
-
-    /**
-     * Returns the not cached count of ChildExam objects. This will hit always the databases.
-     * If you have attached new ChildExam object to this object you need to call `save` first to get
-     * the correct return value. Use getExamQuestionnumbers() to get the current internal state.
-     *
-     * @param int $questionnumber
-     * @param Criteria $criteria
-     * @param ConnectionInterface $con
-     *
-     * @return integer
-     */
-    public function countExams($questionnumber = null, Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        return $this->createExamsQuery($questionnumber, $criteria)->count($con);
-    }
-
-    /**
-     * Associate a ChildExam to this object
-     * through the questionAssigner cross reference table.
-     *
-     * @param ChildExam $exam,
-     * @param int $questionnumber
-     * @return ChildQuestion The current object (for fluent API support)
-     */
-    public function addExam(ChildExam $exam, $questionnumber)
-    {
-        if ($this->combinationCollExamQuestionnumbers === null) {
-            $this->initExamQuestionnumbers();
-        }
-
-        if (!$this->getExamQuestionnumbers()->contains($exam, $questionnumber)) {
-            // only add it if the **same** object is not already associated
-            $this->combinationCollExamQuestionnumbers->push($exam, $questionnumber);
-            $this->doAddExamQuestionnumber($exam, $questionnumber);
-        }
-
-        return $this;
-    }
-
-    /**
-     *
-     * @param ChildExam $exam,
-     * @param int $questionnumber
-     */
-    protected function doAddExamQuestionnumber(ChildExam $exam, $questionnumber)
-    {
-        $questionAssigner = new ChildQuestionAssigner();
-
-        $questionAssigner->setExam($exam);
-        $questionAssigner->setQuestionnumber($questionnumber);
-
-
-        $questionAssigner->setQuestion($this);
-
-        $this->addQuestionAssigner($questionAssigner);
-
-        // set the back reference to this object directly as using provided method either results
-        // in endless loop or in multiple relations
-        if ($exam->isQuestionQuestionnumbersLoaded()) {
-            $exam->initQuestionQuestionnumbers();
-            $exam->getQuestionQuestionnumbers()->push($this, $questionnumber);
-        } elseif (!$exam->getQuestionQuestionnumbers()->contains($this, $questionnumber)) {
-            $exam->getQuestionQuestionnumbers()->push($this, $questionnumber);
-        }
-
-    }
-
-    /**
-     * Remove exam, questionnumber of this object
-     * through the questionAssigner cross reference table.
-     *
-     * @param ChildExam $exam,
-     * @param int $questionnumber
-     * @return ChildQuestion The current object (for fluent API support)
-     */
-    public function removeExamQuestionnumber(ChildExam $exam, $questionnumber)
-    {
-        if ($this->getExamQuestionnumbers()->contains($exam, $questionnumber)) { $questionAssigner = new ChildQuestionAssigner();
-
-            $questionAssigner->setExam($exam);
-            if ($exam->isQuestionQuestionnumbersLoaded()) {
-                //remove the back reference if available
-                $exam->getQuestionQuestionnumbers()->removeObject($this, $questionnumber);
-            }
-
-            $questionAssigner->setQuestionnumber($questionnumber);
-            $questionAssigner->setQuestion($this);
-            $this->removeQuestionAssigner(clone $questionAssigner);
-            $questionAssigner->clear();
-
-            $this->combinationCollExamQuestionnumbers->remove($this->combinationCollExamQuestionnumbers->search($exam, $questionnumber));
-
-            if (null === $this->combinationCollExamQuestionnumbersScheduledForDeletion) {
-                $this->combinationCollExamQuestionnumbersScheduledForDeletion = clone $this->combinationCollExamQuestionnumbers;
-                $this->combinationCollExamQuestionnumbersScheduledForDeletion->clear();
-            }
-
-            $this->combinationCollExamQuestionnumbersScheduledForDeletion->push($exam, $questionnumber);
-        }
-
-
-        return $this;
-    }
-
-    /**
-     * Clears out the collTags collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addTags()
-     */
-    public function clearTags()
-    {
-        $this->collTags = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Initializes the collTags crossRef collection.
-     *
-     * By default this just sets the collTags collection to an empty collection (like clearTags());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @return void
-     */
-    public function initTags()
-    {
-        $this->collTags = new ObjectCollection();
-        $this->collTagsPartial = true;
-
-        $this->collTags->setModel('\Tag');
-    }
-
-    /**
-     * Checks if the collTags collection is loaded.
-     *
-     * @return bool
-     */
-    public function isTagsLoaded()
-    {
-        return null !== $this->collTags;
-    }
-
-    /**
-     * Gets a collection of ChildTag objects related by a many-to-many relationship
-     * to the current object by way of the tagsXquestions cross-reference table.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildQuestion is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria Optional query object to filter the query
-     * @param      ConnectionInterface $con Optional connection object
-     *
-     * @return ObjectCollection|ChildTag[] List of ChildTag objects
-     */
-    public function getTags(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collTagsPartial && !$this->isNew();
-        if (null === $this->collTags || null !== $criteria || $partial) {
-            if ($this->isNew()) {
-                // return empty collection
-                if (null === $this->collTags) {
-                    $this->initTags();
-                }
-            } else {
-
-                $query = ChildTagQuery::create(null, $criteria)
-                    ->filterByQuestion($this);
-                $collTags = $query->find($con);
-                if (null !== $criteria) {
-                    return $collTags;
-                }
-
-                if ($partial && $this->collTags) {
-                    //make sure that already added objects gets added to the list of the database.
-                    foreach ($this->collTags as $obj) {
-                        if (!$collTags->contains($obj)) {
-                            $collTags[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collTags = $collTags;
-                $this->collTagsPartial = false;
-            }
-        }
-
-        return $this->collTags;
-    }
-
-    /**
-     * Sets a collection of Tag objects related by a many-to-many relationship
-     * to the current object by way of the tagsXquestions cross-reference table.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param  Collection $tags A Propel collection.
-     * @param  ConnectionInterface $con Optional connection object
-     * @return $this|ChildQuestion The current object (for fluent API support)
-     */
-    public function setTags(Collection $tags, ConnectionInterface $con = null)
-    {
-        $this->clearTags();
-        $currentTags = $this->getTags();
-
-        $tagsScheduledForDeletion = $currentTags->diff($tags);
-
-        foreach ($tagsScheduledForDeletion as $toDelete) {
-            $this->removeTag($toDelete);
-        }
-
-        foreach ($tags as $tag) {
-            if (!$currentTags->contains($tag)) {
-                $this->doAddTag($tag);
-            }
-        }
-
-        $this->collTagsPartial = false;
-        $this->collTags = $tags;
-
-        return $this;
-    }
-
-    /**
-     * Gets the number of Tag objects related by a many-to-many relationship
-     * to the current object by way of the tagsXquestions cross-reference table.
-     *
-     * @param      Criteria $criteria Optional query object to filter the query
-     * @param      boolean $distinct Set to true to force count distinct
-     * @param      ConnectionInterface $con Optional connection object
-     *
-     * @return int the number of related Tag objects
-     */
-    public function countTags(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collTagsPartial && !$this->isNew();
-        if (null === $this->collTags || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collTags) {
-                return 0;
-            } else {
-
-                if ($partial && !$criteria) {
-                    return count($this->getTags());
-                }
-
-                $query = ChildTagQuery::create(null, $criteria);
-                if ($distinct) {
-                    $query->distinct();
-                }
-
-                return $query
-                    ->filterByQuestion($this)
-                    ->count($con);
-            }
-        } else {
-            return count($this->collTags);
-        }
-    }
-
-    /**
-     * Associate a ChildTag to this object
-     * through the tagsXquestions cross reference table.
-     *
-     * @param ChildTag $tag
-     * @return ChildQuestion The current object (for fluent API support)
-     */
-    public function addTag(ChildTag $tag)
-    {
-        if ($this->collTags === null) {
-            $this->initTags();
-        }
-
-        if (!$this->getTags()->contains($tag)) {
-            // only add it if the **same** object is not already associated
-            $this->collTags->push($tag);
-            $this->doAddTag($tag);
-        }
-
-        return $this;
-    }
-
-    /**
-     *
-     * @param ChildTag $tag
-     */
-    protected function doAddTag(ChildTag $tag)
-    {
-        $taggedQuestion = new ChildTaggedQuestion();
-
-        $taggedQuestion->setTag($tag);
-
-        $taggedQuestion->setQuestion($this);
-
-        $this->addTaggedQuestion($taggedQuestion);
-
-        // set the back reference to this object directly as using provided method either results
-        // in endless loop or in multiple relations
-        if (!$tag->isQuestionsLoaded()) {
-            $tag->initQuestions();
-            $tag->getQuestions()->push($this);
-        } elseif (!$tag->getQuestions()->contains($this)) {
-            $tag->getQuestions()->push($this);
-        }
-
-    }
-
-    /**
-     * Remove tag of this object
-     * through the tagsXquestions cross reference table.
-     *
-     * @param ChildTag $tag
-     * @return ChildQuestion The current object (for fluent API support)
-     */
-    public function removeTag(ChildTag $tag)
-    {
-        if ($this->getTags()->contains($tag)) { $taggedQuestion = new ChildTaggedQuestion();
-
-            $taggedQuestion->setTag($tag);
-            if ($tag->isQuestionsLoaded()) {
-                //remove the back reference if available
-                $tag->getQuestions()->removeObject($this);
-            }
-
-            $taggedQuestion->setQuestion($this);
-            $this->removeTaggedQuestion(clone $taggedQuestion);
-            $taggedQuestion->clear();
-
-            $this->collTags->remove($this->collTags->search($tag));
-
-            if (null === $this->tagsScheduledForDeletion) {
-                $this->tagsScheduledForDeletion = clone $this->collTags;
-                $this->tagsScheduledForDeletion->clear();
-            }
-
-            $this->tagsScheduledForDeletion->push($tag);
-        }
-
-
-        return $this;
     }
 
     /**
@@ -3156,9 +2407,13 @@ abstract class Question implements ActiveRecordInterface
      */
     public function clear()
     {
+        if (null !== $this->aUser) {
+            $this->aUser->removeQuestion($this);
+        }
         $this->id = null;
         $this->questiontext = null;
         $this->questionname = null;
+        $this->user_id = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -3194,29 +2449,12 @@ abstract class Question implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
-            if ($this->collTaggedQuestions) {
-                foreach ($this->collTaggedQuestions as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
-            if ($this->combinationCollExamQuestionnumbers) {
-                foreach ($this->combinationCollExamQuestionnumbers as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
-            if ($this->collTags) {
-                foreach ($this->collTags as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
         } // if ($deep)
 
         $this->collQuestionScores = null;
         $this->collQuestionAssigners = null;
         $this->collElementAssignments = null;
-        $this->collTaggedQuestions = null;
-        $this->combinationCollExamQuestionnumbers = null;
-        $this->collTags = null;
+        $this->aUser = null;
     }
 
     /**

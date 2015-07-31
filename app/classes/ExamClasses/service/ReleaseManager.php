@@ -8,6 +8,8 @@
 
 namespace App\classes\ExamClasses\service;
 
+use App\classes\PseudoIDClasses\service\IManagerFactory;
+use App\classes\RequestClasses\IRequest;
 use Map\PseudoIDTableMap;
 use Propel\Runtime\Propel;
 
@@ -30,17 +32,17 @@ class ReleaseManager extends ExamServiceParent implements IExamStatusManager
     /** The task string expected for unrelease operations */
     const UNRELEASE_TASK = 'unreleaseExam';
 
-    /** @var  $request \App\classes\RequestClasses\IRequest */
+    /** @var  $request IRequest */
     protected $request;
 
-    /** @var  $pseudoID_manager \App\classes\PseudoIDClasses\service\IManagerFactory */
+    /** @var  $pseudoID_manager IManagerFactory */
     protected $pseudoID_manager;
 
     /**
      * The main publicly called function.
-     * @param \App\classes\RequestClasses\IRequest $request
+     * @param IRequest $request
      */
-    public function execute(\App\classes\RequestClasses\IRequest $request)
+    public function execute(IRequest $request)
     {
         $this->request = $request;
         $this->choose();
@@ -130,9 +132,9 @@ class ReleaseManager extends ExamServiceParent implements IExamStatusManager
 
     /**
      * Loads the object which handles pseudoID operations
-     * @param \App\classes\PseudoIDClasses\service\IManagerFactory $pseudoID_manager
+     * @param IManagerFactory $pseudoID_manager
      */
-    public function set_pseudoID_manager(\App\classes\PseudoIDClasses\service\IManagerFactory $pseudoID_manager)
+    public function set_pseudoID_manager(IManagerFactory $pseudoID_manager)
     {
         $this->pseudoID_manager = $pseudoID_manager;
     }

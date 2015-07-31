@@ -22,6 +22,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildExamInfoQuery orderByExamid($order = Criteria::ASC) Order by the examID column
  * @method     ChildExamInfoQuery orderByStudentid($order = Criteria::ASC) Order by the studentID column
+ * @method     ChildExamInfoQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildExamInfoQuery orderByCompletionorder($order = Criteria::ASC) Order by the completionOrder column
  * @method     ChildExamInfoQuery orderByPages($order = Criteria::ASC) Order by the pages column
  * @method     ChildExamInfoQuery orderByNotecard($order = Criteria::ASC) Order by the notecard column
@@ -31,6 +32,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildExamInfoQuery groupByExamid() Group by the examID column
  * @method     ChildExamInfoQuery groupByStudentid() Group by the studentID column
+ * @method     ChildExamInfoQuery groupByUserId() Group by the user_id column
  * @method     ChildExamInfoQuery groupByCompletionorder() Group by the completionOrder column
  * @method     ChildExamInfoQuery groupByPages() Group by the pages column
  * @method     ChildExamInfoQuery groupByNotecard() Group by the notecard column
@@ -50,13 +52,18 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildExamInfoQuery rightJoinStudent($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Student relation
  * @method     ChildExamInfoQuery innerJoinStudent($relationAlias = null) Adds a INNER JOIN clause to the query using the Student relation
  *
- * @method     \ExamQuery|\StudentQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildExamInfoQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildExamInfoQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildExamInfoQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
+ *
+ * @method     \ExamQuery|\StudentQuery|\UserQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildExamInfo findOne(ConnectionInterface $con = null) Return the first ChildExamInfo matching the query
  * @method     ChildExamInfo findOneOrCreate(ConnectionInterface $con = null) Return the first ChildExamInfo matching the query, or a new ChildExamInfo object populated from the query conditions when no match is found
  *
  * @method     ChildExamInfo findOneByExamid(int $examID) Return the first ChildExamInfo filtered by the examID column
  * @method     ChildExamInfo findOneByStudentid(int $studentID) Return the first ChildExamInfo filtered by the studentID column
+ * @method     ChildExamInfo findOneByUserId(int $user_id) Return the first ChildExamInfo filtered by the user_id column
  * @method     ChildExamInfo findOneByCompletionorder(int $completionOrder) Return the first ChildExamInfo filtered by the completionOrder column
  * @method     ChildExamInfo findOneByPages(double $pages) Return the first ChildExamInfo filtered by the pages column
  * @method     ChildExamInfo findOneByNotecard(double $notecard) Return the first ChildExamInfo filtered by the notecard column
@@ -69,6 +76,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildExamInfo requireOneByExamid(int $examID) Return the first ChildExamInfo filtered by the examID column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildExamInfo requireOneByStudentid(int $studentID) Return the first ChildExamInfo filtered by the studentID column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildExamInfo requireOneByUserId(int $user_id) Return the first ChildExamInfo filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildExamInfo requireOneByCompletionorder(int $completionOrder) Return the first ChildExamInfo filtered by the completionOrder column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildExamInfo requireOneByPages(double $pages) Return the first ChildExamInfo filtered by the pages column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildExamInfo requireOneByNotecard(double $notecard) Return the first ChildExamInfo filtered by the notecard column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -79,6 +87,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildExamInfo[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildExamInfo objects based on current ModelCriteria
  * @method     ChildExamInfo[]|ObjectCollection findByExamid(int $examID) Return ChildExamInfo objects filtered by the examID column
  * @method     ChildExamInfo[]|ObjectCollection findByStudentid(int $studentID) Return ChildExamInfo objects filtered by the studentID column
+ * @method     ChildExamInfo[]|ObjectCollection findByUserId(int $user_id) Return ChildExamInfo objects filtered by the user_id column
  * @method     ChildExamInfo[]|ObjectCollection findByCompletionorder(int $completionOrder) Return ChildExamInfo objects filtered by the completionOrder column
  * @method     ChildExamInfo[]|ObjectCollection findByPages(double $pages) Return ChildExamInfo objects filtered by the pages column
  * @method     ChildExamInfo[]|ObjectCollection findByNotecard(double $notecard) Return ChildExamInfo objects filtered by the notecard column
@@ -177,7 +186,7 @@ abstract class ExamInfoQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT examID, studentID, completionOrder, pages, notecard, examGroupNumber, created_at, updated_at FROM examInfo WHERE examID = :p0 AND studentID = :p1';
+        $sql = 'SELECT examID, studentID, user_id, completionOrder, pages, notecard, examGroupNumber, created_at, updated_at FROM examInfo WHERE examID = :p0 AND studentID = :p1';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
@@ -363,6 +372,49 @@ abstract class ExamInfoQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(ExamInfoTableMap::COL_STUDENTID, $studentid, $comparison);
+    }
+
+    /**
+     * Filter the query on the user_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUserId(1234); // WHERE user_id = 1234
+     * $query->filterByUserId(array(12, 34)); // WHERE user_id IN (12, 34)
+     * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
+     * </code>
+     *
+     * @see       filterByUser()
+     *
+     * @param     mixed $userId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildExamInfoQuery The current query, for fluid interface
+     */
+    public function filterByUserId($userId = null, $comparison = null)
+    {
+        if (is_array($userId)) {
+            $useMinMax = false;
+            if (isset($userId['min'])) {
+                $this->addUsingAlias(ExamInfoTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($userId['max'])) {
+                $this->addUsingAlias(ExamInfoTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ExamInfoTableMap::COL_USER_ID, $userId, $comparison);
     }
 
     /**
@@ -767,6 +819,83 @@ abstract class ExamInfoQuery extends ModelCriteria
         return $this
             ->joinStudent($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'Student', '\StudentQuery');
+    }
+
+    /**
+     * Filter the query by a related \User object
+     *
+     * @param \User|ObjectCollection $user The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildExamInfoQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = null)
+    {
+        if ($user instanceof \User) {
+            return $this
+                ->addUsingAlias(ExamInfoTableMap::COL_USER_ID, $user->getId(), $comparison);
+        } elseif ($user instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(ExamInfoTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByUser() only accepts arguments of type \User or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the User relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildExamInfoQuery The current query, for fluid interface
+     */
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('User');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'User');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the User relation User object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \UserQuery A secondary query class using the current class as primary query
+     */
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
     }
 
     /**

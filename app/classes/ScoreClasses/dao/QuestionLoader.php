@@ -10,11 +10,22 @@ namespace App\classes\ScoreClasses\dao;
 
 
 use App\classes\ScoreClasses\dao\ScoreDAO;
+use App\classes\Traits\UserTraits;
 
 class QuestionLoader extends LoaderParent implements ILoader
 {
     static public $type = ScoreDAO::WORKER_QUESTION;
 
+
+    use UserTraits;
+
+    /** @var \User */
+    public $user;
+
+    function __construct()
+    {
+        $this->user = $this->getUser();
+    }
 
     public function all()
     {
@@ -63,6 +74,7 @@ class QuestionLoader extends LoaderParent implements ILoader
     protected function get_all_scores_for_student()
     {
         return  \QuestionScoreQuery::create()
+            ->filterByUser($this->user)
             ->filterByExam($this->exam)
             ->filterByStudent($this->student)
             ->find();
@@ -74,6 +86,7 @@ class QuestionLoader extends LoaderParent implements ILoader
     protected function get_all_scores_on_exam()
     {
         return  \QuestionScoreQuery::create()
+            ->filterByUser($this->user)
             ->filterByExam($this->exam)
             ->find();
     }
@@ -88,6 +101,7 @@ class QuestionLoader extends LoaderParent implements ILoader
     {
         return  \QuestionScoreQuery::create()
             ->filterByExam($this->exam)
+            ->filterByUser($this->user)
             ->filterByStudent($this->student)
             ->filterByQuestion($question)
             ->findOne();
@@ -102,6 +116,7 @@ class QuestionLoader extends LoaderParent implements ILoader
     protected function get_all_students_on_one_question(\Question $question)
     {
         return  \QuestionScoreQuery::create()
+            ->filterByUser($this->user)
             ->filterByExam($this->exam)
             ->filterByQuestion($question)
             ->find();
@@ -116,6 +131,7 @@ class QuestionLoader extends LoaderParent implements ILoader
     {
         try {
             $q = \QuestionAssignerQuery::create()
+                ->filterByUser($this->user)
                 ->filterByExam($this->exam)
                 ->filterByQuestionnumber($questionNumber)
                 ->findOne();
@@ -123,6 +139,7 @@ class QuestionLoader extends LoaderParent implements ILoader
                 throw new \Exception();
             }
             return  \QuestionScoreQuery::create()
+                ->filterByUser($this->user)
                 ->filterByExam($this->exam)
                 ->filterByStudent($this->student)
                 ->filterByQuestion($q->getQuestion())
@@ -141,6 +158,7 @@ class QuestionLoader extends LoaderParent implements ILoader
     {
         try {
             $q = \QuestionAssignerQuery::create()
+                ->filterByUser($this->user)
                 ->filterByExam($this->exam)
                 ->filterByQuestionnumber($questionNumber)
                 ->findOne();
@@ -148,6 +166,7 @@ class QuestionLoader extends LoaderParent implements ILoader
                 throw new \Exception();
             }
             return  \QuestionScoreQuery::create()
+                ->filterByUser($this->user)
                 ->filterByExam($this->exam)
                 ->filterByQuestion($q->getQuestion())
                 ->find();

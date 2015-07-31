@@ -24,6 +24,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildGradingTimeQuery orderByExamid($order = Criteria::ASC) Order by the examID column
  * @method     ChildGradingTimeQuery orderByStudentid($order = Criteria::ASC) Order by the studentID column
  * @method     ChildGradingTimeQuery orderBySeconds($order = Criteria::ASC) Order by the seconds column
+ * @method     ChildGradingTimeQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildGradingTimeQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildGradingTimeQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
@@ -31,12 +32,17 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildGradingTimeQuery groupByExamid() Group by the examID column
  * @method     ChildGradingTimeQuery groupByStudentid() Group by the studentID column
  * @method     ChildGradingTimeQuery groupBySeconds() Group by the seconds column
+ * @method     ChildGradingTimeQuery groupByUserId() Group by the user_id column
  * @method     ChildGradingTimeQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildGradingTimeQuery groupByUpdatedAt() Group by the updated_at column
  *
  * @method     ChildGradingTimeQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildGradingTimeQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildGradingTimeQuery innerJoin($relation) Adds a INNER JOIN clause to the query
+ *
+ * @method     ChildGradingTimeQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildGradingTimeQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildGradingTimeQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
  *
  * @method     ChildGradingTimeQuery leftJoinExam($relationAlias = null) Adds a LEFT JOIN clause to the query using the Exam relation
  * @method     ChildGradingTimeQuery rightJoinExam($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Exam relation
@@ -46,7 +52,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildGradingTimeQuery rightJoinStudent($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Student relation
  * @method     ChildGradingTimeQuery innerJoinStudent($relationAlias = null) Adds a INNER JOIN clause to the query using the Student relation
  *
- * @method     \ExamQuery|\StudentQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \UserQuery|\ExamQuery|\StudentQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildGradingTime findOne(ConnectionInterface $con = null) Return the first ChildGradingTime matching the query
  * @method     ChildGradingTime findOneOrCreate(ConnectionInterface $con = null) Return the first ChildGradingTime matching the query, or a new ChildGradingTime object populated from the query conditions when no match is found
@@ -55,6 +61,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildGradingTime findOneByExamid(int $examID) Return the first ChildGradingTime filtered by the examID column
  * @method     ChildGradingTime findOneByStudentid(int $studentID) Return the first ChildGradingTime filtered by the studentID column
  * @method     ChildGradingTime findOneBySeconds(double $seconds) Return the first ChildGradingTime filtered by the seconds column
+ * @method     ChildGradingTime findOneByUserId(int $user_id) Return the first ChildGradingTime filtered by the user_id column
  * @method     ChildGradingTime findOneByCreatedAt(string $created_at) Return the first ChildGradingTime filtered by the created_at column
  * @method     ChildGradingTime findOneByUpdatedAt(string $updated_at) Return the first ChildGradingTime filtered by the updated_at column *
 
@@ -65,6 +72,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildGradingTime requireOneByExamid(int $examID) Return the first ChildGradingTime filtered by the examID column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildGradingTime requireOneByStudentid(int $studentID) Return the first ChildGradingTime filtered by the studentID column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildGradingTime requireOneBySeconds(double $seconds) Return the first ChildGradingTime filtered by the seconds column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildGradingTime requireOneByUserId(int $user_id) Return the first ChildGradingTime filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildGradingTime requireOneByCreatedAt(string $created_at) Return the first ChildGradingTime filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildGradingTime requireOneByUpdatedAt(string $updated_at) Return the first ChildGradingTime filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
@@ -73,6 +81,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildGradingTime[]|ObjectCollection findByExamid(int $examID) Return ChildGradingTime objects filtered by the examID column
  * @method     ChildGradingTime[]|ObjectCollection findByStudentid(int $studentID) Return ChildGradingTime objects filtered by the studentID column
  * @method     ChildGradingTime[]|ObjectCollection findBySeconds(double $seconds) Return ChildGradingTime objects filtered by the seconds column
+ * @method     ChildGradingTime[]|ObjectCollection findByUserId(int $user_id) Return ChildGradingTime objects filtered by the user_id column
  * @method     ChildGradingTime[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildGradingTime objects filtered by the created_at column
  * @method     ChildGradingTime[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildGradingTime objects filtered by the updated_at column
  * @method     ChildGradingTime[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -124,10 +133,10 @@ abstract class GradingTimeQuery extends ModelCriteria
      * Go fast if the query is untouched.
      *
      * <code>
-     * $obj  = $c->findPk(12, $con);
+     * $obj = $c->findPk(array(12, 34), $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query
+     * @param array[$id, $user_id] $key Primary key to use for the query
      * @param ConnectionInterface $con an optional connection object
      *
      * @return ChildGradingTime|array|mixed the result, formatted by the current formatter
@@ -137,7 +146,7 @@ abstract class GradingTimeQuery extends ModelCriteria
         if ($key === null) {
             return null;
         }
-        if ((null !== ($obj = GradingTimeTableMap::getInstanceFromPool((string) $key))) && !$this->formatter) {
+        if ((null !== ($obj = GradingTimeTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && !$this->formatter) {
             // the object is already in the instance pool
             return $obj;
         }
@@ -167,10 +176,11 @@ abstract class GradingTimeQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, examID, studentID, seconds, created_at, updated_at FROM time_grading WHERE id = :p0';
+        $sql = 'SELECT id, examID, studentID, seconds, user_id, created_at, updated_at FROM time_grading WHERE id = :p0 AND user_id = :p1';
         try {
             $stmt = $con->prepare($sql);
-            $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
+            $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
+            $stmt->bindValue(':p1', $key[1], PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
             Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -181,7 +191,7 @@ abstract class GradingTimeQuery extends ModelCriteria
             /** @var ChildGradingTime $obj */
             $obj = new ChildGradingTime();
             $obj->hydrate($row);
-            GradingTimeTableMap::addInstanceToPool($obj, (string) $key);
+            GradingTimeTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1])));
         }
         $stmt->closeCursor();
 
@@ -210,7 +220,7 @@ abstract class GradingTimeQuery extends ModelCriteria
     /**
      * Find objects by primary key
      * <code>
-     * $objs = $c->findPks(array(12, 56, 832), $con);
+     * $objs = $c->findPks(array(array(12, 56), array(832, 123), array(123, 456)), $con);
      * </code>
      * @param     array $keys Primary keys to use for the query
      * @param     ConnectionInterface $con an optional connection object
@@ -240,8 +250,10 @@ abstract class GradingTimeQuery extends ModelCriteria
      */
     public function filterByPrimaryKey($key)
     {
+        $this->addUsingAlias(GradingTimeTableMap::COL_ID, $key[0], Criteria::EQUAL);
+        $this->addUsingAlias(GradingTimeTableMap::COL_USER_ID, $key[1], Criteria::EQUAL);
 
-        return $this->addUsingAlias(GradingTimeTableMap::COL_ID, $key, Criteria::EQUAL);
+        return $this;
     }
 
     /**
@@ -253,8 +265,17 @@ abstract class GradingTimeQuery extends ModelCriteria
      */
     public function filterByPrimaryKeys($keys)
     {
+        if (empty($keys)) {
+            return $this->add(null, '1<>1', Criteria::CUSTOM);
+        }
+        foreach ($keys as $key) {
+            $cton0 = $this->getNewCriterion(GradingTimeTableMap::COL_ID, $key[0], Criteria::EQUAL);
+            $cton1 = $this->getNewCriterion(GradingTimeTableMap::COL_USER_ID, $key[1], Criteria::EQUAL);
+            $cton0->addAnd($cton1);
+            $this->addOr($cton0);
+        }
 
-        return $this->addUsingAlias(GradingTimeTableMap::COL_ID, $keys, Criteria::IN);
+        return $this;
     }
 
     /**
@@ -426,6 +447,49 @@ abstract class GradingTimeQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the user_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUserId(1234); // WHERE user_id = 1234
+     * $query->filterByUserId(array(12, 34)); // WHERE user_id IN (12, 34)
+     * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
+     * </code>
+     *
+     * @see       filterByUser()
+     *
+     * @param     mixed $userId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildGradingTimeQuery The current query, for fluid interface
+     */
+    public function filterByUserId($userId = null, $comparison = null)
+    {
+        if (is_array($userId)) {
+            $useMinMax = false;
+            if (isset($userId['min'])) {
+                $this->addUsingAlias(GradingTimeTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($userId['max'])) {
+                $this->addUsingAlias(GradingTimeTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(GradingTimeTableMap::COL_USER_ID, $userId, $comparison);
+    }
+
+    /**
      * Filter the query on the created_at column
      *
      * Example usage:
@@ -509,6 +573,83 @@ abstract class GradingTimeQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(GradingTimeTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \User object
+     *
+     * @param \User|ObjectCollection $user The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildGradingTimeQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = null)
+    {
+        if ($user instanceof \User) {
+            return $this
+                ->addUsingAlias(GradingTimeTableMap::COL_USER_ID, $user->getId(), $comparison);
+        } elseif ($user instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(GradingTimeTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByUser() only accepts arguments of type \User or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the User relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildGradingTimeQuery The current query, for fluid interface
+     */
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('User');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'User');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the User relation User object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \UserQuery A secondary query class using the current class as primary query
+     */
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
     }
 
     /**
@@ -675,7 +816,9 @@ abstract class GradingTimeQuery extends ModelCriteria
     public function prune($gradingTime = null)
     {
         if ($gradingTime) {
-            $this->addUsingAlias(GradingTimeTableMap::COL_ID, $gradingTime->getId(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond0', $this->getAliasedColName(GradingTimeTableMap::COL_ID), $gradingTime->getId(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond1', $this->getAliasedColName(GradingTimeTableMap::COL_USER_ID), $gradingTime->getUserId(), Criteria::NOT_EQUAL);
+            $this->combine(array('pruneCond0', 'pruneCond1'), Criteria::LOGICAL_OR);
         }
 
         return $this;

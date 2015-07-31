@@ -22,17 +22,23 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildTagQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildTagQuery orderByTag($order = Criteria::ASC) Order by the tag column
+ * @method     ChildTagQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  * @method     ChildTagQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildTagQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildTagQuery groupById() Group by the id column
  * @method     ChildTagQuery groupByTag() Group by the tag column
+ * @method     ChildTagQuery groupByUserId() Group by the user_id column
  * @method     ChildTagQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildTagQuery groupByUpdatedAt() Group by the updated_at column
  *
  * @method     ChildTagQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildTagQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildTagQuery innerJoin($relation) Adds a INNER JOIN clause to the query
+ *
+ * @method     ChildTagQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildTagQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildTagQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
  *
  * @method     ChildTagQuery leftJoinTaggedQuestion($relationAlias = null) Adds a LEFT JOIN clause to the query using the TaggedQuestion relation
  * @method     ChildTagQuery rightJoinTaggedQuestion($relationAlias = null) Adds a RIGHT JOIN clause to the query using the TaggedQuestion relation
@@ -42,13 +48,14 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildTagQuery rightJoinTaggedElement($relationAlias = null) Adds a RIGHT JOIN clause to the query using the TaggedElement relation
  * @method     ChildTagQuery innerJoinTaggedElement($relationAlias = null) Adds a INNER JOIN clause to the query using the TaggedElement relation
  *
- * @method     \TaggedQuestionQuery|\TaggedElementQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \UserQuery|\TaggedQuestionQuery|\TaggedElementQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildTag findOne(ConnectionInterface $con = null) Return the first ChildTag matching the query
  * @method     ChildTag findOneOrCreate(ConnectionInterface $con = null) Return the first ChildTag matching the query, or a new ChildTag object populated from the query conditions when no match is found
  *
  * @method     ChildTag findOneById(int $id) Return the first ChildTag filtered by the id column
  * @method     ChildTag findOneByTag(string $tag) Return the first ChildTag filtered by the tag column
+ * @method     ChildTag findOneByUserId(int $user_id) Return the first ChildTag filtered by the user_id column
  * @method     ChildTag findOneByCreatedAt(string $created_at) Return the first ChildTag filtered by the created_at column
  * @method     ChildTag findOneByUpdatedAt(string $updated_at) Return the first ChildTag filtered by the updated_at column *
 
@@ -57,12 +64,14 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildTag requireOneById(int $id) Return the first ChildTag filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTag requireOneByTag(string $tag) Return the first ChildTag filtered by the tag column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildTag requireOneByUserId(int $user_id) Return the first ChildTag filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTag requireOneByCreatedAt(string $created_at) Return the first ChildTag filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTag requireOneByUpdatedAt(string $updated_at) Return the first ChildTag filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildTag[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildTag objects based on current ModelCriteria
  * @method     ChildTag[]|ObjectCollection findById(int $id) Return ChildTag objects filtered by the id column
  * @method     ChildTag[]|ObjectCollection findByTag(string $tag) Return ChildTag objects filtered by the tag column
+ * @method     ChildTag[]|ObjectCollection findByUserId(int $user_id) Return ChildTag objects filtered by the user_id column
  * @method     ChildTag[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildTag objects filtered by the created_at column
  * @method     ChildTag[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildTag objects filtered by the updated_at column
  * @method     ChildTag[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -114,10 +123,10 @@ abstract class TagQuery extends ModelCriteria
      * Go fast if the query is untouched.
      *
      * <code>
-     * $obj  = $c->findPk(12, $con);
+     * $obj = $c->findPk(array(12, 34), $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query
+     * @param array[$id, $user_id] $key Primary key to use for the query
      * @param ConnectionInterface $con an optional connection object
      *
      * @return ChildTag|array|mixed the result, formatted by the current formatter
@@ -127,7 +136,7 @@ abstract class TagQuery extends ModelCriteria
         if ($key === null) {
             return null;
         }
-        if ((null !== ($obj = TagTableMap::getInstanceFromPool((string) $key))) && !$this->formatter) {
+        if ((null !== ($obj = TagTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && !$this->formatter) {
             // the object is already in the instance pool
             return $obj;
         }
@@ -157,10 +166,11 @@ abstract class TagQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, tag, created_at, updated_at FROM tags WHERE id = :p0';
+        $sql = 'SELECT id, tag, user_id, created_at, updated_at FROM tags WHERE id = :p0 AND user_id = :p1';
         try {
             $stmt = $con->prepare($sql);
-            $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
+            $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
+            $stmt->bindValue(':p1', $key[1], PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
             Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -171,7 +181,7 @@ abstract class TagQuery extends ModelCriteria
             /** @var ChildTag $obj */
             $obj = new ChildTag();
             $obj->hydrate($row);
-            TagTableMap::addInstanceToPool($obj, (string) $key);
+            TagTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1])));
         }
         $stmt->closeCursor();
 
@@ -200,7 +210,7 @@ abstract class TagQuery extends ModelCriteria
     /**
      * Find objects by primary key
      * <code>
-     * $objs = $c->findPks(array(12, 56, 832), $con);
+     * $objs = $c->findPks(array(array(12, 56), array(832, 123), array(123, 456)), $con);
      * </code>
      * @param     array $keys Primary keys to use for the query
      * @param     ConnectionInterface $con an optional connection object
@@ -230,8 +240,10 @@ abstract class TagQuery extends ModelCriteria
      */
     public function filterByPrimaryKey($key)
     {
+        $this->addUsingAlias(TagTableMap::COL_ID, $key[0], Criteria::EQUAL);
+        $this->addUsingAlias(TagTableMap::COL_USER_ID, $key[1], Criteria::EQUAL);
 
-        return $this->addUsingAlias(TagTableMap::COL_ID, $key, Criteria::EQUAL);
+        return $this;
     }
 
     /**
@@ -243,8 +255,17 @@ abstract class TagQuery extends ModelCriteria
      */
     public function filterByPrimaryKeys($keys)
     {
+        if (empty($keys)) {
+            return $this->add(null, '1<>1', Criteria::CUSTOM);
+        }
+        foreach ($keys as $key) {
+            $cton0 = $this->getNewCriterion(TagTableMap::COL_ID, $key[0], Criteria::EQUAL);
+            $cton1 = $this->getNewCriterion(TagTableMap::COL_USER_ID, $key[1], Criteria::EQUAL);
+            $cton0->addAnd($cton1);
+            $this->addOr($cton0);
+        }
 
-        return $this->addUsingAlias(TagTableMap::COL_ID, $keys, Criteria::IN);
+        return $this;
     }
 
     /**
@@ -315,6 +336,49 @@ abstract class TagQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(TagTableMap::COL_TAG, $tag, $comparison);
+    }
+
+    /**
+     * Filter the query on the user_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUserId(1234); // WHERE user_id = 1234
+     * $query->filterByUserId(array(12, 34)); // WHERE user_id IN (12, 34)
+     * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
+     * </code>
+     *
+     * @see       filterByUser()
+     *
+     * @param     mixed $userId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildTagQuery The current query, for fluid interface
+     */
+    public function filterByUserId($userId = null, $comparison = null)
+    {
+        if (is_array($userId)) {
+            $useMinMax = false;
+            if (isset($userId['min'])) {
+                $this->addUsingAlias(TagTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($userId['max'])) {
+                $this->addUsingAlias(TagTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(TagTableMap::COL_USER_ID, $userId, $comparison);
     }
 
     /**
@@ -401,6 +465,83 @@ abstract class TagQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(TagTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \User object
+     *
+     * @param \User|ObjectCollection $user The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildTagQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = null)
+    {
+        if ($user instanceof \User) {
+            return $this
+                ->addUsingAlias(TagTableMap::COL_USER_ID, $user->getId(), $comparison);
+        } elseif ($user instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(TagTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByUser() only accepts arguments of type \User or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the User relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildTagQuery The current query, for fluid interface
+     */
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('User');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'User');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the User relation User object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \UserQuery A secondary query class using the current class as primary query
+     */
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', '\UserQuery');
     }
 
     /**
@@ -550,6 +691,23 @@ abstract class TagQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query by a related User object
+     * using the tagsXquestions table as cross reference
+     *
+     * @param User $user the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildTagQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = Criteria::EQUAL)
+    {
+        return $this
+            ->useTaggedQuestionQuery()
+            ->filterByUser($user, $comparison)
+            ->endUse();
+    }
+
+    /**
      * Filter the query by a related Question object
      * using the tagsXquestions table as cross reference
      *
@@ -563,6 +721,23 @@ abstract class TagQuery extends ModelCriteria
         return $this
             ->useTaggedQuestionQuery()
             ->filterByQuestion($question, $comparison)
+            ->endUse();
+    }
+
+    /**
+     * Filter the query by a related User object
+     * using the tagsXelements table as cross reference
+     *
+     * @param User $user the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildTagQuery The current query, for fluid interface
+     */
+    public function filterByUser($user, $comparison = Criteria::EQUAL)
+    {
+        return $this
+            ->useTaggedElementQuery()
+            ->filterByUser($user, $comparison)
             ->endUse();
     }
 
@@ -593,7 +768,9 @@ abstract class TagQuery extends ModelCriteria
     public function prune($tag = null)
     {
         if ($tag) {
-            $this->addUsingAlias(TagTableMap::COL_ID, $tag->getId(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond0', $this->getAliasedColName(TagTableMap::COL_ID), $tag->getId(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond1', $this->getAliasedColName(TagTableMap::COL_USER_ID), $tag->getUserId(), Criteria::NOT_EQUAL);
+            $this->combine(array('pruneCond0', 'pruneCond1'), Criteria::LOGICAL_OR);
         }
 
         return $this;

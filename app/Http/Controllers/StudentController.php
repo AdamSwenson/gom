@@ -8,22 +8,34 @@
 
 namespace App\Http\Controllers;
 
-/*
+
 use App\classes\ExamClasses\service\CurrentExamManager;
 use App\classes\ImportExportClasses\StudentUpload\StudentCsvProcessor;
-use App\classes\ImportExportClasses\StudentUpload\Uploader;
+use App\classes\ImportExportClasses\dao\Uploader;
 use App\classes\RequestClasses\FileRequest;
-use App\Http\Controllers\helpers\ExamSelectorHelper;*/
+use App\Http\Controllers\helpers\ExamSelectorHelper;
+use App\Http\Requests\StudentRequest;
+use App\Repositories\Student\IStudentRepository;
+use App\Student;
 
 class StudentController extends Controller
-
 {
+    /** @var IStudentRepository  */
+    protected $dao;
+
+    public function __construct(IStudentRepository $studentRepository)
+    {
+        $this->dao = $studentRepository;
+    }
+
     /**
      * Display a listing of the resource.
+     * We'll co-op this to display the roster editing page
      *
+     * @param StudentRequest $request
      * @return Response
      */
-    public function index()
+    public function index(StudentRequest $request)
     {
         return view('setup/edit_roster');
     }
@@ -31,9 +43,10 @@ class StudentController extends Controller
     /**
      * Show the form for creating a new resource.
      *
+     * @param StudentRequest $request
      * @return Response
      */
-    public function create()
+    public function create(StudentRequest $request)
     {
         //
     }
@@ -41,42 +54,60 @@ class StudentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
+     * @param StudentRequest $request
      * @return Response
      */
-    public function store()
+    public function store(StudentRequest $request)
     {
-        //
+        $student = $this->dao->create_student(
+            $request->input('lastName'),
+            $request->input('firstName'),
+            $request->input('studentId'),
+            $request->input('email')
+        );
+        //todo add view to return
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param Student $student
      * @return Response
      */
-    public function show($id)
+    public function show(Student $student)
     {
-        //
+
+        //todo add view for model bound
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param Student $student
+     * @param StudentRequest $request
      * @return Response
+     *
      */
-    public function edit($id)
+    public function edit(Student $student, StudentRequest $request)
     {
         //
     }
 
     /**
+     * Show the form for importing and editing a student roster
+     */
+    public function editAll($exam, StudentRequest $request) {
+        return view('setup/edit_roster');
+    }
+
+    /**
      * Update the specified resource in storage.
      *
-     * @param  int  $id
+     * @param Student $student
+     * @param StudentRequest $request
      * @return Response
      */
-    public function update($id)
+    public function update(Student $student, StudentRequest $request)
     {
         //
     }
@@ -84,12 +115,14 @@ class StudentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Student $student
      * @return Response
      */
-    public function destroy($id)
+    public function destroy(Student $student)
     {
-        //
+        $result = $this->dao->delete_student_by_object($student);
+
+        //TODO Add view
     }
 }
 
@@ -136,4 +169,5 @@ class StudentController extends Controller
             }
         }
     }
-} */
+
+}*/

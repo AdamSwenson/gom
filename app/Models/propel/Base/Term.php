@@ -2,10 +2,10 @@
 
 namespace Base;
 
-use \Exam as ChildExam;
-use \ExamQuery as ChildExamQuery;
 use \Term as ChildTerm;
 use \TermQuery as ChildTermQuery;
+use \User as ChildUser;
+use \UserQuery as ChildUserQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
@@ -15,7 +15,6 @@ use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
-use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
@@ -72,6 +71,12 @@ abstract class Term implements ActiveRecordInterface
     protected $content;
 
     /**
+     * The value for the user_id field.
+     * @var        int
+     */
+    protected $user_id;
+
+    /**
      * The value for the created_at field.
      * @var        \DateTime
      */
@@ -84,10 +89,9 @@ abstract class Term implements ActiveRecordInterface
     protected $updated_at;
 
     /**
-     * @var        ObjectCollection|ChildExam[] Collection to store aggregation of ChildExam objects.
+     * @var        ChildUser
      */
-    protected $collExams;
-    protected $collExamsPartial;
+    protected $aUser;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -96,12 +100,6 @@ abstract class Term implements ActiveRecordInterface
      * @var boolean
      */
     protected $alreadyInSave = false;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildExam[]
-     */
-    protected $examsScheduledForDeletion = null;
 
     /**
      * Initializes internal state of Base\Term object.
@@ -331,6 +329,16 @@ abstract class Term implements ActiveRecordInterface
     }
 
     /**
+     * Get the [user_id] column value.
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [created_at] column value.
      *
      *
@@ -389,6 +397,30 @@ abstract class Term implements ActiveRecordInterface
 
         return $this;
     } // setContent()
+
+    /**
+     * Set the value of [user_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\Term The current object (for fluent API support)
+     */
+    public function setUserId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[TermTableMap::COL_USER_ID] = true;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
+        }
+
+        return $this;
+    } // setUserId()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
@@ -469,13 +501,16 @@ abstract class Term implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : TermTableMap::translateFieldName('Content', TableMap::TYPE_PHPNAME, $indexType)];
             $this->content = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : TermTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : TermTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->user_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : TermTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : TermTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : TermTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -488,7 +523,7 @@ abstract class Term implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 3; // 3 = TermTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 4; // 4 = TermTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Term'), 0, $e);
@@ -510,6 +545,9 @@ abstract class Term implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
+        }
     } // ensureConsistency
 
     /**
@@ -549,8 +587,7 @@ abstract class Term implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->collExams = null;
-
+            $this->aUser = null;
         } // if (deep)
     }
 
@@ -662,6 +699,18 @@ abstract class Term implements ActiveRecordInterface
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
 
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -671,23 +720,6 @@ abstract class Term implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
-            }
-
-            if ($this->examsScheduledForDeletion !== null) {
-                if (!$this->examsScheduledForDeletion->isEmpty()) {
-                    \ExamQuery::create()
-                        ->filterByPrimaryKeys($this->examsScheduledForDeletion->getPrimaryKeys(false))
-                        ->delete($con);
-                    $this->examsScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collExams !== null) {
-                foreach ($this->collExams as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
             }
 
             $this->alreadyInSave = false;
@@ -715,6 +747,9 @@ abstract class Term implements ActiveRecordInterface
         if ($this->isColumnModified(TermTableMap::COL_CONTENT)) {
             $modifiedColumns[':p' . $index++]  = 'content';
         }
+        if ($this->isColumnModified(TermTableMap::COL_USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'user_id';
+        }
         if ($this->isColumnModified(TermTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
@@ -734,6 +769,9 @@ abstract class Term implements ActiveRecordInterface
                 switch ($columnName) {
                     case 'content':
                         $stmt->bindValue($identifier, $this->content, PDO::PARAM_STR);
+                        break;
+                    case 'user_id':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -800,9 +838,12 @@ abstract class Term implements ActiveRecordInterface
                 return $this->getContent();
                 break;
             case 1:
-                return $this->getCreatedAt();
+                return $this->getUserId();
                 break;
             case 2:
+                return $this->getCreatedAt();
+                break;
+            case 3:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -836,21 +877,22 @@ abstract class Term implements ActiveRecordInterface
         $keys = TermTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getContent(),
-            $keys[1] => $this->getCreatedAt(),
-            $keys[2] => $this->getUpdatedAt(),
+            $keys[1] => $this->getUserId(),
+            $keys[2] => $this->getCreatedAt(),
+            $keys[3] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[1]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[1]];
-            $result[$keys[1]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[2]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[2]];
             $result[$keys[2]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[3]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[3]];
+            $result[$keys[3]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -859,20 +901,20 @@ abstract class Term implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->collExams) {
+            if (null !== $this->aUser) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'exams';
+                        $key = 'user';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'examss';
+                        $key = 'users';
                         break;
                     default:
-                        $key = 'Exams';
+                        $key = 'User';
                 }
 
-                $result[$key] = $this->collExams->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -912,9 +954,12 @@ abstract class Term implements ActiveRecordInterface
                 $this->setContent($value);
                 break;
             case 1:
-                $this->setCreatedAt($value);
+                $this->setUserId($value);
                 break;
             case 2:
+                $this->setCreatedAt($value);
+                break;
+            case 3:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -947,10 +992,13 @@ abstract class Term implements ActiveRecordInterface
             $this->setContent($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setCreatedAt($arr[$keys[1]]);
+            $this->setUserId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setUpdatedAt($arr[$keys[2]]);
+            $this->setCreatedAt($arr[$keys[2]]);
+        }
+        if (array_key_exists($keys[3], $arr)) {
+            $this->setUpdatedAt($arr[$keys[3]]);
         }
     }
 
@@ -995,6 +1043,9 @@ abstract class Term implements ActiveRecordInterface
 
         if ($this->isColumnModified(TermTableMap::COL_CONTENT)) {
             $criteria->add(TermTableMap::COL_CONTENT, $this->content);
+        }
+        if ($this->isColumnModified(TermTableMap::COL_USER_ID)) {
+            $criteria->add(TermTableMap::COL_USER_ID, $this->user_id);
         }
         if ($this->isColumnModified(TermTableMap::COL_CREATED_AT)) {
             $criteria->add(TermTableMap::COL_CREATED_AT, $this->created_at);
@@ -1089,22 +1140,9 @@ abstract class Term implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setContent($this->getContent());
+        $copyObj->setUserId($this->getUserId());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
-
-        if ($deepCopy) {
-            // important: temporarily setNew(false) because this affects the behavior of
-            // the getter/setter methods for fkey referrer objects.
-            $copyObj->setNew(false);
-
-            foreach ($this->getExams() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addExam($relObj->copy($deepCopy));
-                }
-            }
-
-        } // if ($deepCopy)
-
         if ($makeNew) {
             $copyObj->setNew(true);
         }
@@ -1132,288 +1170,55 @@ abstract class Term implements ActiveRecordInterface
         return $copyObj;
     }
 
-
     /**
-     * Initializes a collection based on the name of a relation.
-     * Avoids crafting an 'init[$relationName]s' method name
-     * that wouldn't work when StandardEnglishPluralizer is used.
+     * Declares an association between this object and a ChildUser object.
      *
-     * @param      string $relationName The name of the relation to initialize
-     * @return void
-     */
-    public function initRelation($relationName)
-    {
-        if ('Exam' == $relationName) {
-            return $this->initExams();
-        }
-    }
-
-    /**
-     * Clears out the collExams collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addExams()
-     */
-    public function clearExams()
-    {
-        $this->collExams = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collExams collection loaded partially.
-     */
-    public function resetPartialExams($v = true)
-    {
-        $this->collExamsPartial = $v;
-    }
-
-    /**
-     * Initializes the collExams collection.
-     *
-     * By default this just sets the collExams collection to an empty array (like clearcollExams());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initExams($overrideExisting = true)
-    {
-        if (null !== $this->collExams && !$overrideExisting) {
-            return;
-        }
-        $this->collExams = new ObjectCollection();
-        $this->collExams->setModel('\Exam');
-    }
-
-    /**
-     * Gets an array of ChildExam objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildTerm is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildExam[] List of ChildExam objects
-     * @throws PropelException
-     */
-    public function getExams(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collExamsPartial && !$this->isNew();
-        if (null === $this->collExams || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collExams) {
-                // return empty collection
-                $this->initExams();
-            } else {
-                $collExams = ChildExamQuery::create(null, $criteria)
-                    ->filterByTerm($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collExamsPartial && count($collExams)) {
-                        $this->initExams(false);
-
-                        foreach ($collExams as $obj) {
-                            if (false == $this->collExams->contains($obj)) {
-                                $this->collExams->append($obj);
-                            }
-                        }
-
-                        $this->collExamsPartial = true;
-                    }
-
-                    return $collExams;
-                }
-
-                if ($partial && $this->collExams) {
-                    foreach ($this->collExams as $obj) {
-                        if ($obj->isNew()) {
-                            $collExams[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collExams = $collExams;
-                $this->collExamsPartial = false;
-            }
-        }
-
-        return $this->collExams;
-    }
-
-    /**
-     * Sets a collection of ChildExam objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $exams A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildTerm The current object (for fluent API support)
-     */
-    public function setExams(Collection $exams, ConnectionInterface $con = null)
-    {
-        /** @var ChildExam[] $examsToDelete */
-        $examsToDelete = $this->getExams(new Criteria(), $con)->diff($exams);
-
-
-        $this->examsScheduledForDeletion = $examsToDelete;
-
-        foreach ($examsToDelete as $examRemoved) {
-            $examRemoved->setTerm(null);
-        }
-
-        $this->collExams = null;
-        foreach ($exams as $exam) {
-            $this->addExam($exam);
-        }
-
-        $this->collExams = $exams;
-        $this->collExamsPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related Exam objects.
-     *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related Exam objects.
-     * @throws PropelException
-     */
-    public function countExams(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collExamsPartial && !$this->isNew();
-        if (null === $this->collExams || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collExams) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getExams());
-            }
-
-            $query = ChildExamQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByTerm($this)
-                ->count($con);
-        }
-
-        return count($this->collExams);
-    }
-
-    /**
-     * Method called to associate a ChildExam object to this object
-     * through the ChildExam foreign key attribute.
-     *
-     * @param  ChildExam $l ChildExam
+     * @param  ChildUser $v
      * @return $this|\Term The current object (for fluent API support)
+     * @throws PropelException
      */
-    public function addExam(ChildExam $l)
+    public function setUser(ChildUser $v = null)
     {
-        if ($this->collExams === null) {
-            $this->initExams();
-            $this->collExamsPartial = true;
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
         }
 
-        if (!$this->collExams->contains($l)) {
-            $this->doAddExam($l);
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
+        if ($v !== null) {
+            $v->addTerm($this);
         }
 
-        return $this;
-    }
-
-    /**
-     * @param ChildExam $exam The ChildExam object to add.
-     */
-    protected function doAddExam(ChildExam $exam)
-    {
-        $this->collExams[]= $exam;
-        $exam->setTerm($this);
-    }
-
-    /**
-     * @param  ChildExam $exam The ChildExam object to remove.
-     * @return $this|ChildTerm The current object (for fluent API support)
-     */
-    public function removeExam(ChildExam $exam)
-    {
-        if ($this->getExams()->contains($exam)) {
-            $pos = $this->collExams->search($exam);
-            $this->collExams->remove($pos);
-            if (null === $this->examsScheduledForDeletion) {
-                $this->examsScheduledForDeletion = clone $this->collExams;
-                $this->examsScheduledForDeletion->clear();
-            }
-            $this->examsScheduledForDeletion[]= clone $exam;
-            $exam->setTerm(null);
-        }
 
         return $this;
     }
 
 
     /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Term is new, it will return
-     * an empty collection; or if this Term has previously
-     * been saved, it will retrieve related Exams from storage.
+     * Get the associated ChildUser object
      *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Term.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildExam[] List of ChildExam objects
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUser The associated ChildUser object.
+     * @throws PropelException
      */
-    public function getExamsJoinTopic(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getUser(ConnectionInterface $con = null)
     {
-        $query = ChildExamQuery::create(null, $criteria);
-        $query->joinWith('Topic', $joinBehavior);
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addTerms($this);
+             */
+        }
 
-        return $this->getExams($query, $con);
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Term is new, it will return
-     * an empty collection; or if this Term has previously
-     * been saved, it will retrieve related Exams from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Term.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildExam[] List of ChildExam objects
-     */
-    public function getExamsJoinYear(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildExamQuery::create(null, $criteria);
-        $query->joinWith('Year', $joinBehavior);
-
-        return $this->getExams($query, $con);
+        return $this->aUser;
     }
 
     /**
@@ -1423,7 +1228,11 @@ abstract class Term implements ActiveRecordInterface
      */
     public function clear()
     {
+        if (null !== $this->aUser) {
+            $this->aUser->removeTerm($this);
+        }
         $this->content = null;
+        $this->user_id = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -1444,14 +1253,9 @@ abstract class Term implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
-            if ($this->collExams) {
-                foreach ($this->collExams as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
         } // if ($deep)
 
-        $this->collExams = null;
+        $this->aUser = null;
     }
 
     /**

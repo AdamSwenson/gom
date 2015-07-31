@@ -1,4 +1,7 @@
 <?php
+
+
+//TODO remove this once propel is refactored out
 require_once app_path().'/propel_config/config.php';
 
 return [
@@ -145,6 +148,18 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        /*
+         * Custom service providers
+         */
+        App\Providers\StorageServiceProvider::class,
+        App\Providers\UtilitiesServiceProvider::class,
+
+        /*
+         * Development
+         * TODO: Remove this or put it somewhere nice for production
+         */
+        //
+        Laracasts\Generators\GeneratorsServiceProvider::class
     ],
 
     /*
