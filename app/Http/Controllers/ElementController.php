@@ -6,6 +6,7 @@ use App\Element;
 use App\Http\Requests\ElementRequest;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
+use App\Repositories\Question\IQuestionAssignmentRepository;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -27,7 +28,9 @@ class ElementController extends Controller
      * @param IElementRepository $elementDao
      * @param IElementAssignmentRepository $assignmentDao
      */
-    public function __construct(IElementRepository $elementDao, IElementAssignmentRepository $assignmentDao)
+    public function __construct(IElementRepository $elementDao,
+        IElementAssignmentRepository $assignmentDao,
+        IQuestionAssignmentRepository $questionAssignmentRepo)
     {
         $this->elementDao = $elementDao;
         $this->assignmentDao = $assignmentDao;
@@ -118,16 +121,70 @@ class ElementController extends Controller
     /** Edit all elements associated with given question
      *
      */
-    public function editAll() {
-        $exam = 1;
-        $question = 1;
-        $nextqId = 2;
-        $prevqId = 0;
-        // shows all elements for a given question
-        return view('setup.edit_element')->with( ['examId' => $exam,
-            'qId' => $question,
-            'nextqId' => $nextqId,
-            'prevqId' => $prevqId]);
+    public function editAll($exam, $question)
+    {
+        // element->comments  <- gets a collection of comments to work on
+
+        // given the current $question, find previous and next
+        $qId = $question->getId();
+        $examId = $exam->getId();
+
+        $allQuestionAss = $this->questionAssignmentDAO->load_all_for_exam($examId);
+        // loadByIds() will loop if the same questionId appears several times on the same exam,
+        // as it matches with the first Id found in the ordered Assignments.
+        $qNumber = $this->questionAssignmentDAO->loadByIds($examId, $qId);
+        $index = 0;
+        // .. look through it to find the index that our question appears
+
+        foreach ($allQuestionAss as $questionAss) {
+              if ($qId === $questionAss->question_id) {
+
+                break;
+            } else {
+                $index++;
+            }
+        }
+
+        // once we found the index, get the question IDs for the previous and next questions
+        // if previous or next does not exist, set to 0.
+
+        $pQId = 0;
+        $nQId = 0;
+        if (isset($index)) {
+            if ($index < count($allQuestionAss) - 1) {
+                $next = $allQuestionAss[$index + 1];
+                $nQId = $next->question_id;
+            }
+            if ($index > 0) {
+                $prev = $allQuestionAss[$index - 1];
+                $pQId = $prev->question_id;
+            }
+        }
+        // load data for any existing elements
+        $elements = [];
+
+        /*
+        $assignments = $this->assignmentDao->load_element_assignments_by_question_number($examId, $qNumber);
+        $numValences = sizeof(Comment::$valences);
+        $counter = 0;
+        foreach ($assignments as $ass) {
+            $elementId = $ass->element_id;
+            $elements['eObj'] = this->elementDao->loadElementById($elementId);
+            $valences['eValence'] =
+
+        }
+        $elements[$counter++] = $q;
+        }
+        */
+
+        // shows all elements for a given question along with the ids for 'next' and 'previous'
+        return view('setup.edit_element')->with(['examId' => $examId,
+            'qId' => $qId,
+            'nextqId' => $nQId,
+            'prevqId' => $pQId,
+            'questionName' => $question->getQuestionName(),
+            'qNumber' => $qNumber,
+            'questions' => $elements]);
     }
 
     /**
