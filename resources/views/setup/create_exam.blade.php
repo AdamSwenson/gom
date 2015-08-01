@@ -12,6 +12,12 @@
                       accept-charset="UTF-8" role="form">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <ul class="pager">
+                        <li class="previous">
+                            <a href="{{ url('exam/') }}" id="prev-question" style="cursor:pointer;"> <span
+                                        class="glyphicon glyphicon-chevron-left"
+                                        aria-hidden="true"></span>
+                                Setup</a>
+                        </li>
                         <li class="next">
                         <a id="submitLink" style="cursor:pointer;">Create <span class="glyphicon glyphicon-chevron-right"
                                                            aria-hidden="true"></span></a>
@@ -36,12 +42,22 @@
 
             $('#termList li').on('click', function () {
                 $('#hiddenTerm').val($(this).text());
-                $('#term').text($(this).text());
+
+                var $icon = $('#term').find('span');
+                $('#term').html($(this).text());
+                $('#term').append(" ");
+                $('#term').append($icon);
+
+
             });
 
             $('#yearList li').on('click', function () {
                 $('#hiddenYear').val($(this).text());
+
+                var $icon = $('#year').find('span');
                 $('#year').text($(this).text());
+                $('#year').append(" ");
+                $('#year').append($icon);
             });
 
             var btnDone = document.getElementById("submitLink");

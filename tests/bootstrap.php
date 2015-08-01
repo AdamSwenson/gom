@@ -6,9 +6,9 @@
  * Time: 10:21 PM
  */
 
-use App\classes\DbTestAids;
+//use App\classes\DbTestAids;
 
-require_once 'vendor/autoload.php';
+require_once '../vendor/autoload.php';
 
 //
 //$username = putenv("DB_USERNAME=testuser4");

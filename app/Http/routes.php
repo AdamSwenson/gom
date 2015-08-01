@@ -79,7 +79,6 @@ Route::delete('exam/{id}/question/{question}', 'QuestionController@destroy');
 /* Routes for Elements */
 Route::get('exam/{exam}/question/{question}/element/edit', array('as' => 'editAllElements', 'uses' => 'ElementController@editAll'));
 Route::post('exam/{exam}/question/{question}/element/updateAll', 'ElementController@updateAll'); // update all elements for question
-Route::post('exam/{exam}/question/{question}/element/done', 'ElementController@updateAll');
 Route::resource('exam.question.element', 'ElementController');
 /*
 Route::get('exam/{id}/question/{id}/element', 'ElementController@index');
@@ -90,7 +89,7 @@ Route::get('exam/{id}/question/{id}/element/{id}/edit', 'ElementController@edit'
 Route::patch('exam/{id}/question/{id}/element/{id}', 'ElementController@update');
 Route::delete('exam/{id}/question/{id}/element/{id}', 'ElementController@destroy');
 */
-
+Route::get('exam/{exam}/student/edit', array('as' => 'editAllStudents', 'uses' => 'StudentController@editAll'));
 Route::resource('exam.student', 'StudentController');
 /*
 Route::get('exam/{exam}/student', 'StudentController@index'); //gets list of students for import / editing

@@ -6,7 +6,6 @@ use App\Element;
 use App\Http\Requests\ElementRequest;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
-use App\Repositories\Question\IQuestionAssignmentRepository;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -27,13 +26,14 @@ class ElementController extends Controller
      * ElementController constructor.
      * @param IElementRepository $elementDao
      * @param IElementAssignmentRepository $assignmentDao
+     * @param IQuestionAssignmentRepository $questionAssignmentRepo
      */
-    public function __construct(IElementRepository $elementDao,
-        IElementAssignmentRepository $assignmentDao,
-        IQuestionAssignmentRepository $questionAssignmentRepo)
+    public function __construct(IElementRepository $elementDao, IElementAssignmentRepository $assignmentDao,
+                                IQuestionAssignmentRepository $questionAssignmentRepo)
     {
         $this->elementDao = $elementDao;
         $this->assignmentDao = $assignmentDao;
+        $this->questionAssignmentDAO = $questionAssignmentRepo;
     }
 
     /**
@@ -43,16 +43,15 @@ class ElementController extends Controller
      */
     public function index(ElementRequest $request)
     {
-        if(!empty($questionId))
-        {}
-        else{
+        if (!empty($questionId)) {
+        } else {
             return Element::all();
         }
         $element = $this->dao->loadElementById($elementId);
         return $element;
         //for question number
         return $this->dao->load_element_assignments_by_question_number($request->input('exam_id'), $request->input('question_number'));
-       // return ('List of elements for question id: '.$question);
+        // return ('List of elements for question id: '.$question);
     }
 
     /**
@@ -78,8 +77,7 @@ class ElementController extends Controller
         $respGeneric = $request->input('respGeneric');
         $element = $this->dao->createElement($elementName, '', $respGeneric);
 
-        if(!empty($element))
-        {
+        if (!empty($element)) {
             $this->dao->addValencedContent($element->getId(), Comment::VALENCE_ABSENT, $request->input('respAbsent'));
             $this->dao->addValencedContent($element->getId(), Comment::VALENCE_POOR, $request->input('respPoor'));
             $this->dao->addValencedContent($element->getId(), Comment::VALENCE_OK, $request->input('respFair'));
@@ -94,7 +92,7 @@ class ElementController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return Response
      */
     public function show(Element $element)
@@ -102,8 +100,6 @@ class ElementController extends Controller
         $element = $this->dao->loadElementById($elementId);
         return $element;
 
-
-        //
     }
 
     /**
@@ -194,9 +190,30 @@ class ElementController extends Controller
      * @param ElementRequest $request
      * @return Response
      */
-    public function update(Element $element, ElementRequest $request)
+    public
+    function update(Element $element, ElementRequest $request)
     {
 
+    }
+
+    /**
+     * Update all elements passed in from the web form.
+     * Has 3 possible routes: back to EditQuestion, forward to EditRoster or to editElements (new question)
+     */
+    public
+    function updateAll($exam, $question, ElementRequest $request)
+    {
+        $nextAction = $request->input('questionDirection');
+        $examId = $exam->getId();
+
+        if ($nextAction === 'back') {
+            return redirect()->route('editAllQuestions', $examId);
+        } else if ($nextAction === 'forward') {
+            return redirect()->route('editAllStudents', $examId);
+        } else {
+            return redirect()->action('ElementController@editAll', array('examId' => $examId,
+                'question' => $nextAction));
+        }
     }
 
     /**
@@ -206,7 +223,8 @@ class ElementController extends Controller
      * @return Response
      * @internal param int $id
      */
-    public function destroy(Element $element)
+    public
+    function destroy(Element $element)
     {
         //
     }
@@ -214,7 +232,9 @@ class ElementController extends Controller
     /**
      * Saves the elements for the question and redirects to StudentController
      */
-    public function done() {
+    public
+    function done()
+    {
         return ('this connects to the edit students page');
         return $this->elementDao->deleteElement($element);
     }

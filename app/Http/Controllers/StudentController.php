@@ -94,6 +94,13 @@ class StudentController extends Controller
     }
 
     /**
+     * Show the form for importing and editing a student roster
+     */
+    public function editAll($exam, StudentRequest $request) {
+        return view('setup/edit_roster');
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param Student $student

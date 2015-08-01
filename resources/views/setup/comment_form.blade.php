@@ -16,12 +16,17 @@
                     <li role="presentation"><a href="#">Fair</a></li>
                     <li role="presentation"><a href="#">Good</a></li>
                 </ul>
-                <div id="customResponse">
-                    <textarea class="form-control" rows="3" id="questionText" placeholder="Write your custom response here."></textarea>
+                <div id="comments">
+                    <textarea class="form-control" rows="3" id="comment0" placeholder="Write your custom response here."></textarea>
+                    <textarea class="form-control" rows="3" id="comment1" placeholder="Write your custom response here."></textarea>
+                    <textarea class="form-control" rows="3" id="comment2" placeholder="Write your custom response here."></textarea>
+                    <textarea class="form-control" rows="3" id="comment3" placeholder="Write your custom response here."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Save</button>
+                <!-- added data-token to try csrf token -->
+                <button type="button" class="btn btn-default confirm-btn" data-token="{{ csrf_token() }}"
+                        data-dismiss="modal">Save</button>
             </div>
         </div>
     </div>
