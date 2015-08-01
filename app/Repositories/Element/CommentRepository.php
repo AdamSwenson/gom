@@ -11,7 +11,7 @@ namespace App\Repositories\Element;
 
 use App\Comment;
 
-class CommentRepository
+class CommentRepository implements ICommentRepository
 {
     static public $assignmentCriteria = [
         Comment::VALENCE_ABSENT => [
@@ -31,6 +31,20 @@ class CommentRepository
             'maxScore' => 10.0
         ]
     ];
+
+
+    /**
+     * Returns the appropriate comment text for the score
+     * @param $elementId
+     * @param $score
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getCommentForScore($elementId, $score)
+    {
+        $valence = $this->chooseValenceByScore($score);
+        return $this->getCommentForValence($elementId, $valence);
+    }
 
 
     public function getCommentForValence($elementId, $valence)

@@ -9,13 +9,18 @@
 namespace Repositories\Feedback;
 
 
+use App\Repositories\Element\ICommentRepository;
+use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
+use App\Repositories\Score\IElementScoreRepository;
+use App\Repositories\Score\IQuestionScoreRepository;
 use App\Repositories\Student\IStudentRepository;
 
 class FeedbackBuilder
 {
 
     public $feedback = [];
+    public $questionAssignments;
     /**
      * @var IStudentRepository
      */
@@ -26,12 +31,44 @@ class FeedbackBuilder
     private $questionAssignmentRepository;
 
     protected $students;
+    /**
+     * @var IElementAssignmentRepository
+     */
+    private $elementAssignmentRepository;
+    /**
+     * @var IQuestionScoreRepository
+     */
+    private $questionScoreRepository;
+    /**
+     * @var IElementScoreRepository
+     */
+    private $elementScoreRepository;
+    /**
+     * @var ICommentRepository
+     */
+    private $commentRepository;
 
-    public function __construct(IStudentRepository $studentRepository, IQuestionAssignmentRepository $questionAssignmentRepository)
+    public function __construct(
+        IQuestionAssignmentRepository $questionAssignmentRepository,
+        IElementAssignmentRepository $elementAssignmentRepository,
+        IQuestionScoreRepository $questionScoreRepository,
+        IElementScoreRepository $elementScoreRepository,
+    ICommentRepository $commentRepository
+    )
     {
 
-        $this->studentRepository = $studentRepository;
+
         $this->questionAssignmentRepository = $questionAssignmentRepository;
+        $this->elementAssignmentRepository = $elementAssignmentRepository;
+        $this->questionScoreRepository = $questionScoreRepository;
+        $this->elementScoreRepository = $elementScoreRepository;
+        $this->commentRepository = $commentRepository;
+    }
+
+    public function loadStudents(IStudentRepository $studentRepository, $examId)
+    {
+        $this->studentRepository = $studentRepository;
+        $this->students = $this->studentRepository->load_students_by_exam($examId);
     }
 
     /**
@@ -39,22 +76,42 @@ class FeedbackBuilder
      */
     public function buildFeedback($examId)
     {
-        $this->students = $this->studentRepository->load_students_by_exam($examId);
+        $this->loadStudents($examId);
+        $this->questionAssignments = $this->questionAssignmentRepository->load_all_for_exam($examId);
 
-        $numberQuestions = 4;
 
-
-        for ($i = 1; $i <= $numberQuestions; $i++)
+        foreach($this->students as $student)
         {
-            $questionTitle = 'text';
+            $accessKey = 'randomnumber here';
+            $data =[];
+            foreach ($this->questionAssignments as $questionAssignment)
+            {
+                $questionTitle = $questionAssignment->question->question_name;
+                $questionNumber = $questionAssignment->question_number;
 
-            $feedback = [
-                $accessKey => [
-                ]
-            ]
-            ];
+                $comments = [];
+                $elementAssignments = $this->elementAssignmentRepository->load_element_assignments_by_question_number($examId,
+                    $questionNumber);
+                foreach($elementAssignments as $elementAssignment)
+                {
+                    $score = $this->elementScoreRepository->load($elementAssignment->id, $student->id);
+                    $comments[$elementAssignment->subtask] =
+                        [
+                            'subtask' => $elementAssignment->subtask,
+                            'score' => $score,
+                            'comment' => $this->commentRepository->getCommentForScore($elementAssignment->element->id, $score)
+                        ];
+                }
+                $data[$questionNumber] = [
+                    'questionTitle' => $questionTitle,
+                    'questionNumber' => $questionNumber,
+                    'comments' => $comments
+                ];
+            }
 
+            $this->feedback[$accessKey] = $data;
         }
+        return $this->feedback;
     }
 
     /**
@@ -64,7 +121,7 @@ class FeedbackBuilder
     {
 
         $this->buildTopLevelContent($studentArray, $examName, $grade);
-        foreach($questionsArray as $){
+        foreach($questionsArray as $q){
             $this->buildQuestion($studentArray, $q['questionNumber'], $q['questionTitle'], $q['commentsArray']);
         }
 

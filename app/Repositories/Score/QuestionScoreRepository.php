@@ -11,7 +11,7 @@ namespace App\Repositories\Score;
 
 use App\QuestionScore;
 
-class QuestionScoreRepository
+class QuestionScoreRepository implements IQuestionScoreRepository
 {
     protected $score_object;
 
