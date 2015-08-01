@@ -38,5 +38,5 @@
         </a>
     </div>
     <input type="hidden" id="questionId" name="questionId{{isset($q) ? $counter : 1}}"
-           value="{{ isset($q) ? $q['qObj']->getId() : '0' }}"/>
+           value="{{ isset($q['qObj']) ? $q['qObj']->getId() : '0' }}"/>
 </li>

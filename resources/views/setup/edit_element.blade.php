@@ -63,7 +63,8 @@
         </div>
     </div>
     <?php $counter = 0;
-    $q = 0; ?>
+    $q['qName'] = '';
+    $q['qDesc'] = '' ?>
     @include('setup.element_form_empty')
     @include('errors.list')
 @endsection

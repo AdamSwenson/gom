@@ -1,3 +1,4 @@
+<!-- Comment form shows the custom response modal window -->
 <div class="modal fade" id="customizeResponse{{ isset($q) ? $counter : 1 }}" role="dialog">
     <div class="modal-dialog">
 

@@ -1,3 +1,4 @@
+<!-- used to display an individual element in the edit_element view -->
 <ul style="display: none" id="hiddenQuestionList">
     <li class="list-group-item" id="emptyQuestionItem">
         <h4 id="displayNumber">Question #0</h4>
