@@ -1192,7 +1192,7 @@ class ModelCriteriaTest extends BookstoreTestBase
             'a.id',
             'a.first_name',
             'a.last_name',
-            'a.emails',
+            'a.email',
             'a.age'
         );
         $this->assertEquals($expectedColumns, $c->getSelectColumns(), 'with() adds the columns of the related table');
@@ -1235,7 +1235,7 @@ class ModelCriteriaTest extends BookstoreTestBase
             'a.id',
             'a.first_name',
             'a.last_name',
-            'a.emails',
+            'a.email',
             'a.age'
         );
         $this->assertEquals($expectedColumns, $c->getSelectColumns(), 'with() adds the columns of the main table with an alias if required');
@@ -1309,7 +1309,7 @@ class ModelCriteriaTest extends BookstoreTestBase
             'a.id',
             'a.first_name',
             'a.last_name',
-            'a.emails',
+            'a.email',
             'a.age'
         );
         $this->assertEquals($expectedColumns, $c->getSelectColumns(), 'joinWith() adds the join with the alias');
@@ -1424,7 +1424,7 @@ class ModelCriteriaTest extends BookstoreTestBase
     {
         $c = new ModelCriteria('bookstore', 'Propel\Tests\Bookstore\Author');
         $c->withColumn($clause, $alias);
-        $sql = $this->getSql('SELECT author.id, author.first_name, author.last_name, author.emails, author.age, ' . $selectTranslation . ' FROM author');
+        $sql = $this->getSql('SELECT author.id, author.first_name, author.last_name, author.email, author.age, ' . $selectTranslation . ' FROM author');
         $params = array();
         $this->assertCriteriaTranslation($c, $sql, $params, 'withColumn() adds a calculated column using quotes to the select clause');
     }
@@ -2260,7 +2260,7 @@ class ModelCriteriaTest extends BookstoreTestBase
             'a.id',
             'a.first_name',
             'a.last_name',
-            'a.emails',
+            'a.email',
             'a.age'
         );
         $this->assertEquals($expectedColumns, $c->getSelectColumns(), 'leftJoinWith() adds the join with the alias');
@@ -2482,7 +2482,7 @@ class ModelCriteriaTest extends BookstoreTestBase
         $con = Propel::getServiceContainer()->getConnection(BookTableMap::DATABASE_NAME);
         $c->find($con);
 
-        $expectedSQL = $this->getSql("SELECT review.id, review.reviewed_by, review.review_date, review.recommended, review.status, review.book_id, book.id, book.title, book.isbn, book.price, book.publisher_id, book.author_id, author.id, author.first_name, author.last_name, author.emails, author.age FROM review INNER JOIN book ON (review.book_id=book.id) INNER JOIN author ON (book.author_id=author.id)");
+        $expectedSQL = $this->getSql("SELECT review.id, review.reviewed_by, review.review_date, review.recommended, review.status, review.book_id, book.id, book.title, book.isbn, book.price, book.publisher_id, book.author_id, author.id, author.first_name, author.last_name, author.email, author.age FROM review INNER JOIN book ON (review.book_id=book.id) INNER JOIN author ON (book.author_id=author.id)");
 
         $this->assertEquals($expectedSQL, $con->getLastExecutedQuery(), 'useQuery() and joinWith() can be used together and form a correct query');
     }

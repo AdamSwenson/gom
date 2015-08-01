@@ -42,7 +42,7 @@
 
                             <!-- create exam -->
                             <a id="createExamLink" href="{{url('exam/create')}}" class="list-group-item">
-                                <h4><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create Exam</h4>
+                                <h4><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Create Exam</h4>
                             </a>
                             <!-- edit exam -->
                             <a id="editExamLink" style="cursor:pointer;" class="list-group-item" data-toggle="collapse"
@@ -54,12 +54,9 @@
                                 <div class="container">
                                     @foreach($exams as $exam)
                                         <div class="row">
-                                            <form method="GET" action="{{url('exam/'. $exam->getId() . '/edit')}}"
-                                                  accept-charset="UTF-8">
-
+                                            <form method="GET" action="{{url('exam/'. $exam->getId() . '/edit')}}" accept-charset="UTF-8">
                                                 <button type="submit"
                                                         class="list-group-item">{{ $exam->getName() }}</button>
-
                                             </form>
                                         </div>
                                     @endforeach

@@ -37,7 +37,7 @@
                 <div class="col-xs-8">
                     <!-- Something goes here -->
                 </div>
-                <form method="POST" action="{{url('/select')}}" accept-charset="UTF-8" class="col-xs-4">
+                <form method="POST" action="{{url('/setup')}}" accept-charset="UTF-8" class="col-xs-4">
                  <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <h3 class="text-left"> Log In:</h3>
                     <div class="form-group ">
@@ -61,8 +61,8 @@
 
 
 @section('jsArea')
-    <!--
-    <script type="text/javascript" src="<php echo asset("inc/js/common.js");?>"></script>
+
+    <script type="text/javascript" src="<php echo {{asset("inc/js/common.js")}};?>"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             var scripts = [
@@ -82,9 +82,9 @@
             }
 
             onLoad();
-//                    scriptLoader(scripts.length, 0);
+                    scriptLoader(scripts.length, 0);
         });
     </script>
--->
+
 @endsection
 @endsection

@@ -17,6 +17,8 @@ use App\Http\Controllers\helpers\ExamSelectorHelper;
 use App\Http\Requests\StudentRequest;
 use App\Repositories\Student\IStudentRepository;
 use App\Student;
+use App\Exam;
+use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
@@ -96,8 +98,9 @@ class StudentController extends Controller
     /**
      * Show the form for importing and editing a student roster
      */
-    public function editAll($exam, StudentRequest $request) {
-        return view('setup/edit_roster');
+    public function editAll(Exam $exam, StudentRequest $request) {
+
+        return view('setup/edit_roster')->with(['exam' => $exam]);
     }
 
     /**
@@ -111,6 +114,17 @@ class StudentController extends Controller
     {
         //
     }
+
+    public function updateAll(Request $request)
+    {
+        //
+          $data = $request->input('filedata');
+            dd($data);
+
+       // return view('setup.select_exam');
+    }
+
+
 
     /**
      * Remove the specified resource from storage.

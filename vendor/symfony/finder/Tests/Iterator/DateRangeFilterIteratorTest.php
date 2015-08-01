@@ -37,7 +37,7 @@ class DateRangeFilterIteratorTest extends RealIteratorTestCase
             'test.py',
             'foo',
             'foo/bar.tmp',
-            'test.blade.php',
+            'test.php',
             'toto',
             '.bar',
             '.foo',
@@ -60,7 +60,7 @@ class DateRangeFilterIteratorTest extends RealIteratorTestCase
 
         $untilLastMonth = array(
             'foo/bar.tmp',
-            'test.blade.php',
+            'test.php',
         );
 
         return array(

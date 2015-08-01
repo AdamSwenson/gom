@@ -1,5 +1,6 @@
 var file;
 var rows;
+
 function handleFileSelect() {
     var fr = new FileReader();
 
@@ -10,6 +11,7 @@ function handleFileSelect() {
         } else {
             file = x.files[0];
             if ('name' in file) {
+                $data = [];
                 document.getElementById('fileName').setAttribute('value',file.name);
 
                 fr.onload =(function(theFile) {
@@ -19,8 +21,9 @@ function handleFileSelect() {
                         for( var i= 0; i < rows.length-1;i++)
                         {
                             addRow(array[(4*i)], array[(4*i)+1], array[(4*i)+2], array[(4*i)+3],"row" + (i+1));
-
                         }
+
+                      document.getElementById('filedata').setAttribute('value',array.toString())
 
                     };
                 })(file);
@@ -74,3 +77,4 @@ function deleteRoster(){
 
     }
 }
+

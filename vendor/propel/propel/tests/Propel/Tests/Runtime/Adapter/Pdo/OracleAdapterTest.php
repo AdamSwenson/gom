@@ -48,7 +48,7 @@ class OracleAdapterTest extends TestCaseFixtures
         $c->setLimit(1);
         $params = array();
         $sql = $c->createSelectSql($params);
-        $this->assertEquals('SELECT B.* FROM (SELECT A.*, rownum AS PROPEL_ROWNUM FROM (SELECT book.id AS ORA_COL_ALIAS_0, book.title AS ORA_COL_ALIAS_1, book.isbn AS ORA_COL_ALIAS_2, book.price AS ORA_COL_ALIAS_3, book.publisher_id AS ORA_COL_ALIAS_4, book.author_id AS ORA_COL_ALIAS_5, author.id AS ORA_COL_ALIAS_6, author.first_name AS ORA_COL_ALIAS_7, author.last_name AS ORA_COL_ALIAS_8, author.emails AS ORA_COL_ALIAS_9, author.age AS ORA_COL_ALIAS_10 FROM book, author) A ) B WHERE  B.PROPEL_ROWNUM <= 1', $sql, 'applyLimit() creates a subselect with aliased column names when a duplicate column name is found');
+        $this->assertEquals('SELECT B.* FROM (SELECT A.*, rownum AS PROPEL_ROWNUM FROM (SELECT book.id AS ORA_COL_ALIAS_0, book.title AS ORA_COL_ALIAS_1, book.isbn AS ORA_COL_ALIAS_2, book.price AS ORA_COL_ALIAS_3, book.publisher_id AS ORA_COL_ALIAS_4, book.author_id AS ORA_COL_ALIAS_5, author.id AS ORA_COL_ALIAS_6, author.first_name AS ORA_COL_ALIAS_7, author.last_name AS ORA_COL_ALIAS_8, author.email AS ORA_COL_ALIAS_9, author.age AS ORA_COL_ALIAS_10 FROM book, author) A ) B WHERE  B.PROPEL_ROWNUM <= 1', $sql, 'applyLimit() creates a subselect with aliased column names when a duplicate column name is found');
     }
 
     public function testApplyLimitDuplicateColumnNameWithColumn()
@@ -63,7 +63,7 @@ class OracleAdapterTest extends TestCaseFixtures
         $params = array();
         $asColumns = $c->getAsColumns();
         $sql = $c->createSelectSql($params);
-        $this->assertEquals('SELECT B.* FROM (SELECT A.*, rownum AS PROPEL_ROWNUM FROM (SELECT book.id AS ORA_COL_ALIAS_0, book.title AS ORA_COL_ALIAS_1, book.isbn AS ORA_COL_ALIAS_2, book.price AS ORA_COL_ALIAS_3, book.publisher_id AS ORA_COL_ALIAS_4, book.author_id AS ORA_COL_ALIAS_5, author.id AS ORA_COL_ALIAS_6, author.first_name AS ORA_COL_ALIAS_7, author.last_name AS ORA_COL_ALIAS_8, author.emails AS ORA_COL_ALIAS_9, author.age AS ORA_COL_ALIAS_10, book.price AS BOOK_PRICE FROM book, author) A ) B WHERE  B.PROPEL_ROWNUM <= 1', $sql, 'applyLimit() creates a subselect with aliased column names when a duplicate column name is found');
+        $this->assertEquals('SELECT B.* FROM (SELECT A.*, rownum AS PROPEL_ROWNUM FROM (SELECT book.id AS ORA_COL_ALIAS_0, book.title AS ORA_COL_ALIAS_1, book.isbn AS ORA_COL_ALIAS_2, book.price AS ORA_COL_ALIAS_3, book.publisher_id AS ORA_COL_ALIAS_4, book.author_id AS ORA_COL_ALIAS_5, author.id AS ORA_COL_ALIAS_6, author.first_name AS ORA_COL_ALIAS_7, author.last_name AS ORA_COL_ALIAS_8, author.email AS ORA_COL_ALIAS_9, author.age AS ORA_COL_ALIAS_10, book.price AS BOOK_PRICE FROM book, author) A ) B WHERE  B.PROPEL_ROWNUM <= 1', $sql, 'applyLimit() creates a subselect with aliased column names when a duplicate column name is found');
         $this->assertEquals($asColumns, $c->getAsColumns(), 'createSelectSql supplementary add alias column');
     }
 

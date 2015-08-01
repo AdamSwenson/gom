@@ -53,8 +53,10 @@ class ExamController extends Controller
         //TODO Remove this once the login system is working
         Auth::loginUsingId(1);
         $exams = $this->examDao->load_all_exams();
+        //dd($exams);
 
         return View::make('setup.select_exam', compact('exams'));
+
     }
 
     /**

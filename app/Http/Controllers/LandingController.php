@@ -9,10 +9,7 @@
 namespace App\Http\Controllers;
 
 
-use Swift_Message;
-use Swift_Mime_Message;
-use Swift_Mailer;
-use Swift_SmtpTransport;
+use Illuminate\Support\Facades\Auth;
 
 use App\Http\Requests;
 use Illuminate\Http\Request;

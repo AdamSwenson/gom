@@ -253,7 +253,7 @@ EOF;
 
        $failure = $failures[0];
        $this->assertInstanceOf('Symfony\Component\Validator\ConstraintViolation', $failure);
-       $this->assertEquals('emails', $failure->getPropertyPath(), 'emails property expected to fail');
+       $this->assertEquals('email', $failure->getPropertyPath(), 'email property expected to fail');
     }
 
     public function testMultipleValidationFailures()
@@ -265,7 +265,7 @@ EOF;
        $reader->setEmail('zora.null@'); //failure
        $reader->setBirthday('1983-09-22');
 
-       $failedProperties = array('last_name', 'first_name', 'emails');
+       $failedProperties = array('last_name', 'first_name', 'email');
 
        $res = $reader->validate();
 
@@ -377,7 +377,7 @@ EOF;
             'first_name' => 'Propel\Tests\Bookstore\Behavior\ValidateAuthor',
             'website'    => 'Propel\Tests\Bookstore\Behavior\ValidatePublisher',
             'title'      => 'Propel\Tests\Bookstore\Behavior\ValidateBook',
-            'emails'      => 'Propel\Tests\Bookstore\Behavior\ValidateReader',
+            'email'      => 'Propel\Tests\Bookstore\Behavior\ValidateReader',
             'last_name'  => 'Propel\Tests\Bookstore\Behavior\ValidateReader'
         );
 
