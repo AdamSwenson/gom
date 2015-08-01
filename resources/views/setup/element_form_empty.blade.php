@@ -16,18 +16,24 @@
                   placeholder="Explain in detail what needed to be done in order to fully answer this element. This will form the basis for the response seen by the student."></textarea>
         </div>
         <div class="form-group">
-        <span class="btn btn-info btn-sm"><span class="handle" aria-hidden="true">
+            <!-- move -->
+        <a class="btn btn-info btn-sm"><span class="handle" aria-hidden="true">
                 <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
              Move</span>
-                </span>
-            <button class="btn btn-info btn-sm" id="customizeElement" data-toggle="modal"
-                    data-target="#customizeResponse">
+                </a>
+
+            <!-- customize -->
+            <a class="btn btn-info btn-sm" id="customizeElement0" data-toggle="modal"
+                    data-target="#customizeResponse0">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 Customize Responses
-            </button>
-            <button class="btn btn-warning btn-sm"><span class="js-remove"><span
+            </a>
+            @include('setup.comment_form')
+
+            <!-- delete -->
+            <a class="btn btn-warning btn-sm"><span class="js-remove"><span
                             class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete</span>
-            </button>
+            </a>
         </div>
         <input type="hidden" id="questionId" name="questionId" value="0"/>
     </li>
