@@ -58,9 +58,8 @@ class ExamController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new exam.
      *
-     * @param Request $request
      * @return Response
      */
     public function create()
@@ -70,11 +69,11 @@ class ExamController extends Controller
         // probably handle cloning here:
         // If the request includes an examId, send to clone() function
         //$data['examName'] = '';
-        return view('setup/create_exam');//->with('exam', $data);
+        return view('setup/create_exam');
     }
 
     /**
-     * Store a newly created exam in storage.
+     * Store a newly created exam in DB.
      *
      * TODO Add error handling
      *
@@ -89,7 +88,7 @@ class ExamController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display given exam.
      *
      * @param Exam $exam
      * @return Response
@@ -109,10 +108,12 @@ class ExamController extends Controller
     {
         // do something to get id from DB
         // pass values into $data for view
+        /*
         $data['examId'] = $exam;
         $data['examName'] = 'Test Name';
         $data['examTerm'] = 'Fall';
         $data['examYear'] = '2014';
+        */
 
         return view('setup/edit_exam', compact('exam'));
     }
@@ -148,7 +149,7 @@ class ExamController extends Controller
         {
             Session::flash(self::SUCCESS_FLASH_NAME, self::DELETE_SUCCESS);
         }
-        return view('/setup/create_exam');
+        return redirect()->action('ExamController@index');
     }
 
 }

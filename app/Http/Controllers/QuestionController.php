@@ -175,8 +175,6 @@ class QuestionController extends Controller
             -set the order property for each question
             -pass the first questionId and examId to ElementController@
         */
-        dd($request);
-
         $data['examId'] = $exam;
         $data['questionId'] = 1;
 
@@ -186,7 +184,10 @@ class QuestionController extends Controller
 
     public function editAll($exam)
     {
-        return $exam . "Remember to make this non-sucky, Brian";
+        $examId = $exam->getId();
+        $examName = $exam->getName();
+        return view('setup.edit_question')->with([ 'examId' => $examId,
+            'examName' => $examName]);
     }
 
     /**

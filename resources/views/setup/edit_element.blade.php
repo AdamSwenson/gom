@@ -38,7 +38,7 @@
                 should address.</h5>
             <!-- form will update all given questions and create new ones where required -->
             <form id="questionForm" name="questionForm" method="post" role="form"
-                  action="{{ url('exam/'.$examId.'/question/'.$qId.'/updateAll') }}"
+                  action="{{ url('exam/'.$examId.'/question/'.$qId.'/element/updateAll') }}"
                   accept-charset="UTF-8">
 
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -50,8 +50,6 @@
                     @else
                         @include('setup.element_form')
                     @endif
-
-
                 </ul>
             </form>
             <a class="btn btn-primary" id="addQuestion"><span
