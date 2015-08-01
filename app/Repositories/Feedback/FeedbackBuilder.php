@@ -9,22 +9,38 @@
 namespace Repositories\Feedback;
 
 
+use App\Repositories\Question\IQuestionAssignmentRepository;
+use App\Repositories\Student\IStudentRepository;
+
 class FeedbackBuilder
 {
 
     public $feedback = [];
+    /**
+     * @var IStudentRepository
+     */
+    private $studentRepository;
+    /**
+     * @var IQuestionAssignmentRepository
+     */
+    private $questionAssignmentRepository;
 
+    protected $students;
 
-    public function __construct()
+    public function __construct(IStudentRepository $studentRepository, IQuestionAssignmentRepository $questionAssignmentRepository)
     {
 
+        $this->studentRepository = $studentRepository;
+        $this->questionAssignmentRepository = $questionAssignmentRepository;
     }
 
     /**
      * Creates the feedback structure
      */
-    public function buildFeedback($accessKey)
+    public function buildFeedback($examId)
     {
+        $this->students = $this->studentRepository->load_students_by_exam($examId);
+
         $numberQuestions = 4;
 
 
