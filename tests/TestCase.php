@@ -47,6 +47,22 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         return $mock;
     }
 
+    /**
+     * Clean up the testing environment before the next test.
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        parent::tearDown();
+    Mockery::close();
+    }
+
+
+
+
+
+
 
 //    protected $nestedViewData = array();
 //

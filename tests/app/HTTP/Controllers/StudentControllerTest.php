@@ -25,7 +25,18 @@ class StudentControllerTest extends \TestCase
         parent::setUp();
         $this->student = Student::all()->random();
         $this->dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
-       // $this->object = new StudentController($this->dao);
+        // $this->object = new StudentController($this->dao);
+    }
+
+    /**
+     * Clean up the testing environment before the next test.
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        parent::tearDown();
+        \Mockery::close();
     }
 
 //
@@ -41,21 +52,21 @@ class StudentControllerTest extends \TestCase
 //    }
 
 
-//    public function testStore()
-//    {
-//        $data = [
-//            'lastName' => $this->faker->lastName(),
-//            'firstName' => $this->faker->firstName(),
-//            'studentId' => $this->faker->randomNumber(9),
-//            'email' => $this->faker->email()
-//        ];
-//
-//        $dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
-//        $dao->shouldReceive('create_student')->with($data)->andReturn($this->student);
-//
-//        $response = $this->action('POST', 'StudentController@store', $data);
-//        $this->assertNotNull($response);
-//    }
+    public function testStore()
+    {
+        $data = [
+            'lastName' => $this->faker->lastName(),
+            'firstName' => $this->faker->firstName(),
+            'studentId' => $this->faker->randomNumber(9),
+            'email' => $this->faker->email()
+        ];
+
+        $dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
+        $dao->shouldReceive('create_student')->with($data)->andReturn($this->student);
+
+        $response = $this->action('POST', 'StudentController@store', $data);
+        $this->assertNotNull($response);
+    }
 
 
     public function testShow()

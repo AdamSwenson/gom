@@ -13,20 +13,52 @@ use App\Comment;
 
 class CommentRepository
 {
+    static public $assignmentCriteria = [
+        Comment::VALENCE_ABSENT => [
+            'minScore' => 0,
+            'maxScore' => 0.25
+        ],
+        Comment::VALENCE_POOR => [
+            'minScore' => 0.26,
+            'maxScore' => 4.0
+        ],
+        Comment::VALENCE_OK => [
+            'minScore' => 4.1,
+            'maxScore' => 6.9
+        ],
+        Comment::VALENCE_EXCELLENT => [
+            'minScore' => 7.0,
+            'maxScore' => 10.0
+        ]
+    ];
 
 
-    public function getByValence($elementId, $valence)
+    public function getCommentForValence($elementId, $valence)
     {
-        $fuck_you_laravel = array();
-        $comments = Comment::onValence($valence)->element->where('element_id', $elementId)->get();
-        foreach($comments as $c){
-            if ($c->element->id == 10)
+        $comment = Comment::where('valence', $valence)->where('element_id', $elementId)->first();
+        return $comment;
+    }
+
+
+
+    /**
+     * Determines which comment valence to load
+     * @param $score
+     * @return int|string
+     * @throws \Exception
+     */
+    public function chooseValenceByScore($score)
+    {
+        foreach(self::$assignmentCriteria as $k => $v)
+        {
+            if($score <= $v['maxScore'])
             {
-                array_push($fuck_you_laravel, $c);
+                return $k;
             }
         }
-        return $fuck_you_laravel;
-
-//        App\Comment::has('element', '=', 10)->onValence('absent')->get();
+        throw new \Exception('score out of range');
     }
+
+
+
 }

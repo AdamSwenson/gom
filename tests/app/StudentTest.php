@@ -39,13 +39,13 @@ class StudentTest extends \TestCase
         }
     }
 
-    public function testExams()
-    {
-        foreach($this->student->exams as $r)
-        {
-            $this->assertInstanceOf('App\Exam', $r);
-        }
-    }
+//    public function testExams()
+//    {
+//        foreach($this->student->exams as $r)
+//        {
+//            $this->assertInstanceOf('App\Exam', $r);
+//        }
+//    }
 
     public function testUser()
     {

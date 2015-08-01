@@ -66,13 +66,14 @@ class QuestionAssignmentRepositoryTest extends \TestCase
         $eid = $preexisting->exam_id;
         $qnum = $preexisting->question_number;
         $questionId = $preexisting->question_id;
-        $qid = $this->question->getId();
-        if($this->question->getId() == $questionId){
-            $this->question = Question::where('id', '!=', $questionId);
-            $qid = $this->question['id'];
-        }
+
+        $question = Question::where('id', '!=', $questionId);
+        $qid = $this->question['id'];
+
         $result = $this->object->record($eid, $qid, $qnum); //going directly to id because may be query builder object
+
         //  $this->assertInstanceOf('App\QuestionAssignment', $result);
+
         $this->seeInDatabase('question_assignments',
             ['exam_id' => $eid, 'question_id' => $this->question->id, 'question_number' => $qnum]);
     }
@@ -82,10 +83,21 @@ class QuestionAssignmentRepositoryTest extends \TestCase
     {
         $result = $this->object->load_all_for_exam($this->assignment->exam_id);
         $this->assertNotEmpty($result);
+        $nums = [];
         foreach ($result as $r)
         {
             $this->assertInstanceOf('App\QuestionAssignment', $r);
+            array_push($nums, $r->question_number);
         }
+        for($i=0; $i<count($nums); $i++)
+        {
+            $next = $i + 1;
+            if($next != count($nums)){
+                $this->assertTrue($nums[$i] < $nums[$next]);
+            }
+
+        }
+
     }
 
 

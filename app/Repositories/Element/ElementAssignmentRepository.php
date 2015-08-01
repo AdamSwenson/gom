@@ -93,7 +93,7 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
      * @param $questionId
      * @param $elementId
      * @param $subtask
-     * @return mixed
+     * @return Element
      */
     public function record($examId, $questionId, $elementId, $subtask)
     {

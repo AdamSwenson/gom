@@ -130,6 +130,61 @@ class Element extends BaseModel
     {
         return $this->attributes['commentText'];
     }
+
+#----------------- foreign keys
+    /**
+     * Junction to user
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
+
+    /**
+     * Junction element assignment
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function elementAssignments()
+    {
+        return $this->questionAssignments();
+    }
+
+    public function questionAssignments()
+    {
+        return $this->belongsToMany('App\QuestionAssignment',
+            'element_assignments')->withPivot('subtask')->withTimestamps();
+    }
+
+    /**
+     * Junction to element scores
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function scores()
+    {
+        return $this->hasManyThrough('App\ElementScore', 'App\ElementAssignment', 'element_id',
+            'element_assignment_id');
+    }
+
+    /**
+     * Junction to comments
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function comments()
+    {
+        return $this->hasMany('App\Comment');
+    }
+
+    //    public function exam()
+//    {
+//        return $this->belongsToMany('App\Exam', 'element_assignments');
+//    }
+
+//    public function questions()
+//    {
+//        return $this->hasManyThrough('App\Question', 'App\QuestionAssignment', 'element_id');//App\QuestionAssignment')->withTimestamps();
+//    }
+
 //
 //    /**
 //     * Handle legacy and aliased method calls.
@@ -166,41 +221,4 @@ class Element extends BaseModel
 //    }
 
 
-#----------------- foreign keys
-    public function user()
-    {
-        return $this->belongsTo('App\User');
-    }
-
-//    public function exam()
-//    {
-//        return $this->belongsToMany('App\Exam', 'element_assignments');
-//    }
-
-    public function elementAssignments()
-    {
-        return $this->questionAssignments();
-    }
-
-    public function questionAssignments()
-    {
-        return $this->belongsToMany('App\QuestionAssignment',
-            'element_assignments')->withPivot('subtask')->withTimestamps();
-    }
-
-    public function scores()
-    {
-        return $this->hasManyThrough('App\ElementScore', 'App\ElementAssignment', 'element_id',
-            'element_assignment_id');
-    }
-
-    public function comments()
-    {
-        return $this->hasMany('App\Comment');
-    }
-
-//    public function questions()
-//    {
-//        return $this->hasManyThrough('App\Question', 'App\QuestionAssignment', 'element_id');//App\QuestionAssignment')->withTimestamps();
-//    }
 }
