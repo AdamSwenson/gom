@@ -1,4 +1,4 @@
-<div class="modal fade" id="customizeResponse" role="dialog">
+<div class="modal fade" id="customizeResponse{{ isset($q) ? $counter : 1 }}" role="dialog">
     <div class="modal-dialog">
 
         <!-- Modal content-->
@@ -10,22 +10,30 @@
             </div>
             <!-- tabbed area for responses -->
             <div class="modal-body">
-                <ul class="nav nav-pills">
-                    <li role="presentation" class="active"><a href="#">Missing</a></li>
-                    <li role="presentation"><a href="#">Poor</a></li>
-                    <li role="presentation"><a href="#">Fair</a></li>
-                    <li role="presentation"><a href="#">Good</a></li>
+                <ul class="nav nav-pills nav-justified">
+                    <li role="presentation" class="active"><a data-toggle="tab" href="#comment0">Missing</a></li>
+                    <li role="presentation"><a data-toggle="tab" href="#comment1">Poor</a></li>
+                    <li role="presentation"><a data-toggle="tab" href="#comment2">Fair</a></li>
+                    <li role="presentation"><a data-toggle="tab" href="#comment3">Excellent</a></li>
                 </ul>
-                <div id="comments">
-                    <textarea class="form-control" rows="3" id="comment0" placeholder="Write your custom response here."></textarea>
-                    <textarea class="form-control" rows="3" id="comment1" placeholder="Write your custom response here."></textarea>
-                    <textarea class="form-control" rows="3" id="comment2" placeholder="Write your custom response here."></textarea>
-                    <textarea class="form-control" rows="3" id="comment3" placeholder="Write your custom response here."></textarea>
+                <div class="tab-content" id="comments">
+                    <div id="comment0" class="tab-pane fade in active">
+                    <textarea class="form-control" rows="3" id="comText0" placeholder="Write a response if the element is missing."></textarea>
+                    </div>
+                    <div id="comment1" class="tab-pane fade">
+                        <textarea class="form-control" rows="3" id="comText1"
+                                  placeholder="Write a response if the student did a poor job of answering this element."></textarea>
+                    </div>
+                    <div id="comment2" class="tab-pane fade">
+                        <textarea class="form-control" rows="3" id="comText2" placeholder="If the student did a good job."></textarea>
+                    </div>
+                    <div id="comment3" class="tab-pane fade">
+                        <textarea class="form-control" rows="3" id="comText3" placeholder="The student did an excellent."></textarea>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <!-- added data-token to try csrf token -->
-                <button type="button" class="btn btn-default confirm-btn" data-token="{{ csrf_token() }}"
+                <button type="button" class="btn btn-default confirm-btn"
                         data-dismiss="modal">Save</button>
             </div>
         </div>

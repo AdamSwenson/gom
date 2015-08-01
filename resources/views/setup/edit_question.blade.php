@@ -56,9 +56,9 @@
                         class="glyphicon glyphicon-plus"
                         aria-hidden="true"></span>
                 Add Question</a>
-            <button class="btn btn-primary" id="importQuestion"><span class="glyphicon glyphicon-import"
+            <a class="btn btn-primary" id="importQuestion"><span class="glyphicon glyphicon-import"
                                                                       aria-hidden="true"></span>Import Question
-            </button>
+            </a>
         </div>
     </div>
     @include('setup.question_form_empty')

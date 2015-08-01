@@ -28,6 +28,7 @@
                             Previous Question</a>
                     </li>
                     <li class="next">
+
                         <a id="next-question" data-nextQ="{{ $nextqId }}" style="cursor:pointer;">Next Question <span
                                     class="glyphicon glyphicon-chevron-right"
                                     aria-hidden="true"></span></a>
@@ -41,13 +42,12 @@
             <form id="elementForm" name="elementForm" method="post" role="form"
                   action="{{ url('exam/'.$examId.'/question/'.$qId.'/element/updateAll') }}"
                   accept-charset="UTF-8">
-
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <ul class="form-group" id="questionList">
                     @if( isset($elements) )
                         <?php $counter = 1; ?>
                         @foreach($elements as $q)
-                            @include('setup.question_form')
+                            @include('setup.element_form')
                             <?php $counter++; ?>
                         @endforeach
                     @else
@@ -62,6 +62,8 @@
                 Add Element</a>
         </div>
     </div>
+    <?php $counter = 0;
+    $q = 0; ?>
     @include('setup.element_form_empty')
     @include('errors.list')
 @endsection
@@ -180,12 +182,8 @@
                 document.getElementById("elementForm").submit();
             }
 
-            $('#elementForm').on('keyup keypress', function(e) {
-                var code = e.keyCode || e.which;
-                if (code == 13) {
-                    e.preventDefault();
-                    return false;
-                }
+            $("input[type='submit']").click(function (e) {
+                e.preventDefault();
             });
 
             return false;

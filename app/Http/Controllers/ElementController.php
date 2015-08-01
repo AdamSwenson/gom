@@ -121,7 +121,7 @@ class ElementController extends Controller
     {
         // element->comments  <- gets a collection of comments to work on
 
-        // given the current $question, find previous and next
+        // given the current $question, find previous and next...
         $qId = $question->getId();
         $examId = $exam->getId();
 
@@ -130,7 +130,6 @@ class ElementController extends Controller
         // as it matches with the first Id found in the ordered Assignments.
         $qNumber = $this->questionAssignmentDAO->loadByIds($examId, $qId);
         $index = 0;
-        // .. look through it to find the index that our question appears
 
         foreach ($allQuestionAss as $questionAss) {
               if ($qId === $questionAss->question_id) {
@@ -159,7 +158,7 @@ class ElementController extends Controller
         // load data for any existing elements
         $elements = [];
 
-        /*
+        /* build the comments and add to submit data
         $assignments = $this->assignmentDao->load_element_assignments_by_question_number($examId, $qNumber);
         $numValences = sizeof(Comment::$valences);
         $counter = 0;
@@ -206,6 +205,10 @@ class ElementController extends Controller
         $nextAction = $request->input('questionDirection');
         $examId = $exam->getId();
 
+        // create new elements - create new comments?
+        //
+        // and update existing.
+
         if ($nextAction === 'back') {
             return redirect()->route('editAllQuestions', $examId);
         } else if ($nextAction === 'forward') {
@@ -226,16 +229,6 @@ class ElementController extends Controller
     public
     function destroy(Element $element)
     {
-        //
-    }
 
-    /**
-     * Saves the elements for the question and redirects to StudentController
-     */
-    public
-    function done()
-    {
-        return ('this connects to the edit students page');
-        return $this->elementDao->deleteElement($element);
     }
 }

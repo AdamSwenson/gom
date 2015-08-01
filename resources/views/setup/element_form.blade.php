@@ -25,17 +25,17 @@
              Move</span>
         </span>
         <!-- customize responses -->
-        <button class="btn btn-info btn-sm" id="customizeElement" data-toggle="modal" data-target="#customizeResponse">
+        <a class="btn btn-info btn-sm" id="customizeElement{{ isset($q) ? $counter : 1 }}" data-toggle="modal"
+                data-target="#customizeResponse{{ isset($q) ? $counter : 1 }}">
             <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
             Customize Responses
-        </button>
-
+        </a>
         @include('setup.comment_form')
 
                 <!-- delete button -->
-        <button class="btn btn-warning btn-sm" type="button"><span class="js-remove"><span
+        <a class="btn btn-warning btn-sm" type="button"><span class="js-remove"><span
                         class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete</span>
-        </button>
+        </a>
     </div>
     <input type="hidden" id="questionId" name="questionId{{isset($q) ? $counter : 1}}"
            value="{{ isset($q) ? $q['qObj']->getId() : '0' }}"/>
