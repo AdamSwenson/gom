@@ -38,6 +38,7 @@ class ElementScoreRepository implements IElementScoreRepository
     public function load_all_for_question_number(IQuestionAssignmentRepository $questionAssigner, $examId, $questionNumber)
     {
         $assignment = $questionAssigner->load($examId, $questionNumber);
+        $elementAssignments =
         ElementScore::whereHas('questionAssignment', function($query, $assignment){
             $query->where('id', $assignment->getId());
         });

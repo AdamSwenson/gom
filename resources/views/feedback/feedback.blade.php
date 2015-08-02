@@ -21,7 +21,7 @@ $w = '80px';
             <li>
                 <label for='grade' class="studentInfoLabel">Grade: </label>
                 <input type="text" readonly="readonly" id="grade" class="grade"
-                       value="{{ (isset($data['grade']) ? $data['grade'] : '')}}"/>
+                       value="{{ $data['grade'] or ''}}"/>
             </li>
             <li>
                 <span class="studentInfoLabel">Entry Code:</span> <span class="pseudoID"> </span>
@@ -38,7 +38,7 @@ $w = '80px';
     </div> <!--overall-->
 
     <div id="questionResultsHere">
-        @foreach($data['questions'] as $question)
+        @foreach($data as $question)
             @include('feedback.question')
         @endforeach
     </div>
@@ -46,5 +46,8 @@ $w = '80px';
 @endsection
 
 @section('jsArea')
+    <script type="text/javascript">
+        var data = {!! ($data ? json_encode($data, JSON_FORCE_OBJECT) : '') !!};
+    </script>
 
 @endsection

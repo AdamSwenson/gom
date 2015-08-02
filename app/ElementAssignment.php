@@ -34,6 +34,38 @@ class ElementAssignment extends BaseModel
 //        parent::boot();
     }
 
+    /**
+     * Returns the id of the element which this object associates with a question.
+     *
+     * NB, This is not the id of the present object.
+     *
+     * @return mixed
+     */
+    public function getElementId()
+    {
+        return $this->attributes['element_id'];
+    }
+
+    /**
+     * Returns the id of the present object.
+     *
+     * NB, This is not the id of the element model which this object associates with a question
+     * @return int
+     */
+    public function getElementAssignmentId()
+    {
+        return $this->getId();
+    }
+
+    /**
+     * Returns the name of the element associated with the question
+     * @return string
+     */
+    public function getElementName()
+    {
+        return $this->element->getElementName();
+    }
+
     public function setSubtask($subtask)
     {
         $this->attributes['subtask'] = $subtask;

@@ -6,7 +6,7 @@
  * Time: 12:22 PM
  */
 
-namespace App\Repositories\Feedback;
+namespace App\classes\PseudoIDClasses\service;
 
 /**
  * Class PseudoIDMaker

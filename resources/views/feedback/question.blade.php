@@ -9,17 +9,18 @@ $h='40px';
 $w='80px';
 ?>
 
-
-<div id='q{{ $question['questionNumber'] }}'>
+@if(!empty($question['score']))
+<div id='q{{ $question['questionNumber'] }}' class="questionFeedbackArea">
 
     <h1 class='mainHeading'>Q{{ $question['questionNumber'] }}: {{ $question['questionName'] }}</h1>
 
     <p class='stockText generalStock'></p>
 
-    <ul id='q{{ $question['questionNumber'] }}Comments'>
+    <div id='q{{ $question['questionNumber'] }}Comments' class="commentsArea">
         @foreach($question['elements'] as $element)
             @include('feedback.comment')
         @endforeach
-    </ul>
+    </div>
     <div id='Q{{$question['questionNumber']}}Chart' class='elementChartDiv' style='height:{{$h}}; width:{{$w}}'></div>
 </div>
+@endif

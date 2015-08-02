@@ -31,7 +31,10 @@ class QuestionAssignmentRepositoryTest extends \TestCase
         $this->assignment = QuestionAssignment::all()->random();
     }
 
-
+public function tearDown()
+{
+    \Mockery::close();
+}
     public function testLoad()
     {
         $qid = $this->assignment->question_number;

@@ -11,6 +11,7 @@ namespace App\HTTP\Controllers;
 
 use App\Student;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
+use Mockery\Mock;
 
 class StudentControllerTest extends \TestCase
 {
@@ -22,9 +23,12 @@ class StudentControllerTest extends \TestCase
 
     public function setUp()
     {
+        \Mockery::close();
         parent::setUp();
         $this->student = Student::all()->random();
-        $this->dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
+        $this->dao = \Mockery::mock('\App\Repositories\Student\IStudentRepository');
+        $this->app->instance('\App\Repositories\Student\IStudentRepository', $this->dao);
+//        $this->dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
         // $this->object = new StudentController($this->dao);
     }
 

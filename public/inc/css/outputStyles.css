@@ -3,6 +3,18 @@ UPDATED
 14 aug 2014
 */
 
+.questionFeedbackArea{
+    display:block;
+    clear:both;
+    margin-right: 20%;
+    margin-left:20%;
+}
+
+.commentParagraph{
+    padding-bottom: 1em;
+}
+
+
 .displayBig{font-size: 20px;}
 .elementChartDiv{
     height: 300px;

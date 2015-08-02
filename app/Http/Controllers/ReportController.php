@@ -8,10 +8,61 @@
 
 namespace App\Http\Controllers;
 
+use App\Exam;
+use App\Repositories\Element\ICommentRepository;
+use App\Repositories\Element\IElementAssignmentRepository;
+use App\Repositories\Feedback\FeedbackBuilder;
+use App\Repositories\Question\IQuestionAssignmentRepository;
+use App\Repositories\Score\IElementScoreRepository;
+use App\Repositories\Score\IQuestionScoreRepository;
+use App\Repositories\Student\IStudentRepository;
+use Illuminate\Support\Facades\Auth;
+
 class ReportController extends Controller
 {
+    /**
+     * @var IStudentRepository
+     */
+    private $studentRepository;
+
+    /**
+     * @param IQuestionAssignmentRepository $questionAssignmentRepository
+     * @param IElementAssignmentRepository $elementAssignmentRepository
+     * @param IQuestionScoreRepository $questionScoreRepository
+     * @param IElementScoreRepository $elementScoreRepository
+     * @param ICommentRepository $commentRepository
+     * @param IStudentRepository $studentRepository
+     */
+    public function __construct(
+        IQuestionAssignmentRepository $questionAssignmentRepository,
+        IElementAssignmentRepository $elementAssignmentRepository,
+        IQuestionScoreRepository $questionScoreRepository,
+        IElementScoreRepository $elementScoreRepository,
+        ICommentRepository $commentRepository,
+    IStudentRepository $studentRepository
+    ) {
+        Auth::loginUsingId(1);
+        $this->questionAssignmentRepository = $questionAssignmentRepository;
+        $this->elementAssignmentRepository = $elementAssignmentRepository;
+        $this->questionScoreRepository = $questionScoreRepository;
+        $this->elementScoreRepository = $elementScoreRepository;
+        $this->commentRepository = $commentRepository;
+        $this->studentRepository = $studentRepository;
+    }
+
 
     public function showGradeAssign(){
         return "Grade assignment page here";
+    }
+
+    public function createFeedback()
+    {
+        $f = new FeedbackBuilder();
+        $feedback = $f->buildFeedback(1);
+        $accessKeys = array_keys($feedback);
+//        dd($feedback[5]);
+        $data = $feedback[$accessKeys[0]];
+
+        return view('feedback.feedback', compact('data'));
     }
 }

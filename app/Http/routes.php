@@ -45,6 +45,10 @@ Route::get('feedback', 'StudentAccessController@show');
 /* If arrived via feedback login page */
 Route::post('feedback/login', 'StudentAccessController@show');
 
+Route::get('feedback/make', 'ReportController@createFeedback');
+
+
+
 /* NEW routes for exam selection and creation below */
 // Select exam page
 

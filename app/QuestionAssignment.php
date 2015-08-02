@@ -38,14 +38,48 @@ class QuestionAssignment extends BaseModel
 //        parent::junctionBoot();
     }
 
-//    /**
-//     * Associates with user
-//     * @param $user_id
-//     */
-//    public function setUser($user_id)
-//    {
-//        $this->attributes['user_id'] = $user_id;
-//    }
+    /**
+     * Returns the name of the associated question object
+     * @return string
+     */
+    public function getQuestionName()
+    {
+        $obj = $this->question->first();
+        return $obj->getQuestionName();
+    }
+
+    /**
+     * Returns the number (i.e., the order) of the associated question on the exam
+     * @return integer
+     */
+    public function getQuestionNumber()
+    {
+        return $this->attributes['question_number'];
+    }
+
+    /**
+     * Returns the id of the associated question (i.e., the question which this object is associating
+     * with an exam).
+     *
+     * @return mixed
+     */
+    public function getQuestionId()
+    {
+        return $this->attributes['question_id'];
+    }
+
+    /**
+     * Returns the id of the question assignment (i.e., the association of the question with an exam).
+     *
+     * NB, This is not the id number of the Question model/object.
+     *
+     * @return int
+     */
+    public function getQuestionAssignmentId()
+    {
+        return $this->getId();
+    }
+
 
 #--------------- Queries
     public function scopeOnExam($query, $examId)
@@ -69,6 +103,14 @@ class QuestionAssignment extends BaseModel
 //        return $this->belongsTo('App\User', 'owner_id', 'id');
 //    }
 
+    /**
+     * Elements associated with this question
+     */
+    public function elementAssignments()
+    {
+        return $this->hasMany('App\ElementAssignment');
+    }
+
     public function exam()
     {
         return $this->belongsToMany('App\Exam', 'question_assignments', 'exam_id');
@@ -76,6 +118,7 @@ class QuestionAssignment extends BaseModel
 
     public function question()
     {
+//        return $this->hasOne('App\Question', 'question_assignments', 'question_id');
         return $this->belongsToMany('App\Question', 'question_assignments', 'question_id');
     }
 
