@@ -72,6 +72,7 @@
         // Sortable is the lib for deag and drop elements
         // create an editable list and set up some filters to handle callbacks
         $(document).ready(function () {
+                    localStorage.clear();
                     var qList = document.getElementById('questionList');
                     var editableList = Sortable.create(qList, {
                         filter: '.js-remove',

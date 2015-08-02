@@ -217,13 +217,12 @@ class QuestionController extends Controller
     {
         $assignments = $this->assignmentDao->load_all_for_exam($exam->getId());
         $questions = [];
-        $counter = 0;
 
         foreach ($assignments as $ass) {
             $id = $ass->question_id;
             // load the question with given id by its index: ['0','1', ...]
             $q['qObj'] = $this->questionDao->loadQuestionById($id);
-            $questions[$counter++] = $q;
+            $questions[] = $q;
         }
         $examName = $exam->getName();
         $examId = $exam->getId();

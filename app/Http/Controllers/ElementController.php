@@ -121,21 +121,18 @@ class ElementController extends Controller
      */
     public function editAll($exam, $question)
     {
-        // element->comments  <- gets a collection of comments to work on
-
-        // given the current $question, find previous and next...
-        $qId = $question->getId();
+        $questionId = $question->getId();
         $examId = $exam->getId();
-
         $allQuestionAss = $this->questionAssignmentDAO->load_all_for_exam($examId);
+        $qNumber = $this->questionAssignmentDAO->loadByIds($examId, $questionId);
+
+        // given the current $question, find previous and next $questionId...
         // loadByIds() will loop if the same questionId appears several times on the same exam,
         // as it matches with the first Id found in the ordered Assignments.
-        $qNumber = $this->questionAssignmentDAO->loadByIds($examId, $qId);
+
         $index = 0;
-
         foreach ($allQuestionAss as $questionAss) {
-              if ($qId === $questionAss->question_id) {
-
+              if ($questionId === $questionAss->question_id) {
                 break;
             } else {
                 $index++;
@@ -158,30 +155,17 @@ class ElementController extends Controller
             }
         }
         // load data for any existing elements
-        $elements = [];
-
-        /* build the comments and add to submit data
-        $assignments = $this->assignmentDao->load_element_assignments_by_question_number($examId, $qNumber);
-        $numValences = sizeof(Comment::$valences);
-        $counter = 0;
-        foreach ($assignments as $ass) {
-            $elementId = $ass->element_id;
-            $elements['eObj'] = this->elementDao->loadElementById($elementId);
-            $valences['eValence'] =
-
-        }
-        $elements[$counter++] = $q;
-        }
-        */
-
-        // shows all elements for a given question along with the ids for 'next' and 'previous'
+        $elements = $this->assignmentDao->load_elements($examId, $qNumber);
+        //dd($elements[0]->comments[2]->body);
+        //dd($elements[0]->commentText);
+        // show all elements for a given question along with the ids for 'next' and 'previous'
         return view('setup.edit_element')->with(['examId' => $examId,
-            'qId' => $qId,
             'nextqId' => $nQId,
             'prevqId' => $pQId,
-            'questionName' => $question->getQuestionName(),
+            'questionId' => $questionId,
             'qNumber' => $qNumber,
-            'questions' => $elements]);
+            'questionName' => $question->getQuestionName(),
+            'elements' => $elements ]);
     }
 
     /**

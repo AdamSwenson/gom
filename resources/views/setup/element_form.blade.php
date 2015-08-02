@@ -1,22 +1,22 @@
-<!-- this form describes the input form and buttons for an individual question -->
-<li class="list-group-item" id="questionItem{{ isset($q) ? $counter : 1 }}">
-    <h4 id="displayNumber">Element #{{ isset($q) ? $counter : 1 }}</h4>
+<!-- this form describes the input form and buttons for an individual element -->
+<li class="list-group-item" id="elementItem{{ isset($e) ? $counter : 1 }}">
+    <h4 id="displayNumber">Element #{{ isset($e) ? $counter : 1 }}</h4>
 
     <div class="input-group">
         <span class="input-group-addon">Element Name</span>
-        <input id="questionName{{ isset($q) ? $counter : 1 }}"
-               name="questionName{{ isset($q) ? $counter : 1 }}" type="text" class="form-control input"
-               value="{{ isset($q['qName']) ? $q['qName'] : '' }}"
+        <input id="elementName{{ isset($e) ? $counter : 1 }}"
+               name="elementName{{ isset($e) ? $counter : 1 }}" type="text" class="form-control input"
+               value="{{ isset($e->elementName ) ? $e->elementName : '' }}"
                placeholder="(Optional) Enter a short reminder for this element, i.e. &quot;Economic causes of the Civil War&quot; "
                aria-describedby="basic-addon1">
     </div>
     <h5>Element Response</h5>
 
     <div class="form-group">
-        <textarea class="form-control" rows="3" id="questionText{{ isset($q) ? $counter : 1 }}"
-                  name="questionText{{ isset($q) ? $counter : 1 }}"
+        <textarea class="form-control" rows="3" id="elementText{{ isset($e) ? $counter : 1 }}"
+                  name="elementText{{ isset($e) ? $counter : 1 }}"
                   placeholder="Explain in detail what needed to be done in order to fully answer this element. This will form the basis for the response seen by the student."
-                >{{ isset($q['qDesc']) ? $q['qDesc'] : '' }}</textarea>
+                >{{ isset($e->elementName ) ? $e->commentText  : '' }}</textarea>
     </div>
     <div class="form-group">
         <!-- move -->
@@ -25,8 +25,8 @@
              Move</span>
         </span>
         <!-- customize responses -->
-        <a class="btn btn-info btn-sm" id="customizeElement{{ isset($q) ? $counter : 1 }}" data-toggle="modal"
-                data-target="#customizeResponse{{ isset($q) ? $counter : 1 }}">
+        <a class="btn btn-info btn-sm" id="btnCustomizeResponse{{ isset($e) ? $counter : 1 }}" data-toggle="modal"
+                data-target="#commentForm{{ isset($e) ? $counter : 1 }}">
             <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
             Customize Responses
         </a>
@@ -37,6 +37,6 @@
                         class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete</span>
         </a>
     </div>
-    <input type="hidden" id="questionId" name="questionId{{isset($q) ? $counter : 1}}"
-           value="{{ isset($q['qObj']) ? $q['qObj']->getId() : '0' }}"/>
+    <input type="hidden" id="elementId" name="elementId{{isset($e) ? $counter : 1}}"
+           value="{{ isset($e['eObj']) ? $e['eObj']->getId() : '0' }}"/>
 </li>

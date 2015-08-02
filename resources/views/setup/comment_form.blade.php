@@ -1,5 +1,5 @@
-<!-- Comment form shows the custom response modal window -->
-<div class="modal fade" id="customizeResponse{{ isset($q) ? $counter : 1 }}" role="dialog">
+<!-- comment_form displays the custom response modal -->
+<div class="modal fade" id="commentForm{{ isset($e) ? $counter : 1 }}" role="dialog">
     <div class="modal-dialog">
 
         <!-- Modal content-->
@@ -12,30 +12,38 @@
             <!-- tabbed area for responses -->
             <div class="modal-body">
                 <ul class="nav nav-pills nav-justified">
-                    <li role="presentation" class="active"><a data-toggle="tab" href="#comment0">Missing</a></li>
-                    <li role="presentation"><a data-toggle="tab" href="#comment1">Poor</a></li>
-                    <li role="presentation"><a data-toggle="tab" href="#comment2">Fair</a></li>
-                    <li role="presentation"><a data-toggle="tab" href="#comment3">Excellent</a></li>
+                    <li role="presentation" class="active"><a id="tab0" data-toggle="tab" href="#e{{ $counter }}valence0">Missing</a></li>
+                    <li role="presentation"><a id="tab1" data-toggle="tab" href="#e{{ $counter }}valence1">Poor</a></li>
+                    <li role="presentation"><a id="tab2" data-toggle="tab" href="#e{{ $counter }}valence2">Fair</a></li>
+                    <li role="presentation"><a id="tab3" data-toggle="tab" href="#e{{ $counter }}valence3">Excellent</a></li>
                 </ul>
                 <div class="tab-content" id="comments">
-                    <div id="comment0" class="tab-pane fade in active">
-                    <textarea class="form-control" rows="3" id="comText0" placeholder="Write a response if the element is missing."></textarea>
+                    <div id="e{{ $counter }}valence0" class="tab-pane fade in active">
+                        <textarea class="form-control" rows="5" id="valenceText0" name="e{{ $counter }}valence0"
+                                  placeholder="Write a response if the element is missing."
+                                >{{ isset($e->comments[0]->body) ? $e->comments[0]->body : ''  }}</textarea>
                     </div>
-                    <div id="comment1" class="tab-pane fade">
-                        <textarea class="form-control" rows="3" id="comText1"
-                                  placeholder="Write a response if the student did a poor job of answering this element."></textarea>
+                    <div id="e{{ $counter }}valence1" class="tab-pane fade">
+                        <textarea class="form-control" rows="5" id="valenceText1" name="e{{ $counter }}valence1"
+                                  placeholder="Modify the response for a student that did a poor job of addressing this element."
+                                >{{ isset($e->comments[1]->body) ? $e->comments[1]->body : ''  }}</textarea>
                     </div>
-                    <div id="comment2" class="tab-pane fade">
-                        <textarea class="form-control" rows="3" id="comText2" placeholder="If the student did a good job."></textarea>
+                    <div id="e{{ $counter }}valence2" class="tab-pane fade">
+                        <textarea class="form-control" rows="5" id="valenceText2" name="e{{ $counter }}valence2"
+                                  placeholder="This response is if the student did a fair job on the element."
+                                >{{ isset($e->comments[2]->body) ? $e->comments[2]->body : ''  }}</textarea>
                     </div>
-                    <div id="comment3" class="tab-pane fade">
-                        <textarea class="form-control" rows="3" id="comText3" placeholder="The student did an excellent."></textarea>
+                    <div id="e{{ $counter }}valence3" class="tab-pane fade">
+                        <textarea class="form-control" rows="5" id="valenceText3" name="e{{ $counter }}valence3"
+                                  placeholder="Here, response for a student that who did an excellent job on this element."
+                                >{{ isset($e->comments[3]->body) ? $e->comments[3]->body : ''  }}</textarea>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default confirm-btn"
-                        data-dismiss="modal">Save</button>
+                        data-dismiss="modal">Save
+                </button>
             </div>
         </div>
     </div>
