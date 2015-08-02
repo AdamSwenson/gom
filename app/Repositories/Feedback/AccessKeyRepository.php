@@ -6,10 +6,13 @@
  * Time: 3:11 PM
  */
 
-namespace Repositories\Feedback;
+namespace App\Repositories\Feedback;
 
+use App\AccessKey;
 use App\Exceptions\InputTypeException;
+use App\Feedback;
 use App\Repositories\Feedback\PseudoIDMaker;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class AccessKeyRepository
@@ -24,13 +27,28 @@ class AccessKeyRepository implements IAccessKeyRepository
     protected $validKey;
 
     /**
-     * Determines whether a key is already in use
-     * @param $potentialKey
-     * @return boolean
+     * Creates an access key, checks its validity, and records it in the database.
+     * Returns only the string, not the model object.
+     * @param $examId
+     * @param $studentId
+     * @return string
      */
-    public function checkIfKeyIsUnique($potentialKey)
+    public function createAccessKey($examId, $studentId)
     {
-        $this->validateKey($potentialKey);
+        $accessKey = $this->generateNewKey();
+        if($accessKey)
+        {
+            $k = new AccessKey();
+            $k->setKey($accessKey);
+            $k->setExamId($examId);
+            $k->setStudentId($studentId);
+            $k->save();
+
+            if($k)
+            {
+                return $k->getKey();
+            }
+        }
     }
 
 
@@ -49,12 +67,44 @@ class AccessKeyRepository implements IAccessKeyRepository
     }
 
     /**
+     * Looks up the access key for a student.
+     *
+     * Note that the query is automatically limited to the present user. Therefore,
+     * do not try to use this to check that a key is unique for all users.
+     *
+     * @param $examId
+     * @param $studentId
+     * @return string The access key for the student
+     */
+    public function getAccessKeyForStudent($examId, $studentId)
+    {
+        $key = AccessKey::onExam($examId)->where('student_id', $studentId)->first();
+        return $key->getKey();
+    }
+
+    /**
+     * Loads all access keys for a given exam
+     * @param $examId
+     */
+    public function getAccessKeysForExam($examId)
+    {
+        return AccessKey::onExam($examId)->get();
+    }
+
+
+
+
+
+    /**
      * Removes an access key (and associated feedback) from storage
      *
      * @param string $accessKey
      */
     public function removeAccessKey($accessKey)
-    {}
+    {
+        $key = AccessKey::where('access_key', $accessKey)->firstOrFail();
+        return $key->delete();
+    }
 
     /**
      * Helper to check if an incoming key has the properties of an access key
@@ -67,7 +117,7 @@ class AccessKeyRepository implements IAccessKeyRepository
     {
         $trimmed = \trim($accessKey);
         $cleaned = \filter_var($trimmed, \FILTER_SANITIZE_STRING);
-        if((!empty($cleaned)) && (\mb_strlen($cleaned) === PseudoIDMaker::LOOKUP_SIZE))
+        if((!empty($cleaned)) && (\mb_strlen($cleaned) === AccessKey::LOOKUP_SIZE))
         {
             $this->validKey = $cleaned;
             return $this->validKey;
@@ -86,6 +136,50 @@ class AccessKeyRepository implements IAccessKeyRepository
         if(!empty($this->validKey))
         {
 //Todo: Implement loader of feedback
+            $data = Feedback::byAccessKey($this->validKey);
+            return $data->toArray();
+
         }
+    }
+
+
+    /**
+     * Creates a unique key
+     *
+     * @return string The candidate pseudoID
+     */
+    protected function generateNewKey()
+    {
+        $candidate = $this->createCandidateKey();
+        if($this->checkIfKeyIsUnique($candidate))
+        {
+            return $candidate;
+        }
+    }
+
+    /**
+     * Checks whether candidate key is unique.
+     * Note that this checks across all users
+     * @param $candidate
+     * @return bool
+     */
+    protected function checkIfKeyIsUnique($candidate)
+    {
+        $key = DB::table('access_keys')->where('access_key', $candidate)->first();
+        if(empty($key))
+        {
+            return $candidate;
+        }
+        return false;
+    }
+
+    /**
+     * Generates a potential key ready to be  checked for uniqueness
+     * @return mixed
+     */
+    protected function createCandidateKey()
+    {
+        $candidate = hash('sha256', \openssl_random_pseudo_bytes(AccessKey::LOOKUP_SIZE));
+        return $candidate;
     }
 }

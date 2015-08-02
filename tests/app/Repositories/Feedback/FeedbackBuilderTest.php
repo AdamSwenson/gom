@@ -32,6 +32,7 @@ class FeedbackBuilderTest extends \TestCase
     protected $elementScoreRepository;
     protected $commentRepository;
     protected $studentRepository;
+    protected $accessKeyRepository;
 
     public function setUp()
     {
@@ -43,6 +44,7 @@ class FeedbackBuilderTest extends \TestCase
         $this->elementScoreRepository = $this->makeMock('App\Repositories\Score\IElementScoreRepository');
         $this->commentRepository = $this->makeMock('App\Repositories\Element\ICommentRepository');
         $this->studentRepository = $this->makeMock('App\Repositories\Student\IStudentRepository');
+        $this->accessKeyRepository = $this->makeMock('App\Repositories\Feedback\IAccessKeyRepository');
         $this->object = new FeedbackBuilder();
 
         $ex = Exam::all()->random(1);
@@ -137,6 +139,8 @@ class FeedbackBuilderTest extends \TestCase
         $comment->body = 'comment text';
         $this->commentRepository->shouldReceive('getCommentForScore')->andReturn($comment);
 
+        $this->accessKeyRepository->shouldReceive('createAccessKey')->andReturnUsing(function(){return $this->faker->sha256();});
+
 
         $fb = new FeedbackBuilder();
 
@@ -144,6 +148,19 @@ class FeedbackBuilderTest extends \TestCase
         $this->assertNotEmpty($result);
         $this->assertTrue(is_array($result));
         $this->assertEquals(count($students), count($fb->students), "correct number of student arrays");
+    }
+
+    public function testStoreFeedback()
+    {
+        $accessKey = $this->faker->sha256();
+        $content = [
+            'item1' => $this->faker->text(1000),
+            'item2' => $this->faker->text(1000),
+            'item3' => $this->faker->text(1000)
+        ];
+
+        $this->object->storeFeedback($accessKey, $content);
+        $this->seeInDatabase('feedback', ['access_key' => $accessKey]);
     }
 
 
@@ -164,38 +181,38 @@ class FeedbackBuilderTest extends \TestCase
 
     }
 
-
-    public function testBuildOneQuestion(
-        IElementAssignmentRepository $elementAssignmentRepository,
-        $examId,
-        $questionName,
-        $questionNumber,
-        $studentId,
-        &$data
-    ) {
-//        $testArray = [];
-//        $examId = $this->faker->randomNumber(3);
-//        $questionNumber = $this->faker->randomDigit();
-//        $questionName = $this->faker->text();
-//        $studentId = $this->faker->randomNumber(9);
 //
+//    public function testBuildOneQuestion(
+//        IElementAssignmentRepository $elementAssignmentRepository,
+//        $examId,
+//        $questionName,
+//        $questionNumber,
+//        $studentId,
+//        &$data
+//    ) {
+////        $testArray = [];
+////        $examId = $this->faker->randomNumber(3);
+////        $questionNumber = $this->faker->randomDigit();
+////        $questionName = $this->faker->text();
+////        $studentId = $this->faker->randomNumber(9);
+////
+////
+////        $elementAssignmentRepository = \Mockery::mock('App\Repositories\Element\IElementAssignmentRepository')
+////        ->shouldReceive('load_element_assignments_by_question_number')
+////        ->withArgs([$examId, $questionNumber]);
+////
+////        $this->object->buildOneQuestion($elementAssignmentRepository, $examId, $questionName, $questionNumber, $studentId, $testArray);
+////
+////        $elementAssignments = $this->elementAssignmentRepository->load_element_assignments_by_question_number($examId, $questionNumber);
+////        $this->buildElementScore($elementAssignments, $studentId, $comments);
+////        $data[$questionNumber] = [
+////            'questionTitle' => $questionName,
+////            'questionNumber' => $questionNumber,
+////            'questionScore' =>
+////            'comments' => $comments
+////        ];
 //
-//        $elementAssignmentRepository = \Mockery::mock('App\Repositories\Element\IElementAssignmentRepository')
-//        ->shouldReceive('load_element_assignments_by_question_number')
-//        ->withArgs([$examId, $questionNumber]);
-//
-//        $this->object->buildOneQuestion($elementAssignmentRepository, $examId, $questionName, $questionNumber, $studentId, $testArray);
-//
-//        $elementAssignments = $this->elementAssignmentRepository->load_element_assignments_by_question_number($examId, $questionNumber);
-//        $this->buildElementScore($elementAssignments, $studentId, $comments);
-//        $data[$questionNumber] = [
-//            'questionTitle' => $questionName,
-//            'questionNumber' => $questionNumber,
-//            'questionScore' =>
-//            'comments' => $comments
-//        ];
-
-    }
+//    }
 
     public function testBuildFeedback()
     {

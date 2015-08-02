@@ -9,6 +9,7 @@
 namespace App\Repositories\Feedback;
 
 
+use App\Feedback;
 use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Feedback\IPseudoIDMaker;
@@ -17,7 +18,7 @@ use App\Repositories\Score\IElementScoreRepository;
 use App\Repositories\Score\IQuestionScoreRepository;
 use App\Repositories\Student\IStudentRepository;
 
-class FeedbackBuilder
+class FeedbackBuilder implements IFeedbackBuilder
 {
 
     public $feedback = [];
@@ -26,6 +27,7 @@ class FeedbackBuilder
     public $students;
 
     protected $pseudoIdMaker;
+    protected $accessKeyRepository;
     /**
      * @var IStudentRepository
      */
@@ -55,6 +57,9 @@ class FeedbackBuilder
 
     public $assignments = array();
 
+    /**
+     *
+     */
     public function __construct()
     {
         $this->questionAssignmentRepository = app()->make('App\Repositories\Question\IQuestionAssignmentRepository');
@@ -63,6 +68,8 @@ class FeedbackBuilder
         $this->elementScoreRepository = app()->make('App\Repositories\Score\IElementScoreRepository');
         $this->commentRepository = app()->make('App\Repositories\Element\ICommentRepository');
         $this->studentRepository = app()->make('App\Repositories\Student\IStudentRepository');
+        $this->accessKeyRepository = app()->make('App\Repositories\Feedback\IAccessKeyRepository');
+
 //        $this->pseudoIdMaker = app()->make('App\Repositories\Feedback\IPseudoIDMaker');
     }
 
@@ -111,24 +118,20 @@ class FeedbackBuilder
     }
 
 
+    /**
+     * Populates self::students with the students associated with the exam
+     * @param $examId
+     */
     public function loadStudents($examId)
     {
-//        $this->studentRepository = $studentRepository;
         $this->students = $this->studentRepository->load_students_by_exam($examId);
     }
 
-    /**
-     * @param IPseudoIDMaker $pseudoIDMaker
-     */
-    public function makePseudoId(
-        IPseudoIDMaker $pseudoIDMaker
-    ) {
-        $this->pseudoIdMaker = $pseudoIDMaker;
-    }
 
 
     /**
      * Creates the feedback structure
+     * This is the main publicly called method
      */
     public function buildFeedback($examId)
     {
@@ -172,11 +175,33 @@ class FeedbackBuilder
                 }
             }
 
-            $this->feedback[$student->id] = $studentScores;
+            $accessKey = $this->accessKeyRepository->createAccessKey($examId, $student->id);
+
+            $this->feedback[$accessKey] = $studentScores;
+            $this->storeFeedback($accessKey, $studentScores);
         }
 
         return $this->feedback;
     }
+
+    /**
+     * Saves the content to the database.
+     *
+     * TODO: Mark as protected once testing is better set up
+     *
+     * @param $accessKey
+     * @param $content
+     * @return bool
+     */
+    public function storeFeedback($accessKey, $content)
+    {
+        $feedback = new Feedback();
+        $feedback->setAccessKey($accessKey);
+        $feedback->content = $content;
+//        $feedback->setContent($content);
+        return $feedback->save();
+    }
+
 
     public
     function buildOneQuestion(

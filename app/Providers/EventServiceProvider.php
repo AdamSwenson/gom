@@ -13,9 +13,12 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\SomeEvent' => [
-            'App\Listeners\EventListener',
+        'App\Events\ExamReleased' => [
+            'App\Listeners\FeedbackCompileListener'
         ],
+        'App\Events\FeedbackCompilationComplete' => [
+            'App\Listeners\NotifyStudentsListener'
+        ]
     ];
 
     /**

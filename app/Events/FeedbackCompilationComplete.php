@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Events;
+
+use App\Events\Event;
+use App\Exam;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+
+/**
+ * Class FeedbackCompilationComplete
+ *
+ * Fires when student feedback has been compiled
+ *
+ * @package App\Events
+ */
+class FeedbackCompilationComplete extends Event
+{
+    use SerializesModels;
+    /**
+     * @var Exam
+     */
+    private $exam;
+
+    /**
+     * Create a new event instance.
+     *
+     * @param Exam $exam
+     */
+    public function __construct(Exam $exam)
+    {
+        $this->exam = $exam;
+    }
+
+    /**
+     * Get the channels the event should be broadcast on.
+     *
+     * @return array
+     */
+    public function broadcastOn()
+    {
+        return [];
+    }
+}

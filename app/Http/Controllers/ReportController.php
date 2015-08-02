@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ExamReleased;
 use App\Exam;
 use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
@@ -57,8 +58,13 @@ class ReportController extends Controller
 
     public function createFeedback()
     {
-        $f = new FeedbackBuilder();
-        $feedback = $f->buildFeedback(1);
+        $exam = new Exam();
+        $exam->id = 1;
+
+        event(new ExamReleased($exam));
+        $feedbackBuilder = new FeedbackBuilder();
+
+        $feedback = $feedbackBuilder->buildFeedback($exam->getId());
         $accessKeys = array_keys($feedback);
 //        dd($feedback[5]);
         $data = $feedback[$accessKeys[0]];

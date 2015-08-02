@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use Repositories\Feedback\IAccessKeyRepository;
+use App\Repositories\Feedback\IAccessKeyRepository;
 
 /**
  * Class PublicFeedbackController
