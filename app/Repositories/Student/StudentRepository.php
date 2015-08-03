@@ -67,7 +67,6 @@ class StudentRepository implements IStudentRepository
      * INNER JOIN classesXexams c ON sxc.classID = c.classID
      * WHERE c.examID = :examID"
      *
-     * TODO: Fix schema so that this again works programmatically with propel
      *
      * @param $examId
      * @return mixed

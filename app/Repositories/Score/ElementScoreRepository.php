@@ -12,7 +12,7 @@ namespace App\Repositories\Score;
 use App\ElementScore;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 
-class ElementScoreRepository
+class ElementScoreRepository implements IElementScoreRepository
 {
     /** @var  ElementScore */
     public $score_object;
@@ -31,12 +31,14 @@ class ElementScoreRepository
 
     /**
      * Loads all element scores for a given question on an exam
+     * @param IQuestionAssignmentRepository $questionAssigner
      * @param $examId
      * @param $questionNumber
      */
     public function load_all_for_question_number(IQuestionAssignmentRepository $questionAssigner, $examId, $questionNumber)
     {
         $assignment = $questionAssigner->load($examId, $questionNumber);
+        $elementAssignments =
         ElementScore::whereHas('questionAssignment', function($query, $assignment){
             $query->where('id', $assignment->getId());
         });
@@ -49,7 +51,7 @@ class ElementScoreRepository
      */
     public function load_for_student_on_exam($examId, $studentId)
     {
-
+return ElementScore::where('student_id', $studentId)->where('exam_id', $examId)->first();
     }
 
 

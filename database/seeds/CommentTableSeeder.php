@@ -22,7 +22,7 @@ class CommentTableSeeder extends Seeder
     public function loadElement($numberOfRuns)
     {
         $this->elements = Element::all()->shuffle();
-        while(count($this->elements) < $numberOfRuns)
+        while (count($this->elements) < $numberOfRuns)
         {
             $this->elements = array_merge($this->elements, Element::all()->shuffle());
         }
@@ -36,7 +36,7 @@ class CommentTableSeeder extends Seeder
     public function run($num = 10)
     {
         $this->faker = \Faker\Factory::create();
-    $this->loadElement($num);
+        $this->loadElement($num);
 
         DB::table('comments')->delete();
 //        DB::table('comment_element')->delete();
@@ -45,20 +45,19 @@ class CommentTableSeeder extends Seeder
         {
 //            try
 //            {
-                foreach (Comment::$valences as $valence)
-                {
-                    $e = $this->elements[$i];
-$body = $this->faker->text();
-                    $comment = new Comment();
-                    $comment->setValence($valence);
-                    $comment->setBody($body);
-                    $comment->element()->associate($e);
-                    $comment->save();
+            foreach (Comment::$valences as $valence)
+            {
+                $e = $this->elements[$i];
+                $body = $this->faker->text(1000);
+                $comment = new Comment();
+                $comment->setValence($valence);
+                $comment->setBody($body);
+                $comment->element()->associate($e);
+                $comment->save();
 //                    $comment->element()->save($e);
 
 
-
-                }
+            }
 
 
 //            } catch (\Exception $e)

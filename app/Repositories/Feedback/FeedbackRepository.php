@@ -6,7 +6,9 @@
  * Time: 3:15 PM
  */
 
-namespace Repositories\Feedback;
+namespace App\Repositories\Feedback;
+
+use App\Comment;
 
 /**
  * Class FeedbackRepository
@@ -17,11 +19,17 @@ namespace Repositories\Feedback;
  */
 class FeedbackRepository
 {
+
+
+
     public function save($accessKey, $feedback)
-    {}
+    {
+    }
 
     public function load($accessKey)
-    {}
+    {
+    }
+
 
 
 

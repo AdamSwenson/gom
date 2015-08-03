@@ -29,6 +29,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
         $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
+
         Auth::loginUsingId(self::$userid);
 
         return $app;
@@ -42,10 +43,25 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
     public function createMock($class)
     {
         $mock = Mockery::mock($class);
-        var_dump($mock);
         $this->app->instance($class, $mock);
         return $mock;
     }
+
+    /**
+     * Clean up the testing environment before the next test.
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        parent::tearDown();
+    Mockery::close();
+    }
+
+
+
+
+
 
 
 //    protected $nestedViewData = array();

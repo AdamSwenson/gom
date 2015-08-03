@@ -24,8 +24,7 @@ use App\QuestionAssignment;
 class QuestionAssignmentRepository implements IQuestionAssignmentRepository
 {
 
-
-    /** @var CleanerFactory  */
+    /** @var CleanerFactory */
     public $cleaner;
 
     public function __construct()
@@ -64,8 +63,9 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
     {
         $q = Question::findOrFail($questionId);
         $questionNumber = $q->getQuestionNumber($examId);
-     return $questionNumber;
-     //   return QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->firstOrFail();
+
+        return $questionNumber;
+        //   return QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->firstOrFail();
 //        return QuestionAssignment::onExam($examId)->onQuestionId($questionId)->firstOrFail();
     }
 
@@ -75,7 +75,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
      * @param integer $examId
      * @param integer $questionId
      * @param integer $question_number
-     * @return QuestionAssignment
+     * @return Question
      */
     public function record($examId, $questionId, $question_number)
     {
@@ -118,6 +118,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
     function remove($examId, $questionId)
     {
         $qa = QuestionAssignment::onExam($examId)->onQuestionId($questionId)->firstOrFail();
+
         return $qa->delete();
     }
 }

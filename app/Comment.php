@@ -99,6 +99,12 @@ class Comment extends BaseModel
     }
 
     #---------------------------------------- queries
+    /**
+     * Limits query to comments with the specified valence
+     * @param $query
+     * @param $valence
+     * @return mixed
+     */
     public function scopeOnValence($query, $valence)
     {
         return $query->where('valence', $valence);
@@ -111,6 +117,10 @@ class Comment extends BaseModel
 
 
 #----------------- foreign keys
+    /**
+     * Junction with user
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function user()
     {
         return $this->belongsTo('App\User');

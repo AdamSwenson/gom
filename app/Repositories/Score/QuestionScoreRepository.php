@@ -11,7 +11,7 @@ namespace App\Repositories\Score;
 
 use App\QuestionScore;
 
-class QuestionScoreRepository
+class QuestionScoreRepository implements IQuestionScoreRepository
 {
     protected $score_object;
 
@@ -44,7 +44,7 @@ class QuestionScoreRepository
      */
     public function load($questionAssignmentId, $studentId)
     {
-        $this->score_object = QuestionScore::onStudentQuestionAssignment($studentId, $questionAssignmentId)->first();
+        $this->score_object = QuestionScore::where('student_id', $studentId)->where('question_assignment_id', $questionAssignmentId)->first();
         return $this->score_object;
     }
 

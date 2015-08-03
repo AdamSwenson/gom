@@ -60,10 +60,10 @@ class Student extends BaseModel
         return $this->belongsToMany('App\Kumi', 'kumi_student'); //removed belongsToMany
     }
 
-    public function exams()
-    {
-        return $this->hasManyThrough('App\Exam', 'App\Kumi');
-    }
+//    public function exams()
+//    {
+//        return $this->hasManyThrough('App\Exam', 'App\Kumi');
+//    }
 
     /**
      * Junction with user

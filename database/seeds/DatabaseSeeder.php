@@ -6,6 +6,36 @@ use Illuminate\Database\Eloquent\Model;
 
 class DatabaseSeeder extends Seeder
 {
+
+    protected $toTruncate = [
+        'element_scores',
+        'question_scores',
+        'exam_kumi',
+        'kumi_student',
+
+        'element_assignments',
+        'question_assignments',
+
+        'kumis',
+        'comments',
+        'elements',
+        'questions',
+        'students',
+        'exams'
+
+    ];
+
+    /**
+     * DOES NOT WORK
+     */
+    public function runTruncate()
+    {
+        foreach($this->toTruncate as $t)
+        {
+            DB::table($t)->truncate();
+        }
+    }
+
     /**
      * Run the database seeds.
      *

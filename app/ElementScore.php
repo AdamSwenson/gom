@@ -5,7 +5,7 @@ namespace App;
 
 class ElementScore extends BaseModel
 {
-    protected $fillable = [];
+    protected $fillable = ['score'];
 
     public function __construct()
     {

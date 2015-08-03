@@ -129,8 +129,23 @@ class ElementRepository implements IElementRepository
     }
 
     /**
+     * Loads a comment object given the element id it is associated with
+     * and the valence
+     *
+     * @param $elementId
+     * @param $valence
+     * @return Comment
+     */
+    public function loadCommentByElementIdAndValence($elementId, $valence)
+    {
+        return Comment::where('element_id', $elementId)->where('valence', $valence)->first();
+    }
+
+    /**
      * Adds a comment to the comments table and associates it with an
-     * element assignment.
+     * element assignment. If the valence and element id are already in the table,
+     * updates the associated body text
+     *
      *
      * @param $elementId
      * @param $valence
@@ -140,16 +155,21 @@ class ElementRepository implements IElementRepository
      */
     public function addValencedContent($elementId, $valence, $content)
     {
-        $clean_body = $content;
-//        $clean_body = $this->cleaner->sanitize($content, CleanerFactory::TEXT, Comment::MAX_BODY_LENGTH);
-        $comment = new Comment();
-        $comment->setValence($valence);
-        $comment->setBody($clean_body);
-//        $element = $this->loadElementById($elementId);
-        $comment->element()->save($elementId);
+        $clean_body = $this->cleaner->sanitize($content, CleanerFactory::TEXT, Comment::MAX_BODY_LENGTH);
+        $preExisting = $this->loadCommentByElementIdAndValence($elementId, $valence);
 
-        return $comment;
+        if($preExisting)
+        {
+            $preExisting->setBody($clean_body);
+            $preExisting->update();
+            return $preExisting;
+        }else{
+            $comment = new Comment();
+            $comment->setValence($valence);
+            $comment->setBody($clean_body);
+            $element = $this->loadElementById($elementId);
+            $comment->element()->associate($element);
+            return $comment;
+        }
     }
-
-
 }

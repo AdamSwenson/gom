@@ -19,13 +19,16 @@ class StudentRepositoryTest extends \TestCase
     protected $object;
 
     public function setUp()
-    {
+    {    \Mockery::close();
         parent::setUp();
         $this->object = new StudentRepository;
         $this->exam =Exam::all()->random();
         $this->student = Student::all()->random();
     }
-
+public function tearDown()
+{
+    \Mockery::close();
+}
     /**
      * @covers \App\classes\RequestHandlers\dao\StudentDao::load_students_by_exam
      */

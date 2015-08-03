@@ -6,9 +6,7 @@ use App\Element;
 use App\Http\Requests\ElementRequest;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
-use App\Repositories\Question\IQuestionAssignmentRepository;
 use Illuminate\Http\Request;
-use App\Comment;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;

@@ -11,6 +11,8 @@
 |
 */
 
+use App\Http\Controllers\PublicFeedbackController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -44,6 +46,12 @@ Route::get('report/qualitycontrol', function(){
 Route::get('feedback', 'StudentAccessController@show');
 /* If arrived via feedback login page */
 Route::post('feedback/login', 'StudentAccessController@show');
+
+Route::get('feedback/make/{exam}', 'ReportController@createFeedback');
+
+Route::get('feedback/view', 'PublicFeedbackController@showFeedback');
+
+
 
 /* NEW routes for exam selection and creation below */
 // Select exam page
