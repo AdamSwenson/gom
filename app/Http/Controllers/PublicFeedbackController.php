@@ -41,12 +41,21 @@ class PublicFeedbackController extends Controller
      */
     public function showFeedback(StudentAccessRequest $request)
     {
-//        dd($request);
         $accessKey = $request->input('accessKey');
-        $fb = $this->accessKeyRepository->retrieveFeedback($accessKey);
-        $data = $fb->content;
-//        dd($data);
-        return view('feedback.feedback', compact('data'));
+        if (empty($accessKey))
+        {
+            $this->showLogin();
+        }
+        try
+        {
+            $fb = $this->accessKeyRepository->retrieveFeedback($accessKey);
+            $data = $fb->content;
+
+            return view('feedback.feedback', compact('data'));
+        } catch (\Exception $e)
+        {
+            $this->showLogin();
+        }
     }
 
     /**

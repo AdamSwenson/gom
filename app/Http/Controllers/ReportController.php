@@ -56,13 +56,14 @@ class ReportController extends Controller
         return "Grade assignment page here";
     }
 
-    public function createFeedback()
+    /**
+     * Receives the command to create feedback for the exam and dispatches the
+     * events to take care of it
+     * @return \Illuminate\View\View
+     */
+    public function createFeedback(Exam $exam)
     {
-        $exam = new Exam();
-        $exam->id = 1;
-
         event(new ExamReleasedEvent($exam));
-
         return view('feedback.progress_compiling');
 
 //

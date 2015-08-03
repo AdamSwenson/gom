@@ -47,7 +47,7 @@ Route::get('feedback', 'StudentAccessController@show');
 /* If arrived via feedback login page */
 Route::post('feedback/login', 'StudentAccessController@show');
 
-Route::get('feedback/make', 'ReportController@createFeedback');
+Route::get('feedback/make/{exam}', 'ReportController@createFeedback');
 
 Route::get('feedback/view', 'PublicFeedbackController@showFeedback');
 
