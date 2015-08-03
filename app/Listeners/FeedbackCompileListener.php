@@ -2,8 +2,8 @@
 
 namespace App\Listeners;
 
-use App\Events\ExamReleased;
-use App\Events\FeedbackCompilationComplete;
+use App\Events\ExamReleasedEvent;
+use App\Events\FeedbackCompilationCompleteEvent;
 use App\Repositories\Feedback\IFeedbackBuilder;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,17 +35,26 @@ class FeedbackCompileListener implements ShouldQueue
     /**
      * Handle the event.
      *
-     * @param  ExamReleased  $event
+     * @param  ExamReleasedEvent  $event
      * @return void
      */
-    public function handle(ExamReleased $event)
+    public function handle(ExamReleasedEvent $event)
     {
-        $feedback = $this->feedbackBuilder->buildFeedback($event->exam->getId());
+//        $this->displayProgress();
+        $examId = $event->getExamId();
+
+        $feedback = $this->feedbackBuilder->buildFeedback($examId);
         if(!empty($feedback))
         {
             //once done, fire the notification that ready for distribution
-            event(new FeedbackCompilationComplete($event->exam));
+            $exam = $event->getExam();
+            event(new FeedbackCompilationCompleteEvent($exam));
         }
 
     }
+
+//    public function displayProgress()
+//    {
+//        echo view('feedback.progress_compiling');
+//    }
 }

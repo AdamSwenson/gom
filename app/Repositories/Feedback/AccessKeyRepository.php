@@ -92,9 +92,6 @@ class AccessKeyRepository implements IAccessKeyRepository
     }
 
 
-
-
-
     /**
      * Removes an access key (and associated feedback) from storage
      *
@@ -115,9 +112,13 @@ class AccessKeyRepository implements IAccessKeyRepository
      */
     protected function validateKey($accessKey)
     {
+     //   dd($accessKey);
         $trimmed = \trim($accessKey);
+       // dd($trimmed);
         $cleaned = \filter_var($trimmed, \FILTER_SANITIZE_STRING);
-        if((!empty($cleaned)) && (\mb_strlen($cleaned) === AccessKey::LOOKUP_SIZE))
+        //dd($cleaned);
+        if(!empty($cleaned))
+//        if((!empty($cleaned)) && (\mb_strlen($cleaned) === AccessKey::LOOKUP_SIZE))
         {
             $this->validKey = $cleaned;
             return $this->validKey;
@@ -135,9 +136,10 @@ class AccessKeyRepository implements IAccessKeyRepository
     {
         if(!empty($this->validKey))
         {
+//            echo 'j';
 //Todo: Implement loader of feedback
-            $data = Feedback::byAccessKey($this->validKey);
-            return $data->toArray();
+            $data = Feedback::findOrFail($this->validKey);
+            return $data;
 
         }
     }

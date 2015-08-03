@@ -2,7 +2,9 @@
 
 namespace App\Listeners;
 
-use App\Events\ExamReleased;
+use App\Events\ExamReleasedEvent;
+use App\Events\FeedbackCompilationCompleteEvent;
+use App\Events\StudentNotificationCompleteEvent;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -21,11 +23,14 @@ class NotifyStudentsListener
     /**
      * Handle the event.
      *
-     * @param  ExamReleased  $event
-     * @return void
+     * @param ExamReleasedEvent|FeedbackCompilationCompleteEvent $event
      */
-    public function handle(ExamReleased $event)
+    public function handle(FeedbackCompilationCompleteEvent $event)
     {
+        //delay for demo
         //
+        event(new StudentNotificationCompleteEvent());
     }
+
+
 }

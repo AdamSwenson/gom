@@ -8,7 +8,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\ExamReleased;
+use App\Events\ExamReleasedEvent;
 use App\Exam;
 use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
@@ -61,14 +61,18 @@ class ReportController extends Controller
         $exam = new Exam();
         $exam->id = 1;
 
-        event(new ExamReleased($exam));
-        $feedbackBuilder = new FeedbackBuilder();
+        event(new ExamReleasedEvent($exam));
 
-        $feedback = $feedbackBuilder->buildFeedback($exam->getId());
-        $accessKeys = array_keys($feedback);
-//        dd($feedback[5]);
-        $data = $feedback[$accessKeys[0]];
+        return view('feedback.progress_compiling');
 
-        return view('feedback.feedback', compact('data'));
+//
+//        $feedbackBuilder = new FeedbackBuilder();
+//
+//        $feedback = $feedbackBuilder->buildFeedback($exam->getId());
+//        $accessKeys = array_keys($feedback);
+////        dd($feedback[5]);
+//        $data = $feedback[$accessKeys[0]];
+
+     //   return view('feedback.feedback', compact('data'));
     }
 }

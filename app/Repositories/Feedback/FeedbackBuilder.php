@@ -202,114 +202,114 @@ class FeedbackBuilder implements IFeedbackBuilder
         return $feedback->save();
     }
 
-
-    public
-    function buildOneQuestion(
-        IElementAssignmentRepository $elementAssignmentRepository,
-        $examId,
-        $questionName,
-        $questionNumber,
-        $studentId,
-        &$data
-    ) {
-//        $questionTitle = $questionAssignment->question->question_name;
-//        $questionNumber = $questionAssignment->question_number;
-        $comments = [];
-
-        $elementAssignments = $elementAssignmentRepository->load_element_assignments_by_question_number($examId,
-            $questionNumber);
-        $this->buildElementScore($elementAssignments, $studentId, $comments);
-        $data[$questionNumber] = [
-            'questionTitle' => $questionName,
-            'questionNumber' => $questionNumber,
-            'comments' => $comments
-        ];
-    }
-
-
-    /**
-     * Builds an array of feedback for a single student on the exam
-     */
-    public
-    function buildStudent(
-        $examName,
-        $grade,
-        $questionsArray
-    ) {
-
-        $this->buildTopLevelContent($studentArray, $examName, $grade);
-        foreach ($questionsArray as $q)
-        {
-            $this->buildQuestion($studentArray, $q['questionNumber'], $q['questionTitle'], $q['commentsArray']);
-        }
-
-    }
-
-
-    /**
-     * Adds data to the outermost area of a student's array
-     * @param $studentArray
-     * @param $examName
-     * @param $grade
-     */
-    public
-    function buildTopLevelContent(
-        &$studentArray,
-        $examName,
-        $grade
-    ) {
-        $studentArray['examName'] = $examName;
-        $studentArray['grade'] = $grade;
-    }
-
-
-    /**
-     * Adds an entry for a question to the studentArray
-     * @param $studentArray
-     * @param $questionNumber
-     * @param $questionTitle
-     * @param $commentsArray
-     * @return mixed
-     */
-    public
-    function buildQuestion(
-        &$studentArray,
-        $questionNumber,
-        $questionTitle,
-        $commentsArray
-    ) {
-        $studentArray["question_{$questionNumber}"] =
-            [
-                'questionTitle' => $questionTitle,
-                'comments' => $commentsArray
-            ];
-
-        return $studentArray;
-    }
-
-    /**
-     * @param $elementAssignments
-     * @param $student
-     * @param $comments
-     */
-    public
-    function buildElementScore(
-        $elementAssignments,
-        $studentId,
-        &$comments
-    ) {
-        foreach ($elementAssignments as $elementAssignment)
-        {
-            $score = $this->elementScoreRepository->load($elementAssignment->id, $studentId);
-            $comments[$elementAssignment->subtask] =
-                [
-                    'subtask' => $elementAssignment->subtask,
-                    'score' => $score,
-                    'comment' => $this->commentRepository->getCommentForScore($elementAssignment->element->id,
-                        $score)
-                ];
-        }
-    }
+//
+//    public
+//    function buildOneQuestion(
+//        IElementAssignmentRepository $elementAssignmentRepository,
+//        $examId,
+//        $questionName,
+//        $questionNumber,
+//        $studentId,
+//        &$data
+//    ) {
+////        $questionTitle = $questionAssignment->question->question_name;
+////        $questionNumber = $questionAssignment->question_number;
+//        $comments = [];
+//
+//        $elementAssignments = $elementAssignmentRepository->load_element_assignments_by_question_number($examId,
+//            $questionNumber);
+//        $this->buildElementScore($elementAssignments, $studentId, $comments);
+//        $data[$questionNumber] = [
+//            'questionTitle' => $questionName,
+//            'questionNumber' => $questionNumber,
+//            'comments' => $comments
+//        ];
+//    }
+//
+//
+//    /**
+//     * Builds an array of feedback for a single student on the exam
+//     */
+//    public
+//    function buildStudent(
+//        $examName,
+//        $grade,
+//        $questionsArray
+//    ) {
+//
+//        $this->buildTopLevelContent($studentArray, $examName, $grade);
+//        foreach ($questionsArray as $q)
+//        {
+//            $this->buildQuestion($studentArray, $q['questionNumber'], $q['questionTitle'], $q['commentsArray']);
+//        }
+//
+//    }
+//
+//
+//    /**
+//     * Adds data to the outermost area of a student's array
+//     * @param $studentArray
+//     * @param $examName
+//     * @param $grade
+//     */
+//    public
+//    function buildTopLevelContent(
+//        &$studentArray,
+//        $examName,
+//        $grade
+//    ) {
+//        $studentArray['examName'] = $examName;
+//        $studentArray['grade'] = $grade;
+//    }
+//
+//
+//    /**
+//     * Adds an entry for a question to the studentArray
+//     * @param $studentArray
+//     * @param $questionNumber
+//     * @param $questionTitle
+//     * @param $commentsArray
+//     * @return mixed
+//     */
+//    public
+//    function buildQuestion(
+//        &$studentArray,
+//        $questionNumber,
+//        $questionTitle,
+//        $commentsArray
+//    ) {
+//        $studentArray["question_{$questionNumber}"] =
+//            [
+//                'questionTitle' => $questionTitle,
+//                'comments' => $commentsArray
+//            ];
+//
+//        return $studentArray;
+//    }
+//
+//    /**
+//     * @param $elementAssignments
+//     * @param $student
+//     * @param $comments
+//     */
+//    public
+//    function buildElementScore(
+//        $elementAssignments,
+//        $studentId,
+//        &$comments
+//    ) {
+//        foreach ($elementAssignments as $elementAssignment)
+//        {
+//            $score = $this->elementScoreRepository->load($elementAssignment->id, $studentId);
+//            $comments[$elementAssignment->subtask] =
+//                [
+//                    'subtask' => $elementAssignment->subtask,
+//                    'score' => $score,
+//                    'comment' => $this->commentRepository->getCommentForScore($elementAssignment->element->id,
+//                        $score)
+//                ];
+//        }
+//    }
 
 
 }

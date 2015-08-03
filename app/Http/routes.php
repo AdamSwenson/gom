@@ -11,6 +11,8 @@
 |
 */
 
+use App\Http\Controllers\PublicFeedbackController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -46,6 +48,8 @@ Route::get('feedback', 'StudentAccessController@show');
 Route::post('feedback/login', 'StudentAccessController@show');
 
 Route::get('feedback/make', 'ReportController@createFeedback');
+
+Route::get('feedback/view', 'PublicFeedbackController@showFeedback');
 
 
 

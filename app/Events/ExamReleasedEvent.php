@@ -8,19 +8,18 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 /**
- * Class FeedbackCompilationComplete
+ * Class ExamReleasedEvent
+ * Event which fires when the user clicks 'release exam'
  *
- * Fires when student feedback has been compiled
+ * The various listeners will compile feedback and then handle notifications
  *
  * @package App\Events
  */
-class FeedbackCompilationComplete extends Event
+class ExamReleasedEvent extends Event
 {
     use SerializesModels;
-    /**
-     * @var Exam
-     */
-    private $exam;
+
+    public $exam;
 
     /**
      * Create a new event instance.
@@ -30,6 +29,16 @@ class FeedbackCompilationComplete extends Event
     public function __construct(Exam $exam)
     {
         $this->exam = $exam;
+    }
+
+    public function getExamId()
+    {
+        return $this->exam->getId();
+    }
+
+    public function getExam()
+    {
+        return $this->exam;
     }
 
     /**
