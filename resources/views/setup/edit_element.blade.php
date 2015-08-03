@@ -34,7 +34,8 @@
                     </li>
                 </ul>
             </nav>
-            <h2>Add / Edit Elements: Question #{{ isset($qNumber) ? $qNumber : '1'}} "{{ isset($questionName) ? $questionName : '' }}"</h2>
+            <h2>Add / Edit Elements: Question #{{ isset($qNumber) ? $qNumber : '1'}}
+                "{{ isset($questionName) ? $questionName : '' }}"</h2>
             <h5>Each element is composed of one or more elements, representing individual items that the student
                 should address.</h5>
             <!-- form will update all given elements and create new ones where required -->
@@ -61,9 +62,11 @@
                 Add Element</a>
         </div>
     </div>
-    <?php $counter = 0;
-    $e = NULL; ?>
-    @include('setup.element_form_empty')
+    <ul style="display: none" id="hiddenElementList">
+        <?php $counter = 0;
+        $e = NULL; ?>
+        @include('setup.element_form')
+    </ul>
     @include('errors.list')
 @endsection
 
@@ -110,7 +113,7 @@
             document.getElementById("addElement").onclick = function () {
                 // copy empty form
                 var order = getElementCount() + 1;
-                var myClone = $('#emptyElementItem').clone();
+                var myClone = $('#elementItem0').clone();
                 // set values
 
                 // add to editableList and refresh
@@ -122,7 +125,7 @@
             // update all elements
             function updateNumbers() {
 
-                $("[id^=elementItem]").each(function (index, el) {
+                $('#elementForm').find("[id^=elementItem]").each(function (index, el) {
                     updateListItemData(el, (index + 1));
                 });
             }
@@ -140,10 +143,10 @@
                 // update customizeResponse button and set which modal it opens
                 $(item).find("[id^='btnCustomizeResponse']").attr('id', 'btnCustomizeResponse' + order);
                 $(item).find("[id^='btnCustomizeResponse']").attr('data-target', 'commentForm' + order);
-                $(item).find('.modal').attr('id','commentForm' + order);
+                $(item).find('.modal').attr('id', 'commentForm' + order);
 
                 //update links, names and ids for the commentForm div
-                for(var i=0; i < numValences; i++) {
+                for (var i = 0; i < numValences; i++) {
                     $(item).find('#tab' + i).attr('href', "valence" + order + i);
                     var toFind = 'valence' + i;
                     $(item).find("[id$= toFind]").attr('id', 'e' + order + 'valence' + i); //!!

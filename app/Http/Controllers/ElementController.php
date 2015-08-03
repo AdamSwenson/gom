@@ -188,13 +188,12 @@ class ElementController extends Controller
     public
     function updateAll($exam, $question, ElementRequest $request)
     {
-        $nextAction = $request->input('questionDirection');
         $examId = $exam->getId();
 
-        // create new elements - create new comments?
-        //
-        // and update existing.
+        //dd($request);
 
+
+        $nextAction = $request->input('questionDirection');
         if ($nextAction === 'back') {
             return redirect()->route('editAllQuestions', $examId);
         } else if ($nextAction === 'forward') {
