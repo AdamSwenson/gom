@@ -42,9 +42,24 @@ interface IElementRepository
      */
     public function editElement($elementId, $elementName, $displayText, $commentText);
 
+
+
+    /**
+     * Loads a comment object given the element id it is associated with
+     * and the valence
+     *
+     * @param $elementId
+     * @param $valence
+     * @return Comment
+     */
+    public function loadCommentByElementIdAndValence($elementId, $valence);
+
+
     /**
      * Adds a comment to the comments table and associates it with an
-     * element assignment.
+     * element assignment. If the valence and element id are already in the table,
+     * updates the associated body text
+     *
      *
      * @param $elementId
      * @param $valence
@@ -53,4 +68,5 @@ interface IElementRepository
      * @throws \Exception
      */
     public function addValencedContent($elementId, $valence, $content);
+
 }

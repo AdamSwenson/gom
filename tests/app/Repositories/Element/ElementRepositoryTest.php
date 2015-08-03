@@ -10,6 +10,7 @@ namespace App\Repositories\Element;
 
 
 use App\classes\SecurityClasses\cleaning\CleanerFactory;
+use App\Comment;
 use App\Element;
 
 class ElementRepositoryTest extends \TestCase
@@ -24,6 +25,7 @@ class ElementRepositoryTest extends \TestCase
 
         $this->object->set_cleaner(new CleanerFactory());
         $this->element = Element::all()->random();
+        $this->comment = Comment::all()->random();
     }
 
 
@@ -95,6 +97,45 @@ class ElementRepositoryTest extends \TestCase
         $this->assertEquals($elementName, $altered->elementName);
         $this->assertEquals($displayText, $altered->displayText);
         $this->assertEquals($commentText, $altered->commentText);
+    }
+
+
+    public function testLoadCommentByElementIdAndValence()
+    {
+        $eid = $this->comment->element_id;
+        $valence = $this->comment->valence;
+
+        $result = $this->object->loadCommentByElementIdAndValence($eid, $valence);
+        $this->assertNotEmpty($result);
+        $this->assertInstanceOf('App\Comment', $result);
+        $this->assertEquals($eid, $result->element_id);
+        $this->assertEquals($valence, $result->valence);
+    }
+
+    public function testAddValencedContent()
+    {
+//        $elementId, $valence, $content
+        $testContent = $this->faker->text(500);
+        $testValence = $this->faker->randomElement(Comment::$valences);
+        $eid = $this->element->id;
+
+        $result = $this->object->addValencedContent($eid, $testValence, $testContent);
+        $this->assertNotEmpty($result);
+        $this->assertInstanceOf('App\Comment', $result);
+        $this->seeInDatabase('comments', ['user_id' => 1, 'element_id' => $eid, 'valence' => $testValence, 'body' => $testContent]);
+
+    }
+
+    public function testAddValencedContentEmptyComment()
+    {
+        $testContent = '';
+        $testValence = $this->faker->randomElement(Comment::$valences);
+        $eid = $this->element->id;
+
+        $result = $this->object->addValencedContent($eid, $testValence, $testContent);
+        $this->assertNotEmpty($result);
+        $this->assertInstanceOf('App\Comment', $result);
+        $this->seeInDatabase('comments', ['user_id' => 1, 'element_id' => $eid, 'valence' => $testValence, 'body' => $testContent]);
     }
 
 }
