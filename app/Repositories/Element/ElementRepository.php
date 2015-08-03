@@ -107,10 +107,16 @@ class ElementRepository implements IElementRepository
      */
     public function editElement($elementId, $elementName, $displayText, $commentText)
     {
-        $clean_id = $this->cleaner->sanitize($elementId, CleanerFactory::INTEGER);
-        $clean_name = $this->cleaner->sanitize($elementName, CleanerFactory::TEXT, self::MAX_NAME_LENGTH);
-        $clean_display = $this->cleaner->sanitize($displayText, CleanerFactory::TEXT, self::MAX_DISPLAY_LENGTH);
-        $clean_comment = $this->cleaner->sanitize($commentText, CleanerFactory::TEXT, self::MAX_COMMENT_LENGTH);
+        $clean_id = $elementId;
+        $clean_name = $elementName;
+        $clean_display = $displayText;
+        $clean_comment = $commentText;
+
+//        $clean_id = $this->cleaner->sanitize($elementId, CleanerFactory::INTEGER);
+//        $clean_name = $this->cleaner->sanitize($elementName, CleanerFactory::TEXT, self::MAX_NAME_LENGTH);
+//        $clean_display = $this->cleaner->sanitize($displayText, CleanerFactory::TEXT, self::MAX_DISPLAY_LENGTH);
+//        $clean_comment = $this->cleaner->sanitize($commentText, CleanerFactory::TEXT, self::MAX_COMMENT_LENGTH);
+
 
         $element = Element::findOrFail($clean_id);;
         $element->setElementName($clean_name);
@@ -134,7 +140,8 @@ class ElementRepository implements IElementRepository
      */
     public function addValencedContent($elementId, $valence, $content)
     {
-        $clean_body = $this->cleaner->sanitize($content, CleanerFactory::TEXT, Comment::MAX_BODY_LENGTH);
+        $clean_body = $content;
+//        $clean_body = $this->cleaner->sanitize($content, CleanerFactory::TEXT, Comment::MAX_BODY_LENGTH);
         $comment = new Comment();
         $comment->setValence($valence);
         $comment->setBody($clean_body);

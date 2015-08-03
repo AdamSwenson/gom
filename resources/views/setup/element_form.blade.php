@@ -16,7 +16,7 @@
         <textarea class="form-control" rows="3" id="elementText{{ $counter }}"
                   name="elementText{{ $counter }}"
                   placeholder="Explain in detail what needed to be done in order to fully answer this element. This will form the basis for the response seen by the student."
-                >{{ isset($e->elementName ) ? $e->commentText  : '' }}</textarea>
+                >{{ isset($e->commentText ) ? $e->commentText  : '' }}</textarea>
     </div>
     <div class="form-group">
         <!-- move -->
@@ -38,5 +38,5 @@
         </a>
     </div>
     <input type="hidden" id="elementId" name="elementId{{ $counter }}"
-           value="{{ isset($e['eObj']) ? $e['eObj']->getId() : '0' }}"/>
+           value="{{ isset($e) ? $e->getId() : '0' }}"/>
 </li>

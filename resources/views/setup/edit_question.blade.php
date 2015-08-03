@@ -138,7 +138,7 @@
                     // update all questions
                     function updateNumbers() {
 
-                        $('#questionForm').find("[id^=questionItem]").each(function (index, el) {
+                        $('#questionForm').find("[id^='questionItem']").each(function (index, el) {
                             updateListItemData(el, (index + 1));
                         });
                     }
@@ -156,7 +156,7 @@
 
                     function getQuestionCount() {
                         // return number of questions currently in the questionList
-                        return $("[id^=questionItem]").length;
+                        return $("[id^='questionItem']").length;
                     }
 
                     // handle form submission

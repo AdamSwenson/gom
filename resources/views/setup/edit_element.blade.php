@@ -96,7 +96,6 @@
                     // store the ordering to localStorage
                     get: function (sortable) {
                         var order = localStorage.getItem(sortable.options.group);
-                        window.console.log(localStorage.getItem(sortable.options.group));
                         return order ? order.split('|') : [];
                     },
 
@@ -108,6 +107,23 @@
                     }
                 }
             });
+
+            // Customize Responses -- Handle copy forms in here -- in progress
+            $("[id^='commentForm']").on('shown.bs.modal', function (e) {
+                // find closest elementText and copy to all blank valences, or valences that are == to elementText
+                var comment = $(e).closest("[id^='elementText']").val();
+                //console.log(comment.val());
+
+                for(var i = 0; i < numValences; i++ ) {
+                    var toFind = 'valence' + i;
+                    var valenceText = $(e.target).find("[id$=toFind]");
+
+                    if ( valenceText.val() == '' ) {
+                        valenceText.val(comment);
+                    }
+                    console.log( valenceText.val() );
+                }
+            })
 
             // handle addelement button
             document.getElementById("addElement").onclick = function () {
@@ -125,7 +141,7 @@
             // update all elements
             function updateNumbers() {
 
-                $('#elementForm').find("[id^=elementItem]").each(function (index, el) {
+                $('#elementForm').find("[id^='elementItem']").each(function (index, el) {
                     updateListItemData(el, (index + 1));
                 });
             }
@@ -142,21 +158,22 @@
 
                 // update customizeResponse button and set which modal it opens
                 $(item).find("[id^='btnCustomizeResponse']").attr('id', 'btnCustomizeResponse' + order);
-                $(item).find("[id^='btnCustomizeResponse']").attr('data-target', 'commentForm' + order);
+                $(item).find("[id^='btnCustomizeResponse']").attr('data-target', '#commentForm' + order);
                 $(item).find('.modal').attr('id', 'commentForm' + order);
 
                 //update links, names and ids for the commentForm div
                 for (var i = 0; i < numValences; i++) {
-                    $(item).find('#tab' + i).attr('href', "valence" + order + i);
+                    $(item).find('#tab' + i).attr('href', 'e' + order + "valence" + i);
                     var toFind = 'valence' + i;
                     $(item).find("[id$= toFind]").attr('id', 'e' + order + 'valence' + i); //!!
                     $(item).find('#valenceText' + i).attr('name', "e" + order + "valence" + i);
+                    //$('.test').html(toFind);
                 }
 
             }
 
             function getElementCount() {
-                return $("[id^=elementItem]").length;
+                return $('elementForm').find("[id^='elementItem']").length;
             }
 
             // Previous Question button
