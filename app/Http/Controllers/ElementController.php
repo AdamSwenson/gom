@@ -6,10 +6,13 @@ use App\Element;
 use App\Http\Requests\ElementRequest;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
+use App\Repositories\Question\IQuestionAssignmentRepository;
 use Illuminate\Http\Request;
+
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Comment;
 
 class ElementController extends Controller
 {
@@ -157,7 +160,6 @@ class ElementController extends Controller
         // load data for any existing elements
         $elements = $this->assignmentDao->load_elements($examId, $qNumber);
 
-
         // show all elements for a given question along with the ids for 'next' and 'previous'
         return view('setup.edit_element')->with(['examId' => $examId,
             'nextqId' => $nQId,
@@ -218,6 +220,7 @@ class ElementController extends Controller
             }
             // Loop through valences and add / edit comments
             for($j = 0; $j < $numValences; $j++) {
+
                 $this->elementDao->addValencedContent($element->getId(), $j, $request->input('e'.$i.'valence'.$j));
             }
             $currentElements[$element->getId()] = $element;
@@ -230,6 +233,7 @@ class ElementController extends Controller
         // This can be hard on the test data as it contains multiple re-uses of the same elements (bb 8/2/15).
         $questionNumber = $question->getQuestionNumber($examId);
         $oldElements = $this->assignmentDao->load_elements($examId, $questionNumber );
+        /*
         if (!count($oldElements)) {
             foreach ($oldElements as $oldElement) {
                 $eIdToFind = $oldElement->element->getId();
@@ -239,6 +243,7 @@ class ElementController extends Controller
                 }
             }
         }
+        */
 
         /* Choose next action based on 'questionDirection' param:
             1. go back to QuestionController

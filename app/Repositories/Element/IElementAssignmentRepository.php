@@ -43,7 +43,7 @@ interface IElementAssignmentRepository
      * @param $questionId
      * @param $elementId
      * @param $subtask
-     * @return \ElementAssignment
+     * @return \Element
      */
     public function record($examId, $questionId, $elementId, $subtask);
 }
