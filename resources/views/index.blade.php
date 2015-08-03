@@ -131,7 +131,7 @@
                 <p>The app teachers love.</p>
             </div>
         </div>
-        <a href="#">
+        <a href="{{url('account/create')}}">
         <div class="rounded-corners clearfix colelem" id="u95"><!-- group -->
             <div class="clearfix grpelem" id="u96-4"><!-- content -->
                 <p>Get Started</p>
@@ -206,11 +206,13 @@
                     <div class="clearfix grpelem" id="u118-4"><!-- content -->
                         <p>Sign up today for free</p>
                     </div>
+                    <a href="{{url('account/create')}}">
                     <div class="rounded-corners clearfix grpelem" id="u119"><!-- group -->
                         <div class="clearfix grpelem" id="u120-4"><!-- content -->
                             <p>Get Started</p>
                         </div>
                     </div>
+                    </a>
                 </div>
             </div>
         </div>

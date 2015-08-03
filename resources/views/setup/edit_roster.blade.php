@@ -29,8 +29,12 @@
 
                     <nav>
                     <ul class="pager">
+
                         <li class="next">
                                 <a href="#" onclick="document.getElementById('formFileData').submit();">Done <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+                        </li>
+                        <li class="previous">
+                            <a href="{{url('exam/'. $exam->getId() . '/edit')}}"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Edit Exam</a>
                         </li>
                     </ul>
                     </nav>

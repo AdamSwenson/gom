@@ -115,12 +115,14 @@ class StudentController extends Controller
         //
     }
 
-    public function updateAll(Request $request)
+    public function updateAll(Exam $exam,Request $request)
     {
         //
           $data = $request->input('filedata');
-            dd($data);
+          //  dd($data);
 
+
+        return redirect()->action('ExamController@index')->with(['exam'=>$exam]);
     }
 
 
