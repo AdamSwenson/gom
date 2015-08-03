@@ -20,7 +20,7 @@ class CreateCommentsTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->integer('element_id')->unsigned();
             $table->string('valence');
-            $table->text('body');
+            $table->text('body')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')

@@ -19,16 +19,16 @@ interface IElementScoreRepository
      */
     public function load($elementAssignmentId, $studentId);
 
-    /**
-     * Loads all element scores for a given question on an exam
-     * @param $examId
-     * @param $questionNumber
-     */
-    public function load_all_for_question_number(
-        IQuestionAssignmentRepository $questionAssigner,
-        $examId,
-        $questionNumber
-    );
+//    /**
+//     * Loads all element scores for a given question on an exam
+//     * @param $examId
+//     * @param $questionNumber
+//     */
+//    public function load_all_for_question_number(
+//        IQuestionAssignmentRepository $questionAssigner,
+//        $examId,
+//        $questionNumber
+//    );
 
     /**
      * Loads all question scores for a student on an exam

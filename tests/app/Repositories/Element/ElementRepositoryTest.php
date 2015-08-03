@@ -123,7 +123,6 @@ class ElementRepositoryTest extends \TestCase
         $this->assertNotEmpty($result);
         $this->assertInstanceOf('App\Comment', $result);
         $this->seeInDatabase('comments', ['user_id' => 1, 'element_id' => $eid, 'valence' => $testValence, 'body' => $testContent]);
-
     }
 
     public function testAddValencedContentEmptyComment()
@@ -138,4 +137,17 @@ class ElementRepositoryTest extends \TestCase
         $this->seeInDatabase('comments', ['user_id' => 1, 'element_id' => $eid, 'valence' => $testValence, 'body' => $testContent]);
     }
 
+    public function testAddValencedContentPreexisting()
+    {
+        $preExisting = Comment::all()->random();
+        $eid = $preExisting->element_id;
+        $testContent = 'catfood';
+        $testValence = $this->faker->randomElement(Comment::$valences);
+//        $eid = $this->element->id;
+
+        $result = $this->object->addValencedContent($eid, $testValence, $testContent);
+        $this->assertNotEmpty($result);
+        $this->assertInstanceOf('App\Comment', $result);
+        $this->seeInDatabase('comments', ['user_id' => 1, 'element_id' => $eid, 'valence' => $testValence, 'body' => $testContent]);
+    }
 }

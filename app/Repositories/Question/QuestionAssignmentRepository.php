@@ -59,7 +59,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
      * @param $questionId
      * @return mixed
      */
-    public function loadByIds($examId, $questionId)
+    public function loadQuestionNumberById($examId, $questionId)
     {
         $q = Question::findOrFail($questionId);
         $questionNumber = $q->getQuestionNumber($examId);

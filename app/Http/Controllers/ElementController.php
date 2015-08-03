@@ -126,7 +126,7 @@ class ElementController extends Controller
         $examId = $exam->getId();
 
         $allQuestionAss = $this->questionAssignmentDAO->load_all_for_exam($examId);
-        // loadByIds() will loop if the same questionId appears several times on the same exam,
+        // loadQuestionNumberById() will loop if the same questionId appears several times on the same exam,
         // as it matches with the first Id found in the ordered Assignments.
         $qNumber = $this->questionAssignmentDAO->loadByIds($examId, $qId);
         $index = 0;

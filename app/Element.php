@@ -36,7 +36,6 @@ class Element extends BaseModel
      * Records the element as a subtask of an assigned question
      * @param $examId
      * @param $questionId
-     * @param $elementId
      * @param $subtask
      * @return $this
      */

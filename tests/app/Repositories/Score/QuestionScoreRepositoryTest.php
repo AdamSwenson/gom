@@ -9,12 +9,14 @@
 namespace Repositories\Score;
 
 
-class QuestionScoreRepositoryTest extends \PHPUnit_Framework_TestCase
+use App\QuestionScore;
+
+class QuestionScoreRepositoryTest extends \TestCase
 {
 
     protected $object;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new QuestionScoreRepositoryTest;
@@ -34,6 +36,13 @@ class QuestionScoreRepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function testLoad()
     {
+        $es = QuestionScore::all()->random();
+        $questionAssignmentId = $es->question_assignment_id;
+        $studentId = $es->student_id;
+
+        $this->score_object = QuestionScore::where('student_id', $studentId)->where('question_assignment_id', $questionAssignmentId)->first();
+        return $this->score_object;
+
         $this->markTestIncomplete();
 //        $questionAssignmentId, $studentId
 //
@@ -41,9 +50,41 @@ class QuestionScoreRepositoryTest extends \PHPUnit_Framework_TestCase
 //        return $this->score_object;
     }
 
-    public function testUpdate()
+
+    public function testUpdateNew()
     {
-//        $questionAssignmentId, $studentId, $score
-        $this->markTestIncomplete();
+        $es = QuestionScore::all()->random();
+        $questionAssignmentId = $es->question_assignment_id;
+        $studentId = $es->student_id;
+        $score = $this->faker->randomFloat(2);
+
+        $es->delete();
+        $this->notSeeInDatabase('question_scores', ['question_assignment_id' => $questionAssignmentId, 'student_id' => $studentId]);
+
+        $result = $this->object->update($questionAssignmentId, $studentId, $score);
+
+        $this->assertNotEmpty($result);
+        $this->assertInstanceOf('App\ElementScore', $result);
+        $this->assertEquals($questionAssignmentId, $result->question_assignment_id);
+        $this->assertEquals($studentId, $result->student_id);
+        $this->assertEquals($score, $result->score);
+        $this->seeInDatabase('question_scores', ['question_assignment_id' => $questionAssignmentId, 'student_id' => $studentId, 'score' => $score]);
+    }
+
+    public function testUpdatePreexisting()
+    {
+        $es = QuestionScore::all()->random();
+        $questionAssignmentId = $es->question_assignment_id;
+        $studentId = $es->student_id;
+        $score = $this->faker->randomFloat(2);
+
+        $result = $this->object->update($questionAssignmentId, $studentId, $score);
+
+        $this->assertNotEmpty($result);
+        $this->assertInstanceOf('App\ElementScore', $result);
+        $this->assertEquals($questionAssignmentId, $result->question_assignment_id);
+        $this->assertEquals($studentId, $result->student_id);
+        $this->assertEquals($score, $result->score);
+        $this->seeInDatabase('question_scores', ['question_assignment_id' => $questionAssignmentId, 'student_id' => $studentId, 'score' => $score]);
     }
 }
