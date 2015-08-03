@@ -36,7 +36,6 @@ class QuestionScoreRepository implements IQuestionScoreRepository
     }
 
 
-
     /**
      * @param $questionAssignmentId
      * @param $studentId
@@ -45,6 +44,7 @@ class QuestionScoreRepository implements IQuestionScoreRepository
     public function load($questionAssignmentId, $studentId)
     {
         $this->score_object = QuestionScore::where('student_id', $studentId)->where('question_assignment_id', $questionAssignmentId)->first();
+
         return $this->score_object;
     }
 
@@ -53,12 +53,24 @@ class QuestionScoreRepository implements IQuestionScoreRepository
      * @param $questionAssignmentId
      * @param $studentId
      * @param $score
-     * @return boolean
+     * @return QuestionScore
      */
     public function update($questionAssignmentId, $studentId, $score)
     {
         $this->load($questionAssignmentId, $studentId);
-        $this->score_object->setScore($score);
-        return $this->score_object->update();
+        if (!empty($this->score_object))
+        {
+            $this->score_object->setScore($score);
+            $this->score_object->update();
+            return $this->score_object;
+        }
+        else{
+            $questionScore = new QuestionScore();
+            $questionScore->question_assignment_id = $questionAssignmentId;
+            $questionScore->student_id = $studentId;
+            $questionScore->score = $score;
+            $questionScore->save();
+            return $questionScore;
+        }
     }
 }

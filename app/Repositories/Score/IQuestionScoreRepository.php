@@ -37,7 +37,7 @@ interface IQuestionScoreRepository
      * @param $questionAssignmentId
      * @param $studentId
      * @param $score
-     * @return boolean
+     * @return QuestionScore
      */
     public function update($questionAssignmentId, $studentId, $score);
 }

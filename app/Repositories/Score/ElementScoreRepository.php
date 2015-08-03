@@ -26,9 +26,11 @@ class ElementScoreRepository implements IElementScoreRepository
     public function load($elementAssignmentId, $studentId)
     {
         $this->score_object = ElementScore::firstOrNew(['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId]);
+        return $this->score_object;
+
 //        ElementScore::where('element_assignment_id', $elementAssignmentId)->where('student_id', $studentId)->
 //        $this->score_object = ElementScore::onStudentElementAssignment($studentId, $elementAssignmentId)->first();
-        return $this->score_object;
+
     }
 
 //    /**
@@ -67,9 +69,11 @@ class ElementScoreRepository implements IElementScoreRepository
      **/
     public function update($elementAssignmentId, $studentId, $score)
     {
-        $this->load($elementAssignmentId, $studentId);
-        $this->score_object->score = $score;
-        $this->score_object->update();
+        $this->score_object = ElementScore::updateOrCreate(['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId], ['score' => $score]);
+//
+//        $this->load($elementAssignmentId, $studentId);
+//        $this->score_object->score = $score;
+//        $this->score_object->update();
         return $this->score_object;
     }
 }
