@@ -75,6 +75,7 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
+            // clear local storage to dump Sortable data - or it may display items out of order
             localStorage.clear();
             // magic 4 for now...
             var numValences = 4;
@@ -109,21 +110,18 @@
             });
 
             // Customize Responses -- Handle copy forms in here -- in progress
-            $("[id^='commentForm']").on('shown.bs.modal', function (e) {
-                // find closest elementText and copy to all blank valences, or valences that are == to elementText
-                var comment = $(e).closest("[id^='elementText']").val();
-                //console.log(comment.val());
+            $("[id^='commentForm']").on('shown.bs.modal', function () {
+                // find closest elementText and copy to all blank valences
+                var parent = $(this).closest("[id^='elementItem']");
+                var elementText = $(parent).find("[id^='elementText']").val();
 
                 for(var i = 0; i < numValences; i++ ) {
-                    var toFind = 'valence' + i;
-                    var valenceText = $(e.target).find("[id$=toFind]");
-
-                    if ( valenceText.val() == '' ) {
-                        valenceText.val(comment);
+                    var valenceText = $(parent).find("[name$=valence" + i + "]");
+                    if ( valenceText.val() === '' ) {
+                        valenceText.val(elementText);
                     }
-                    console.log( valenceText.val() );
                 }
-            })
+            });
 
             // handle addelement button
             document.getElementById("addElement").onclick = function () {
@@ -169,7 +167,6 @@
                     $(item).find('#valenceText' + i).attr('name', "e" + order + "valence" + i);
                     //$('.test').html(toFind);
                 }
-
             }
 
             function getElementCount() {
@@ -222,8 +219,6 @@
 
             return false;
         });
-
-
     </script>
 @endsection
 

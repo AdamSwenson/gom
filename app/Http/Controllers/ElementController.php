@@ -230,7 +230,8 @@ class ElementController extends Controller
 
         // NOTE: any elements associated with this exam that weren't submitted with the form are deleted.
         // This can be hard on the test data as it contains multiple re-uses of the same elements (bb 8/2/15).
-        $oldElements = $this->assignmentDao->load_all_for_exam($examId);
+        $questionNumber = $question->getQuestionNumber($examId);
+        $oldElements = $this->assignmentDao->load_elements($examId, $questionNumber );
         if (!count($oldElements)) {
             foreach ($oldElements as $oldElement) {
                 $eIdToFind = $oldElement->element->getId();

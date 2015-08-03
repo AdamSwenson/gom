@@ -19,7 +19,7 @@ interface IElementAssignmentRepository
     public function load_elements($examId, $questionNumber);
 
     /**
-     * Loads the elements for a given question
+     * Loads the element assignments for a given question
      * (returns an array of element objects)
      * @param $examId
      * @param $questionNumber
