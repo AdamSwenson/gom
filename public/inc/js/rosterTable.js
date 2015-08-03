@@ -23,7 +23,7 @@ function handleFileSelect() {
                             addRow(array[(4*i)], array[(4*i)+1], array[(4*i)+2], array[(4*i)+3],"row" + (i+1));
                         }
 
-                      document.getElementById('filedata').setAttribute('value',array.toString())
+                      document.getElementById('filedata').setAttribute('value',array.toString());
 
                     };
                 })(file);

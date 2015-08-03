@@ -4,17 +4,17 @@
 
 @section('cssLinks')
 
- <!-- styles for jsArea(the top bar of the webpage-->
-    <link rel="stylesheet" type="text/css" href="{{asset("inc/css/navMenuStyles.css")}}"/>
-    <link rel="stylesheet" type="text/css" href="{{asset("inc/css/standardStyles.css")}}"/>
-    <link rel="stylesheet" type="text/css" href="{{asset("inc/css/examCreateStyles.css")}}"/>
 
-  <!--styles for the rest of the webpage -->
-    <link href="{{asset('inc/css/landing.css')}}" type="text/css" rel="stylesheet"/>
-    <link href="{{asset('inc/css/indexStyle.css')}}" type="test/css" rel="stylesheet"/>
 @endsection
 
 @section('body')
+    <script>
+        //these elements exist in the nav_bar_main.blade.php
+        document.getElementById('setupHead').setAttribute('class',"");
+        document.getElementById('gradeHead').setAttribute('class',"");
+        document.getElementById('reportHead').setAttribute('class',"");
+        document.getElementById('accountHead').setAttribute('class',"active");
+    </script>
     <div id="pageContainer">
         <div id="container" class="container">
             <div class="row">
@@ -35,7 +35,6 @@
                     </div>
                 </div>
         </div>
-    </div>
 @endsection
 
 @section('jsArea')

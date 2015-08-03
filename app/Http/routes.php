@@ -32,6 +32,7 @@ Route::get('account/create','LandingController@accountCreate');
 Route::post('account/confirm','LandingController@accountConfirm');
 Route::get('account/retrieve','LandingController@retrievePassword');
 
+Route::post('account/sent','LandingController@sentPassword');
 
 Route::get('account/user_settings', function(){
     return "User settings page";

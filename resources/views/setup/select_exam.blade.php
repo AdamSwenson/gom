@@ -20,6 +20,13 @@
 @endsection
 
 @section('body')
+    <script>
+        //these elements exist in the nav_bar_main.blade.php
+        document.getElementById('setupHead').setAttribute('class',"active");
+        document.getElementById('gradeHead').setAttribute('class',"");
+        document.getElementById('reportHead').setAttribute('class',"");
+        document.getElementById('accountHead').setAttribute('class',"");
+    </script>
     <div id="selectExam">
         <div class="section">
             <div class="container">

@@ -121,7 +121,6 @@ class StudentController extends Controller
           $data = $request->input('filedata');
             dd($data);
 
-       // return view('setup.select_exam');
     }
 
 

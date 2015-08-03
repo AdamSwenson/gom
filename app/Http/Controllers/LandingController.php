@@ -22,7 +22,7 @@ class LandingController extends Controller
     public function showLanding()
     {
 
-        return view('landing');
+        return view('index');
     }
 
     public function showLandingLoggedIn()
@@ -44,28 +44,25 @@ class LandingController extends Controller
 
     public function accountCreate()
     {
-        return view('account.create');
+        return view('account.createAccount');
     }
 
 
     public function accountConfirm(){
 
-        return view('account.confirm');
+        return view('account.confirmAccount');
     }
 
     public function retrievePassword(){
-        return view('account.retrieve');
+        return view('account.retrievePassword');
     }
 
-    public function sendEmail(){
-
-        Mail::send('emails.test',[], function($message){
-            $message->to('jerrysmash17@gmail.com','')->subject('Welcome to the Laravel 4 Auth App!');
-        });
 
 
-        return view('account.set');
+    public function sentPassword(){
+        return view('account.sent');
     }
+
 
 
 
