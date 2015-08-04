@@ -71,7 +71,7 @@ class ElementScoreRepositoryTest extends \TestCase
         $es = ElementScore::all()->random();
         $elementAssignmentId = $es->element_assignment_id;
         $studentId = $es->student_id;
-        $score = $this->faker->randomFloat(2);
+        $score = $this->faker->randomFloat(2,0,10);
 
         $es->delete();
         $this->notSeeInDatabase('element_scores', ['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId]);
@@ -93,7 +93,7 @@ class ElementScoreRepositoryTest extends \TestCase
         $es = ElementScore::all()->random();
         $elementAssignmentId = $es->element_assignment_id;
         $studentId = $es->student_id;
-        $score = $this->faker->randomFloat(2);
+        $score = $this->faker->randomFloat(2,0,10);
 
         $result = $this->object->update($elementAssignmentId, $studentId, $score);
 
@@ -106,4 +106,8 @@ class ElementScoreRepositoryTest extends \TestCase
     }
 
 
+    /*
+    public function testScoreTooBig()
+    {}
+    */
 }

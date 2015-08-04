@@ -70,6 +70,11 @@ MYSQL;
      */
     public function down()
     {
-        //
+        DB::unprepared('DROP PROCEDURE IF EXISTS assign_element');
+        DB::unprepared('DROP PROCEDURE IF EXISTS assign_question');
+
+        DB::unprepared('DROP PROCEDURE IF EXISTS record_question_score');
+        DB::unprepared('DROP PROCEDURE IF EXISTS record_element_score');
+
     }
 }

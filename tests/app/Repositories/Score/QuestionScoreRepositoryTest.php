@@ -56,7 +56,7 @@ class QuestionScoreRepositoryTest extends \TestCase
         $es = QuestionScore::all()->random();
         $questionAssignmentId = $es->question_assignment_id;
         $studentId = $es->student_id;
-        $score = $this->faker->randomFloat(2);
+        $score = $this->faker->randomFloat(2, 0, 10);
 
         $es->delete();
         $this->notSeeInDatabase('question_scores', ['question_assignment_id' => $questionAssignmentId, 'student_id' => $studentId]);
@@ -76,7 +76,7 @@ class QuestionScoreRepositoryTest extends \TestCase
         $es = QuestionScore::all()->random();
         $questionAssignmentId = $es->question_assignment_id;
         $studentId = $es->student_id;
-        $score = $this->faker->randomFloat(2);
+        $score = $this->faker->randomFloat(2, 0, 10);
 
         $result = $this->object->update($questionAssignmentId, $studentId, $score);
 
