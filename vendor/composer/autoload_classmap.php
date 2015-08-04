@@ -988,6 +988,7 @@ return array(
     'StockText' => $baseDir . '/app/Models/propel/StockText.php',
     'StockTextQuery' => $baseDir . '/app/Models/propel/StockTextQuery.php',
     'StopwatchTask' => $vendorDir . '/phing/phing/classes/phing/tasks/ext/StopwatchTask.php',
+    'StoredProcedures' => $baseDir . '/database/migrations/2015_08_04_120147_stored_procedures.php',
     'StreamRequiredBuildLogger' => $vendorDir . '/phing/phing/classes/phing/listener/StreamRequiredBuildLogger.php',
     'StringHelper' => $vendorDir . '/phing/phing/classes/phing/util/StringHelper.php',
     'StringReader' => $vendorDir . '/phing/phing/classes/phing/system/io/StringReader.php',
