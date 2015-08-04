@@ -32,8 +32,26 @@ interface IQuestionScoreRepository
      */
     public function load($questionAssignmentId, $studentId);
 
+
     /**
-     * Saves the question score
+     * Saves or updates the question score
+     *
+     * This and update do the same thing. Just added the extra method for clarity
+     * and compatibility.
+     *
+     * @param $questionAssignmentId
+     * @param $studentId
+     * @param $score
+     * @return QuestionScore
+     */
+    public function record($questionAssignmentId, $studentId, $score);
+
+    /**
+     * Saves or updates the question score
+     *
+     * This and record do the same thing. Just added the extra method for clarity
+     * and compatibility.
+     *
      * @param $questionAssignmentId
      * @param $studentId
      * @param $score

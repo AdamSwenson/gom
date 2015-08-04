@@ -17,6 +17,7 @@ class ElementScoreRepository implements IElementScoreRepository
     /** @var  ElementScore */
     public $score_object;
 
+
     /**
      * Load score for a student by the id of the element assigment
      * @param integer $elementAssignmentId
@@ -61,7 +62,27 @@ class ElementScoreRepository implements IElementScoreRepository
 
 
     /**
-     * Saves the question score
+     * Saves or updates the element score
+     *
+     * This and update do the same thing. Just added the extra method for clarity
+     * and compatibility.
+     *
+     * @param $elementAssignmentId
+     * @param $studentId
+     * @param $score
+     * @return ElementScore
+     */
+    public function record($elementAssignmentId, $studentId, $score)
+    {
+        return $this->update($elementAssignmentId, $studentId, $score);
+    }
+
+    /**
+     * Saves or updates the element score
+     *
+     * This and record do the same thing. Just added the extra method for clarity
+     * and compatibility.
+     *
      * @param $elementAssignmentId
      * @param $studentId
      * @param $score

@@ -38,11 +38,29 @@ interface IElementScoreRepository
     public function load_for_student_on_exam($examId, $studentId);
 
     /**
-     * Saves the question score
+     * Saves or updates the element score
+     *
+     * This and update do the same thing. Just added the extra method for clarity
+     * and compatibility.
+     *
+     * @param $elementAssignmentId
+     * @param $studentId
+     * @param $score
+     * @return ElementScore
+     */
+    public function record($elementAssignmentId, $studentId, $score);
+
+    /**
+     * Saves or updates the element score
+     *
+     * This and record do the same thing. Just added the extra method for clarity
+     * and compatibility.
+     *
      * @param $elementAssignmentId
      * @param $studentId
      * @param $score
      * @return ElementScore
      **/
     public function update($elementAssignmentId, $studentId, $score);
+
 }
