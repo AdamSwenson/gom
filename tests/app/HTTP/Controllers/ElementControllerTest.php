@@ -50,6 +50,7 @@ class ElementControllerTest extends \TestCase
 
     public function testCreate()
     {
+        $this->markTestIncomplete();
     }
 
 
@@ -90,15 +91,86 @@ class ElementControllerTest extends \TestCase
 
     public function testEdit()
     {
-
+        $this->markTestIncomplete();
     }
 
+    public function testEditAll() //$exam, $question)
+    {
+        $this->markTestIncomplete();
+    }
 
     public function testUpdate()
     {
-
+        $this->markTestIncomplete();
     }
 
+
+    public function buildIncomingArray($number)
+    {
+        return [
+            "elementName{$number}" => $this->faker->text(),
+            "elementId{$number}" => $this->faker->randomNumber(),
+            "elementText{$number}" => $this->faker->text(),
+            "e{$number}valence0" => $this->faker->text(),
+            "e{$number}valence1" => $this->faker->text(),
+            "e{$number}valence2" => $this->faker->text(),
+            "e{$number}valence3" => $this->faker->text()
+        ];
+    }
+
+
+    public function testUpdateAllNewElement()
+    {
+        $elementId = 45;
+        $element = new Element();
+        $element->id = $elementId;
+        $examId = 1;
+        $questionId = 1;
+
+        $data = $this->buildIncomingArray(0);
+        $data['examId'] = $examId;
+        $data['questionId'] = $questionId;
+
+        $this->elementDaoMock->shouldReceive('createElement')
+            ->with([$data['elementName0'], '', $data['elementText0']])
+            ->andReturn($element);
+
+        $this->assignmentDaoMock->shouldReceive('record')->with($examId, $questionId, $elementId, 1);
+
+        $response = $this->action('POST', 'ElementController@updateAll', $data);
+        $this->assertNotNull($response);
+    }
+
+
+    public function testUpdateAllExistingElement() //$exam, $question, ElementRequest $request)
+    {
+        $elementId = 2;
+        $element = new Element();
+        $element->id = $elementId;
+        $examId = 1;
+        $questionId = 1;
+
+        $data = $this->buildIncomingArray(2);
+        $data['examId'] = $examId;
+        $data['questionId'] = $questionId;
+
+        $this->elementDaoMock->shouldReceive('editElement')
+            ->with([$data['elementName2'], '', $data['elementText2']])
+            ->andReturn($element);
+
+        $this->assignmentDaoMock->shouldReceive('record')->with($examId, $questionId, $elementId, 1);
+
+        $response = $this->action('POST', 'ElementController@updateAll', $data);
+        $this->assertNotNull($response);
+
+
+//        $data = [
+//            $this->buildIncomingArray(1), $this->buildIncomingArray(2)
+//        ];
+//
+//        $this->assignmentDaoMock->shouldReceive('record')
+//        $this->markTestIncomplete();
+    }
 
     public function testDestroy()
     {

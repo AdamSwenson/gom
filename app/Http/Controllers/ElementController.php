@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Comment;
 use App\Element;
 use App\Http\Requests\ElementRequest;
 use App\Repositories\Element\IElementAssignmentRepository;
@@ -9,10 +10,8 @@ use App\Repositories\Element\IElementRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use Illuminate\Http\Request;
 
-
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\Comment;
 
 class ElementController extends Controller
 {
@@ -160,6 +159,7 @@ class ElementController extends Controller
         // load data for any existing elements
         $elements = $this->assignmentDao->load_elements($examId, $qNumber);
 
+
         // show all elements for a given question along with the ids for 'next' and 'previous'
         return view('setup.edit_element')->with(['examId' => $examId,
             'nextqId' => $nQId,
@@ -177,8 +177,7 @@ class ElementController extends Controller
      * @param ElementRequest $request
      * @return Response
      */
-    public
-    function update(Element $element, ElementRequest $request)
+    public function update(Element $element, ElementRequest $request)
     {
 
     }
@@ -192,8 +191,7 @@ class ElementController extends Controller
      * @param ElementRequest $request
      * @return Response
      */
-    public
-    function updateAll($exam, $question, ElementRequest $request)
+    public function updateAll($exam, $question, ElementRequest $request)
     {
 
         $examId = $exam->getId();
@@ -208,12 +206,12 @@ class ElementController extends Controller
             // We're not using the 'displayText' parameter at this time.
             if ($elementId == 0) {
                 // Add new Elements
-                $element = $this->elementDao->createElement( $request->input('elementName' . $i), 'test' ,
+                $element = $this->elementDao->createElement( $request->input('elementName' . $i), '' ,
                         $request->input('elementText' . $i));
                 $this->assignmentDao->record($examId, $questionId, $element->getId(), $i);
             } else {
                 // Update existing
-                $element = $this->elementDao->editElement($elementId, $request->input('elementName' . $i), 'test',
+                $element = $this->elementDao->editElement($elementId, $request->input('elementName' . $i), '',
                         $request->input('elementText' . $i));
                 $this->assignmentDao->record($examId, $questionId, $elementId, $i);
             }
@@ -266,8 +264,7 @@ class ElementController extends Controller
      * @return Response
      * @internal param int $id
      */
-    public
-    function destroy(Element $element)
+    public function destroy(Element $element)
     {
 
     }

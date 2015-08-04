@@ -6,7 +6,7 @@
  * Time: 9:09 AM
  */
 
-namespace Repositories\Score;
+namespace App\Repositories\Score;
 
 
 use App\QuestionScore;
@@ -19,7 +19,7 @@ class QuestionScoreRepositoryTest extends \TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->object = new QuestionScoreRepositoryTest;
+        $this->object = new QuestionScoreRepository;
     }
 
     public function testLoad_for_student_on_exam()
@@ -56,7 +56,7 @@ class QuestionScoreRepositoryTest extends \TestCase
         $es = QuestionScore::all()->random();
         $questionAssignmentId = $es->question_assignment_id;
         $studentId = $es->student_id;
-        $score = $this->faker->randomFloat(2);
+        $score = $this->faker->randomFloat(2, 0, 10);
 
         $es->delete();
         $this->notSeeInDatabase('question_scores', ['question_assignment_id' => $questionAssignmentId, 'student_id' => $studentId]);
@@ -64,7 +64,7 @@ class QuestionScoreRepositoryTest extends \TestCase
         $result = $this->object->update($questionAssignmentId, $studentId, $score);
 
         $this->assertNotEmpty($result);
-        $this->assertInstanceOf('App\ElementScore', $result);
+        $this->assertInstanceOf('App\QuestionScore', $result);
         $this->assertEquals($questionAssignmentId, $result->question_assignment_id);
         $this->assertEquals($studentId, $result->student_id);
         $this->assertEquals($score, $result->score);
@@ -76,12 +76,12 @@ class QuestionScoreRepositoryTest extends \TestCase
         $es = QuestionScore::all()->random();
         $questionAssignmentId = $es->question_assignment_id;
         $studentId = $es->student_id;
-        $score = $this->faker->randomFloat(2);
+        $score = $this->faker->randomFloat(2, 0, 10);
 
         $result = $this->object->update($questionAssignmentId, $studentId, $score);
 
         $this->assertNotEmpty($result);
-        $this->assertInstanceOf('App\ElementScore', $result);
+        $this->assertInstanceOf('App\QuestionScore', $result);
         $this->assertEquals($questionAssignmentId, $result->question_assignment_id);
         $this->assertEquals($studentId, $result->student_id);
         $this->assertEquals($score, $result->score);

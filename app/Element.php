@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Illuminate\Support\Facades\DB;
+
 class Element extends BaseModel
 {
     /** Maximum length in utf-8 characters of the elementName field (used in sanitizing) */
@@ -19,12 +21,14 @@ class Element extends BaseModel
     }
 
     protected $fillable = [
+        'element_id',
         'elementName',
         'displayText',
         'commentText'
     ];
 
     protected $casts = [
+        'element_id' => 'integer',
         'elementName' => 'string',
         'displayText' => 'string',
         'commentText' => 'string'
@@ -41,23 +45,47 @@ class Element extends BaseModel
      */
     public function setAsQuestionTask($examId, $questionId, $subtask)
     {
-        $questionAssignment = QuestionAssignment::where('exam_id', $examId)->where('question_id',
-            $questionId)->firstOrFail();
+        $questionAssignment = QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->firstOrFail();
+        $query = 'CALL assign_element(:questionAssignmentId, :subtask, :elementId)';
+        $values = [
+            'questionAssignmentId' => $questionAssignment->id,
+            'subtask' => $subtask,
+            'elementId' => $this->attributes['id']
+        ];
+        DB::statement($query, $values);
 
-        $pre_existing = ElementAssignment::where('subtask', $subtask)->where('question_assignment_id',
-            $questionAssignment->getId());
-        if ($pre_existing)
-        {
-            $pre_existing->delete();
-        }
 
+        //$questionAssignment = QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->firstOrFail();
 
-//    $pre_assigned = ElementAssignment::where('exam_id', $examId)->where('question_id', $this->getId());
-//    if($pre_assigned)
-//    {
-//        $pre_assigned->delete();
-//    }
-        $this->questionAssignments()->attach($questionAssignment->getId(), ['subtask' => $subtask]);
+        /*        //works with raw
+                $query = "INSERT INTO element_assignments (question_assignment_id, subtask, element_id)
+                VALUES (:assignId, :subtask, :elementId) ON DUPLICATE KEY UPDATE element_id = :element_id";
+                $vals = [
+                    'assignId' => $questionAssignment->getId(),
+                    'subtask' => $subtask,
+                    'elementId' => $this->attributes['id']
+                ];
+                DB::raw($query, $vals);*/
+
+//        ElementAssignment::updateOrCreate(
+//            ['question_assignment_id' => $questionAssignment->getId(), 'subtask' => $subtask],
+//            ['element_id' => $this->attributes['id']]
+//        );
+//
+//        $pre_existing = ElementAssignment::where('subtask', $subtask)->where('question_assignment_id',
+//            $questionAssignment->getId());
+//        if ($pre_existing)
+//        {
+//            $pre_existing->delete();
+//        }
+//
+//
+////    $pre_assigned = ElementAssignment::where('exam_id', $examId)->where('question_id', $this->getId());
+////    if($pre_assigned)
+////    {
+////        $pre_assigned->delete();
+////    }
+//        $this->questionAssignments()->attach($questionAssignment->getId(), ['subtask' => $subtask]);
 
         return $this;
     }
@@ -72,6 +100,7 @@ class Element extends BaseModel
     public function getQuestionTaskNumber($questionAssignmentId)
     {
         $e = $this->questionAssignments()->where('question_assignment_id', $questionAssignmentId)->first();
+
         return $e->pivot->subtask;
     }
 
@@ -152,7 +181,7 @@ class Element extends BaseModel
     public function questionAssignments()
     {
         return $this->belongsToMany('App\QuestionAssignment',
-            'element_assignments')->withPivot('subtask')->withTimestamps();
+                                    'element_assignments')->withPivot('subtask')->withTimestamps();
     }
 
     /**
@@ -162,7 +191,7 @@ class Element extends BaseModel
     public function scores()
     {
         return $this->hasManyThrough('App\ElementScore', 'App\ElementAssignment', 'element_id',
-            'element_assignment_id');
+                                     'element_assignment_id');
     }
 
     /**

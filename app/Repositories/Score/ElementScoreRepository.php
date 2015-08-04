@@ -17,6 +17,7 @@ class ElementScoreRepository implements IElementScoreRepository
     /** @var  ElementScore */
     public $score_object;
 
+
     /**
      * Load score for a student by the id of the element assigment
      * @param integer $elementAssignmentId
@@ -26,9 +27,11 @@ class ElementScoreRepository implements IElementScoreRepository
     public function load($elementAssignmentId, $studentId)
     {
         $this->score_object = ElementScore::firstOrNew(['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId]);
+        return $this->score_object;
+
 //        ElementScore::where('element_assignment_id', $elementAssignmentId)->where('student_id', $studentId)->
 //        $this->score_object = ElementScore::onStudentElementAssignment($studentId, $elementAssignmentId)->first();
-        return $this->score_object;
+
     }
 
 //    /**
@@ -59,7 +62,27 @@ class ElementScoreRepository implements IElementScoreRepository
 
 
     /**
-     * Saves the question score
+     * Saves or updates the element score
+     *
+     * This and update do the same thing. Just added the extra method for clarity
+     * and compatibility.
+     *
+     * @param $elementAssignmentId
+     * @param $studentId
+     * @param $score
+     * @return ElementScore
+     */
+    public function record($elementAssignmentId, $studentId, $score)
+    {
+        return $this->update($elementAssignmentId, $studentId, $score);
+    }
+
+    /**
+     * Saves or updates the element score
+     *
+     * This and record do the same thing. Just added the extra method for clarity
+     * and compatibility.
+     *
      * @param $elementAssignmentId
      * @param $studentId
      * @param $score
@@ -67,9 +90,16 @@ class ElementScoreRepository implements IElementScoreRepository
      **/
     public function update($elementAssignmentId, $studentId, $score)
     {
-        $this->load($elementAssignmentId, $studentId);
-        $this->score_object->score = $score;
-        $this->score_object->update();
+        $this->score_object = new ElementScore();
+        $this->score_object->element_assignment_id = $elementAssignmentId;
+        $this->score_object->student_id = $studentId;
+        $this->score_object->recordScore($score);
+
+//        $this->score_object = ElementScore::updateOrCreate(['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId], ['score' => $score]);
+//
+//        $this->load($elementAssignmentId, $studentId);
+//        $this->score_object->score = $score;
+//        $this->score_object->update();
         return $this->score_object;
     }
 }
