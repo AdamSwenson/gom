@@ -1,4 +1,4 @@
-<!-- EDIT QUESTION -->
+<!-- EDIT element -->
 
 <!--
 /**
@@ -10,8 +10,8 @@
  -->
 
 @extends('layouts.master')
-@section('pageTitle', 'Edit Questions')
-@section('description', 'Add or edit questions')
+@section('pageTitle', 'Edit elements')
+@section('description', 'Add or edit elements')
 @section('cssLinks')
 @endsection
 
@@ -28,25 +28,25 @@
                             Previous Question</a>
                     </li>
                     <li class="next">
-
                         <a id="next-question" data-nextQ="{{ $nextqId }}" style="cursor:pointer;">Next Question <span
                                     class="glyphicon glyphicon-chevron-right"
                                     aria-hidden="true"></span></a>
                     </li>
                 </ul>
             </nav>
-            <h2>Add / Edit Elements: Question #{{ isset($qNumber) ? $qNumber : '1'}} "{{ isset($questionName) ? $questionName : '' }}"</h2>
-            <h5>Each question is composed of one or more elements, representing individual items that the student
+            <h2>Add / Edit Elements: Question #{{ isset($qNumber) ? $qNumber : '1'}}
+                "{{ isset($questionName) ? $questionName : '' }}"</h2>
+            <h5>Each element is composed of one or more elements, representing individual items that the student
                 should address.</h5>
-            <!-- form will update all given questions and create new ones where required -->
+            <!-- form will update all given elements and create new ones where required -->
             <form id="elementForm" name="elementForm" method="post" role="form"
-                  action="{{ url('exam/'.$examId.'/question/'.$qId.'/element/updateAll') }}"
+                  action="{{ url('exam/'.$examId.'/question/'.$questionId.'/element/updateAll') }}"
                   accept-charset="UTF-8">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <ul class="form-group" id="questionList">
-                    @if( isset($elements) )
-                        <?php $counter = 1; ?>
-                        @foreach($elements as $q)
+                <ul class="form-group" id="elementList">
+                    <?php $counter = 1; ?>
+                    @if( !empty($elements) )
+                        @foreach($elements as $e)
                             @include('setup.element_form')
                             <?php $counter++; ?>
                         @endforeach
@@ -56,15 +56,17 @@
                 </ul>
                 <input type="hidden" id="questionDirection" name="questionDirection" value="0"/>
             </form>
-            <a class="btn btn-primary" id="addQuestion"><span
+            <a class="btn btn-primary" id="addElement"><span
                         class="glyphicon glyphicon-plus"
                         aria-hidden="true"></span>
                 Add Element</a>
         </div>
     </div>
-    <?php $counter = 0;
-    $q = 0; ?>
-    @include('setup.element_form_empty')
+    <ul style="display: none" id="hiddenElementList">
+        <?php $counter = 0;
+        $e = NULL; ?>
+        @include('setup.element_form')
+    </ul>
     @include('errors.list')
 @endsection
 
@@ -72,11 +74,14 @@
 @section('jsArea')
     <script type="text/javascript">
 
-        // Sortable is the lib for deag and drop elements
-        // create an editable list and set up some filters to handle callbacks
         $(document).ready(function () {
-            var qList = document.getElementById('questionList');
-            var editableList = Sortable.create(qList, {
+            // clear local storage to dump Sortable data - or it may display items out of order
+            localStorage.clear();
+            // magic 4 for now...
+            var numValences = 4;
+            // set up Sortable list
+            var eList = document.getElementById('elementList');
+            var editableList = Sortable.create(eList, {
                 filter: '.js-remove',
                 animation: 150,
                 handle: '.handle',
@@ -92,7 +97,6 @@
                     // store the ordering to localStorage
                     get: function (sortable) {
                         var order = localStorage.getItem(sortable.options.group);
-                        window.console.log(localStorage.getItem(sortable.options.group));
                         return order ? order.split('|') : [];
                     },
 
@@ -105,48 +109,75 @@
                 }
             });
 
-            // handle addQuestion button
-            document.getElementById("addQuestion").onclick = function () {
+            // Customize Responses -- Handle copy forms in here -- in progress
+            $("[id^='commentForm']").on('shown.bs.modal', function () {
+                // find closest elementText and copy to all blank valences
+                var parent = $(this).closest("[id^='elementItem']");
+                var elementText = $(parent).find("[id^='elementText']").val();
+
+                for(var i = 0; i < numValences; i++ ) {
+                    var valenceText = $(parent).find("[name$=valence" + i + "]");
+                    if ( valenceText.val() === '' ) {
+                        valenceText.val(elementText);
+                    }
+                }
+            });
+
+            // handle addelement button
+            document.getElementById("addElement").onclick = function () {
                 // copy empty form
-                var order = getQuestionCount() + 1;
-                var myClone = $('#emptyQuestionItem').clone();
+                var order = getElementCount() + 1;
+                var myClone = $('#elementItem0').clone();
                 // set values
 
                 // add to editableList and refresh
-                myClone.appendTo($("#questionList"));
+                myClone.appendTo($("#elementList"));
                 updateListItemData(myClone, order);
                 updateNumbers();
             };
 
-            // update all questions
+            // update all elements
             function updateNumbers() {
 
-                $("[id^=questionItem]").each(function (index, el) {
+                $('#elementForm').find("[id^='elementItem']").each(function (index, el) {
                     updateListItemData(el, (index + 1));
                 });
             }
 
             // set all relevant names and ids of [item] to value [order]
             function updateListItemData(item, order) {
-                $(item).attr('id', 'questionItem' + order);
+                $(item).attr('id', 'elementItem' + order);
                 $(item).find('#displayNumber').text('Element #' + (order));
-                $(item).find("[id^='questionName']").attr('id', 'questionName' + order);
-                $(item).find("[id^='questionName']").attr('name', 'questionName' + order);
-                $(item).find('textarea').attr('id', 'questionText' + order);
-                $(item).find('textarea').attr('name', 'questionText' + order);
-                $(item).find('#questionId').attr('name', 'questionId' + order);
+                $(item).find("[id^='elementName']").attr('id', 'elementName' + order);
+                $(item).find("[id^='elementName']").attr('name', 'elementName' + order);
+                $(item).find('textarea').attr('id', 'elementText' + order);
+                $(item).find('textarea').attr('name', 'elementText' + order);
+                $(item).find('#elementId').attr('name', 'elementId' + order);
+
+                // update customizeResponse button and set which modal it opens
+                $(item).find("[id^='btnCustomizeResponse']").attr('id', 'btnCustomizeResponse' + order);
+                $(item).find("[id^='btnCustomizeResponse']").attr('data-target', '#commentForm' + order);
+                $(item).find('.modal').attr('id', 'commentForm' + order);
+
+                //update links, names and ids for the commentForm div
+                for (var i = 0; i < numValences; i++) {
+                    $(item).find('#tab' + i).attr('href', 'e' + order + "valence" + i);
+                    var toFind = 'valence' + i;
+                    $(item).find("[id$= toFind]").attr('id', 'e' + order + 'valence' + i); //!!
+                    $(item).find('#valenceText' + i).attr('name', "e" + order + "valence" + i);
+                    //$('.test').html(toFind);
+                }
             }
 
-            function getQuestionCount() {
-                // return number of questions currently in the questionList
-                return $("[id^=questionItem]").length;
+            function getElementCount() {
+                return $('elementForm').find("[id^='elementItem']").length;
             }
 
             // Previous Question button
             var btnPrevious = document.getElementById('prev-question');
             var prevQuestion = parseInt(btnPrevious.getAttribute('data-prevQ'));
             if ((prevQuestion === 0)) {
-                // set text to "Edit Questions"
+                // set text to "Edit questions"
                 $('#prev-question').text('Edit Questions');
             }
 
@@ -160,17 +191,17 @@
                 submitForm();
             }
 
-            // Next Question button
+            // "Next Question" button
             var btnNext = document.getElementById('next-question');
             var nextQuestion = parseInt(btnNext.getAttribute('data-nextQ'));
-            // If we're at the last question, set text to "done"
+            // If we're at the last element, set text to "done"
             if ((nextQuestion === 0)) {
                 $('#next-question').text('Done');
             }
 
             btnNext.onclick = function () {
                 if (nextQuestion === 0) {
-                    // set the hidden field to either the questionId to view next, or 'previous'
+                    // set the hidden field to either the elementId to view next, or 'previous' to return to edit question
                     $('#questionDirection').attr('value', 'forward');
                 } else {
                     $('#questionDirection').attr('value', nextQuestion);
@@ -188,8 +219,6 @@
 
             return false;
         });
-
-
     </script>
 @endsection
 

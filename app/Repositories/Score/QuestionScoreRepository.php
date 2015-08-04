@@ -57,6 +57,13 @@ class QuestionScoreRepository implements IQuestionScoreRepository
      */
     public function update($questionAssignmentId, $studentId, $score)
     {
+        $questionScore = new QuestionScore();
+        $questionScore->question_assignment_id = $questionAssignmentId;
+        $questionScore->student_id = $studentId;
+        $questionScore->recordScore($score);
+        return $questionScore;
+
+        /*
         $this->load($questionAssignmentId, $studentId);
         if (!empty($this->score_object))
         {
@@ -71,6 +78,6 @@ class QuestionScoreRepository implements IQuestionScoreRepository
             $questionScore->score = $score;
             $questionScore->save();
             return $questionScore;
-        }
+        }*/
     }
 }

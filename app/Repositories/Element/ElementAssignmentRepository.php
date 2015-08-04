@@ -32,8 +32,8 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
      */
     public function __construct()
     {
-        $this->questionAssignmentDao = new QuestionAssignmentRepository();
-        $this->cleaner = new CleanerFactory();
+        $this->questionAssignmentDao = app()->make('App\Repositories\Question\IQuestionAssignmentRepository');
+//        $this->cleaner = new CleanerFactory();
     }
 
 //    public function __construct(IQuestionAssignmentRepository $questionAssignmentDao, ICleanerFactory $cleaner)
@@ -42,22 +42,14 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
 //        $this->cleaner = $cleaner;
 //    }
 
-    public function setCleaner(ICleanerFactory $cleanerFactory)
-    {
-        $this->cleaner = $cleanerFactory;
-    }
+//    public function setCleaner(ICleanerFactory $cleanerFactory)
+//    {
+//        $this->cleaner = $cleanerFactory;
+//    }
 
 
     public function load_elements($examId, $questionNumber)
     {
-//        $questionAssignment = $this->questionAssignmentDao->load($examId, $questionNumber);
-//
-//        if(empty($questionAssignment))
-//        {
-//        //TODO: Add error handling
-//        }
-//        $this->assignments = ElementAssignment::where('question_assignment_id', $questionAssignment[0]->id)->get();
-
         $this->load_element_assignments_by_question_number($examId, $questionNumber);
         $elements = array();
         foreach ($this->assignments as $assign)
@@ -98,8 +90,8 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
     public function record($examId, $questionId, $elementId, $subtask)
     {
         $element = Element::findOrFail($elementId);
-        $element->setAsQuestionTask($examId, $questionId, $subtask);
-      return $element;
+        return $element->setAsQuestionTask($examId, $questionId, $subtask);
+//      return $element;
 
 //        $questionAssignment = $this->questionAssignmentDao->loadQuestionNumberById($examId, $questionId);
 //

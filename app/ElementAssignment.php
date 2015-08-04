@@ -22,7 +22,9 @@ namespace App;
 class ElementAssignment extends BaseModel
 {
 
-    protected $fillable = [];
+    protected $fillable = [
+        'element_id'
+    ];
 
     protected $casts = [
         'subtask' => 'integer'

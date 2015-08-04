@@ -3,6 +3,8 @@
 namespace App;
 
 
+use Illuminate\Support\Facades\DB;
+
 class ElementScore extends BaseModel
 {
     protected $fillable = ['score'];
@@ -12,6 +14,36 @@ class ElementScore extends BaseModel
 //        parent::junctionBoot();
     }
 
+
+    /**
+     * Records or updates the score for a student on a particular question
+     *
+     * @param float $score
+     * @return boolean
+     */
+    public function recordScore($score)
+    {
+        $query = "CALL record_element_score(:elementAssignmentId, :studentId, :score)";
+        $values = [
+            'elementAssignmentId' => $this->attributes['element_assignment_id'],
+            'studentId' => $this->attributes['student_id'],
+            'score' => $score
+        ];
+        if(DB::statement($query, $values))
+        {
+            $result = ElementScore::where('element_assignment_id', $this->attributes['element_assignment_id'])
+                ->where('student_id', $this->attributes['student_id'])
+                ->firstOrFail();
+//            $result = DB::select('SELECT * FROM element_scores WHERE element_assignment_id = :elementAssignmentId AND student_id = :studentId',
+//                       ['elementAssignmentId' => $this->attributes['element_assignment_id'],
+//                       'studentId' => $this->attributes['student_id']]);
+            if($result)
+            {
+                $this->attributes['id'] = $result->id;
+                $this->attributes['score'] = $result->score;
+            }
+        }
+    }
 
     /**
      * Returns results limited to the particular student

@@ -79,7 +79,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
      */
     public function record($examId, $questionId, $question_number)
     {
-        $q = Question::find($questionId);
+        $q = Question::findOrFail($questionId);
         $q->setQuestionNumber($examId, $question_number);
 //
 //        $qa = QuestionAssignment::where('exam_id', $examId)->where('question_number', $question_number)->first();

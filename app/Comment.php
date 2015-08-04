@@ -17,10 +17,10 @@ namespace App;
  */
 class Comment extends BaseModel
 {
-    const VALENCE_ABSENT = 'absent';
-    const VALENCE_POOR = 'poor';
-    const VALENCE_OK = 'ok';
-    const VALENCE_EXCELLENT = 'excellent';
+    const VALENCE_ABSENT = '0';
+    const VALENCE_POOR = '1';
+    const VALENCE_OK = '2';
+    const VALENCE_EXCELLENT = '3';
 
     const MAX_BODY_LENGTH = 3000;
 

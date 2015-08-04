@@ -21,7 +21,11 @@ class CreateQuestionAssignmentTable extends Migration
             $table->timestamps();
 
             $table->unique(['exam_id', 'question_number']);
-            $table->unique(['exam_id', 'question_id']);
+            //TODO Consider re-adding the prohibition on the same question appearing twice on exam
+            //$table->unique(['exam_id', 'question_id']);
+
+
+
 //            $table->unique(['owner_id', 'exam_id', 'question_number']);
 //            $table->unique(['owner_id', 'exam_id', 'question_id']);
 

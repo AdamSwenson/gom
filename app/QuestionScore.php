@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Illuminate\Support\Facades\DB;
+
 
 /**
  * Class QuestionScore
@@ -62,6 +64,34 @@ class QuestionScore extends BaseModel
 //    {
 //
 //    }
+
+    /**
+     * Records or updates the score for a student on a particular question
+     *
+     * @param float $score
+     * @return boolean
+     */
+    public function recordScore($score)
+    {
+        $query = "CALL record_question_score(:questionAssignmentId, :studentId, :score)";
+        $values = [
+            'questionAssignmentId' => $this->attributes['question_assignment_id'],
+            'studentId' => $this->attributes['student_id'],
+            'score' => $score
+        ];
+
+        if(DB::statement($query, $values))
+        {
+            $result = QuestionScore::where('question_assignment_id', $this->attributes['question_assignment_id'])
+                ->where('student_id', $this->attributes['student_id'])
+                ->firstOrFail();
+            if($result)
+            {
+                $this->attributes['id'] = $result->id;
+                $this->attributes['score'] = $result->score;
+            }
+        }
+    }
 
 
     #--------------------------------- getters and setters

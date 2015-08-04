@@ -40,8 +40,8 @@
                   accept-charset="UTF-8">
                 <input type="hidden" id="token" name="_token" value="{{ csrf_token() }}">
                 <ul class="form-group" id="questionList">
+                    <?php $counter = 1; ?>
                     @if (!empty($questions))
-                        <?php $counter = 1; ?>
                         @foreach($questions as $q)
                             @include('setup.question_form')
                             <?php $counter++; ?>
@@ -57,11 +57,16 @@
                         aria-hidden="true"></span>
                 Add Question</a>
             <a class="btn btn-primary" id="importQuestion"><span class="glyphicon glyphicon-import"
-                                                                      aria-hidden="true"></span>Import Question
+                                                                 aria-hidden="true"></span>Import Question
             </a>
         </div>
     </div>
-    @include('setup.question_form_empty')
+    <!-- a blank question form to use for clones -->
+    <ul style="display: none" id="hiddenQuestionList">
+        <?php $counter = 0;
+        $q = NULL; ?>
+        @include('setup.question_form')
+    </ul>
     @include('errors.list')
 @endsection
 
@@ -72,6 +77,7 @@
         // Sortable is the lib for deag and drop elements
         // create an editable list and set up some filters to handle callbacks
         $(document).ready(function () {
+                    localStorage.clear();
                     var qList = document.getElementById('questionList');
                     var editableList = Sortable.create(qList, {
                         filter: '.js-remove',
@@ -121,7 +127,7 @@
                     document.getElementById("addQuestion").onclick = function () {
                         // copy empty form
                         var order = getQuestionCount() + 1;
-                        var myClone = $('#emptyQuestionItem').clone();
+                        var myClone = $('#questionItem0').clone();
 
                         // add to editableList and refresh
                         myClone.appendTo($("#questionList"));
@@ -132,7 +138,7 @@
                     // update all questions
                     function updateNumbers() {
 
-                        $("[id^=questionItem]").each(function (index, el) {
+                        $('#questionForm').find("[id^='questionItem']").each(function (index, el) {
                             updateListItemData(el, (index + 1));
                         });
                     }
@@ -150,7 +156,7 @@
 
                     function getQuestionCount() {
                         // return number of questions currently in the questionList
-                        return $("[id^=questionItem]").length;
+                        return $("[id^='questionItem']").length;
                     }
 
                     // handle form submission

@@ -3,6 +3,8 @@
 namespace App;
 
 
+use Illuminate\Support\Facades\DB;
+
 class Question extends BaseModel
 {
     /** Maximum length in utf-8 characters of the name field (used in sanitizing) */
@@ -97,17 +99,26 @@ class Question extends BaseModel
      */
     public function setQuestionNumber($examId, $questionNumber)
     {
-        $pre_existing = QuestionAssignment::where('exam_id', $examId)->where('question_number', $questionNumber);
-        if ($pre_existing)
-        {
-            $pre_existing->delete();
-        }
-        $pre_assigned = QuestionAssignment::where('exam_id', $examId)->where('question_id', $this->getId());
-        if ($pre_assigned)
-        {
-            $pre_assigned->delete();
-        }
-        $this->exam()->attach($examId, ['question_number' => $questionNumber]);
+        $query = 'CALL assign_question(:questionId, :examId, :questionNumber)';
+        $values = [
+            'questionId' => $this->attributes['id'],
+            'examId' => $examId,
+            'questionNumber' => $questionNumber
+        ];
+
+        DB::statement($query, $values);
+
+//        $pre_existing = QuestionAssignment::where('exam_id', $examId)->where('question_number', $questionNumber);
+//        if ($pre_existing)
+//        {
+//            $pre_existing->delete();
+//        }
+//        $pre_assigned = QuestionAssignment::where('exam_id', $examId)->where('question_id', $this->getId());
+//        if ($pre_assigned)
+//        {
+//            $pre_assigned->delete();
+//        }
+//        $this->exam()->attach($examId, ['question_number' => $questionNumber]);
 
         return $this;
     }
