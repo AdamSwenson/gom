@@ -50,8 +50,8 @@ class ElementController extends Controller
         } else {
             return Element::all();
         }
-        $element = $this->dao->loadElementById($elementId);
-        return $element;
+        //$element = $this->dao->loadElementById($elementId);
+        //return $element;
         //for question number
         return $this->dao->load_element_assignments_by_question_number($request->input('exam_id'), $request->input('question_number'));
         // return ('List of elements for question id: '.$question);
@@ -100,8 +100,8 @@ class ElementController extends Controller
      */
     public function show(Element $element)
     {
-        $element = $this->dao->loadElementById($elementId);
-        return $element;
+        //$element = $this->dao->loadElementById($elementId);
+        //return $element;
 
     }
 
@@ -127,7 +127,7 @@ class ElementController extends Controller
         $questionId = $question->getId();
         $examId = $exam->getId();
         $allQuestionAss = $this->questionAssignmentDAO->load_all_for_exam($examId);
-        $qNumber = $this->questionAssignmentDAO->loadByIds($examId, $questionId);
+        $qNumber = $this->questionAssignmentDAO->loadQuestionNumberById($examId, $questionId);
 
         // given the current $question, find previous and next $questionId...
         // loadByIds() will loop if the same questionId appears several times on the same exam,
@@ -199,7 +199,6 @@ class ElementController extends Controller
         $examId = $exam->getId();
         $questionId = $question->getId();
         $numValences = count( Comment::$valences );
-
         //  Update elements and create new elements as necessary
         $currentElements = [];
         $i = 1;
@@ -209,12 +208,12 @@ class ElementController extends Controller
             // We're not using the 'displayText' parameter at this time.
             if ($elementId == 0) {
                 // Add new Elements
-                $element = $this->elementDao->createElement( $request->input('elementName' . $i), '' ,
+                $element = $this->elementDao->createElement( $request->input('elementName' . $i), 'test' ,
                         $request->input('elementText' . $i));
                 $this->assignmentDao->record($examId, $questionId, $element->getId(), $i);
             } else {
                 // Update existing
-                $element = $this->elementDao->editElement($elementId, $request->input('elementName' . $i), '',
+                $element = $this->elementDao->editElement($elementId, $request->input('elementName' . $i), 'test',
                         $request->input('elementText' . $i));
                 $this->assignmentDao->record($examId, $questionId, $elementId, $i);
             }
@@ -226,24 +225,23 @@ class ElementController extends Controller
             $currentElements[$element->getId()] = $element;
             $i++;
         }
-
         // Handle item deletion
 
         // NOTE: any elements associated with this exam that weren't submitted with the form are deleted.
         // This can be hard on the test data as it contains multiple re-uses of the same elements (bb 8/2/15).
+
         $questionNumber = $question->getQuestionNumber($examId);
         $oldElements = $this->assignmentDao->load_elements($examId, $questionNumber );
-        /*
-        if (!count($oldElements)) {
+        if ( count($oldElements) > 0) {
             foreach ($oldElements as $oldElement) {
-                $eIdToFind = $oldElement->element->getId();
+                $eIdToFind = $oldElement->getId();
                 if (!array_key_exists($eIdToFind, $currentElements)) {
+                    // are deletions removing elements? or just assignments?
                     $this->elementDao->deleteElement($eIdToFind);
-                    dd($oldElement);
+                    dd($eIdToFind);
                 }
             }
         }
-        */
 
         /* Choose next action based on 'questionDirection' param:
             1. go back to QuestionController

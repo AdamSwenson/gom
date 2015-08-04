@@ -1,7 +1,22 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Brian
- * Date: 8/3/2015
- * Time: 5:32 PM
- */
+
+namespace App\Http\Controllers;
+
+use App\Element;
+use App\Http\Requests;
+use App\Http\Requests\GradingRequest;
+
+class GradeController extends Controller {
+
+    public function __contstruct() {
+
+    }
+
+    public function index() {
+
+    }
+
+    public function grade() {
+
+    }
+}

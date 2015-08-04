@@ -108,3 +108,6 @@ Route::get('exam/{exam}/student/{id}/edit', 'StudentController@edit'); // edit a
 Route::patch('exam/{exam}/student/{id}', 'StudentController@update'); //update given student
 Route::delete('exam/{exam}/student/{id}', 'StudentController@destroy'); // delete student
 */
+
+Route::get('grade', 'GradeController@index'); // present list of exams to grade.
+Route::get('grade/exam/{exam}', 'GradeController@grade');  // begin grading the specified exam

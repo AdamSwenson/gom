@@ -34,7 +34,7 @@ interface IQuestionAssignmentRepository
      * @param $questionId
      * @return mixed
      */
-    public function loadByIds($examId, $questionId);
+
     public function loadQuestionNumberById($examId, $questionId);
 
     /**

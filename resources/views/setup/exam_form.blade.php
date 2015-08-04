@@ -37,3 +37,12 @@
         <li><a>2016</a></li>
     </ul>
 </div>
+<p>
+<?php isset($exam) ? $examId = $exam->getId() : $examId = 0; ?>
+<div style="display: {{ isset($exam) ? 'visible' : 'none' }}" >
+    <a href="{{ url('exam/'.$examId.'/student/edit') }}" class="btn btn-info" style="cursor:pointer;"><span
+                class="glyphicon glyphicon-tasks"
+                aria-hidden="true"></span>
+        Edit Student Roster</a>
+</div>
+</p>
