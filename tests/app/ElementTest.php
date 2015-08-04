@@ -32,7 +32,7 @@ class ElementTest extends \TestCase
 
         $this->assertInstanceOf('App\Element', $result);
         $this->seeInDatabase('element_assignments',
-            ['element_id' => $this->element->getId(), 'subtask' => $enum]); //not the most perfect test
+            ['question_assignment_id' => $qa->id, 'element_id' => $this->element->getId(), 'subtask' => $enum]); //not the most perfect test
     }
 
 

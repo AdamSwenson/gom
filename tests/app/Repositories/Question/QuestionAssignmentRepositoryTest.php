@@ -45,11 +45,11 @@ public function tearDown()
         $this->assertInstanceOf('App\QuestionAssignment', $result);
     }
 
-    public function testLoadByIds()
+    public function testLoadQuestionNumberById()
     {
         $qid = $this->assignment->question_id;
         $eid = $this->assignment->exam_id;
-        $result = $this->object->loadByIds($eid, $qid);
+        $result = $this->object->loadQuestionNumberById($eid, $qid);
         $this->assertTrue(is_integer($result));
     }
 

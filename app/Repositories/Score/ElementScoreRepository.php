@@ -18,31 +18,33 @@ class ElementScoreRepository implements IElementScoreRepository
     public $score_object;
 
     /**
+     * Load score for a student by the id of the element assigment
      * @param integer $elementAssignmentId
      * @param integer $studentId
      * @return ElementScore
      */
     public function load($elementAssignmentId, $studentId)
     {
-        $this->score_object = ElementScore::onStudentElementAssignment($studentId, $elementAssignmentId)->first();
-
+        $this->score_object = ElementScore::firstOrNew(['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId]);
+//        ElementScore::where('element_assignment_id', $elementAssignmentId)->where('student_id', $studentId)->
+//        $this->score_object = ElementScore::onStudentElementAssignment($studentId, $elementAssignmentId)->first();
         return $this->score_object;
     }
 
-    /**
-     * Loads all element scores for a given question on an exam
-     * @param IQuestionAssignmentRepository $questionAssigner
-     * @param $examId
-     * @param $questionNumber
-     */
-    public function load_all_for_question_number(IQuestionAssignmentRepository $questionAssigner, $examId, $questionNumber)
-    {
-        $assignment = $questionAssigner->load($examId, $questionNumber);
-        $elementAssignments =
-        ElementScore::whereHas('questionAssignment', function($query, $assignment){
-            $query->where('id', $assignment->getId());
-        });
-    }
+//    /**
+//     * Loads all element scores for a given question on an exam
+//     * @param IQuestionAssignmentRepository $questionAssigner
+//     * @param $examId
+//     * @param $questionNumber
+//     */
+//    public function load_all_for_question_number(IQuestionAssignmentRepository $questionAssigner, $examId, $questionNumber)
+//    {
+//        $assignment = $questionAssigner->load($examId, $questionNumber);
+//        $elementAssignments = ElementScore::whereHas('questionAssignment', function ($query, $assignment)
+//            {
+//                $query->where('id', $assignment->getId());
+//            });
+//    }
 
     /**
      * Loads all question scores for a student on an exam
@@ -51,7 +53,8 @@ class ElementScoreRepository implements IElementScoreRepository
      */
     public function load_for_student_on_exam($examId, $studentId)
     {
-return ElementScore::where('student_id', $studentId)->where('exam_id', $examId)->first();
+        return ElementScore::where('student_id', $studentId)->where('exam_id', $examId)->get();
+//        return ElementScore::where('student_id', $studentId)->where('exam_id', $examId)->first();
     }
 
 
@@ -65,8 +68,8 @@ return ElementScore::where('student_id', $studentId)->where('exam_id', $examId)-
     public function update($elementAssignmentId, $studentId, $score)
     {
         $this->load($elementAssignmentId, $studentId);
-        $this->score_object->setScore($score);
-
-        return $this->score_object->update();
+        $this->score_object->score = $score;
+        $this->score_object->update();
+        return $this->score_object;
     }
 }

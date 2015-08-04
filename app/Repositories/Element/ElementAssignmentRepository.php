@@ -57,13 +57,13 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
 //        //TODO: Add error handling
 //        }
 //        $this->assignments = ElementAssignment::where('question_assignment_id', $questionAssignment[0]->id)->get();
+
         $this->load_element_assignments_by_question_number($examId, $questionNumber);
         $elements = array();
         foreach ($this->assignments as $assign)
         {
             array_push($elements, $assign->element()->first());
         }
-
         return $elements;
     }
 
@@ -97,11 +97,11 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
      */
     public function record($examId, $questionId, $elementId, $subtask)
     {
-        $element = Element::find($elementId);
-
+        $element = Element::findOrFail($elementId);
         $element->setAsQuestionTask($examId, $questionId, $subtask);
       return $element;
-//        $questionAssignment = $this->questionAssignmentDao->loadByIds($examId, $questionId);
+
+//        $questionAssignment = $this->questionAssignmentDao->loadQuestionNumberById($examId, $questionId);
 //
 //        $ea = ElementAssignment::where('question_assignment_id', $questionAssignment->id)->where('subtask', $subtask);
 //        if($ea){

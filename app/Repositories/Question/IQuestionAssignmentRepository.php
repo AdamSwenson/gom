@@ -35,6 +35,7 @@ interface IQuestionAssignmentRepository
      * @return mixed
      */
     public function loadByIds($examId, $questionId);
+    public function loadQuestionNumberById($examId, $questionId);
 
     /**
      * Assigns a question to an exam as the specified question number

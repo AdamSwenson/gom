@@ -170,6 +170,7 @@ class ElementRepository implements IElementRepository
             $comment->setBody($clean_body);
             $element = $this->loadElementById($elementId);
             $comment->element()->associate($element);
+            $comment->save();
             return $comment;
         }
     }
