@@ -119,6 +119,7 @@ class StudentController extends Controller
     {
         //
           $data = $request->input('filedata');
+
           //  dd($data);
 
 

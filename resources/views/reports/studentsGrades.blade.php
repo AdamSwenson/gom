@@ -13,18 +13,6 @@
         document.getElementById('gradeHead').setAttribute('class',"");
         document.getElementById('reportHead').setAttribute('class',"active");
         document.getElementById('accountHead').setAttribute('class',"");
-
-       function  Release(id){
-           document.getElementById( "lockExam" + id ).className = "btn btn-danger";
-           document.getElementById("releaseExam" + id).className = "btn btn-success disabled";
-
-        }
-        function Lock(id){
-            document.getElementById( "lockExam" + id ).className = "btn btn-danger disabled";
-            document.getElementById("releaseExam" + id).className = "btn btn-success";
-
-        }
-
     </script>
     <div id="editRoster">
         <div class="section">
@@ -32,19 +20,19 @@
                 <nav>
                     <ul class="pager">
                         <li class="previous">
-                            <a href="{{url('setup')}}"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Exam Setup</a>
+                            <a href="{{url('report')}}"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Exam List</a>
                         </li>
                     </ul>
                 </nav>
 
 
                 <a style="width: 82%;" id="editExamLink" class="list-group-item">
-                    <h4><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>Exams</h4>
+                    <h4><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>Students</h4>
                 </a>
 
                 <div id="examListEdit" class="sublinks">
                     <div class="container">
-                        @foreach($exams as $exam)
+                        @foreach($students as $student)
                             <div class="row" >
                                 <div style="width: 80%;">
                                 <!--<form method="GET" action="{url('exam/'. $exam->getId() . '/edit')}}" accept-charset="UTF-8">
@@ -52,20 +40,17 @@
                                <!-- </form> -->
                                     <div class="well well-sm">
                                         <div class="row" >
-                                        <div  class="col-sm-2">
-                                            <a class="btn btn-primary" href="{{url('report/' . $exam->getId() . '/analytics')}}" ><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a>
-                                            <a class="btn btn-default" href="{{url('report/' . $exam->getId() . '/students')}}" ><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></a>
-                                        </div>
-                                        <div  class="col-sm-8">
-                                            {{ $exam->getName() }}
-                                            {{ $exam->getTerm() }}
-                                            {{ $exam->getYear() }}
+                                        <div  class="col-sm-4">
 
+                                        </div>
+                                        <div  class="col-sm-6">
+                                          <p> <span style="font-weight:bold;">STUDENT ID:</span>{{ $student->getStudentId() }} </p>
+                                            <p><span style="font-weight:bold;">Name:</span> {{ $student->getStudentFName() }}
+                                            {{ $student->getStudentLName() }} </p>
                                         </div>
 
                                         <div  class="col-sm-2">
-                                            <a id="{{'lockExam' . $exam->getId()}}" class="btn btn-danger disabled" onclick="Lock({{$exam->getId()}})"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></a>
-                                            <a id="{{'releaseExam' . $exam->getId()}}" class="btn btn-success" onclick="Release({{$exam->getId()}})" ><span class="glyphicon glyphicon-send" aria-hidden="true"></span></a>
+
                                         </div>
                                         </div>
                                     </div>

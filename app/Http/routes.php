@@ -11,6 +11,10 @@
 |
 */
 
+Route::get('test', function () {
+    return view('feedback.feedback');
+});
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -44,15 +48,17 @@ Route::get('account/logout', function(){
     return "Logout";
 });
 
+
 // Public routes for students to view
 Route::get('studentview', function(){
     return 'student view';
 });
 
 // Reporting and analytics
-Route::get('report/analytics', function(){
-    return "This will eventually be the analytics page";
-});
+Route::get('report', 'ReportController@showExams');
+Route::get('report/{exam}/students', 'ReportController@showStudents');
+Route::get('report/{exam}/analytics','ReportController@showAnalytics');
+
 
 // Grading
 Route::get('report/gradeassign', array('uses' => 'ReportController@showGradeAssign'));

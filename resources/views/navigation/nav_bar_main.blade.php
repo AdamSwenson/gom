@@ -27,7 +27,7 @@
                     <a href="#">Grade</a>
                 </li>
                 <li id="reportHead">
-                    <a href="#">Reports</a>
+                    <a href="{{url('report')}}">Reports</a>
                 </li>
                 <li id="accountHead">
                     <a href="{{url('account/home')}}">Account</a>

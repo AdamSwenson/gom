@@ -46,7 +46,7 @@
 
                 <input type="file" name="file" style="visibility:hidden;" id="file" onchange='handleFileSelect();' /><br/>
 
-                <button class="btn btn-primary" onclick="$('#file').click();"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                <button class="btn btn-primary" onclick="$('#file').click();"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
                         Select File
                 </button>
 
