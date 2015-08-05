@@ -161,13 +161,15 @@ class FeedbackBuilder implements IFeedbackBuilder
                 if (!empty($questionScoreObject))
                 {
                     $question['score'] = $questionScoreObject->getScore();
+                    $question['average'] = 5.0;
                 }
                 foreach ($question['elements'] as &$element)
                 {
                     $scoreObject = $this->elementScoreRepository->load($element['elementAssignmentId'], $student->id);
-                    if (!empty($scoreObject))
+                    if (!empty($scoreObject) && !empty($scoreObject->score))
                     {
                         $element['score'] = $scoreObject->getScore();
+                        $element['average'] = 5.0;
                         $commentObj = $this->commentRepository->getCommentForScore($element['elementId'],
                             $element['score']);
                         $element['comment'] = $commentObj->getBody();

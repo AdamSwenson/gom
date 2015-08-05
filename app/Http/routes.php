@@ -11,11 +11,17 @@
 |
 */
 
+
+//This is for dev....
+use App\Http\Controllers\PublicFeedbackController;
+
 Route::get('test', function () {
     return view('feedback.feedback');
 });
 
-use App\Http\Controllers\PublicFeedbackController;
+
+
+
 
 Route::get('/', function () {
     return view('welcome');

@@ -31,7 +31,6 @@ class ElementScoreRepository implements IElementScoreRepository
 
 //        ElementScore::where('element_assignment_id', $elementAssignmentId)->where('student_id', $studentId)->
 //        $this->score_object = ElementScore::onStudentElementAssignment($studentId, $elementAssignmentId)->first();
-
     }
 
 //    /**

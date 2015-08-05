@@ -18,7 +18,7 @@ class StudentControllerTest extends \TestCase
     use WithoutMiddleware;
 
     public $student;
-    public $dao;
+//    public $dao;
     protected $object;
 
     public function setUp()
@@ -26,8 +26,8 @@ class StudentControllerTest extends \TestCase
         \Mockery::close();
         parent::setUp();
         $this->student = Student::all()->random();
-        $this->dao = \Mockery::mock('\App\Repositories\Student\IStudentRepository');
-        $this->app->instance('\App\Repositories\Student\IStudentRepository', $this->dao);
+       // $this->dao = \Mockery::mock('\App\Repositories\Student\IStudentRepository');
+        //$this->app->instance('\App\Repositories\Student\IStudentRepository', $this->dao);
 //        $this->dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
         // $this->object = new StudentController($this->dao);
     }
@@ -75,7 +75,8 @@ class StudentControllerTest extends \TestCase
 
     public function testShow()
     {
-        $this->dao->shouldReceive('load_student_by_id')->with($this->student)->andReturn($this->student);
+        $dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
+        $dao->shouldReceive('load_student_by_id')->with($this->student)->andReturn($this->student);
         $response = $this->action('POST', 'StudentController@show', $this->student);
         $this->assertNotNull($response);
     }
@@ -94,7 +95,8 @@ class StudentControllerTest extends \TestCase
 
     public function testDestroy()
     {
-        $this->dao->shouldReceive('delete_student_by_object')->with($this->student)->andReturn(true);
+        $dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
+        $dao->shouldReceive('delete_student_by_object')->with($this->student)->andReturn(true);
         $response = $this->action('POST', 'StudentController@destroy', $this->student);
         $this->assertNotNull($response);
     }

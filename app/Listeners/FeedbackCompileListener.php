@@ -12,6 +12,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
  * Class FeedbackCompileListener
  *
  * This gets notified when an exam is released. It compiles and stores the feedback for the exam.
+ *
  * @package App\Listeners
  */
 class FeedbackCompileListener implements ShouldQueue
@@ -28,7 +29,6 @@ class FeedbackCompileListener implements ShouldQueue
      */
     public function __construct(IFeedbackBuilder $feedbackBuilder)
     {
-        //
         $this->feedbackBuilder = $feedbackBuilder;
     }
 
@@ -40,9 +40,7 @@ class FeedbackCompileListener implements ShouldQueue
      */
     public function handle(ExamReleasedEvent $event)
     {
-//        $this->displayProgress();
         $examId = $event->getExamId();
-
         $feedback = $this->feedbackBuilder->buildFeedback($examId);
         if(!empty($feedback))
         {
