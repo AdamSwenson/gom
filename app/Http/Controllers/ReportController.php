@@ -8,9 +8,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ExamReleasedEvent;
 use App\Exam;
 use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
+use App\Repositories\Exam\IExamRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Score\IElementScoreRepository;
 use App\Repositories\Score\IQuestionScoreRepository;
@@ -24,9 +26,10 @@ class ReportController extends Controller
      */
     private $studentRepository;
     protected $examDao;
-    protected $studentDao;
 
     /**
+     * @param IExamRepository $examRepository
+     * @param IStudentRepository $studentRepository
      * @param IQuestionAssignmentRepository $questionAssignmentRepository
      * @param IElementAssignmentRepository $elementAssignmentRepository
      * @param IQuestionScoreRepository $questionScoreRepository
@@ -35,6 +38,8 @@ class ReportController extends Controller
      * @param IStudentRepository $studentRepository
      */
     public function __construct(
+        IExamRepository $examRepository,
+        IStudentRepository $studentRepository,
         IQuestionAssignmentRepository $questionAssignmentRepository,
         IElementAssignmentRepository $elementAssignmentRepository,
         IQuestionScoreRepository $questionScoreRepository,
@@ -42,7 +47,9 @@ class ReportController extends Controller
         ICommentRepository $commentRepository,
     IStudentRepository $studentRepository
     ) {
+        //TODO Remove this once the login system is working
         Auth::loginUsingId(1);
+        $this->examDao = $examRepository;
         $this->questionAssignmentRepository = $questionAssignmentRepository;
         $this->elementAssignmentRepository = $elementAssignmentRepository;
         $this->questionScoreRepository = $questionScoreRepository;
@@ -59,6 +66,7 @@ class ReportController extends Controller
     /**
      * Receives the command to create feedback for the exam and dispatches the
      * events to take care of it
+     * @param Exam $exam
      * @return \Illuminate\View\View
      */
     public function createFeedback(Exam $exam)
@@ -78,7 +86,7 @@ class ReportController extends Controller
 
     public function showExams()
     {
-        //TODO Remove this once the login system is working
+
 
         $exams = $this->examDao->load_all_exams();
         //$students = $this->studentDao->load_all_students();
@@ -88,13 +96,12 @@ class ReportController extends Controller
     }
 
     public function showStudents(Exam $exam){
-        $students = $this->studentDao->load_students_by_exam($exam->getId());
-
+        $students = $this->studentRepository->load_students_by_exam($exam->getId());
         return view('reports.studentsGrades')->with(['exam' => $exam,'students'=>$students]);
     }
 
     public function showAnalytics(Exam $exam){
-        $students = $this->studentDao->load_students_by_exam($exam->getId());
+        $students = $this->studentRepository->load_students_by_exam($exam->getId());
 
         return view('reports.analyticsCharts')->with(['exam' => $exam,'students'=>$students]);
     }

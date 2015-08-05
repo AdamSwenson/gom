@@ -102,7 +102,7 @@
     </div>
     <script type="text/javascript">
 //        setTimeout(function(){}, 10);
-        </script
+        </script>
 
     <script type="text/javascript" src="{{asset('inc/js/securityTools.js')}}"></script>
     <script type="text/javascript" src="{{asset('inc/js/input_plugins.js')}}"></script>

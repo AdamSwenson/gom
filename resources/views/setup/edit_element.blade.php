@@ -16,7 +16,6 @@
 @endsection
 
 @section('body')
-
     <div class="section">
         <div class="container">
             <nav>
