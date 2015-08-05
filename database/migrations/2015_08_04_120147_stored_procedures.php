@@ -61,6 +61,20 @@ MYSQL;
 
         DB::unprepared($record_element_score);
 
+//, OUT @questionNumber INT, OUT @questionName @VARCHAR, OUT @average FLOAT)
+        $question_averages = <<<MYSQL
+DROP PROCEDURE IF EXISTS question_score_averages_for_exam;
+CREATE PROCEDURE `question_score_averages_for_exam` (IN examId INT)
+BEGIN
+    SELECT qa.question_number AS questionNumber, q.questionName AS questionName, AVG(qs.score) AS average FROM question_scores qs
+    INNER JOIN question_assignments qa ON qs.question_assignment_id = qa.id
+    INNER JOIN questions q ON qa.question_id = q.id
+    WHERE qa.exam_id = examId
+    GROUP BY qs.question_assignment_id;
+END;
+MYSQL;
+
+        DB::unprepared($question_averages);
     }
 
     /**

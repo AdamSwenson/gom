@@ -86,13 +86,9 @@ class ReportController extends Controller
 
     public function showExams()
     {
-
-
         $exams = $this->examDao->load_all_exams();
         //$students = $this->studentDao->load_all_students();
-
         return view('reports.ExamsRelease', compact('exams'));
-
     }
 
     public function showStudents(Exam $exam){
@@ -102,7 +98,6 @@ class ReportController extends Controller
 
     public function showAnalytics(Exam $exam){
         $students = $this->studentRepository->load_students_by_exam($exam->getId());
-
         return view('reports.analyticsCharts')->with(['exam' => $exam,'students'=>$students]);
     }
 

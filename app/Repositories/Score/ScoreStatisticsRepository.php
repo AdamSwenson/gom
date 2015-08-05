@@ -6,10 +6,11 @@
  * Time: 7:02 PM
  */
 
-namespace Repositories\Score;
+namespace App\Repositories\Score;
 
 
 use App\Exam;
+use Illuminate\Support\Facades\DB;
 
 class ScoreStatisticsRepository
 {
@@ -35,6 +36,13 @@ class ScoreStatisticsRepository
     public function getQuestionStatsForExam(Exam $exam)
     {
         $this->exam = $exam;
+//       DB::statement('CALL question_score_averages_for_exam(:examId, @questionNumber, @questionName, @average)', ['examId' => $exam->getId()]);
+        DB::statement('CALL question_score_averages_for_exam(:examId, questionNumber, questionName, average)', ['examId' => $exam->getId()]);
+        $result = DB::select('SELECT questionNumber, questionName, average');
+//        $result = DB::select('SELECT @questionNumber AS questionNumber, @questionName AS questionName, @average AS average');
+        return $result;
+
+
     }
 
 

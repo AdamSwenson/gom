@@ -13,9 +13,7 @@
 @section('description', 'Upload or modify student roster')
 
 @section('cssLinks')
-    <script src="{{asset("inc/js/rosterTable.js")}}" >
-
-    </script>
+    <script language="javascript" type="text/javascript" src="{{ asset('inc/js/rosterTable.js') }}" ></script>
 @endsection
 
 @section('body')

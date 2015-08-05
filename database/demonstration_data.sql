@@ -7,7 +7,7 @@
 #
 # Host: localhost (MySQL 5.6.25)
 # Database: gom_lar
-# Generation Time: 2015-08-05 00:52:30 +0000
+# Generation Time: 2015-08-05 20:41:54 +0000
 # ************************************************************
 
 
@@ -259,6 +259,122 @@ CREATE TABLE `element_scores` (
   CONSTRAINT `element_scores_student_id_foreign` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+LOCK TABLES `element_scores` WRITE;
+/*!40000 ALTER TABLE `element_scores` DISABLE KEYS */;
+
+INSERT INTO `element_scores` (`id`, `element_assignment_id`, `student_id`, `score`, `created_at`, `updated_at`)
+VALUES
+	(1,1,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(2,2,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(3,3,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(4,4,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(7,6,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(8,7,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(10,9,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(11,10,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(12,11,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(13,12,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(14,13,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(15,14,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(16,15,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(18,17,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(20,18,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(21,19,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(22,20,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(23,21,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(24,22,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(25,23,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(26,24,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(27,25,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(28,26,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(32,29,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(33,30,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(34,31,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(36,33,1,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(37,1,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(38,2,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(39,3,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(40,4,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(41,6,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(42,7,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(43,9,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(44,10,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(45,11,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(46,12,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(47,13,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(48,14,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(49,15,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(50,17,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(51,18,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(52,19,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(53,20,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(54,21,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(55,22,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(56,23,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(57,24,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(58,25,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(59,26,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(60,29,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(61,30,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(62,31,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(63,33,2,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(64,1,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(65,2,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(66,3,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(67,4,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(68,6,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(69,7,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(70,9,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(71,10,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(72,11,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(73,12,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(74,13,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(75,14,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(76,15,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(77,17,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(78,18,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(79,19,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(80,20,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(81,21,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(82,22,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(83,23,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(84,24,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(85,25,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(86,26,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(87,29,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(88,30,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(89,31,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(90,33,3,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(91,1,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(92,2,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(93,3,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(94,4,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(95,6,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(96,7,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(97,9,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(98,10,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(99,11,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(100,12,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(101,13,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(102,14,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(103,15,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(104,17,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(105,18,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(106,19,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(107,20,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(108,21,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(109,22,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(110,23,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(111,24,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(112,25,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(113,26,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(114,29,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(115,30,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(116,31,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(117,33,4,2.30,'0000-00-00 00:00:00','0000-00-00 00:00:00');
+
+/*!40000 ALTER TABLE `element_scores` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table elements
@@ -336,6 +452,15 @@ CREATE TABLE `exam_kumi` (
   CONSTRAINT `exam_kumi_kumi_id_foreign` FOREIGN KEY (`kumi_id`) REFERENCES `kumis` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+LOCK TABLES `exam_kumi` WRITE;
+/*!40000 ALTER TABLE `exam_kumi` DISABLE KEYS */;
+
+INSERT INTO `exam_kumi` (`id`, `exam_id`, `kumi_id`, `created_at`, `updated_at`)
+VALUES
+	(1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00');
+
+/*!40000 ALTER TABLE `exam_kumi` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table exams
@@ -423,6 +548,18 @@ CREATE TABLE `kumi_student` (
   CONSTRAINT `kumi_student_student_id_foreign` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+LOCK TABLES `kumi_student` WRITE;
+/*!40000 ALTER TABLE `kumi_student` DISABLE KEYS */;
+
+INSERT INTO `kumi_student` (`id`, `kumi_id`, `student_id`, `created_at`, `updated_at`)
+VALUES
+	(1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(2,1,2,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(3,1,3,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(4,1,4,'0000-00-00 00:00:00','0000-00-00 00:00:00');
+
+/*!40000 ALTER TABLE `kumi_student` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table kumis
@@ -442,6 +579,15 @@ CREATE TABLE `kumis` (
   CONSTRAINT `kumis_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+LOCK TABLES `kumis` WRITE;
+/*!40000 ALTER TABLE `kumis` DISABLE KEYS */;
+
+INSERT INTO `kumis` (`id`, `user_id`, `year`, `nickname`, `created_at`, `updated_at`)
+VALUES
+	(1,1,2015,'classname','0000-00-00 00:00:00','0000-00-00 00:00:00');
+
+/*!40000 ALTER TABLE `kumis` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table migrations
@@ -552,6 +698,38 @@ CREATE TABLE `question_scores` (
   CONSTRAINT `question_scores_student_id_foreign` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+LOCK TABLES `question_scores` WRITE;
+/*!40000 ALTER TABLE `question_scores` DISABLE KEYS */;
+
+INSERT INTO `question_scores` (`id`, `question_assignment_id`, `student_id`, `score`, `created_at`, `updated_at`)
+VALUES
+	(1,1,1,5.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(2,1,2,6.00,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(3,1,3,2.00,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(4,1,4,2.20,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(5,2,1,5.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(6,2,2,6.00,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(7,2,3,2.00,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(8,2,4,2.20,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(9,3,1,5.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(10,3,2,6.00,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(11,3,3,2.00,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(12,3,4,2.20,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(13,4,1,5.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(14,4,2,6.00,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(15,4,3,2.00,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(16,4,4,2.20,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(17,5,1,5.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(18,5,2,6.00,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(19,5,3,2.00,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(20,5,4,2.20,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(21,6,1,5.30,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(22,6,2,6.00,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(23,6,3,2.00,'0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(24,6,4,2.20,'0000-00-00 00:00:00','0000-00-00 00:00:00');
+
+/*!40000 ALTER TABLE `question_scores` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table questions
@@ -606,6 +784,18 @@ CREATE TABLE `students` (
   CONSTRAINT `students_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+LOCK TABLES `students` WRITE;
+/*!40000 ALTER TABLE `students` DISABLE KEYS */;
+
+INSERT INTO `students` (`id`, `user_id`, `student_identifier`, `last_name`, `first_name`, `email`, `created_at`, `updated_at`)
+VALUES
+	(1,1,11111111,'Hobbes','Tommy','tommy@hobbes.com','0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(2,1,22222222,'Hypatia','Ms','old@old.com','0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(3,1,33333333,'Hume','Davey','davey@hume.edu','0000-00-00 00:00:00','0000-00-00 00:00:00'),
+	(4,1,44444444,'Anscombe','Liz','liz@csun.edu','0000-00-00 00:00:00','0000-00-00 00:00:00');
+
+/*!40000 ALTER TABLE `students` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table users
@@ -636,6 +826,82 @@ VALUES
 UNLOCK TABLES;
 
 
+
+--
+-- Dumping routines (PROCEDURE) for database 'gom_lar'
+--
+DELIMITER ;;
+
+# Dump of PROCEDURE assign_element
+# ------------------------------------------------------------
+
+/*!50003 DROP PROCEDURE IF EXISTS `assign_element` */;;
+/*!50003 SET SESSION SQL_MODE="NO_ENGINE_SUBSTITUTION"*/;;
+/*!50003 CREATE*/ /*!50020 DEFINER=`testuser4`@`localhost`*/ /*!50003 PROCEDURE `assign_element`(IN questionAssignmentId INT, IN subtask INT, IN elementId INT)
+BEGIN
+        INSERT INTO element_assignments (question_assignment_id, subtask, element_id)
+        VALUES (questionAssignmentId, subtask, elementId) ON DUPLICATE KEY UPDATE element_id = elementId;
+
+        SELECT question_assignment_id, subtask, element_id FROM element_assignments
+        WHERE question_assignment_id = questionAssignmentId AND subtask = subtask AND element_id = elementId;
+    END */;;
+
+/*!50003 SET SESSION SQL_MODE=@OLD_SQL_MODE */;;
+# Dump of PROCEDURE assign_question
+# ------------------------------------------------------------
+
+/*!50003 DROP PROCEDURE IF EXISTS `assign_question` */;;
+/*!50003 SET SESSION SQL_MODE="NO_ENGINE_SUBSTITUTION"*/;;
+/*!50003 CREATE*/ /*!50020 DEFINER=`testuser4`@`localhost`*/ /*!50003 PROCEDURE `assign_question`(IN questionId INT, IN examId INT, IN questionNumber INT)
+BEGIN
+    INSERT INTO question_assignments (question_id, exam_id, question_number)
+    VALUES (questionId, examId, questionNumber)
+    ON DUPLICATE KEY UPDATE question_id = questionId;
+  END */;;
+
+/*!50003 SET SESSION SQL_MODE=@OLD_SQL_MODE */;;
+# Dump of PROCEDURE question_score_averages_for_exam
+# ------------------------------------------------------------
+
+/*!50003 DROP PROCEDURE IF EXISTS `question_score_averages_for_exam` */;;
+/*!50003 SET SESSION SQL_MODE="NO_ENGINE_SUBSTITUTION"*/;;
+/*!50003 CREATE*/ /*!50020 DEFINER=`testuser4`@`localhost`*/ /*!50003 PROCEDURE `question_score_averages_for_exam`(IN examId INT)
+BEGIN
+    SELECT qa.question_number AS questionNumber, q.questionName AS questionName, AVG(qs.score) AS average FROM question_scores qs
+    INNER JOIN question_assignments qa ON qs.question_assignment_id = qa.id
+    INNER JOIN questions q ON qa.question_id = q.id
+    WHERE qa.exam_id = examId
+    GROUP BY qs.question_assignment_id;
+END */;;
+
+/*!50003 SET SESSION SQL_MODE=@OLD_SQL_MODE */;;
+# Dump of PROCEDURE record_element_score
+# ------------------------------------------------------------
+
+/*!50003 DROP PROCEDURE IF EXISTS `record_element_score` */;;
+/*!50003 SET SESSION SQL_MODE="NO_ENGINE_SUBSTITUTION"*/;;
+/*!50003 CREATE*/ /*!50020 DEFINER=`testuser4`@`localhost`*/ /*!50003 PROCEDURE `record_element_score`(IN elementAssignmentId INT, IN studentId INT, IN score FLOAT)
+BEGIN
+    INSERT INTO element_scores (element_assignment_id, student_id, score)
+    VALUES (elementAssignmentId, studentId, score)
+    ON DUPLICATE KEY UPDATE score = score;
+  END */;;
+
+/*!50003 SET SESSION SQL_MODE=@OLD_SQL_MODE */;;
+# Dump of PROCEDURE record_question_score
+# ------------------------------------------------------------
+
+/*!50003 DROP PROCEDURE IF EXISTS `record_question_score` */;;
+/*!50003 SET SESSION SQL_MODE="NO_ENGINE_SUBSTITUTION"*/;;
+/*!50003 CREATE*/ /*!50020 DEFINER=`testuser4`@`localhost`*/ /*!50003 PROCEDURE `record_question_score`(IN questionAssignmentId INT, IN studentId INT, IN score FLOAT)
+BEGIN
+  INSERT INTO question_scores (question_assignment_id, student_id, score)
+  VALUES (questionAssignmentId, studentId, score)
+  ON DUPLICATE KEY UPDATE score = score;
+END */;;
+
+/*!50003 SET SESSION SQL_MODE=@OLD_SQL_MODE */;;
+DELIMITER ;
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
