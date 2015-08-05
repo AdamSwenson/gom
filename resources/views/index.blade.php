@@ -234,6 +234,7 @@
                 <p>Contact</p>
             </div>
         </div>
+
         <div class="verticalspacer"></div>
     </div>
     </div>
