@@ -53,6 +53,7 @@
             <div class="clearfix" id="u82-4"><!-- content -->
                 <p>GradeOmatic</p>
             </div>
+        </div>
         </a>
 
         </div>
@@ -233,6 +234,7 @@
                 <p>Contact</p>
             </div>
         </div>
+
         <div class="verticalspacer"></div>
     </div>
     </div>
