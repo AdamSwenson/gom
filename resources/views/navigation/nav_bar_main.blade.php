@@ -24,7 +24,7 @@
                     <a href="{{url('setup')}}">Setup</a>
                 </li>
                 <li>
-                    <a href="#">Grade</a>
+                    <a href="{{url('grade')}}">Grade</a>
                 </li>
                 <li id="reportHead">
                     <a href="{{url('report')}}">Reports</a>
