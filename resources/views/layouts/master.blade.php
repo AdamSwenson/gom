@@ -14,13 +14,9 @@
             <!-- moved these to test responsiveness -->
     @include('layouts.js_jqueryJs')
     @include('layouts.js_scriptloader')
-    <link href="{{ asset('inc/css/bootstrap-slider.min.css') }}" rel="stylesheet">
-
             <!-- bootstrap -->
     <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <!-- bootstrap sliders -->
-    <script type='text/javascript' src="<?php echo asset("inc/js/bootstrap-slider.min.js");?>"></script>
 
     <!-- bootbox: was going to use for warning easy modals NOT CURRENTLY USED -->
     <script type="text/javascript" src="<?php echo asset("inc/js/bootbox.min.js");?>"></script>

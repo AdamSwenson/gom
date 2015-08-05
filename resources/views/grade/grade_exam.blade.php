@@ -33,7 +33,6 @@
 
             <!-- Right column holds Roster and Time info -->
             <div class="col-md-4">
-
                 <!-- student name and / or ID -->
                 <div class="row">
                     <div class="col-md-6">
@@ -71,14 +70,18 @@
 
 
 @section('jsArea')
+
+        <!-- bootstrap sliders -->
+    <link href="{{ asset('inc/css/slider.css') }}" rel="stylesheet">
+    <script type='text/javascript' src="{{ asset('inc/js/bootstrap-slider.js') }}"></script>
+
     <script type="text/javascript">
 
         $(document).ready(function () {
-            // Instantiate a slider
-            var mySlider = $("input.slider").bootstrapSlider();
+            var mySlider = $("input.slider").slider();
 
             // Call a method on the slider
-            var value = mySlider.bootstrapSlider('getValue');
+            //var value = mySlider.bootstrapSlider('getValue');
         });
     </script>
 @endsection
