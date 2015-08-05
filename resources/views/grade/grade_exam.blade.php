@@ -23,6 +23,7 @@
                     <div class="panel-body">
                         <div class="tab-content">
                             <?php for ($count = 0; $count < 4; $count++) { ?>
+                                    <!-- element sliders -->
                             @include('grade.element_slider')
                             <?php } ?>
                         </div>
@@ -70,6 +71,14 @@
 
 
 @section('jsArea')
+    <script type="text/javascript">
 
+        $(document).ready(function () {
+            // Instantiate a slider
+            var mySlider = $("input.slider").bootstrapSlider();
 
+            // Call a method on the slider
+            var value = mySlider.bootstrapSlider('getValue');
+        });
+    </script>
 @endsection
