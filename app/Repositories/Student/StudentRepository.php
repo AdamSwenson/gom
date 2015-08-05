@@ -134,6 +134,7 @@ class StudentRepository implements IStudentRepository
     }
 
 
+
     /**
      * Handles the database queries for the autocomplete function
      * on the main grading page

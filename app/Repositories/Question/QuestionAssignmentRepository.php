@@ -81,6 +81,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
     {
         $q = Question::findOrFail($questionId);
         $q->setQuestionNumber($examId, $question_number);
+        return $q;
 //
 //        $qa = QuestionAssignment::where('exam_id', $examId)->where('question_number', $question_number)->first();
 ////        $qa = QuestionAssignment::firstOrNew(['exam_id' => $examId, 'question_number' => $question_number]);
@@ -118,7 +119,6 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
     function remove($examId, $questionId)
     {
         $qa = QuestionAssignment::onExam($examId)->onQuestionId($questionId)->firstOrFail();
-
         return $qa->delete();
     }
 }

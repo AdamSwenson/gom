@@ -18,6 +18,14 @@ use App\Http\Requests\StudentRequest;
 use App\Repositories\Student\IStudentRepository;
 use App\Student;
 
+/**
+ * Class StudentController
+ *
+ * This handles requests concerning student management such as adding,
+ * removing, and editing rosters.
+ *
+ * @package App\Http\Controllers
+ */
 class StudentController extends Controller
 {
     /** @var IStudentRepository  */
