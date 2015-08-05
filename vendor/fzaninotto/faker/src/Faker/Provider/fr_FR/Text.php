@@ -15462,7 +15462,7 @@ EOT;
     The Foundation's principal office is located at 4557 Melan Dr. S.
     Fairbanks, AK, 99712., but its volunteers and employees are scattered
     throughout numerous locations.  Its business office is located at
-    809 North 1500 West, Salt Lake City, UT 84116, (801) 596-1887, email
+    809 North 1500 West, Salt Lake City, UT 84116, (801) 596-1887, emails
     business@pglaf.org.  Email contact links and up to date contact
     information can be found at the Foundation's web site and official
     page at http://pglaf.org
@@ -15526,6 +15526,6 @@ EOT;
     This Web site includes information about Project Gutenberg-tm,
     including how to make donations to the Project Gutenberg Literary
     Archive Foundation, how to help produce our new eBooks, and how to
-    subscribe to our email newsletter to hear about new eBooks.
+    subscribe to our emails newsletter to hear about new eBooks.
     */
 }

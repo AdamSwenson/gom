@@ -22,13 +22,13 @@ use Monolog\Logger;
 class NativeMailerHandler extends MailHandler
 {
     /**
-     * The email addresses to which the message will be sent
+     * The emails addresses to which the message will be sent
      * @var array
      */
     protected $to;
 
     /**
-     * The subject of the email
+     * The subject of the emails
      * @var string
      */
     protected $subject;
@@ -144,14 +144,14 @@ class NativeMailerHandler extends MailHandler
     }
 
     /**
-     * @param  string $contentType The content type of the email - Defaults to text/plain. Use text/html for HTML
+     * @param  string $contentType The content type of the emails - Defaults to text/plain. Use text/html for HTML
      *                             messages.
      * @return self
      */
     public function setContentType($contentType)
     {
         if (strpos($contentType, "\n") !== false || strpos($contentType, "\r") !== false) {
-            throw new \InvalidArgumentException('The content type can not contain newline characters to prevent email header injection');
+            throw new \InvalidArgumentException('The content type can not contain newline characters to prevent emails header injection');
         }
 
         $this->contentType = $contentType;
@@ -166,7 +166,7 @@ class NativeMailerHandler extends MailHandler
     public function setEncoding($encoding)
     {
         if (strpos($encoding, "\n") !== false || strpos($encoding, "\r") !== false) {
-            throw new \InvalidArgumentException('The encoding can not contain newline characters to prevent email header injection');
+            throw new \InvalidArgumentException('The encoding can not contain newline characters to prevent emails header injection');
         }
 
         $this->encoding = $encoding;

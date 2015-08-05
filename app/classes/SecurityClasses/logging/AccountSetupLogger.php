@@ -27,10 +27,10 @@ class AccountSetupLogger
 
     protected $log_channel_name = "AccountCreation";
 
-    /** @var $to_email The email address to send creation messages to */
+    /** @var $to_email The emails address to send creation messages to */
     protected $to_email = '';
 
-    /** @var $from_email The email address to send from */
+    /** @var $from_email The emails address to send from */
     protected $from_email = '';
 
     /**

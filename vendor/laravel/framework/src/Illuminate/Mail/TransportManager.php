@@ -70,7 +70,7 @@ class TransportManager extends Manager
         $config = $this->app['config']->get('services.ses', []);
 
         $config += [
-            'version' => 'latest', 'service' => 'email',
+            'version' => 'latest', 'service' => 'emails',
         ];
 
         if ($config['key'] && $config['secret']) {

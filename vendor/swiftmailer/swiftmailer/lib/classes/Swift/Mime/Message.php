@@ -73,7 +73,7 @@ interface Swift_Mime_Message extends Swift_Mime_MimeEntity
      * addresses, but Swift itself does not require it directly.
      *
      * An associative array (with one element!) can be used to provide a display-
-     * name: i.e. array('email@address' => 'Real Name').
+     * name: i.e. array('emails@address' => 'Real Name').
      *
      * If the second parameter is provided and the first is a string, then $name
      * is associated with the address.
@@ -101,7 +101,7 @@ interface Swift_Mime_Message extends Swift_Mime_MimeEntity
      * according to RFC 2822, MUST set the sender address.
      *
      * An array can be used if display names are to be provided: i.e.
-     * array('email@address.com' => 'Real Name').
+     * array('emails@address.com' => 'Real Name').
      *
      * If the second parameter is provided and the first is a string, then $name
      * is associated with the address.
@@ -142,7 +142,7 @@ interface Swift_Mime_Message extends Swift_Mime_MimeEntity
      * Get the Reply-To addresses for this message.
      *
      * This method always returns an associative array where the keys provide the
-     * email addresses.
+     * emails addresses.
      *
      * @return string[]
      */
@@ -167,7 +167,7 @@ interface Swift_Mime_Message extends Swift_Mime_MimeEntity
      * Get the To addresses for this message.
      *
      * This method always returns an associative array, whereby the keys provide
-     * the actual email addresses.
+     * the actual emails addresses.
      *
      * @return string[]
      */
@@ -189,7 +189,7 @@ interface Swift_Mime_Message extends Swift_Mime_MimeEntity
      * Get the Cc addresses for this message.
      *
      * This method always returns an associative array, whereby the keys provide
-     * the actual email addresses.
+     * the actual emails addresses.
      *
      * @return string[]
      */
@@ -215,7 +215,7 @@ interface Swift_Mime_Message extends Swift_Mime_MimeEntity
      * Get the Bcc addresses for this message.
      *
      * This method always returns an associative array, whereby the keys provide
-     * the actual email addresses.
+     * the actual emails addresses.
      *
      * @return string[]
      */

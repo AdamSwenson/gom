@@ -8,7 +8,7 @@ namespace Faker\Provider\is_IS;
 class Internet extends \Faker\Provider\Internet
 {
     /**
-     * @var array Some email domains in Denmark.
+     * @var array Some emails domains in Denmark.
      */
     protected static $freeEmailDomain = array(
         'gmail.com', 'yahoo.com', 'hotmail.com', 'visir.is', 'simnet.is', 'internet.is'

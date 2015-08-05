@@ -19,7 +19,7 @@ use App\Classes\UserManagement\models\SettableUser;
 /**
  * This is the master controller for creating a new user and their schema.
  * It executes all the calls for setting up the new user and their schema.
- * It is run after the user responds to the activation email
+ * It is run after the user responds to the activation emails
  *
  * @author adam
  */
@@ -90,7 +90,7 @@ class AccountSetup
     /**
      * Runs the account setup process
      * TODO Check length for expected size
-     * @param string $token Hash sent to registrant's email
+     * @param string $token Hash sent to registrant's emails
      * @return bool
      * @throws \Exception
      */

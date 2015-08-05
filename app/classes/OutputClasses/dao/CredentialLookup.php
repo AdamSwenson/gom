@@ -11,7 +11,7 @@ namespace App\classes\OutputClasses\dao;
 /**
  * Class CredentialLookup
  * This handles looking up the student and exam from the
- * credentials provided to the student in an email.
+ * credentials provided to the student in an emails.
  *
  * @package App\classes\OutputClasses\dao
  */

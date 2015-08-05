@@ -8,11 +8,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\ExamReleasedEvent;
 use App\Exam;
 use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
-use App\Repositories\Feedback\FeedbackBuilder;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Score\IElementScoreRepository;
 use App\Repositories\Score\IQuestionScoreRepository;
@@ -25,6 +23,8 @@ class ReportController extends Controller
      * @var IStudentRepository
      */
     private $studentRepository;
+    protected $examDao;
+    protected $studentDao;
 
     /**
      * @param IQuestionAssignmentRepository $questionAssignmentRepository
@@ -65,7 +65,6 @@ class ReportController extends Controller
     {
         event(new ExamReleasedEvent($exam));
         return view('feedback.progress_compiling');
-
 //
 //        $feedbackBuilder = new FeedbackBuilder();
 //
@@ -76,4 +75,28 @@ class ReportController extends Controller
 
      //   return view('feedback.feedback', compact('data'));
     }
+
+    public function showExams()
+    {
+        //TODO Remove this once the login system is working
+
+        $exams = $this->examDao->load_all_exams();
+        //$students = $this->studentDao->load_all_students();
+
+        return view('reports.examsRelease', compact('exams'));
+
+    }
+
+    public function showStudents(Exam $exam){
+        $students = $this->studentDao->load_students_by_exam($exam->getId());
+
+        return view('reports.studentsGrades')->with(['exam' => $exam,'students'=>$students]);
+    }
+
+    public function showAnalytics(Exam $exam){
+        $students = $this->studentDao->load_students_by_exam($exam->getId());
+
+        return view('reports.analyticsCharts')->with(['exam' => $exam,'students'=>$students]);
+    }
+
 }

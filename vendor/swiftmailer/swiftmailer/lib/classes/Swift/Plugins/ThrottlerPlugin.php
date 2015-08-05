@@ -39,7 +39,7 @@ class Swift_Plugins_ThrottlerPlugin extends Swift_Plugins_BandwidthMonitorPlugin
     private $_timer;
 
     /**
-     * The time at which the first email was sent.
+     * The time at which the first emails was sent.
      *
      * @var int
      */

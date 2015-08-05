@@ -91,7 +91,7 @@
 //                        } else {
 //                            $sid = $data[0];
 //                            $studentName = $data[1];
-//                            $email = $data[2];
+//                            $emails = $data[2];
 //                            try {
 //                                $classid = \App\classes\ImportExportClasses\StudentImportValidator::clean($_POST['classid']);
 //                                $class = new \KumiClasses\LoadKumiByClass($user, $classid);
@@ -99,10 +99,10 @@
 //                                echo $e->getMessage();
 //                                echo "The classID you specified was invalid. You must first create a class. Look up the id and add it to your csv file";
 //                            }
-//                            $valid = new \App\classes\ImportExportClasses\StudentImportValidator($sid, $studentName, $email);
+//                            $valid = new \App\classes\ImportExportClasses\StudentImportValidator($sid, $studentName, $emails);
 //                            $import = new \App\classes\ImportExportClasses\StudentImporter($valid, $class);
 //                            if ($import) {
-//                                echo $sid . ' ' . $studentName . '  ' . $class->displayID() . '  ' . $email;
+//                                echo $sid . ' ' . $studentName . '  ' . $class->displayID() . '  ' . $emails;
 //                                echo '<br />';
 //                            } else {
 //                                //@todo Add better error message

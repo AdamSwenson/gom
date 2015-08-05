@@ -2578,7 +2578,7 @@ EOT;
 
     These Web sites include award-winning information about Project
     Gutenberg, including how to donate, how to help produce our new
-    eBooks, and how to subscribe to our email newsletter (free!).
+    eBooks, and how to subscribe to our emails newsletter (free!).
 
     Those of you who want to download any eBook before announcement
     can get to them as follows, and just download by date.  This is
@@ -2694,13 +2694,13 @@ EOT;
     ***
 
     If you can't reach Project Gutenberg,
-    you can always email directly to:
+    you can always emails directly to:
 
     Michael S. Hart <hart@pobox.com>
 
     Prof. Hart will answer or forward your message.
 
-    We would prefer to send you information by email.
+    We would prefer to send you information by emails.
 
 
     **The Legal Small Print**

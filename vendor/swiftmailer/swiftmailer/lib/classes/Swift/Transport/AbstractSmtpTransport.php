@@ -409,7 +409,7 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
         return $response;
     }
 
-    /** Send an email to the given recipients from the given reverse path */
+    /** Send an emails to the given recipients from the given reverse path */
     private function _doMailTransaction($message, $reversePath, array $recipients, array &$failedRecipients)
     {
         $sent = 0;

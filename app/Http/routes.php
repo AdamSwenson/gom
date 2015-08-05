@@ -11,13 +11,35 @@
 |
 */
 
+Route::get('test', function () {
+    return view('feedback.feedback');
+});
+
 use App\Http\Controllers\PublicFeedbackController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Account
+Route::post('api', array('uses' => 'AjaxController@handleRequest'));
+Route::post('setup/api', array('uses' => 'AjaxController@handleRequest'));
+
+Route::get('home', 'LandingController@showLanding');
+
+Route::get('landing', 'LandingController@showLanding');
+Route::get('index', 'LandingController@showLanding');
+
+Route::post('account/home', 'LandingController@loggedIn');
+Route::get('account/home', 'LandingController@loggedIn');
+
+
+Route::get('account/create','LandingController@accountCreate');
+
+Route::post('account/confirm','LandingController@accountConfirm');
+Route::get('account/retrieve','LandingController@retrievePassword');
+
+Route::post('account/sent','LandingController@sentPassword');
+
 Route::get('account/user_settings', function(){
     return "User settings page";
 });
@@ -29,10 +51,16 @@ Route::get('account/logout', function(){
 });
 
 
-// Reporting and analytics
-Route::get('report/analytics', function(){
-    return "This will eventually be the analytics page";
+// Public routes for students to view
+Route::get('studentview', function(){
+    return 'student view';
 });
+
+// Reporting and analytics
+Route::get('report', 'ReportController@showExams');
+Route::get('report/{exam}/students', 'ReportController@showStudents');
+Route::get('report/{exam}/analytics','ReportController@showAnalytics');
+
 
 // Grading
 Route::get('report/gradeassign', array('uses' => 'ReportController@showGradeAssign'));
@@ -55,8 +83,8 @@ Route::get('feedback/view', 'PublicFeedbackController@showFeedback');
 
 /* NEW routes for exam selection and creation below */
 // Select exam page
-
 Route::get('setup','ExamController@index');
+Route::post('setup','ExamController@index');
 Route::resource('exam', 'ExamController');
 /*
 Route::get('exam', 'ExamController@index'); // get all exams for user
@@ -73,7 +101,6 @@ Route::delete('exam/{exam}', 'ExamController@destroy'); // delete element {id}
 Route::get('exam/{exam}/question/edit', array('as' =>'editAllQuestions', 'uses' => 'QuestionController@editAll'));
 Route::post('exam/{exam}/question/updateAll', 'QuestionController@updateAll'); // updates all questions for the exam
 Route::resource('exam.question', 'QuestionController');
-
 /*
 Route::get('exam/{id}/question', 'QuestionController@index');
 Route::get('exam/{id}/question/create', 'QuestionController@create');
@@ -97,6 +124,8 @@ Route::get('exam/{id}/question/{id}/element/{id}/edit', 'ElementController@edit'
 Route::patch('exam/{id}/question/{id}/element/{id}', 'ElementController@update');
 Route::delete('exam/{id}/question/{id}/element/{id}', 'ElementController@destroy');
 */
+
+Route::get('exam/{exam}/student/update','StudentController@updateAll');
 Route::get('exam/{exam}/student/edit', array('as' => 'editAllStudents', 'uses' => 'StudentController@editAll'));
 Route::resource('exam.student', 'StudentController');
 /*

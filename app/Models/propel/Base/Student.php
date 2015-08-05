@@ -96,7 +96,7 @@ abstract class Student implements ActiveRecordInterface
     protected $studentname;
 
     /**
-     * The value for the email field.
+     * The value for the emails field.
      * @var        string
      */
     protected $email;
@@ -452,7 +452,7 @@ abstract class Student implements ActiveRecordInterface
     }
 
     /**
-     * Get the [email] column value.
+     * Get the [emails] column value.
      *
      * @return string
      */
@@ -572,7 +572,7 @@ abstract class Student implements ActiveRecordInterface
     } // setStudentname()
 
     /**
-     * Set the value of [email] column.
+     * Set the value of [emails] column.
      *
      * @param string $v new value
      * @return $this|\Student The current object (for fluent API support)
@@ -1074,7 +1074,7 @@ abstract class Student implements ActiveRecordInterface
             $modifiedColumns[':p' . $index++]  = 'studentName';
         }
         if ($this->isColumnModified(StudentTableMap::COL_EMAIL)) {
-            $modifiedColumns[':p' . $index++]  = 'email';
+            $modifiedColumns[':p' . $index++]  = 'emails';
         }
         if ($this->isColumnModified(StudentTableMap::COL_USER_ID)) {
             $modifiedColumns[':p' . $index++]  = 'user_id';
@@ -1105,7 +1105,7 @@ abstract class Student implements ActiveRecordInterface
                     case 'studentName':
                         $stmt->bindValue($identifier, $this->studentname, PDO::PARAM_STR);
                         break;
-                    case 'email':
+                    case 'emails':
                         $stmt->bindValue($identifier, $this->email, PDO::PARAM_STR);
                         break;
                     case 'user_id':

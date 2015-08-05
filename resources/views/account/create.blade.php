@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.primalMaster')
 
 @section('pageTitle', 'Welcome to the gradeomatic')
 
@@ -25,12 +25,10 @@
             <div class="row">
                 <div class="col-xs-10 btn-group">
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Home</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Payment</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Guides</a>
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Features</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg ">News</a>
                     <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">About Us</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Help</a>
+                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg ">News</a>
+                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Pricing</a>
                 </div>
             </div>
             <div class="row" >
@@ -44,7 +42,7 @@
                         <div class="form-group">
                             <input class="form-control" type="password" name="password" id="pwd" placeholder="Enter password">
                         </div>
-                        <input class="btn btn-default" type="submit" >
+                        <input class="btn btn-default" value="Create Account" type="submit" >
                     </form>
                 </div>
             </div>

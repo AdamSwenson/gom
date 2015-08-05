@@ -21,7 +21,7 @@ class Swift_Plugins_ThrottlerPluginTest extends \SwiftMailerTestCase
         $sleeper->shouldReceive('sleep')->twice()->with(1);
 
         //10,000,000 bytes per minute
-        //100,000 bytes per email
+        //100,000 bytes per emails
 
         // .: (10,000,000/100,000)/60 emails per second = 1.667 emais/sec
 

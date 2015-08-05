@@ -49,7 +49,7 @@ interface Guard
      * @param  string  $field
      * @return \Symfony\Component\HttpFoundation\Response|null
      */
-    public function basic($field = 'email');
+    public function basic($field = 'emails');
 
     /**
      * Perform a stateless HTTP Basic login attempt.
@@ -57,7 +57,7 @@ interface Guard
      * @param  string  $field
      * @return \Symfony\Component\HttpFoundation\Response|null
      */
-    public function onceBasic($field = 'email');
+    public function onceBasic($field = 'emails');
 
     /**
      * Validate a user's credentials.
