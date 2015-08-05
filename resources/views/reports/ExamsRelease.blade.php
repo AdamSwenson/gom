@@ -17,11 +17,13 @@
        function  Release(id){
            document.getElementById( "lockExam" + id ).className = "btn btn-danger";
            document.getElementById("releaseExam" + id).className = "btn btn-success disabled";
+           document.getElementById("examState" + id).innerHTML = "(Released)";
 
         }
         function Lock(id){
             document.getElementById( "lockExam" + id ).className = "btn btn-danger disabled";
             document.getElementById("releaseExam" + id).className = "btn btn-success";
+            document.getElementById("examState" + id).innerHTML = "(Locked)";
 
         }
 
@@ -60,7 +62,7 @@
                                             {{ $exam->getName() }}
                                             {{ $exam->getTerm() }}
                                             {{ $exam->getYear() }}
-
+                                            <span id="{{'examState' . $exam->getId()}}">(Locked)</span>
                                         </div>
 
                                         <div  class="col-sm-2">
