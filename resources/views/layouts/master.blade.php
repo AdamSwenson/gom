@@ -29,8 +29,7 @@
     @yield('body')
     @include('layouts.footer')
     <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
-</div>
-
+    </div>
 <div id="scriptBox">
     <script type="text/javascript">
         $.ajaxSetup({
@@ -38,7 +37,6 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-
     </script>
     @yield('jsArea')
 </div>
