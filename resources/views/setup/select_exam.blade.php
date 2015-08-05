@@ -123,12 +123,12 @@
 
 
 @section('jsArea')
+
     <script type="text/javascript">
         $(document).ready(function () {
             return false;
         });
     </script>
-
 
 @endsection
 

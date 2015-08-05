@@ -109,19 +109,23 @@
                 }
             });
 
-            // Customize Responses -- Handle copy forms in here -- in progress
-            $("[id^='commentForm']").on('shown.bs.modal', function () {
-                // find closest elementText and copy to all blank valences
-                var parent = $(this).closest("[id^='elementItem']");
-                var elementText = $(parent).find("[id^='elementText']").val();
+            // 'Customize responses': Copy base response into empty comments
+            function registerCustomtizeHandlers() {
+                $("[id^='commentForm']").on('shown.bs.modal', function () {
+                    // find closest elementText and copy to all blank valences
+                    var parent = $(this).closest("[id^='elementItem']");
+                    var elementText = $(parent).find("[id^='elementText']").val();
 
-                for(var i = 0; i < numValences; i++ ) {
-                    var valenceText = $(parent).find("[name$=valence" + i + "]");
-                    if ( valenceText.val() === '' ) {
-                        valenceText.val(elementText);
+                    for (var i = 0; i < numValences; i++) {
+                        var valenceText = $(parent).find("[name$='valence" + i + "']");
+                        console.log(valenceText.val() );
+                        if (valenceText.val() == '') {
+                            valenceText.val(elementText);
+                        }
                     }
-                }
-            });
+                });
+            }
+            registerCustomtizeHandlers();
 
             // handle addelement button
             document.getElementById("addElement").onclick = function () {
@@ -134,6 +138,7 @@
                 myClone.appendTo($("#elementList"));
                 updateListItemData(myClone, order);
                 updateNumbers();
+                registerCustomtizeHandlers();
             };
 
             // update all elements
@@ -150,22 +155,22 @@
                 $(item).find('#displayNumber').text('Element #' + (order));
                 $(item).find("[id^='elementName']").attr('id', 'elementName' + order);
                 $(item).find("[id^='elementName']").attr('name', 'elementName' + order);
-                $(item).find('textarea').attr('id', 'elementText' + order);
-                $(item).find('textarea').attr('name', 'elementText' + order);
+                $(item).find("[id^='elementText']").attr('id', 'elementText' + order);
+                $(item).find("[id^='elementText']").attr('name', 'elementText' + order);
                 $(item).find('#elementId').attr('name', 'elementId' + order);
 
                 // update customizeResponse button and set which modal it opens
                 $(item).find("[id^='btnCustomizeResponse']").attr('id', 'btnCustomizeResponse' + order);
                 $(item).find("[id^='btnCustomizeResponse']").attr('data-target', '#commentForm' + order);
-                $(item).find('.modal').attr('id', 'commentForm' + order);
 
-                //update links, names and ids for the commentForm div
+                // update items within comment_form
+                $(item).find("[id^='commentForm']").attr('id', 'commentForm' + order);
+
                 for (var i = 0; i < numValences; i++) {
-                    $(item).find('#tab' + i).attr('href', 'e' + order + "valence" + i);
+                    $(item).find('#tab' + i).attr('href', '#e' + order + "area" + i);
                     var toFind = 'valence' + i;
-                    $(item).find("[id$= toFind]").attr('id', 'e' + order + 'valence' + i); //!!
-                    $(item).find('#valenceText' + i).attr('name', "e" + order + "valence" + i);
-                    //$('.test').html(toFind);
+                    $(item).find("[id$='area" + i + "']").attr('id', 'e' + order + 'area' + i);
+                    $(item).find("[name$='" + toFind + "']").attr('name', "e" + order + toFind);
                 }
             }
 

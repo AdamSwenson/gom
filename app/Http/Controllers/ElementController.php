@@ -49,8 +49,8 @@ class ElementController extends Controller
         } else {
             return Element::all();
         }
-        $element = $this->dao->loadElementById($elementId);
-        return $element;
+        //$element = $this->dao->loadElementById($elementId);
+        //return $element;
         //for question number
         return $this->dao->load_element_assignments_by_question_number($request->input('exam_id'), $request->input('question_number'));
         // return ('List of elements for question id: '.$question);
@@ -99,8 +99,8 @@ class ElementController extends Controller
      */
     public function show(Element $element)
     {
-        $element = $this->dao->loadElementById($elementId);
-        return $element;
+        //$element = $this->dao->loadElementById($elementId);
+        //return $element;
 
     }
 
@@ -197,7 +197,6 @@ class ElementController extends Controller
         $examId = $exam->getId();
         $questionId = $question->getId();
         $numValences = count( Comment::$valences );
-
         //  Update elements and create new elements as necessary
         $currentElements = [];
         $i = 1;
@@ -218,27 +217,29 @@ class ElementController extends Controller
             }
             // Loop through valences and add / edit comments
             for($j = 0; $j < $numValences; $j++) {
+
                 $this->elementDao->addValencedContent($element->getId(), $j, $request->input('e'.$i.'valence'.$j));
             }
             $currentElements[$element->getId()] = $element;
             $i++;
         }
-
         // Handle item deletion
 
         // NOTE: any elements associated with this exam that weren't submitted with the form are deleted.
         // This can be hard on the test data as it contains multiple re-uses of the same elements (bb 8/2/15).
-//        $questionNumber = $question->getQuestionNumber($examId);
-//        $oldElements = $this->assignmentDao->load_elements($examId, $questionNumber );
-//        if (!count($oldElements)) {
-//            foreach ($oldElements as $oldElement) {
-//                $eIdToFind = $oldElement->element->getId();
-//                if (!array_key_exists($eIdToFind, $currentElements)) {
-//                    $this->elementDao->deleteElement($eIdToFind);
-//                    dd($oldElement);
-//                }
-//            }
-//        }
+
+        $questionNumber = $question->getQuestionNumber($examId);
+        $oldElements = $this->assignmentDao->load_elements($examId, $questionNumber );
+        if ( count($oldElements) > 0) {
+            foreach ($oldElements as $oldElement) {
+                $eIdToFind = $oldElement->getId();
+                if (!array_key_exists($eIdToFind, $currentElements)) {
+                    // are deletions removing elements? or just assignments?
+                    $this->elementDao->deleteElement($eIdToFind);
+                    dd($eIdToFind);
+                }
+            }
+        }
 
         /* Choose next action based on 'questionDirection' param:
             1. go back to QuestionController

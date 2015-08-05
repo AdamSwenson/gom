@@ -12,28 +12,28 @@
             <!-- tabbed area for responses -->
             <div class="modal-body">
                 <ul class="nav nav-pills nav-justified">
-                    <li role="presentation" class="active"><a id="tab0" data-toggle="tab" href="#e{{ $counter }}valence0">Missing</a></li>
-                    <li role="presentation"><a id="tab1" data-toggle="tab" href="#e{{ $counter }}valence1">Poor</a></li>
-                    <li role="presentation"><a id="tab2" data-toggle="tab" href="#e{{ $counter }}valence2">Fair</a></li>
-                    <li role="presentation"><a id="tab3" data-toggle="tab" href="#e{{ $counter }}valence3">Excellent</a></li>
+                    <li role="presentation" class="active"><a id="tab0" data-toggle="tab" href="#e{{ $counter }}area0">Missing</a></li>
+                    <li role="presentation"><a id="tab1" data-toggle="tab" href="#e{{ $counter }}area1">Poor</a></li>
+                    <li role="presentation"><a id="tab2" data-toggle="tab" href="#e{{ $counter }}area2">Fair</a></li>
+                    <li role="presentation"><a id="tab3" data-toggle="tab" href="#e{{ $counter }}area3">Excellent</a></li>
                 </ul>
                 <div class="tab-content" id="comments">
-                    <div id="e{{ $counter }}valence0" class="tab-pane fade in active">
+                    <div id="e{{ $counter }}area0" class="tab-pane fade in active">
                         <textarea class="form-control" rows="5" name="e{{ $counter }}valence0"
                                   placeholder="Write a response if the element is missing."
                                 >{{ isset($e->comments[0]->body) ? $e->comments[0]->body : ''  }}</textarea>
                     </div>
-                    <div id="e{{ $counter }}valence1" class="tab-pane fade">
+                    <div id="e{{ $counter }}area1" class="tab-pane fade">
                         <textarea class="form-control" rows="5" name="e{{ $counter }}valence1"
                                   placeholder="Modify the response for a student that did a poor job of addressing this element."
                                 >{{ isset($e->comments[1]->body) ? $e->comments[1]->body : ''  }}</textarea>
                     </div>
-                    <div id="e{{ $counter }}valence2" class="tab-pane fade">
+                    <div id="e{{ $counter }}area2" class="tab-pane fade">
                         <textarea class="form-control" rows="5" name="e{{ $counter }}valence2"
                                   placeholder="This response is if the student did a fair job on the element."
                                 >{{ isset($e->comments[2]->body) ? $e->comments[2]->body : ''  }}</textarea>
                     </div>
-                    <div id="e{{ $counter }}valence3" class="tab-pane fade">
+                    <div id="e{{ $counter }}area3" class="tab-pane fade">
                         <textarea class="form-control" rows="5" name="e{{ $counter }}valence3"
                                   placeholder="Here, response for a student that who did an excellent job on this element."
                                 >{{ isset($e->comments[3]->body) ? $e->comments[3]->body : ''  }}</textarea>

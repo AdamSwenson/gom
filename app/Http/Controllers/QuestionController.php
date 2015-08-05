@@ -176,8 +176,9 @@ class QuestionController extends Controller
         // Handle item deletion
 
         // NOTE: any questions associated with this exam that weren't submitted with the form are deleted.
+
         $oldQuestions = $this->assignmentDao->load_all_for_exam($examId);
-        if (!count($oldQuestions)) {
+        if ( count($oldQuestions) > 0) {
             foreach ($oldQuestions as $oldQuestion) {
                 $qIdToFind = $oldQuestion->question->getId();
                 if (!array_key_exists($qIdToFind, $currentQuestions)) {
@@ -186,6 +187,7 @@ class QuestionController extends Controller
             }
         }
 
+
         // If someone deletes all questions and defeat checks, redirect back to exam select...
         $checkIfEmpty = $this->assignmentDao->load_all_for_exam($examId);
         if ( !count($checkIfEmpty) ) {
@@ -193,7 +195,7 @@ class QuestionController extends Controller
         }
         // ...because this line will crash if there is no question #1
         $firstQuestionAssign = $this->assignmentDao->load($examId, 1);
-        $firstQId = $firstQuestionAssign->question_id;
+        $firstQId = $firstQuestionAssign->getQuestionId();
         $firstQuestionObject = $this->questionDao->loadQuestionById($firstQId);
 
         return redirect()->action('ElementController@editAll', array('examId' => $examId,

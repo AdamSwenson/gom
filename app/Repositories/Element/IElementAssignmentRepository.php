@@ -20,7 +20,7 @@ interface IElementAssignmentRepository
 
     /**
      * Loads the element assignments for a given question
-     * (returns an array of element objects)
+     * (returns an array of elementAssignment objects)
      * @param $examId
      * @param $questionNumber
      * @return array
@@ -43,7 +43,7 @@ interface IElementAssignmentRepository
      * @param $questionId
      * @param $elementId
      * @param $subtask
-     * @return \ElementAssignment
+     * @return \Element
      */
     public function record($examId, $questionId, $elementId, $subtask);
 }

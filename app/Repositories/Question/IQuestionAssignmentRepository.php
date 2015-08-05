@@ -29,6 +29,12 @@ interface IQuestionAssignmentRepository
      */
     public function load($examId, $question_number);
 
+    /** Returns question number from question ID
+     * @param $examId
+     * @param $questionId
+     * @return mixed
+     */
+
     public function loadQuestionNumberById($examId, $questionId);
 
     /**
