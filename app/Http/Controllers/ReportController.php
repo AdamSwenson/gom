@@ -83,7 +83,7 @@ class ReportController extends Controller
         $exams = $this->examDao->load_all_exams();
         //$students = $this->studentDao->load_all_students();
 
-        return view('reports.examsRelease', compact('exams'));
+        return view('reports.ExamsRelease', compact('exams'));
 
     }
 
