@@ -61,12 +61,12 @@
 
         <div class="clearfix pinned-colelem" id="u305"><!-- group -->
 
-         <a href="{{url('account/create')}}" >
+         <a href="{{url('auth/register')}}" >
             <div class="rounded-corners clearfix" id="u78"><!-- group -->
                 <div class="clearfix" id="u75-4"><!-- content -->
                    Sign Up
                 </div>
-            </div> -->
+            </div>
          </a>
 
          <a href="#" id="cloneExamLink" class="" data-toggle="collapse"
@@ -89,27 +89,28 @@
                             <div class="col-xs-8">
                                 <!-- Something goes here -->
                             </div>
-                            <form method="POST" action="{{url('/setup')}}" accept-charset="UTF-8" class="form-horizontal col-xs-4">
-                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                <div class="form-group">
-                                    <div class="col-xs-8">
-                                        <label>Email:</label>
-                                        <input class="form-control" type="email" name="email"  placeholder="Enter email">
-                                    </div>
-                                </div>
-                                <div class="form-group">
+                            @include('auth.login_form')
+                            {{--<form method="POST" action="{{url('/setup')}}" accept-charset="UTF-8" class="form-horizontal col-xs-4">--}}
+                                {{--<input type="hidden" name="_token" value="{{ csrf_token() }}">--}}
+                                {{--<div class="form-group">--}}
+                                    {{--<div class="col-xs-8">--}}
+                                        {{--<label>Email:</label>--}}
+                                        {{--<input class="form-control" type="email" name="email"  placeholder="Enter email">--}}
+                                    {{--</div>--}}
+                                {{--</div>--}}
+                                {{--<div class="form-group">--}}
 
-                                    <div class="col-xs-8">
-                                        <label>Password:</label>
-                                        <input class="form-control" type="password" name="password" placeholder="Enter password">
-                                    </div>
-                                </div>
-                                <div class="checkbox">
-                                    <label><input type="checkbox"> Remember me</label>
-                                    <label><a href={{url('account/retrieve')}}>Forgot Password</a></label>
-                                </div>
-                                <input class="btn btn-primary" value="Log In" type="submit" >
-                            </form>
+                                    {{--<div class="col-xs-8">--}}
+                                        {{--<label>Password:</label>--}}
+                                        {{--<input class="form-control" type="password" name="password" placeholder="Enter password">--}}
+                                    {{--</div>--}}
+                                {{--</div>--}}
+                                {{--<div class="checkbox">--}}
+                                    {{--<label><input type="checkbox"> Remember me</label>--}}
+                                    {{--<label><a href={{url('account/retrieve')}}>Forgot Password</a></label>--}}
+                                {{--</div>--}}
+                                {{--<input class="btn btn-primary" value="Log In" type="submit" >--}}
+                            {{--</form>--}}
 
                         </div>
                     </div>

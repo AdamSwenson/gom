@@ -22,6 +22,10 @@ class EventServiceProvider extends ServiceProvider
                 'App\Listeners\ReportCompilationComplete',
                 'App\Listeners\NotifyStudentsListener'
             ],
+        'App\Listeners\NewUserSignedUpEvent' =>
+            [
+                'App\Listeners\SendWelcomeEmailListener'
+            ],
         'App\Events\StudentNotificationCompleteEvent' =>
             [
                 'App\Listeners\ReportNotificationComplete'

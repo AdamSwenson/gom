@@ -28,9 +28,9 @@ trait ResetsPasswords
      */
     public function postEmail(Request $request)
     {
-        $this->validate($request, ['emails' => 'required|emails']);
+        $this->validate($request, ['email' => 'required|email']);
 
-        $response = Password::sendResetLink($request->only('emails'), function (Message $message) {
+        $response = Password::sendResetLink($request->only('email'), function (Message $message) {
             $message->subject($this->getEmailSubject());
         });
 
@@ -39,12 +39,12 @@ trait ResetsPasswords
                 return redirect()->back()->with('status', trans($response));
 
             case Password::INVALID_USER:
-                return redirect()->back()->withErrors(['emails' => trans($response)]);
+                return redirect()->back()->withErrors(['email' => trans($response)]);
         }
     }
 
     /**
-     * Get the e-mail subject line to be used for the reset link emails.
+     * Get the e-mail subject line to be used for the reset link email.
      *
      * @return string
      */
@@ -78,12 +78,12 @@ trait ResetsPasswords
     {
         $this->validate($request, [
             'token' => 'required',
-            'emails' => 'required|emails',
+            'email' => 'required|email',
             'password' => 'required|confirmed',
         ]);
 
         $credentials = $request->only(
-            'emails', 'password', 'password_confirmation', 'token'
+            'email', 'password', 'password_confirmation', 'token'
         );
 
         $response = Password::reset($credentials, function ($user, $password) {
@@ -96,8 +96,8 @@ trait ResetsPasswords
 
             default:
                 return redirect()->back()
-                            ->withInput($request->only('emails'))
-                            ->withErrors(['emails' => trans($response)]);
+                            ->withInput($request->only('email'))
+                            ->withErrors(['email' => trans($response)]);
         }
     }
 

@@ -7,6 +7,9 @@ use Illuminate\Contracts\Auth\Guard;
 
 class RedirectIfAuthenticated
 {
+    /** @var string Where to redirect a logged in user to. Was originally '/home' */
+    protected $redirectPath = '/exam';
+
     /**
      * The Guard implementation.
      *
@@ -35,7 +38,7 @@ class RedirectIfAuthenticated
     public function handle($request, Closure $next)
     {
         if ($this->auth->check()) {
-            return redirect('/home');
+            return redirect($this->redirectPath);
         }
 
         return $next($request);

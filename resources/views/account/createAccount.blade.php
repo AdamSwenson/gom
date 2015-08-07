@@ -1,3 +1,11 @@
+<?php
+/**
+*  DEPRECATED
+ * Being replaced by auth.register
+*/
+?>
+
+
 <!DOCTYPE html>
 <html class="html" lang="en-US">
 <head>
@@ -63,6 +71,9 @@
                                     <form role="form" method="POST" action="{{url('account/confirm')}}" accept-charset="UTF-8" class="col-xs-4">
                                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                                         <h3 class="text-left"> Create Account:</h3>
+                                        <div class="form-group ">
+                                            <input class="form-control" type="text" name="name"  placeholder="Username">
+                                        </div>
                                         <div class="form-group ">
                                             <input class="form-control" type="email" name="email"  placeholder="Enter email">
                                         </div>

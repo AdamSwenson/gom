@@ -33,6 +33,7 @@ class ElementController extends Controller
     public function __construct(IElementRepository $elementDao, IElementAssignmentRepository $assignmentDao,
                                 IQuestionAssignmentRepository $questionAssignmentRepo)
     {
+        $this->middleware('auth');
         $this->elementDao = $elementDao;
         $this->assignmentDao = $assignmentDao;
         $this->questionAssignmentDAO = $questionAssignmentRepo;

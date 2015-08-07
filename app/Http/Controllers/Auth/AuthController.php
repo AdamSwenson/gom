@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Requests\AuthRequest;
 use App\User;
+use App\Http\Requests\Request;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
@@ -23,6 +26,14 @@ class AuthController extends Controller
 
     use AuthenticatesAndRegistersUsers, ThrottlesLogins;
 
+    /** @var string Path to redirect to upon authentication */
+    protected $redirectPath = '/exam';
+
+    /** @var string Redirect on unsuccessful login */
+    protected $loginPath = '/auth/login';
+
+    protected $redirectAfterLogout = '/index';
+
     /**
      * Create a new authentication controller instance.
      *
@@ -33,17 +44,60 @@ class AuthController extends Controller
         $this->middleware('guest', ['except' => 'getLogout']);
     }
 
+//    /**
+//     * Create new account
+//     * @param AuthRequest $request
+//     */
+//    public function postRegister(AuthRequest $request)
+//    {
+////        $validator = $this->validator($request->all());
+////        if ($validator->fails())
+////        {
+////            $this->throwValidationException($request, $validator);
+////        }
+//auth()->login($this->create($request->all()));
+//        redirect($this->redirectPath);
+//    }
+//
+//    /**
+//     * Returns the page where the user can create a new account
+//     */
+//    public function getRegister()
+//    {
+//        return view('auth.register');
+////        return view('account.createAccount');
+//    }
+//
+//
+//    /**
+//     * Returns the log in page
+//     */
+//    public function getLogin()
+//    {
+//        return view($this->loginPath);
+//    }
+
+//    /**
+//     * Process the request to log in
+//     * @param Request $request
+//     */
+//    public function postLogin(AuthRequest $request)
+//    {
+//        $validator = $this->validator($request);
+//
+//    }
+
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array  $data
+     * @param  array $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
     {
         return Validator::make($data, [
             'name' => 'required|max:255',
-            'emails' => 'required|emails|max:255|unique:users',
+            'email' => 'required|email|max:255|unique:users',
             'password' => 'required|confirmed|min:6',
         ]);
     }
@@ -51,15 +105,15 @@ class AuthController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
+     * @param  array $data
      * @return User
      */
     protected function create(array $data)
     {
         return User::create([
-            'name' => $data['name'],
-            'emails' => $data['emails'],
-            'password' => bcrypt($data['password']),
-        ]);
+                                'name' => $data['name'],
+                                'email' => $data['email'],
+                                'password' => bcrypt($data['password']),
+                            ]);
     }
 }

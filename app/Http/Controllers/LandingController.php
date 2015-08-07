@@ -21,7 +21,6 @@ class LandingController extends Controller
 
     public function showLanding()
     {
-
         return view('index');
     }
 
@@ -44,7 +43,8 @@ class LandingController extends Controller
 
     public function accountCreate()
     {
-        return view('account.createAccount');
+return view('auth.register');
+//        return view('account.createAccount');
     }
 
 

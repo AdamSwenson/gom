@@ -84,7 +84,7 @@ class DatabaseTokenRepository implements TokenRepositoryInterface
      */
     protected function deleteExisting(CanResetPasswordContract $user)
     {
-        return $this->getTable()->where('emails', $user->getEmailForPasswordReset())->delete();
+        return $this->getTable()->where('email', $user->getEmailForPasswordReset())->delete();
     }
 
     /**
@@ -96,7 +96,7 @@ class DatabaseTokenRepository implements TokenRepositoryInterface
      */
     protected function getPayload($email, $token)
     {
-        return ['emails' => $email, 'token' => $token, 'created_at' => new Carbon];
+        return ['email' => $email, 'token' => $token, 'created_at' => new Carbon];
     }
 
     /**
@@ -110,9 +110,9 @@ class DatabaseTokenRepository implements TokenRepositoryInterface
     {
         $email = $user->getEmailForPasswordReset();
 
-        $token = (array) $this->getTable()->where('emails', $email)->where('token', $token)->first();
+        $token = (array) $this->getTable()->where('email', $email)->where('token', $token)->first();
 
-        return $token && !$this->tokenExpired($token);
+        return $token && ! $this->tokenExpired($token);
     }
 
     /**

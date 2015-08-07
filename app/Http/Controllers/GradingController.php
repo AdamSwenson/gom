@@ -28,6 +28,10 @@ use App\Repositories\Student\IStudentRepository;
  */
 class GradingController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     public function showInputPage(GradingRequest $request)
     {

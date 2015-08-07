@@ -35,6 +35,7 @@ class StudentController extends Controller
 
     public function __construct(IStudentRepository $studentRepository)
     {
+        $this->middleware('auth');
         $this->dao = $studentRepository;
     }
 

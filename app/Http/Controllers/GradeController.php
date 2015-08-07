@@ -22,7 +22,9 @@ class GradeController extends Controller {
 
     protected $IExamRepository;
 
-    public function __construct(IExamRepository $IExamRepository) {
+    public function __construct(IExamRepository $IExamRepository)
+    {
+        $this->middleware('auth');
         $this->examDao = $IExamRepository;
     }
 

@@ -5,7 +5,6 @@ namespace Illuminate\Foundation\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Lang;
-use Illuminate\Support\Facades\Cache;
 
 trait AuthenticatesUsers
 {
@@ -138,7 +137,7 @@ trait AuthenticatesUsers
      */
     public function loginUsername()
     {
-        return property_exists($this, 'username') ? $this->username : 'emails';
+        return property_exists($this, 'username') ? $this->username : 'email';
     }
 
     /**
