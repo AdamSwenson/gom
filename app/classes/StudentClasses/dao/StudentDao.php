@@ -162,7 +162,7 @@ class StudentDao implements IStudentDao
             $results = $stmt->fetchAll();
             return $results;
         } catch (\PDOException $e) {
-            throw new StudentException(StudentException::INVALID_AUTOCOMPLETE, $e);
+            //throw new StudentException(StudentException::INVALID_AUTOCOMPLETE, $e);
         }
     }
 

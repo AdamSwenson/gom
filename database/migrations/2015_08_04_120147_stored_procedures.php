@@ -61,7 +61,7 @@ MYSQL;
 
         DB::unprepared($record_element_score);
 
-//, OUT @questionNumber INT, OUT @questionName @VARCHAR, OUT @average FLOAT)
+
         $question_averages = <<<MYSQL
 DROP PROCEDURE IF EXISTS question_score_averages_for_exam;
 CREATE PROCEDURE `question_score_averages_for_exam` (IN examId INT)
@@ -75,6 +75,25 @@ END;
 MYSQL;
 
         DB::unprepared($question_averages);
+
+//
+//    $add_student = <<<MYSQL
+//DROP PROCEDURE IF EXISTS add_or_update_student;
+//CREATE PROCEDURE `add_or_update_student` (IN user_id INT
+//MYSQL;
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     /**

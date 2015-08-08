@@ -54,6 +54,11 @@ Route::get('exam/{exam}/question/{question}/element/edit', array('as' => 'editAl
 Route::post('exam/{exam}/question/{question}/element/updateAll', 'ElementController@updateAll'); // update all elements for question
 Route::resource('exam.question.element', 'ElementController');
 
+/* Manage students */
+Route::post('exam/{exam}/student/store', 'StudentController@store');
+Route::get('exam/{exam}/student/update','StudentController@updateAll');
+Route::get('exam/{exam}/student/edit', array('as' => 'editAllStudents', 'uses' => 'StudentController@editAll'));
+Route::resource('exam.student', 'StudentController');
 
 
 /* ------------------------------------------------ Grade exams ---------------------------------------------------------- */
@@ -70,10 +75,6 @@ Route::get('report/{exam}/analytics','ReportController@showAnalytics');
 Route::get('report/{exam}/qualitycontrol', 'ReportController@showQualityControl');
 
 
-/* Manage students */
-Route::get('exam/{exam}/student/update','StudentController@updateAll');
-Route::get('exam/{exam}/student/edit', array('as' => 'editAllStudents', 'uses' => 'StudentController@editAll'));
-Route::resource('exam.student', 'StudentController');
 
 /* Feedback */
 //If arrived via link in email to student

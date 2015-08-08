@@ -25,13 +25,16 @@ class Student extends BaseModel
     const MAX_EMAIL_LENGTH = 300;
 
     protected $fillable = [
-        'studentIdentifier',
-        'studentName',
-        'email'];
+        'student_identifier',
+        'first_name',
+        'last_name',
+        'email'
+    ];
 
     protected $casts = [
-        'studentIdentifier' => 'integer',
-        'studentName' => 'string',
+        'student_identifier' => 'integer',
+        'last_name' => 'string',
+        'first_name' => 'string',
         'email' => 'string'
     ];
 

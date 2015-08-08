@@ -27,6 +27,28 @@ class StudentRepository implements IStudentRepository
         $this->cleaner = $cleanerFactory;
     }
 
+    protected function update(Student $preExisting, $lastName, $firstName, $email)
+    {
+        $cleanLastName = $lastName;
+        $cleanFirstName = $firstName;
+        $cleanEmail = $email;
+        if (!empty($email))
+        {
+            $cleanEmail = $email;
+        }
+
+        $preExisting->last_name = $cleanLastName;
+        $preExisting->first_name = $cleanFirstName;
+        if ($cleanEmail)
+        {
+            $preExisting->email = $cleanEmail;
+        }
+        $preExisting->update();
+
+        return $preExisting;
+    }
+
+
     /**
      * Add a new student to the database
      *
@@ -37,26 +59,56 @@ class StudentRepository implements IStudentRepository
      * @param null $studentId
      * @return Student
      */
-    public function create_student($lastName, $firstName, $studentId=null, $email=null)
+    public function create_student($lastName, $firstName, $studentId = null, $email = null)
     {
         $cleanLastName = $lastName;
         $cleanFirstName = $firstName;
         $cleanStudentId = $studentId;
-        if(!empty($email))
+        if (!empty($email))
         {
             $cleanEmail = $email;
         }
 
-        $student = new Student();
-        $student->last_name = $cleanLastName;
-        $student->first_name = $cleanFirstName;
-        $student->student_identifier = $cleanStudentId;
-        if($cleanEmail)
+        $preExisting = $this->load_student_by_sid($cleanStudentId);
+        if (!empty($preExisting))
         {
-            $student->email = $cleanEmail;
-        }
-        $student->save();
+            $student = $this->update($preExisting, $cleanLastName, $cleanFirstName, $cleanEmail=null);
+       }else{
+            $student = new Student();
+            $student->student_identifier = $cleanStudentId;
+            $student->last_name = $cleanLastName;
+            $student->first_name = $cleanFirstName;
+            if ($cleanEmail)
+            {
+                $student->email = $cleanEmail;
+            }
+            $student->save();
+    }
         return $student;
+
+//        Student::updateOrCreate()
+//$student = Student::firstOrCreate(['last_name' => $cleanLastName,
+//                                'first_name' => $cleanFirstName,
+//                                'student_identifier' => $cleanStudentId,
+//                                'email' => $cleanEmail
+//                                ]);
+////
+//        $student = Student::where('student_identifier', $cleanStudentId);
+//        if (!$student)
+//        {
+//            $student = new Student();
+//            $student->student_identifier = $cleanStudentId;
+//        }
+//        $student->last_name = $cleanLastName;
+//        $student->first_name = $cleanFirstName;
+//
+//        if ($cleanEmail)
+//        {
+//            $student->email = $cleanEmail;
+//        }
+//        $student->save();
+
+//        return $student;
     }
 
     /**
@@ -76,13 +128,14 @@ class StudentRepository implements IStudentRepository
         $students = [];
         $exam = Exam::findOrFail($examId);
         $classes = $exam->classes;
-        foreach($classes as $c)
+        foreach ($classes as $c)
         {
-            foreach($c->students as $s)
+            foreach ($c->students as $s)
             {
                 array_push($students, $s);
             }
         }
+
         return $students;
 //        return $students;
 //        $classes = $exam->classes;
@@ -134,7 +187,6 @@ class StudentRepository implements IStudentRepository
     }
 
 
-
     /**
      * Handles the database queries for the autocomplete function
      * on the main grading page
@@ -179,6 +231,7 @@ class StudentRepository implements IStudentRepository
         $student = $this->load_student_by_id($clean_sid);
         $student->setEmail($clean_email);
         $student->update();
+
         return $student;
     }
 
@@ -202,6 +255,7 @@ class StudentRepository implements IStudentRepository
     public function delete_student_by_sid($sid)
     {
         $student = $this->load_student_by_sid($sid);
+
         return $student->delete();
     }
 
