@@ -32,6 +32,9 @@
                 <li id="accountHead">
                     <a href="{{url('account/home')}}">Account</a>
                 </li>
+                <li id="logOutHead">
+                    <a href="{{url('auth/logout')}}">Log out</a>
+                </li>
             </ul>
         </div>
     </div>

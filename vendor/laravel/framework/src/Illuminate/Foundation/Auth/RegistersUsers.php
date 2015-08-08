@@ -2,6 +2,7 @@
 
 namespace Illuminate\Foundation\Auth;
 
+use App\Events\NewUserSignedUpEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -35,8 +36,10 @@ trait RegistersUsers
             );
         }
 
-        Auth::login($this->create($request->all()));
+        $user = $this->create($request->all());
+        Auth::login($user);
 
+        event(new NewUserSignedUpEvent($user));
         return redirect($this->redirectPath());
     }
 }

@@ -106,9 +106,9 @@ class StudentCsvProcessor implements IStudentCsvProcessor
                 }
                 $i++;
             }
+            \fclose($file);
 
         } catch (\Exception $e) {
-            var_dump($e);
             return false;
         } finally {
             \fclose($file);
