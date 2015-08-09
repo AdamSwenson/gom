@@ -32,17 +32,17 @@ class ElementTest extends \TestCase
 
         $this->assertInstanceOf('App\Element', $result);
         $this->seeInDatabase('element_assignments',
-            ['question_assignment_id' => $qa->id, 'element_id' => $this->element->getId(), 'subtask' => $enum]); //not the most perfect test
+            ['question_id' => $questionId, 'exam_id' => $examId, 'element_id' => $this->element->getId(), 'subtask' => $enum]); //not the most perfect test
     }
 
 
-    public function testGetQuestionTaskNumber()
-    {
-        $qaid = $this->elementAssign->question_assignment_id;
-        $this->object->id = $this->elementAssign->element_id;
-        $result = $this->object->getQuestionTaskNumber($qaid);
-        $this->assertTrue(is_integer($result));
-    }
+//    public function testGetQuestionTaskNumber()
+//    {
+//        $qaid = $this->elementAssign->question_assignment_id;
+//        $this->object->id = $this->elementAssign->element_id;
+//        $result = $this->object->getQuestionTaskNumber($qaid);
+//        $this->assertTrue(is_integer($result));
+//    }
 
 
     public function testSetElementName()
@@ -84,13 +84,13 @@ class ElementTest extends \TestCase
 //        $this->assertInstanceOf('App\ElementAssignment', $r);
 //    }
 
-    public function testQuestionAssignments()
-    {
-        foreach ($this->element->questionAssignments as $r)
-        {
-            $this->assertInstanceOf('App\QuestionAssignment', $r);
-        }
-    }
+//    public function testQuestionAssignments()
+//    {
+//        foreach ($this->element->questionAssignments as $r)
+//        {
+//            $this->assertInstanceOf('App\QuestionAssignment', $r);
+//        }
+//    }
 
 
 //    public function testExam()

@@ -15,6 +15,7 @@ use App\classes\ImportExportClasses\dao\Uploader;
 use App\classes\RequestClasses\FileRequest;
 use App\Http\Controllers\helpers\ExamSelectorHelper;
 use App\Http\Requests\StudentRequest;
+use App\Jobs\ImportStudentsFromCsv;
 use App\Kumi;
 use App\Repositories\Student\IStudentRepository;
 use App\Student;
@@ -84,15 +85,20 @@ class StudentController extends Controller
     {
         $kumi = $this->kumiRepository->create($exam->name, $exam->year, $exam);
 
-        $processor = new \App\Http\Controllers\helpers\StudentUpload\StudentCsvProcessor();
-        $file = $request->file('studentsFile');
-        $processor->process_file($file->getRealPath());
+        $processor = app()->make('App\Jobs\StudentImport\IImportStudentsFromCsv');//new ImportStudentsFromCsv();
+        $processedStudents = $processor->handle($request);
+
+//        $processor = new \App\Http\Controllers\helpers\StudentUpload\StudentCsvProcessor();
+//        $file = $request->file('studentsFile');
+//        $processor->process_file($file->getRealPath());
 
         $students = array();
 
-        if (count($processor->students) > 0)
+        // Now that students are in the database, make a fake class (kumi) for them to belong to
+        // and use that class to associate them with the exam
+        if (count($processedStudents) > 0)
         {
-            foreach ($processor->students as $student)
+            foreach ($processedStudents as $student)
             {
                 $newStudent = $this->dao->create_student($student['last_name'], $student['first_name'], $student['student_id'], $student['email']);
 

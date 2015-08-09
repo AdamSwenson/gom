@@ -80,6 +80,16 @@ class QuestionAssignment extends BaseModel
         return $this->getId();
     }
 
+    /**
+     * Returns the exam id that this assignment is for
+     *
+     * @return int
+     */
+    public function getExamId()
+    {
+        return $this->attributes['exam_id'];
+    }
+
 
 #--------------- Queries
     public function scopeOnExam($query, $examId)

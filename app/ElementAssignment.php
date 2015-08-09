@@ -78,10 +78,10 @@ class ElementAssignment extends BaseModel
         return $this->attributes['subtask'];
     }
 
-    public function getQuestionNumber()
-    {
-        return $this->questionAssignment->question_number;
-    }
+//    public function getQuestionNumber()
+//    {
+//        return $this->questionAssignment->question_number;
+//    }
 #--------------- Queries
 
     /**
@@ -96,17 +96,17 @@ class ElementAssignment extends BaseModel
         return $query->whereExamId($examId);
     }
 
-    /**
-     * Does not work. Needs join.
-     * TODO: Fix on questionNumber for elementAssignment
-     * @param $query
-     * @param $questionNumber
-     * @return mixed
-     */
-    public function scopeQuestionNumber($query, $questionNumber)
-    {
-        return $query->whereQuestionNumber($questionNumber);
-    }
+//    /**
+//     * Does not work. Needs join.
+//     * TODO: Fix on questionNumber for elementAssignment
+//     * @param $query
+//     * @param $questionNumber
+//     * @return mixed
+//     */
+//    public function scopeQuestionNumber($query, $questionNumber)
+//    {
+//        return $query->whereQuestionNumber($questionNumber);
+//    }
 
 # -------------- Foreign key associations
     public function user()
@@ -129,7 +129,8 @@ class ElementAssignment extends BaseModel
      */
     public function exam()
     {
-        return $this->hasManyThrough('App\Exam', 'App\QuestionAssignment', 'exam_id', 'question_assignment_id' );
+        return $this->belongsTo('App\Exam');
+//        return $this->hasManyThrough('App\Exam', 'App\QuestionAssignment', 'exam_id', 'question_assignment_id' );
     }
 
     /**
@@ -145,14 +146,15 @@ class ElementAssignment extends BaseModel
         return $this->hasMany('App\ElementScore');
     }
 
-//    public function question()
-//    {
-//        return $this->belongsTo('App\Question', 'question_assignments');
-//    }
-
-    public function questionAssignment()
+    public function question()
     {
-        return $this->belongsTo('App\QuestionAssignment');
+        return $this->belongsTo('App\Question');
+//        return $this->belongsTo('App\Question', 'question_assignments');
     }
+
+//    public function questionAssignment()
+//    {
+//        return $this->belongsTo('App\QuestionAssignment');
+//    }
 
 }

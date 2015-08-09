@@ -15,13 +15,16 @@ class StoredProcedures extends Migration
     {
         $assign_element = <<<MYSQL
     DROP PROCEDURE IF EXISTS assign_element;
-    CREATE PROCEDURE `assign_element` (IN questionAssignmentId INT, IN subtask INT, IN elementId INT)
+    CREATE PROCEDURE `assign_element` (IN examId INT, IN questionId INT, IN subtask INT, IN elementId INT)
     BEGIN
-        INSERT INTO element_assignments (question_assignment_id, subtask, element_id)
-        VALUES (questionAssignmentId, subtask, elementId) ON DUPLICATE KEY UPDATE element_id = elementId;
+        INSERT INTO element_assignments (exam_id, question_id, subtask, element_id)
+        VALUES (examId, questionId, subtask, elementId) ON DUPLICATE KEY UPDATE subtask = subtask;
 
-        SELECT question_assignment_id, subtask, element_id FROM element_assignments
-        WHERE question_assignment_id = questionAssignmentId AND subtask = subtask AND element_id = elementId;
+        SELECT exam_id, question_id, element_id, subtask FROM element_assignments
+        WHERE exam_id = examId
+        AND question_id = questionId
+        AND element_id = elementId
+        AND subtask = subtask;
     END
 MYSQL;
         DB::unprepared($assign_element);

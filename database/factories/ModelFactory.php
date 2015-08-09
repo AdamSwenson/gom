@@ -11,6 +11,9 @@
 |
 */
 
+use Carbon\Carbon;
+use Faker\Generator;
+
 $factory->define(App\User::class, function (Faker\Generator $faker)
 {
     return [
@@ -21,17 +24,29 @@ $factory->define(App\User::class, function (Faker\Generator $faker)
     ];
 });
 
-$factory->define(App\Question::class, function (Faker\Generator $faker)
+
+$factory->define(App\Exam::class, function ($faker)
 {
     return [
-        'questionName' => $faker->text(20),
-        'questionText' => $faker->text(200),
+        'term' => $faker->text(10),
+        'name' => $faker->text(10),
+        'year' => $faker->year()
+    ];
+});
+
+$factory->define('App\Question', function ($faker)
+{
+    return [
+//        'user_id' => 1,
+        'question_name' => str_random(20),
+        'question_text' => str_random(200),
+        'created_at' => new Carbon,
+        'updated_at' => new Carbon
     ];
 });
 
 $factory->define(App\Comment::class, function (Faker\Generator $faker)
 {
-    \Auth::loginUsingId(1);
 
     return [
         'element_id' => \App\Element::all()->random(),

@@ -27,25 +27,12 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
     /** @var  IQuestionAssignmentDAO */
     public $questionAssignmentDao;
 
-    /**
-     * TODO Fix dependency injection
-     */
+
     public function __construct()
     {
         $this->questionAssignmentDao = app()->make('App\Repositories\Question\IQuestionAssignmentRepository');
 //        $this->cleaner = new CleanerFactory();
     }
-
-//    public function __construct(IQuestionAssignmentRepository $questionAssignmentDao, ICleanerFactory $cleaner)
-//    {
-//        $this->questionAssignmentDao = $questionAssignmentDao;
-//        $this->cleaner = $cleaner;
-//    }
-
-//    public function setCleaner(ICleanerFactory $cleanerFactory)
-//    {
-//        $this->cleaner = $cleanerFactory;
-//    }
 
 
     public function load_elements($examId, $questionNumber)
@@ -67,16 +54,19 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
         {
             //TODO: Add error handling
         }
-        $this->assignments = ElementAssignment::where('question_assignment_id', $questionAssignment->id)->get();
+        $this->assignments = ElementAssignment::where('exam_id', $examId)
+            ->where('question_id', $questionAssignment->question_id)
+            ->get();
 
         return $this->assignments;
     }
 
     public function load_by_exam($examId)
     {
-        $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($examId);
-
-        return ElementAssignment::where('question_assignment_id', $questionAssignments)->get();
+        return ElementAssignment::where('exam_id', $examId)->get();
+//        $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($examId);
+//
+//        return ElementAssignment::where('question_assignment_id', $questionAssignments)->get();
     }
 
     /**

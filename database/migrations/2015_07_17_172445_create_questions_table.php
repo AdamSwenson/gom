@@ -23,8 +23,6 @@ class CreateQuestionsTable extends Migration
                 ->references('id')
                 ->on('users')
                 ->onDelete('cascade');
-
-
         });
     }
 

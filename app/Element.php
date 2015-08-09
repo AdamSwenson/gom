@@ -45,14 +45,24 @@ class Element extends BaseModel
      */
     public function setAsQuestionTask($examId, $questionId, $subtask)
     {
-        $questionAssignment = QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->firstOrFail();
-        $query = 'CALL assign_element(:questionAssignmentId, :subtask, :elementId)';
+        $query = 'CALL assign_element(:examId, :questionId, :subtask, :elementId)';
         $values = [
-            'questionAssignmentId' => $questionAssignment->id,
+            'examId' => $examId,
+            'questionId' => $questionId,
             'subtask' => $subtask,
             'elementId' => $this->attributes['id']
         ];
         DB::statement($query, $values);
+//dd($result);
+
+//        $questionAssignment = QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->firstOrFail();
+//        $query = 'CALL assign_element(:questionAssignmentId, :subtask, :elementId)';
+//        $values = [
+//            'questionAssignmentId' => $questionAssignment->id,
+//            'subtask' => $subtask,
+//            'elementId' => $this->attributes['id']
+//        ];
+//        DB::statement($query, $values);
 
 
         //$questionAssignment = QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->firstOrFail();
@@ -90,19 +100,19 @@ class Element extends BaseModel
         return $this;
     }
 
-    /**
-     * Returns integer subtask
-     * @param $questionAssignmentId
-     * @return mixed
-     * @internal param $examId
-     * @internal param $questionId
-     */
-    public function getQuestionTaskNumber($questionAssignmentId)
-    {
-        $e = $this->questionAssignments()->where('question_assignment_id', $questionAssignmentId)->first();
-
-        return $e->pivot->subtask;
-    }
+//    /**
+//     * Returns integer subtask
+//     * @param $questionAssignmentId
+//     * @return mixed
+//     * @internal param $examId
+//     * @internal param $questionId
+//     */
+//    public function getQuestionTaskNumber($questionAssignmentId)
+//    {
+//        $e = $this->questionAssignments()->where('question_assignment_id', $questionAssignmentId)->first();
+//
+//        return $e->pivot->subtask;
+//    }
 
 
     /**
@@ -178,11 +188,22 @@ class Element extends BaseModel
         return $this->questionAssignments();
     }
 
-    public function questionAssignments()
+    public function questions()
     {
-        return $this->belongsToMany('App\QuestionAssignment',
-                                    'element_assignments')->withPivot('subtask')->withTimestamps();
+        return $this->belongsToMany('App\Question', 'element_assignments')->withPivot('exam_id', 'subtask')->withTimestamps();
     }
+
+
+    public function exams()
+    {
+        return $this->belongsToMany('App\Exam', 'element_assignments')->withPivot('question_id', 'subtask')->withTimestamps();
+    }
+
+//    public function questionAssignments()
+//    {
+//        return $this->belongsToMany('App\QuestionAssignment',
+//                                    'element_assignments')->withPivot('subtask')->withTimestamps();
+//    }
 
     /**
      * Junction to element scores

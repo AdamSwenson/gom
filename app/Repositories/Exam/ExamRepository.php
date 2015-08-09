@@ -43,7 +43,7 @@ class ExamRepository implements IExamRepository
 
     /**
      * Deletes the exam
-     * @param Exam $examId
+     * @param int $examId
      * @return mixed|void
      */
     public function delete_exam($examId)

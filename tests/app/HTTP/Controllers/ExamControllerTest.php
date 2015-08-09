@@ -45,18 +45,18 @@ class ExamControllerTest extends \TestCase
         $this->examTerm = $this->faker->text(5);
         $this->examYear = $this->faker->year();
 
+        $eid = $this->exam->getId();
         $this->examData = [
-            'examId' => $this->exam->getId(),
+            'exam_id' => $eid,
             'name' => $this->examName,
-            'term' => $this->examTerm,
-            'year' => $this->examYear
+            'examTerm' => $this->examTerm,
+            'examYear' => $this->examYear
         ];
     }
 
     public function tearDown()
     {
            \Mockery::close();
-
     }
 
     public function testIndex()
@@ -65,22 +65,17 @@ class ExamControllerTest extends \TestCase
         $mock->shouldReceive('load_all_exams')
             ->andReturn(Exam::all());
 
-//        $view='/setup/select_exam';
-//        $this->registerNestedView($view);
-
         $response = $this->action('GET', 'ExamController@index');
         $this->assertNotNull($response);
-
-//        $this->assertNestedViewHas($view, '/setup/select_exam');
-
-//        $this->assertInstanceOf('View', $response->original);
     }
 
     public function testIndexViaSetup()
     {
         $mock = $this->createMock('\App\Repositories\Exam\IExamRepository');
-        $mock->shouldReceive('load_all_exams')->andReturn(Exam::all())->once();
-        $response = $this->call('GET', 'setup');
+        $mock->shouldReceive('load_all_exams')
+            ->andReturn(Exam::all());
+
+        $response = $this->call('GET', '/setup');
         $this->assertNotNull($response);
 
      //   $this->assertInstanceOf('View', $response->original);
@@ -98,14 +93,18 @@ class ExamControllerTest extends \TestCase
 
 
     public function testStore()
-    {
+    { $data = [
+        'name' => $this->examName,
+        'examTerm' => $this->examTerm,
+        'examYear' => $this->examYear
+    ];
         $mock = $this->createMock('\App\Repositories\Exam\IExamRepository');
         $mock->shouldReceive('save_new_exam')
-            ->with($this->examData['year'], $this->examData['term'], $this->examData['name'])
+            ->with($data['examYear'], $data['examTerm'], $data['name'])
             ->once()
         ->andReturn($this->exam);
 
-        $response = $this->action('POST', 'ExamController@store', $this->examData);
+        $response = $this->action('POST', 'ExamController@store', $data);
         $this->assertNotNull($response);
 
         //Todo Add test for view returned
@@ -131,10 +130,11 @@ class ExamControllerTest extends \TestCase
     {
         $mock = $this->createMock('\App\Repositories\Exam\IExamRepository');
         $mock->shouldReceive('update_exam_object')
-            ->with($this->exam, $this->examData['year'], $this->examData['term'], $this->examData['name'])
-            ->once()->andReturn($this->exam);;
+           // ->with($this->exam, $this->examData['year'], $this->examData['term'], $this->examData['name'])
+            ->once()
+            ->andReturn($this->exam);
 
-        $response = $this->action('POST', 'ExamController@update', $this->examData);
+        $response = $this->action('PUT', 'ExamController@update', $this->examData);
         $this->assertNotNull($response);
 
 
@@ -144,12 +144,12 @@ class ExamControllerTest extends \TestCase
 
     public function testDestroy()
     {
-        $mock = $this->createMock('\App\Repositories\Exam\IExamRepository');
+        $mock = $this->createMock('App\Repositories\Exam\IExamRepository');
         $mock->shouldReceive('delete_exam_object')
             ->with($this->exam)
             ->once();
 
-        $response = $this->action('POST', 'ExamController@destroy', $this->exam);
+        $response = $this->action('DELETE', 'ExamController@destroy', $this->exam);
         $this->assertNotNull($response);
 
         //TODO Test for view

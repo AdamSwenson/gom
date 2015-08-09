@@ -15,25 +15,28 @@ class ElementAssignmentTableSeeder extends Seeder
         DB::table('element_assignments')->delete();
 
         $questionAssigns = DB::table('question_assignments')->get();
+//        $questionAssigns = DB::table('question_assignments')->get();
         $elementIds = \App\Element::lists('id')->toArray();
         $faker = Faker\Factory::create();
 
+        $eid = 0;
         foreach ($questionAssigns as $qa)
         {
             for($subtask=1; $subtask <= $numSubtasksPerQuestion; $subtask++)
             {
                 try
                 {
-                    $eid = $faker->randomElement($elementIds);
+                    //$eid = $faker->randomElement($elementIds);
                     $ea = new \App\ElementAssignment();
-                    $ea->question_assignment_id = $qa->id;
-                    $ea->element_id = $eid;
+                    $ea->exam_id = $qa->exam_id;
+                    $ea->question_id = $qa->question_id;
+                    $ea->element_id = $elementIds[$eid];
                     $ea->subtask = $subtask;
-
+$eid += 1;
                     $ea->save();
                 }catch (\Exception $e)
                 {
-                    $subtask -= 1; //try this insert again, in case duplicated assignment
+          //          $subtask -= 1; //try this insert again, in case duplicated assignment
                 }
             }
         }

@@ -34,7 +34,7 @@ class StorageServiceProvider extends ServiceProvider
     public function register()
     {
         //Exams
-        $this->app->bind('\App\Repositories\Exam\IExamRepository', '\App\Repositories\Exam\ExamRepository');
+        $this->app->bind('App\Repositories\Exam\IExamRepository', 'App\Repositories\Exam\ExamRepository');
 
         //Elements and comments
         $this->app->bind('\App\Repositories\Element\IElementRepository', '\App\Repositories\Element\ElementRepository');
@@ -60,6 +60,7 @@ class StorageServiceProvider extends ServiceProvider
         $this->app->bind('\App\Repositories\Student\IStudentRepository', '\App\Repositories\Student\StudentRepository');
         $this->app->bind('\App\classes\SecurityClasses\cleaning\ICleanerFactory', '\App\classes\SecurityClasses\cleaning\CleanerFactory');
 
+        $this->app->bind('App\Jobs\StudentImport\IImportStudentsFromCsv', 'App\Jobs\StudentImport\ImportStudentsFromCsv');
 
 
         //

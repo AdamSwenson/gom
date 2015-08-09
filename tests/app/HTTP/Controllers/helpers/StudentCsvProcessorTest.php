@@ -6,22 +6,22 @@
  * Time: 5:56 PM
  */
 
-namespace ImportExportClasses\StudentUpload;
+namespace App\Http\Controllers\helpers\StudentUpload;
 
 
-class StudentCsvProcessorTest extends \PHPUnit_Framework_TestCase
+class StudentCsvProcessorTest extends \TestCase
 {
     static public $valid_files = array("tests/test_student_upload_valid.csv");
     static public $invalid_files = array("tests/test_student_upload_invalid.csv");
 
     protected $object;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->object = new StudentCsvProcessor;
 
-        $this->request = new \RequestClasses\IFileRequestMock();
+        //$this->request = new \RequestClasses\IFileRequestMock();
 
 
     }
@@ -75,8 +75,9 @@ class StudentCsvProcessorTest extends \PHPUnit_Framework_TestCase
     public function testProcess_file()
     {
         foreach (self::$valid_files as $f) {
-            $this->request->filenames = array($f);
-            $this->assertTrue($this->object->process_file($this->request));
+            //$this->request->filenames = array($f);
+            $this->assertTrue($this->object->process_file($f));
+//            $this->assertTrue($this->object->process_file($this->request));
             $this->assertEquals(4, count($this->object->students));
         }
     }
@@ -87,8 +88,10 @@ class StudentCsvProcessorTest extends \PHPUnit_Framework_TestCase
     public function testProcess_file_invalid()
     {
         foreach (self::$invalid_files as $f) {
-            $this->request->filenames = array($f);
-            $this->assertFalse($this->object->process_file($this->request));
+//            $this->request->filenames = array($f);
+            $this->assertFalse($this->object->process_file($f));
+//            $this->request->filenames = array($f);
+//            $this->assertFalse($this->object->process_file($this->request));
             $this->assertEquals(0, count($this->object->students));
             $this->assertNotEmpty($this->object->file_error);
         }

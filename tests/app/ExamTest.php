@@ -112,20 +112,20 @@ class ExamTest extends \TestCase
     }
 
 
-//    public function testElements()
-//    {
-//        foreach ($this->exam->questionAssignments as $r)
-//        {
-//            $this->assertInstanceOf('App\Element', $r);
-//        }
-//    }
+    public function testElements()
+    {
+        foreach ($this->exam->elements as $r)
+        {
+            $this->assertInstanceOf('App\Element', $r);
+        }
+    }
 
 
     public function testElementAssignments()
     {
         foreach ($this->exam->elementAssignments as $r)
         {
-            $this->assertInstanceOf('App\ElementAssignment', $r);
+            $this->assertInstanceOf('App\Element', $r);
         }
     }
 

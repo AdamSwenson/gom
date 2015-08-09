@@ -20,7 +20,9 @@ class Question extends BaseModel
     /** @var array Fields that are mass assignable */
     protected $fillable = [
         'questionText',
-        'questionName'
+        'questionName',
+        'created_at',
+        'updated_at'
     ];
 
     protected $casts = [

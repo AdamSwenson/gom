@@ -1,20 +1,21 @@
 <?php
 
-/*
- * Gradeomatic
- * Copyright Adam Swenson Merp Co Intl
- * 
- */
+namespace App\Jobs\StudentImport;
 
-namespace App\Http\Controllers\helpers\StudentUpload;
-
+use App\Http\Requests\StudentRequest;
+use App\Jobs\Job;
+use Illuminate\Contracts\Bus\SelfHandling;
 
 /**
- * Handles reading the csv file
+ * Class ImportStudentsFromCsv
  *
- * @author adam
+ * Handles importing students from a a roster uploaded as a csv file.
+ *
+ * TODO: Add validation and sanitization
+ *
+ * @package App\Jobs\StudentImport
  */
-class StudentCsvProcessor implements IStudentCsvProcessor
+class ImportStudentsFromCsv extends Job implements SelfHandling, IImportStudentsFromCsv
 {
     const FILE_TYPE_ERROR = "The file was not a valid .csv file.";
     const ALL_HEADERS_ERROR = "The columns did not have all the correct headers.";
@@ -32,6 +33,29 @@ class StudentCsvProcessor implements IStudentCsvProcessor
     public $file_error;
 
     public $students = array();
+
+    /**
+     * Create a new job instance.
+     *
+     */
+    public function __construct()
+    {
+        //
+    }
+
+    /**
+     * Execute the job.
+     *
+     * @param StudentRequest $request
+     * @return array
+     */
+    public function handle(StudentRequest $request)
+    {
+        $this->file = $request->file('studentsFile');
+        $this->process_file($this->file->getRealPath());
+        return $this->students;
+    }
+
 
     /**
      * Makes sure that the file has the required headers
@@ -66,7 +90,7 @@ class StudentCsvProcessor implements IStudentCsvProcessor
                 }
             }
             return TRUE;
-        } 
+        }
         else {
             $this->file_error = self::ALL_HEADERS_ERROR;
             return FALSE;
@@ -82,20 +106,20 @@ class StudentCsvProcessor implements IStudentCsvProcessor
             while (($data = \fgetcsv($file, 10000, ",")) !== FALSE) {
                 //check the header fields
                 if ($i === 0) {
-//                    if(!$this->check_has_mandatory_headers($data)){
-//                        throw new \Exception();
-//                    };
-//                    if(!$this->check_header_order($data)){
-//                        throw new \Exception();
-//                    }
-                } 
+                    if(!$this->check_has_mandatory_headers($data)){
+                        throw new \Exception();
+                    };
+                    if(!$this->check_header_order($data)){
+                        throw new \Exception();
+                    }
+                }
                 else {
                     $student = array(
                         //'class_nickname' => $data[0],
                         'last_name' => $data[0],
                         'first_name' => $data[1],
                         'student_id' =>  $data[2],
-                        );
+                    );
                     if(isset($data[3])){
                         $student['email'] = $data[3];
                     }
@@ -110,7 +134,6 @@ class StudentCsvProcessor implements IStudentCsvProcessor
         } finally {
             fclose($file);
             \ini_set('auto_detect_line_endings', FALSE);
-       //     var_dump($this->students);
         }
         return true;
     }

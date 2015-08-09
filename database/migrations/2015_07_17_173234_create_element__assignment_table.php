@@ -15,31 +15,32 @@ class CreateElementAssignmentTable extends Migration
         Schema::create('element_assignments', function (Blueprint $table)
         {
             $table->increments('id');
-//            $table->integer('owner_id')->unsigned();
-            $table->integer('question_assignment_id')->unsigned();
+            $table->integer('exam_id')->unsigned();
+            $table->integer('question_id')->unsigned();
             $table->integer('element_id')->unsigned();
             $table->integer('subtask')->unsigned();
             $table->timestamps();
 
-            $table->unique(['question_assignment_id', 'subtask'], 'el_assign_unique');
-//            $table->unique(['owner_id', 'question_assignment_id', 'subtask'], 'el_assign_unique');
-//
-//            $table->foreign('owner_id')
-//                ->references('id')
-//                ->on('users')
-//                ->onDelete('cascade');
+            //Each question cannot have two elements assigned to the same subtask on the same exam
+            $table->unique(['exam_id', 'question_id', 'subtask'], 'el_assign_unique');
 
+            //Deleting the exam will delete the element assignment
+            $table->foreign('exam_id')
+                ->references('id')
+                ->on('exams')
+                ->onDelete('cascade');
+
+            //If there is no element to be assigned, then the assignment should go too.
             $table->foreign('element_id')
                 ->references('id')
                 ->on('elements')
                 ->onDelete('cascade');
 
-            $table->foreign('question_assignment_id')
+            //Deleting the question will destroy the element assignment. Moving the question will not
+            $table->foreign('question_id')
                 ->references('id')
-                ->on('question_assignments')
+                ->on('questions')
                 ->onDelete('cascade');
-
-
         });
 
     }
