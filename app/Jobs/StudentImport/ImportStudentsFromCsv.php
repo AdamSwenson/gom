@@ -134,7 +134,8 @@ class ImportStudentsFromCsv extends Job implements SelfHandling, IImportStudents
         } finally {
             fclose($file);
             \ini_set('auto_detect_line_endings', FALSE);
+            return true;
         }
-        return true;
+
     }
 }

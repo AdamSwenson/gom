@@ -118,7 +118,8 @@ class QuestionAssignment extends BaseModel
      */
     public function elementAssignments()
     {
-        return $this->hasMany('App\ElementAssignment');
+        return ElementAssignment::where('exam_id', $this->attributes['exam_id'])->where('question_id', $this->attributes['question_id'])->get();
+//        return $this->hasMany('App\ElementAssignment');
     }
 
     public function exam()
