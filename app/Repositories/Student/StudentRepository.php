@@ -27,6 +27,33 @@ class StudentRepository implements IStudentRepository
         $this->cleaner = $cleanerFactory;
     }
 
+    /**
+     * Since several functions can be passed either an exam object or
+     * the id of an exam, this determines which has been passed in and returns
+     * the appropriate exam object.
+     *
+     * @param $exam_or_examId
+     * @return Exam
+     * @throws \Exception
+     */
+    protected function determineType($exam_or_examId)
+    {
+        if($exam_or_examId instanceof Exam)
+        {
+            return $exam_or_examId;
+        }else
+        {
+            $examId = (int) $exam_or_examId;
+            if(is_integer($examId))
+            {
+                return Exam::findOrFail($examId);
+            }
+            else{
+                throw new \Exception('invalid type passed in');
+            }
+        }
+    }
+
     protected function update(Student $preExisting, $lastName, $firstName, $email)
     {
         $cleanLastName = $lastName;
@@ -120,29 +147,26 @@ class StudentRepository implements IStudentRepository
      * WHERE c.examID = :examID"
      *
      *
-     * @param $examId
+     * @param Exam|int $exam_or_examId
      * @return mixed
      */
-    public function load_students_by_exam($examId)
+    public function load_students_by_exam($exam_or_examId)
     {
         $students = [];
-        $exam = Exam::findOrFail($examId);
-        $classes = $exam->classes;
-        foreach ($classes as $c)
+
+        $exam = $this->determineType($exam_or_examId);
+        if($exam)
         {
-            foreach ($c->students as $s)
+            $classes = $exam->classes;
+            foreach ($classes as $c)
             {
-                array_push($students, $s);
+                foreach ($c->students as $s)
+                {
+                    array_push($students, $s);
+                }
             }
         }
-
         return $students;
-//        return $students;
-//        $classes = $exam->classes;
-//        if(count($classes) > 0)
-//        {
-//            return $classes->students;
-//        }
     }
 
     /**

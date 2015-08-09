@@ -18,7 +18,16 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 
-class GradeController extends Controller {
+/**
+ * Class GradeController
+ *
+ * This handles all operations involved in displaying the grading input page and
+ * recording the actual grades as they are assigned.
+ *
+ * @package App\Http\Controllers
+ */
+class GradeController extends Controller
+{
 
     protected $IExamRepository;
 
@@ -41,8 +50,32 @@ class GradeController extends Controller {
      * @param Exam $exam
      * @return View
      */
-    public function grade(Exam $exam) {
-        //return('this is the grading page');
-        return View::make('grade.grade_exam', compact('exam') );
+    public function grade(Exam $exam)
+    {
+        $studentDao = app()->make('App\Repositories\Student\IStudentRepository');
+        $students = $studentDao->load_students_by_exam($exam);
+
+        return View::make('grade.grade_exam')->with(['exam' => $exam, 'students' => $students]);
     }
+
+    /**
+     * Records scores as well as time and any other information
+     * @param Exam $exam
+     * @param GradingRequest $request
+     */
+    public function recordScore(Exam $exam, GradingRequest $request)
+    {
+        $questionScoreDao = app()->make('App\Repositories\Score\IQuestionScoreRepository');
+        $elementScoreDao = app()->make('App\Repositories\Score\IElementScoreRepository');
+    }
+
+
+    public function getAutoSID()
+    {}
+
+    /**
+     * Alters the total number of exams to use in statistics
+     */
+    public function setTotalExams()
+    {}
 }
