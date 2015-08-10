@@ -22,7 +22,6 @@ class GradeControllerTest extends \TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->object = new GradeController();
         $this->exam = Exam::all()->random();
     }
 
@@ -34,7 +33,7 @@ class GradeControllerTest extends \TestCase
 
     public function testIndex()
     {
-        $examDao = $this->getMock('App\Repositories\IExamRepository');
+        $examDao = $this->getMock('App\Repositories\Exam\IExamRepository');
         $examDao->shouldReceive('load_all_exams')
             ->andReturn(Exam::all());
         $response = $this->action('GET', 'ExamController@index');
