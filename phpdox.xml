@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <phpdox xmlns="http://xml.phpdox.net/config" silent="false">
-    <project name="phpDox" source="${basedir}/src" workdir="${basedir}/build/api/xml">
+    <project name="phpDox" source="${basedir}/app" workdir="${basedir}/build/api/xml">
         <collector publiconly="false" backend="parser" />
         <generator output="${basedir}/build/api/docs">
             <enrich base="${basedir}/build/logs">
