@@ -33,7 +33,7 @@ class GradeControllerTest extends \TestCase
 
     public function testIndex()
     {
-        $examDao = $this->getMock('App\Repositories\Exam\IExamRepository');
+        $examDao = $this->createMock('App\Repositories\Exam\IExamRepository');
         $examDao->shouldReceive('load_all_exams')
             ->andReturn(Exam::all());
         $response = $this->action('GET', 'ExamController@index');
@@ -42,7 +42,7 @@ class GradeControllerTest extends \TestCase
 
     public function testGrade()
     {
-        $studentDao = $this->getMock('App\Repositories\Student\IStudentRepository');
+        $studentDao = $this->createMock('App\Repositories\Student\IStudentRepository');
         $studentDao->shouldReceive('load_students_by_exam')
             ->with($this->exam)
             ->andReturn(Student::all()->random(5));
