@@ -18,6 +18,7 @@ use App\Student;
 
 class GradeControllerTest extends \TestCase
 {
+    use WithoutMiddleware;
 
     protected $object;
     protected $exam;
