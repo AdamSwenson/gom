@@ -62,9 +62,12 @@ Route::resource('exam.student', 'StudentController');
 
 
 /* ------------------------------------------------ Grade exams ---------------------------------------------------------- */
+//TODO Rework to be more coherent and restful
 Route::get('grade', 'GradeController@index'); // present list of exams to grade.
 Route::get('grade/exam/{exam}', 'GradeController@grade');  // begin grading the specified exam
-
+Route::post('grade/exam/{exam}', 'GradeController@recordScore');
+Route::get('grade/exam{exam}/time','GradeController@loadTime');
+Route::post('grade/exam{exam}/time','GradeController@recordTime');
 
 /* ----------------------------------------------- Reports --------------------------------------------------------------- */
 /* Reporting and analytics */

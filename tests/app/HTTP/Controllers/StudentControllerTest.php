@@ -27,7 +27,7 @@ class StudentControllerTest extends \TestCase
 //        \Mockery::close();
         parent::setUp();
         $this->student = Student::all()->random();
-       // $this->dao = \Mockery::mock('\App\Repositories\Student\IStudentRepository');
+        // $this->dao = \Mockery::mock('\App\Repositories\Student\IStudentRepository');
         //$this->app->instance('\App\Repositories\Student\IStudentRepository', $this->dao);
 //        $this->dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
         // $this->object = new StudentController($this->dao);
@@ -47,14 +47,14 @@ class StudentControllerTest extends \TestCase
 
     public function testIndex()
     {
-        $this->markTestIncomplete();
-
+        $response = $this->action('GET', 'StudentController@index');
+        $this->assertNotNull($response);
     }
 
-    public function testCreate()
+/*    public function testCreate()
     {
-$this->markTestIncomplete();
-    }
+        $this->markTestIncomplete();
+    }*/
 
 
     public function testStore()

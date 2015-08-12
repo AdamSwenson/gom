@@ -15,7 +15,7 @@ use Monolog\Logger;
 /**
  * Formats incoming records into an HTML table
  *
- * This is especially useful for html emails logging
+ * This is especially useful for html email logging
  *
  * @author Tiago Brito <tlfbrito@gmail.com>
  */

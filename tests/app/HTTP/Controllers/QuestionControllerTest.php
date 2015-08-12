@@ -46,34 +46,29 @@ class QuestionControllerTest extends \TestCase
 
     public function testIndexByExam()
     {
-        $this->markTestIncomplete();
-//        $exam = Exam::all()->random();
-//        $assignmentDao = $this->createMock('App\Repositories\Question\IQuestionAssignmentRepository');
-//        $assignmentDao->shouldReceive('load_all_for_exam')->once()->andReturn(Question::all());
-//        $response = $this->action('GET', 'QuestionController@index', ['examId' => 2]);
-//        $this->assertNotNull($response);
+        $exam = Exam::all()->random();
+        $assignmentDao = $this->createMock('App\Repositories\Question\IQuestionAssignmentRepository');
+        $assignmentDao->shouldReceive('load_all_for_exam')->andReturn(Question::all());
+        $response = $this->action('GET', 'QuestionController@index', ['examId' => $exam->id]);
+        $this->assertNotNull($response);
     }
 
     public function testIndexByClassId()
     {
-        $this->markTestIncomplete();
-//        $questionDao = $this->createMock('App\Repositories\Question\IQuestionRepository');
-//        $questionDao->shouldReceive('loadQuestionsByClassId')
-//            ->once()
-//            ->andReturn(Question::all());
-//        $response = $this->action('GET', 'QuestionController@index', ['classId' => 3]);
-//        $this->assertNotNull($response);
+        $questionDao = $this->createMock('App\Repositories\Question\IQuestionRepository');
+        $questionDao->shouldReceive('loadQuestionsByClassId')
+            ->andReturn(Question::all());
+        $response = $this->action('GET', 'QuestionController@index', ['classId' => 3]);
+        $this->assertNotNull($response);
     }
 
     public function testIndexAll()
     {
-        $this->markTestIncomplete();
-//        $questionDao = $this->createMock('App\Repositories\Question\IQuestionRepository');
-//        $questionDao->shouldReceive('loadAll')
-//            ->once()
-//            ->andReturn(Question::all());
-//        $response = $this->action('GET', 'QuestionController@index');
-//        $this->assertNotNull($response);
+        $questionDao = $this->createMock('App\Repositories\Question\IQuestionRepository');
+        $questionDao->shouldReceive('loadAll')
+            ->andReturn(Question::all());
+        $response = $this->action('GET', 'QuestionController@index');
+        $this->assertNotNull($response);
     }
 
 
@@ -116,11 +111,12 @@ class QuestionControllerTest extends \TestCase
     }
 
 
-  /*  public function testEdit()
+  public function testEdit()
     {
+        $response = $this->action('POST', 'QuestionController@edit', ['questionId' => 1]);
+$this->assertNotNull($response);
 
-//        return view('', compact('question'));
-    }*/
+    }
 
 
     public function testUpdate()
@@ -135,8 +131,10 @@ class QuestionControllerTest extends \TestCase
         $this->assertNotNull($response);
     }
 
-//    public function testUpdateAll()
-//    {
+    public function testUpdateAll()
+    {
+        $this->markTestIncomplete();
+    }
 //        // this function will take a request and process all the questions therein.
 //        /* it will:
 //            -Create a new question if the id is empty
@@ -152,11 +150,10 @@ class QuestionControllerTest extends \TestCase
 
     public function testDestroy()
     {
-        $this->markTestIncomplete();
-//        $questionDao = $this->createMock('App\Repositories\Question\IQuestionRepository');
-//        $questionDao->shouldReceive('deleteQuestionObject')->with($this->question)->once();
-//        $response = $this->action('POST', 'QuestionController@destroy', ['questionId' => $this->question->getId()]);
-//        $this->assertNotNull($response);
+        $questionDao = $this->createMock('App\Repositories\Question\IQuestionRepository');
+        $questionDao->shouldReceive('deleteQuestionObject')->with($this->question);
+        $response = $this->action('POST', 'QuestionController@destroy', ['questionId' => $this->question->getId()]);
+        $this->assertNotNull($response);
     }
 
 

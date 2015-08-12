@@ -144,14 +144,12 @@ class ExamControllerTest extends \TestCase
 
     public function testDestroy()
     {
-        $this->markTestIncomplete();
-//        $mock = $this->createMock('App\Repositories\Exam\IExamRepository');
-//        $mock->shouldReceive('delete_exam_object')
-//            ->with($this->exam)
-//            ->once();
-//
-//        $response = $this->action('DELETE', 'ExamController@destroy', ['examId' => $this->exam->id]);
-//        $this->assertNotNull($response);
+        $mock = $this->createMock('App\Repositories\Exam\IExamRepository');
+        $mock->shouldReceive('delete_exam_object')
+            ->with($this->exam);
+
+        $response = $this->action('DELETE', 'ExamController@destroy', ['examId' => $this->exam->id]);
+        $this->assertNotNull($response);
 
         //TODO Test for view
     }

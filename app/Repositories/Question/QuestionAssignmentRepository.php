@@ -8,8 +8,7 @@
 
 namespace App\Repositories\Question;
 
-use App\classes\SecurityClasses\cleaning\CleanerFactory;
-use App\classes\SecurityClasses\cleaning\ICleanerFactory;
+
 use App\Exam;
 use App\Question;
 use App\QuestionAssignment;
@@ -24,12 +23,13 @@ use App\QuestionAssignment;
 class QuestionAssignmentRepository implements IQuestionAssignmentRepository
 {
 
-    /** @var CleanerFactory */
+    /** @var \App\HTTP\Controllers\helpers\cleaning\ICleanerFactory */
     public $cleaner;
 
     public function __construct()
     {
-        $this->cleaner = new CleanerFactory();
+        $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\ICleanerFactory');
+
     }
 //    /**
 //     * @param ICleanerFactory $cleaner

@@ -79,6 +79,17 @@ MYSQL;
 
         DB::unprepared($question_averages);
 
+
+        $record_grading_time = <<<MYSQL
+DROP PROCEDURE IF EXISTS record_grading_time;
+CREATE PROCEDURE `record_grading_time` (IN examId INT, IN studentId INT, IN toAdd FLOAT)
+BEGIN
+    INSERT INTO grading_time (exam_id, student_id, seconds) VALUES (examId, studentId, toAdd)
+    ON DUPLICATE KEY UPDATE seconds = seconds + toAdd;
+END;
+MYSQL;
+        DB::unprepared($record_grading_time);
+
 //
 //    $add_student = <<<MYSQL
 //DROP PROCEDURE IF EXISTS add_or_update_student;
@@ -111,6 +122,8 @@ MYSQL;
 
         DB::unprepared('DROP PROCEDURE IF EXISTS record_question_score');
         DB::unprepared('DROP PROCEDURE IF EXISTS record_element_score');
+
+        DB::unprepared('DROP PROCEDURE IF EXISTS record_grading_time');
 
     }
 }

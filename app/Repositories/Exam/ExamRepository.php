@@ -8,8 +8,8 @@
 
 namespace App\Repositories\Exam;
 use App\Repositories\Exam\IExamRepository;
-use App\classes\SecurityClasses\cleaning\CleanerFactory;
-use App\classes\SecurityClasses\cleaning\ICleanerFactory;
+use App\Http\Controllers\helpers\cleaning\CleanerFactory;
+use App\Http\Controllers\helpers\cleaning\ICleanerFactory;
 use App\Exam;
 
 
@@ -23,7 +23,7 @@ class ExamRepository implements IExamRepository
 
     public function __construct()
     {
-        $this->cleaner = new CleanerFactory();
+        $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\ICleanerFactory');
     }
 //
 //    public function __construct(ICleanerFactory $cleaner)

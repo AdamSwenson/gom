@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\View;
  */
 class GradeController extends Controller
 {
-
+    protected $dao;
     protected $IExamRepository;
 
     public function __construct(IExamRepository $IExamRepository)
@@ -40,9 +40,11 @@ class GradeController extends Controller
     /**
      *  Presents a list of exams to grade
      */
-    public function index() {
+    public function index()
+    {
         $exams = $this->examDao->load_all_exams();
-        return View::make('grade.grade_select_exam', compact('exams') );
+
+        return View::make('grade.grade_select_exam', compact('exams'));
     }
 
     /**
@@ -65,17 +67,64 @@ class GradeController extends Controller
      */
     public function recordScore(Exam $exam, GradingRequest $request)
     {
-        $questionScoreDao = app()->make('App\Repositories\Score\IQuestionScoreRepository');
-        $elementScoreDao = app()->make('App\Repositories\Score\IElementScoreRepository');
+        //Don't even get started if there's no student id and score
+        if ($request->has('student_id') && $request->has('score'))
+        {
+            $studentId = $request->input('student_id');
+            $score = $request->input('score');
+
+            //If the request is to record a question score, it follows this path
+            if ($request->has('question_assignment_id'))
+            {
+                $this->dao = app()->make('App\Repositories\Score\IQuestionScoreRepository');
+                $itemId = $request->input('question_assignment_id');
+            } //If it is to record an element score, it follows this path
+            elseif ($request->has('element_assignment_id'))
+            {
+                $this->dao = app()->make('App\Repositories\Score\IElementScoreRepository');
+                $itemId = $request->input('element_assignment_id');
+            }
+            $this->dao->record($itemId, $studentId, $score);
+        } else
+        {
+            //TODO Error handling
+        }
+
     }
 
+    public function recordTime(Exam $exam, GradingRequest $request)
+    {
+        if ($request->has('student_id') && $request->has('time'))
+        {
+            $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
+            $time = $dao->record($exam->id, $request->input('student_id'), $request->input('time'));
+            return $time;
+        }
+        else{
+            //TODO Error handling
+        }
+
+    }
+
+    public function loadTime(Exam $exam, GradingRequest $request)
+    {
+        if ($request->has('student_id'))
+        {
+            $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
+            $time = $dao->load($exam->id, $request->input('student_id'));
+        return $time;
+        }
+
+    }
 
     public function getAutoSID()
-    {}
+    {
+    }
 
     /**
      * Alters the total number of exams to use in statistics
      */
     public function setTotalExams()
-    {}
+    {
+    }
 }

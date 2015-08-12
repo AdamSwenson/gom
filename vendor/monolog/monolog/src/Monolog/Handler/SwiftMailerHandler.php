@@ -48,7 +48,7 @@ class SwiftMailerHandler extends MailHandler
     /**
      * Creates instance of Swift_Message to be sent
      *
-     * @param string $content formatted emails body to be sent
+     * @param string $content formatted email body to be sent
      * @param array  $records Log records that formed the content
      * @return \Swift_Message
      */
@@ -57,7 +57,7 @@ class SwiftMailerHandler extends MailHandler
         $message = null;
         if ($this->messageTemplate instanceof \Swift_Message) {
             $message = clone $this->messageTemplate;
-        } else if (is_callable($this->messageTemplate)) {
+        } elseif (is_callable($this->messageTemplate)) {
             $message = call_user_func($this->messageTemplate, $content, $records);
         }
 

@@ -47,11 +47,12 @@ class ElementControllerTest extends \TestCase
         $this->assertNotNull($response);
     }
 
-
+/*
     public function testCreate()
     {
         $this->markTestIncomplete();
     }
+*/
 
 
     public function testStore()
@@ -88,21 +89,24 @@ class ElementControllerTest extends \TestCase
         $response = $this->elementDaoMock->shouldReceive('loadElementById')->with($data)->andReturn($this->element);
         $response = $this->action('POST', 'ElementController@show', $data);
     }
-
+/*
     public function testEdit()
     {
         $this->markTestIncomplete();
     }
+*/
 
     public function testEditAll() //$exam, $question)
     {
         $this->markTestIncomplete();
     }
 
+    /*
     public function testUpdate()
     {
         $this->markTestIncomplete();
     }
+    */
 
 
     public function buildIncomingArray($number)

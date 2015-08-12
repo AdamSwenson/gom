@@ -1,11 +1,6 @@
 <?php
 use Illuminate\Database\Seeder;
 
-use Base\User;
-use Map\UserTableMap;
-use Propel\Runtime\ActiveQuery\Criteria;
-
-use Propel\Runtime\Propel;
 
 
 /**

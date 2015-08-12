@@ -27,7 +27,7 @@ class QuestionRepository implements IQuestionRepository
 
     public function __construct()
     {
-        $this->cleaner = new CleanerFactory();
+        $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\ICleanerFactory');
     }
 
 //    public function __construct(ICleanerFactory $cleaner)
