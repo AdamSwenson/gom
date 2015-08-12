@@ -9,8 +9,6 @@
 namespace App\Repositories\Element;
 
 
-use App\classes\SecurityClasses\cleaning\CleanerFactory;
-use App\classes\SecurityClasses\cleaning\ICleanerFactory;
 use App\ElementAssignment;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Question\QuestionAssignmentRepository;

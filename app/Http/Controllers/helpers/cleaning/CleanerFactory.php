@@ -47,19 +47,19 @@ class CleanerFactory implements ICleanerFactory {
     public function make($type) {
         switch ($type) {
             case self::INTEGER:
-                $cleaner = new \SecurityClasses\cleaning\IntegerCleaner();
+                $cleaner = new IntegerCleaner();
                 break;
             case self::FLOAT:
-                $cleaner = new \SecurityClasses\cleaning\FloatCleaner();
+                $cleaner = new FloatCleaner();
                 break;
             case self::STRING:
-                $cleaner = new \SecurityClasses\cleaning\TextCleaner();
+                $cleaner = new TextCleaner();
                 break;
             case self::TEXT:
-                $cleaner = new \SecurityClasses\cleaning\TextCleaner();
+                $cleaner = new TextCleaner();
                 break;
             case self::EMAIL:
-                $cleaner = new \SecurityClasses\cleaning\EmailCleaner();
+                $cleaner = new EmailCleaner();
                 break;
             default:
                 return FALSE;

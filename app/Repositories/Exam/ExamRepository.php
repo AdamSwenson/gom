@@ -7,9 +7,9 @@
  */
 
 namespace App\Repositories\Exam;
+use App\HTTP\Controllers\helpers\cleaning\CleanerFactory;
 use App\Repositories\Exam\IExamRepository;
-use App\Http\Controllers\helpers\cleaning\CleanerFactory;
-use App\Http\Controllers\helpers\cleaning\ICleanerFactory;
+
 use App\Exam;
 
 

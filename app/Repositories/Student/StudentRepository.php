@@ -18,14 +18,18 @@ class StudentRepository implements IStudentRepository
     /** @var  $cleaner ICleanerFactory */
     public $cleaner;
 
-    /**
-     * Loads the class which handles cleaning before query
-     * @param ICleanerFactory $cleanerFactory
-     */
-    public function set_cleaner(ICleanerFactory $cleanerFactory)
+    public function __construct()
     {
-        $this->cleaner = $cleanerFactory;
+        $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\CleanerFactory');
     }
+//    /**
+//     * Loads the class which handles cleaning before query
+//     * @param ICleanerFactory $cleanerFactory
+//     */
+//    public function set_cleaner(ICleanerFactory $cleanerFactory)
+//    {
+//        $this->cleaner = $cleanerFactory;
+//    }
 
     /**
      * Since several functions can be passed either an exam object or

@@ -15,7 +15,7 @@ namespace ImportExportClasses;
  */
 class StudentImportValidator
 {
-    
+    /** @var \App\HTTP\Controllers\helpers\cleaning\CleanerFactory */
     public $validator;
     /**
      * @var int The validated sid
@@ -32,10 +32,10 @@ class StudentImportValidator
 
     protected $student_info_id;
     
-    public function set_validator(\SecurityClasses\cleaning\ICleanerFactory $cleaner_factory)
-    {
-        $this->validator = $cleaner_factory;
-    }
+//    public function set_validator(\SecurityClasses\cleaning\ICleanerFactory $cleaner_factory)
+//    {
+//        $this->validator = $cleaner_factory;
+//    }
     
     /**
      * This will validate the record and then pass the valid record on demand
@@ -45,7 +45,8 @@ class StudentImportValidator
      */
     public function __construct($sid, $studentname, $email)
     {
-        $this->set_validator(new \SecurityClasses\cleaning\CleanerFactory());
+        $this->validator = app()->make('App\HTTP\Controllers\helpers\cleaning\CleanerFactory');
+//        $this->set_validator(new \SecurityClasses\cleaning\CleanerFactory());
         $this->validate_email($email);
         $this->validate_student_id($sid);
         $this->validate_student_name($studentname);

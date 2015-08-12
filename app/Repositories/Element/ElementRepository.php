@@ -8,8 +8,6 @@
 
 namespace App\Repositories\Element;
 
-use App\classes\SecurityClasses\cleaning\ICleanerFactory;
-use App\classes\SecurityClasses\cleaning\CleanerFactory;
 use App\Comment;
 use App\Element;
 
@@ -22,14 +20,18 @@ class ElementRepository implements IElementRepository
     /** @var  $cleaner ICleanerFactory */
     public $cleaner;
 
-    /**
-     * Loads the class which handles cleaning before query
-     * @param ICleanerFactory $cleanerFactory
-     */
-    public function set_cleaner(ICleanerFactory $cleanerFactory)
+    public function __construct()
     {
-        $this->cleaner = $cleanerFactory;
+        $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\CleanerFactory');
     }
+//    /**
+//     * Loads the class which handles cleaning before query
+//     * @param ICleanerFactory $cleanerFactory
+//     */
+//    public function set_cleaner(ICleanerFactory $cleanerFactory)
+//    {
+//        $this->cleaner = $cleanerFactory;
+//    }
 
     /**
      * Load an element object by its id

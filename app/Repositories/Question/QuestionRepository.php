@@ -9,8 +9,8 @@
 namespace App\Repositories\Question;
 
 
-use App\classes\SecurityClasses\cleaning\CleanerFactory;
-use App\classes\SecurityClasses\cleaning\ICleanerFactory;
+
+use App\HTTP\Controllers\helpers\cleaning\CleanerFactory;
 use App\Question;
 
 /**
@@ -30,10 +30,6 @@ class QuestionRepository implements IQuestionRepository
         $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\ICleanerFactory');
     }
 
-//    public function __construct(ICleanerFactory $cleaner)
-//    {
-//        $this->cleaner = $cleaner;
-//    }
 
     /**
      * Creates a new question
