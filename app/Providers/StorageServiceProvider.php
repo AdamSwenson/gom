@@ -37,8 +37,8 @@ class StorageServiceProvider extends ServiceProvider
         $this->app->bind('App\Repositories\Exam\IExamRepository', 'App\Repositories\Exam\ExamRepository');
 
         //Elements and comments
-        $this->app->bind('\App\Repositories\Element\IElementRepository', '\App\Repositories\Element\ElementRepository');
-        $this->app->bind('\App\Repositories\Element\IElementAssignmentRepository', '\App\Repositories\Element\ElementAssignmentRepository');
+        $this->app->bind('App\Repositories\Element\IElementRepository', 'App\Repositories\Element\ElementRepository');
+        $this->app->bind('App\Repositories\Element\IElementAssignmentRepository', 'App\Repositories\Element\ElementAssignmentRepository');
         $this->app->bind('App\Repositories\Element\ICommentRepository', 'App\Repositories\Element\CommentRepository');
 
         //Feedback
@@ -49,7 +49,7 @@ class StorageServiceProvider extends ServiceProvider
         $this->app->bind('App\Repositories\Student\IKumiRepository', 'App\Repositories\Student\KumiRepository');
 
         //Questions
-        $this->app->bind('\App\Repositories\Question\IQuestionRepository', '\App\Repositories\Question\QuestionRepository');
+        $this->app->bind('App\Repositories\Question\IQuestionRepository', 'App\Repositories\Question\QuestionRepository');
         $this->app->bind('App\Repositories\Question\IQuestionAssignmentRepository', 'App\Repositories\Question\QuestionAssignmentRepository');
 
         //Scores
@@ -57,8 +57,8 @@ class StorageServiceProvider extends ServiceProvider
         $this->app->bind('App\Repositories\Score\IElementScoreRepository', 'App\Repositories\Score\ElementScoreRepository');
 
         //Students
-        $this->app->bind('\App\Repositories\Student\IStudentRepository', '\App\Repositories\Student\StudentRepository');
-        $this->app->bind('\App\classes\SecurityClasses\cleaning\ICleanerFactory', '\App\classes\SecurityClasses\cleaning\CleanerFactory');
+        $this->app->bind('App\Repositories\Student\IStudentRepository', 'App\Repositories\Student\StudentRepository');
+        $this->app->bind('App\classes\SecurityClasses\cleaning\ICleanerFactory', 'App\classes\SecurityClasses\cleaning\CleanerFactory');
 
         $this->app->bind('App\Jobs\StudentImport\IImportStudentsFromCsv', 'App\Jobs\StudentImport\ImportStudentsFromCsv');
 

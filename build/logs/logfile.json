@@ -1,0 +1,1965 @@
+{
+    "event": "suiteStart",
+    "suite": "gradeomatic",
+    "tests": 182
+}{
+    "event": "suiteStart",
+    "suite": "App\\CommentTest",
+    "tests": 7
+}{
+    "event": "testStart",
+    "suite": "App\\CommentTest",
+    "test": "App\\CommentTest::testGetBody"
+}{
+    "event": "test",
+    "suite": "App\\CommentTest",
+    "test": "App\\CommentTest::testGetBody",
+    "status": "pass",
+    "time": 0.7451388835907,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\CommentTest",
+    "test": "App\\CommentTest::testGetValence"
+}{
+    "event": "test",
+    "suite": "App\\CommentTest",
+    "test": "App\\CommentTest::testGetValence",
+    "status": "pass",
+    "time": 0.69271302223206,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\CommentTest",
+    "test": "App\\CommentTest::testSetValence"
+}{
+    "event": "test",
+    "suite": "App\\CommentTest",
+    "test": "App\\CommentTest::testSetValence",
+    "status": "pass",
+    "time": 0.67679905891418,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\CommentTest",
+    "test": "App\\CommentTest::testSetValenceExceptionOnInvalidValence"
+}{
+    "event": "test",
+    "suite": "App\\CommentTest",
+    "test": "App\\CommentTest::testSetValenceExceptionOnInvalidValence",
+    "status": "pass",
+    "time": 0.68160700798035,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\CommentTest",
+    "test": "App\\CommentTest::testScopeOnValence"
+}{
+    "event": "test",
+    "suite": "App\\CommentTest",
+    "test": "App\\CommentTest::testScopeOnValence",
+    "status": "pass",
+    "time": 0.84520101547241,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\CommentTest",
+    "test": "App\\CommentTest::testUser"
+}{
+    "event": "test",
+    "suite": "App\\CommentTest",
+    "test": "App\\CommentTest::testUser",
+    "status": "pass",
+    "time": 0.71350812911987,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\CommentTest",
+    "test": "App\\CommentTest::testElement"
+}{
+    "event": "test",
+    "suite": "App\\CommentTest",
+    "test": "App\\CommentTest::testElement",
+    "status": "pass",
+    "time": 0.76285409927368,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "App\\ElementAssignmentTest",
+    "tests": 6
+}{
+    "event": "testStart",
+    "suite": "App\\ElementAssignmentTest",
+    "test": "App\\ElementAssignmentTest::testSetSubtask"
+}{
+    "event": "test",
+    "suite": "App\\ElementAssignmentTest",
+    "test": "App\\ElementAssignmentTest::testSetSubtask",
+    "status": "pass",
+    "time": 0.41219711303711,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementAssignmentTest",
+    "test": "App\\ElementAssignmentTest::testGetSubtask"
+}{
+    "event": "test",
+    "suite": "App\\ElementAssignmentTest",
+    "test": "App\\ElementAssignmentTest::testGetSubtask",
+    "status": "pass",
+    "time": 0.34702086448669,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementAssignmentTest",
+    "test": "App\\ElementAssignmentTest::testScopeOnExam"
+}{
+    "event": "test",
+    "suite": "App\\ElementAssignmentTest",
+    "test": "App\\ElementAssignmentTest::testScopeOnExam",
+    "status": "pass",
+    "time": 0.3466260433197,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementAssignmentTest",
+    "test": "App\\ElementAssignmentTest::testElement"
+}{
+    "event": "test",
+    "suite": "App\\ElementAssignmentTest",
+    "test": "App\\ElementAssignmentTest::testElement",
+    "status": "pass",
+    "time": 0.38114500045776,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementAssignmentTest",
+    "test": "App\\ElementAssignmentTest::testElementScores"
+}{
+    "event": "test",
+    "suite": "App\\ElementAssignmentTest",
+    "test": "App\\ElementAssignmentTest::testElementScores",
+    "status": "pass",
+    "time": 0.40646886825562,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementAssignmentTest",
+    "test": "App\\ElementAssignmentTest::testQuestion"
+}{
+    "event": "test",
+    "suite": "App\\ElementAssignmentTest",
+    "test": "App\\ElementAssignmentTest::testQuestion",
+    "status": "pass",
+    "time": 0.41314101219177,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "App\\ElementScoreTest",
+    "tests": 8
+}{
+    "event": "testStart",
+    "suite": "App\\ElementScoreTest",
+    "test": "App\\ElementScoreTest::testScopeOnStudent"
+}{
+    "event": "test",
+    "suite": "App\\ElementScoreTest",
+    "test": "App\\ElementScoreTest::testScopeOnStudent",
+    "status": "pass",
+    "time": 0.40055084228516,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementScoreTest",
+    "test": "App\\ElementScoreTest::testScopeOnElementAssignment"
+}{
+    "event": "test",
+    "suite": "App\\ElementScoreTest",
+    "test": "App\\ElementScoreTest::testScopeOnElementAssignment",
+    "status": "pass",
+    "time": 0.40898299217224,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementScoreTest",
+    "test": "App\\ElementScoreTest::testScopeOnStudentElementAssignment"
+}{
+    "event": "test",
+    "suite": "App\\ElementScoreTest",
+    "test": "App\\ElementScoreTest::testScopeOnStudentElementAssignment",
+    "status": "pass",
+    "time": 0.39662098884583,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementScoreTest",
+    "test": "App\\ElementScoreTest::testGetScore"
+}{
+    "event": "test",
+    "suite": "App\\ElementScoreTest",
+    "test": "App\\ElementScoreTest::testGetScore",
+    "status": "pass",
+    "time": 0.39480900764465,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementScoreTest",
+    "test": "App\\ElementScoreTest::testSetScore"
+}{
+    "event": "test",
+    "suite": "App\\ElementScoreTest",
+    "test": "App\\ElementScoreTest::testSetScore",
+    "status": "pass",
+    "time": 0.37870216369629,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementScoreTest",
+    "test": "App\\ElementScoreTest::testElement"
+}{
+    "event": "test",
+    "suite": "App\\ElementScoreTest",
+    "test": "App\\ElementScoreTest::testElement",
+    "status": "pass",
+    "time": 0.4085738658905,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementScoreTest",
+    "test": "App\\ElementScoreTest::testStudent"
+}{
+    "event": "test",
+    "suite": "App\\ElementScoreTest",
+    "test": "App\\ElementScoreTest::testStudent",
+    "status": "pass",
+    "time": 0.43784213066101,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementScoreTest",
+    "test": "App\\ElementScoreTest::testElementAssignment"
+}{
+    "event": "test",
+    "suite": "App\\ElementScoreTest",
+    "test": "App\\ElementScoreTest::testElementAssignment",
+    "status": "pass",
+    "time": 0.39442610740662,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "App\\ElementTest",
+    "tests": 8
+}{
+    "event": "testStart",
+    "suite": "App\\ElementTest",
+    "test": "App\\ElementTest::testSetAsQuestionTask"
+}{
+    "event": "test",
+    "suite": "App\\ElementTest",
+    "test": "App\\ElementTest::testSetAsQuestionTask",
+    "status": "pass",
+    "time": 0.4684591293335,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementTest",
+    "test": "App\\ElementTest::testSetElementName"
+}{
+    "event": "test",
+    "suite": "App\\ElementTest",
+    "test": "App\\ElementTest::testSetElementName",
+    "status": "pass",
+    "time": 0.49701881408691,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementTest",
+    "test": "App\\ElementTest::testSetCommentText"
+}{
+    "event": "test",
+    "suite": "App\\ElementTest",
+    "test": "App\\ElementTest::testSetCommentText",
+    "status": "pass",
+    "time": 0.47691488265991,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementTest",
+    "test": "App\\ElementTest::testGetElementName"
+}{
+    "event": "test",
+    "suite": "App\\ElementTest",
+    "test": "App\\ElementTest::testGetElementName",
+    "status": "pass",
+    "time": 0.45751690864563,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementTest",
+    "test": "App\\ElementTest::testGetCommentText"
+}{
+    "event": "test",
+    "suite": "App\\ElementTest",
+    "test": "App\\ElementTest::testGetCommentText",
+    "status": "pass",
+    "time": 0.5136570930481,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementTest",
+    "test": "App\\ElementTest::testUser"
+}{
+    "event": "test",
+    "suite": "App\\ElementTest",
+    "test": "App\\ElementTest::testUser",
+    "status": "pass",
+    "time": 0.48764204978943,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementTest",
+    "test": "App\\ElementTest::testScores"
+}{
+    "event": "test",
+    "suite": "App\\ElementTest",
+    "test": "App\\ElementTest::testScores",
+    "status": "pass",
+    "time": 0.48434019088745,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ElementTest",
+    "test": "App\\ElementTest::testComments"
+}{
+    "event": "test",
+    "suite": "App\\ElementTest",
+    "test": "App\\ElementTest::testComments",
+    "status": "pass",
+    "time": 0.47065496444702,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "App\\ExamTest",
+    "tests": 19
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testScopeOnClasses"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testScopeOnClasses",
+    "status": "pass",
+    "time": 0.35482096672058,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testScopeUnlocked"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testScopeUnlocked",
+    "status": "pass",
+    "time": 0.44526886940002,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testScopeUnreleased"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testScopeUnreleased",
+    "status": "pass",
+    "time": 0.41580486297607,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testScopeReleased"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testScopeReleased",
+    "status": "pass",
+    "time": 0.36072993278503,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testSetTerm"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testSetTerm",
+    "status": "pass",
+    "time": 0.35319781303406,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testSetName"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testSetName",
+    "status": "pass",
+    "time": 0.35540509223938,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testSetYear"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testSetYear",
+    "status": "pass",
+    "time": 0.38439393043518,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testSetLocked"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testSetLocked",
+    "status": "pass",
+    "time": 0.34816908836365,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testSetReleased"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testSetReleased",
+    "status": "pass",
+    "time": 0.35987997055054,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testClasses"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testClasses",
+    "status": "pass",
+    "time": 0.37578392028809,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testElements"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testElements",
+    "status": "pass",
+    "time": 0.55663990974426,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testElementAssignments"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testElementAssignments",
+    "status": "pass",
+    "time": 0.39270782470703,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testQuestionAssignments"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testQuestionAssignments",
+    "status": "pass",
+    "time": 0.44142007827759,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testQuestionScores"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testQuestionScores",
+    "status": "pass",
+    "time": 0.40727400779724,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testUser"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testUser",
+    "status": "pass",
+    "time": 0.39516997337341,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testGetTerm"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testGetTerm",
+    "status": "pass",
+    "time": 0.38813900947571,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testGetName"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testGetName",
+    "status": "pass",
+    "time": 0.35349607467651,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testGetLocked"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testGetLocked",
+    "status": "pass",
+    "time": 0.34268593788147,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testGetReleased"
+}{
+    "event": "test",
+    "suite": "App\\ExamTest",
+    "test": "App\\ExamTest::testGetReleased",
+    "status": "pass",
+    "time": 0.35311603546143,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "tests": 10
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testIndex"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testIndex",
+    "status": "pass",
+    "time": 1.2516870498657,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testCreate"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testCreate",
+    "status": "error",
+    "time": 0.52000093460083,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/HTTP\/Controllers\/ElementControllerTest.php",
+            "line": 53,
+            "function": "markTestIncomplete",
+            "class": "PHPUnit_Framework_Assert",
+            "type": "::"
+        }
+    ],
+    "message": "Incomplete Test: ",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testStore"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testStore",
+    "status": "pass",
+    "time": 0.74719095230103,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testShow"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testShow",
+    "status": "pass",
+    "time": 0.77682781219482,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testEdit"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testEdit",
+    "status": "error",
+    "time": 0.4837019443512,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/HTTP\/Controllers\/ElementControllerTest.php",
+            "line": 94,
+            "function": "markTestIncomplete",
+            "class": "PHPUnit_Framework_Assert",
+            "type": "::"
+        }
+    ],
+    "message": "Incomplete Test: ",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testEditAll"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testEditAll",
+    "status": "error",
+    "time": 0.50761294364929,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/HTTP\/Controllers\/ElementControllerTest.php",
+            "line": 99,
+            "function": "markTestIncomplete",
+            "class": "PHPUnit_Framework_Assert",
+            "type": "::"
+        }
+    ],
+    "message": "Incomplete Test: ",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testUpdate"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testUpdate",
+    "status": "error",
+    "time": 0.50525903701782,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/HTTP\/Controllers\/ElementControllerTest.php",
+            "line": 104,
+            "function": "markTestIncomplete",
+            "class": "PHPUnit_Framework_Assert",
+            "type": "::"
+        }
+    ],
+    "message": "Incomplete Test: ",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testUpdateAllNewElement"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testUpdateAllNewElement",
+    "status": "pass",
+    "time": 0.69811916351318,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testUpdateAllExistingElement"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testUpdateAllExistingElement",
+    "status": "pass",
+    "time": 0.67793607711792,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testDestroy"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ElementControllerTest",
+    "test": "HTTP\\Controllers\\ElementControllerTest::testDestroy",
+    "status": "pass",
+    "time": 0.7765040397644,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "HTTP\\Controllers\\ExamControllerTest",
+    "tests": 7
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ExamControllerTest",
+    "test": "HTTP\\Controllers\\ExamControllerTest::testIndex"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ExamControllerTest",
+    "test": "HTTP\\Controllers\\ExamControllerTest::testIndex",
+    "status": "pass",
+    "time": 0.73885703086853,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ExamControllerTest",
+    "test": "HTTP\\Controllers\\ExamControllerTest::testIndexViaSetup"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ExamControllerTest",
+    "test": "HTTP\\Controllers\\ExamControllerTest::testIndexViaSetup",
+    "status": "pass",
+    "time": 0.64384913444519,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ExamControllerTest",
+    "test": "HTTP\\Controllers\\ExamControllerTest::testCreate"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ExamControllerTest",
+    "test": "HTTP\\Controllers\\ExamControllerTest::testCreate",
+    "status": "pass",
+    "time": 0.56678414344788,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ExamControllerTest",
+    "test": "HTTP\\Controllers\\ExamControllerTest::testStore"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ExamControllerTest",
+    "test": "HTTP\\Controllers\\ExamControllerTest::testStore",
+    "status": "pass",
+    "time": 0.47372007369995,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ExamControllerTest",
+    "test": "HTTP\\Controllers\\ExamControllerTest::testEdit"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ExamControllerTest",
+    "test": "HTTP\\Controllers\\ExamControllerTest::testEdit",
+    "status": "pass",
+    "time": 0.49254488945007,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ExamControllerTest",
+    "test": "HTTP\\Controllers\\ExamControllerTest::testUpdate"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ExamControllerTest",
+    "test": "HTTP\\Controllers\\ExamControllerTest::testUpdate",
+    "status": "pass",
+    "time": 0.46558117866516,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Controllers\\ExamControllerTest",
+    "test": "HTTP\\Controllers\\ExamControllerTest::testDestroy"
+}{
+    "event": "test",
+    "suite": "HTTP\\Controllers\\ExamControllerTest",
+    "test": "HTTP\\Controllers\\ExamControllerTest::testDestroy",
+    "status": "error",
+    "time": 0.58401298522949,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/CountValidator\/Exact.php",
+            "line": 37
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/Expectation.php",
+            "line": 271,
+            "function": "validate",
+            "class": "Mockery\\CountValidator\\Exact",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/ExpectationDirector.php",
+            "line": 120,
+            "function": "verify",
+            "class": "Mockery\\Expectation",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/Container.php",
+            "line": 297,
+            "function": "mockery_verify",
+            "class": "Mockery_2_App_Repositories_Exam_IExamRepository",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/Container.php",
+            "line": 282,
+            "function": "mockery_verify",
+            "class": "Mockery\\Container",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery.php",
+            "line": 142,
+            "function": "mockery_teardown",
+            "class": "Mockery\\Container",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/HTTP\/Controllers\/ExamControllerTest.php",
+            "line": 59,
+            "function": "close",
+            "class": "Mockery",
+            "type": "::"
+        }
+    ],
+    "message": "Method delete_exam_object(object(App\\Exam)) from Mockery_2_App_Repositories_Exam_IExamRepository should be called\n exactly 1 times but called 0 times.",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "App\\HTTP\\Controllers\\GradeControllerTest",
+    "tests": 5
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\GradeControllerTest",
+    "test": "App\\HTTP\\Controllers\\GradeControllerTest::testIndex"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\GradeControllerTest",
+    "test": "App\\HTTP\\Controllers\\GradeControllerTest::testIndex",
+    "status": "pass",
+    "time": 0.70429301261902,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\GradeControllerTest",
+    "test": "App\\HTTP\\Controllers\\GradeControllerTest::testGrade"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\GradeControllerTest",
+    "test": "App\\HTTP\\Controllers\\GradeControllerTest::testGrade",
+    "status": "error",
+    "time": 0.481684923172,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/laravel\/framework\/src\/Illuminate\/Routing\/UrlGenerator.php",
+            "line": 558
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/laravel\/framework\/src\/Illuminate\/Foundation\/Testing\/CrawlerTrait.php",
+            "line": 760,
+            "function": "action",
+            "class": "Illuminate\\Routing\\UrlGenerator",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/HTTP\/Controllers\/GradeControllerTest.php",
+            "line": 50,
+            "function": "action",
+            "class": "Illuminate\\Foundation\\Testing\\TestCase",
+            "type": "->"
+        }
+    ],
+    "message": "Action App\\Http\\Controllers\\ExamController@grade not defined.",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\GradeControllerTest",
+    "test": "App\\HTTP\\Controllers\\GradeControllerTest::testRecordScore"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\GradeControllerTest",
+    "test": "App\\HTTP\\Controllers\\GradeControllerTest::testRecordScore",
+    "status": "error",
+    "time": 0.42519617080688,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/HTTP\/Controllers\/GradeControllerTest.php",
+            "line": 56,
+            "function": "markTestIncomplete",
+            "class": "PHPUnit_Framework_Assert",
+            "type": "::"
+        }
+    ],
+    "message": "Incomplete Test: ",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\GradeControllerTest",
+    "test": "App\\HTTP\\Controllers\\GradeControllerTest::testGetAutoSID"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\GradeControllerTest",
+    "test": "App\\HTTP\\Controllers\\GradeControllerTest::testGetAutoSID",
+    "status": "error",
+    "time": 0.44923901557922,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/HTTP\/Controllers\/GradeControllerTest.php",
+            "line": 64,
+            "function": "markTestIncomplete",
+            "class": "PHPUnit_Framework_Assert",
+            "type": "::"
+        }
+    ],
+    "message": "Incomplete Test: ",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\GradeControllerTest",
+    "test": "App\\HTTP\\Controllers\\GradeControllerTest::testSetTotalExams"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\GradeControllerTest",
+    "test": "App\\HTTP\\Controllers\\GradeControllerTest::testSetTotalExams",
+    "status": "error",
+    "time": 0.41272115707397,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/HTTP\/Controllers\/GradeControllerTest.php",
+            "line": 74,
+            "function": "markTestIncomplete",
+            "class": "PHPUnit_Framework_Assert",
+            "type": "::"
+        }
+    ],
+    "message": "Incomplete Test: ",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "App\\HTTP\\Controllers\\QuestionControllerTest",
+    "tests": 7
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\QuestionControllerTest",
+    "test": "App\\HTTP\\Controllers\\QuestionControllerTest::testIndexByExam"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\QuestionControllerTest",
+    "test": "App\\HTTP\\Controllers\\QuestionControllerTest::testIndexByExam",
+    "status": "error",
+    "time": 0.77118802070618,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/CountValidator\/Exact.php",
+            "line": 37
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/Expectation.php",
+            "line": 271,
+            "function": "validate",
+            "class": "Mockery\\CountValidator\\Exact",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/ExpectationDirector.php",
+            "line": 120,
+            "function": "verify",
+            "class": "Mockery\\Expectation",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/Container.php",
+            "line": 297,
+            "function": "mockery_verify",
+            "class": "Mockery_4_App_Repositories_Question_IQuestionAssignmentRepository",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/Container.php",
+            "line": 282,
+            "function": "mockery_verify",
+            "class": "Mockery\\Container",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery.php",
+            "line": 142,
+            "function": "mockery_teardown",
+            "class": "Mockery\\Container",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/HTTP\/Controllers\/QuestionControllerTest.php",
+            "line": 43,
+            "function": "close",
+            "class": "Mockery",
+            "type": "::"
+        }
+    ],
+    "message": "Method load_all_for_exam() from Mockery_4_App_Repositories_Question_IQuestionAssignmentRepository should be called\n exactly 1 times but called 0 times.",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\QuestionControllerTest",
+    "test": "App\\HTTP\\Controllers\\QuestionControllerTest::testIndexByClassId"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\QuestionControllerTest",
+    "test": "App\\HTTP\\Controllers\\QuestionControllerTest::testIndexByClassId",
+    "status": "error",
+    "time": 0.65743803977966,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/CountValidator\/Exact.php",
+            "line": 37
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/Expectation.php",
+            "line": 271,
+            "function": "validate",
+            "class": "Mockery\\CountValidator\\Exact",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/ExpectationDirector.php",
+            "line": 120,
+            "function": "verify",
+            "class": "Mockery\\Expectation",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/Container.php",
+            "line": 297,
+            "function": "mockery_verify",
+            "class": "Mockery_5_App_Repositories_Question_IQuestionRepository",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/Container.php",
+            "line": 282,
+            "function": "mockery_verify",
+            "class": "Mockery\\Container",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery.php",
+            "line": 142,
+            "function": "mockery_teardown",
+            "class": "Mockery\\Container",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/HTTP\/Controllers\/QuestionControllerTest.php",
+            "line": 43,
+            "function": "close",
+            "class": "Mockery",
+            "type": "::"
+        }
+    ],
+    "message": "Method loadQuestionsByClassId() from Mockery_5_App_Repositories_Question_IQuestionRepository should be called\n exactly 1 times but called 0 times.",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\QuestionControllerTest",
+    "test": "App\\HTTP\\Controllers\\QuestionControllerTest::testIndexAll"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\QuestionControllerTest",
+    "test": "App\\HTTP\\Controllers\\QuestionControllerTest::testIndexAll",
+    "status": "error",
+    "time": 0.61793684959412,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/CountValidator\/Exact.php",
+            "line": 37
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/Expectation.php",
+            "line": 271,
+            "function": "validate",
+            "class": "Mockery\\CountValidator\\Exact",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/ExpectationDirector.php",
+            "line": 120,
+            "function": "verify",
+            "class": "Mockery\\Expectation",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/Container.php",
+            "line": 297,
+            "function": "mockery_verify",
+            "class": "Mockery_5_App_Repositories_Question_IQuestionRepository",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/Container.php",
+            "line": 282,
+            "function": "mockery_verify",
+            "class": "Mockery\\Container",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery.php",
+            "line": 142,
+            "function": "mockery_teardown",
+            "class": "Mockery\\Container",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/HTTP\/Controllers\/QuestionControllerTest.php",
+            "line": 43,
+            "function": "close",
+            "class": "Mockery",
+            "type": "::"
+        }
+    ],
+    "message": "Method loadAll() from Mockery_5_App_Repositories_Question_IQuestionRepository should be called\n exactly 1 times but called 0 times.",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\QuestionControllerTest",
+    "test": "App\\HTTP\\Controllers\\QuestionControllerTest::testStore"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\QuestionControllerTest",
+    "test": "App\\HTTP\\Controllers\\QuestionControllerTest::testStore",
+    "status": "pass",
+    "time": 0.55607295036316,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\QuestionControllerTest",
+    "test": "App\\HTTP\\Controllers\\QuestionControllerTest::testShow"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\QuestionControllerTest",
+    "test": "App\\HTTP\\Controllers\\QuestionControllerTest::testShow",
+    "status": "pass",
+    "time": 0.68788909912109,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\QuestionControllerTest",
+    "test": "App\\HTTP\\Controllers\\QuestionControllerTest::testUpdate"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\QuestionControllerTest",
+    "test": "App\\HTTP\\Controllers\\QuestionControllerTest::testUpdate",
+    "status": "pass",
+    "time": 0.67665195465088,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\QuestionControllerTest",
+    "test": "App\\HTTP\\Controllers\\QuestionControllerTest::testDestroy"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\QuestionControllerTest",
+    "test": "App\\HTTP\\Controllers\\QuestionControllerTest::testDestroy",
+    "status": "error",
+    "time": 0.58611392974854,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/CountValidator\/Exact.php",
+            "line": 37
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/Expectation.php",
+            "line": 271,
+            "function": "validate",
+            "class": "Mockery\\CountValidator\\Exact",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/ExpectationDirector.php",
+            "line": 120,
+            "function": "verify",
+            "class": "Mockery\\Expectation",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/Container.php",
+            "line": 297,
+            "function": "mockery_verify",
+            "class": "Mockery_5_App_Repositories_Question_IQuestionRepository",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery\/Container.php",
+            "line": 282,
+            "function": "mockery_verify",
+            "class": "Mockery\\Container",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/vendor\/mockery\/mockery\/library\/Mockery.php",
+            "line": 142,
+            "function": "mockery_teardown",
+            "class": "Mockery\\Container",
+            "type": "->"
+        },
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/HTTP\/Controllers\/QuestionControllerTest.php",
+            "line": 43,
+            "function": "close",
+            "class": "Mockery",
+            "type": "::"
+        }
+    ],
+    "message": "Method deleteQuestionObject(object(App\\Question)) from Mockery_5_App_Repositories_Question_IQuestionRepository should be called\n exactly 1 times but called 0 times.",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "App\\HTTP\\Controllers\\StudentControllerTest",
+    "tests": 5
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\StudentControllerTest",
+    "test": "App\\HTTP\\Controllers\\StudentControllerTest::testIndex"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\StudentControllerTest",
+    "test": "App\\HTTP\\Controllers\\StudentControllerTest::testIndex",
+    "status": "error",
+    "time": 0.41305303573608,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/HTTP\/Controllers\/StudentControllerTest.php",
+            "line": 50,
+            "function": "markTestIncomplete",
+            "class": "PHPUnit_Framework_Assert",
+            "type": "::"
+        }
+    ],
+    "message": "Incomplete Test: ",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\StudentControllerTest",
+    "test": "App\\HTTP\\Controllers\\StudentControllerTest::testCreate"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\StudentControllerTest",
+    "test": "App\\HTTP\\Controllers\\StudentControllerTest::testCreate",
+    "status": "error",
+    "time": 0.40728282928467,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/HTTP\/Controllers\/StudentControllerTest.php",
+            "line": 56,
+            "function": "markTestIncomplete",
+            "class": "PHPUnit_Framework_Assert",
+            "type": "::"
+        }
+    ],
+    "message": "Incomplete Test: ",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\StudentControllerTest",
+    "test": "App\\HTTP\\Controllers\\StudentControllerTest::testStore"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\StudentControllerTest",
+    "test": "App\\HTTP\\Controllers\\StudentControllerTest::testStore",
+    "status": "pass",
+    "time": 0.830806016922,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\StudentControllerTest",
+    "test": "App\\HTTP\\Controllers\\StudentControllerTest::testShow"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\StudentControllerTest",
+    "test": "App\\HTTP\\Controllers\\StudentControllerTest::testShow",
+    "status": "pass",
+    "time": 0.65464091300964,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\HTTP\\Controllers\\StudentControllerTest",
+    "test": "App\\HTTP\\Controllers\\StudentControllerTest::testDestroy"
+}{
+    "event": "test",
+    "suite": "App\\HTTP\\Controllers\\StudentControllerTest",
+    "test": "App\\HTTP\\Controllers\\StudentControllerTest::testDestroy",
+    "status": "pass",
+    "time": 0.72299313545227,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "HTTP\\Requests\\ExamRequestTest",
+    "tests": 1
+}{
+    "event": "testStart",
+    "suite": "HTTP\\Requests\\ExamRequestTest",
+    "test": "HTTP\\Requests\\ExamRequestTest::testFilter"
+}{
+    "event": "test",
+    "suite": "HTTP\\Requests\\ExamRequestTest",
+    "test": "HTTP\\Requests\\ExamRequestTest::testFilter",
+    "status": "error",
+    "time": 0.4115149974823,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/HTTP\/Requests\/ExamRequestTest.php",
+            "line": 28,
+            "function": "markTestIncomplete",
+            "class": "PHPUnit_Framework_Assert",
+            "type": "::"
+        }
+    ],
+    "message": "Incomplete Test: ",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest",
+    "tests": 7
+}{
+    "event": "testStart",
+    "suite": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest",
+    "test": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest::testCheck_has_mandatory_headers_all"
+}{
+    "event": "test",
+    "suite": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest",
+    "test": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest::testCheck_has_mandatory_headers_all",
+    "status": "pass",
+    "time": 0.40418696403503,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest",
+    "test": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest::testCheck_has_mandatory_headers_required"
+}{
+    "event": "test",
+    "suite": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest",
+    "test": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest::testCheck_has_mandatory_headers_required",
+    "status": "pass",
+    "time": 0.39787483215332,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest",
+    "test": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest::testCheck_has_mandatory_headers_false"
+}{
+    "event": "test",
+    "suite": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest",
+    "test": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest::testCheck_has_mandatory_headers_false",
+    "status": "pass",
+    "time": 0.43078899383545,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest",
+    "test": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest::testCheck_header_order"
+}{
+    "event": "test",
+    "suite": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest",
+    "test": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest::testCheck_header_order",
+    "status": "pass",
+    "time": 0.40897011756897,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest",
+    "test": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest::testCheck_header_order_false"
+}{
+    "event": "test",
+    "suite": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest",
+    "test": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest::testCheck_header_order_false",
+    "status": "pass",
+    "time": 0.39678120613098,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest",
+    "test": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest::testProcess_file"
+}{
+    "event": "test",
+    "suite": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest",
+    "test": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest::testProcess_file",
+    "status": "pass",
+    "time": 0.45705103874207,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest",
+    "test": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest::testProcess_file_invalid"
+}{
+    "event": "test",
+    "suite": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest",
+    "test": "App\\Jobs\\StudentImport\\ImportStudentsFromCsvTest::testProcess_file_invalid",
+    "status": "error",
+    "time": 0.47715091705322,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/Jobs\/StudentImport\/ImportStudentsFromCsvTest.php",
+            "line": 88,
+            "function": "markTestIncomplete",
+            "class": "PHPUnit_Framework_Assert",
+            "type": "::"
+        }
+    ],
+    "message": "Incomplete Test: ",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "App\\KumiTest",
+    "tests": 5
+}{
+    "event": "testStart",
+    "suite": "App\\KumiTest",
+    "test": "App\\KumiTest::testSetName"
+}{
+    "event": "test",
+    "suite": "App\\KumiTest",
+    "test": "App\\KumiTest::testSetName",
+    "status": "pass",
+    "time": 0.43769407272339,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\KumiTest",
+    "test": "App\\KumiTest::testSetYear"
+}{
+    "event": "test",
+    "suite": "App\\KumiTest",
+    "test": "App\\KumiTest::testSetYear",
+    "status": "pass",
+    "time": 0.44123291969299,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\KumiTest",
+    "test": "App\\KumiTest::testStudents"
+}{
+    "event": "test",
+    "suite": "App\\KumiTest",
+    "test": "App\\KumiTest::testStudents",
+    "status": "pass",
+    "time": 0.55267214775085,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\KumiTest",
+    "test": "App\\KumiTest::testExams"
+}{
+    "event": "test",
+    "suite": "App\\KumiTest",
+    "test": "App\\KumiTest::testExams",
+    "status": "pass",
+    "time": 0.45560908317566,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\KumiTest",
+    "test": "App\\KumiTest::testUser"
+}{
+    "event": "test",
+    "suite": "App\\KumiTest",
+    "test": "App\\KumiTest::testUser",
+    "status": "pass",
+    "time": 0.45129895210266,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "App\\QuestionAssignmentTest",
+    "tests": 4
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionAssignmentTest",
+    "test": "App\\QuestionAssignmentTest::testElementAssignments"
+}{
+    "event": "test",
+    "suite": "App\\QuestionAssignmentTest",
+    "test": "App\\QuestionAssignmentTest::testElementAssignments",
+    "status": "pass",
+    "time": 0.46298098564148,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionAssignmentTest",
+    "test": "App\\QuestionAssignmentTest::testExam"
+}{
+    "event": "test",
+    "suite": "App\\QuestionAssignmentTest",
+    "test": "App\\QuestionAssignmentTest::testExam",
+    "status": "pass",
+    "time": 0.43292498588562,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionAssignmentTest",
+    "test": "App\\QuestionAssignmentTest::testQuestion"
+}{
+    "event": "test",
+    "suite": "App\\QuestionAssignmentTest",
+    "test": "App\\QuestionAssignmentTest::testQuestion",
+    "status": "pass",
+    "time": 0.41567015647888,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionAssignmentTest",
+    "test": "App\\QuestionAssignmentTest::testQuestionScores"
+}{
+    "event": "test",
+    "suite": "App\\QuestionAssignmentTest",
+    "test": "App\\QuestionAssignmentTest::testQuestionScores",
+    "status": "pass",
+    "time": 0.4554750919342,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "App\\QuestionScoreTest",
+    "tests": 6
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionScoreTest",
+    "test": "App\\QuestionScoreTest::testScopeStudent"
+}{
+    "event": "test",
+    "suite": "App\\QuestionScoreTest",
+    "test": "App\\QuestionScoreTest::testScopeStudent",
+    "status": "pass",
+    "time": 0.57441401481628,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionScoreTest",
+    "test": "App\\QuestionScoreTest::testScopeQuestionAssignment"
+}{
+    "event": "test",
+    "suite": "App\\QuestionScoreTest",
+    "test": "App\\QuestionScoreTest::testScopeQuestionAssignment",
+    "status": "pass",
+    "time": 0.4839870929718,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionScoreTest",
+    "test": "App\\QuestionScoreTest::testExam"
+}{
+    "event": "test",
+    "suite": "App\\QuestionScoreTest",
+    "test": "App\\QuestionScoreTest::testExam",
+    "status": "pass",
+    "time": 0.48339891433716,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionScoreTest",
+    "test": "App\\QuestionScoreTest::testQuestionAssignment"
+}{
+    "event": "test",
+    "suite": "App\\QuestionScoreTest",
+    "test": "App\\QuestionScoreTest::testQuestionAssignment",
+    "status": "pass",
+    "time": 0.50113201141357,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionScoreTest",
+    "test": "App\\QuestionScoreTest::testQuestion"
+}{
+    "event": "test",
+    "suite": "App\\QuestionScoreTest",
+    "test": "App\\QuestionScoreTest::testQuestion",
+    "status": "pass",
+    "time": 0.49122309684753,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionScoreTest",
+    "test": "App\\QuestionScoreTest::testStudent"
+}{
+    "event": "test",
+    "suite": "App\\QuestionScoreTest",
+    "test": "App\\QuestionScoreTest::testStudent",
+    "status": "pass",
+    "time": 0.47780013084412,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "App\\QuestionTest",
+    "tests": 7
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionTest",
+    "test": "App\\QuestionTest::testGetQuestionNumber"
+}{
+    "event": "test",
+    "suite": "App\\QuestionTest",
+    "test": "App\\QuestionTest::testGetQuestionNumber",
+    "status": "pass",
+    "time": 0.50889897346497,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionTest",
+    "test": "App\\QuestionTest::testSetQuestionNumber"
+}{
+    "event": "test",
+    "suite": "App\\QuestionTest",
+    "test": "App\\QuestionTest::testSetQuestionNumber",
+    "status": "pass",
+    "time": 0.49195504188538,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionTest",
+    "test": "App\\QuestionTest::testSetQuestionNumberPreExisting"
+}{
+    "event": "test",
+    "suite": "App\\QuestionTest",
+    "test": "App\\QuestionTest::testSetQuestionNumberPreExisting",
+    "status": "pass",
+    "time": 0.51334285736084,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionTest",
+    "test": "App\\QuestionTest::testExam"
+}{
+    "event": "test",
+    "suite": "App\\QuestionTest",
+    "test": "App\\QuestionTest::testExam",
+    "status": "pass",
+    "time": 0.62231492996216,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionTest",
+    "test": "App\\QuestionTest::testUser"
+}{
+    "event": "test",
+    "suite": "App\\QuestionTest",
+    "test": "App\\QuestionTest::testUser",
+    "status": "pass",
+    "time": 0.48970293998718,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionTest",
+    "test": "App\\QuestionTest::testQuestionAssignments"
+}{
+    "event": "test",
+    "suite": "App\\QuestionTest",
+    "test": "App\\QuestionTest::testQuestionAssignments",
+    "status": "pass",
+    "time": 0.52284288406372,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\QuestionTest",
+    "test": "App\\QuestionTest::testScores"
+}{
+    "event": "test",
+    "suite": "App\\QuestionTest",
+    "test": "App\\QuestionTest::testScores",
+    "status": "pass",
+    "time": 0.51873278617859,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "App\\Repositories\\Element\\CommentRepositoryTest",
+    "tests": 3
+}{
+    "event": "testStart",
+    "suite": "App\\Repositories\\Element\\CommentRepositoryTest",
+    "test": "App\\Repositories\\Element\\CommentRepositoryTest::testGetCommentForValence"
+}{
+    "event": "test",
+    "suite": "App\\Repositories\\Element\\CommentRepositoryTest",
+    "test": "App\\Repositories\\Element\\CommentRepositoryTest::testGetCommentForValence",
+    "status": "pass",
+    "time": 0.8458559513092,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\Repositories\\Element\\CommentRepositoryTest",
+    "test": "App\\Repositories\\Element\\CommentRepositoryTest::testChooseValenceByScore"
+}{
+    "event": "test",
+    "suite": "App\\Repositories\\Element\\CommentRepositoryTest",
+    "test": "App\\Repositories\\Element\\CommentRepositoryTest::testChooseValenceByScore",
+    "status": "pass",
+    "time": 0.95765209197998,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\Repositories\\Element\\CommentRepositoryTest",
+    "test": "App\\Repositories\\Element\\CommentRepositoryTest::testChooseValenceByScoreExceptionOutOfMaxRange"
+}{
+    "event": "test",
+    "suite": "App\\Repositories\\Element\\CommentRepositoryTest",
+    "test": "App\\Repositories\\Element\\CommentRepositoryTest::testChooseValenceByScoreExceptionOutOfMaxRange",
+    "status": "pass",
+    "time": 0.84942817687988,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "suiteStart",
+    "suite": "App\\Repositories\\Element\\ElementAssignmentRepositoryTest",
+    "tests": 4
+}{
+    "event": "testStart",
+    "suite": "App\\Repositories\\Element\\ElementAssignmentRepositoryTest",
+    "test": "App\\Repositories\\Element\\ElementAssignmentRepositoryTest::testRecord"
+}{
+    "event": "test",
+    "suite": "App\\Repositories\\Element\\ElementAssignmentRepositoryTest",
+    "test": "App\\Repositories\\Element\\ElementAssignmentRepositoryTest::testRecord",
+    "status": "pass",
+    "time": 0.66293907165527,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\Repositories\\Element\\ElementAssignmentRepositoryTest",
+    "test": "App\\Repositories\\Element\\ElementAssignmentRepositoryTest::testLoad_elements"
+}{
+    "event": "test",
+    "suite": "App\\Repositories\\Element\\ElementAssignmentRepositoryTest",
+    "test": "App\\Repositories\\Element\\ElementAssignmentRepositoryTest::testLoad_elements",
+    "status": "pass",
+    "time": 0.72805118560791,
+    "trace": [],
+    "message": "",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\Repositories\\Element\\ElementAssignmentRepositoryTest",
+    "test": "App\\Repositories\\Element\\ElementAssignmentRepositoryTest::testLoad_elements_by_question_number"
+}{
+    "event": "test",
+    "suite": "App\\Repositories\\Element\\ElementAssignmentRepositoryTest",
+    "test": "App\\Repositories\\Element\\ElementAssignmentRepositoryTest::testLoad_elements_by_question_number",
+    "status": "fail",
+    "time": 0.65038800239563,
+    "trace": [
+        {
+            "file": "\/Users\/adam\/Dropbox\/gom3\/tests\/app\/Repositories\/Element\/ElementAssignmentRepositoryTest.php",
+            "line": 84,
+            "function": "assertAttributeNotEmpty",
+            "class": "PHPUnit_Framework_Assert",
+            "type": "::"
+        }
+    ],
+    "message": "assignments load\nFailed asserting that an object is not empty.",
+    "output": ""
+}{
+    "event": "testStart",
+    "suite": "App\\Repositories\\Element\\ElementAssignmentRepositoryTest",
+    "test": "App\\Repositories\\Element\\ElementAssignmentRepositoryTest::testLoad_by_exam"
+}

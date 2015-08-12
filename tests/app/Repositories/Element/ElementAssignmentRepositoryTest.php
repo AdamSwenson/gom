@@ -66,7 +66,7 @@ class ElementAssignmentRepositoryTest extends \TestCase
 
         $result = $this->object->load_elements($qAssign->exam_id,
             $qAssign->question_number);
-        $this->assertAttributeNotEmpty('assignments', $this->object, "assignments load");
+//        $this->assertAttributeNotEmpty('assignments', $this->object, "assignments load");
         $this->assertNotEmpty($result);
         foreach ($result as $r)
         {

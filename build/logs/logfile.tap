@@ -1,0 +1,123 @@
+TAP version 13
+ok 1 - App\CommentTest::testGetBody
+ok 2 - App\CommentTest::testGetValence
+ok 3 - App\CommentTest::testSetValence
+ok 4 - App\CommentTest::testSetValenceExceptionOnInvalidValence
+ok 5 - App\CommentTest::testScopeOnValence
+ok 6 - App\CommentTest::testUser
+ok 7 - App\CommentTest::testElement
+ok 8 - App\ElementAssignmentTest::testSetSubtask
+ok 9 - App\ElementAssignmentTest::testGetSubtask
+ok 10 - App\ElementAssignmentTest::testScopeOnExam
+ok 11 - App\ElementAssignmentTest::testElement
+ok 12 - App\ElementAssignmentTest::testElementScores
+ok 13 - App\ElementAssignmentTest::testQuestion
+ok 14 - App\ElementScoreTest::testScopeOnStudent
+ok 15 - App\ElementScoreTest::testScopeOnElementAssignment
+ok 16 - App\ElementScoreTest::testScopeOnStudentElementAssignment
+ok 17 - App\ElementScoreTest::testGetScore
+ok 18 - App\ElementScoreTest::testSetScore
+ok 19 - App\ElementScoreTest::testElement
+ok 20 - App\ElementScoreTest::testStudent
+ok 21 - App\ElementScoreTest::testElementAssignment
+ok 22 - App\ElementTest::testSetAsQuestionTask
+ok 23 - App\ElementTest::testSetElementName
+ok 24 - App\ElementTest::testSetCommentText
+ok 25 - App\ElementTest::testGetElementName
+ok 26 - App\ElementTest::testGetCommentText
+ok 27 - App\ElementTest::testUser
+ok 28 - App\ElementTest::testScores
+ok 29 - App\ElementTest::testComments
+ok 30 - App\ExamTest::testScopeOnClasses
+ok 31 - App\ExamTest::testScopeUnlocked
+ok 32 - App\ExamTest::testScopeUnreleased
+ok 33 - App\ExamTest::testScopeReleased
+ok 34 - App\ExamTest::testSetTerm
+ok 35 - App\ExamTest::testSetName
+ok 36 - App\ExamTest::testSetYear
+ok 37 - App\ExamTest::testSetLocked
+ok 38 - App\ExamTest::testSetReleased
+ok 39 - App\ExamTest::testClasses
+ok 40 - App\ExamTest::testElements
+ok 41 - App\ExamTest::testElementAssignments
+ok 42 - App\ExamTest::testQuestionAssignments
+ok 43 - App\ExamTest::testQuestionScores
+ok 44 - App\ExamTest::testUser
+ok 45 - App\ExamTest::testGetTerm
+ok 46 - App\ExamTest::testGetName
+ok 47 - App\ExamTest::testGetLocked
+ok 48 - App\ExamTest::testGetReleased
+ok 49 - HTTP\Controllers\ElementControllerTest::testIndex
+not ok 50 - HTTP\Controllers\ElementControllerTest::testCreate # TODO Incomplete Test
+ok 51 - HTTP\Controllers\ElementControllerTest::testStore
+ok 52 - HTTP\Controllers\ElementControllerTest::testShow
+not ok 53 - HTTP\Controllers\ElementControllerTest::testEdit # TODO Incomplete Test
+not ok 54 - HTTP\Controllers\ElementControllerTest::testEditAll # TODO Incomplete Test
+not ok 55 - HTTP\Controllers\ElementControllerTest::testUpdate # TODO Incomplete Test
+ok 56 - HTTP\Controllers\ElementControllerTest::testUpdateAllNewElement
+ok 57 - HTTP\Controllers\ElementControllerTest::testUpdateAllExistingElement
+ok 58 - HTTP\Controllers\ElementControllerTest::testDestroy
+ok 59 - HTTP\Controllers\ExamControllerTest::testIndex
+ok 60 - HTTP\Controllers\ExamControllerTest::testIndexViaSetup
+ok 61 - HTTP\Controllers\ExamControllerTest::testCreate
+ok 62 - HTTP\Controllers\ExamControllerTest::testStore
+ok 63 - HTTP\Controllers\ExamControllerTest::testEdit
+ok 64 - HTTP\Controllers\ExamControllerTest::testUpdate
+not ok 65 - Error: HTTP\Controllers\ExamControllerTest::testDestroy
+ok 66 - App\HTTP\Controllers\GradeControllerTest::testIndex
+not ok 67 - Error: App\HTTP\Controllers\GradeControllerTest::testGrade
+not ok 68 - App\HTTP\Controllers\GradeControllerTest::testRecordScore # TODO Incomplete Test
+not ok 69 - App\HTTP\Controllers\GradeControllerTest::testGetAutoSID # TODO Incomplete Test
+not ok 70 - App\HTTP\Controllers\GradeControllerTest::testSetTotalExams # TODO Incomplete Test
+not ok 71 - Error: App\HTTP\Controllers\QuestionControllerTest::testIndexByExam
+not ok 72 - Error: App\HTTP\Controllers\QuestionControllerTest::testIndexByClassId
+not ok 73 - Error: App\HTTP\Controllers\QuestionControllerTest::testIndexAll
+ok 74 - App\HTTP\Controllers\QuestionControllerTest::testStore
+ok 75 - App\HTTP\Controllers\QuestionControllerTest::testShow
+ok 76 - App\HTTP\Controllers\QuestionControllerTest::testUpdate
+not ok 77 - Error: App\HTTP\Controllers\QuestionControllerTest::testDestroy
+not ok 78 - App\HTTP\Controllers\StudentControllerTest::testIndex # TODO Incomplete Test
+not ok 79 - App\HTTP\Controllers\StudentControllerTest::testCreate # TODO Incomplete Test
+ok 80 - App\HTTP\Controllers\StudentControllerTest::testStore
+ok 81 - App\HTTP\Controllers\StudentControllerTest::testShow
+ok 82 - App\HTTP\Controllers\StudentControllerTest::testDestroy
+not ok 83 - HTTP\Requests\ExamRequestTest::testFilter # TODO Incomplete Test
+ok 84 - App\Jobs\StudentImport\ImportStudentsFromCsvTest::testCheck_has_mandatory_headers_all
+ok 85 - App\Jobs\StudentImport\ImportStudentsFromCsvTest::testCheck_has_mandatory_headers_required
+ok 86 - App\Jobs\StudentImport\ImportStudentsFromCsvTest::testCheck_has_mandatory_headers_false
+ok 87 - App\Jobs\StudentImport\ImportStudentsFromCsvTest::testCheck_header_order
+ok 88 - App\Jobs\StudentImport\ImportStudentsFromCsvTest::testCheck_header_order_false
+ok 89 - App\Jobs\StudentImport\ImportStudentsFromCsvTest::testProcess_file
+not ok 90 - App\Jobs\StudentImport\ImportStudentsFromCsvTest::testProcess_file_invalid # TODO Incomplete Test
+ok 91 - App\KumiTest::testSetName
+ok 92 - App\KumiTest::testSetYear
+ok 93 - App\KumiTest::testStudents
+ok 94 - App\KumiTest::testExams
+ok 95 - App\KumiTest::testUser
+ok 96 - App\QuestionAssignmentTest::testElementAssignments
+ok 97 - App\QuestionAssignmentTest::testExam
+ok 98 - App\QuestionAssignmentTest::testQuestion
+ok 99 - App\QuestionAssignmentTest::testQuestionScores
+ok 100 - App\QuestionScoreTest::testScopeStudent
+ok 101 - App\QuestionScoreTest::testScopeQuestionAssignment
+ok 102 - App\QuestionScoreTest::testExam
+ok 103 - App\QuestionScoreTest::testQuestionAssignment
+ok 104 - App\QuestionScoreTest::testQuestion
+ok 105 - App\QuestionScoreTest::testStudent
+ok 106 - App\QuestionTest::testGetQuestionNumber
+ok 107 - App\QuestionTest::testSetQuestionNumber
+ok 108 - App\QuestionTest::testSetQuestionNumberPreExisting
+ok 109 - App\QuestionTest::testExam
+ok 110 - App\QuestionTest::testUser
+ok 111 - App\QuestionTest::testQuestionAssignments
+ok 112 - App\QuestionTest::testScores
+ok 113 - App\Repositories\Element\CommentRepositoryTest::testGetCommentForValence
+ok 114 - App\Repositories\Element\CommentRepositoryTest::testChooseValenceByScore
+ok 115 - App\Repositories\Element\CommentRepositoryTest::testChooseValenceByScoreExceptionOutOfMaxRange
+ok 116 - App\Repositories\Element\ElementAssignmentRepositoryTest::testRecord
+ok 117 - App\Repositories\Element\ElementAssignmentRepositoryTest::testLoad_elements
+not ok 118 - Failure: App\Repositories\Element\ElementAssignmentRepositoryTest::testLoad_elements_by_question_number
+  ---
+  message: 'assignments load'
+  severity: fail
+  ...

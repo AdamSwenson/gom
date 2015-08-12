@@ -36,7 +36,7 @@ class GradeControllerTest extends \TestCase
         $examDao = $this->createMock('App\Repositories\Exam\IExamRepository');
         $examDao->shouldReceive('load_all_exams')
             ->andReturn(Exam::all());
-        $response = $this->action('GET', 'ExamController@index');
+        $response = $this->action('GET', 'GradeController@index');
         $this->assertNotEmpty($response);
     }
 
@@ -47,7 +47,7 @@ class GradeControllerTest extends \TestCase
             ->with($this->exam)
             ->andReturn(Student::all()->random(5));
 
-        $response = $this->action('GET', 'ExamController@grade', $this->exam);
+        $response = $this->action('GET', 'GradeController@grade', $this->exam);
         $this->assertNotEmpty($response);
     }
 

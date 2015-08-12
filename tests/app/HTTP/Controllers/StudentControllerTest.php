@@ -70,7 +70,7 @@ $this->markTestIncomplete();
         $kumi_repository_processor_mock
             ->shouldReceive('create')->andReturn(Kumi::all()->random());
 
-        $dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
+        $dao = $this->createMock('App\Repositories\Student\IStudentRepository');
         $dao->shouldReceive('create_student')
             ->times($numStudents)
             ->andReturn(Student::all()->random());
