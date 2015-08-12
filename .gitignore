@@ -4,3 +4,4 @@ Homestead.yaml
 .idea
 .DS_store
 vendor/.DS_Store
+build
