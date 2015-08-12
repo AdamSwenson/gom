@@ -24,7 +24,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
     {
         // Temporarily increase memory limit to 256MB
         ini_set('memory_limit','256M');
-        
+
         //        $this->user = \UserQuery::create()->filterById(self::$userid)->findOneOrCreate();
         $this->faker = \Faker\Factory::create();
 
