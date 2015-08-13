@@ -90,15 +90,50 @@ END;
 MYSQL;
         DB::unprepared($record_grading_time);
 
-//
-//    $add_student = <<<MYSQL
-//DROP PROCEDURE IF EXISTS add_or_update_student;
-//CREATE PROCEDURE `add_or_update_student` (IN user_id INT
-//MYSQL;
+
+        $get_question_scores_for_student = <<<MYSQL
+DROP PROCEDURE IF EXISTS get_question_scores_for_student;
+CREATE PROCEDURE `get_question_scores_for_student` (IN userId INT, IN examId INT, IN studentId INT)
+BEGIN
+SELECT q.id AS questionId, qa.question_number AS questionNumber, q.questionName, qa.id AS questionAssignmentId,
+                    (SELECT qs.score AS questionScore
+                    FROM question_scores qs WHERE
+                    qs.student_id = studentId
+                    AND qs.question_assignment_id = questionAssignmentId) AS questionScore
+                    FROM questions q
+                    INNER JOIN question_assignments qa ON q.id = qa.question_id
+                    WHERE qa.exam_id = examId
+                    AND q.user_id = userId
+                    ORDER BY qa.question_number ASC;
+END;
+MYSQL;
+       // DB::unprepared($get_question_scores_for_student);
 
 
-
-
+        $get_element_scores_for_student_by_question_id = <<<MYSQL
+DROP PROCEDURE IF EXISTS get_element_scores_for_student_by_question_id;
+CREATE PROCEDURE `get_element_scores_for_student_by_question_id` (IN userId INT, IN examId INT, IN questionId INT, IN studentId INT,
+OUT elementId INT, OUT elementName TEXT, OUT questionNumber INT, OUT subtask INT, OUT elementAssignmentId INT, OUT elementScore FLOAT)
+BEGIN
+SELECT e.id AS elementId, e.elementName AS elementName, exq.subtask AS subtask, exq.id AS elementAssignmentId,
+                (SELECT qa.question_number FROM question_assignments qa
+                    WHERE qa.exam_id = examId
+                        AND qa.question_id = questionId
+                ) AS questionNumber,
+                (SELECT score AS elementScore
+                FROM element_scores WHERE element_assignment_id = elementAssignmentId
+                AND student_id = studentId
+                AND element_assignment_id = elementAssignmentId ) AS elementScore
+                FROM elements e
+                INNER JOIN element_assignments exq ON e.id = exq.element_id
+                WHERE
+                    e.user_id = userId
+                    AND exq.exam_id = examId
+                    AND exq.question_id = questionId
+                    ORDER BY exq.subtask ASC;
+END;
+MYSQL;
+//        DB::unprepared($get_element_scores_for_student_by_question_id);
 
 
 
@@ -123,7 +158,11 @@ MYSQL;
         DB::unprepared('DROP PROCEDURE IF EXISTS record_question_score');
         DB::unprepared('DROP PROCEDURE IF EXISTS record_element_score');
 
+        DB::unprepared('DROP PROCEDURE IF EXISTS get_question_scores_for_student');
+        DB::unprepared('DROP PROCEDURE IF EXISTS get_element_scores_for_student_by_question_id');
+
         DB::unprepared('DROP PROCEDURE IF EXISTS record_grading_time');
+
 
     }
 }

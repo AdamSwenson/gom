@@ -68,7 +68,6 @@ class GradeControllerTest extends \TestCase
 
     public function testRecordScoreElement()
     {
-
         $data = ['element_assignment_id' => 1, 'student_id' => 2, 'score' => 3.4];
         $mock = $this->createMock('App\Repositories\Score\IElementScoreRepository');
         $mock->shouldReceive('record')

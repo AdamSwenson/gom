@@ -33,6 +33,63 @@ class ElementScoreRepository implements IElementScoreRepository
 //        $this->score_object = ElementScore::onStudentElementAssignment($studentId, $elementAssignmentId)->first();
     }
 
+
+    /**
+     * Loads all of a students scores on elements associated with a question by the question's id number.
+     * The results will be in ascending order via subtask.
+     * Returns array with following keys:
+     *      elementId: The id of the element
+     *      elementName: The name of the element for display
+     *      subtask: The order in which the element appears for the question
+     *      elementAssignmentId: The id of the association between element and question
+     *      questionNumber: The number of the question on the exam
+     *      elementScore: Float value of the score or NULL if not yet graded.
+     *
+     * @param integer $examId
+     * @param integer $questionId
+     * @param integer $studentId
+     * @return mixed
+     */
+    public function load_all_for_student_by_question_id($examId, $questionId, $studentId)
+    {
+        $query = <<<MYSQL
+SELECT e.id AS elementId,
+    e.elementName AS elementName,
+    exq.subtask AS subtask,
+    exq.id AS elementAssignmentId,
+    (SELECT qa.question_number FROM question_assignments qa
+        WHERE qa.exam_id = :examId
+            AND qa.question_id = :questionId
+    ) AS questionNumber,
+    (SELECT score AS elementScore
+        FROM element_scores
+        WHERE element_assignment_id = elementAssignmentId
+        AND student_id = :studentId
+    ) AS elementScore
+    FROM elements e
+        INNER JOIN element_assignments exq ON e.id = exq.element_id
+        WHERE
+            e.user_id = :userId
+            AND exq.exam_id = :examId2
+            AND exq.question_id = :questionId2
+        ORDER BY exq.subtask ASC;
+MYSQL;
+$uid = \Auth::user()->id;
+       // $query = "CALL get_element_scores_for_student_by_question_id(:userId, :examId, :questionId, :studentId, @elementId, @elementName, @questionNumber, @subtask, @elementAssignmentId, @elementScore)";
+        $values = [
+            'userId' => $uid,
+            'examId' => $examId,
+            'examId2' => $examId,
+            'questionId' => $questionId,
+            'questionId2' => $questionId,
+            'studentId' => $studentId
+        ];
+        return \DB::select($query, $values);
+//           //TODO Error handling
+
+    }
+
+
 //    /**
 //     * Loads all element scores for a given question on an exam
 //     * @param IQuestionAssignmentRepository $questionAssigner
