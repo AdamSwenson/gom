@@ -11,7 +11,7 @@
         <div class="row">
             <!-- Left column holds questions and sliders -->
             <div class="col-md-8">
-                <h3>Question #1: "Causes of the Civil War"</h3>
+                <h3>Question #1: "Causes of the Civil War: this is a very long title to test what happens"</h3>
                 <!-- Centered Question Pills -->
                 <ul class="nav nav-pills nav-justified">
                     <li class="active" role="presentation"><a href="#q1-panel" data-toggle="tab">Q1</a></li>
@@ -22,7 +22,7 @@
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <div class="tab-content">
-                            <?php for ($count = 0; $count < 4; $count++) { ?>
+                            <?php for ($count = 1; $count < 2; $count++) { ?>
                                     <!-- element sliders -->
                             @include('grade.element_slider')
                             <?php } ?>
@@ -66,22 +66,22 @@
             </div>
         </div>
     </div>
-@endsection
+    @endsection
 
 
-@section('jsArea')
+    @section('jsArea')
 
-        <!-- bootstrap sliders -->
-    <link href="{{ asset('inc/css/slider.css') }}" rel="stylesheet">
+            <!-- bootstrap sliders -->
+
     <script type='text/javascript' src="{{ asset('inc/js/bootstrap-slider.js') }}"></script>
 
     <script type="text/javascript">
 
-        $(document).ready(function () {
-            var mySlider = $("input.slider").slider();
+        $(".slider").slider();
+        $("#ex2").slider();
 
-            // Call a method on the slider
-            //var value = mySlider.bootstrapSlider('getValue');
+        $(document).ready(function () {
+
         });
     </script>
 @endsection

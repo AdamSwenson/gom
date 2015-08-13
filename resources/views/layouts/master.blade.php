@@ -10,9 +10,8 @@
 
 
     @yield('cssLinks')
-    @include('layouts.js_jqueryCss')
-            <!-- moved these to test responsiveness -->
-    @include('layouts.js_jqueryJs')
+    <link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet">
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.2.js"></script>
     @include('layouts.js_scriptloader')
             <!-- bootstrap -->
     <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
