@@ -15,6 +15,7 @@ use App\GradingTime;
 use App\Http\Controllers\GradeController;
 use App\QuestionScore;
 use App\Student;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class GradeControllerTest extends \TestCase
 {
@@ -32,7 +33,6 @@ class GradeControllerTest extends \TestCase
     public function tearDown()
     {
         \Mockery::close();
-
     }
 
     public function testIndex()
