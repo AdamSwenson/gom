@@ -60,9 +60,10 @@ class StorageServiceProvider extends ServiceProvider
         //Students
         $this->app->bind('App\Repositories\Student\IStudentRepository', 'App\Repositories\Student\StudentRepository');
 
-
         //Time
         $this->app->bind('App\Repositories\Time\IGradingTimeRepository', 'App\Repositories\Time\GradingTimeRepository');
+        $this->app->bind('App\Repositories\Time\IGradingStatsRepository', 'App\Repositories\Time\GradingStatsRepository');
+
 
         # Jobs
         //Students

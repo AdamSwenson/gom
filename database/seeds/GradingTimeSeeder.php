@@ -24,7 +24,7 @@ class GradingTimeSeeder extends Seeder
                 $t = new \App\GradingTime();
                 $t->exam_id = $e->id;
                 $t->student_id = $s->id;
-                $t->seconds = \Faker\Factory::create()->randomFloat(2, 2);
+                $t->seconds = \Faker\Factory::create()->randomFloat(2, 0, 500);
                 $t->save();
             }
         }

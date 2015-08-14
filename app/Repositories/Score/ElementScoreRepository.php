@@ -74,7 +74,7 @@ SELECT e.id AS elementId,
             AND exq.question_id = :questionId2
         ORDER BY exq.subtask ASC;
 MYSQL;
-$uid = \Auth::user()->id;
+        $uid = \Auth::user()->id;
        // $query = "CALL get_element_scores_for_student_by_question_id(:userId, :examId, :questionId, :studentId, @elementId, @elementName, @questionNumber, @subtask, @elementAssignmentId, @elementScore)";
         $values = [
             'userId' => $uid,
@@ -85,8 +85,7 @@ $uid = \Auth::user()->id;
             'studentId' => $studentId
         ];
         return \DB::select($query, $values);
-//           //TODO Error handling
-
+        //TODO Error handling
     }
 
 

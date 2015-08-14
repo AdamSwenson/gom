@@ -92,6 +92,12 @@ class GradeController extends Controller
 
     }
 
+    /**
+     * Record or add to the time spent grading a particular student's exam
+     * @param Exam $exam
+     * @param GradingRequest $request
+     * @return mixed
+     */
     public function recordTime(Exam $exam, GradingRequest $request)
     {
         if ($request->has('student_id') && $request->has('time'))
@@ -103,9 +109,15 @@ class GradeController extends Controller
         else{
             //TODO Error handling
         }
-
     }
 
+    /**
+     * Load the time spent grading a particular student exam
+     *
+     * @param Exam $exam
+     * @param GradingRequest $request
+     * @return mixed
+     */
     public function loadTime(Exam $exam, GradingRequest $request)
     {
         if ($request->has('student_id'))
@@ -115,6 +127,20 @@ class GradeController extends Controller
         return $time;
         }
 
+    }
+
+    /**
+     * Loads array of statistics for grading time.
+     * See IGradingStatsRepository for description of array.
+     *
+     * @param Exam $exam
+     * @return mixed
+     */
+    public function loadStats(Exam $exam)
+    {
+        $dao = app()->make('App\Repositories\Time\IGradingStatsRepository');
+        $stats = $dao->get_grading_time_stats($exam->id);
+        return $stats;
     }
 
     public function getAutoSID()

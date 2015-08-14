@@ -57,7 +57,7 @@ class GradeControllerTest extends \TestCase
 
     public function testRecordScoreQuestion()
     {
-        $data = ['question_assignment_id' => 1, 'student_id' => 2, 'score' => 3.4];
+        $data = ['examId' => 1, 'question_assignment_id' => 1, 'student_id' => 2, 'score' => 3.4];
         $mock = $this->createMock('App\Repositories\Score\IQuestionScoreRepository');
         $mock->shouldReceive('record')
             ->with([$data['question_assignment_id'], $data['student_id'], $data['score']])
@@ -68,7 +68,7 @@ class GradeControllerTest extends \TestCase
 
     public function testRecordScoreElement()
     {
-        $data = ['element_assignment_id' => 1, 'student_id' => 2, 'score' => 3.4];
+        $data = ['examId' => 1, 'element_assignment_id' => 1, 'student_id' => 2, 'score' => 3.4];
         $mock = $this->createMock('App\Repositories\Score\IElementScoreRepository');
         $mock->shouldReceive('record')
             ->with([$data['element_assignment_id'], $data['student_id'], $data['score']])
@@ -103,6 +103,17 @@ class GradeControllerTest extends \TestCase
             ->with([$data['examId'], $data['studentId']])
             ->andReturn(GradingTime::all()->random());
         $result = $this->action('GET', 'GradeController@loadTime', $data);
+        $this->assertNotNull($result);
+    }
+
+    public function testLoadStats()
+    {
+        $data = ['examId' => 1];
+        $mock = $this->createMock('App\Repositories\Time\IGradingStatsRepository');
+        $mock->shouldReceive('get_grading_time_stats')
+            ->with($data['examId'])
+            ->andReturn(array('stats', 'stats'));
+        $result = $this->action('GET', 'GradeController@loadStats', $data);
         $this->assertNotNull($result);
     }
 

@@ -136,11 +136,66 @@ MYSQL;
 //        DB::unprepared($get_element_scores_for_student_by_question_id);
 
 
+$grading_stats = <<<MYSQL
+DROP PROCEDURE IF EXISTS get_grading_stats;
+CREATE PROCEDURE `get_grading_stats` (
+    IN examId INT,
+    OUT averageExamTime FLOAT,
+    OUT totalExams INT,
+    OUT totalGraded INT,
+    OUT remainingExams INT,
+    OUT gradeTimeRemaining FLOAT,
+    OUT gradeTimeElapsed FLOAT
+)
+BEGIN
+    SELECT @avgEx := ROUND(AVG(seconds), 2) INTO averageExamTime
+        FROM grading_times
+        WHERE exam_id = examId;
+
+    SELECT @te := COUNT(ks.student_id) INTO totalExams
+        FROM kumi_student ks
+        INNER JOIN exam_kumi ek ON ks.kumi_id = ek.kumi_id
+        WHERE ek.exam_id = examId;
+
+    SELECT @tg := COUNT(exam_id) INTO totalGraded
+        FROM grading_times
+        WHERE exam_id = examId;
+
+    SELECT ROUND(SUM(seconds), 2) INTO gradeTimeElapsed
+        FROM grading_times
+        WHERE exam_id = examId;
+
+    SELECT @te - @tg INTO remainingExams;
+
+    SELECT ROUND(averageExamTime * remainingExams, 2) INTO gradeTimeRemaining;
+
+END;
+MYSQL;
+        DB::unprepared($grading_stats);
 
 
 
-
-
+/**
+ * DROP PROCEDURE IF EXISTS get_grading_stats;
+CREATE PROCEDURE `get_grading_stats` (IN examId INT,
+OUT averageExamTime FLOAT,
+OUT totalGraded INT,
+OUT remainingExams INT,
+OUT gradeTimeRemaining FLOAT,
+OUT gradeElapsed FLOAT,
+OUT workElapsed FLOAT,
+OUT workRemaining FLOAT)
+BEGIN
+SELECT ROUND(AVG(gt.seconds), 2) INTO AS avgExam,
+(SELECT COUNT(ks.student_id) FROM kumi_student ks INNER JOIN exam_kumi ek ON ks.kumi_id = ek.kumi_id WHERE ek.exam_id = examId) AS total_exams,
+(SELECT COUNT(gt.exam_id) INTO totalGraded WHERE gt.exam_id = examId),
+(SELECT @remain := total_exams - @graded) AS remainingExams,
+(SELECT ROUND(AVG(gt.seconds) * @remain, 2)) AS gradeTimeRemaining,
+SUM(gt.seconds) AS gradeElapsed,
+FROM grading_times gt
+WHERE gt.examID = examId;
+END;
+ */
 
 
     }
@@ -163,6 +218,7 @@ MYSQL;
 
         DB::unprepared('DROP PROCEDURE IF EXISTS record_grading_time');
 
+        DB::unprepared('DROP PROCEDURE IF EXISTS get_grading_stats');
 
     }
 }

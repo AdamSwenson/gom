@@ -13,6 +13,7 @@
 
 
 Route::get('test', function () {
+    return view('reports.grade_range_assignment');
   // return view('auth.reset');
 });
 
@@ -66,8 +67,9 @@ Route::resource('exam.student', 'StudentController');
 Route::get('grade', 'GradeController@index'); // present list of exams to grade.
 Route::get('grade/exam/{exam}', 'GradeController@grade');  // begin grading the specified exam
 Route::post('grade/exam/{exam}', 'GradeController@recordScore');
-Route::get('grade/exam{exam}/time','GradeController@loadTime');
-Route::post('grade/exam{exam}/time','GradeController@recordTime');
+Route::get('grade/exam/{exam}/time','GradeController@loadTime');
+Route::post('grade/exam/{exam}/time','GradeController@recordTime');
+Route::get('grade/exam/{exam}/stats', 'GradeController@loadStats');
 
 /* ----------------------------------------------- Reports --------------------------------------------------------------- */
 /* Reporting and analytics */
@@ -86,6 +88,7 @@ Route::get('feedback', 'StudentAccessController@show');
 Route::post('feedback/login', 'StudentAccessController@show');
 Route::get('feedback/make/{exam}', 'ReportController@createFeedback');
 Route::get('feedback/view', 'PublicFeedbackController@showFeedback');
+
 
 
 
