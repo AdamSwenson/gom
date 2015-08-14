@@ -24,7 +24,7 @@ class ClassCodeGeneratorSpec extends ObjectBehavior
         $class->getInterfaces()->willReturn(array(
             'Prophecy\Doubler\Generator\MirroredInterface', 'ArrayAccess', 'ArrayIterator'
         ));
-        $class->getProperties()->willReturn(array('name' => 'public', 'emails' => 'private'));
+        $class->getProperties()->willReturn(array('name' => 'public', 'email' => 'private'));
         $class->getMethods()->willReturn(array($method1, $method2, $method3));
 
         $method1->getName()->willReturn('getName');
@@ -32,6 +32,8 @@ class ClassCodeGeneratorSpec extends ObjectBehavior
         $method1->returnsReference()->willReturn(false);
         $method1->isStatic()->willReturn(true);
         $method1->getArguments()->willReturn(array($argument11, $argument12));
+        $method1->hasReturnType()->willReturn(true);
+        $method1->getReturnType()->willReturn('string');
         $method1->getCode()->willReturn('return $this->name;');
 
         $method2->getName()->willReturn('getEmail');
@@ -39,13 +41,15 @@ class ClassCodeGeneratorSpec extends ObjectBehavior
         $method2->returnsReference()->willReturn(false);
         $method2->isStatic()->willReturn(false);
         $method2->getArguments()->willReturn(array($argument21));
-        $method2->getCode()->willReturn('return $this->emails;');
+        $method2->hasReturnType()->willReturn(false);
+        $method2->getCode()->willReturn('return $this->email;');
 
         $method3->getName()->willReturn('getRefValue');
         $method3->getVisibility()->willReturn('public');
         $method3->returnsReference()->willReturn(true);
         $method3->isStatic()->willReturn(false);
         $method3->getArguments()->willReturn(array($argument31));
+        $method3->hasReturnType()->willReturn(false);
         $method3->getCode()->willReturn('return $this->refValue;');
 
         $argument11->getName()->willReturn('fullname');
@@ -76,13 +80,13 @@ class ClassCodeGeneratorSpec extends ObjectBehavior
 namespace  {
 class CustomClass extends \RuntimeException implements \Prophecy\Doubler\Generator\MirroredInterface, \ArrayAccess, \ArrayIterator {
 public $name;
-private $emails;
+private $email;
 
-public static function getName(array $fullname = NULL, \ReflectionClass $class) {
+public static function getName(array $fullname = NULL, \ReflectionClass $class): string {
 return $this->name;
 }
 protected  function getEmail( $default = 'ever.zet@gmail.com') {
-return $this->emails;
+return $this->email;
 }
 public  function &getRefValue( $refValue) {
 return $this->refValue;
@@ -113,6 +117,7 @@ PHP;
         $method->getVisibility()->willReturn('public');
         $method->isStatic()->willReturn(false);
         $method->getArguments()->willReturn(array($argument));
+        $method->hasReturnType()->willReturn(false);
         $method->returnsReference()->willReturn(false);
         $method->getCode()->willReturn('return $this->name;');
 
