@@ -146,6 +146,11 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         /*
+         * Laravel tools imported
+         */
+        Illuminate\Html\HtmlServiceProvider::class,
+
+        /*
          * Custom service providers
          */
         App\Providers\StorageServiceProvider::class,
@@ -204,6 +209,9 @@ return [
         'URL'       => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View'      => Illuminate\Support\Facades\View::class,
+        //added
+        'Form'      => Illuminate\Html\FormFacade::class,
+        'HTML'      => Illuminate\Html\HtmlFacade::class
 
     ],
 
