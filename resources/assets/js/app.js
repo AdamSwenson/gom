@@ -40,6 +40,11 @@ Grade.prototype.updateMinScore = function(newMinScore){
     }
 }
 
+
+
+
+
+
 Vue.component('grade-slider', {
     //template: document.querySelector('#slider-template'),
     template: require('./components/gradeAssignmentSliderTemplate.html'),

@@ -9,6 +9,7 @@ use App\Http\Requests\GradingRequest;
 use App\Exam;
 use App\Http\Requests\ExamRequest;
 use App\Repositories\Exam\IExamRepository;
+use App\Student;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
@@ -30,11 +31,17 @@ class GradeController extends Controller
 {
     protected $dao;
     protected $IExamRepository;
+    protected $elementScoreDao;
+    protected $questionScoreDao;
+    protected $studentDao;
 
     public function __construct(IExamRepository $IExamRepository)
     {
         $this->middleware('auth');
         $this->examDao = $IExamRepository;
+        $this->studentDao = app()->make('App\Repositories\Student\IStudentRepository');
+        $this->questionScoreDao = app()->make('App\Repositories\Score\IQuestionScoreRepository');
+        $this->elementScoreDao = app()->make('App\Repositories\Score\IElementScoreRepository');
     }
 
     /**
@@ -50,14 +57,53 @@ class GradeController extends Controller
     /**
      * Presents the exam for grading
      * @param Exam $exam
+     * @param Student $currentStudent
      * @return View
      */
-    public function grade(Exam $exam)
+    public function grade(Exam $exam, Student $currentStudent)
     {
-        $studentDao = app()->make('App\Repositories\Student\IStudentRepository');
-        $students = $studentDao->load_students_by_exam($exam);
 
-        return View::make('grade.grade_exam')->with(['exam' => $exam, 'students' => $students]);
+        //Load students for the displayed list of students
+        $students = $this->studentDao->load_students_by_exam($exam);
+
+        //Load statistics on grading time etc
+        $stats = $this->loadStats($exam);
+
+        if(isset($currentStudent->id))
+        {
+            //Load the questions with any existing scores (null if not preexisting) for the student.
+            // This takes care of the the question names etc
+            $questionScores = $this->questionScoreDao->load_for_student_on_exam($exam->id, $currentStudent->id);
+
+            foreach ($questionScores as $qs)
+            {
+                //Add corresponding element names, ids, and scores (if preexisting)
+               $qs->elementScores = $this->elementScoreDao->load_all_for_student_by_question_id($exam->id, $qs->questionId, $currentStudent->id);
+            }
+
+            return View::make('grade.grade_exam')
+                ->with(
+                    [
+                        'currentStudent' => $currentStudent,
+                        'scores' => $questionScores,
+                        'exam' => $exam,
+                        'students' => $students,
+                        'stats' => $stats
+                    ]);
+        }
+        else{
+            //No student set yet
+
+            return View::make('grade.grade_exam')
+                ->with(
+                    [
+                        'currentStudent' => array(),
+                        'scores' => array(),
+                        'exam' => $exam,
+                        'students' => $students,
+                        'stats' => $stats
+                    ]);
+        }
     }
 
     /**

@@ -50,7 +50,7 @@ MYSQL;
         $values = [
             'userId' => \Auth::user()->id,
             'examId' => $examId,
-            'studentId' => $studentId
+            'studentId' => $studentId,
         ];
         return \DB::select($query, $values);
     }
