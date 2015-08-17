@@ -38,41 +38,47 @@ class ElementAssignmentTest extends \TestCase
 
     }
 
-    public function testGetQuestionNumber()
-    {
-
-//        $v = $this->faker->randomDigit();
-//        $this->object->question_number = $v;
-        $this->assertNotEmpty($this->assignment->getQuestionNumber());
-//        $this->assertEquals($v, $this->assignment->getQuestionNumber());
-    }
+//    public function testGetQuestionNumber()
+//    {
+//
+////        $v = $this->faker->randomDigit();
+////        $this->object->question_number = $v;
+//        $this->assertNotEmpty($this->assignment->getQuestionNumber());
+////        $this->assertEquals($v, $this->assignment->getQuestionNumber());
+//    }
 #--------------- Queries
 
 
     public function testScopeOnExam()
-    {   $qa = QuestionAssignment::find($this->assignment->question_assignment_id);
-        $eid = $qa->exam_id;
-        //$a = $this->assignment->toArray();
+    {   $eid = $this->assignment->exam_id;
         $result = ElementAssignment::onExam($eid);//$a['exam_id']);
         $this->assertNotEmpty($result);
         foreach($result as $r){
             $this->assertInstanceOf('App\Exam', $r);
         }
+//        $qa = QuestionAssignment::find($this->assignment->question_assignment_id);
+//        $eid = $qa->exam_id;
+//        //$a = $this->assignment->toArray();
+//        $result = ElementAssignment::onExam($eid);//$a['exam_id']);
+//        $this->assertNotEmpty($result);
+//        foreach($result as $r){
+//            $this->assertInstanceOf('App\Exam', $r);
+//        }
 
     }
 
-
-    public function testScopeQuestionNumber()
-    {
-        $qa = QuestionAssignment::find($this->assignment->question_assignment_id);
-        $qnum = $qa->question_number;
-        $result = ElementAssignment::questionNumber($qnum);
-        $this->assertNotEmpty($result);
-        foreach($result as $r)
-        {
-            $this->assertInstanceOf('App\ElementAssignment', $r);
-        }
-    }
+//
+//    public function testScopeQuestionNumber()
+//    {
+//        $qa = QuestionAssignment::find($this->assignment->question_assignment_id);
+//        $qnum = $qa->question_number;
+//        $result = ElementAssignment::questionNumber($qnum);
+//        $this->assertNotEmpty($result);
+//        foreach($result as $r)
+//        {
+//            $this->assertInstanceOf('App\ElementAssignment', $r);
+//        }
+//    }
 
 # -------------- Foreign key associations
 //    public function testUser()
@@ -106,16 +112,16 @@ class ElementAssignmentTest extends \TestCase
         }
     }
 
-//    public function testQuestion()
-//    {
-//        $this->assertInstanceOf('App\Question', $this->assignment->question);
-//     }
-
-    public function testQuestionAssignment()
+    public function testQuestion()
     {
-        $this->assertInstanceOf('App\QuestionAssignment', $this->assignment->questionAssignment);
-//        return $this->belongsTo('App\QuestionAssignment');
-    }
+        $this->assertInstanceOf('App\Question', $this->assignment->question);
+     }
+
+//    public function testQuestionAssignment()
+//    {
+//        $this->assertInstanceOf('App\QuestionAssignment', $this->assignment->questionAssignment);
+////        return $this->belongsTo('App\QuestionAssignment');
+//    }
 
 
 

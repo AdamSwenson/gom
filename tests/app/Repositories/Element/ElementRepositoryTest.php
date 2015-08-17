@@ -23,7 +23,7 @@ class ElementRepositoryTest extends \TestCase
         parent::setUp();
         $this->object = new ElementRepository();
 
-        $this->object->set_cleaner(new CleanerFactory());
+//        $this->object->set_cleaner(new CleanerFactory());
         $this->element = Element::all()->random();
         $this->comment = Comment::all()->random();
     }

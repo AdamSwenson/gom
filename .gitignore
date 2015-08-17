@@ -1,6 +1,7 @@
-/node_modules
+#/node_modules
 Homestead.yaml
 .env
 .idea
 .DS_store
 vendor/.DS_Store
+build

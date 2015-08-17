@@ -18,20 +18,33 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 
-class GradeController extends Controller {
-
+/**
+ * Class GradeController
+ *
+ * This handles all operations involved in displaying the grading input page and
+ * recording the actual grades as they are assigned.
+ *
+ * @package App\Http\Controllers
+ */
+class GradeController extends Controller
+{
+    protected $dao;
     protected $IExamRepository;
 
-    public function __construct(IExamRepository $IExamRepository) {
+    public function __construct(IExamRepository $IExamRepository)
+    {
+        $this->middleware('auth');
         $this->examDao = $IExamRepository;
     }
 
     /**
      *  Presents a list of exams to grade
      */
-    public function index() {
+    public function index()
+    {
         $exams = $this->examDao->load_all_exams();
-        return View::make('grade.grade_select_exam', compact('exams') );
+
+        return View::make('grade.grade_select_exam', compact('exams'));
     }
 
     /**
@@ -39,8 +52,105 @@ class GradeController extends Controller {
      * @param Exam $exam
      * @return View
      */
-    public function grade(Exam $exam) {
-        //return('this is the grading page');
-        return View::make('grade.grade_exam', compact('exam') );
+    public function grade(Exam $exam)
+    {
+        $studentDao = app()->make('App\Repositories\Student\IStudentRepository');
+        $students = $studentDao->load_students_by_exam($exam);
+
+        return View::make('grade.grade_exam')->with(['exam' => $exam, 'students' => $students]);
+    }
+
+    /**
+     * Records scores as well as time and any other information
+     * @param Exam $exam
+     * @param GradingRequest $request
+     */
+    public function recordScore(Exam $exam, GradingRequest $request)
+    {
+        //Don't even get started if there's no student id and score
+        if ($request->has('student_id') && $request->has('score'))
+        {
+            $studentId = $request->input('student_id');
+            $score = $request->input('score');
+
+            //If the request is to record a question score, it follows this path
+            if ($request->has('question_assignment_id'))
+            {
+                $this->dao = app()->make('App\Repositories\Score\IQuestionScoreRepository');
+                $itemId = $request->input('question_assignment_id');
+            } //If it is to record an element score, it follows this path
+            elseif ($request->has('element_assignment_id'))
+            {
+                $this->dao = app()->make('App\Repositories\Score\IElementScoreRepository');
+                $itemId = $request->input('element_assignment_id');
+            }
+            $this->dao->record($itemId, $studentId, $score);
+        } else
+        {
+            //TODO Error handling
+        }
+
+    }
+
+    /**
+     * Record or add to the time spent grading a particular student's exam
+     * @param Exam $exam
+     * @param GradingRequest $request
+     * @return mixed
+     */
+    public function recordTime(Exam $exam, GradingRequest $request)
+    {
+        if ($request->has('student_id') && $request->has('time'))
+        {
+            $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
+            $time = $dao->record($exam->id, $request->input('student_id'), $request->input('time'));
+            return $time;
+        }
+        else{
+            //TODO Error handling
+        }
+    }
+
+    /**
+     * Load the time spent grading a particular student exam
+     *
+     * @param Exam $exam
+     * @param GradingRequest $request
+     * @return mixed
+     */
+    public function loadTime(Exam $exam, GradingRequest $request)
+    {
+        if ($request->has('student_id'))
+        {
+            $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
+            $time = $dao->load($exam->id, $request->input('student_id'));
+        return $time;
+        }
+
+    }
+
+    /**
+     * Loads array of statistics for grading time.
+     * See IGradingStatsRepository for description of array.
+     *
+     * @param Exam $exam
+     * @return mixed
+     */
+    public function loadStats(Exam $exam)
+    {
+        $dao = app()->make('App\Repositories\Time\IGradingStatsRepository');
+        $stats = $dao->get_grading_time_stats($exam->id);
+        return $stats;
+    }
+
+    public function getAutoSID()
+    {
+    }
+
+    /**
+     * Alters the total number of exams to use in statistics
+     */
+    public function setTotalExams()
+    {
     }
 }

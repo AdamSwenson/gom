@@ -8,8 +8,7 @@
 
 namespace App\Repositories\Question;
 
-use App\classes\SecurityClasses\cleaning\CleanerFactory;
-use App\classes\SecurityClasses\cleaning\ICleanerFactory;
+
 use App\Exam;
 use App\Question;
 use App\QuestionAssignment;
@@ -24,12 +23,13 @@ use App\QuestionAssignment;
 class QuestionAssignmentRepository implements IQuestionAssignmentRepository
 {
 
-    /** @var CleanerFactory */
+    /** @var \App\HTTP\Controllers\helpers\cleaning\ICleanerFactory */
     public $cleaner;
 
     public function __construct()
     {
-        $this->cleaner = new CleanerFactory();
+        $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\ICleanerFactory');
+
     }
 //    /**
 //     * @param ICleanerFactory $cleaner
@@ -81,6 +81,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
     {
         $q = Question::findOrFail($questionId);
         $q->setQuestionNumber($examId, $question_number);
+        return $q;
 //
 //        $qa = QuestionAssignment::where('exam_id', $examId)->where('question_number', $question_number)->first();
 ////        $qa = QuestionAssignment::firstOrNew(['exam_id' => $examId, 'question_number' => $question_number]);
@@ -118,7 +119,6 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
     function remove($examId, $questionId)
     {
         $qa = QuestionAssignment::onExam($examId)->onQuestionId($questionId)->firstOrFail();
-
         return $qa->delete();
     }
 }

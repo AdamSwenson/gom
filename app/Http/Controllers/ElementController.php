@@ -33,6 +33,7 @@ class ElementController extends Controller
     public function __construct(IElementRepository $elementDao, IElementAssignmentRepository $assignmentDao,
                                 IQuestionAssignmentRepository $questionAssignmentRepo)
     {
+        $this->middleware('auth');
         $this->elementDao = $elementDao;
         $this->assignmentDao = $assignmentDao;
         $this->questionAssignmentDAO = $questionAssignmentRepo;
@@ -143,7 +144,6 @@ class ElementController extends Controller
 
         // once we found the index, get the question IDs for the previous and next questions
         // if previous or next does not exist, set to 0.
-
         $pQId = 0;
         $nQId = 0;
         if (isset($index)) {

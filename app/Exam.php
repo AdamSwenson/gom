@@ -133,22 +133,24 @@ class Exam extends BaseModel
         return $this->belongsToMany('App\Kumi', 'exam_kumi')->withTimestamps();
     }
 
-//    /**
-//     * Elements comprising the exam
-//     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
-//     */
-//    public function elements()
-//    {
-//        return $this->hasManyThrough('App\Element', 'App\ElementAssignment');
-//    }
-
     /**
      * Associated elements and their subtask numbers
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function elementAssignments()
     {
-        return $this->hasManyThrough('App\ElementAssignment', 'App\QuestionAssignment');
+        return $this->belongsToMany('App\Element', 'element_assignments')->withPivot('subtask')->withTimestamps();
+        //'App\QuestionAssignment');
+    }
+
+    /**
+     * Elements comprising the exam
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function elements()
+    {
+        return $this->belongsToMany('App\Element', 'element_assignments')->withPivot('subtask')->withTimestamps();
+//        return $this->hasMany('App\Element');
     }
 
 //    /**

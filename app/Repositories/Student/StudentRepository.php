@@ -18,14 +18,67 @@ class StudentRepository implements IStudentRepository
     /** @var  $cleaner ICleanerFactory */
     public $cleaner;
 
-    /**
-     * Loads the class which handles cleaning before query
-     * @param ICleanerFactory $cleanerFactory
-     */
-    public function set_cleaner(ICleanerFactory $cleanerFactory)
+    public function __construct()
     {
-        $this->cleaner = $cleanerFactory;
+        $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\CleanerFactory');
     }
+//    /**
+//     * Loads the class which handles cleaning before query
+//     * @param ICleanerFactory $cleanerFactory
+//     */
+//    public function set_cleaner(ICleanerFactory $cleanerFactory)
+//    {
+//        $this->cleaner = $cleanerFactory;
+//    }
+
+    /**
+     * Since several functions can be passed either an exam object or
+     * the id of an exam, this determines which has been passed in and returns
+     * the appropriate exam object.
+     *
+     * @param $exam_or_examId
+     * @return Exam
+     * @throws \Exception
+     */
+    protected function determineType($exam_or_examId)
+    {
+        if($exam_or_examId instanceof Exam)
+        {
+            return $exam_or_examId;
+        }else
+        {
+            $examId = (int) $exam_or_examId;
+            if(is_integer($examId))
+            {
+                return Exam::findOrFail($examId);
+            }
+            else{
+                throw new \Exception('invalid type passed in');
+            }
+        }
+    }
+
+    protected function update(Student $preExisting, $lastName, $firstName, $email)
+    {
+        $cleanLastName = $lastName;
+        $cleanFirstName = $firstName;
+        $cleanEmail = $email;
+        if (!empty($email))
+        {
+            $cleanEmail = $email;
+        }
+
+        $preExisting->last_name = $cleanLastName;
+        $preExisting->first_name = $cleanFirstName;
+        if ($cleanEmail)
+        {
+            $preExisting->email = $cleanEmail;
+        }
+        $preExisting->update();
+
+        return $preExisting;
+    }
+
 
     /**
      * Add a new student to the database
@@ -37,26 +90,56 @@ class StudentRepository implements IStudentRepository
      * @param null $studentId
      * @return Student
      */
-    public function create_student($lastName, $firstName, $studentId=null, $email=null)
+    public function create_student($lastName, $firstName, $studentId = null, $email = null)
     {
         $cleanLastName = $lastName;
         $cleanFirstName = $firstName;
         $cleanStudentId = $studentId;
-        if(!empty($email))
+        if (!empty($email))
         {
             $cleanEmail = $email;
         }
 
-        $student = new Student();
-        $student->last_name = $cleanLastName;
-        $student->first_name = $cleanFirstName;
-        $student->student_identifier = $cleanStudentId;
-        if($cleanEmail)
+        $preExisting = $this->load_student_by_sid($cleanStudentId);
+        if (!empty($preExisting))
         {
-            $student->email = $cleanEmail;
-        }
-        $student->save();
+            $student = $this->update($preExisting, $cleanLastName, $cleanFirstName, $cleanEmail=null);
+       }else{
+            $student = new Student();
+            $student->student_identifier = $cleanStudentId;
+            $student->last_name = $cleanLastName;
+            $student->first_name = $cleanFirstName;
+            if ($cleanEmail)
+            {
+                $student->email = $cleanEmail;
+            }
+            $student->save();
+    }
         return $student;
+
+//        Student::updateOrCreate()
+//$student = Student::firstOrCreate(['last_name' => $cleanLastName,
+//                                'first_name' => $cleanFirstName,
+//                                'student_identifier' => $cleanStudentId,
+//                                'email' => $cleanEmail
+//                                ]);
+////
+//        $student = Student::where('student_identifier', $cleanStudentId);
+//        if (!$student)
+//        {
+//            $student = new Student();
+//            $student->student_identifier = $cleanStudentId;
+//        }
+//        $student->last_name = $cleanLastName;
+//        $student->first_name = $cleanFirstName;
+//
+//        if ($cleanEmail)
+//        {
+//            $student->email = $cleanEmail;
+//        }
+//        $student->save();
+
+//        return $student;
     }
 
     /**
@@ -68,28 +151,26 @@ class StudentRepository implements IStudentRepository
      * WHERE c.examID = :examID"
      *
      *
-     * @param $examId
+     * @param Exam|int $exam_or_examId
      * @return mixed
      */
-    public function load_students_by_exam($examId)
+    public function load_students_by_exam($exam_or_examId)
     {
         $students = [];
-        $exam = Exam::findOrFail($examId);
-        $classes = $exam->classes;
-        foreach($classes as $c)
+
+        $exam = $this->determineType($exam_or_examId);
+        if($exam)
         {
-            foreach($c->students as $s)
+            $classes = $exam->classes;
+            foreach ($classes as $c)
             {
-                array_push($students, $s);
+                foreach ($c->students as $s)
+                {
+                    array_push($students, $s);
+                }
             }
         }
         return $students;
-//        return $students;
-//        $classes = $exam->classes;
-//        if(count($classes) > 0)
-//        {
-//            return $classes->students;
-//        }
     }
 
     /**
@@ -178,6 +259,7 @@ class StudentRepository implements IStudentRepository
         $student = $this->load_student_by_id($clean_sid);
         $student->setEmail($clean_email);
         $student->update();
+
         return $student;
     }
 
@@ -201,6 +283,7 @@ class StudentRepository implements IStudentRepository
     public function delete_student_by_sid($sid)
     {
         $student = $this->load_student_by_sid($sid);
+
         return $student->delete();
     }
 

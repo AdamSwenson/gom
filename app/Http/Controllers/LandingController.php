@@ -8,8 +8,12 @@
 
 namespace App\Http\Controllers;
 
+
+use Illuminate\Support\Facades\Auth;
+
 use App\Http\Requests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 
 class LandingController extends Controller
@@ -17,7 +21,7 @@ class LandingController extends Controller
 
     public function showLanding()
     {
-        return view('landing');
+        return view('index');
     }
 
     public function showLandingLoggedIn()
@@ -28,27 +32,39 @@ class LandingController extends Controller
     public function loggedIn(Request $request)
     {
 
-        $email = $request->get('email');
+        $email = $request->get('emails');
         $password = $request->get('password');
 
         return view("account.home")->with([
-            'email' => $email,
+            'emails' => $email,
             'password' => $password,
         ]);
     }
 
     public function accountCreate()
     {
-        return view('account.create');
+return view('auth.register');
+//        return view('account.createAccount');
     }
 
 
     public function accountConfirm(){
-        return view('account.confirm');
+
+        return view('account.confirmAccount');
     }
 
     public function retrievePassword(){
-        return view('account.retrieve');
+        return view('account.retrievePassword');
     }
+
+
+
+    public function sentPassword(){
+        return view('account.sent');
+    }
+
+
+
+
 
 }

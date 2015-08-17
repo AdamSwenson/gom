@@ -34,6 +34,7 @@ class QuestionController extends Controller
 
     public function __construct(IQuestionRepository $questionDao, IQuestionAssignmentRepository $assignmentDao)
     {
+        $this->middleware('auth');
         $this->questionDao = $questionDao;
         $this->assignmentDao = $assignmentDao;
     }

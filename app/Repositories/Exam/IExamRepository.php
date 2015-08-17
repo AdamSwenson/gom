@@ -54,9 +54,8 @@ interface IExamRepository
 
     /**
      * Deletes the exam by id
-     * @param Exam $examId
+     * @param int $examId
      * @return mixed|void
-     * @internal param Exam $exam
      */
     public function delete_exam($examId);
 

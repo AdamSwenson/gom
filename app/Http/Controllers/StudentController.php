@@ -15,17 +15,39 @@ use App\classes\ImportExportClasses\dao\Uploader;
 use App\classes\RequestClasses\FileRequest;
 use App\Http\Controllers\helpers\ExamSelectorHelper;
 use App\Http\Requests\StudentRequest;
+use App\Jobs\ImportStudentsFromCsv;
+use App\Kumi;
 use App\Repositories\Student\IStudentRepository;
 use App\Student;
+use App\Exam;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Repositories\Student\IKumiRepository;
 
+/**
+ * Class StudentController
+ *
+ * This handles requests concerning student management such as adding,
+ * removing, and editing rosters.
+ *
+ * @package App\Http\Controllers
+ */
 class StudentController extends Controller
 {
-    /** @var IStudentRepository  */
+    /** @var IStudentRepository */
     protected $dao;
+    /** @var IKumiRepository */
+    protected $kumiRepository;
 
-    public function __construct(IStudentRepository $studentRepository)
+    /**
+     * @param IStudentRepository $studentRepository
+     * @param IKumiRepository $kumiRepository
+     */
+    public function __construct(IStudentRepository $studentRepository, IKumiRepository $kumiRepository)
     {
+        $this->middleware('auth');
         $this->dao = $studentRepository;
+        $this->kumiRepository = $kumiRepository;
     }
 
     /**
@@ -52,20 +74,40 @@ class StudentController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
+     * Store a newly created set of students in the database.
+     * Creates or loads a new kumi (class) and associates them.
+     * 
+     * @param Exam $exam
      * @param StudentRequest $request
      * @return Response
      */
-    public function store(StudentRequest $request)
+    public function store(Exam $exam, StudentRequest $request)
     {
-        $student = $this->dao->create_student(
-            $request->input('lastName'),
-            $request->input('firstName'),
-            $request->input('studentId'),
-            $request->input('email')
-        );
-        //todo add view to return
+        $kumi = $this->kumiRepository->create($exam->name, $exam->year, $exam);
+
+        $processor = app()->make('App\Jobs\StudentImport\IImportStudentsFromCsv');//new ImportStudentsFromCsv();
+        $processedStudents = $processor->handle($request);
+
+//        $processor = new \App\Http\Controllers\helpers\StudentUpload\StudentCsvProcessor();
+//        $file = $request->file('studentsFile');
+//        $processor->process_file($file->getRealPath());
+
+        $students = array();
+
+        // Now that students are in the database, make a fake class (kumi) for them to belong to
+        // and use that class to associate them with the exam
+        if (count($processedStudents) > 0)
+        {
+            foreach ($processedStudents as $student)
+            {
+                $newStudent = $this->dao->create_student($student['last_name'], $student['first_name'], $student['student_id'], $student['email']);
+
+                $newStudent->kumis()->attach($kumi);
+
+                array_push($students, $newStudent);
+            }
+        }
+        return view('setup.edit_roster')->with(['exam' => $exam, 'students' => $students]);
     }
 
     /**
@@ -83,21 +125,39 @@ class StudentController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
+     * @param Exam $exam
      * @param Student $student
      * @param StudentRequest $request
      * @return Response
-     *
      */
-    public function edit(Student $student, StudentRequest $request)
+    public function edit(Exam $exam, Student $student, StudentRequest $request)
     {
-        //
+        $students = array();
+        $kumi = $this->kumiRepository->load($exam->name, $exam->year);
+        if ($kumi)
+        {
+            $students = $this->dao->load_students_by_exam($exam->getId());
+        }
+
+        return view('setup/edit_roster')->with(['exam' => $exam, 'students' => $students]);
     }
 
     /**
      * Show the form for importing and editing a student roster
+     * @param Exam $exam
+     * @param StudentRequest $request
+     * @return $this
      */
-    public function editAll($exam, StudentRequest $request) {
-        return view('setup/edit_roster');
+    public function editAll(Exam $exam, StudentRequest $request)
+    {
+        $students = array();
+        $kumi = $this->kumiRepository->load($exam->name, $exam->year);
+        if ($kumi)
+        {
+            $students = $this->dao->load_students_by_exam($exam->getId());
+        }
+
+        return view('setup/edit_roster')->with(['exam' => $exam, 'students' => $students]);
     }
 
     /**
@@ -112,6 +172,18 @@ class StudentController extends Controller
         //
     }
 
+    public function updateAll(Exam $exam, Request $request)
+    {
+        //
+        $data = $request->input('filedata');
+
+        //  dd($data);
+
+
+        return redirect()->action('ExamController@index')->with(['exam' => $exam]);
+    }
+
+
     /**
      * Remove the specified resource from storage.
      *
@@ -125,6 +197,34 @@ class StudentController extends Controller
         //TODO Add view
     }
 }
+
+//    public function processStudentFile()
+//    {
+
+//        /** @var $files Array of raw files passed in */
+//        public $files = array();
+//
+//        /** @var $filenames Array holding names of files passed in */
+//        public $filenames = array();
+//
+//
+//    /**
+//     * Captures any files that came in with the request
+//     */
+//    public function load_files() {
+//        if (isset($_FILES) && (count($_FILES) > 0) && ($_FILES["file"]["size"] > 0)) {
+//            if (count($_FILES) === 1) {
+//                array_push($this->filenames, $_FILES["file"]["tmp_name"]);
+//                $this->files = $_FILES;
+//            } else {
+//                //add handling if this is ever an issue
+//                throw new \Exception('unexpected number of files passed in');
+//            }
+//        }
+//    }
+
+//    }
+
 
 /* commenting the old StudentController out for reference
 {

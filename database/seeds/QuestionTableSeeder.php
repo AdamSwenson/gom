@@ -16,22 +16,25 @@ class QuestionTableSeeder extends Seeder
 {
     public $faker;
 
-    public function run($num = 20)
+    public function run($num = 15)
     {
         $this->faker = \Faker\Factory::create();
 
         DB::table('questions')->delete();
+        \Auth::loginUsingId(1);
+
         for ($i = 0; $i < $num; $i++)
         {
 //            $q = factory(App\Question::class)->create();
+//            $q->save();
 //            )
             $name = $this->faker->text(20);
             $text = $this->faker->text(200);
             $question = new \App\Question();
             $question->questionName = $name;
             $question->questionText = $text;
-//
-////            $question->setUser(1);
+////
+//////            $question->setUser(1);
             $question->save();
         }
     }

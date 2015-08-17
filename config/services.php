@@ -15,8 +15,8 @@ return [
     */
 
     'mailgun' => [
-        'domain' => '',
-        'secret' => '',
+        'domain' => 'mg.gradeomatic.net',
+        'secret' => 'key-3c2043866a1f5512de70e79655e2e38c',
     ],
 
     'mandrill' => [

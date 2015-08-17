@@ -17,12 +17,42 @@ class QuestionScoreRepository implements IQuestionScoreRepository
 
     /**
      * Loads all question scores for a student on an exam
+     * Will return array of arrays which have keys:
+     *      questionId: The id of the question
+     *      questionNumber: The order the question appears on the exam
+     *      questionName: The name of the question
+     *      questionAssignmentId: The id of the assignment of the question to the exam
+     *      questionScore: Float of the score the student received on this question. (Null if not answered)
+     *
      * @param $examId
      * @param $studentId
      */
     public function load_for_student_on_exam($examId, $studentId)
     {
+        $query = <<<MYSQL
+        SELECT q.id AS questionId,
+            qa.question_number AS questionNumber,
+            q.questionName,
+            qa.id AS questionAssignmentId,
+            (SELECT qs.score AS questionScore
+                FROM question_scores qs
+                WHERE qs.student_id = :studentId
+                    AND qs.question_assignment_id = questionAssignmentId
+            ) AS questionScore
+        FROM questions q
+        INNER JOIN question_assignments qa ON q.id = qa.question_id
+        WHERE qa.exam_id = :examId
+            AND q.user_id = :userId
+        ORDER BY qa.question_number ASC;
+MYSQL;
 
+    //    $query = "CALL get_question_scores_for_student(:userId, :examId, :studentId)";
+        $values = [
+            'userId' => \Auth::user()->id,
+            'examId' => $examId,
+            'studentId' => $studentId
+        ];
+        return \DB::select($query, $values);
     }
 
     /**
@@ -44,7 +74,6 @@ class QuestionScoreRepository implements IQuestionScoreRepository
     public function load($questionAssignmentId, $studentId)
     {
         $this->score_object = QuestionScore::where('student_id', $studentId)->where('question_assignment_id', $questionAssignmentId)->first();
-
         return $this->score_object;
     }
 

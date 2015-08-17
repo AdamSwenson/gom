@@ -1,0 +1,53 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: adam
+ * Date: 5/28/15
+ * Time: 8:24 PM
+ */
+
+namespace App\HTTP\Controllers\helpers\cleaning;
+
+
+class FloatCleanerTest extends \TestCase
+{
+
+    protected $object;
+
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->object = new FloatCleaner();
+    }
+
+    /**
+     * @covers \App\HTTP\Controllers\helpers\cleaning\FloatCleaner::sanitize
+     */
+    public function testSanitize()
+    {
+        $this->assertEquals(9.3, $this->object->sanitize(9.3));
+        $this->assertEquals(9.3, $this->object->sanitize('9.3'));
+        $this->assertFalse($this->object->sanitize('taco'));
+    }
+
+    /**
+     * @covers \App\HTTP\Controllers\helpers\cleaning\FloatCleaner::validate
+     */
+    public function testValidate()
+    {
+        $this->assertEquals(9.3, $this->object->validate(9.3));
+        $this->assertEquals(9.3, $this->object->validate('9.3'));
+        $this->assertFalse($this->object->validate('taco'));
+    }
+
+    /**
+     * @covers \App\HTTP\Controllers\helpers\cleaning\FloatCleaner::set_max_length
+     */
+    public function testSet_max_length()
+    {
+        $this->object->set_max_length(45);
+        $this->assertAttributeEquals(45, 'max_length', $this->object);
+    }
+
+}

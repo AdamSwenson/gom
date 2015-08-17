@@ -5,8 +5,8 @@
  * Date: 7/28/15
  * Time: 7:27 AM
  */
-$h='40px';
-$w='80px';
+$h='400px';
+$w='800px';
 ?>
 
 @if(!empty($question['score']))
@@ -21,6 +21,9 @@ $w='80px';
             @include('feedback.comment')
         @endforeach
     </div>
-    <div id='Q{{$question['questionNumber']}}Chart' class='elementChartDiv' style='height:{{$h}}; width:{{$w}}'></div>
+    <div class="chartContainer">
+    <h4>Q{{$question['questionNumber']}}: {{$question['questionName']}}</h4>
+        <div id='Q{{$question['questionNumber']}}Chart' class='elementChartDiv' style='height:{{$h}}; width:{{$w}}'></div>
+    </div>
 </div>
 @endif

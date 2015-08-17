@@ -7,9 +7,9 @@
  */
 
 namespace App\Repositories\Exam;
+use App\HTTP\Controllers\helpers\cleaning\CleanerFactory;
 use App\Repositories\Exam\IExamRepository;
-use App\classes\SecurityClasses\cleaning\CleanerFactory;
-use App\classes\SecurityClasses\cleaning\ICleanerFactory;
+
 use App\Exam;
 
 
@@ -23,7 +23,7 @@ class ExamRepository implements IExamRepository
 
     public function __construct()
     {
-        $this->cleaner = new CleanerFactory();
+        $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\ICleanerFactory');
     }
 //
 //    public function __construct(ICleanerFactory $cleaner)
@@ -43,7 +43,7 @@ class ExamRepository implements IExamRepository
 
     /**
      * Deletes the exam
-     * @param Exam $examId
+     * @param int $examId
      * @return mixed|void
      */
     public function delete_exam($examId)
@@ -118,7 +118,8 @@ class ExamRepository implements IExamRepository
      */
     public function load_all_exams()
     {
-        return Exam::all();
+        $exams = Exam::all();
+        return $exams->sortByDesc('year');
     }
 
     /**

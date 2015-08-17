@@ -1,0 +1,25 @@
+.sliderArea {
+  width: 80%;
+  display: block;
+  clear: both;
+  margin-bottom: 1%; }
+
+.right {
+  float: right; }
+
+.left {
+  float: left; }
+
+.center {
+  float: left;
+  margin-left: 20%; }
+
+.gradeLabelArea {
+  display: block;
+  margin-bottom: 1px; }
+
+.sliderHolder {
+  display: block;
+  clear: both; }
+
+/*# sourceMappingURL=app.css.map */

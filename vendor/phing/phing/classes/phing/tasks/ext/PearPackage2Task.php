@@ -72,7 +72,7 @@ require_once 'phing/tasks/ext/PearPackageTask.php';
  *   <element>
  *    <element key="handle" value="hlellelid"/>
  *    <element key="name" value="Hans"/>
- *    <element key="email" value="hans@xmpl.org"/>
+ *    <element key="emails" value="hans@xmpl.org"/>
  *    <element key="role" value="lead"/>
  *    <element key="active" value="yes"/>
  *   </element>
@@ -230,7 +230,7 @@ class PearPackage2Task extends PearPackageTask
                             $maintainer['role'],
                             $maintainer['handle'],
                             $maintainer['name'],
-                            $maintainer['email'],
+                            $maintainer['emails'],
                             $maintainer['active']
                         );
                     }

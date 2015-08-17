@@ -60,7 +60,7 @@ namespace Faker;
  *
  * @method string realText($maxNbChars = 200, $indexSize = 2)
  *
- * @property string $email
+ * @property string $emails
  * @property string $safeEmail
  * @property string $freeEmail
  * @property string $companyEmail

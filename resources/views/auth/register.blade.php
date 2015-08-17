@@ -1,0 +1,30 @@
+@extends('auth.auth_master')
+
+@section('title')
+    Sign up for the Gradeomatic
+@endsection
+
+@section('formArea')
+    <form role="form" method="POST" action="{{url('auth/register')}}" accept-charset="UTF-8" class="col-xs-4">
+        {!! csrf_field() !!}
+        <h3 class="text-left"> Create Account</h3>
+
+        <div class="form-group ">
+            <input class="form-control" type="text" name="name" value="{{ old('name') }}"
+                   placeholder="Username">
+        </div>
+        <div class="form-group ">
+            <input class="form-control" type="email" name="email" value="{{ old('email') }}"
+                   placeholder="Enter email">
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="password" name="password" id="pwd" placeholder="Enter password">
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="password" name="password_confirmation" id="pwd_conf"
+                   placeholder="Confirm password">
+        </div>
+
+        <input class="btn btn-default" value="Create Account" type="submit">
+    </form>
+@endsection

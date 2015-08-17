@@ -8,14 +8,14 @@ namespace Faker\Provider\da_DK;
 class Internet extends \Faker\Provider\Internet
 {
     /**
-     * @var array Some safe email TLD.
+     * @var array Some safe emails TLD.
      */
     protected static $safeEmailTld = array(
         'org', 'com', 'net', 'dk', 'dk', 'dk',
     );
 
     /**
-     * @var array Some email domains in Denmark.
+     * @var array Some emails domains in Denmark.
      */
     protected static $freeEmailDomain = array(
         'gmail.com', 'yahoo.com', 'yahoo.dk', 'hotmail.com', 'hotmail.dk', 'mail.dk', 'live.dk'

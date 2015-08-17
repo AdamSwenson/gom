@@ -43,7 +43,7 @@ class Name
                 return function () use ($generator) {
                     return $generator->userName;
                 };
-            case 'email':
+            case 'emails':
                 return function () use ($generator) {
                     return $generator->email;
                 };

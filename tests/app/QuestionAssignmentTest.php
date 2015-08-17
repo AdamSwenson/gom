@@ -47,7 +47,7 @@ class QuestionAssignmentTest extends \TestCase
 
     public function testElementAssignments()
     {
-        foreach($this->assignment->elementAssignments as $ea)
+        foreach($this->assignment->elementAssignments() as $ea)
         {
             $this->assertInstanceOf('App\ElementAssignment', $ea);
         }

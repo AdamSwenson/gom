@@ -26,9 +26,9 @@ function QuestionHolder() {
 QuestionHolder.prototype.loadScores = function (questionJSON) {
     var me = this;
     $.each(questionJSON, function (k, v) {
-        var q = new Question(v['questionID']);
+        var q = new Question(v['questionId']);
         q.setQuestionNumber(v['questionNumber']);
-        q.setScore(v['questionScore']);
+        q.setScore(v['score']);
         q.setTitle(v['questionName']);
         me.questions.push(q);
         me.questionNumbers.push(Number(v['questionNumber']));
@@ -38,8 +38,8 @@ QuestionHolder.prototype.loadScores = function (questionJSON) {
 QuestionHolder.prototype.loadAverages = function (questionAveragesJSON) {
     var me = this;
     $.each(questionAveragesJSON, function (k, v) {
-        var qid = v['questionID'];
-        var avg = v['questionAverage'];
+        var qid = v['questionId'];
+        var avg = v['average'];
         $.each(me.questions, function () {
             if (this.questionID === qid) {
                 this.setAverage(avg);
@@ -115,31 +115,44 @@ Element.prototype.setAverage = function (average) {
 function ElementHolder() {
     this.elements = [];
 };
+
 ElementHolder.prototype.loadScores = function (elementJSON) {
     var me = this;
-    $.each(elementJSON, function (k, v) {
-        //console.log(v);
-        var el = new Element(v['elementID']);
-        el.setQuestionNumber(v['questionNumber']);
-        el.setElementAbbr(v['elementName']);
-        el.setElementEnglish(v['displayText']);
-        el.setScore(v['elementScore']);
-        el.setSubtask(v['subtask']);
-        me.elements.push(el);
-    });
-};
-ElementHolder.prototype.loadAverages = function (elementAveragesJSON) {
-    var me = this;
-    $.each(elementAveragesJSON, function (k, v) {
-        var eid = v['elementID'];
-        var avg = v['elementAverage'];
-        $.each(me.elements, function () {
-            if (this.elementID === eid) {
-                this.setAverage(avg);
-            }
+    $.each(elementJSON, function()
+    {
+        $.each(this.elements, function (k, v) {
+            //console.log(v);
+            var el = new Element(v['elementId']);
+            el.setQuestionNumber(v['questionNumber']);
+            el.setElementAbbr(v['elementName']);
+            // el.setElementEnglish(v['displayText']);
+            el.setScore(v['score']);
+            el.setSubtask(v['subtask']);
+            el.setAverage(v['average']);
+            el.questionNumber = v['questionNumber'];
+            me.elements.push(el);
         });
     });
 };
+
+
+ElementHolder.prototype.loadAverages = function (elementAveragesJSON) {
+    var me = this;
+    $.each(elementAveragesJSON, function() {
+        $.each(this.elements, function (k, v) {
+            //$.each(elementAveragesJSON.elements, function (k, v) {
+            var eid = v['elementId'];
+            var avg = v['average'];
+            $.each(me.elements, function () {
+                if (this.elementID === eid) {
+                    this.setAverage(avg);
+                    this.questionNumber = v['questionNumber'];
+                }
+            });
+        });
+    });
+};
+
 ElementHolder.prototype.getByQuestionNumber = function (qnum) {
     var results = [];
     $.each(this.elements, function () {
@@ -190,10 +203,11 @@ function makeElementCharts(ElementHolder, QuestionHolder) {
         //go through the elementScores array and pull out relevant items
         var elements = ElementHolder.getByQuestionNumber(qnum);
         //go through each element and add its properties to the scores, averages, and titles
-        if (elements.length > 0) {
+        if (elements && (elements.length > 0)) {
             $.each(elements, function () {
+                window.console.log('iterating elements', this);
                 scores.push(this.score);
-                titles.push(this.elementEnglish);
+                titles.push(this.elementAbbr);
                 averages.push(this.average);
             });
         }
@@ -277,8 +291,8 @@ QuestionDataObject.prototype.load = function (questionJSON) {
     this.cnt = 0;
     $.each(questionJSON, function (k, v) {
         me.questionNumbers.push(Number(v['questionNumber']));
-        me.questionNames.push(v['questionTitle']);
-        me.questionScores.push(Number(v['questionScore']));
+        me.questionNames.push(v['questionName']);
+        me.questionScores.push(Number(v['score']));
         me.cnt++;
     });
 };
@@ -296,7 +310,7 @@ QuestionAverages.prototype.load = function (questionAverageJSON) {
     //Max number for counter
     this.responses = questionAverageJSON.length;
     $.each(questionAverageJSON, function (k, v) {
-        me.questionAverages.push(Number(v['questionAverage']));
+        me.questionAverages.push(Number(v['average']));
         me.cnt++;
     });
 };

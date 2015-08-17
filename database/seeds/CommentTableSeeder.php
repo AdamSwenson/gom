@@ -22,10 +22,10 @@ class CommentTableSeeder extends Seeder
     public function loadElement($numberOfRuns)
     {
         $this->elements = Element::all()->shuffle();
-        while (count($this->elements) < $numberOfRuns)
-        {
-            $this->elements = array_merge($this->elements, Element::all()->shuffle());
-        }
+//        while (count($this->elements) < $numberOfRuns)
+//        {
+//            $this->elements = array_merge($this->elements, Element::all()->shuffle());
+//        }
 //        foreach($this->elements as $e)
 //        {
 //            yield $e;
@@ -38,26 +38,39 @@ class CommentTableSeeder extends Seeder
         $this->faker = \Faker\Factory::create();
         $this->loadElement($num);
 
+        $elements = Element::all();
+
         DB::table('comments')->delete();
 //        DB::table('comment_element')->delete();
 
-        for ($i = 0; $i < $num; $i++)
-        {
-//            try
-//            {
+        foreach($elements as $e){
             foreach (Comment::$valences as $valence)
             {
-                $e = $this->elements[$i];
+                //$e = $this->elements[$i];
                 $body = $this->faker->text(1000);
                 $comment = new Comment();
                 $comment->setValence($valence);
                 $comment->setBody($body);
                 $comment->element()->associate($e);
                 $comment->save();
-//                    $comment->element()->save($e);
-
-
-            }
+        }
+//        for ($i = 0; $i < $num; $i++)
+//        {
+////            try
+////            {
+//            foreach (Comment::$valences as $valence)
+//            {
+//                $e = $this->elements[$i];
+//                $body = $this->faker->text(1000);
+//                $comment = new Comment();
+//                $comment->setValence($valence);
+//                $comment->setBody($body);
+//                $comment->element()->associate($e);
+//                $comment->save();
+////                    $comment->element()->save($e);
+//
+//
+//            }
 
 
 //            } catch (\Exception $e)

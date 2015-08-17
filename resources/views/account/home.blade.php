@@ -4,53 +4,37 @@
 
 @section('cssLinks')
 
- <!-- styles for jsArea(the top bar of the webpage-->
-    <link rel="stylesheet" type="text/css" href="{{asset("inc/css/navMenuStyles.css")}}"/>
-    <link rel="stylesheet" type="text/css" href="{{asset("inc/css/standardStyles.css")}}"/>
-    <link rel="stylesheet" type="text/css" href="{{asset("inc/css/examCreateStyles.css")}}"/>
 
-  <!--styles for the rest of the webpage -->
-    <link href="{{asset('inc/css/landing.css')}}" type="text/css" rel="stylesheet"/>
-    <link href="{{asset('inc/css/indexStyle.css')}}" type="test/css" rel="stylesheet"/>
 @endsection
 
 @section('body')
+    <script>
+        //these elements exist in the nav_bar_main.blade.php
+        document.getElementById('setupHead').setAttribute('class',"");
+        document.getElementById('gradeHead').setAttribute('class',"");
+        document.getElementById('reportHead').setAttribute('class',"");
+        document.getElementById('accountHead').setAttribute('class',"active");
+    </script>
     <div id="pageContainer">
         <div id="container" class="container">
             <div class="row">
-                <div class="col-xs-10">
-                    <h1 id="GradeomaticHomeTitle" class="text-left">Gradeomatic</h1>
-                </div>
             </div>
-            <div class="row">
-                <div class="col-xs-10 btn-group">
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Home</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Payment</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Guides</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Features</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg ">News</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">About Us</a>
-                    <a href="{{url('home')}}" type="button" class="btn btn-primary btn-lg">Help</a>
-                </div>
-            </div>
-            <div class="row" >
-                <div class="col-xs-8">
-                    <a href="#" class="list-group-item" data-toggle="collapse" data-target="#examListClone" data-parent="#examAction">
-                        <h4>Preferences</h4></a>
-                    <!-- this div should be replaced by real exams or a "No exams found" error popup -->
-                    <div id="examListClone" class="sublinks collapse">
-                        <div class="container">
-                                <a class="list-group-item large"> Security </a>
-                                <a class="list-group-item large"> Payment </a>
+                <div class="container">
+                        <div class="row" >
+                            <div class="col-xs-12">
+                                <div class="list-group">
+                                    <a href="#" class="list-group-item"><h4>Preferences</h4></a>
+                                    <a href="#" class="list-group-item"><h4>Security</h4></a>
+                                    <a href="#" class="list-group-item"><h4>Payment</h4></a>
+                                    <a href="#" class="list-group-item"><h4>Upgrade</h4></a>
+                                </div>
                         </div>
                     </div>
-
+                    </div>
+                    <div class="col-xs-4">
+                    </div>
                 </div>
-            </div>
-                </div>
-            </div>
         </div>
-    </div>
 @endsection
 
 @section('jsArea')

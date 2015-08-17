@@ -20,17 +20,20 @@
         </div>
         <div class="collapse navbar-collapse" id="navbar-ex-collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li class="active">
+                <li id="setupHead">
                     <a href="{{url('setup')}}">Setup</a>
                 </li>
                 <li>
                     <a href="{{url('grade')}}">Grade</a>
                 </li>
-                <li>
-                    <a href="#">Reports</a>
+                <li id="reportHead">
+                    <a href="{{url('report')}}">Reports</a>
                 </li>
-                <li>
+                <li id="accountHead">
                     <a href="{{url('account/home')}}">Account</a>
+                </li>
+                <li id="logOutHead">
+                    <a href="{{url('auth/logout')}}">Log out</a>
                 </li>
             </ul>
         </div>

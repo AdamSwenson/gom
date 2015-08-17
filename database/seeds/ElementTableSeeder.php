@@ -17,7 +17,7 @@ class ElementTableSeeder extends Seeder
 
     public $faker;
 
-    public function run($num = 10)
+    public function run($num = 75)
     {
         $this->faker = \Faker\Factory::create();
 

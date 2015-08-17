@@ -40,6 +40,7 @@ class ExamController extends Controller
 
     public function __construct(IExamRepository $examDao)
     {
+        $this->middleware('auth');
         $this->examDao = $examDao;
     }
 
@@ -50,10 +51,7 @@ class ExamController extends Controller
      */
     public function index()
     {
-        //TODO Remove this once the login system is working
-        Auth::loginUsingId(1);
         $exams = $this->examDao->load_all_exams();
-
         return View::make('setup.select_exam', compact('exams'));
     }
 
@@ -135,7 +133,7 @@ class ExamController extends Controller
      */
     public function destroy(Exam $exam)
     {
-        $result = $this->examDao->delete_exam($exam->getId());
+        $result = $this->examDao->delete_exam_object($exam);
         if (!empty($result))
         {
             Session::flash(self::SUCCESS_FLASH_NAME, self::DELETE_SUCCESS);

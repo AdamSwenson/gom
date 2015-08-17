@@ -12,21 +12,34 @@ use App\Events\ExamReleasedEvent;
 use App\Exam;
 use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
-use App\Repositories\Feedback\FeedbackBuilder;
+use App\Repositories\Exam\IExamRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Score\IElementScoreRepository;
 use App\Repositories\Score\IQuestionScoreRepository;
 use App\Repositories\Student\IStudentRepository;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class ReportController
+ *
+ * This handles requests having to do with the generation and editing of reports.
+ *
+ * All operations require the user to be logged in. This does NOT handle student's access to
+ * their comments.
+ *
+ * @package App\Http\Controllers
+ */
 class ReportController extends Controller
 {
     /**
      * @var IStudentRepository
      */
     private $studentRepository;
+    protected $examDao;
 
     /**
+     * @param IExamRepository $examRepository
+     * @param IStudentRepository $studentRepository
      * @param IQuestionAssignmentRepository $questionAssignmentRepository
      * @param IElementAssignmentRepository $elementAssignmentRepository
      * @param IQuestionScoreRepository $questionScoreRepository
@@ -35,14 +48,18 @@ class ReportController extends Controller
      * @param IStudentRepository $studentRepository
      */
     public function __construct(
+        IExamRepository $examRepository,
+        IStudentRepository $studentRepository,
         IQuestionAssignmentRepository $questionAssignmentRepository,
         IElementAssignmentRepository $elementAssignmentRepository,
         IQuestionScoreRepository $questionScoreRepository,
         IElementScoreRepository $elementScoreRepository,
         ICommentRepository $commentRepository,
-    IStudentRepository $studentRepository
-    ) {
-        Auth::loginUsingId(1);
+        IStudentRepository $studentRepository
+    )
+    {
+        $this->middleware('auth');
+        $this->examDao = $examRepository;
         $this->questionAssignmentRepository = $questionAssignmentRepository;
         $this->elementAssignmentRepository = $elementAssignmentRepository;
         $this->questionScoreRepository = $questionScoreRepository;
@@ -52,20 +69,22 @@ class ReportController extends Controller
     }
 
 
-    public function showGradeAssign(){
+    public function showGradeAssign()
+    {
         return "Grade assignment page here";
     }
 
     /**
      * Receives the command to create feedback for the exam and dispatches the
      * events to take care of it
+     * @param Exam $exam
      * @return \Illuminate\View\View
      */
     public function createFeedback(Exam $exam)
     {
         event(new ExamReleasedEvent($exam));
-        return view('feedback.progress_compiling');
 
+        return view('feedback.progress_compiling');
 //
 //        $feedbackBuilder = new FeedbackBuilder();
 //
@@ -74,6 +93,39 @@ class ReportController extends Controller
 ////        dd($feedback[5]);
 //        $data = $feedback[$accessKeys[0]];
 
-     //   return view('feedback.feedback', compact('data'));
+        //   return view('feedback.feedback', compact('data'));
     }
+
+    public function showAnalytics(Exam $exam)
+    {
+        $students = $this->studentRepository->load_students_by_exam($exam->getId());
+
+        return view('reports.analyticsCharts')->with(['exam' => $exam, 'students' => $students]);
+    }
+
+    public function showExams()
+    {
+        $exams = $this->examDao->load_all_exams();
+
+        //$students = $this->studentDao->load_all_students();
+        return view('reports.ExamsRelease', compact('exams'));
+    }
+
+    /**
+     * Returns the page with quality control tools for the given exam
+     * @param Exam $exam
+     */
+    public function showQualityControl(Exam $exam)
+    {
+
+    }
+
+    public function showStudents(Exam $exam)
+    {
+        $students = $this->studentRepository->load_students_by_exam($exam->getId());
+
+        return view('reports.studentsGrades')->with(['exam' => $exam, 'students' => $students]);
+    }
+
+
 }

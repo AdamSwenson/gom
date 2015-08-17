@@ -30,7 +30,7 @@ public function tearDown()
     \Mockery::close();
 }
     /**
-     * @covers \App\classes\RequestHandlers\dao\StudentDao::load_students_by_exam
+     * @covers \App\Repositories\Student\StudentRepository::load_students_by_exam
      */
     public function testLoad_students_by_exam()
     {

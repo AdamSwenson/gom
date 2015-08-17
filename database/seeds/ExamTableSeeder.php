@@ -1,11 +1,6 @@
 <?php
 use Illuminate\Database\Seeder;
 
-use Base\User;
-use Map\UserTableMap;
-use Propel\Runtime\ActiveQuery\Criteria;
-
-use Propel\Runtime\Propel;
 
 
 /**
@@ -19,7 +14,7 @@ class ExamTableSeeder extends Seeder
 
     public $faker;
 
-    public function run($num=10)
+    public function run($num=3)
     {
         $this->faker = \Faker\Factory::create();
 

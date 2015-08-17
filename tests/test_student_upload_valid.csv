@@ -1,1 +1,1 @@
-class_nickname,student_id,student_name,emailphil100sec01,122,"TestLastname1, TestFirstname1",email1@fake.comphil100sec01,124,"TestLastname2, TestFirstname2",email2@fake.comphil100sec02,125,"TestLastname3, TestFirstname3",email3@fake.comphil100sec02,126,"TestLastname4, TestFirstname4",email4@fake.com
+last_name,first_name,student_id,emailtestLast1,testFirst1,111111111,email1@fake.comtestLast2,testFirst2,222222222,email2@fake.comtestLast3,testFirst3,333333333,email3@fake.comtestLast4,testFirst4,444444444,email4@fake.com

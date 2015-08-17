@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\UserOnlyScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +14,7 @@ class BaseModel extends Model
     {
         parent::boot();
 
-        static::addGlobalScope(new \App\UserOnlyScope());
+        static::addGlobalScope(new UserOnlyScope());
 
         static::creating(function($model)
         {

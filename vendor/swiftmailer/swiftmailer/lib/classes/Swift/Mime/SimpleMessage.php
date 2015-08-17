@@ -9,7 +9,7 @@
  */
 
 /**
- * The default email message class.
+ * The default emails message class.
  *
  * @author Chris Corbyn
  */
