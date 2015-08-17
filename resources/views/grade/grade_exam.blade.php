@@ -11,7 +11,8 @@
         <div class="row">
             <!-- Left column holds questions and sliders -->
             <div class="col-md-8">
-                <h3>Question #1: "Causes of the Civil War: this is a very long title to test what happens"</h3>
+                <h3>"History 101, Exam 3: Civil War"</h3>
+                    <h4>Q1: "Causes of the Civil War: this is a very long title to test what happens"</h4>
                 <!-- Centered Question Pills -->
                 <ul class="nav nav-pills nav-justified">
                     <li class="active" role="presentation"><a href="#q1-panel" data-toggle="tab">Q1</a></li>
@@ -22,7 +23,7 @@
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <div class="tab-content">
-                            <?php for ($count = 1; $count < 2; $count++) { ?>
+                            <?php for ($count = 1; $count < 5; $count++) { ?>
                                     <!-- element sliders -->
                             @include('grade.element_slider')
                             <?php } ?>
@@ -33,8 +34,10 @@
 
             <!-- Right column holds Roster and Time info -->
             <div class="col-md-4">
+
                 <!-- student name and / or ID -->
                 <div class="row">
+
                     <div class="col-md-6">
                         <h4 id="student-name"><span class="glyphicon glyphicon-pencil"> </span> John Doe</h4>
                     </div>
@@ -43,6 +46,8 @@
                     </div>
                 </div>
                 <p>Graded: 0 Remaining: 22</p>
+                <a class="btn btn-success col-md-12"><span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>
+                    Save & Finish</a>
                 <!-- student table -->
                 @include('grade.student_table')
                         <!-- timing and data -->
@@ -77,8 +82,12 @@
 
     <script type="text/javascript">
 
-        $(".slider").slider();
-        $("#ex2").slider();
+        $("[id^='ex']").slider({
+            ticks: [0, 33, 67, 100],
+            ticks_labels: ['Missing', 'Poor', 'Fair', 'Excellent'],
+            ticks_snap_bounds: 0,
+            value: 0
+        });
 
         $(document).ready(function () {
 
