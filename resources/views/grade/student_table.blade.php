@@ -29,14 +29,15 @@
         </tr>
         </thead>
         <tbody>
-        <?php for($counter = 0; $counter < 20; $counter++)
-        { $val = 1000000 + $counter; ?>
-        <tr>
-            <td class="col-md-6"><span class="glyphicon glyphicon-ok"></span> Adams, Adam</td>
-            <td class="col-md-4"><?php echo "$val"; ?></td>
-            <td class="col-md-2">75</td>
-        </tr>
-        <?php } ?>
+        @foreach($students as $student)
+            <tr id="student{{ $student->getId() }}">
+                <td class="col-md-6">{{ $student->getStudentLName() }},
+                    {{ $student->getStudentFName() }} </td>
+                <td class="col-md-4">{{ $student->getStudentId() }}</td>
+                <td class="col-md-2">75</td>
+            </tr>
+        @endforeach
+
         </tbody>
     </table>
 </div>

@@ -11,23 +11,58 @@
         <div class="row">
             <!-- Left column holds questions and sliders -->
             <div class="col-md-8">
-                <h3>"History 101, Exam 3: Civil War"</h3>
-                    <h4>Q1: "Causes of the Civil War: this is a very long title to test what happens"</h4>
+                <h3>{{ $exam->getTerm() }}, {{ $exam->getYear() }}: "{{ $exam->getName() }}" </h3>
                 <!-- Centered Question Pills -->
                 <ul class="nav nav-pills nav-justified">
-                    <li class="active" role="presentation"><a href="#q1-panel" data-toggle="tab">Q1</a></li>
-                    <li role="presentation"><a href="#q2-panel" data-toggle="tab">Q2</a></li>
-                    <li role="presentation"><a href="#q3-panel" data-toggle="tab">Q3</a></li>
-                    <li role="presentation"><a href="#q4-panel" data-toggle="tab">Q4</a></li>
+                    @foreach($questionAssignments as $qAssignment)
+                        <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
+                        <li <?php if ($qNumber == 1) {
+                            echo "class='active'";
+                        } ?> role="presentation">
+                            <a href="#q{{ $qNumber }}-panel" data-toggle="tab">
+                                Q{{ $qNumber }}</a></li>
+                    @endforeach
                 </ul>
+                <!-- question panel -->
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <div class="tab-content">
-                            <?php for ($count = 1; $count < 5; $count++) { ?>
-                                    <!-- element sliders -->
-                            @include('grade.element_slider')
-                            <?php } ?>
+                            @foreach($questionAssignments as $qAssignment)
+                                <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
+                                <div id="q<?php echo "$qNumber" ?>-panel" class="tab-pane fade
+                                <?php if ($qNumber === 1) {
+                                    echo "in active";
+                                } ?>">
+                                    <!-- question Name -->
+                                    <h4 id="questionName">Question #{{ $qNumber }}:
+                                        "{{ $qAssignment->getQuestionName() }}"</h4>
+                                    <!-- question Scores -->
+                                    <form class="form-horizontal">
+                                        <div class="form-group">
+                                            <div class="col-md-3">
+                                                <label for="inputScore{{ $qNumber }}">Question Score:</label>
+                                                <span id="inputScore{{ $qNumber }}">22/30</span>
+                                            </div>
+                                                <label class="col-md-3" for="customScore{{ $qNumber }}">Custom Score:</label>
+                                            <div class="col-md-3">
+                                                <input class="form-control" type="number"
+                                                       id="customScore{{ $qNumber }}"/>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <!-- element area holds all sliders and comments for this question -->
+                                    <div class="list-group">
+                                        <?php $elements = $allElements[$qNumber - 1];
+                                        $eNumber = 1;
+                                        while ($eNumber <= count($elements) ) { ?>
+                                                <!-- add element panels -->
+                                        @include('grade.element_panel')
+                                        <?php $eNumber++; } ?>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -46,7 +81,8 @@
                     </div>
                 </div>
                 <p>Graded: 0 Remaining: 22</p>
-                <a class="btn btn-success col-md-12"><span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>
+                <a class="btn btn-success col-md-12"><span class="glyphicon glyphicon-save-file"
+                                                           aria-hidden="true"></span>
                     Save & Finish</a>
                 <!-- student table -->
                 @include('grade.student_table')
@@ -71,18 +107,24 @@
             </div>
         </div>
     </div>
-    @endsection
+@endsection
 
 
-    @section('jsArea')
-
-            <!-- bootstrap sliders -->
-
+@section('jsArea')
     <script type='text/javascript' src="{{ asset('inc/js/bootstrap-slider.js') }}"></script>
-
     <script type="text/javascript">
 
-        $("[id^='ex']").slider({
+        /*
+         EXAM GRADES? Any flag to know if an exam has been graded?
+
+         * on load:
+         *   - count graded, updated "graded / remaining"
+         *   - set all roster backgrounds to appropriate colors
+         */
+
+        /* initialize Sliders */
+
+        $("[id^='sliderQ']").slider({
             ticks: [0, 33, 67, 100],
             ticks_labels: ['Missing', 'Poor', 'Fair', 'Excellent'],
             ticks_snap_bounds: 0,
@@ -90,7 +132,28 @@
         });
 
         $(document).ready(function () {
+            /*
+             when a student is selected:
+             -load scores for all sliders
+             -load text for all comments
+             -load timer
+             -set roster background color
+             -set StudentName and StudentId fields
+             */
 
+            /*
+             when a slider is moved:
+             - record value / slider position for this element
+             - update comment text (if necessary - consider replacing comment with stock if moving to a new region)
+             - update total score
+             - check if exam done. if done, call "examDone()"
+             - check if all exams done. if all done, call "examDone()" and show "finish" button
+             - examDone() - saves scores and comments for the student,
+             sets roster background color to green,
+             sets rosterScore
+             saves all timers,
+             updates "graded / remaining" fields.
+             */
         });
     </script>
 @endsection

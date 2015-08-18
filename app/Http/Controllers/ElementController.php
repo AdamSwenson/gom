@@ -28,15 +28,15 @@ class ElementController extends Controller
      * ElementController constructor.
      * @param IElementRepository $elementDao
      * @param IElementAssignmentRepository $assignmentDao
-     * @param IQuestionAssignmentRepository $questionAssignmentRepo
+     * @param IQuestionAssignmentRepository $questionAssignmentDao
      */
     public function __construct(IElementRepository $elementDao, IElementAssignmentRepository $assignmentDao,
-                                IQuestionAssignmentRepository $questionAssignmentRepo)
+                                IQuestionAssignmentRepository $questionAssignmentDao)
     {
         $this->middleware('auth');
         $this->elementDao = $elementDao;
         $this->assignmentDao = $assignmentDao;
-        $this->questionAssignmentDAO = $questionAssignmentRepo;
+        $this->questionAssignmentDAO = $questionAssignmentDao;
     }
 
     /**

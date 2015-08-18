@@ -9,6 +9,10 @@ use App\Http\Requests\GradingRequest;
 use App\Exam;
 use App\Http\Requests\ExamRequest;
 use App\Repositories\Exam\IExamRepository;
+use App\Repositories\Question\IQuestionAssignmentRepository;
+use App\Repositories\Element\IElementAssignmentRepository;
+use App\Repositories\Element\IElementRepository;
+use App\Repositories\Score\IElementScoreRepository;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
@@ -31,10 +35,17 @@ class GradeController extends Controller
     protected $dao;
     protected $IExamRepository;
 
-    public function __construct(IExamRepository $IExamRepository)
+    public function __construct(IExamRepository $IExamRepository, IElementRepository $elementRepository,
+                                IElementAssignmentRepository $elementAssignmentRepository,
+                                IQuestionAssignmentRepository $questionAssignmentRepository,
+                                IElementScoreRepository $elementScoreRepository)
     {
         $this->middleware('auth');
         $this->examDao = $IExamRepository;
+        $this->questionAssignmentDao = $questionAssignmentRepository;
+        $this->elementDao = $elementRepository;
+        $this->elementAssignmentDao = $elementAssignmentRepository;
+        $this->elementScoreDao = $elementScoreRepository;
     }
 
     /**
@@ -56,8 +67,27 @@ class GradeController extends Controller
     {
         $studentDao = app()->make('App\Repositories\Student\IStudentRepository');
         $students = $studentDao->load_students_by_exam($exam);
+        $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
+        foreach ($questionAssignments as $qAssignment ) {
+            $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qAssignment->getQuestionNumber());
+        }
 
-        return View::make('grade.grade_exam')->with(['exam' => $exam, 'students' => $students]);
+        // load all current student scores
+        $allElementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
+        foreach ($students as $student) {
+            $elementScores = NULL;
+            foreach($allElementAssignments as $eleAssignment ) {
+                $elementScores[] = $this->elementScoreDao->load( $eleAssignment->getElementAssignmentId(), $student->getId());
+            }
+            $studentScores[] = $elementScores;
+        }
+
+        return View::make('grade.grade_exam')->with(['exam' => $exam,
+            'students' => $students,
+            'questionAssignments' => $questionAssignments,
+            'allElements' => $allElements,
+            'studentScores' => $studentScores
+        ]);
     }
 
     /**
@@ -89,7 +119,6 @@ class GradeController extends Controller
         {
             //TODO Error handling
         }
-
     }
 
     /**
