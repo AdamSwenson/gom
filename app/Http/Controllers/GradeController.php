@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Element;
+use App\Comment;
 use App\Http\Requests;
 use App\Http\Requests\GradingRequest;
 
@@ -67,8 +68,10 @@ class GradeController extends Controller
     {
         $studentDao = app()->make('App\Repositories\Student\IStudentRepository');
         $students = $studentDao->load_students_by_exam($exam);
+
+        // load all question assignments and all elements for those questions
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
-        foreach ($questionAssignments as $qAssignment ) {
+        foreach ($questionAssignments as $qAssignment) {
             $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qAssignment->getQuestionNumber());
         }
 
@@ -76,10 +79,24 @@ class GradeController extends Controller
         $allElementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
         foreach ($students as $student) {
             $elementScores = NULL;
-            foreach($allElementAssignments as $eleAssignment ) {
-                $elementScores[] = $this->elementScoreDao->load( $eleAssignment->getElementAssignmentId(), $student->getId());
+            foreach ($allElementAssignments as $eleAssignment) {
+                $elementScores[] = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
+                // LOAD STUDENT-SPECIFIC COMMENTS
             }
             $studentScores[] = $elementScores;
+        }
+
+        // load default comments for each element
+        foreach ($allElements as $aQuestion) {
+            $allDefaultComments = NULL;
+            foreach ($aQuestion as $element) {
+                $defaultComments = NULL;
+                for ($i = 0; $i < count(Comment::$valences); $i++) {
+                    $defaultComments[] = $this->elementDao->loadCommentByElementIdAndValence($element->getId(), $i);
+                }
+                $allDefaultComments[] = $defaultComments;
+            }
+            $stockComments[] = $allDefaultComments;
         }
 
         return View::make('grade.grade_exam')->with(['exam' => $exam,
@@ -98,25 +115,21 @@ class GradeController extends Controller
     public function recordScore(Exam $exam, GradingRequest $request)
     {
         //Don't even get started if there's no student id and score
-        if ($request->has('student_id') && $request->has('score'))
-        {
+        if ($request->has('student_id') && $request->has('score')) {
             $studentId = $request->input('student_id');
             $score = $request->input('score');
 
             //If the request is to record a question score, it follows this path
-            if ($request->has('question_assignment_id'))
-            {
+            if ($request->has('question_assignment_id')) {
                 $this->dao = app()->make('App\Repositories\Score\IQuestionScoreRepository');
                 $itemId = $request->input('question_assignment_id');
             } //If it is to record an element score, it follows this path
-            elseif ($request->has('element_assignment_id'))
-            {
+            elseif ($request->has('element_assignment_id')) {
                 $this->dao = app()->make('App\Repositories\Score\IElementScoreRepository');
                 $itemId = $request->input('element_assignment_id');
             }
             $this->dao->record($itemId, $studentId, $score);
-        } else
-        {
+        } else {
             //TODO Error handling
         }
     }
@@ -129,13 +142,11 @@ class GradeController extends Controller
      */
     public function recordTime(Exam $exam, GradingRequest $request)
     {
-        if ($request->has('student_id') && $request->has('time'))
-        {
+        if ($request->has('student_id') && $request->has('time')) {
             $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
             $time = $dao->record($exam->id, $request->input('student_id'), $request->input('time'));
             return $time;
-        }
-        else{
+        } else {
             //TODO Error handling
         }
     }
@@ -149,11 +160,10 @@ class GradeController extends Controller
      */
     public function loadTime(Exam $exam, GradingRequest $request)
     {
-        if ($request->has('student_id'))
-        {
+        if ($request->has('student_id')) {
             $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
             $time = $dao->load($exam->id, $request->input('student_id'));
-        return $time;
+            return $time;
         }
 
     }

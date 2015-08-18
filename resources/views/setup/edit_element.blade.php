@@ -117,7 +117,6 @@
 
                     for (var i = 0; i < numValences; i++) {
                         var valenceText = $(parent).find("[name$='valence" + i + "']");
-                        console.log(valenceText.val() );
                         if (valenceText.val() == '') {
                             valenceText.val(elementText);
                         }

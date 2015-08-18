@@ -29,8 +29,9 @@
         </tr>
         </thead>
         <tbody>
+        <?php $count = 0; ?>
         @foreach($students as $student)
-            <tr id="student{{ $student->getId() }}">
+            <tr id="studentListItem{{ $student->getId() }}" data-index="<?= $count++; ?>">
                 <td class="col-md-6">{{ $student->getStudentLName() }},
                     {{ $student->getStudentFName() }} </td>
                 <td class="col-md-4">{{ $student->getStudentId() }}</td>

@@ -33,20 +33,21 @@
                                 <?php if ($qNumber === 1) {
                                     echo "in active";
                                 } ?>">
-                                    <!-- question Name -->
-                                    <h4 id="questionName">Question #{{ $qNumber }}:
-                                        "{{ $qAssignment->getQuestionName() }}"</h4>
+
                                     <!-- question Scores -->
-                                    <form class="form-horizontal">
-                                        <div class="form-group">
-                                            <div class="col-md-3">
-                                                <label for="inputScore{{ $qNumber }}">Question Score:</label>
-                                                <span id="inputScore{{ $qNumber }}">22/30</span>
-                                            </div>
-                                                <label class="col-md-3" for="customScore{{ $qNumber }}">Custom Score:</label>
-                                            <div class="col-md-3">
+                                    <form class="form-horizontal" role="form">
+                                        <div class="form-group ">
+                                            <span class="col-md-9">
+                                                <!-- question Name -->
+                                                <h4 id="questionName">Question #{{ $qNumber }}:
+                                        "{{ $qAssignment->getQuestionName() }}"</h4>
+                                            </span>
+                                            <label class="col-md-1 control-label" for="customScore{{ $qNumber }}">
+                                                Score:</label>
+
+                                            <div class="col-md-2">
                                                 <input class="form-control" type="number"
-                                                       id="customScore{{ $qNumber }}"/>
+                                                       id="questionScore{{ $qNumber }}"/>
                                             </div>
                                         </div>
                                     </form>
@@ -74,10 +75,13 @@
                 <div class="row">
 
                     <div class="col-md-6">
-                        <h4 id="student-name"><span class="glyphicon glyphicon-pencil"> </span> John Doe</h4>
+                        <h4>
+                            <span class="glyphicon glyphicon-pencil"> </span>
+                            <span id="studentName"></span>
+                        </h4>
                     </div>
                     <div class="col-md-6">
-                        <h4 id="student-id">ID 123456789</h4>
+                        <h4>ID <span id="studentId"></span></h4>
                     </div>
                 </div>
                 <p>Graded: 0 Remaining: 22</p>
@@ -114,6 +118,9 @@
     <script type='text/javascript' src="{{ asset('inc/js/bootstrap-slider.js') }}"></script>
     <script type="text/javascript">
 
+        var students = <?= json_encode($students) ?>;
+        var studentScores = <?= json_encode($studentScores) ?>;
+        var aName = students[0].last_name;
         /*
          EXAM GRADES? Any flag to know if an exam has been graded?
 
@@ -122,24 +129,43 @@
          *   - set all roster backgrounds to appropriate colors
          */
 
-        /* initialize Sliders */
+        // sets the studentName and studentId fields
+        function setNameAndId(student) {
+            var name = student.last_name + ", " + student.first_name;
+            var id = student.student_identifier;
+            $("#studentName").text(name);
+            $("#studentId").text(id);
+        }
 
-        $("[id^='sliderQ']").slider({
-            ticks: [0, 33, 67, 100],
-            ticks_labels: ['Missing', 'Poor', 'Fair', 'Excellent'],
-            ticks_snap_bounds: 0,
-            value: 0
-        });
 
         $(document).ready(function () {
+
+            /* initialize Sliders */
+
+            $("[id^='slider']").slider({
+                /*
+                 ticks: [0, 33, 67, 100],
+                 ticks_labels: ['Missing', 'Poor', 'Fair', 'Excellent'],
+                 ticks_snap_bounds: 0, */
+                value: 15
+            });
+
             /*
              when a student is selected:
              -load scores for all sliders
              -load text for all comments
              -load timer
              -set roster background color
-             -set StudentName and StudentId fields
+
              */
+
+            // SELECT STUDENT - DO LOTS OF STUFF
+            $("[id^='studentListItem']").click( function(e) {
+                // set StudentName and StudentId fields
+                var index = $(this).attr("data-index");
+                var aStudent = students[index];
+                setNameAndId(aStudent);
+            });
 
             /*
              when a slider is moved:
