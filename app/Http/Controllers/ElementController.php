@@ -217,7 +217,6 @@ class ElementController extends Controller
             }
             // Loop through valences and add / edit comments
             for($j = 0; $j < $numValences; $j++) {
-
                 $this->elementDao->addValencedContent($element->getId(), $j, $request->input('e'.$i.'valence'.$j));
             }
             $currentElements[$element->getId()] = $element;
@@ -234,7 +233,6 @@ class ElementController extends Controller
             foreach ($oldElements as $oldElement) {
                 $eIdToFind = $oldElement->getId();
                 if (!array_key_exists($eIdToFind, $currentElements)) {
-                    // are deletions removing elements? or just assignments?
                     $this->elementDao->deleteElement($eIdToFind);
                     dd($eIdToFind);
                 }

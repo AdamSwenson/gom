@@ -80,30 +80,31 @@ class GradeController extends Controller
         foreach ($students as $student) {
             $elementScores = NULL;
             foreach ($allElementAssignments as $eleAssignment) {
-                $elementScores[] = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
-                // Load comments into this or create another array?
+                $elementScore = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
+                $elementScores[] = $elementScore;
             }
             $studentScores[] = $elementScores;
         }
 
         // load default comments for each element
         foreach ($allElements as $aQuestion) {
-            $allDefaultComments = NULL;
             foreach ($aQuestion as $element) {
                 $defaultComments = NULL;
                 for ($i = 0; $i < count(Comment::$valences); $i++) {
                     $defaultComments[] = $this->elementDao->loadCommentByElementIdAndValence($element->getId(), $i);
                 }
-                $allDefaultComments[] = $defaultComments;
+                $stockComments[] = $defaultComments;
             }
-            $stockComments[] = $allDefaultComments;
         }
+
+        // I  need a way to get elementAssignmentId from elementId (or element)
 
         return View::make('grade.grade_exam')->with(['exam' => $exam,
             'students' => $students,
             'questionAssignments' => $questionAssignments,
             'allElements' => $allElements,
-            'studentScores' => $studentScores
+            'studentScores' => $studentScores,
+            'stockComments' => $stockComments
         ]);
     }
 

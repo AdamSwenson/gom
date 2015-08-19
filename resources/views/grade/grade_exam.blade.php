@@ -11,7 +11,8 @@
         <div class="row">
             <!-- Left column holds questions and sliders -->
             <div class="col-md-8">
-                <h3>{{ $exam->getTerm() }}, {{ $exam->getYear() }}: "{{ $exam->getName() }}" </h3>
+                <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                     {{ $exam->getTerm() }}, {{ $exam->getYear() }}: "{{ $exam->getName() }}" </h3>
                 <!-- Centered Question Pills -->
                 <ul class="nav nav-pills nav-justified">
                     @foreach($questionAssignments as $qAssignment)
@@ -27,6 +28,7 @@
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <div class="tab-content">
+                            <?php $count = 0 ?>
                             @foreach($questionAssignments as $qAssignment)
                                 <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
                                 <div id="q<?php echo "$qNumber" ?>-panel" class="tab-pane fade
@@ -52,11 +54,11 @@
                                     <!-- element area holds all sliders and comments for this question -->
                                     <div class="list-group">
                                         <?php $elements = $allElements[$qNumber - 1];
-                                        $eNumber = 1;
-                                        while ($eNumber <= count($elements) ) { ?>
+                                        $eNumber = 0;
+                                        while ($eNumber < count($elements) ) { ?>
                                                 <!-- add element panels -->
                                         @include('grade.element_panel')
-                                        <?php $eNumber++; } ?>
+                                        <?php $count++; $eNumber++; } ?>
                                     </div>
                                 </div>
                             @endforeach
@@ -72,26 +74,26 @@
                 <!-- student name and / or ID -->
                 <div class="row">
 
-                    <div class="col-md-6">
+                    <div class="col-md-7">
                         <h4>
                             <span class="glyphicon glyphicon-pencil"> </span>
-                            <span id="studentName"></span>
+                            <span id="studentName">No Student Selected</span>
                         </h4>
                     </div>
-                    <div class="col-md-6">
-                        <h4>ID <span id="studentId"></span></h4>
+                    <div class="col-md-5">
+                        <h4>ID <span id="studentId">--</span></h4>
                     </div>
                 </div>
                 <!-- graded / remaining counters -->
                 <p>Graded: <span id="graded">0</span> Remaining: <span id="remaining">0</span></p>
                 <!-- save & finish button -->
-                <a class="btn btn-success col-md-12"><span class="glyphicon glyphicon-save-file"
-                                                           aria-hidden="true"></span>
-                    Save & Finish</a>
+                <a class="btn btn-success col-md-12" id="finishButton" style="display: none;">
+                    <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish
+                </a>
                 <!-- student table -->
                 @include('grade.student_table')
                         <!-- timing and data -->
-                <h4><span class="glyphicon glyphicon-time"></span> Statistics</h4>
+                <h4><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Statistics</h4>
 
                 <div class="panel panel-default">
                     <div class="panel-body">
@@ -122,27 +124,32 @@
         var studentScores = <?= json_encode($studentScores) ?>;
         var activeStudent = null;
         var examGrades = [];
-
+        console.log(students);
+        console.log(studentScores);
         updateExamGrades();
-        console.log(examGrades);
+
 
         /*
          * GENERAL FUNCTIONS
          */
 
-        // keeps a persistent total of the exam score for each student
+        // examGrades[] keeps a persistent total of the exam score for each student
         function updateExamGrades() {
             for (var i = 0; i < studentScores.length; i++) {
                 var thisScore = null;
                 studentScores[i].forEach(function (gradeEntry) {
                     if (gradeEntry.score >= 0) {
-                        if (thisScore === null) { thisScore = 0; }
+                        if (thisScore === null) {
+                            thisScore = 0;
+                        }
                         thisScore += gradeEntry.score;
                     }
                 });
                 examGrades[i] = thisScore.toPrecision(3);
-            };
-        };
+            }
+            ;
+        }
+        ;
 
         // sets the studentName and studentId fields
         function setNameAndId(student) {
@@ -153,12 +160,16 @@
         }
 
         // update the "graded: xx remaining: xx" counters
-        function updateGradedCounter() {
+        // also displays the "Save & Finish" button when remaining == 0
+        function updateGradedRemainingCounter() {
             var total = examGrades.length;
             var graded = examsGraded();
             var remaining = total - graded;
             $("#graded").text(graded);
             $("#remaining").text(remaining);
+            if (remaining === 0) {
+                $('#finishButton').show();
+            }
         }
 
         // returns number of exams graded
@@ -172,7 +183,6 @@
 
         // set the "grades" column in the student roster
         function updateRosterGradeDisplay() {
-            /// set all graded exams green: grab data-index="k" and pass that object into function
             for (var i = 0; i < examGrades.length; i++) {
                 if (examGrades[i] >= 0) {
                     $('#examGrade' + i).text(examGrades[i]);
@@ -197,50 +207,69 @@
             $(item).css('color', 'white');
         }
 
+        function updateStudentDataArea() {
+            updateGradedRemainingCounter();
+            updateRosterGradeDisplay();
+            setStudentBackgroundColors();
+        }
+
         /*
          ONLOAD AREA
          */
         $(document).ready(function () {
 
-            updateGradedCounter();
-            updateRosterGradeDisplay();
-            setStudentBackgroundColors();
+            updateStudentDataArea();
 
             /* initialize Sliders */
-            $("[id^='slider']").slider({
-                value: 0
+            var $sliders = $('input.slider').slider({
+
             });
 
-            // SELECT STUDENT - DO LOTS OF STUFF
+            // A student is selected from the list - DO LOTS OF STUFF
             $("[id^='studentListItem']").click(function () {
 
-                /*
-                 when a student is selected:
-                 -load scores for all sliders
-                 -load text for all comments
-                 -load timers
+                // TODO: save previous student data, including comments, times, and scores
+
+                /* TODO:
+                 -load text for all comments that have custom text
+                 -set grades for questions
+                 -load & set timers
                  */
+
 
                 // set StudentName and StudentId fields
                 var index = $(this).attr("data-index");
                 var aStudent = students[index];
                 setNameAndId(aStudent);
+                activeStudent = index;
+
+                // set slider values (if they exist)
+                $.each( $sliders, function( index, item ) {
+                    // may want some error checking here??
+                    var score = studentScores[activeStudent][index].score;
+                    item.slider( 'setValue', score );
+                });
+
+                // set question scores
+                $("[id^='questionScore']")
+
 
                 // calculate and display graded / remaining
                 // THIS WILL BE MOVED TO THE SLIDER INTERACTION FUNCTION
-                updateGradedCounter();
+                updateGradedRemainingCounter();
                 setRosterBackgroundGraded(this);
 
-                activeStudent = index;
+
             });
 
             /*
              when a slider is moved:
-             - record value / slider position for this element
+             - update element score (send ajax and model)
              - update comment text (if necessary - consider replacing comment with stock if moving to a new region)
+             - update question score (send ajax and model)
              - update total score
-             - check if exam done. if done, call "examDone()"
-             - check if all exams done. if all done, call "examDone()" and show "finish" button
+             - check if exam done.
+             - check if all exams done. if all done, call "examDone()"
              - examDone() - saves scores and comments for the student,
              sets roster background color to green,
              sets rosterScore
