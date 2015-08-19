@@ -16,10 +16,10 @@
 
     .table-fixed tbody td, .table-fixed thead > tr > th {
         float: left;
-        border-bottom-width: 0;
+        cursor: pointer;
     }
 </style>
-<div class="panel panel-default">
+<div class="panel panel-default" id="studentRoster">
     <table class="table table-fixed">
         <thead>
         <tr>
@@ -31,14 +31,13 @@
         <tbody>
         <?php $count = 0; ?>
         @foreach($students as $student)
-            <tr id="studentListItem{{ $student->getId() }}" data-index="<?= $count++; ?>">
-                <td class="col-md-6">{{ $student->getStudentLName() }},
-                    {{ $student->getStudentFName() }} </td>
-                <td class="col-md-4">{{ $student->getStudentId() }}</td>
-                <td class="col-md-2">75</td>
+            <tr id="studentListItem<?= $count; ?>" data-index="<?= $count; ?>">
+                <td class="col-md-6" id="studentName<?= $count; ?>">{{ $student->getStudentLName() }},
+                    {{ $student->getStudentFName() }}</td>
+                <td class="col-md-4" id="studentId<?= $count; ?>">{{ $student->getStudentId() }}</td>
+                <td class="col-md-2" id="examGrade<?= $count++; ?>">--</td>
             </tr>
         @endforeach
-
         </tbody>
     </table>
 </div>

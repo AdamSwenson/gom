@@ -81,7 +81,7 @@ class GradeController extends Controller
             $elementScores = NULL;
             foreach ($allElementAssignments as $eleAssignment) {
                 $elementScores[] = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
-                // LOAD STUDENT-SPECIFIC COMMENTS
+                // Load comments into this or create another array?
             }
             $studentScores[] = $elementScores;
         }
