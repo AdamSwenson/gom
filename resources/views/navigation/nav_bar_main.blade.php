@@ -1,12 +1,4 @@
-<!--
-/**
- * Created by PhpStorm.
- * User: Brian
- * Date: 7/17/2015
- * Time: 5:51 PM
- */
-
- this layout creates the new title and nav bar with basic bootstrap styling -->
+<!-- general nav bar -->
 <div class="navbar navbar-default navbar-static-top">
     <div class="container">
         <div class="navbar-header">
