@@ -35,7 +35,7 @@
                                 <?php if ($qNumber === 1) {
                                     echo "in active";
                                 } ?>">
-                                    <form class="form-horizontal" role="form">
+                                    <div class="form-horizontal" role="form">
                                         <div class="form-group ">
                                             <span class="col-md-9">
                                                 <!-- question Name -->
@@ -46,11 +46,11 @@
                                                 Score:</label>
                                             <!-- question Score -->
                                             <div class="col-md-2">
-                                                <input class="form-control" type="number"
+                                                <input class="form-control questionScore" type="number" data-number="{{ $qNumber }}"
                                                        id="questionScore{{ $qNumber }}"/>
                                             </div>
                                         </div>
-                                    </form>
+                                    </div>
                                     <!-- element area holds all sliders and comments for this question -->
                                     <div class="list-group">
                                         <?php $elements = $allElements[$qNumber - 1];
@@ -121,11 +121,12 @@
     <script type="text/javascript">
 
         var students = <?= json_encode($students) ?>;
-        var studentScores = <?= json_encode($studentScores) ?>;
+        var elementScores = <?= json_encode($studentElementScores) ?>;
+        var questionScores = <?= json_encode($studentQuestionScores) ?>;
         var activeStudent = null;
         var examGrades = [];
-        console.log(students);
-        console.log(studentScores);
+        //console.log(elementScores);
+        //console.log(questionScores);
         updateExamGrades();
 
 
@@ -135,17 +136,17 @@
 
         // examGrades[] keeps a persistent total of the exam score for each student
         function updateExamGrades() {
-            for (var i = 0; i < studentScores.length; i++) {
-                var thisScore = null;
-                studentScores[i].forEach(function (gradeEntry) {
-                    if (gradeEntry.score >= 0) {
-                        if (thisScore === null) {
-                            thisScore = 0;
+            for (var i = 0; i < questionScores.length; i++) {
+                var totalScore = null;
+                questionScores[i].forEach(function (gradeEntry) {
+                    if (gradeEntry !== null && gradeEntry >= 0) {
+                        if (totalScore === null) {
+                            totalScore = 0;
                         }
-                        thisScore += gradeEntry.score;
+                        totalScore += gradeEntry;
                     }
                 });
-                examGrades[i] = thisScore.toPrecision(3);
+                examGrades[i] = totalScore.toPrecision(3);
             }
             ;
         }
@@ -176,7 +177,7 @@
         function examsGraded() {
             var graded = 0;
             for (var i = 0; i < examGrades.length; i++) {
-                if (examGrades[i] >= 0) graded++;
+                if (examGrades[i] !== null) graded++;
             }
             return graded;
         }
@@ -208,9 +209,17 @@
         }
 
         function updateStudentDataArea() {
+            updateExamGrades();
             updateGradedRemainingCounter();
             updateRosterGradeDisplay();
             setStudentBackgroundColors();
+        }
+
+        // TODO: save previous student data, including comments, times, and scores
+        // saves the student's data to local structure and posts to server
+        // student in an int representing the index order of the student
+        function saveStudentData(student) {
+
         }
 
         /*
@@ -222,20 +231,22 @@
 
             /* initialize Sliders */
             var $sliders = $('input.slider').slider({
+            });
 
+            /* handle questionScore inputs */
+            $('.questionScore').change( function() {
+                var qNumber = $(this).attr('data-number');
+                questionScores[activeStudent][qNumber - 1] = parseFloat( $(this).val() );
+                updateStudentDataArea();
+                // TODO: save score to server
             });
 
             // A student is selected from the list - DO LOTS OF STUFF
             $("[id^='studentListItem']").click(function () {
 
-                // TODO: save previous student data, including comments, times, and scores
-
-                /* TODO:
-                 -load text for all comments that have custom text
-                 -set grades for questions
-                 -load & set timers
+                saveStudentData(activeStudent);
+                /* TODO: Load comments for the student, load timers
                  */
-
 
                 // set StudentName and StudentId fields
                 var index = $(this).attr("data-index");
@@ -243,15 +254,19 @@
                 setNameAndId(aStudent);
                 activeStudent = index;
 
-                // set slider values (if they exist)
+                // set slider values
                 $.each( $sliders, function( index, item ) {
-                    // may want some error checking here??
-                    var score = studentScores[activeStudent][index].score;
+                    //  error checking here??
+                    var score = elementScores[activeStudent][index];
                     item.slider( 'setValue', score );
                 });
 
                 // set question scores
-                $("[id^='questionScore']")
+                $("[id^='questionScore']").each( function(index) {
+                    // error checking??
+                    var score = questionScores[activeStudent][index];
+                    $(this).val(score);
+                });
 
 
                 // calculate and display graded / remaining
@@ -276,6 +291,8 @@
              saves all timers,
              updates "graded / remaining" fields.
              */
+
+            return false;
         });
     </script>
 @endsection

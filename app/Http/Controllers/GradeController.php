@@ -14,6 +14,7 @@ use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
 use App\Repositories\Score\IElementScoreRepository;
+use App\Repositories\Score\IQuestionScoreRepository;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
@@ -39,7 +40,8 @@ class GradeController extends Controller
     public function __construct(IExamRepository $IExamRepository, IElementRepository $elementRepository,
                                 IElementAssignmentRepository $elementAssignmentRepository,
                                 IQuestionAssignmentRepository $questionAssignmentRepository,
-                                IElementScoreRepository $elementScoreRepository)
+                                IElementScoreRepository $elementScoreRepository,
+                                IQuestionScoreRepository $questionScoreRepository)
     {
         $this->middleware('auth');
         $this->examDao = $IExamRepository;
@@ -47,6 +49,7 @@ class GradeController extends Controller
         $this->elementDao = $elementRepository;
         $this->elementAssignmentDao = $elementAssignmentRepository;
         $this->elementScoreDao = $elementScoreRepository;
+        $this->questionScoreDao = $questionScoreRepository;
     }
 
     /**
@@ -78,12 +81,31 @@ class GradeController extends Controller
         // load all current student scores
         $allElementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
         foreach ($students as $student) {
+            // load element scores for each student
             $elementScores = NULL;
             foreach ($allElementAssignments as $eleAssignment) {
-                $elementScore = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
-                $elementScores[] = $elementScore;
+                // why does this return an empty object but questionScore returns a null?
+                $aScore = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
+                if ( isset($aScore->score) ) {
+                    $aScore = $aScore->getScore();
+                } else
+                    $aScore = NULL;
+                $elementScores[] = $aScore;
             }
-            $studentScores[] = $elementScores;
+            $studentElementScores[] = $elementScores;
+
+            // load question scores for each student
+            // -- not sure about the order these will be returned -- will they match element assignment orderings ??
+            $questionScores = NULL;
+            foreach ($questionAssignments as $questionAssignment) {
+                $aScore = $this->questionScoreDao->load($questionAssignment->getId(), $student->getId());
+                if ( isset($aScore->score) ) {
+                    $aScore = $aScore->getScore();
+                } else
+                    $aScore = NULL;
+                $questionScores[] = $aScore;
+            }
+            $studentQuestionScores[] = $questionScores;
         }
 
         // load default comments for each element
@@ -103,7 +125,8 @@ class GradeController extends Controller
             'students' => $students,
             'questionAssignments' => $questionAssignments,
             'allElements' => $allElements,
-            'studentScores' => $studentScores,
+            'studentElementScores' => $studentElementScores,
+            'studentQuestionScores' => $studentQuestionScores,
             'stockComments' => $stockComments
         ]);
     }
