@@ -12,57 +12,62 @@
             <!-- Left column holds questions and sliders -->
             <div class="col-md-8">
                 <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
-                     {{ $exam->getTerm() }}, {{ $exam->getYear() }}: "{{ $exam->getName() }}" </h3>
-                <!-- Centered Question Pills -->
-                <ul class="nav nav-pills nav-justified">
-                    @foreach($questionAssignments as $qAssignment)
-                        <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
-                        <li <?php if ($qNumber == 1) {
-                            echo "class='active'";
-                        } ?> role="presentation">
-                            <a href="#panelQuestion{{ $qNumber }}" data-toggle="tab">
-                                Q{{ $qNumber }}</a></li>
-                    @endforeach
-                </ul>
-                <!-- question panel -->
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <div class="tab-content">
-                            <?php $count = 0 ?>
-                            @foreach($questionAssignments as $qAssignment)
-                                <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
-                                <div id="panelQuestion{{ $qNumber }}" data-question-number="{{ $qNumber }}" class="tab-pane fade
-                                                    <?php if ($qNumber === 1) { echo "in active"; } ?>">
-                                    <div class="form-horizontal" role="form">
-                                        <div class="form-group ">
+                    {{ $exam->getTerm() }}, {{ $exam->getYear() }}: "{{ $exam->getName() }}" </h3>
+                <h4 id="selectPrompt">To begin grading, select a student.</h4>
+                <div id="questionArea" style="display: none">
+                    <!-- Centered Question Pills -->
+                    <ul class="nav nav-pills nav-justified">
+                        @foreach($questionAssignments as $qAssignment)
+                            <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
+                            <li <?php if ($qNumber == 1) {
+                                echo "class='active'";
+                            } ?> role="presentation">
+                                <a href="#panelQuestion{{ $qNumber }}" data-toggle="tab">
+                                    Q{{ $qNumber }}</a></li>
+                        @endforeach
+                    </ul>
+                    <!-- question panel -->
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="tab-content">
+                                <?php $count = 0 ?>
+                                @foreach($questionAssignments as $qAssignment)
+                                    <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
+                                    <div id="panelQuestion{{ $qNumber }}" data-question-number="{{ $qNumber }}" class="tab-pane fade
+                                                    <?php if ($qNumber === 1) {
+                                        echo "in active";
+                                    } ?>">
+                                        <div class="form-horizontal" role="form">
+                                            <div class="form-group ">
                                             <span class="col-md-9">
                                                 <!-- question Name -->
                                                 <h4 id="questionName">Question #{{ $qNumber }}:
                                                     "{{ $qAssignment->getQuestionName() }}"</h4>
                                             </span>
-                                            <label class="col-md-1 control-label" for="customScore{{ $qNumber }}">
-                                                Score:</label>
-                                            <!-- question Score -->
-                                            <div class="col-md-2">
-                                                <input class="form-control questionScore" type="number" min="0"
-                                                       data-number="{{ $qNumber }}"
-                                                       id="questionScore{{ $qNumber }}"/>
+                                                <label class="col-md-1 control-label" for="questionScore{{ $qNumber }}">
+                                                    Score:</label>
+                                                <!-- question Score -->
+                                                <div class="col-md-2">
+                                                    <input class="form-control questionScore" type="number" min="0"
+                                                           data-number="{{ $qNumber }}"
+                                                           id="questionScore{{ $qNumber }}"/>
+                                                </div>
                                             </div>
                                         </div>
+                                        <!-- element area holds all sliders and comments for this question -->
+                                        <div class="list-group">
+                                            <?php $elements = $allElements[$qNumber - 1];
+                                            $eNumber = 0;
+                                            while ($eNumber < count($elements) ) { ?>
+                                                    <!-- add element panels -->
+                                            @include('grade.element_panel')
+                                            <?php $count++; $eNumber++; } ?>
+                                        </div>
                                     </div>
-                                    <!-- element area holds all sliders and comments for this question -->
-                                    <div class="list-group">
-                                        <?php $elements = $allElements[$qNumber - 1];
-                                        $eNumber = 0;
-                                        while ($eNumber < count($elements) ) { ?>
-                                                <!-- add element panels -->
-                                        @include('grade.element_panel')
-                                        <?php $count++; $eNumber++; } ?>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
+                                @endforeach
+                            </div>
 
+                        </div>
                     </div>
                 </div>
             </div>
@@ -120,6 +125,7 @@
     <script type="text/javascript">
         // "students" is a set of student objects - decompose?
         var students = <?= json_encode($students) ?>;
+        var elementComments = <?= json_encode($studentElementComments) ?>;
         var elementScores = <?= json_encode($studentElementScores) ?>;
         var questionScores = <?= json_encode($studentQuestionScores) ?>;
         var stockComments = <?= json_encode($stockComments) ?>;
@@ -128,11 +134,13 @@
         var customScoring = true;
         var examGrades = [];
 
+        console.log(elementComments);
         updateExamGrades();
 
-        // Set valences for comments
+        // Set valenceCutoffs for comments. These represent the max value for each valence group.
+        // Magic numbers for now, but these may be a user option later on.
         //var maxSliderValue = $sliders[0].slider('getAttribute', 'max');
-        var scoreCutoffs = [0, 3.25, 6.75, 10];
+        var valenceCutoffs = [0, 3.25, 6.75, 10];
 
         /* initialize Sliders */
         var $sliders = $('input.slider').slider({
@@ -143,12 +151,12 @@
          * GENERAL FUNCTIONS
          */
 
-        // Returns which valence group a given score belongs to
+        // Returns which valence group (int) a given score belongs to by comparing to valenceCutoffs[]
         function getValence(score) {
             var valence = 0;
-            for (var j = scoreCutoffs.length - 2; j >= 0; j--) {
-                if( score > scoreCutoffs[j] ) {
-                    valence = j+1;
+            for (var j = valenceCutoffs.length - 2; j >= 0; j--) {
+                if (score > valenceCutoffs[j]) {
+                    valence = j + 1;
                     break;
                 }
             }
@@ -169,12 +177,12 @@
                 });
                 examGrades[i] = totalScore.toPrecision(3);
             }
-            ;
         }
-        ;
+
 
         // sets the studentName and studentId fields
-        function setNameAndId(student) {
+        function setNameAndId() {
+            var student = students[activeStudent];
             var name = student.last_name + ", " + student.first_name;
             var id = student.student_identifier;
             $("#studentName").text(name);
@@ -241,15 +249,20 @@
 
         }
 
-        // TODO: save previous student data, including comments, times, and scores
-        // saves the student's data to local structure and posts to server
-        // student = index order of the student
-        function saveStudentData(student) {
+        // save timers for the active student and update the displays for avg time, total time, and time remaining
+        function saveTimers() {
+            if (activeStudent === null) return;
+        }
 
+        // loads the timers for the active student. Called when loading a student
+        function loadTimers() {
+            if (activeStudent === null) return;
         }
 
         /*
-         ONLOAD AREA
+         *
+         * ONLOAD AREA
+         *
          */
 
         $(document).ready(function () {
@@ -257,7 +270,7 @@
             updateStudentDataArea();
 
             /* Handle Slider movement */
-            $('input.slider').on('slideStop', function(slideEvt) {
+            $('input.slider').on('slideStop', function (slideEvt) {
 
                 // update element score
                 var elementNumber = $(this).closest('[id^="element"]').attr('data-element-index');
@@ -268,68 +281,77 @@
                 elementScores[activeStudent][elementNumber] = newScore;
 
                 // update and save question scores - if using bell curve scoring
-                if( !customScoring ) {
+                if (!customScoring) {
                     updateQuestionScores();
                 }
 
                 // update comment text -- only change the text if the score has changed valence regions
                 var $parent = $(this).parents('[id^="element"]');
                 var $elementComment = $($parent).find('textArea');
-                if (getValence(newScore) != getValence(oldScore) ) {
-                    var stockResponse = stockComments[elementNumber][ getValence(newScore) ];
+                if (getValence(newScore) != getValence(oldScore)) {
+                    var stockResponse = stockComments[elementNumber][getValence(newScore)];
                     $($elementComment).val(stockResponse);
                     // TODO: save new  comment text to data structure & server
                 }
 
                 // update exam scores and student data area
                 updateStudentDataArea();
+                saveTimers();
             });
 
-            /* Handle question score input */
-            $('.questionScore').change( function() {
+            // Handle question score inputs. When focus is lost, store values, update grades and save timers.
+            $('.questionScore').change(function () {
                 var qNumber = $(this).attr('data-number');
-                questionScores[activeStudent][qNumber - 1] = parseFloat( $(this).val() );
+                questionScores[activeStudent][qNumber - 1] = parseFloat($(this).val());
                 updateStudentDataArea();
                 // TODO: save score to server
+                saveTimers();
             });
 
 
-            // Handle elementComment changes
-            $('[name^="comment"]').focusout( function() {
+            //  Handle changes to the comment TextArea when focus is lost. Saves data and timers.
+            $('[name^="comment"]').focusout(function () {
                 // TODO: when comment textArea loses focus, save to data structure and DB
+                saveTimers();
             });
 
-            // A student is selected from the list - DO LOTS OF STUFF
+            /*
+            * A student is selected from the roster - DO LOTS OF STUFF
+            */
+
             $("[id^='studentListItem']").click(function () {
+                saveTimers();
+                $('#selectPrompt').hide();
+                $('#questionArea').show("fast");
 
-                saveStudentData(activeStudent);
-                /*
-                    TODO: Load custom comments for the student, load timers
-                 */
-
-                // set StudentName and StudentId fields
-                var index = $(this).attr("data-index");
-                var aStudent = students[index];
-                setNameAndId(aStudent);
-                activeStudent = index;
-
-                // set slider values
-                $.each( $sliders, function( index, item ) {
-                    //  error checking here??
-                    var score = elementScores[activeStudent][index];
-                    item.slider( 'setValue', score );
-                });
+                // set the active student
+                activeStudent = $(this).attr("data-index");
+                setNameAndId();
+                loadTimers();
 
                 // set question scores
-                $("[id^='questionScore']").each( function(index) {
-                    // error checking??
+                $("[id^='questionScore']").each(function (index) {
                     var score = questionScores[activeStudent][index];
                     $(this).val(score);
                 });
+
+                // set slider values
+                $.each($sliders, function (index, item) {
+                    var score = elementScores[activeStudent][index];
+                    item.slider('setValue', score);
+                });
+
+                // set comments
+                $('[name^="commentQ"]').each( function(index) {
+                    var thisComment = elementComments[activeStudent][index];
+                    $(this).val(thisComment);
+                });
+
             });
 
-            $('#finishButton').click( function() {
-                saveStudentData(activeStudent);
+            // finish & save button routes to reports
+            $('#finishButton').click(function () {
+
             });
 
             return false;

@@ -85,14 +85,15 @@ class GradeController extends Controller
         }
 
         // load all current student scores
-        /* NOTE :: If I can get allElements[] in the correct order, I can build allElementAssignments in order.
+        /* TODO :: If I can get allElements[] in the correct order, I can build allElementAssignments in order.
          * either load_by_exam or load_element_assignments_by_question_number need to be sorted by element order.
          *
          */
         $allElementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
         foreach ($students as $student) {
-            // load element scores for each student
+            // load element scores & element comments for each student
             $elementScores = NULL;
+            $elementComments = NULL;
             foreach ($allElementAssignments as $eleAssignment) {
                 $aScore = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
                 if ( isset($aScore->score) ) {
@@ -100,8 +101,12 @@ class GradeController extends Controller
                 } else
                     $aScore = NULL;
                 $elementScores[] = $aScore;
+
+                $aComment = "test comment, element assignment #".$eleAssignment->getId();
+                $elementComments[] = $aComment;
             }
             $studentElementScores[] = $elementScores;
+            $studentElementComments[] = $elementComments;
 
             // load question scores for each student
             $questionScores = NULL;
@@ -133,6 +138,7 @@ class GradeController extends Controller
             'questionAssignments' => $questionAssignments,
             'allElements' => $allElements,
             'studentElementScores' => $studentElementScores,
+            'studentElementComments' => $studentElementComments,
             'studentQuestionScores' => $studentQuestionScores,
             'stockComments' => $stockComments
         ]);
