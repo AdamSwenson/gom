@@ -72,6 +72,9 @@ class GradeController extends Controller
         $studentDao = app()->make('App\Repositories\Student\IStudentRepository');
         $students = $studentDao->load_students_by_exam($exam);
 
+
+        if( empty($students) ) return ("No students found for this exam");
+
         // load all question assignments and all elements for those questions
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
         foreach ($questionAssignments as $qAssignment) {
@@ -113,7 +116,7 @@ class GradeController extends Controller
             foreach ($aQuestion as $element) {
                 $defaultComments = NULL;
                 for ($i = 0; $i < count(Comment::$valences); $i++) {
-                    $defaultComments[] = $this->elementDao->loadCommentByElementIdAndValence($element->getId(), $i);
+                    $defaultComments[] = $this->elementDao->loadCommentByElementIdAndValence($element->getId(), $i)->getBody();
                 }
                 $stockComments[] = $defaultComments;
             }

@@ -1,4 +1,4 @@
-<div class="list-group-item" style="background-color: #DDDDDD;" id="element{{ $count }}"
+<div class="list-group-item" style="background-color: #DDDDDD;" id="element{{ $count }}" data-element-index="{{ $count }}"
      data-element-id="{{ $elements[$eNumber]->getId() }}">
     <h5>Element #{{ $eNumber+1 }}: "{{ $elements[$eNumber]->getElementName() }}"</h5>
     <div class="row">

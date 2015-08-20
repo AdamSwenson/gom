@@ -20,7 +20,7 @@
                         <li <?php if ($qNumber == 1) {
                             echo "class='active'";
                         } ?> role="presentation">
-                            <a href="#q{{ $qNumber }}-panel" data-toggle="tab">
+                            <a href="#panelQuestion{{ $qNumber }}" data-toggle="tab">
                                 Q{{ $qNumber }}</a></li>
                     @endforeach
                 </ul>
@@ -31,10 +31,8 @@
                             <?php $count = 0 ?>
                             @foreach($questionAssignments as $qAssignment)
                                 <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
-                                <div id="q<?php echo "$qNumber" ?>-panel" class="tab-pane fade
-                                <?php if ($qNumber === 1) {
-                                    echo "in active";
-                                } ?>">
+                                <div id="panelQuestion{{ $qNumber }}" data-question-number="{{ $qNumber }}" class="tab-pane fade
+                                                    <?php if ($qNumber === 1) { echo "in active"; } ?>">
                                     <div class="form-horizontal" role="form">
                                         <div class="form-group ">
                                             <span class="col-md-9">
@@ -46,7 +44,8 @@
                                                 Score:</label>
                                             <!-- question Score -->
                                             <div class="col-md-2">
-                                                <input class="form-control questionScore" type="number" data-number="{{ $qNumber }}"
+                                                <input class="form-control questionScore" type="number" min="0"
+                                                       data-number="{{ $qNumber }}"
                                                        id="questionScore{{ $qNumber }}"/>
                                             </div>
                                         </div>
@@ -123,16 +122,39 @@
         var students = <?= json_encode($students) ?>;
         var elementScores = <?= json_encode($studentElementScores) ?>;
         var questionScores = <?= json_encode($studentQuestionScores) ?>;
+        var stockComments = <?= json_encode($stockComments) ?>;
+        var studentComments = [];
         var activeStudent = null;
         var examGrades = [];
         //console.log(elementScores);
         //console.log(questionScores);
+        console.log(stockComments);
         updateExamGrades();
 
+        /* initialize Sliders */
+        var $sliders = $('input.slider').slider({
+            tooltip: 'show'
+        });
+
+        // Set valences to 0, 1/3, 2/3 of the max slider value. These could be set by the user in the future
+        var maxSliderValue = $sliders[0].slider('getAttribute', 'max');
+        var scoreCutoffs = [0, maxSliderValue / 3, maxSliderValue * (2/3), maxSliderValue];
 
         /*
          * GENERAL FUNCTIONS
          */
+
+        // Returns which valence group a given score belongs to
+        function getValence(score) {
+            var valence = 0;
+            for (var j = scoreCutoffs.length - 2; j >= 0; j--) {
+                if( score > scoreCutoffs[j] ) {
+                    valence = j+1;
+                    break;
+                }
+            }
+            return valence;
+        }
 
         // examGrades[] keeps a persistent total of the exam score for each student
         function updateExamGrades() {
@@ -215,9 +237,14 @@
             setStudentBackgroundColors();
         }
 
+        // sums elements scores and sets question scores
+        function updateQuestionScores() {
+
+        }
+
         // TODO: save previous student data, including comments, times, and scores
         // saves the student's data to local structure and posts to server
-        // student in an int representing the index order of the student
+        // student = index order of the student
         function saveStudentData(student) {
 
         }
@@ -225,15 +252,40 @@
         /*
          ONLOAD AREA
          */
+
         $(document).ready(function () {
 
             updateStudentDataArea();
 
-            /* initialize Sliders */
-            var $sliders = $('input.slider').slider({
+            /* Handle Slider movement */
+            $('input.slider').on('slideStop', function(slideEvt) {
+
+                // update element score
+                var elementNumber = $(this).closest('[id^="element"]').attr('data-element-index');
+                var oldScore = elementScores[activeStudent][elementNumber];
+                var newScore = slideEvt.value;
+
+                // TODO: save element score to server - return on failure
+                elementScores[activeStudent][elementNumber] = newScore;
+
+                // update and save question scores - if using bell curve scoring
+                // TODO: only score if we're using SD (bell curve) scoring
+                updateQuestionScores();
+
+                // update comment text -- only change the text if the score has changed valence regions
+                var $parent = $(this).parents('[id^="element"]');
+                var $elementComment = $($parent).find('textArea');
+                if (getValence(newScore) != getValence(oldScore) ) {
+                    var stockResponse = stockComments[elementNumber][ getValence(newScore) ];
+                    $($elementComment).val(stockResponse);
+                    // TODO: if comment text has changed, save comment text to data structure & server
+                }
+
+                // update exam scores and student data area
+                updateStudentDataArea();
             });
 
-            /* handle questionScore inputs */
+            /* Handle question score input */
             $('.questionScore').change( function() {
                 var qNumber = $(this).attr('data-number');
                 questionScores[activeStudent][qNumber - 1] = parseFloat( $(this).val() );
@@ -241,11 +293,14 @@
                 // TODO: save score to server
             });
 
+            // TODO: when comment textArea loses focus, save to data structure and DB
+
             // A student is selected from the list - DO LOTS OF STUFF
             $("[id^='studentListItem']").click(function () {
 
                 saveStudentData(activeStudent);
-                /* TODO: Load comments for the student, load timers
+                /*
+                    TODO: Load custom comments for the student, load timers
                  */
 
                 // set StudentName and StudentId fields
@@ -267,30 +322,7 @@
                     var score = questionScores[activeStudent][index];
                     $(this).val(score);
                 });
-
-
-                // calculate and display graded / remaining
-                // THIS WILL BE MOVED TO THE SLIDER INTERACTION FUNCTION
-                updateGradedRemainingCounter();
-                setRosterBackgroundGraded(this);
-
-
             });
-
-            /*
-             when a slider is moved:
-             - update element score (send ajax and model)
-             - update comment text (if necessary - consider replacing comment with stock if moving to a new region)
-             - update question score (send ajax and model)
-             - update total score
-             - check if exam done.
-             - check if all exams done. if all done, call "examDone()"
-             - examDone() - saves scores and comments for the student,
-             sets roster background color to green,
-             sets rosterScore
-             saves all timers,
-             updates "graded / remaining" fields.
-             */
 
             return false;
         });
