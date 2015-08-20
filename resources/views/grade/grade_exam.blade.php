@@ -118,7 +118,7 @@
 @section('jsArea')
     <script type='text/javascript' src="{{ asset('inc/js/bootstrap-slider.js') }}"></script>
     <script type="text/javascript">
-
+        // "students" is a set of student objects - decompose?
         var students = <?= json_encode($students) ?>;
         var elementScores = <?= json_encode($studentElementScores) ?>;
         var questionScores = <?= json_encode($studentQuestionScores) ?>;

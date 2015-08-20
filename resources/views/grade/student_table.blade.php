@@ -16,10 +16,10 @@
 
     .table-fixed tbody td, .table-fixed thead > tr > th {
         float: left;
-        border-bottom-width: 0;
+        cursor: pointer;
     }
 </style>
-<div class="panel panel-default">
+<div class="panel panel-default" id="studentRoster">
     <table class="table table-fixed">
         <thead>
         <tr>
@@ -29,24 +29,15 @@
         </tr>
         </thead>
         <tbody>
-        @if(! isset($students))
-            <?php for($counter = 0; $counter < 20; $counter++)
-            { $val = 1000000 + $counter; ?>
-            <tr>
-                <td class="col-md-6"><span class="glyphicon glyphicon-ok"></span> Adams, Adam</td>
-                <td class="col-md-4"><?php echo "$val"; ?></td>
-                <td class="col-md-2">75</td>
+        <?php $count = 0; ?>
+        @foreach($students as $student)
+            <tr id="studentListItem{{ $count }}" data-index="{{ $count }}">
+                <td class="col-md-6" id="studentName{{ $count }}">{{ $student->getStudentLName() }},
+                    {{ $student->getStudentFName() }}</td>
+                <td class="col-md-4" id="studentId{{ $count }}">{{ $student->getStudentId() }}</td>
+                <td class="col-md-2" id="examGrade<?= $count++; ?>">--</td>
             </tr>
-            <?php } ?>
-        @else
-            @foreach($students as $s)
-            <tr data-student-id="{{ $s->id }}" v-on="click: selectStudentToGrade({{$s->id}})">
-                <td class="col-md-6"><span class="glyphicon glyphicon-ok"></span>{{ $s->last_name }}, {{ $s->first_name }}</td>
-                <td class="col-md-4">{{ $s->student_identifier }}</td>
-                <td class="col-md-2">75</td>
-            </tr>
-            @endforeach
-        @endif
+        @endforeach
         </tbody>
     </table>
 </div>
