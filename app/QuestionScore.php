@@ -99,6 +99,31 @@ class QuestionScore extends BaseModel
 
 
     #--------------------------------- getters and setters
+
+    /**
+     * If the score for the question has been set directly by the user (as opposed to calculating it
+     * from element scores), the is_custom field needs to be set to true. This method does that.
+     */
+    public function setAsCustom()
+    {
+        $this->attributes['is_custom'] = true;
+    }
+
+    /**
+     * If the score for the question has been set directly by the user (as opposed to calculating it
+     * from element scores), this will return true. If it is instead calculated from the constituent element scores,
+     * it will return false.
+     */
+    public function isScoreCustom()
+    {
+        if($this->attributes['is_custom'] === 1 || $this->attributes['is_custom'] === true)
+        {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     /**
      * Get the score
      * @return float

@@ -97,4 +97,35 @@ class QuestionScoreTest extends \TestCase
             $this->assertInstanceOf('App\Student', $r);
         }
     }
+
+
+    public function testSetAsCustom()
+    {
+        //prep
+        $this->assertTrue($this->object->is_custom != true);
+
+        //call
+        $this->object->setAsCustom();
+
+        //check
+        $this->assertEquals(true, $this->object->is_custom);
+    }
+
+    public function testIsScoreCustom()
+    {
+        $this->object->is_custom = 1;
+        $this->assertEquals(true, $this->object->isScoreCustom());
+    }
+
+    public function testIsScoreCustomWithBoolean()
+    {
+        $this->object->is_custom = true;
+        $this->assertEquals(true, $this->object->isScoreCustom());
+    }
+
+    public function testIsScoreCustomWhereFalse()
+    {
+        $this->object->is_custom = false;
+        $this->assertEquals(false, $this->object->isScoreCustom());
+    }
 }
