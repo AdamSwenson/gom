@@ -15,6 +15,7 @@ use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
 use App\Repositories\Score\IElementScoreRepository;
 use App\Repositories\Score\IQuestionScoreRepository;
+use App\Student;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
@@ -72,67 +73,41 @@ class GradeController extends Controller
         $studentDao = app()->make('App\Repositories\Student\IStudentRepository');
         $students = $studentDao->load_students_by_exam($exam);
 
-        if( empty($students) ) return ("No students found for this exam");
-
         // load all question assignments and all elements for those questions
-        // TODO: questionAssignments, elements and elementAssignments sorted by number. Also, question can get its order,
-        // but neither element nor elementAssignment has a getOrder() function.
-
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
         foreach ($questionAssignments as $qAssignment) {
             $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qAssignment->getQuestionNumber());
         }
 
         // load all current student scores
-        /* NOTE :: If I can get allElements[] in the correct order, I can build allElementAssignments in order.
-         * either load_by_exam or load_element_assignments_by_question_number need to be sorted by element order.
-         *
-         */
         $allElementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
         foreach ($students as $student) {
-            // load element scores for each student
             $elementScores = NULL;
             foreach ($allElementAssignments as $eleAssignment) {
-                $aScore = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
-                if ( isset($aScore->score) ) {
-                    $aScore = $aScore->getScore();
-                } else
-                    $aScore = NULL;
-                $elementScores[] = $aScore;
+                $elementScore = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
+                $elementScores[] = $elementScore;
             }
-            $studentElementScores[] = $elementScores;
-
-            // load question scores for each student
-            $questionScores = NULL;
-            foreach ($questionAssignments as $questionAssignment) {
-                $aScore = $this->questionScoreDao->load($questionAssignment->getId(), $student->getId());
-                if ( isset($aScore->score) ) {
-                    $aScore = $aScore->getScore();
-                } else
-                    $aScore = NULL;
-                $questionScores[] = $aScore;
-            }
-            $studentQuestionScores[] = $questionScores;
+            $studentScores[] = $elementScores;
         }
 
-        // load stock comments for each element
+        // load default comments for each element
         foreach ($allElements as $aQuestion) {
             foreach ($aQuestion as $element) {
                 $defaultComments = NULL;
                 for ($i = 0; $i < count(Comment::$valences); $i++) {
-                    $defaultComments[] = $this->elementDao->loadCommentByElementIdAndValence($element->getId(), $i)->getBody();
+                    $defaultComments[] = $this->elementDao->loadCommentByElementIdAndValence($element->getId(), $i);
                 }
                 $stockComments[] = $defaultComments;
             }
         }
 
         // I  need a way to get elementAssignmentId from elementId (or element)
+
         return View::make('grade.grade_exam')->with(['exam' => $exam,
             'students' => $students,
             'questionAssignments' => $questionAssignments,
             'allElements' => $allElements,
-            'studentElementScores' => $studentElementScores,
-            'studentQuestionScores' => $studentQuestionScores,
+            'studentScores' => $studentScores,
             'stockComments' => $stockComments
         ]);
     }
@@ -145,23 +120,28 @@ class GradeController extends Controller
     public function recordScore(Exam $exam, GradingRequest $request)
     {
         //Don't even get started if there's no student id and score
-        if ($request->has('student_id') && $request->has('score')) {
+        if ($request->has('student_id') && $request->has('score'))
+        {
             $studentId = $request->input('student_id');
             $score = $request->input('score');
 
             //If the request is to record a question score, it follows this path
-            if ($request->has('question_assignment_id')) {
+            if ($request->has('question_assignment_id'))
+            {
                 $this->dao = app()->make('App\Repositories\Score\IQuestionScoreRepository');
                 $itemId = $request->input('question_assignment_id');
             } //If it is to record an element score, it follows this path
-            elseif ($request->has('element_assignment_id')) {
+            elseif ($request->has('element_assignment_id'))
+            {
                 $this->dao = app()->make('App\Repositories\Score\IElementScoreRepository');
                 $itemId = $request->input('element_assignment_id');
             }
             $this->dao->record($itemId, $studentId, $score);
-        } else {
+        } else
+        {
             //TODO Error handling
         }
+
     }
 
     /**
@@ -172,11 +152,13 @@ class GradeController extends Controller
      */
     public function recordTime(Exam $exam, GradingRequest $request)
     {
-        if ($request->has('student_id') && $request->has('time')) {
+        if ($request->has('student_id') && $request->has('time'))
+        {
             $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
             $time = $dao->record($exam->id, $request->input('student_id'), $request->input('time'));
             return $time;
-        } else {
+        }
+        else{
             //TODO Error handling
         }
     }
@@ -190,10 +172,11 @@ class GradeController extends Controller
      */
     public function loadTime(Exam $exam, GradingRequest $request)
     {
-        if ($request->has('student_id')) {
+        if ($request->has('student_id'))
+        {
             $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
             $time = $dao->load($exam->id, $request->input('student_id'));
-            return $time;
+        return $time;
         }
 
     }

@@ -12,8 +12,8 @@ var elixir = require('laravel-elixir');
  */
 
 elixir(function(mix) {
-
-  mix.browserify('app.js');
+  mix.browserify('app.js')
+  .browserify('grade.js', 'public/js/grade-package.js');
 
     mix.sass('app.scss');
 });

@@ -1,0 +1,11 @@
+<span class="col-md-6">Time This Exam</span>
+<span class="col-md-6">{{ currentExam | convertTime }}</span>
+
+<span class="col-md-6">Average Time</span>
+<span class="col-md-6">{{ averageExam | convertTime }}</span>
+
+<span class="col-md-6">Total Time</span>
+<span class="col-md-6">{{ totalElapsed | convertTime }}</span>
+
+<span class="col-md-6">Time Remaining</span>
+<span class="col-md-6">{{ totalRemaining | convertTime }}</span>
