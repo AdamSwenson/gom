@@ -14,6 +14,8 @@ use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
 use App\Repositories\Score\IElementScoreRepository;
+use App\Repositories\Score\IQuestionScoreRepository;
+use App\Student;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
@@ -39,7 +41,8 @@ class GradeController extends Controller
     public function __construct(IExamRepository $IExamRepository, IElementRepository $elementRepository,
                                 IElementAssignmentRepository $elementAssignmentRepository,
                                 IQuestionAssignmentRepository $questionAssignmentRepository,
-                                IElementScoreRepository $elementScoreRepository)
+                                IElementScoreRepository $elementScoreRepository,
+                                IQuestionScoreRepository $questionScoreRepository)
     {
         $this->middleware('auth');
         $this->examDao = $IExamRepository;
@@ -47,6 +50,7 @@ class GradeController extends Controller
         $this->elementDao = $elementRepository;
         $this->elementAssignmentDao = $elementAssignmentRepository;
         $this->elementScoreDao = $elementScoreRepository;
+        $this->questionScoreDao = $questionScoreRepository;
     }
 
     /**
@@ -69,41 +73,67 @@ class GradeController extends Controller
         $studentDao = app()->make('App\Repositories\Student\IStudentRepository');
         $students = $studentDao->load_students_by_exam($exam);
 
+        if( empty($students) ) return ("No students found for this exam");
+
         // load all question assignments and all elements for those questions
+        // TODO: questionAssignments, elements and elementAssignments sorted by number. Also, question can get its order,
+        // but neither element nor elementAssignment has a getOrder() function.
+
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
         foreach ($questionAssignments as $qAssignment) {
             $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qAssignment->getQuestionNumber());
         }
 
         // load all current student scores
+        /* NOTE :: If I can get allElements[] in the correct order, I can build allElementAssignments in order.
+         * either load_by_exam or load_element_assignments_by_question_number need to be sorted by element order.
+         *
+         */
         $allElementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
         foreach ($students as $student) {
+            // load element scores for each student
             $elementScores = NULL;
             foreach ($allElementAssignments as $eleAssignment) {
-                $elementScore = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
-                $elementScores[] = $elementScore;
+                $aScore = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
+                if ( isset($aScore->score) ) {
+                    $aScore = $aScore->getScore();
+                } else
+                    $aScore = NULL;
+                $elementScores[] = $aScore;
             }
-            $studentScores[] = $elementScores;
+            $studentElementScores[] = $elementScores;
+
+            // load question scores for each student
+            $questionScores = NULL;
+            foreach ($questionAssignments as $questionAssignment) {
+                $aScore = $this->questionScoreDao->load($questionAssignment->getId(), $student->getId());
+                if ( isset($aScore->score) ) {
+                    $aScore = $aScore->getScore();
+                } else
+                    $aScore = NULL;
+                $questionScores[] = $aScore;
+            }
+            $studentQuestionScores[] = $questionScores;
         }
 
-        // load default comments for each element
+        // load stock comments for each element
         foreach ($allElements as $aQuestion) {
             foreach ($aQuestion as $element) {
                 $defaultComments = NULL;
                 for ($i = 0; $i < count(Comment::$valences); $i++) {
-                    $defaultComments[] = $this->elementDao->loadCommentByElementIdAndValence($element->getId(), $i);
+                    $defaultComments[] = $this->elementDao->loadCommentByElementIdAndValence($element->getId(), $i)->getBody();
                 }
                 $stockComments[] = $defaultComments;
             }
         }
 
         // I  need a way to get elementAssignmentId from elementId (or element)
-
         return View::make('grade.grade_exam')->with(['exam' => $exam,
             'students' => $students,
             'questionAssignments' => $questionAssignments,
             'allElements' => $allElements,
-            'studentScores' => $studentScores,
+            'studentElementScores' => $studentElementScores,
+            'studentQuestionScores' => $studentQuestionScores,
             'stockComments' => $stockComments
         ]);
     }

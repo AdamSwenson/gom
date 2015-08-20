@@ -5,7 +5,7 @@
     }
 
     .table-fixed tbody {
-        height: 270px;
+        height: 230px;
         overflow-y: auto;
         width: 100%;
     }
@@ -31,10 +31,10 @@
         <tbody>
         <?php $count = 0; ?>
         @foreach($students as $student)
-            <tr id="studentListItem<?= $count; ?>" data-index="<?= $count; ?>">
-                <td class="col-md-6" id="studentName<?= $count; ?>">{{ $student->getStudentLName() }},
+            <tr id="studentListItem{{ $count }}" data-index="{{ $count }}">
+                <td class="col-md-6" id="studentName{{ $count }}">{{ $student->getStudentLName() }},
                     {{ $student->getStudentFName() }}</td>
-                <td class="col-md-4" id="studentId<?= $count; ?>">{{ $student->getStudentId() }}</td>
+                <td class="col-md-4" id="studentId{{ $count }}">{{ $student->getStudentId() }}</td>
                 <td class="col-md-2" id="examGrade<?= $count++; ?>">--</td>
             </tr>
         @endforeach
