@@ -23,12 +23,7 @@ class CreateQuestionScoresTable extends Migration
                 $table->boolean('is_custom')->default(false);
                 $table->timestamps();
 
-//                $table->unique(['owner_id', 'question_assignment_id', 'student_id'], 'qassign_unique');
                 $table->unique(['question_assignment_id', 'student_id']);
-//                $table->foreign('owner_id')
-//                    ->references('id')
-//                    ->on('users')
-//                    ->onDelete('cascade');
 
                 $table->foreign('question_assignment_id')
                     ->references('id')

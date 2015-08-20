@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class ElementScore extends BaseModel
 {
-    protected $fillable = ['score'];
+    protected $fillable = ['score', 'commentText'];
 
     public function __construct()
     {
@@ -16,10 +16,11 @@ class ElementScore extends BaseModel
 
 
     /**
-     * Records or updates the score for a student on a particular question
+     * Records or updates the score for a student on a particular question.
+     * Returns itself to allow for easy chaining with recordCommentText
      *
      * @param float $score
-     * @return boolean
+     * @return ElementScore
      */
     public function recordScore($score)
     {
@@ -41,8 +42,40 @@ class ElementScore extends BaseModel
             {
                 $this->attributes['id'] = $result->id;
                 $this->attributes['score'] = $result->score;
+                $this->attributes['comment_text'] = $result->comment_text;
             }
         }
+        return $this;
+    }
+
+    /**
+     * Adds or updates the comment text that the student will be given
+     * for the element.
+     *
+     * @param string $text
+     * @return ElementScore
+     */
+    public function recordCommentText($text)
+    {
+        $query = "CALL record_element_comment_text(:elementAssignmentId, :studentId, :commentText)";
+        $values = [
+            'elementAssignmentId' => $this->attributes['element_assignment_id'],
+            'studentId' => $this->attributes['student_id'],
+            'commentText' => $text
+        ];
+        if(DB::statement($query, $values))
+        {
+            $result = ElementScore::where('element_assignment_id', $this->attributes['element_assignment_id'])
+                ->where('student_id', $this->attributes['student_id'])
+                ->firstOrFail();
+            if($result)
+            {
+                $this->attributes['id'] = $result->id;
+                $this->attributes['score'] = $result->score;
+                $this->attributes['comment_text'] = $result->comment_text;
+            }
+        }
+        return $this;
     }
 
     /**
