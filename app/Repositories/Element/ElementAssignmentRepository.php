@@ -59,6 +59,16 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
         return $this->assignments;
     }
 
+    /**
+     * Loads the element assignment object for an element on an exam
+     * @param $examId
+     * @param $elementId
+     */
+    public function load_element_assignment_by_element($examId, $elementId)
+    {
+        return ElementAssignment::where('exam_id', $examId)->where('element_id', $elementId)->first();
+    }
+
     public function load_by_exam($examId)
     {
         return ElementAssignment::where('exam_id', $examId)->get();

@@ -38,6 +38,13 @@ interface IElementAssignmentRepository
     public function load_by_exam($examId);
 
     /**
+     * Loads the element assignment object for an element on an exam
+     * @param integer $examId
+     * @param integer $elementId
+     */
+    public function load_element_assignment_by_element($examId, $elementId);
+
+    /**
      * Records new element assignment to question
      * @param $examId
      * @param $questionId
