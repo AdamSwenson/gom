@@ -125,20 +125,19 @@
         var stockComments = <?= json_encode($stockComments) ?>;
         var studentComments = [];
         var activeStudent = null;
+        var customScoring = true;
         var examGrades = [];
-        //console.log(elementScores);
-        //console.log(questionScores);
-        console.log(stockComments);
+
         updateExamGrades();
+
+        // Set valences for comments
+        //var maxSliderValue = $sliders[0].slider('getAttribute', 'max');
+        var scoreCutoffs = [0, 3.25, 6.75, 10];
 
         /* initialize Sliders */
         var $sliders = $('input.slider').slider({
             tooltip: 'show'
         });
-
-        // Set valences to 0, 1/3, 2/3 of the max slider value. These could be set by the user in the future
-        var maxSliderValue = $sliders[0].slider('getAttribute', 'max');
-        var scoreCutoffs = [0, maxSliderValue / 3, maxSliderValue * (2/3), maxSliderValue];
 
         /*
          * GENERAL FUNCTIONS
@@ -269,8 +268,9 @@
                 elementScores[activeStudent][elementNumber] = newScore;
 
                 // update and save question scores - if using bell curve scoring
-                // TODO: only score if we're using SD (bell curve) scoring
-                updateQuestionScores();
+                if( !customScoring ) {
+                    updateQuestionScores();
+                }
 
                 // update comment text -- only change the text if the score has changed valence regions
                 var $parent = $(this).parents('[id^="element"]');
@@ -278,7 +278,7 @@
                 if (getValence(newScore) != getValence(oldScore) ) {
                     var stockResponse = stockComments[elementNumber][ getValence(newScore) ];
                     $($elementComment).val(stockResponse);
-                    // TODO: if comment text has changed, save comment text to data structure & server
+                    // TODO: save new  comment text to data structure & server
                 }
 
                 // update exam scores and student data area
@@ -293,7 +293,11 @@
                 // TODO: save score to server
             });
 
-            // TODO: when comment textArea loses focus, save to data structure and DB
+
+            // Handle elementComment changes
+            $('[name^="comment"]').focusout( function() {
+                // TODO: when comment textArea loses focus, save to data structure and DB
+            });
 
             // A student is selected from the list - DO LOTS OF STUFF
             $("[id^='studentListItem']").click(function () {
@@ -322,6 +326,10 @@
                     var score = questionScores[activeStudent][index];
                     $(this).val(score);
                 });
+            });
+
+            $('#finishButton').click( function() {
+                saveStudentData(activeStudent);
             });
 
             return false;

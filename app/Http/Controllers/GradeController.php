@@ -72,22 +72,27 @@ class GradeController extends Controller
         $studentDao = app()->make('App\Repositories\Student\IStudentRepository');
         $students = $studentDao->load_students_by_exam($exam);
 
-
         if( empty($students) ) return ("No students found for this exam");
 
         // load all question assignments and all elements for those questions
+        // TODO: questionAssignments, elements and elementAssignments sorted by number. Also, question can get its order,
+        // but neither element nor elementAssignment has a getOrder() function.
+
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
         foreach ($questionAssignments as $qAssignment) {
             $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qAssignment->getQuestionNumber());
         }
 
         // load all current student scores
+        /* NOTE :: If I can get allElements[] in the correct order, I can build allElementAssignments in order.
+         * either load_by_exam or load_element_assignments_by_question_number need to be sorted by element order.
+         *
+         */
         $allElementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
         foreach ($students as $student) {
             // load element scores for each student
             $elementScores = NULL;
             foreach ($allElementAssignments as $eleAssignment) {
-                // why does this return an empty object but questionScore returns a null?
                 $aScore = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
                 if ( isset($aScore->score) ) {
                     $aScore = $aScore->getScore();
@@ -98,7 +103,6 @@ class GradeController extends Controller
             $studentElementScores[] = $elementScores;
 
             // load question scores for each student
-            // -- not sure about the order these will be returned -- will they match element assignment orderings ??
             $questionScores = NULL;
             foreach ($questionAssignments as $questionAssignment) {
                 $aScore = $this->questionScoreDao->load($questionAssignment->getId(), $student->getId());
@@ -111,7 +115,7 @@ class GradeController extends Controller
             $studentQuestionScores[] = $questionScores;
         }
 
-        // load default comments for each element
+        // load stock comments for each element
         foreach ($allElements as $aQuestion) {
             foreach ($aQuestion as $element) {
                 $defaultComments = NULL;
@@ -123,7 +127,6 @@ class GradeController extends Controller
         }
 
         // I  need a way to get elementAssignmentId from elementId (or element)
-
         return View::make('grade.grade_exam')->with(['exam' => $exam,
             'students' => $students,
             'questionAssignments' => $questionAssignments,

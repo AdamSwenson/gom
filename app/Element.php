@@ -249,7 +249,7 @@ class Element extends BaseModel
 //            case 'getDisplaytext':
 //                $this->getDisplayText();
 //                break;
-//            case 'getElementname':
+//            case 'eetElementname':
 //                $this->getElementName();
 //                break;
 //            case 'getCommenttext':
