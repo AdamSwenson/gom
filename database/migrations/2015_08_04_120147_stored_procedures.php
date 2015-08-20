@@ -61,8 +61,21 @@ CREATE PROCEDURE `record_element_score`(IN elementAssignmentId INT, IN studentId
     ON DUPLICATE KEY UPDATE score = score;
   END;
 MYSQL;
-
         DB::unprepared($record_element_score);
+
+
+        $record_element_comment_text = <<<MYSQL
+DROP PROCEDURE IF EXISTS record_element_comment_text;
+CREATE PROCEDURE `record_element_comment_text`(IN elementAssignmentId INT, IN studentId INT, IN commentText TEXT)
+  BEGIN
+    INSERT INTO element_scores (element_assignment_id, student_id, comment_text)
+    VALUES (elementAssignmentId, studentId, commentText)
+    ON DUPLICATE KEY UPDATE comment_text = commentText;
+  END;
+MYSQL;
+        DB::unprepared($record_element_comment_text);
+
+
 
 
         $question_averages = <<<MYSQL

@@ -17,10 +17,10 @@ class CreateElementScoresTable extends Migration
             Schema::create('element_scores', function (Blueprint $table)
             {
                 $table->increments('id');
-//                $table->integer('owner_id')->unsigned();
                 $table->integer('element_assignment_id')->unsigned();
                 $table->integer('student_id')->unsigned();
                 $table->float('score')->nullable();
+                $table->text('comment_text')->nullable();
                 $table->timestamps();
 
                 $table->unique(['element_assignment_id', 'student_id'], 'elassign_unique');

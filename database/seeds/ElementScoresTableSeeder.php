@@ -33,6 +33,7 @@ class ElementScoresTableSeeder extends Seeder
                     $e->element_assignment_id = $qa->id;
                     $e->student_id = $sid;
                     $e->score = $score;
+                    $e->comment_text = $faker->text();
                     $e->save();
                 }catch(\Exception $e)
                 {

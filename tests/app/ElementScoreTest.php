@@ -16,12 +16,16 @@ class ElementScoreTest extends \TestCase
 {
 
     protected $object;
+    protected $elementAssignment;
+    protected $student;
 
     public function setUp()
     {
         parent::setUp();
         $this->object = new ElementScore;
         $this->score = ElementScore::all()->random(1);
+        $this->elementAssignment = ElementAssignment::all()->random();
+        $this->student = Student::all()->random();
     }
 
     public function testScopeOnStudent()
@@ -48,6 +52,75 @@ class ElementScoreTest extends \TestCase
     }
 
 #------------------------------------- getters and setters
+    public function testRecordScore()
+    {
+        //prep
+        $score = $this->faker->randomNumber(4);
+        $this->object->element_assignment_id = $this->elementAssignment->id;
+        $this->object->student_id = $this->student->id;
+        //call
+        $result = $this->object->recordScore($score);
+        //check
+        $this->assertInstanceOf('App\ElementScore', $result, "returns instance of element score");
+        $this->seeInDatabase('element_scores', [
+            'element_assignment_id' => $this->elementAssignment->id,
+            'student_id' => $this->student->id,
+            'score' => $score
+        ]);
+    }
+
+    public function testRecordScorePreexistingValue()
+    {
+        //prep
+        $score = $this->faker->randomNumber(4);
+        $es = ElementScore::all()->random();
+         //call
+        $result = $es->recordScore($score);
+        //check
+        $this->assertInstanceOf('App\ElementScore', $result, "returns instance of element score");
+        $this->seeInDatabase('element_scores', [
+            'id' => $es->id,
+            'element_assignment_id' => $es->element_assignment_id,
+            'student_id' => $es->student_id,
+            'score' => $score
+        ]);
+    }
+
+    public function testRecordCommentText()
+    {
+        //prep
+        $text = $this->faker->text();
+        $this->object->element_assignment_id = $this->elementAssignment->id;
+        $this->object->student_id = $this->student->id;
+        $this->object->score = 4.45;
+        //call
+        $result = $this->object->recordCommentText($text);
+        //check
+        $this->assertInstanceOf('App\ElementScore', $result, "returns instance of element score");
+        $this->seeInDatabase('element_scores', [
+            'element_assignment_id' => $this->elementAssignment->id,
+            'student_id' => $this->student->id,
+            'comment_text' => $text
+        ]);
+    }
+
+    public function testRecordCommentTextPreexistingValue()
+    {
+        //prep
+        $text = $this->faker->text();
+        $es = ElementScore::all()->random();
+        //call
+        $result = $es->recordCommentText($text);
+        //check
+        $this->assertInstanceOf('App\ElementScore', $result, "returns instance of element score");
+        $this->seeInDatabase('element_scores', [
+            'id' => $es->id,
+            'element_assignment_id' => $es->element_assignment_id,
+            'student_id' => $es->student_id,
+            'comment_text' => $text
+        ]);
+    }
+
     public function testGetScore()
     {
         $expect = $this->score->score;
@@ -91,7 +164,7 @@ class ElementScoreTest extends \TestCase
 
     public function testStudent()
     {
-        foreach($this->score->students as $s)
+        foreach ($this->score->students as $s)
         {
             $this->assertInstanceOf('App\Student', $s);
         }
