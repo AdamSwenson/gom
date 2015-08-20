@@ -104,7 +104,7 @@ MYSQL;
         $result = \DB::select($query, $values);
 
         return $result;
-        
+
 //        return ElementAssignment::where('exam_id', $examId)->get();
 //        $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($examId);
 //
