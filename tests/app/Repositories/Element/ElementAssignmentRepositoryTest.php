@@ -27,16 +27,6 @@ class ElementAssignmentRepositoryTest extends \TestCase
 
     public function setUp()
     {
-//        parent::setUp();
-//        $this->object = new ElementAssignmentRepository;
-//        $this->exam = Exam::all()->random();
-//        $this->question = Question::all()->random();
-//        $this->element = Element::all()->random();
-//        $this->questionAssignment = QuestionAssignment::all()->random();
-//        $this->assignment = ElementAssignment::all()->random();
-//    }
-//
-
         parent::setUp();
         $this->object = new ElementAssignmentRepository();
         $this->exam = Exam::all()->random();
@@ -99,12 +89,32 @@ class ElementAssignmentRepositoryTest extends \TestCase
 
         $result = $this->object->load_by_exam($eid);
 
+        $this->assertInstanceOf('Illuminate\Support\Collection', $result, "should return a laravel collection ");
+        foreach ($result as $r)
+        {
+            $this->assertInstanceOf('\App\ElementAssignment', $r);
+        }
+    }
+
+    /**
+     * TODO: Add check to make sure ordered by question_number, subtask
+     */
+    public function testLoad_by_examReturnArray()
+    {
+        $elAssign = ElementAssignment::all()->random(1);
+        $eid = $elAssign->exam_id;
+
+        $result = $this->object->load_by_exam($eid, true);
+
+        $this->assertTrue(is_array($result), "should receive an array");
+
         foreach ($result as $r)
         {
             $this->assertInstanceOf('stdClass', $r);
-//            $this->assertInstanceOf('\App\ElementAssignment', $r);
         }
     }
+
+
 
     public function testLoad_element_assignment_by_element()
     {

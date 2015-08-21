@@ -27,15 +27,32 @@ interface IElementAssignmentRepository
      */
     public function load_element_assignments_by_question_number($examId, $questionNumber);
 
+
     /**
-     * Load all element assignments for the exam.
+     * Loads all elements on an exam. By default, will return a laravel collection of ElementAssignment objects
      *
-     * TODO Set up eager loading of elements
+     * If $returnArray is set to true, these will be returned in an array of StdClass objects. Each object will have the properties:
+     *      element_assignmentId,
+     *      question_id,
+     *      element_id,
+     *      subtask
      *
-     * @param $examId
-     * @return mixed
+     * The objects will be in ascending order by question number and subtask
+     * For example: [
+     *      question 1 subtask 1,
+     *      question 1 subtask 2,
+     *      ....
+     *      question 2 subtask 1,
+     *      ....
+     *      question 3 subtask 1
+     *      ....
+     *      ]
+     *
+     * @param integer $examId
+     * @param bool $returnArray
+     * @return array|Collection
      */
-    public function load_by_exam($examId);
+    public function load_by_exam($examId, $returnArray=false);
 
     /**
      * Loads the element assignment object for an element on an exam
