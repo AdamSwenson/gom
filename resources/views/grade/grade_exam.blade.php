@@ -115,24 +115,33 @@
         var questionScores = <?= json_encode($studentQuestionScores) ?>;
         var stockComments = <?= json_encode($stockComments) ?>;
         var examGradingTimes = <?= json_encode($examGradingTimes) ?>;
+        var examGrades = [];
         var studentComments = [];
         var activeStudent = null;
-        var customScoring = true;
+        var standardScoring = true;
         var sortAsc = true;
-        var examGrades = [];
-
-        console.log(examGradingTimes);
+        var timer;
+        var activeStudentTime;
 
         updateExamGrades();
 
-        // Set valenceCutoffs for comments. These represent the max value for each valence group.
-        // Magic numbers for now, but these may be set or passed in later on.
+        /* Set valenceCutoffs for comments. These represent the maximum value for each valence group.
+         * Magic numbers for now, but will accept data from the server if valenceCutoffs and valenceLabels are modified
+        */
         //var maxSliderValue = $sliders[0].slider('getAttribute', 'max');
         var valenceCutoffs = [0, 3.25, 6.75, 10];
+        var valenceLabels = ["Missing","Poor","Fair","Excellent"];
+        var valenceLabelPositions = [0, 33, 67, 100];
+        var sliderStep = .25;
 
         /* initialize Sliders */
         var $sliders = $('input.slider').slider({
-            tooltip: 'show'
+            tooltip: 'show',
+            value: 0,
+            step: sliderStep,
+            ticks: valenceCutoffs,
+            ticks_labels: valenceLabels,
+            ticks_position: valenceLabels
         });
 
         /*
@@ -266,24 +275,33 @@
         }
 
         // sums elements scores and sets question scores - used for StandardScoring
-        function updateQuestionScores() {
+        function updateStandardScores() {
 
         }
 
-        // save timers for the active student and update the displays for avg time, total time, and time remaining
-        function saveTimers() {
+        // save timer for the active student and update the displays for avg time, total time, and time remaining
+        function saveTimer() {
             if (activeStudent === null) return;
-            updateTimers();
+            examGradingTimes[activeStudent] = activeStudentTime;
+            // TODO: save time for the activeStudent to DB
+            updateTimer();
         }
 
-        // loads the timers for the active student. Called when loading a student
-        function loadTimers() {
+        // loads timer for the active student.
+        function loadTimer() {
             if (activeStudent === null) return;
-            updateTimers();
+            clearInterval(timer);
+
+            // set a new timer to fire every second
+            activeStudentTime = examGradingTimes[activeStudent];
+            timer = setInterval(function () {
+                examGradingTimes[activeStudent] = ++activeStudentTime;
+                updateTimer();
+            }, 1000);
         }
 
-        // updates the timer area
-        function updateTimers() {
+        /// Updates the timer for the student and refreshes the display. Called once per second by the timer.
+        function updateTimer() {
             var totalTime = 0;
             $.each(examGradingTimes, function(index, value) {
                 totalTime += value;
@@ -323,13 +341,11 @@
                 var oldScore = elementScores[activeStudent][elementNumber];
                 var newScore = slideEvt.value;
 
-                // TODO: save element scores - handle failures!!
+                // TODO: save element scores to server - handle failures!!
                 elementScores[activeStudent][elementNumber] = newScore;
 
-                // If using curve scoring, elements affect question score.
-                if (!customScoring) {
-                    updateQuestionScores();
-                }
+                // If using bell curve scoring, element score affects the total question score.
+                if (standardScoring) { updateStandardScores(); }
 
                 // update comment text -- only replace text if the score has changed valence regions
                 var $parent = $(this).parents('[id^="element"]');
@@ -342,7 +358,7 @@
 
                 // update exam scores and student data area
                 updateStudentDataArea();
-                saveTimers();
+                saveTimer();
             });
 
             // Handle question score inputs. When focus is lost, store values, update grades and save timers.
@@ -351,7 +367,7 @@
                 // TODO: save score to server -- handle failures!!
                 questionScores[activeStudent][qNumber - 1] = parseFloat($(this).val());
                 updateStudentDataArea();
-                saveTimers();
+                saveTimer();
             });
 
 
@@ -359,7 +375,7 @@
             $('[name^="comment"]').focusout(function () {
                 if (activeStudent === null) return;
                 updateAndSaveComment($(this));
-                saveTimers();
+                saveTimer();
             });
 
             /*
@@ -367,7 +383,7 @@
              */
 
             $("[id^='studentListItem']").click(function () {
-                saveTimers();
+                saveTimer();
                 $('#selectPrompt').hide();
                 $('#questionArea').show("fast");
 
@@ -376,7 +392,7 @@
                 setSelectedNameAndId();
 
                 // load the timer area with new values
-                loadTimers();
+                loadTimer();
 
                 // set question scores
                 $("[id^='questionScore']").each(function (index) {
