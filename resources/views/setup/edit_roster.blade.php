@@ -1,12 +1,3 @@
-<!--
-/**
- * Created by PhpStorm.
- * User: Brian
- * Date: 7/17/2015
- * Time: 4:59 PM
- */
- -->
-
 @extends('layouts.master')
 
 @section('pageTitle', 'Edit Roster')
