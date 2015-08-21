@@ -44,8 +44,11 @@ class QuestionAssignment extends BaseModel
      */
     public function getQuestionName()
     {
-        $obj = $this->question->first();
-        return $obj->getQuestionName();
+        $qid = $this->question_id;
+        $question = Question::where('id', $qid)->first();
+        return $question->getQuestionName();
+//        $obj = $this->question->first();
+//        return $obj->getQuestionName();
     }
 
     /**
