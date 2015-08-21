@@ -14,6 +14,7 @@
                 <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
                     {{ $exam->getTerm() }}, {{ $exam->getYear() }}: "{{ $exam->getName() }}" </h3>
                 <h4 id="selectPrompt">To begin grading, select a student.</h4>
+
                 <div id="questionArea" style="display: none">
                     <!-- Centered Question Pills -->
                     <ul class="nav nav-pills nav-justified">
@@ -132,9 +133,9 @@
         var studentComments = [];
         var activeStudent = null;
         var customScoring = true;
+        var sortAsc = true;
         var examGrades = [];
 
-        console.log(elementComments);
         updateExamGrades();
 
         // Set valenceCutoffs for comments. These represent the max value for each valence group.
@@ -177,6 +178,16 @@
                 });
                 examGrades[i] = totalScore.toPrecision(3);
             }
+        }
+
+        // updates $comment in the local structure and saves to server
+        function updateAndSaveComment($comment) {
+            $comment.removeAttr('readonly');
+            var index = $comment.parents('[id^="element"]').attr('data-element-index');
+            var elementId = $comment.parents('[id^="element"]').attr('data-element-id');
+
+            //TODO: save comment text to DB -- handle failures!
+            elementComments[activeStudent][index] = $comment.val();
         }
 
 
@@ -244,7 +255,29 @@
             setStudentBackgroundColors();
         }
 
-        // sums elements scores and sets question scores
+        // sorts the StudentRoster by the clicked header. Sort order reverses with each press.
+        // it's duplicating some students (currently).
+        function sortRosterBy(value) {
+            $('#studentRosterBody').append(
+                    $('#studentRosterBody').find('[id^="studentListItem"]').sort(function (a, b) {
+                        var i = $(a).find('[id^="' + value + '"]');
+                        var j = $(b).find('[id^="' + value + '"]');
+                        if (value === 'examGrade') {
+                            var result = parseInt($(i).text(), 10) - parseInt($(j).text(), 10 );
+                        } else {
+                            var result = $(i).text().toUpperCase().localeCompare(
+                                    $(j).text().toUpperCase());
+                        }
+                        console.log('i: ' + $(i).text() + '  j:' + $(j).text() + ' result: ' + result);
+                        // flip results if we're descending
+                        if (!sortAsc) { result *= -1; }
+                        return result;
+                    })
+            );
+            sortAsc = !sortAsc;
+        }
+
+        // sums elements scores and sets question scores - used for StandardScoring
         function updateQuestionScores() {
 
         }
@@ -252,11 +285,20 @@
         // save timers for the active student and update the displays for avg time, total time, and time remaining
         function saveTimers() {
             if (activeStudent === null) return;
+            updateTimers();
         }
 
         // loads the timers for the active student. Called when loading a student
         function loadTimers() {
             if (activeStudent === null) return;
+            updateTimers();
+        }
+
+        function updateTimers() {
+            var totalTime;
+            var avgTime = totalTime / examsGraded();
+            var estTime = avgTime * students.length;
+            var estTimeRemaining = estTime - totalTime;
         }
 
         /*
@@ -277,21 +319,21 @@
                 var oldScore = elementScores[activeStudent][elementNumber];
                 var newScore = slideEvt.value;
 
-                // TODO: save element score to server - return on failure
+                // TODO: save element scores - handle failures!!
                 elementScores[activeStudent][elementNumber] = newScore;
 
-                // update and save question scores - if using bell curve scoring
+                // If using curve scoring, elements affect question score.
                 if (!customScoring) {
                     updateQuestionScores();
                 }
 
-                // update comment text -- only change the text if the score has changed valence regions
+                // update comment text -- only replace text if the score has changed valence regions
                 var $parent = $(this).parents('[id^="element"]');
-                var $elementComment = $($parent).find('textArea');
+                var $elementComment = $parent.find('textArea');
                 if (getValence(newScore) != getValence(oldScore)) {
                     var stockResponse = stockComments[elementNumber][getValence(newScore)];
-                    $($elementComment).val(stockResponse);
-                    // TODO: save new  comment text to data structure & server
+                    $elementComment.val(stockResponse);
+                    updateAndSaveComment($elementComment);
                 }
 
                 // update exam scores and student data area
@@ -302,22 +344,23 @@
             // Handle question score inputs. When focus is lost, store values, update grades and save timers.
             $('.questionScore').change(function () {
                 var qNumber = $(this).attr('data-number');
+                // TODO: save score to server -- handle failures!!
                 questionScores[activeStudent][qNumber - 1] = parseFloat($(this).val());
                 updateStudentDataArea();
-                // TODO: save score to server
                 saveTimers();
             });
 
 
             //  Handle changes to the comment TextArea when focus is lost. Saves data and timers.
             $('[name^="comment"]').focusout(function () {
-                // TODO: when comment textArea loses focus, save to data structure and DB
+                if (activeStudent === null) return;
+                updateAndSaveComment($(this));
                 saveTimers();
             });
 
             /*
-            * A student is selected from the roster - DO LOTS OF STUFF
-            */
+             * A student is selected from the roster - DO LOTS OF STUFF
+             */
 
             $("[id^='studentListItem']").click(function () {
                 saveTimers();
@@ -342,9 +385,14 @@
                 });
 
                 // set comments
-                $('[name^="commentQ"]').each( function(index) {
+                $('[name^="commentQ"]').each(function (index) {
                     var thisComment = elementComments[activeStudent][index];
-                    $(this).val(thisComment);
+                    // if NULL, disable comment text area until a slider is moved.
+                    if (thisComment === null) {
+                        $(this).prop('readonly', 'true');
+                    } else {
+                        $(this).val(thisComment);
+                    }
                 });
 
             });
