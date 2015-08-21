@@ -21,6 +21,21 @@ class QuestionAssignmentTest extends \TestCase
         $this->assignment = QuestionAssignment::all()->random();
     }
 
+    public function testGetQuestionName()
+    {
+        //prep
+        $qid = $this->assignment->question_id;
+        $question = Question::where('id', $qid)->first();
+        $qName = $question->getQuestionName();
+
+        //call
+        $result = $this->assignment->getQuestionName();
+
+        //check
+        $this->assertEquals($qName, $result);
+    }
+
+
 //    public function scopeOnExam($query, $examId)
 //    {
 //        return $query->whereExamId($examId);
