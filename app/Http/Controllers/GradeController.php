@@ -2,27 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Element;
 use App\Comment;
 use App\Http\Requests;
 use App\Http\Requests\GradingRequest;
 
 use App\Exam;
-use App\Http\Requests\ExamRequest;
 use App\Repositories\Exam\IExamRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
 use App\Repositories\Score\IElementScoreRepository;
 use App\Repositories\Score\IQuestionScoreRepository;
-use App\Student;
-use Illuminate\Http\Request;
+use App\Repositories\Time\IGradingTimeRepository;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Routing\Route;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 
 /**
@@ -42,7 +34,8 @@ class GradeController extends Controller
                                 IElementAssignmentRepository $elementAssignmentRepository,
                                 IQuestionAssignmentRepository $questionAssignmentRepository,
                                 IElementScoreRepository $elementScoreRepository,
-                                IQuestionScoreRepository $questionScoreRepository)
+                                IQuestionScoreRepository $questionScoreRepository,
+                                IGradingTimeRepository $gradingTimeRepository)
     {
         $this->middleware('auth');
         $this->examDao = $IExamRepository;
@@ -51,6 +44,7 @@ class GradeController extends Controller
         $this->elementAssignmentDao = $elementAssignmentRepository;
         $this->elementScoreDao = $elementScoreRepository;
         $this->questionScoreDao = $questionScoreRepository;
+        $this->gradingTimeDao = $gradingTimeRepository;
     }
 
     /**
@@ -76,25 +70,19 @@ class GradeController extends Controller
         if( empty($students) ) return ("No students found for this exam");
 
         // load all question assignments and all elements for those questions
-        // TODO: questionAssignments, elements and elementAssignments sorted by number. Also, question can get its order,
-        // but neither element nor elementAssignment has a getOrder() function.
-
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
         foreach ($questionAssignments as $qAssignment) {
             $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qAssignment->getQuestionNumber());
         }
 
-        // load all current student scores
-        /* TODO :: If I can get allElements[] in the correct order, I can build allElementAssignments in order.
-         * either load_by_exam or load_element_assignments_by_question_number need to be sorted by element order.
-         *
-         */
+        // load all current student scores & comments
         $allElementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
         foreach ($students as $student) {
             // load element scores & element comments for each student
             $elementScores = NULL;
             $elementComments = NULL;
             foreach ($allElementAssignments as $eleAssignment) {
+                /* commented out until we figure out what broke.
                 $aScore = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
                 if ( isset($aScore->score) ) {
                     $aScore = $aScore->getScore();
@@ -104,6 +92,9 @@ class GradeController extends Controller
 
                 $aComment = "test comment, element assignment #".$eleAssignment->getId();
                 $elementComments[] = $aComment;
+                */
+                $elementScores[] = rand(0, 10);
+                $elementComments[] = 'a test comment because Adam broke stuff';
             }
             $studentElementScores[] = $elementScores;
             $studentElementComments[] = $elementComments;
@@ -119,6 +110,9 @@ class GradeController extends Controller
                 $questionScores[] = $aScore;
             }
             $studentQuestionScores[] = $questionScores;
+
+            // load grading times for each student
+            $examGradingTimes[] = $this->gradingTimeDao->load($exam->getId(), $student->getId() )->seconds;
         }
 
         // load stock comments for each element
@@ -132,15 +126,15 @@ class GradeController extends Controller
             }
         }
 
-        // I  need a way to get elementAssignmentId from elementId (or element)
         return View::make('grade.grade_exam')->with(['exam' => $exam,
             'students' => $students,
             'questionAssignments' => $questionAssignments,
             'allElements' => $allElements,
+            'stockComments' => $stockComments,
+            'examGradingTimes' => $examGradingTimes,
             'studentElementScores' => $studentElementScores,
             'studentElementComments' => $studentElementComments,
-            'studentQuestionScores' => $studentQuestionScores,
-            'stockComments' => $stockComments
+            'studentQuestionScores' => $studentQuestionScores
         ]);
     }
 

@@ -82,7 +82,7 @@
                     <div class="col-md-7">
                         <h4>
                             <span class="glyphicon glyphicon-pencil"> </span>
-                            <span id="studentName">No Student Selected</span>
+                            <span id="selectedStudentName">No Student Selected</span>
                         </h4>
                     </div>
                     <div class="col-md-5">
@@ -97,24 +97,8 @@
                 </a>
                 <!-- student table -->
                 @include('grade.student_table')
-                        <!-- timing and data -->
-                <h4><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Statistics</h4>
-
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <span class="col-md-6">Time This Exam</span>
-                        <span class="col-md-6">00:35</span>
-
-                        <span class="col-md-6">Average Time</span>
-                        <span class="col-md-6">02:25</span>
-
-                        <span class="col-md-6">Total Time</span>
-                        <span class="col-md-6">00:45:55</span>
-
-                        <span class="col-md-6">Time Remaining</span>
-                        <span class="col-md-6">01:34:15</span>
-                    </div>
-                </div>
+                <!-- timing and data -->
+                @include('grade.statistics_table')
             </div>
         </div>
     </div>
@@ -130,16 +114,19 @@
         var elementScores = <?= json_encode($studentElementScores) ?>;
         var questionScores = <?= json_encode($studentQuestionScores) ?>;
         var stockComments = <?= json_encode($stockComments) ?>;
+        var examGradingTimes = <?= json_encode($examGradingTimes) ?>;
         var studentComments = [];
         var activeStudent = null;
         var customScoring = true;
         var sortAsc = true;
         var examGrades = [];
 
+        console.log(examGradingTimes);
+
         updateExamGrades();
 
         // Set valenceCutoffs for comments. These represent the max value for each valence group.
-        // Magic numbers for now, but these may be a user option later on.
+        // Magic numbers for now, but these may be set or passed in later on.
         //var maxSliderValue = $sliders[0].slider('getAttribute', 'max');
         var valenceCutoffs = [0, 3.25, 6.75, 10];
 
@@ -180,7 +167,7 @@
             }
         }
 
-        // updates $comment in the local structure and saves to server
+        // updates the parameter [$comment] in the local structure and saves to server
         function updateAndSaveComment($comment) {
             $comment.removeAttr('readonly');
             var index = $comment.parents('[id^="element"]').attr('data-element-index');
@@ -191,12 +178,12 @@
         }
 
 
-        // sets the studentName and studentId fields
-        function setNameAndId() {
+        // sets the selectedStudentName and studentId fields
+        function setSelectedNameAndId() {
             var student = students[activeStudent];
             var name = student.last_name + ", " + student.first_name;
             var id = student.student_identifier;
-            $("#studentName").text(name);
+            $("#selectedStudentName").text(name);
             $("#studentId").text(id);
         }
 
@@ -248,6 +235,7 @@
             $(item).css('color', 'white');
         }
 
+        // bulk function updates all the student data fields
         function updateStudentDataArea() {
             updateExamGrades();
             updateGradedRemainingCounter();
@@ -256,21 +244,21 @@
         }
 
         // sorts the StudentRoster by the clicked header. Sort order reverses with each press.
-        // it's duplicating some students (currently).
         function sortRosterBy(value) {
             $('#studentRosterBody').append(
                     $('#studentRosterBody').find('[id^="studentListItem"]').sort(function (a, b) {
                         var i = $(a).find('[id^="' + value + '"]');
                         var j = $(b).find('[id^="' + value + '"]');
                         if (value === 'examGrade') {
-                            var result = parseInt($(i).text(), 10) - parseInt($(j).text(), 10 );
+                            var result = parseInt($(i).text(), 10) - parseInt($(j).text(), 10);
                         } else {
                             var result = $(i).text().toUpperCase().localeCompare(
                                     $(j).text().toUpperCase());
                         }
-                        console.log('i: ' + $(i).text() + '  j:' + $(j).text() + ' result: ' + result);
-                        // flip results if we're descending
-                        if (!sortAsc) { result *= -1; }
+                        // flip results if we're sorting in DESC
+                        if (!sortAsc) {
+                            result *= -1;
+                        }
                         return result;
                     })
             );
@@ -294,11 +282,27 @@
             updateTimers();
         }
 
+        // updates the timer area
         function updateTimers() {
-            var totalTime;
+            var totalTime = 0;
+            $.each(examGradingTimes, function(index, value) {
+                totalTime += value;
+            });
             var avgTime = totalTime / examsGraded();
             var estTime = avgTime * students.length;
-            var estTimeRemaining = estTime - totalTime;
+            var timeRemaining = estTime - totalTime;
+
+            $('#thisExamTime').text( convertSecondsToHHMMSS(examGradingTimes[activeStudent]) );
+            $('#avgTime').text( convertSecondsToHHMMSS(avgTime) );
+            $('#totalTime').text( convertSecondsToHHMMSS(totalTime) );
+            $('#timeRemaining').text( convertSecondsToHHMMSS(timeRemaining) );
+        }
+
+        function convertSecondsToHHMMSS(seconds) {
+            var date = new Date(null);
+            date.setSeconds(seconds);
+            if (seconds < 3600 ) return date.toISOString().substr(14, 5)
+            else return date.toISOString().substr(11, 8);
         }
 
         /*
@@ -311,7 +315,7 @@
 
             updateStudentDataArea();
 
-            /* Handle Slider movement */
+            /* When an element slider stops movement, do things */
             $('input.slider').on('slideStop', function (slideEvt) {
 
                 // update element score
@@ -369,7 +373,9 @@
 
                 // set the active student
                 activeStudent = $(this).attr("data-index");
-                setNameAndId();
+                setSelectedNameAndId();
+
+                // load the timer area with new values
                 loadTimers();
 
                 // set question scores
@@ -399,7 +405,7 @@
 
             // finish & save button routes to reports
             $('#finishButton').click(function () {
-
+                // TODO: make this button do things
             });
 
             return false;

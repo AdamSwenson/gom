@@ -34,8 +34,8 @@
             <tr id="studentListItem{{ $count }}" data-index="{{ $count }}">
                 <td class="col-md-6" id="studentName{{ $count }}" >{{ $student->getStudentLName() }},
                     {{ $student->getStudentFName() }}</td>
-                <td class="col-md-4" id="studentId{{ $count }}" onclick="sortRosterById()" >{{ $student->getStudentId() }}</td>
-                <td class="col-md-2" id="examGrade<?= $count++; ?>" onclick="sortRosterByGrade()" >--</td>
+                <td class="col-md-4" id="studentId{{ $count }}" >{{ $student->getStudentId() }}</td>
+                <td class="col-md-2" id="examGrade<?= $count++; ?>">--</td>
             </tr>
         @endforeach
         </tbody>
