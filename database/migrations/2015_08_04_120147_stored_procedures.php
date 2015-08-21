@@ -97,7 +97,7 @@ MYSQL;
 DROP PROCEDURE IF EXISTS record_or_update_grading_time;
 CREATE PROCEDURE `record_or_update_grading_time` (IN examId INT, IN studentId INT, IN toAdd FLOAT)
 BEGIN
-    INSERT INTO grading_time (exam_id, student_id, seconds) VALUES (examId, studentId, toAdd)
+    INSERT INTO grading_times (exam_id, student_id, seconds) VALUES (examId, studentId, toAdd)
     ON DUPLICATE KEY UPDATE seconds = seconds + toAdd;
 END;
 MYSQL;
@@ -108,7 +108,7 @@ MYSQL;
 DROP PROCEDURE IF EXISTS record_grading_time;
 CREATE PROCEDURE `record_grading_time` (IN examId INT, IN studentId INT, IN gradingTime FLOAT)
 BEGIN
-    INSERT INTO grading_time (exam_id, student_id, seconds) VALUES (examId, studentId, gradingTime)
+    INSERT INTO grading_times (exam_id, student_id, seconds) VALUES (examId, studentId, gradingTime)
     ON DUPLICATE KEY UPDATE seconds = gradingTime;
 END;
 MYSQL;

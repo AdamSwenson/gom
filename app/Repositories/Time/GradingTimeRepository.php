@@ -13,18 +13,14 @@ use App\GradingTime;
 
 class GradingTimeRepository implements IGradingTimeRepository
 {
-
     /**
-     * Adds an interval in seconds to the time spent grading a particular student's exam
-     *
-     * @param integer $examId
-     * @param integer $studentId
-     * @param float $timeToAdd
+     * Loads the time already spent grading a particular student's exam
+     * @param $examId
+     * @param $studentId
      */
-    public function update($examId, $studentId, $timeToAdd)
+    public function load($examId, $studentId)
     {
-        DB::statement('CALL record_grading_time(:examId, :studentId, :toAdd', ['examId' => $examId, 'studentId' => $studentId, 'toAdd' => $timeToAdd]);
-        return $this->load($examId, $studentId);
+        return GradingTime::where('exam_id', $examId)->where('student_id', $studentId)->first();
     }
 
     /**
@@ -37,19 +33,25 @@ class GradingTimeRepository implements IGradingTimeRepository
      */
     public function record($examId, $studentId, $totalGradingTime)
     {
-        DB::statement('CALL record_grading_time(:examId, :studentId, :gradingTime', ['examId' => $examId, 'studentId' => $studentId, 'gradingTime' => $totalGradingTime]);
+        \DB::statement('CALL record_grading_time(:examId, :studentId, :gradingTime)', ['examId' => $examId, 'studentId' => $studentId, 'gradingTime' => $totalGradingTime]);
         return $this->load($examId, $studentId);
     }
 
     /**
-     * Loads the time already spent grading a particular student's exam
-     * @param $examId
-     * @param $studentId
+     * Adds an interval in seconds to the time spent grading a particular student's exam
+     *
+     * @param integer $examId
+     * @param integer $studentId
+     * @param float $timeToAdd
      */
-    public function load($examId, $studentId)
+    public function update($examId, $studentId, $timeToAdd)
     {
-        return GradingTime::where('exam_id', $examId)->where('student_id', $studentId)->first();
+        \DB::statement('CALL record_grading_time(:examId, :studentId, :toAdd)', ['examId' => $examId, 'studentId' => $studentId, 'toAdd' => $timeToAdd]);
+        return $this->load($examId, $studentId);
     }
+
+
+
 
 
 }
