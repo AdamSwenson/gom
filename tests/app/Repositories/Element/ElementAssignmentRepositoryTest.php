@@ -89,12 +89,16 @@ class ElementAssignmentRepositoryTest extends \TestCase
         }
     }
 
+    /**
+     * TODO: Add check to make sure ordered by question_number, subtask
+     */
     public function testLoad_by_exam()
     {
         $elAssign = ElementAssignment::all()->random(1);
         $eid = $elAssign->exam_id;
 
         $result = $this->object->load_by_exam($eid);
+
         foreach ($result as $r)
         {
             $this->assertInstanceOf('stdClass', $r);

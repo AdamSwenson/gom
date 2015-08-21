@@ -71,6 +71,8 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
 
     /**
      * Loads all elements on an exam.
+     *
+     *
      * These will be returned in an array of StdClass objects. Each object will have the properties:
      *      element_assignmentId,
      *      question_id,
@@ -91,7 +93,7 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
      * @param integer $examId
      * @return array
      */
-    public function load_by_exam($examId)
+    public function load_by_exam($examId, $returnArray=false)
     {
         $query = <<<MYSQL
             SELECT ea.id AS element_assignment_id, ea.question_id, ea.element_id, ea.subtask
@@ -102,8 +104,22 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
 MYSQL;
         $values = ['examId' => $examId];
         $result = \DB::select($query, $values);
-
-        return $result;
+        if($returnArray === true)
+        {
+            return $result;
+        }
+        $objects = [];
+        foreach($result as $r)
+        {
+            $ea = new ElementAssignment();
+            $ea->id = $result->id;
+            $ea->question_id = $result->question_id;
+            $ea->element_id = $result->element_id;
+            $ea->subtask = $result->subtask;
+            array_push($objects, $ea);
+        }
+        return collect($objects);
+//        return $result;
 
 //        return ElementAssignment::where('exam_id', $examId)->get();
 //        $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($examId);
