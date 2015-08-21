@@ -97,7 +97,8 @@ class ElementAssignmentRepositoryTest extends \TestCase
         $result = $this->object->load_by_exam($eid);
         foreach ($result as $r)
         {
-            $this->assertInstanceOf('\App\ElementAssignment', $r);
+            $this->assertInstanceOf('stdClass', $r);
+//            $this->assertInstanceOf('\App\ElementAssignment', $r);
         }
     }
 

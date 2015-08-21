@@ -69,9 +69,43 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
         return ElementAssignment::where('exam_id', $examId)->where('element_id', $elementId)->first();
     }
 
+    /**
+     * Loads all elements on an exam.
+     * These will be returned in an array of StdClass objects. Each object will have the properties:
+     *      element_assignmentId,
+     *      question_id,
+     *      element_id,
+     *      subtask
+     *
+     * The objects will be in ascending order by question number and subtask
+     * For example: [
+     *      question 1 subtask 1,
+     *      question 1 subtask 2,
+     *      ....
+     *      question 2 subtask 1,
+     *      ....
+     *      question 3 subtask 1
+     *      ....
+     *      ]
+     *
+     * @param integer $examId
+     * @return array
+     */
     public function load_by_exam($examId)
     {
-        return ElementAssignment::where('exam_id', $examId)->get();
+        $query = <<<MYSQL
+            SELECT ea.id AS element_assignment_id, ea.question_id, ea.element_id, ea.subtask
+            FROM element_assignments ea
+            INNER JOIN question_assignments qa ON qa.question_id = ea.question_id AND qa.exam_id = ea.exam_id
+            WHERE ea.exam_id = :examId
+            ORDER BY qa.question_number, ea.subtask
+MYSQL;
+        $values = ['examId' => $examId];
+        $result = \DB::select($query, $values);
+
+        return $result;
+
+//        return ElementAssignment::where('exam_id', $examId)->get();
 //        $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($examId);
 //
 //        return ElementAssignment::where('question_assignment_id', $questionAssignments)->get();
