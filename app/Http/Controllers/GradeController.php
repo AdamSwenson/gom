@@ -82,19 +82,17 @@ class GradeController extends Controller
             $elementScores = NULL;
             $elementComments = NULL;
             foreach ($allElementAssignments as $eleAssignment) {
-                /* commented out until we figure out what broke.
                 $aScore = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
                 if ( isset($aScore->score) ) {
                     $aScore = $aScore->getScore();
-                } else
-                    $aScore = NULL;
+                } else {
+                    //$aScore = NULL;
+                    $aScore = 0;
+                }
                 $elementScores[] = $aScore;
 
                 $aComment = "test comment, element assignment #".$eleAssignment->getId();
                 $elementComments[] = $aComment;
-                */
-                $elementScores[] = rand(0, 10);
-                $elementComments[] = 'a test comment because Adam broke stuff';
             }
             $studentElementScores[] = $elementScores;
             $studentElementComments[] = $elementComments;
@@ -106,13 +104,17 @@ class GradeController extends Controller
                 if ( isset($aScore->score) ) {
                     $aScore = $aScore->getScore();
                 } else
-                    $aScore = NULL;
+                    //$aScore = NULL;
+                    $aScore = 0;
                 $questionScores[] = $aScore;
             }
             $studentQuestionScores[] = $questionScores;
 
             // load grading times for each student
-            $examGradingTimes[] = $this->gradingTimeDao->load($exam->getId(), $student->getId() )->seconds;
+            if (isset ($this->gradingTimeDao->load($exam->getId(), $student->getId())->seconds) ) {
+                $examGradingTimes[] =  $this->gradingTimeDao->load($exam->getId(), $student->getId() )->seconds;
+            } else
+                $examGradingTimes[] = 0;
         }
 
         // load stock comments for each element
