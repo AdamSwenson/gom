@@ -55,13 +55,13 @@ class QuestionRepositoryTest extends \TestCase
         $this->assertEmpty(Question::find($qid));
     }
 
-    /**
-     * @expectedException \Exception
-     */
-    public function testDeleteQuestionExceptionIdWrongType()
-    {
-        $this->object->deleteQuestion('1=1');
-    }
+//    /**
+//     * @expectedException \Exception
+//     */
+//    public function testDeleteQuestionExceptionIdWrongType()
+//    {
+//        $this->object->deleteQuestion('1=1');
+//    }
 
 //    /**
 //     * @expectedException \Exception

@@ -36,19 +36,19 @@ class GradingTimeRepositoryTest extends \TestCase
 
     public function testRecord()
     {
-       $newTime = $this->faker->randomFloat(3,2);
+       $newTime = $this->faker->randomFloat(3,0,100);
         $gt = GradingTime::all()->random();
         $result = $this->object->record($gt->exam_id, $gt->student_id, $newTime);
 
         $db = GradingTime::where('exam_id', $gt->exam_id)->where('student_id', $gt->student_id)->first();
-        $this->assertEquals($newTime, $db->seconds, "expected time is in db", 0.001);
+        $this->assertEquals($newTime, $db->seconds, "expected time is in db", 0.1);
 //        $this->seeInDatabase('grading_times', ['exam_id' => $gt->exam_id, 'student_id' => $gt->student_id, 'seconds' => $newTime]);
     }
 
     public function testUpdate()
     {
         $gt = GradingTime::all()->random();
-        $newTime = $gt->seconds + $this->faker->randomFloat(3,2);
+        $newTime = $gt->seconds + $this->faker->randomFloat(3,0,100);
 
         $result = $this->object->update($gt->exam_id, $gt->student_id, $newTime);
 
