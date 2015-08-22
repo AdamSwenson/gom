@@ -17,14 +17,21 @@ class StoredProcedures extends Migration
     DROP PROCEDURE IF EXISTS assign_element;
     CREATE PROCEDURE `assign_element` (IN examId INT, IN questionId INT, IN subtask INT, IN elementId INT)
     BEGIN
-        INSERT INTO element_assignments (exam_id, question_id, subtask, element_id)
-        VALUES (examId, questionId, subtask, elementId) ON DUPLICATE KEY UPDATE subtask = subtask;
+
+        IF EXISTS (SELECT id FROM element_assignments WHERE exam_id = examId AND question_id = questionId AND subtask = subtask LIMIT 1)
+        THEN
+            DELETE FROM element_assignments WHERE exam_id = examId AND question_id = questionId AND subtask = subtask;
+        END IF;
+
+        INSERT INTO element_assignments (exam_id, question_id, subtask, element_id, created_at, updated_at)
+            VALUES (examId, questionId, subtask, elementId, NOW(), NOW())
+            ON DUPLICATE KEY UPDATE subtask = subtask, updated_at = NOW();
 
         SELECT exam_id, question_id, element_id, subtask FROM element_assignments
-        WHERE exam_id = examId
-        AND question_id = questionId
-        AND element_id = elementId
-        AND subtask = subtask;
+            WHERE exam_id = examId
+                AND question_id = questionId
+                AND element_id = elementId
+                AND subtask = subtask;
     END
 MYSQL;
         DB::unprepared($assign_element);
@@ -33,9 +40,21 @@ MYSQL;
 DROP PROCEDURE IF EXISTS assign_question;
 CREATE PROCEDURE `assign_question` (IN questionId INT, IN examId INT, IN questionNumber INT)
   BEGIN
-    INSERT INTO question_assignments (question_id, exam_id, question_number)
-    VALUES (questionId, examId, questionNumber)
-    ON DUPLICATE KEY UPDATE question_id = questionId;
+    DECLARE numPreExisting INTEGER;
+
+    SELECT COUNT(*) INTO numPreExisting FROM question_assignments
+        WHERE exam_id = examId
+        AND question_number = questionNumber;
+
+    IF (numPreExisting > 0) THEN
+        DELETE FROM question_assignments
+            WHERE exam_id = examId
+            AND question_number = questionNumber;
+    END IF;
+
+    INSERT INTO question_assignments (question_id, exam_id, question_number, created_at, updated_at)
+        VALUES (questionId, examId, questionNumber, NOW(), NOW())
+        ON DUPLICATE KEY UPDATE question_id = questionId, updated_at = NOW();
   END
 MYSQL;
         DB::unprepared($assign_question);
@@ -44,9 +63,9 @@ MYSQL;
 DROP PROCEDURE IF EXISTS record_question_score;
 CREATE PROCEDURE `record_question_score`(IN questionAssignmentId INT, IN studentId INT, IN score FLOAT)
   BEGIN
-  INSERT INTO question_scores (question_assignment_id, student_id, score)
-  VALUES (questionAssignmentId, studentId, score)
-  ON DUPLICATE KEY UPDATE score = score;
+  INSERT INTO question_scores (question_assignment_id, student_id, score,  created_at, updated_at)
+  VALUES (questionAssignmentId, studentId, score, NOW(), NOW())
+  ON DUPLICATE KEY UPDATE score = score, updated_at = NOW();
 END
 MYSQL;
         DB::unprepared($record_question_score);

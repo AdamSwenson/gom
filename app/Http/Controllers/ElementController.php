@@ -71,6 +71,7 @@ class ElementController extends Controller
     /**
      * Store a newly created resource in storage.
      *
+     * @param ElementRequest $request
      * @return Response
      */
     public function store(ElementRequest $request)
@@ -193,7 +194,6 @@ class ElementController extends Controller
      */
     public function updateAll($exam, $question, ElementRequest $request)
     {
-
         $examId = $exam->getId();
         $questionId = $question->getId();
         $numValences = count( Comment::$valences );
@@ -226,7 +226,6 @@ class ElementController extends Controller
 
         // NOTE: any elements associated with this exam that weren't submitted with the form are deleted.
         // This can be hard on the test data as it contains multiple re-uses of the same elements (bb 8/2/15).
-
         $questionNumber = $question->getQuestionNumber($examId);
         $oldElements = $this->assignmentDao->load_elements($examId, $questionNumber );
         if ( count($oldElements) > 0) {
