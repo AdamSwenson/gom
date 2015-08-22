@@ -97,7 +97,7 @@
                 </a>
                 <!-- student table -->
                 @include('grade.student_table')
-                <!-- timing and data -->
+                        <!-- timing and data -->
                 @include('grade.statistics_table')
             </div>
         </div>
@@ -108,15 +108,17 @@
 @section('jsArea')
     <script type='text/javascript' src="{{ asset('inc/js/bootstrap-slider.js') }}"></script>
     <script type="text/javascript">
-        // "students" is a set of student objects - decompose?
-        var students = <?= json_encode($students) ?>;
+
         var elementComments = <?= json_encode($studentElementComments) ?>;
         var elementScores = <?= json_encode($studentElementScores) ?>;
         var questionScores = <?= json_encode($studentQuestionScores) ?>;
         var stockComments = <?= json_encode($stockComments) ?>;
         var examGradingTimes = <?= json_encode($examGradingTimes) ?>;
-        var examGrades = [];
+        var numStudents = {{ count($students) }};
+        var numQuestions = {{ count($questionAssignments) }};
         var studentComments = [];
+        var examGrades = [];
+        examGrades.length = numStudents;
         var activeStudent = null;
         var standardScoring = true;
         var sortAsc = true;
@@ -127,10 +129,10 @@
 
         /* Set valenceCutoffs for comments. These represent the maximum value for each valence group.
          * Magic numbers for now, but will accept data from the server if valenceCutoffs and valenceLabels are modified
-        */
+         */
         //var maxSliderValue = $sliders[0].slider('getAttribute', 'max');
         var valenceCutoffs = [0, 3.25, 6.75, 10];
-        var valenceLabels = ["Missing","Poor","Fair","Excellent"];
+        var valenceLabels = ["Missing", "Poor", "Fair", "Excellent"];
         var valenceLabelPositions = [0, 33, 67, 100];
         var sliderStep = .25;
 
@@ -160,20 +162,36 @@
             return valence;
         }
 
-        // examGrades[] keeps a persistent total of the exam score for each student
+        // TODO: deleting all grades should set exam back to ungraded!
+        // examGrades[] keeps a persistent total of the exam score for each student.
+        // Exams without grades have a value of -1, because dealing with null and NaN is annoying.
+        // This shouldn't be an issue, as the DB has no notion of exam grades, they're only used here as a shorthand
+        // to store and quickly find information about the exam state.
         function updateExamGrades() {
             for (var i = 0; i < questionScores.length; i++) {
                 var totalScore = null;
                 questionScores[i].forEach(function (gradeEntry) {
-                    if (gradeEntry !== null && gradeEntry >= 0) {
+                    if (gradeEntry !== null && gradeEntry !== NaN && gradeEntry >= 0) {
                         if (totalScore === null) {
                             totalScore = 0;
                         }
                         totalScore += gradeEntry;
                     }
                 });
-                examGrades[i] = totalScore.toPrecision(3);
+                if (totalScore !== null) examGrades[i] = totalScore.toPrecision(3);
+                else {
+                    examGrades[i] = -1;
+                }
             }
+        }
+
+        // returns number of exams graded
+        function examsGraded() {
+            var graded = 0;
+            for (var i = 0; i < examGrades.length; i++) {
+                if (examGrades[i] >= 0) graded++;
+            }
+            return graded;
         }
 
         // updates the parameter [$comment] in the local structure and saves to server
@@ -189,9 +207,12 @@
 
         // sets the selectedStudentName and studentId fields
         function setSelectedNameAndId() {
-            var student = students[activeStudent];
-            var name = student.last_name + ", " + student.first_name;
-            var id = student.student_identifier;
+            //var student = students[activeStudent];
+            //var name = student.last_name + ", " + student.first_name;
+            //var id = student.student_identifier;
+            var $student = $('#studentListItem' + activeStudent);
+            var name = $student.attr('data-lName') + ", " + $student.attr('data-fName');
+            var id = $student.attr('data-studentId');
             $("#selectedStudentName").text(name);
             $("#studentId").text(id);
         }
@@ -209,20 +230,13 @@
             }
         }
 
-        // returns number of exams graded
-        function examsGraded() {
-            var graded = 0;
-            for (var i = 0; i < examGrades.length; i++) {
-                if (examGrades[i] !== null) graded++;
-            }
-            return graded;
-        }
-
         // set the "grades" column in the student roster
         function updateRosterGradeDisplay() {
             for (var i = 0; i < examGrades.length; i++) {
                 if (examGrades[i] >= 0) {
                     $('#examGrade' + i).text(examGrades[i]);
+                } else {
+                    $('#examGrade' + i).text('');
                 }
             }
         }
@@ -230,10 +244,12 @@
         // set backgrounds for all students who have graded exams
         function setStudentBackgroundColors() {
             for (var i = 0; i < examGrades.length; i++) {
+                var name = "#studentListItem" + i;
+                var item = $('#studentRoster').find(name);
                 if (examGrades[i] >= 0) {
-                    var name = "#studentListItem" + i;
-                    var item = $('#studentRoster').find(name);
                     setRosterBackgroundGraded(item);
+                } else {
+                    setRosterBackgroundUngraded(item);
                 }
             }
         }
@@ -242,6 +258,12 @@
         function setRosterBackgroundGraded(item) {
             $(item).find('[class^="col"]').css('background-color', '#5cb85c');
             $(item).css('color', 'white');
+        }
+
+        // set student roster background white when an exam has reverted to ungraded
+        function setRosterBackgroundUngraded(item) {
+            $(item).find('[class^="col"]').css('background-color', 'white');
+            $(item).css('color', 'black');
         }
 
         // bulk function updates all the student data fields
@@ -258,11 +280,11 @@
                     $('#studentRosterBody').find('[id^="studentListItem"]').sort(function (a, b) {
                         var i = $(a).find('[id^="' + value + '"]');
                         var j = $(b).find('[id^="' + value + '"]');
-                        if (value === 'examGrade') {
-                            var result = parseInt($(i).text(), 10) - parseInt($(j).text(), 10);
-                        } else {
+                        if (value === 'studentName') {
                             var result = $(i).text().toUpperCase().localeCompare(
                                     $(j).text().toUpperCase());
+                        } else {
+                            var result = parseInt($(i).text(), 10) - parseInt($(j).text(), 10);
                         }
                         // flip results if we're sorting in DESC
                         if (!sortAsc) {
@@ -303,23 +325,23 @@
         /// Updates the timer for the student and refreshes the display. Called once per second by the timer.
         function updateTimer() {
             var totalTime = 0;
-            $.each(examGradingTimes, function(index, value) {
+            $.each(examGradingTimes, function (index, value) {
                 totalTime += value;
             });
-            var avgTime = totalTime / examsGraded();
-            var estTime = avgTime * students.length;
+            var avgTime = totalTime / ( (examsGraded() == 0) ? 1 : examsGraded() );
+            var estTime = avgTime * numStudents;
             var timeRemaining = estTime - totalTime;
 
-            $('#thisExamTime').text( convertSecondsToHHMMSS(examGradingTimes[activeStudent]) );
-            $('#avgTime').text( convertSecondsToHHMMSS(avgTime) );
-            $('#totalTime').text( convertSecondsToHHMMSS(totalTime) );
-            $('#timeRemaining').text( convertSecondsToHHMMSS(timeRemaining) );
+            $('#thisExamTime').text(convertSecondsToHHMMSS(examGradingTimes[activeStudent]));
+            $('#avgTime').text(convertSecondsToHHMMSS(avgTime));
+            $('#totalTime').text(convertSecondsToHHMMSS(totalTime));
+            $('#timeRemaining').text(convertSecondsToHHMMSS(timeRemaining));
         }
 
         function convertSecondsToHHMMSS(seconds) {
             var date = new Date(null);
             date.setSeconds(seconds);
-            if (seconds < 3600 ) return date.toISOString().substr(14, 5)
+            if (seconds < 3600) return date.toISOString().substr(14, 5)
             else return date.toISOString().substr(11, 8);
         }
 
@@ -332,6 +354,7 @@
         $(document).ready(function () {
 
             updateStudentDataArea();
+            sortRosterBy('studentName');
 
             /* When an element slider stops movement, do things */
             $('input.slider').on('slideStop', function (slideEvt) {
@@ -345,7 +368,9 @@
                 elementScores[activeStudent][elementNumber] = newScore;
 
                 // If using bell curve scoring, element score affects the total question score.
-                if (standardScoring) { updateStandardScores(); }
+                if (standardScoring) {
+                    updateStandardScores();
+                }
 
                 // update comment text -- only replace text if the score has changed valence regions
                 var $parent = $(this).parents('[id^="element"]');
@@ -364,10 +389,11 @@
             // Handle question score inputs. When focus is lost, store values, update grades and save timers.
             $('.questionScore').change(function () {
                 var qNumber = $(this).attr('data-number');
-                // TODO: save score to server -- handle failures!!
+                // TODO: save score to server -- handle failures!! Empty text boxes will report NaN. DEAL WITH THAT TOO!!!!
                 questionScores[activeStudent][qNumber - 1] = parseFloat($(this).val());
                 updateStudentDataArea();
                 saveTimer();
+                console.log(examGrades[activeStudent]);
             });
 
 

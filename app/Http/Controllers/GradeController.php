@@ -86,8 +86,7 @@ class GradeController extends Controller
                 if ( isset($aScore->score) ) {
                     $aScore = $aScore->getScore();
                 } else {
-                    //$aScore = NULL;
-                    $aScore = 0;
+                    $aScore = NULL;
                 }
                 $elementScores[] = $aScore;
 
@@ -104,8 +103,7 @@ class GradeController extends Controller
                 if ( isset($aScore->score) ) {
                     $aScore = $aScore->getScore();
                 } else
-                    //$aScore = NULL;
-                    $aScore = 0;
+                    $aScore = NULL;
                 $questionScores[] = $aScore;
             }
             $studentQuestionScores[] = $questionScores;
