@@ -13,20 +13,6 @@ use App\GradingTime;
 
 class GradingTimeRepository implements IGradingTimeRepository
 {
-
-    /**
-     * Records or updates the time spent grading a particular student's exam
-     *
-     * @param $examId
-     * @param $studentId
-     * @param $timeToAdd
-     */
-    public function update($examId, $studentId, $timeToAdd)
-    {
-        DB::statement('CALL record_grading_time(:examId, :studentId, :toAdd', ['examId' => $examId, 'studentId' => $studentId, 'toAdd' => $timeToAdd]);
-        return $this->load($examId, $studentId);
-    }
-
     /**
      * Loads the time already spent grading a particular student's exam
      * @param $examId
@@ -36,6 +22,36 @@ class GradingTimeRepository implements IGradingTimeRepository
     {
         return GradingTime::where('exam_id', $examId)->where('student_id', $studentId)->first();
     }
+
+    /**
+     * Records a total grading time in the database. If a time already exists for the student, this will overwrite it.
+     * If you instead want to add the time to the preexisting time, use GradingTimeRepository::update()
+     *
+     * @param integer $examId
+     * @param integer $studentId
+     * @param float $totalGradingTime
+     */
+    public function record($examId, $studentId, $totalGradingTime)
+    {
+        \DB::statement('CALL record_grading_time(:examId, :studentId, :gradingTime)', ['examId' => $examId, 'studentId' => $studentId, 'gradingTime' => $totalGradingTime]);
+        return $this->load($examId, $studentId);
+    }
+
+    /**
+     * Adds an interval in seconds to the time spent grading a particular student's exam
+     *
+     * @param integer $examId
+     * @param integer $studentId
+     * @param float $timeToAdd
+     */
+    public function update($examId, $studentId, $timeToAdd)
+    {
+        \DB::statement('CALL record_grading_time(:examId, :studentId, :toAdd)', ['examId' => $examId, 'studentId' => $studentId, 'toAdd' => $timeToAdd]);
+        return $this->load($examId, $studentId);
+    }
+
+
+
 
 
 }

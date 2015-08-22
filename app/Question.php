@@ -101,6 +101,15 @@ class Question extends BaseModel
      */
     public function setQuestionNumber($examId, $questionNumber)
     {
+        //Since each question can be used only once per exam, check if this question is already in use
+        //and, if so, delete it.
+        $q = QuestionAssignment::where('exam_id', $examId)->where('question_id', $this->attributes['id'])->first();
+        if($q){
+            $q->delete();
+        }
+
+        //Assign the question to the exam as the specified question number. This call will take care
+        //of removing the assignment of another question as that question number, if necessary.
         $query = 'CALL assign_question(:questionId, :examId, :questionNumber)';
         $values = [
             'questionId' => $this->attributes['id'],
@@ -109,19 +118,6 @@ class Question extends BaseModel
         ];
 
         DB::statement($query, $values);
-
-//        $pre_existing = QuestionAssignment::where('exam_id', $examId)->where('question_number', $questionNumber);
-//        if ($pre_existing)
-//        {
-//            $pre_existing->delete();
-//        }
-//        $pre_assigned = QuestionAssignment::where('exam_id', $examId)->where('question_id', $this->getId());
-//        if ($pre_assigned)
-//        {
-//            $pre_assigned->delete();
-//        }
-//        $this->exam()->attach($examId, ['question_number' => $questionNumber]);
-
         return $this;
     }
 

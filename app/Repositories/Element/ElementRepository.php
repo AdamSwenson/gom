@@ -160,7 +160,6 @@ class ElementRepository implements IElementRepository
         $clean_body = $content;
         //$clean_body = $this->cleaner->sanitize($content, CleanerFactory::TEXT, Comment::MAX_BODY_LENGTH);
 
-//        $clean_body = $this->cleaner->sanitize($content, CleanerFactory::TEXT, Comment::MAX_BODY_LENGTH);
         $preExisting = $this->loadCommentByElementIdAndValence($elementId, $valence);
 
         if($preExisting)

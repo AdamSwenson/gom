@@ -45,14 +45,27 @@ class Element extends BaseModel
      */
     public function setAsQuestionTask($examId, $questionId, $subtask)
     {
-        $query = 'CALL assign_element(:examId, :questionId, :subtask, :elementId)';
-        $values = [
-            'examId' => $examId,
-            'questionId' => $questionId,
-            'subtask' => $subtask,
-            'elementId' => $this->attributes['id']
-        ];
-        DB::statement($query, $values);
+        $e = ElementAssignment::where('exam_id', $examId)->where('question_id', $questionId)->where('subtask', $subtask)->first();
+
+        if($e){
+            $e->delete();
+        }
+
+        $newAssign = new ElementAssignment();
+        $newAssign->question_id = $questionId;
+        $newAssign->exam_id = $examId;
+        $newAssign->subtask = $subtask;
+        $newAssign->element_id = $this->attributes['id'];
+        $newAssign->save();
+//
+//        $query = 'CALL assign_element(:examId, :questionId, :subtask, :elementId)';
+//        $values = [
+//            'examId' => $examId,
+//            'questionId' => $questionId,
+//            'subtask' => $subtask,
+//            'elementId' => $this->attributes['id']
+//        ];
+//        DB::statement($query, $values);
 //dd($result);
 
 //        $questionAssignment = QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->firstOrFail();
