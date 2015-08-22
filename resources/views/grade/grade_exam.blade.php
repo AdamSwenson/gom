@@ -13,7 +13,7 @@
             <div class="col-md-8">
                 <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
                     {{ $exam->getTerm() }}, {{ $exam->getYear() }}: "{{ $exam->getName() }}" </h3>
-                <h4 id="selectPrompt">To begin grading, select a student.</h4>
+                <h4 id="selectPrompt">Select a student to begin grading.</h4>
 
                 <div id="questionArea" style="display: none">
                     <!-- Centered Question Pills -->
@@ -75,10 +75,8 @@
 
             <!-- Right column holds Roster and Time info -->
             <div class="col-md-4">
-
                 <!-- student name and / or ID -->
                 <div class="row">
-
                     <div class="col-md-7">
                         <h4>
                             <span class="glyphicon glyphicon-pencil"> </span>
@@ -118,11 +116,12 @@
         var numQuestions = {{ count($questionAssignments) }};
         var studentComments = [];
         var examGrades = [];
-        examGrades.length = numStudents;
+        //examGrades.length = numStudents;
         var activeStudent = null;
         var standardScoring = true;
         var sortAsc = true;
         var timer;
+        var timerPaused = true;
         var activeStudentTime;
 
         updateExamGrades();
@@ -130,7 +129,6 @@
         /* Set valenceCutoffs for comments. These represent the maximum value for each valence group.
          * Magic numbers for now, but will accept data from the server if valenceCutoffs and valenceLabels are modified
          */
-        //var maxSliderValue = $sliders[0].slider('getAttribute', 'max');
         var valenceCutoffs = [0, 3.25, 6.75, 10];
         var valenceLabels = ["Missing", "Poor", "Fair", "Excellent"];
         var valenceLabelPositions = [0, 33, 67, 100];
@@ -236,7 +234,7 @@
                 if (examGrades[i] >= 0) {
                     $('#examGrade' + i).text(examGrades[i]);
                 } else {
-                    $('#examGrade' + i).text('');
+                    $('#examGrade' + i).text('--');
                 }
             }
         }
@@ -280,11 +278,16 @@
                     $('#studentRosterBody').find('[id^="studentListItem"]').sort(function (a, b) {
                         var i = $(a).find('[id^="' + value + '"]');
                         var j = $(b).find('[id^="' + value + '"]');
-                        if (value === 'studentName') {
-                            var result = $(i).text().toUpperCase().localeCompare(
+                        var result;
+                        if (value == 'studentName') {
+                            result = $(i).text().toUpperCase().localeCompare(
                                     $(j).text().toUpperCase());
+                        } else if (value == 'studentId') {
+                            result = parseFloat($(i).text()) - parseFloat($(j).text());
                         } else {
-                            var result = parseInt($(i).text(), 10) - parseInt($(j).text(), 10);
+                            var gradeA = examGrades[ $(a).attr('data-index') ];
+                            var gradeB = examGrades[ $(b).attr('data-index') ];
+                            result = gradeA - gradeB;
                         }
                         // flip results if we're sorting in DESC
                         if (!sortAsc) {
@@ -309,10 +312,14 @@
             updateTimer();
         }
 
-        // loads timer for the active student.
+        // loads timer for the active student and sets to running
         function loadTimer() {
             if (activeStudent === null) return;
             clearInterval(timer);
+            $('#btnTimerLabel').text('Running');
+            $('#btnTimer').attr('class','btn btn-success');
+            $('#btnTimerIcon').attr('class', 'glyphicon glyphicon-play');
+            timerPaused = false;
 
             // set a new timer to fire every second
             activeStudentTime = examGradingTimes[activeStudent];
@@ -320,6 +327,25 @@
                 examGradingTimes[activeStudent] = ++activeStudentTime;
                 updateTimer();
             }, 1000);
+        }
+
+        // if the timer is paused, enable it
+        function resumeTimerIfPaused() {
+            if(timerPaused) toggleTimer();
+        }
+
+        // toggle timer between running and paused state
+        function toggleTimer(){
+            if(activeStudent === null) return;
+            timerPaused = !timerPaused;
+            if(timerPaused) {
+                $('#btnTimerLabel').text('Paused');
+                $('#btnTimer').attr('class','btn btn-warning');
+                $('#btnTimerIcon').attr('class', 'glyphicon glyphicon-pause');
+                clearInterval(timer);
+            } else {
+                loadTimer();
+            }
         }
 
         /// Updates the timer for the student and refreshes the display. Called once per second by the timer.
@@ -384,6 +410,7 @@
                 // update exam scores and student data area
                 updateStudentDataArea();
                 saveTimer();
+                resumeTimerIfPaused();
             });
 
             // Handle question score inputs. When focus is lost, store values, update grades and save timers.
@@ -393,7 +420,7 @@
                 questionScores[activeStudent][qNumber - 1] = parseFloat($(this).val());
                 updateStudentDataArea();
                 saveTimer();
-                console.log(examGrades[activeStudent]);
+                resumeTimerIfPaused();
             });
 
 
@@ -402,6 +429,7 @@
                 if (activeStudent === null) return;
                 updateAndSaveComment($(this));
                 saveTimer();
+                resumeTimerIfPaused();
             });
 
             /*
@@ -426,11 +454,13 @@
                     $(this).val(score);
                 });
 
-                // set slider values
-                $.each($sliders, function (index, item) {
-                    var score = elementScores[activeStudent][index];
-                    item.slider('setValue', score);
-                });
+                // set slider values, if any exist
+                if ($sliders) {
+                    $.each($sliders, function (index, item) {
+                        var score = elementScores[activeStudent][index];
+                        item.slider('setValue', score);
+                    });
+                }
 
                 // set comments
                 $('[name^="commentQ"]').each(function (index) {
