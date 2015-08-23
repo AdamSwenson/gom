@@ -200,12 +200,14 @@ class ElementController extends Controller
         //  Update elements and create new elements as necessary
         $currentElements = [];
         $i = 1;
+
         while ($request->input('elementName' . $i)) {
             $elementId = $request->input('elementId' . $i);
             // New elements arrive with id == 0
             // We're not using the 'displayText' parameter at this time.
             if ($elementId == 0) {
                 // Add new Elements
+                // TODO: this fails if the name is empty !
                 $element = $this->elementDao->createElement( $request->input('elementName' . $i), '' ,
                         $request->input('elementText' . $i));
                 $this->assignmentDao->record($examId, $questionId, $element->getId(), $i);
@@ -213,11 +215,15 @@ class ElementController extends Controller
                 // Update existing
                 $element = $this->elementDao->editElement($elementId, $request->input('elementName' . $i), '',
                         $request->input('elementText' . $i));
-                $this->assignmentDao->record($examId, $questionId, $elementId, $i);
+                $this->assignmentDao->record($examId, $questionId, $element->getId(), $i);
             }
-            // Loop through valences and add / edit comments
+            // Loop through valences and add / edit comments. If the valence is empty, use the stock comment (element text)
             for($j = 0; $j < $numValences; $j++) {
-                $this->elementDao->addValencedContent($element->getId(), $j, $request->input('e'.$i.'valence'.$j));
+                $valenceComment = $request->input('e'.$i.'valence'.$j);
+                if ( empty($valenceComment) ) {
+                    $valenceComment = $request->input('elementText' . $i);
+                }
+                $this->elementDao->addValencedContent($element->getId(), $j, $valenceComment );
             }
             $currentElements[$element->getId()] = $element;
             $i++;
@@ -233,7 +239,7 @@ class ElementController extends Controller
                 $eIdToFind = $oldElement->getId();
                 if (!array_key_exists($eIdToFind, $currentElements)) {
                     $this->elementDao->deleteElement($eIdToFind);
-                    dd($eIdToFind);
+
                 }
             }
         }
