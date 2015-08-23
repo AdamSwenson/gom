@@ -4,14 +4,13 @@ namespace App\Events;
 
 use App\Events\Event;
 use App\User;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 /**
  * Fired upon a new user successfully being entered into the database and logged in.
  */
-class NewUserSignedUpEvent extends Event //implements ShouldQueue
+class NewUserSignedUpEvent extends Event
 {
     use SerializesModels;
 
