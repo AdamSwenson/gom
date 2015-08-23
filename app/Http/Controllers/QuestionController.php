@@ -175,17 +175,17 @@ class QuestionController extends Controller
         }
 
         // Handle item deletion
-
         // NOTE: any questions associated with this exam that weren't submitted with the form are deleted.
         // TODO: delete does not appear to remove question assignment... needs testing
         $oldQuestions = $this->assignmentDao->load_all_for_exam($examId);
-        //dd($oldQuestions);
+        $deletedQuestions = [];
         if ( count($oldQuestions) > 0) {
             foreach ($oldQuestions as $oldQuestion) {
-                $qIdToFind = $oldQuestion['question_id'];
+                $qIdToFind = $oldQuestion->question_id;
                 if (!array_key_exists($qIdToFind, $currentQuestions)) {
-
+                    $deletedQuestions[] = $qIdToFind;
                     $this->questionDao->deleteQuestion($qIdToFind);
+                    //$this->assignmentDao->remove($examId, $qIdToFind);
                 }
             }
         }

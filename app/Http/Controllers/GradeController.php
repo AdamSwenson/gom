@@ -116,6 +116,7 @@ class GradeController extends Controller
         }
 
         // load stock comments for each element
+        $stockComments = [];
         foreach ($allElements as $aQuestion) {
             foreach ($aQuestion as $element) {
                 $defaultComments = NULL;

@@ -52,9 +52,7 @@
 
                 </ul>
             </form>
-            <a class="btn btn-primary" id="addQuestion"><span
-                        class="glyphicon glyphicon-plus"
-                        aria-hidden="true"></span>
+            <a class="btn btn-primary" id="addQuestion"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 Add Question</a>
             <a class="btn btn-primary" id="importQuestion"><span class="glyphicon glyphicon-import"
                                                                  aria-hidden="true"></span>Import Question
