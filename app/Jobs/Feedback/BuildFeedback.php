@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Feedback;
 
 use App\Jobs\Job;
 use Illuminate\Queue\SerializesModels;
@@ -19,7 +19,6 @@ class BuildFeedback extends Job implements SelfHandling, ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @return void
      */
     public function __construct()
     {

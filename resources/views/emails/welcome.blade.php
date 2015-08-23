@@ -8,4 +8,5 @@
  * Time: 11:35 AM
  */?>
 
+Hi
 Welcome to the gradeomatic!
