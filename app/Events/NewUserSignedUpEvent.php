@@ -11,7 +11,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 /**
  * Fired upon a new user successfully being entered into the database and logged in.
  */
-class NewUserSignedUpEvent extends Event implements ShouldQueue
+class NewUserSignedUpEvent extends Event //implements ShouldQueue
 {
     use SerializesModels;
 

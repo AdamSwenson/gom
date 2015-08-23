@@ -8,5 +8,6 @@
  * Time: 11:35 AM
  */?>
 
-Hi
+Hi {{ $user->name }},
+
 Welcome to the gradeomatic!
