@@ -12,8 +12,8 @@ namespace App;
  * The corresponding table ('element_assignments') has the following fields
  *
  * id: integer
- * user_id: integer
- * question_assignment_id: integer
+ * exam_id: integer
+ * question_id: integer
  * element_id: integer
  * subtask: integer
  *
@@ -78,10 +78,17 @@ class ElementAssignment extends BaseModel
         return $this->attributes['subtask'];
     }
 
-//    public function getQuestionNumber()
-//    {
-//        return $this->questionAssignment->question_number;
-//    }
+    /**
+     * Return the number of the question that this element assignment belongs to
+     * @return mixed
+     */
+    public function getQuestionNumber()
+    {
+        $qa = QuestionAssignment::where('exam_id', $this->attributes['exam_id'])->where('question_id', $this->attributes['question_id'])->first();
+        return $qa->question_number;
+
+        //return $this->questionAssignment->question_number;
+    }
 #--------------- Queries
 
     /**

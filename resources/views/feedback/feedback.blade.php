@@ -14,7 +14,10 @@ $w = '800px';
 @section('cssLinks')
     <link href="{{ asset('inc/jqplot/jquery.jqplot.min.css')}}" />
 
-    <link href="{{ asset('inc/css/outputStyles.css')}}" type="text/css" rel="stylesheet"/>
+    {!! \HTML::style(asset('/css/output.css')) !!}
+
+
+    {{--<link href="{{ asset('inc/css/outputStyles.css')}}" type="text/css" rel="stylesheet"/>--}}
 @endsection
 
 @section('body')
