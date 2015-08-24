@@ -17,19 +17,23 @@ class EventServiceProvider extends ServiceProvider
             [
                 'App\Listeners\FeedbackCompileListener'
             ],
+
         'App\Events\FeedbackCompilationCompleteEvent' =>
             [
                 'App\Listeners\ReportCompilationComplete',
                 'App\Listeners\NotifyStudentsListener'
             ],
-        'App\Listeners\NewUserSignedUpEvent' =>
+
+        'App\Events\NewUserSignedUpEvent' =>
             [
                 'App\Listeners\SendWelcomeEmailListener'
             ],
+
         'App\Events\StudentNotificationCompleteEvent' =>
             [
                 'App\Listeners\ReportNotificationComplete'
             ],
+
         'App\Events\UnreleaseExamEvent' =>
             [
                 'App\Listeners\RemoveStudentAccessListener'

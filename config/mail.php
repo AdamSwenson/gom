@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'driver' => env('MAIL_DRIVER', 'smtp'),
+    'driver' => env('MAIL_DRIVER', 'mailgun'),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,7 +54,7 @@ return [
     |
     */
 
-    'from' => ['address' => '', 'name' => ''],
+    'from' => ['address' => 'admin@gradeomatic.net', 'name' => 'Admin'],
 
     /*
     |--------------------------------------------------------------------------
