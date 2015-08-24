@@ -200,7 +200,6 @@ class ElementController extends Controller
         //  Update elements and create new elements as necessary
         $currentElements = [];
         $i = 1;
-
         while ($request->input('elementName' . $i)) {
             $elementId = $request->input('elementId' . $i);
             // New elements arrive with id == 0
@@ -217,6 +216,8 @@ class ElementController extends Controller
                         $request->input('elementText' . $i));
                 $this->assignmentDao->record($examId, $questionId, $element->getId(), $i);
             }
+            $currentElements[$element->getId()] = $element;
+
             // Loop through valences and add / edit comments. If the valence is empty, use the stock comment (element text)
             for($j = 0; $j < $numValences; $j++) {
                 $valenceComment = $request->input('e'.$i.'valence'.$j);
@@ -225,24 +226,26 @@ class ElementController extends Controller
                 }
                 $this->elementDao->addValencedContent($element->getId(), $j, $valenceComment );
             }
-            $currentElements[$element->getId()] = $element;
             $i++;
         }
-        // Handle item deletion
 
+
+        // Handle item deletion
         // NOTE: any elements associated with this exam that weren't submitted with the form are deleted.
-        // This can be hard on the test data as it contains multiple re-uses of the same elements (bb 8/2/15).
         $questionNumber = $question->getQuestionNumber($examId);
         $oldElements = $this->assignmentDao->load_elements($examId, $questionNumber );
+        //dd($currentElements);
         if ( count($oldElements) > 0) {
             foreach ($oldElements as $oldElement) {
                 $eIdToFind = $oldElement->getId();
                 if (!array_key_exists($eIdToFind, $currentElements)) {
+                    //$currentElements[] = $eIdToFind;
                     $this->elementDao->deleteElement($eIdToFind);
-
                 }
             }
         }
+
+        //dd($currentElements);
 
         /* Choose next action based on 'questionDirection' param:
             1. go back to QuestionController

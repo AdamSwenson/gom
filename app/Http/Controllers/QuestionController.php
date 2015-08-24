@@ -185,7 +185,6 @@ class QuestionController extends Controller
                 if (!array_key_exists($qIdToFind, $currentQuestions)) {
                     $deletedQuestions[] = $qIdToFind;
                     $this->questionDao->deleteQuestion($qIdToFind);
-                    //$this->assignmentDao->remove($examId, $qIdToFind);
                 }
             }
         }

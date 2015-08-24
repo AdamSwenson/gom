@@ -85,13 +85,14 @@ class GradeController extends Controller
                 $aScore = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
                 if ( isset($aScore->score) ) {
                     $aScore = $aScore->getScore();
+                    $elementComments[] = $aScore->comment_text();
                 } else {
                     $aScore = NULL;
                 }
                 $elementScores[] = $aScore;
 
-                $aComment = "test comment, element assignment #".$eleAssignment->getId();
-                $elementComments[] = $aComment;
+                // grab the student-specific comment for this element
+                //$aComment = "test comment, element assignment #".$eleAssignment->getId();
             }
             $studentElementScores[] = $elementScores;
             $studentElementComments[] = $elementComments;
@@ -115,6 +116,7 @@ class GradeController extends Controller
                 $examGradingTimes[] = 0;
         }
 
+        dd($studentElementComments);
         // load stock comments for each element
         $stockComments = [];
         foreach ($allElements as $aQuestion) {
@@ -161,6 +163,7 @@ class GradeController extends Controller
                 $itemId = $request->input('element_assignment_id');
             }
             $this->dao->record($itemId, $studentId, $score);
+            recordTime();
         } else {
             //TODO Error handling
         }
@@ -182,6 +185,10 @@ class GradeController extends Controller
             //TODO Error handling
         }
     }
+
+    /**
+     * Record c
+     */
 
     /**
      * Load the time spent grading a particular student exam

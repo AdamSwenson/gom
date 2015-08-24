@@ -51,6 +51,7 @@
                                                 <div class="col-md-2">
                                                     <input class="form-control questionScore" type="number" min="0"
                                                            data-number="{{ $qNumber }}"
+                                                           data-question-assignment-id="{{ $$qAssignment->getId() }}"
                                                            id="questionScore{{ $qNumber }}"/>
                                                 </div>
                                             </div>

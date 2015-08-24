@@ -87,17 +87,18 @@
                 ghostClass: "sortable-ghost",
                 onFilter: function (evt) {
                     // handle deletion - items will be deleted once the form is submitted
-
+                    /*
                     var item = evt.item,
                             ctrl = evt.target;
 
                     if (Sortable.utils.is(ctrl, ".js-remove")) {  // Click on remove button
                         item.parentNode.removeChild(item); // remove sortable item
                     }
+                    */
                     // TODO: on delete confirmation
-                    //var el = editableList.closest(evt.item); // get dragged item
-                    //if (el && el.parentNode.removeChild(el))
-                    //    updateNumbers();
+                    var el = editableList.closest(evt.item); // get dragged item
+                    if (el && el.parentNode.removeChild(el))
+                        updateNumbers();
                 },
                 store: {
                     // store the ordering to localStorage
