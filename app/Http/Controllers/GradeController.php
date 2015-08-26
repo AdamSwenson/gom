@@ -30,10 +30,11 @@ class GradeController extends Controller
     protected $dao;
     protected $reportController;
 
-    public function __construct(IExamRepository $IExamRepository, IElementRepository $elementRepository,
+    public function __construct(IExamRepository $IExamRepository,
+                                IElementRepository $elementRepository,
                                 IElementAssignmentRepository $elementAssignmentRepository,
-                                IQuestionAssignmentRepository $questionAssignmentRepository,
                                 IElementScoreRepository $elementScoreRepository,
+                                IQuestionAssignmentRepository $questionAssignmentRepository,
                                 IQuestionScoreRepository $questionScoreRepository,
                                 IGradingTimeRepository $gradingTimeRepository)
     {
@@ -154,6 +155,7 @@ class GradeController extends Controller
         if ($request->has('student_id') ) {
             $studentId = $request->input('student_id');
 
+            $itemId = null;
 
             //If the request is to record a question score, it follows this path
             if ($request->has('question_assignment_id')) {
@@ -164,18 +166,18 @@ class GradeController extends Controller
             if ($request->has('element_id')) {
                 $this->dao = app()->make('App\Repositories\Score\IElementScoreRepository');
                 $itemId = $this->elementAssignmentDao->load_element_assignment_by_element($exam->getId(),
-                                                        $request->input('element_id') );
+                                                        $request->input('element_id') )->getId();
+
+                // if a comment has text with it, record that as well.
+                if ( $request->exists('comment_text') ) {
+                    $this->dao->recordCommentText($itemId, $studentId, $request->input('comment_text') );
+                }
             }
 
+            // record score fot the question or comment
             if ($request->has('score')) {
                 $score = $request->input('score');
                 $this->dao->record($itemId, $studentId, $score);
-            }
-
-            // if a comment has text with it, record that as well.
-            // TODO THIS WONT RECORD A COMMENT TEXT - WILL IT?
-            if ($request->has('comment_text')) {
-                $this->dao->recordCommentScore($itemId, $studentId, $request->input('comment_text') );
             }
 
             // Check if the exam has been released.
@@ -185,7 +187,7 @@ class GradeController extends Controller
                 $reportController->updateFeedbackForStudent($exam->getId(), $studentId);
             }
 
-            recordTime();
+            $this->recordTime($exam, $request);
 
         } else {
             //TODO Error handling
@@ -210,10 +212,6 @@ class GradeController extends Controller
             //TODO Error handling
         }
     }
-
-    /**
-     * Record c
-     */
 
     /**
      * Load the time spent grading a particular student exam

@@ -11,7 +11,8 @@
         <div class="row">
             <!-- Left column holds questions and sliders -->
             <div class="col-md-8">
-                <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                <h3 data-exam-id="{{ $exam->getId() }}"><span class="glyphicon glyphicon-list-alt"
+                                                              aria-hidden="true"></span>
                     {{ $exam->getTerm() }}, {{ $exam->getYear() }}: "{{ $exam->getName() }}" </h3>
                 <h4 id="selectPrompt">Select a student to begin grading.</h4>
 
@@ -167,7 +168,7 @@
             for (var i = 0; i < questionScores.length; i++) {
                 var totalScore = null;
                 questionScores[i].forEach(function (gradeEntry) {
-                    if (gradeEntry !== null && gradeEntry !== NaN && gradeEntry >= 0) {
+                    if (gradeEntry !== null && gradeEntry >= 0) {
                         if (totalScore === null) {
                             totalScore = 0;
                         }
@@ -220,27 +221,37 @@
 
         // add time info to the grading request array and save to server
         function saveDataWithTime(gradeRequest) {
-            if (!gradeRequest)  {
+            if (!gradeRequest) {
                 gradeRequest = {};
-                gradeRequest['student_id'] =  getActiveStudentId();
+                gradeRequest['student_id'] = getActiveStudentId();
             }
             gradeRequest['time'] = examGradingTimes[activeStudent];
             console.log(gradeRequest);
             // TODO: AJAX THIS BITCH
+            var examId = $('h3').attr('data-exam-id');
+
+            $.ajax({
+                url:  'http://localhost:8000/grade/exam/' + examId,
+                data: gradeRequest,
+                type: 'POST',
+                success: function() {
+                    console.log('success! ');
+                },
+                error: function( ) {
+                    alert( "Sorry, there was a problem!" );
+                },
+            });
         }
 
         function getActiveStudentId() {
-            return $('#studentListItem' + activeStudent).attr('data-studentId');
+            return $('#studentListItem' + activeStudent).attr('data-sid');
         }
 
         // sets the selectedStudentName and studentId fields
         function setSelectedNameAndId() {
-            //var student = students[activeStudent];
-            //var name = student.last_name + ", " + student.first_name;
-            //var id = student.student_identifier;
             var $student = $('#studentListItem' + activeStudent);
             var name = $student.attr('data-lName') + ", " + $student.attr('data-fName');
-            var id = getActiveStudentId();
+            var id = $('#studentListItem' + activeStudent).data('student-identifier');
             $("#selectedStudentName").text(name);
             $("#studentId").text(id);
         }
