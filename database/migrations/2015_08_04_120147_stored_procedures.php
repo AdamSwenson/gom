@@ -13,6 +13,7 @@ class StoredProcedures extends Migration
      */
     public function up()
     {
+        # ---------------------------------------------------------- Exam setup
         $assign_element = <<<MYSQL
     DROP PROCEDURE IF EXISTS assign_element;
     CREATE PROCEDURE `assign_element` (IN examId INT, IN questionId INT, IN subtask INT, IN elementId INT)
@@ -70,14 +71,14 @@ END
 MYSQL;
         DB::unprepared($record_question_score);
 
-
+#-------------------------------------------------- Recording scores and individual comments
         $record_element_score = <<<MYSQL
 DROP PROCEDURE IF EXISTS record_element_score;
 CREATE PROCEDURE `record_element_score`(IN elementAssignmentId INT, IN studentId INT, IN score FLOAT)
   BEGIN
-    INSERT INTO element_scores (element_assignment_id, student_id, score)
-    VALUES (elementAssignmentId, studentId, score)
-    ON DUPLICATE KEY UPDATE score = score;
+    INSERT INTO element_scores (element_assignment_id, student_id, score, created_at, updated_at)
+    VALUES (elementAssignmentId, studentId, score, NOW(), NOW())
+    ON DUPLICATE KEY UPDATE score = score, updated_at = NOW();
   END;
 MYSQL;
         DB::unprepared($record_element_score);
