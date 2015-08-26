@@ -110,13 +110,11 @@
                         </tbody>
                     </table>
                 </div>
-                <button class="btn btn-warning" onclick="deleteRoster()" id="deleteRoster"><span
+                <a class="btn btn-danger" onclick="deleteRoster()" id="deleteRoster"><span
                             class="glyphicon glyphicon-minus"
                             aria-hidden="true"></span>
                     Delete Roster
-                </button>
-
-
+                </a>
             </div>
         </div>
     </div>

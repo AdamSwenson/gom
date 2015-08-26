@@ -11,12 +11,14 @@
             </div>
             <!-- tabbed area for responses -->
             <div class="modal-body">
+                <!-- TODO: create nav pills dynamically -->
                 <ul class="nav nav-pills nav-justified">
                     <li role="presentation" class="active"><a id="tab0" data-toggle="tab" href="#e{{ $counter }}area0">Missing</a></li>
                     <li role="presentation"><a id="tab1" data-toggle="tab" href="#e{{ $counter }}area1">Poor</a></li>
                     <li role="presentation"><a id="tab2" data-toggle="tab" href="#e{{ $counter }}area2">Fair</a></li>
                     <li role="presentation"><a id="tab3" data-toggle="tab" href="#e{{ $counter }}area3">Excellent</a></li>
                 </ul>
+                <!-- TODO: create tabs dynamically -->
                 <div class="tab-content" id="comments">
                     <div id="e{{ $counter }}area0" class="tab-pane fade in active">
                         <textarea class="form-control" rows="5" name="e{{ $counter }}valence0"

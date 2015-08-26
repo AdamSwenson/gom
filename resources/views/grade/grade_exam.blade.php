@@ -51,6 +51,7 @@
                                                 <div class="col-md-2">
                                                     <input class="form-control questionScore" type="number" min="0"
                                                            data-number="{{ $qNumber }}"
+                                                           data-question-assignment-id="{{ $qAssignment->getId() }}"
                                                            id="questionScore{{ $qNumber }}"/>
                                                 </div>
                                             </div>
@@ -114,9 +115,7 @@
         var examGradingTimes = <?= json_encode($examGradingTimes) ?>;
         var numStudents = {{ count($students) }};
         var numQuestions = {{ count($questionAssignments) }};
-        var studentComments = [];
         var examGrades = [];
-        //examGrades.length = numStudents;
         var activeStudent = null;
         var standardScoring = true;
         var sortAsc = true;
@@ -160,7 +159,6 @@
             return valence;
         }
 
-        // TODO: deleting all grades should set exam back to ungraded!
         // examGrades[] keeps a persistent total of the exam score for each student.
         // Exams without grades have a value of -1, because dealing with null and NaN is annoying.
         // This shouldn't be an issue, as the DB has no notion of exam grades, they're only used here as a shorthand
@@ -197,11 +195,43 @@
             $comment.removeAttr('readonly');
             var index = $comment.parents('[id^="element"]').attr('data-element-index');
             var elementId = $comment.parents('[id^="element"]').attr('data-element-id');
-
-            //TODO: save comment text to DB -- handle failures!
+            var score = elementScores[activeStudent][index];
             elementComments[activeStudent][index] = $comment.val();
+
+            createGradeRequest('element_id', elementId, score, $comment.val());
         }
 
+        // Creates a key/value array GradeRequest. 
+        // Comments and scores will be added to requests if not null.
+        function createGradeRequest(dataType, dataId, score, comment) {
+            var gradeRequest = {};
+
+            gradeRequest[dataType] = dataId;
+            if (score !== null) {
+                gradeRequest['score'] = score;
+            }
+            if (comment !== null) {
+                gradeRequest['comment_text'] = comment;
+            }
+            gradeRequest['student_id'] = getActiveStudentId();
+
+            saveDataWithTime(gradeRequest);
+        }
+
+        // add time info to the grading request array and save to server
+        function saveDataWithTime(gradeRequest) {
+            if (!gradeRequest)  {
+                gradeRequest = {};
+                gradeRequest['student_id'] =  getActiveStudentId();
+            }
+            gradeRequest['time'] = examGradingTimes[activeStudent];
+            console.log(gradeRequest);
+            // TODO: AJAX THIS BITCH
+        }
+
+        function getActiveStudentId() {
+            return $('#studentListItem' + activeStudent).attr('data-studentId');
+        }
 
         // sets the selectedStudentName and studentId fields
         function setSelectedNameAndId() {
@@ -210,7 +240,7 @@
             //var id = student.student_identifier;
             var $student = $('#studentListItem' + activeStudent);
             var name = $student.attr('data-lName') + ", " + $student.attr('data-fName');
-            var id = $student.attr('data-studentId');
+            var id = getActiveStudentId();
             $("#selectedStudentName").text(name);
             $("#studentId").text(id);
         }
@@ -285,8 +315,8 @@
                         } else if (value == 'studentId') {
                             result = parseFloat($(i).text()) - parseFloat($(j).text());
                         } else {
-                            var gradeA = examGrades[ $(a).attr('data-index') ];
-                            var gradeB = examGrades[ $(b).attr('data-index') ];
+                            var gradeA = examGrades[$(a).attr('data-index')];
+                            var gradeB = examGrades[$(b).attr('data-index')];
                             result = gradeA - gradeB;
                         }
                         // flip results if we're sorting in DESC
@@ -301,14 +331,14 @@
 
         // sums elements scores and sets question scores - used for StandardScoring
         function updateStandardScores() {
-
+            //
         }
 
         // save timer for the active student and update the displays for avg time, total time, and time remaining
         function saveTimer() {
             if (activeStudent === null) return;
             examGradingTimes[activeStudent] = activeStudentTime;
-            // TODO: save time for the activeStudent to DB
+            saveDataWithTime(null);
             updateTimer();
         }
 
@@ -317,7 +347,7 @@
             if (activeStudent === null) return;
             clearInterval(timer);
             $('#btnTimerLabel').text('Running');
-            $('#btnTimer').attr('class','btn btn-success');
+            $('#btnTimer').attr('class', 'btn btn-success');
             $('#btnTimerIcon').attr('class', 'glyphicon glyphicon-play');
             timerPaused = false;
 
@@ -331,16 +361,16 @@
 
         // if the timer is paused, enable it
         function resumeTimerIfPaused() {
-            if(timerPaused) toggleTimer();
+            if (timerPaused) toggleTimer();
         }
 
         // toggle timer between running and paused state
-        function toggleTimer(){
-            if(activeStudent === null) return;
+        function toggleTimer() {
+            if (activeStudent === null) return;
             timerPaused = !timerPaused;
-            if(timerPaused) {
+            if (timerPaused) {
                 $('#btnTimerLabel').text('Paused');
-                $('#btnTimer').attr('class','btn btn-warning');
+                $('#btnTimer').attr('class', 'btn btn-warning');
                 $('#btnTimerIcon').attr('class', 'glyphicon glyphicon-pause');
                 clearInterval(timer);
             } else {
@@ -390,36 +420,48 @@
                 var oldScore = elementScores[activeStudent][elementNumber];
                 var newScore = slideEvt.value;
 
-                // TODO: save element scores to server - handle failures!!
                 elementScores[activeStudent][elementNumber] = newScore;
-
-                // If using bell curve scoring, element score affects the total question score.
-                if (standardScoring) {
-                    updateStandardScores();
-                }
 
                 // update comment text -- only replace text if the score has changed valence regions
                 var $parent = $(this).parents('[id^="element"]');
                 var $elementComment = $parent.find('textArea');
                 if (getValence(newScore) != getValence(oldScore)) {
+                    // update comment and save to server
                     var stockResponse = stockComments[elementNumber][getValence(newScore)];
                     $elementComment.val(stockResponse);
                     updateAndSaveComment($elementComment);
+                } else {
+                    // Jump straight to saving without changing the elementComment
+                    var elementId = $(this).closest('[id^="element"]').attr('data-element-id');
+                    createGradeRequest('element_id', elementId, newScore, null);
+                }
+
+                // If using bell curve scoring, element score affects the total question score.
+                // Update question and exam scores
+                if (standardScoring) {
+                    updateStandardScores();
                 }
 
                 // update exam scores and student data area
                 updateStudentDataArea();
-                saveTimer();
+                //saveTimer();
                 resumeTimerIfPaused();
             });
 
             // Handle question score inputs. When focus is lost, store values, update grades and save timers.
             $('.questionScore').change(function () {
                 var qNumber = $(this).attr('data-number');
-                // TODO: save score to server -- handle failures!! Empty text boxes will report NaN. DEAL WITH THAT TOO!!!!
-                questionScores[activeStudent][qNumber - 1] = parseFloat($(this).val());
+                var score = parseFloat($(this).val());
+                questionScores[activeStudent][qNumber - 1] = score;
+                var questionId = $(this).attr('data-question-assignment-id');
+                if (score === NaN) {
+                    // TODO: if the question score is deleted, we need to delete that object
+                } else {
+                    createGradeRequest('question_assignment_id', questionId, score, null);
+                }
+
                 updateStudentDataArea();
-                saveTimer();
+                //saveTimer();
                 resumeTimerIfPaused();
             });
 
@@ -428,7 +470,7 @@
             $('[name^="comment"]').focusout(function () {
                 if (activeStudent === null) return;
                 updateAndSaveComment($(this));
-                saveTimer();
+                //saveTimer();
                 resumeTimerIfPaused();
             });
 
@@ -472,15 +514,14 @@
                         $(this).val(thisComment);
                     }
                 });
-
             });
 
             // finish & save button routes to reports
             $('#finishButton').click(function () {
                 // TODO: make this button do things
             });
-
             return false;
         });
+
     </script>
 @endsection
