@@ -1,0 +1,14 @@
+@startuml
+
+:Incoming request for question Q \nas questionNumber 2;
+If (Is Q a new question?) then (yes)
+    :Insert Q into questions;
+    :Select Q's id from questions;
+
+else (no)
+    If(Is another question assigned \nas questionNumber 2?) then (yes)
+            :Delete other question \n from question_assignments;
+        endif
+            :Insert Q into question_assignments as #2;
+endif
+@enduml
