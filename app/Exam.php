@@ -116,10 +116,10 @@ class Exam extends BaseModel
         $this->attributes['year'] = $year;
     }
 
-    public function getQuestion($questionNumber)
-    {
-     //   return $this->questions->pivot->wherePivot('question_number', $questionNumber)->first();
-    }
+//    public function getQuestion($questionNumber)
+//    {
+//     //   return $this->questions->pivot->wherePivot('question_number', $questionNumber)->first();
+//    }
 
 
     #------------------------------------------------------ foreign keys

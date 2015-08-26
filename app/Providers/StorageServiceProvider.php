@@ -74,6 +74,8 @@ class StorageServiceProvider extends ServiceProvider
         $this->app->bind('App\HTTP\Controllers\helpers\cleaning\ICleanerFactory', 'App\HTTP\Controllers\helpers\cleaning\CleanerFactory');
 
 
-        //
+        //yes. dumb. i know.
+        $this->app->bind('App\HTTP\Controllers\ReportController', 'App\HTTP\Controllers\ReportController');
+
     }
 }

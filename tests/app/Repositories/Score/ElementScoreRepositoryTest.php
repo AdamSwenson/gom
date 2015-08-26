@@ -60,6 +60,26 @@ class ElementScoreRepositoryTest extends \TestCase
 //    }
 
 
+public function testRecordCommentText()
+{
+    //prep
+    $es = ElementScore::all()->random();
+    $elementAssignmentId = $es->element_assignment_id;
+    $studentId = $es->student_id;
+    $text = $this->faker->text();
+
+    $es->delete();
+    $this->notSeeInDatabase('element_scores', ['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId]);
+
+    //call
+    $this->object->recordCommentText($elementAssignmentId, $studentId, $text);
+
+    //result
+    $this->seeInDatabase('element_scores', ['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId, 'comment_text' => $text]);
+
+}
+
+
     public function testLoad_for_student_on_exam()
     {
         $this->markTestIncomplete();

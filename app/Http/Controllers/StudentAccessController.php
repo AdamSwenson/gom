@@ -11,6 +11,13 @@ use App\Http\Controllers\Controller;
 /**
  * Class StudentAccessController
  *
+ * Ummm actually, this may be deprecated.....
+ * Probably should be using publicFeedbackController
+ *
+ *
+ *
+ *
+ *
  * This handles the events when a student logs in to see their feedback.
  *
  * It corresponds to the old OutputClasses stuff.
@@ -43,6 +50,7 @@ class StudentAccessController extends Controller
     {
         try
         {
+//            throw new \Exception('jjj');
             $data = [
                 'grade' => 'B-',
                 'questions' => [

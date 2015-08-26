@@ -74,6 +74,23 @@ class ReportController extends Controller
         return "Grade assignment page here";
     }
 
+
+    /**
+     * Recompiles the feedback for a particular student.
+     *
+     * This is mainly used if the exam has already been released and the teacher goes back and edits
+     * the comment field for a particular student.
+     *
+     * @param Exam $exam
+     * @param $studentId
+     */
+    public function updateFeedbackForStudent(Exam $exam, $studentId)
+    {
+        //magic
+        //TODO: set up queue-able event to look up the student's access key and then update the output comment
+
+    }
+
     /**
      * Receives the command to create feedback for the exam and dispatches the
      * events to take care of it

@@ -37,7 +37,10 @@ class Element extends BaseModel
 # -------------- getters and setters
 
     /**
-     * Records the element as a subtask of an assigned question
+     * Records the element as a subtask of an assigned question.
+     *
+     * TODO stop wiping existing elements out of the db
+     *
      * @param $examId
      * @param $questionId
      * @param $subtask

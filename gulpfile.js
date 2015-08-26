@@ -16,4 +16,6 @@ elixir(function(mix) {
   .browserify('grade.js', 'public/js/grade-package.js');
 
     mix.sass('app.scss');
+
+    mix.sass(['feedback/chartStyling.scss', 'feedback/textStyling.scss'], 'public/css/output.css');
 });

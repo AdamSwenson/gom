@@ -115,6 +115,22 @@ MYSQL;
 //        return ElementScore::where('student_id', $studentId)->where('exam_id', $examId)->first();
     }
 
+    /**
+     * Records the custom comment text for the student on the element.
+     *
+     * @param $elementAssignmentId
+     * @param $studentId
+     * @param $commentText
+     * @return ElementScore
+     */
+    public function recordCommentText($elementAssignmentId, $studentId, $commentText)
+    {
+        $this->score_object = new ElementScore();
+        $this->score_object->element_assignment_id = $elementAssignmentId;
+        $this->score_object->student_id = $studentId;
+        $this->score_object->recordCommentText($commentText);
+        return $this->score_object;
+    }
 
     /**
      * Saves or updates the element score

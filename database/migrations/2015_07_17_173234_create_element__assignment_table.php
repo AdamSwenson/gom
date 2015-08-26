@@ -24,6 +24,8 @@ class CreateElementAssignmentTable extends Migration
             //Each question cannot have two elements assigned to the same subtask on the same exam
             $table->unique(['exam_id', 'question_id', 'subtask'], 'el_assign_unique');
 
+            $table->unique(['exam_id', 'element_id']);
+
             //Deleting the exam will delete the element assignment
             $table->foreign('exam_id')
                 ->references('id')
