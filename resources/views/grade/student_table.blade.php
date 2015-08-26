@@ -32,7 +32,9 @@
         <?php $count = 0; ?>
         @foreach($students as $student)
             <tr id="studentListItem{{ $count }}" data-index="{{ $count }}" data-fName="{{ $student->getStudentFName() }}"
-                    data-lName="{{ $student->getStudentLName() }}" data-studentId="{{ $student->getStudentId() }}">
+                    data-lName="{{ $student->getStudentLName() }}"
+                    data-sid="{{ $student->id }}"
+                data-student-identifier="{{ $student->getStudentId() }}">
                 <td class="col-md-6" id="studentName{{ $count }}" >{{ $student->getStudentLName() }},
                     {{ $student->getStudentFName() }}</td>
                 <td class="col-md-4" id="studentId{{ $count }}" >{{ $student->getStudentId() }}</td>

@@ -154,6 +154,7 @@ class GradeController extends Controller
         if ($request->has('student_id') ) {
             $studentId = $request->input('student_id');
 
+            $itemId = null;
 
             //If the request is to record a question score, it follows this path
             if ($request->has('question_assignment_id')) {
@@ -166,6 +167,7 @@ class GradeController extends Controller
                 $itemId = $this->elementAssignmentDao->load_element_assignment_by_element($exam->getId(),
                                                         $request->input('element_id') );
             }
+
 
             if ($request->has('score')) {
                 $score = $request->input('score');
@@ -185,7 +187,7 @@ class GradeController extends Controller
                 $reportController->updateFeedbackForStudent($exam->getId(), $studentId);
             }
 
-            recordTime();
+            $this->recordTime($exam, $request);
 
         } else {
             //TODO Error handling
