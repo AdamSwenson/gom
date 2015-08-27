@@ -82,11 +82,11 @@
                     <div class="col-md-7">
                         <h4>
                             <span class="glyphicon glyphicon-pencil"> </span>
-                            <span id="selectedStudentName">No Student Selected</span>
+                            <span id="activeStudentName">No Student Selected</span>
                         </h4>
                     </div>
                     <div class="col-md-5">
-                        <h4>ID <span id="studentId">--</span></h4>
+                        <h4>ID <span id="activeStudentIdentifier">--</span></h4>
                     </div>
                 </div>
                 <!-- graded / remaining counters -->
@@ -231,14 +231,15 @@
             var examId = $('h3').attr('data-exam-id');
 
             $.ajax({
-                url:  'http://localhost:8000/grade/exam/' + examId,
+                //url:  'http://localhost:8000/grade/exam/' + examId,
+                url: examId,
                 data: gradeRequest,
                 type: 'POST',
                 success: function() {
                     console.log('success! ');
                 },
                 error: function( ) {
-                    alert( "Sorry, there was a problem!" );
+                    alert( "Sorry, there was a problem saving this exam!\nPlease try again." );
                 },
             });
         }
@@ -247,13 +248,13 @@
             return $('#studentListItem' + activeStudent).attr('data-sid');
         }
 
-        // sets the selectedStudentName and studentId fields
+        // sets the activeStudentName and studentId fields
         function setSelectedNameAndId() {
             var $student = $('#studentListItem' + activeStudent);
             var name = $student.attr('data-lName') + ", " + $student.attr('data-fName');
             var id = $('#studentListItem' + activeStudent).data('student-identifier');
-            $("#selectedStudentName").text(name);
-            $("#studentId").text(id);
+            $("#activeStudentName").text(name);
+            $("#activeStudentIdentifier").text(id);
         }
 
         // update the "graded: xx remaining: xx" counters
@@ -323,7 +324,7 @@
                         if (value == 'studentName') {
                             result = $(i).text().toUpperCase().localeCompare(
                                     $(j).text().toUpperCase());
-                        } else if (value == 'studentId') {
+                        } else if (value == 'studentIdentifier') {
                             result = parseFloat($(i).text()) - parseFloat($(j).text());
                         } else {
                             var gradeA = examGrades[$(a).attr('data-index')];

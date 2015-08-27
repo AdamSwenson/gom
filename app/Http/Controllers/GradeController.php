@@ -175,16 +175,21 @@ class GradeController extends Controller
             }
 
             // record score fot the question or comment
-            if ($request->has('score')) {
+            if ($request->exists('score')) {
+                // if the score returns as 'NaN' that item's score has been removed, so delete from DB
                 $score = $request->input('score');
-                $this->dao->record($itemId, $studentId, $score);
+                if ($score == NAN) {
+                    //$this->dao->deleteScore
+                } else {
+                    $this->dao->record($itemId, $studentId, $score);
+                }
             }
 
             // Check if the exam has been released.
             // A released exam will have its compiled feedback updated  for this student
             if ( $exam->getReleased() ) {
                 $reportController = app()->make('App\Http\Controllers\ReportController');
-                $reportController->updateFeedbackForStudent($exam->getId(), $studentId);
+                $reportController->updateFeedbackForStudent($exam, $studentId);
             }
 
             $this->recordTime($exam, $request);
