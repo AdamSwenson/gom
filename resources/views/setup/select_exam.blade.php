@@ -72,7 +72,7 @@
                         <!-- clone exam -->
                         <a id="cloneExamLink" class="list-group-item" data-toggle="collapse"
                            data-target="#examListClone" data-parent="#examAction" style="cursor:pointer;">
-                            <h4><span class="glyphicon glyphicon-copy" aria-hidden="true"></span> Clone Exam</h4>
+                            <h4><span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> Clone Exam</h4>
                         </a>
 
                         <div id="examListClone" class="sublinks collapse">
@@ -98,7 +98,6 @@
                            data-target="#examListDelete" data-parent="#examAction" style="cursor:pointer;">
                             <h4><span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete Exam</h4>
                         </a>
-                        <!-- this div should be replaced by real exams or a "No exams found" error popup -->
                         <div id="examListDelete" class="sublinks collapse">
                             <div class="container">
                                 @foreach($exams as $exam)
@@ -133,6 +132,11 @@
 @section('jsArea')
 
     <script type="text/javascript">
+
+        // set 'Setup' tab as active
+        $('[id^="nav"]').attr('class', '');
+        $('#navSetup').attr('class', 'active');
+
         $(document).ready(function () {
             return false;
         });

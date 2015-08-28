@@ -1,43 +1,46 @@
 @extends('layouts.master')
 
 @section('pageTitle', 'Grade Exam')
-@section('description', 'Choose an exam to grade')
+@section('description', 'Select an exam for grading')
 @section('cssLinks')
 
 @endsection
 
 @section('body')
 
-        <!-- style exam names with year and term -->
-<style type="text/css">
-    .exam-name {
-        display: inline-block;
-        width: 110px;
-    }
-</style>
+    <div class="container">
+        <h3><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Grade Exam</h3>
+        <h4>Select an exam to grade or modify</h4>
 
-<div class="container">
-
-    <h2>Select Exam</h2>
-
-    <div class="col-md-8">
-        @foreach($exams as $exam)
-            <div class="row">
-                <form method="GET" action="{{ url('grade/exam/'. $exam->getId()) }}"
-                      accept-charset="UTF-8">
-                    <button type="submit"
-                            class="list-group-item"><span class="exam-name">{{ $exam->getYear() }}, {{ $exam->getTerm() }}
-                        </span>| {{ $exam->getName() }}</button>
-                </form>
+        <div class="well-lg">
+            <div class="panel panel-default">
+                <table class="table">
+                    <tbody>
+                    @foreach($exams as $exam)
+                        <tr class="row" style="cursor: pointer;" data-href="{{ url('grade/exam/'.$exam->getId()) }}">
+                            <td class="col-md-1" style="width:10%;">{{ $exam->getYear() }} {{ $exam->getTerm() }}</td>
+                            <td class="col-md-11">{{ $exam->getName() }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
             </div>
-        @endforeach
+        </div>
     </div>
-</div>
+
 @endsection
 
 
 @section('jsArea')
+    <script type="text/javascript">
+        // set 'Grade' tab as active
+        $('[id^="nav"]').attr('class', '');
+        $('#navGrade').attr('class', 'active');
 
+        $('tr[data-href]').on("click", function() {
+            document.location = $(this).data('href');
+        });
+    </script>
 
 @endsection
 

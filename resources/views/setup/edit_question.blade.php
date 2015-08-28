@@ -52,7 +52,8 @@
 
                 </ul>
             </form>
-            <a class="btn btn-primary" id="addQuestion"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            <a class="btn btn-primary" id="addQuestion"><span class="glyphicon glyphicon-plus"
+                                                              aria-hidden="true"></span>
                 Add Question</a>
             <a class="btn btn-primary" id="importQuestion"><span class="glyphicon glyphicon-import"
                                                                  aria-hidden="true"></span>Import Question
@@ -75,6 +76,7 @@
         // Sortable is the lib for deag and drop elements
         // create an editable list and set up some filters to handle callbacks
         $(document).ready(function () {
+
                     localStorage.clear();
                     var qList = document.getElementById('questionList');
                     var editableList = Sortable.create(qList, {
@@ -85,15 +87,34 @@
                         onFilter: function (evt) {
                             // handle deletion - items will be deleted once the form is submitted
                             var el = editableList.closest(evt.item); // get dragged item
-                            // TODO: add confirm modal
-                            if (el && el.parentNode.removeChild(el))
-                                updateNumbers();
+
+                            bootbox.dialog({
+                                message: "Warning: This will delete all elements and scores associated with the question",
+                                title: "Delete Question",
+                                buttons: {
+                                    success: {
+                                        label: 'Cancel',
+                                        className: "btn-sm",
+                                        callback: function() {
+                                        }
+                                    },
+                                    danger: {
+                                        label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
+                                        className: "btn-danger btn-sm",
+                                        callback: function() {
+                                            if (el && el.parentNode.removeChild(el))
+                                                updateNumbers();
+                                        }
+                                    }
+                                }
+                            });
+
                         },
                         store: {
                             // store the ordering to localStorage
                             get: function (sortable) {
                                 var order = localStorage.getItem(sortable.options.group);
-                                window.console.log(localStorage.getItem(sortable.options.group));
+                                //window.console.log(localStorage.getItem(sortable.options.group));
                                 return order ? order.split('|') : [];
                             },
 
@@ -105,21 +126,6 @@
                             }
                         }
                     });
-
-                    // confirm delete modal: in progress
-                    function confirmDelete(el) {
-
-                        bootbox.confirm("Are you sure?", function (result) {
-                            var el = editableList.closest(evt.item);
-
-                            if (result) {
-                                if (el && el.parentNode.removeChild(el))
-                                    updateNumbers();
-                            }
-
-                            bootbox.hideAll();
-                        });
-                    }
 
                     // handle addQuestion button
                     document.getElementById("addQuestion").onclick = function () {

@@ -117,7 +117,7 @@ class ReportController extends Controller
     {
         $students = $this->studentRepository->load_students_by_exam($exam->getId());
 
-        return view('reports.analyticsCharts')->with(['exam' => $exam, 'students' => $students]);
+        return view('reports.exam_analytics')->with(['exam' => $exam, 'students' => $students]);
     }
 
     public function showExams()
@@ -125,7 +125,7 @@ class ReportController extends Controller
         $exams = $this->examDao->load_all_exams();
 
         //$students = $this->studentDao->load_all_students();
-        return view('reports.ExamsRelease', compact('exams'));
+        return view('reports.exam_controls', compact('exams'));
     }
 
     /**
@@ -141,7 +141,7 @@ class ReportController extends Controller
     {
         $students = $this->studentRepository->load_students_by_exam($exam->getId());
 
-        return view('reports.studentsGrades')->with(['exam' => $exam, 'students' => $students]);
+        return view('reports.student_controls')->with(['exam' => $exam, 'students' => $students]);
     }
 
 
