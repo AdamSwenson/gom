@@ -31,13 +31,6 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
         $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\ICleanerFactory');
 
     }
-//    /**
-//     * @param ICleanerFactory $cleaner
-//     */
-//    public function __construct(ICleanerFactory $cleaner)
-//    {
-//        $this->cleaner = $cleaner;
-//    }
 
 
     /**

@@ -4,7 +4,9 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 /**
  * Class ReseedingTestCase
- * Reseeds the database between every test
+ * Removes the login call from setup. This way database can be reseeded between every test.
+ * Note that it doesn't automatically do the reseeding. That is done by calling prepareDatabase()
+ * in the test method.
  */
 class ReseedingTestCase extends Illuminate\Foundation\Testing\TestCase
 {
@@ -19,6 +21,7 @@ class ReseedingTestCase extends Illuminate\Foundation\Testing\TestCase
     public $faker;
 
     public static $userid = 1;
+
     /**
      * Creates the application.
      *
@@ -27,12 +30,12 @@ class ReseedingTestCase extends Illuminate\Foundation\Testing\TestCase
     public function createApplication()
     {
         // Temporarily increase memory limit to 256MB
-        ini_set('memory_limit','300M');
+        ini_set('memory_limit', '300M');
 
         //        $this->user = \UserQuery::create()->filterById(self::$userid)->findOneOrCreate();
         $this->faker = \Faker\Factory::create();
 
-        $app = require __DIR__.'/../bootstrap/app.php';
+        $app = require __DIR__ . '/../bootstrap/app.php';
 
         $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
@@ -61,6 +64,7 @@ class ReseedingTestCase extends Illuminate\Foundation\Testing\TestCase
     {
         $mock = Mockery::mock($class);
         $this->app->instance($class, $mock);
+
         return $mock;
     }
 
@@ -72,7 +76,7 @@ class ReseedingTestCase extends Illuminate\Foundation\Testing\TestCase
     public function tearDown()
     {
         parent::tearDown();
-    Mockery::close();
+        Mockery::close();
     }
 
 
