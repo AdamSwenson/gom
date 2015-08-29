@@ -60,7 +60,7 @@ class Element extends BaseModel
         */
         $e = ElementAssignment::where('exam_id', $examId)->where('question_id', $questionId)->where('subtask', $subtask)->first();
         if(! is_null($e)) $e->delete();
-        
+
         //Create a new element assignment object and populate it with the new assignment
         $newAssign = new ElementAssignment();
         $newAssign->question_id = $questionId;
