@@ -27,10 +27,12 @@
                             </td>
                             <!-- control buttons -->
                             <td class="col-md-3" style="text-align:right">
-                                <a id="{{'releaseExam' . $exam->getId()}}" title="Release Exam" class="btn btn-warning"
-                                   onclick="releaseExam({{ $exam->getId()}} )"><span
-                                            class="glyphicon glyphicon-lock"
-                                            aria-hidden="true"></span> Release Exam</a>
+                                <a class="btn btn-warning" id="{{'exam' . $exam->getId()}}"
+                                   title="Release Exam" data-released="{{ $exam->getReleased() }}"
+                                   onclick="releaseExam({{ $exam->getId()}} )">
+                                    <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
+                                    Release Exam
+                                </a>
                                 <a class="btn btn-primary" title="Exam Analytics"
                                    href="{{url('report/' . $exam->getId() . '/analytics')}}"><span
                                             class="glyphicon glyphicon-stats"
@@ -60,6 +62,10 @@
         $('[id^="nav"]').attr('class', '');
         $('#navReport').attr('class', 'active');
 
+        // Compiles student scores and stats, then sends notification emails to all graded students
+        // who have not yet received an email. Normally, this will be most (if not all) of the class.
+        // Any late graded exams can be processed by releasing again
+        // or individually via the student controls page
         function releaseExam(examId) {
 
         }

@@ -144,5 +144,8 @@ class ReportController extends Controller
         return view('reports.student_controls')->with(['exam' => $exam, 'students' => $students]);
     }
 
+    // Show feedback on $exam for the selected student
+    public function showStudentFeedback(Exam $exam, Student $student) {
 
+    }
 }

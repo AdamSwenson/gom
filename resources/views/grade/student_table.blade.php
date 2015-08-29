@@ -19,7 +19,7 @@
         cursor: pointer;
     }
 </style>
-<div class="panel panel-default" >
+<div class="panel panel-default">
     <table class="table table-fixed" id="studentRoster">
         <thead>
         <tr>
@@ -31,13 +31,14 @@
         <tbody id="studentRosterBody">
         <?php $count = 0; ?>
         @foreach($students as $student)
-            <tr id="studentListItem{{ $count }}" data-index="{{ $count }}" data-fName="{{ $student->getStudentFName() }}"
-                    data-lName="{{ $student->getStudentLName() }}"
-                    data-sid="{{ $student->id }}"
+            <tr id="studentListItem{{ $count }}" data-index="{{ $count }}"
+                data-fName="{{ $student->getStudentFName() }}"
+                data-lName="{{ $student->getStudentLName() }}"
+                data-sid="{{ $student->id }}"
                 data-student-identifier="{{ $student->getStudentId() }}">
-                <td class="col-md-6" id="studentName{{ $count }}" >{{ $student->getStudentLName() }},
+                <td class="col-md-6" id="studentName{{ $count }}">{{ $student->getStudentLName() }},
                     {{ $student->getStudentFName() }}</td>
-                <td class="col-md-4" id="studentIdentifier{{ $count }}" >{{ $student->getStudentId() }}</td>
+                <td class="col-md-4" id="studentIdentifier{{ $count }}">{{ $student->getStudentId() }}</td>
                 <td class="col-md-2" id="examGrade<?= $count++; ?>">--</td>
             </tr>
         @endforeach
