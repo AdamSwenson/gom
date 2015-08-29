@@ -39,11 +39,11 @@ class ElementAssignmentRepositoryTest extends \TestCase
     public function testRecord()
     {
         $subtask = $this->faker->randomNumber(3);
-        $result = $this->object->record($this->questionAssignment->exam_id, $this->questionAssignment->question_id, $this->element->id, $subtask);
+        $result = $this->object->record($this->questionAssignment->exam_id, $this->question->id, $this->element->id, $subtask);
         $this->assertInstanceOf('\App\Element', $result);
         $this->seeInDatabase('element_assignments',
             [
-                'question_id' => $this->questionAssignment->question_id,
+                'question_id' => $this->question->id,
                 'element_id' => $this->element->id,
                 'subtask' => $subtask
             ]);
@@ -84,16 +84,47 @@ class ElementAssignmentRepositoryTest extends \TestCase
      */
     public function testLoad_by_exam()
     {
+        //prep
         $elAssign = ElementAssignment::all()->random(1);
         $eid = $elAssign->exam_id;
 
+        //call
         $result = $this->object->load_by_exam($eid);
 
+        //check
         $this->assertInstanceOf('Illuminate\Support\Collection', $result, "should return a laravel collection ");
+
+        $q_nums = [];
+        $subtasks = [];
         foreach ($result as $r)
         {
             $this->assertInstanceOf('\App\ElementAssignment', $r);
+            array_push($q_nums, $r->getQuestionNumber());
+            array_push($subtasks, $r->subtask);
         }
+
+        //Check that in ascending order by question number
+        for($i=0; $i<count($q_nums); $i++)
+        {
+            if($i>0)
+            {
+                $this->assertTrue($q_nums[$i] >= $q_nums[$i - 1]);
+            }
+        }
+
+        //Check that subtasks are in order
+        for($i=0; $i<count($subtasks); $i++)
+        {
+            if($i>0 && ($subtasks[$i] != 1))
+            {
+                $this->assertTrue($subtasks[$i] >= $subtasks[$i - 1]);
+            }
+        }
+
+        //Todo: Still not well-ordered
+
+
+
     }
 
     /**
@@ -168,7 +199,7 @@ class ElementAssignmentRepositoryTest extends \TestCase
 //            $subtask);
 //        $this->assertInstanceOf('\App\ElementAssignment', $result);
 //
-//        //todo fix so works
+
 //        $this->seeInDatabase('question_assignments',
 //            ['exam_id' => $this->exam->getId(), 'question_id' => $this->question_id]);
 //        $this->seeInDatabase('element_assignments', ['element_id' => $this->element->getId(), 'subtask' => $subtask]);

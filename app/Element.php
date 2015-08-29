@@ -39,7 +39,6 @@ class Element extends BaseModel
     /**
      * Records the element as a subtask of an assigned question.
      *
-     * TODO stop wiping existing elements out of the db
      *
      * @param $examId
      * @param $questionId
@@ -48,87 +47,31 @@ class Element extends BaseModel
      */
     public function setAsQuestionTask($examId, $questionId, $subtask)
     {
+        /*
+        Check to see if the element is already assigned on the exam.
+        If so, remove it so that there will only be one of an element per exam.
+        */
+        $preExisting = ElementAssignment::where('exam_id', $examId)->where('element_id', $this->attributes['id'])->first();
+        if(! is_null($preExisting)) $preExisting->delete();
+
+        /*
+        Check to see if another element is assigned here
+        If it is, delete the existing assignment.
+        */
         $e = ElementAssignment::where('exam_id', $examId)->where('question_id', $questionId)->where('subtask', $subtask)->first();
-
-        if($e){
-            $e->delete();
-        }
-
+        if(! is_null($e)) $e->delete();
+        
+        //Create a new element assignment object and populate it with the new assignment
         $newAssign = new ElementAssignment();
         $newAssign->question_id = $questionId;
         $newAssign->exam_id = $examId;
         $newAssign->subtask = $subtask;
         $newAssign->element_id = $this->attributes['id'];
+        //Save it
         $newAssign->save();
-//
-//        $query = 'CALL assign_element(:examId, :questionId, :subtask, :elementId)';
-//        $values = [
-//            'examId' => $examId,
-//            'questionId' => $questionId,
-//            'subtask' => $subtask,
-//            'elementId' => $this->attributes['id']
-//        ];
-//        DB::statement($query, $values);
-//dd($result);
-
-//        $questionAssignment = QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->firstOrFail();
-//        $query = 'CALL assign_element(:questionAssignmentId, :subtask, :elementId)';
-//        $values = [
-//            'questionAssignmentId' => $questionAssignment->id,
-//            'subtask' => $subtask,
-//            'elementId' => $this->attributes['id']
-//        ];
-//        DB::statement($query, $values);
-
-
-        //$questionAssignment = QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->firstOrFail();
-
-        /*        //works with raw
-                $query = "INSERT INTO element_assignments (question_assignment_id, subtask, element_id)
-                VALUES (:assignId, :subtask, :elementId) ON DUPLICATE KEY UPDATE element_id = :element_id";
-                $vals = [
-                    'assignId' => $questionAssignment->getId(),
-                    'subtask' => $subtask,
-                    'elementId' => $this->attributes['id']
-                ];
-                DB::raw($query, $vals);*/
-
-//        ElementAssignment::updateOrCreate(
-//            ['question_assignment_id' => $questionAssignment->getId(), 'subtask' => $subtask],
-//            ['element_id' => $this->attributes['id']]
-//        );
-//
-//        $pre_existing = ElementAssignment::where('subtask', $subtask)->where('question_assignment_id',
-//            $questionAssignment->getId());
-//        if ($pre_existing)
-//        {
-//            $pre_existing->delete();
-//        }
-//
-//
-////    $pre_assigned = ElementAssignment::where('exam_id', $examId)->where('question_id', $this->getId());
-////    if($pre_assigned)
-////    {
-////        $pre_assigned->delete();
-////    }
-//        $this->questionAssignments()->attach($questionAssignment->getId(), ['subtask' => $subtask]);
 
         return $this;
     }
-
-//    /**
-//     * Returns integer subtask
-//     * @param $questionAssignmentId
-//     * @return mixed
-//     * @internal param $examId
-//     * @internal param $questionId
-//     */
-//    public function getQuestionTaskNumber($questionAssignmentId)
-//    {
-//        $e = $this->questionAssignments()->where('question_assignment_id', $questionAssignmentId)->first();
-//
-//        return $e->pivot->subtask;
-//    }
 
 
     /**
@@ -204,22 +147,23 @@ class Element extends BaseModel
         return $this->questionAssignments();
     }
 
+    /**
+     * Junction to questions
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function questions()
     {
         return $this->belongsToMany('App\Question', 'element_assignments')->withPivot('exam_id', 'subtask')->withTimestamps();
     }
 
-
+    /**
+     * Junction to exams
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function exams()
     {
         return $this->belongsToMany('App\Exam', 'element_assignments')->withPivot('question_id', 'subtask')->withTimestamps();
     }
-
-//    public function questionAssignments()
-//    {
-//        return $this->belongsToMany('App\QuestionAssignment',
-//                                    'element_assignments')->withPivot('subtask')->withTimestamps();
-//    }
 
     /**
      * Junction to element scores
@@ -239,51 +183,5 @@ class Element extends BaseModel
     {
         return $this->hasMany('App\Comment');
     }
-
-    //    public function exam()
-//    {
-//        return $this->belongsToMany('App\Exam', 'element_assignments');
-//    }
-
-//    public function questions()
-//    {
-//        return $this->hasManyThrough('App\Question', 'App\QuestionAssignment', 'element_id');//App\QuestionAssignment')->withTimestamps();
-//    }
-
-//
-//    /**
-//     * Handle legacy and aliased method calls.
-//     *
-//     * @param  string $method
-//     * @param  array $parameters
-//     * @return mixed
-//     */
-//    public function __call($method, $parameters)
-//    {
-//        switch($method)
-//        {
-//            case 'getDisplaytext':
-//                $this->getDisplayText();
-//                break;
-//            case 'eetElementname':
-//                $this->getElementName();
-//                break;
-//            case 'getCommenttext':
-//                $this->getCommentText();
-//                break;
-//            case 'setDisplaytext':
-//                $this->setDisplayText($parameters);
-//                break;
-//            case 'setElementname':
-//                $this->getElementName($parameters);
-//                break;
-//            case 'setCommenttext':
-//                $this->setCommentText($parameters);
-//                break;
-//            default:
-//                break;
-//        }
-//    }
-
 
 }

@@ -8,7 +8,7 @@
 
 //use App\classes\DbTestAids;
 
-require_once 'vendor/autoload.php';
+require_once '../../vendor/autoload.php';
 
 //
 //$username = putenv("DB_USERNAME=testuser4");

@@ -12,6 +12,7 @@ use App\AccessKey;
 use App\Exceptions\InputTypeException;
 use App\Feedback;
 use App\Repositories\Feedback\PseudoIDMaker;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -24,24 +25,32 @@ use Illuminate\Support\Facades\DB;
  */
 class AccessKeyRepository implements IAccessKeyRepository
 {
+
+
     protected $validKey;
 
     /**
      * Creates an access key, checks its validity, and records it in the database.
      * Returns only the string, not the model object.
+     *
+     * TODO: Improve localization so that expiration date will occur as expected
+     *
      * @param $examId
      * @param $studentId
+     * @param int $daysUntilExpiration
      * @return string
      */
-    public function createAccessKey($examId, $studentId)
+    public function createAccessKey($examId, $studentId, $daysUntilExpiration=10)
     {
         $accessKey = $this->generateNewKey();
         if($accessKey)
         {
+            $expire = Carbon::now()->addDays($daysUntilExpiration);
             $k = new AccessKey();
             $k->setKey($accessKey);
             $k->setExamId($examId);
             $k->setStudentId($studentId);
+            $k->setExpirationDate($expire);
             $k->save();
 
             if($k)
@@ -78,7 +87,7 @@ class AccessKeyRepository implements IAccessKeyRepository
      */
     public function getAccessKeyForStudent($examId, $studentId)
     {
-        $key = AccessKey::onExam($examId)->where('student_id', $studentId)->first();
+        $key = AccessKey::where('exam_id', $examId)->where('student_id', $studentId)->first();
         return $key->getKey();
     }
 

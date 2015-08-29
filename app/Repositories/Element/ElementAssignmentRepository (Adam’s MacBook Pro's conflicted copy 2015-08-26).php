@@ -41,7 +41,6 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
         {
             array_push($elements, $assign->element()->first());
         }
-
         return $elements;
     }
 
@@ -100,7 +99,7 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
      * @param bool $returnArray
      * @return array
      */
-    public function load_by_exam($examId, $returnArray = false)
+    public function load_by_exam($examId, $returnArray=false)
     {
         $query = <<<MYSQL
             SELECT ea.id AS element_assignment_id, ea.question_id, ea.element_id, ea.subtask
@@ -111,22 +110,20 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
 MYSQL;
         $values = ['examId' => $examId];
         $result = \DB::select($query, $values);
-        if ($returnArray === true)
+        if($returnArray === true)
         {
             return $result;
         }
         $objects = [];
-        foreach ($result as $r)
+        foreach($result as $r)
         {
             $ea = new ElementAssignment();
             $ea->id = $r->element_assignment_id;
             $ea->question_id = $r->question_id;
             $ea->element_id = $r->element_id;
-            $ea->exam_id = $examId;
             $ea->subtask = $r->subtask;
             array_push($objects, $ea);
         }
-
         return collect($objects);
     }
 
@@ -141,7 +138,6 @@ MYSQL;
     public function record($examId, $questionId, $elementId, $subtask)
     {
         $element = Element::findOrFail($elementId);
-
         return $element->setAsQuestionTask($examId, $questionId, $subtask);
 
 
@@ -178,48 +174,23 @@ MYSQL;
      */
     protected function isElementAlreadyAssignedOnThisExam($examId, $elementId)
     {
-        $ea = ElementAssignment::where('exam_id', $examId)->where('element_id', $elementId)->first();
-        if (empty($ea))
-        {
+       $ea = ElementAssignment::where('exam_id', $examId)->where('element_id', $elementId)->first();
+        if(empty($ea)){
             return false;
-        } else
-        {
+        }else{
             return $ea;
         }
     }
 
     /**
      * When an element is deleted from an exam, the other elements associated with the question will need to be reordered.
-     * This returns a collection of elementAssignment objects for the elements which need to be reordered.
-     * @param integer $examId
-     * @param integer $questionId
-     * @param integer $subtaskOfElementBeingDeleted
-     * @return bool
+     *
+     * @param $examId
+     * @param $questionId
      */
-    public function reorderElementsToMaintainSubtaskConsistency($examId, $questionId, $subtaskOfElementBeingDeleted)
+    protected function loadAllElementsForReordering($examId, $questionId, $subtaskOfElementBeingDeleted)
     {
+        $assignments = ElementAssignment::where('exam_id', $examId)->where('question_id', $questionId)->where('subtask', '>', $subtaskOfElementBeingDeleted)->orderBy('subtask')->get();
 
-        $assignments = ElementAssignment::where('exam_id', $examId)
-            ->where('question_id', $questionId)
-            ->where('subtask', '>', $subtaskOfElementBeingDeleted)
-            ->orderBy('subtask')
-            ->get();
-
-        /*
-        * If $assignments is empty, the element being deleted was set as the last subtask, so
-        * we don't need to do anything else. But if it is empty, we need to go through and
-        * reduce the assigned subtask by one for each of the elements whose subtask was greater
-        * than the subtask of the element being deleted.
-        */
-        if (!empty($assignments))
-        {
-            //Do reordering
-            foreach ($assignments as $assign)
-            {
-                $assign->subtask = $assign->subtask - 1;
-                $assign->update();
-            }
-        }
-        return true;
     }
 }

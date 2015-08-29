@@ -1,0 +1,38 @@
+@startuml
+:Incoming request;
+If(What are we to do?) then (record assignment)
+    If(Request concerns question or element) then (question)
+    :Incoming request for question Q \nas questionNumber #i;
+    If (Is Q a new question?) then (yes)
+        :Insert Q into questions;
+        :Select Q's id from questions;
+
+    else (no)
+        If(Is there a question \n assigned as #i?) then (yes)
+            If(Is Q the question assigned as #i?) then(yes)
+             else(no)
+                :Delete other question \n from question_assignments;
+            endif
+                :Insert Q into question_assignments as #i;
+                endif
+    endif
+
+    else(element)
+    :Incoming request for element E as subtask k;
+    If(Is element E a new element) then(yes)
+        :Insert E into elements;
+        :Select E's id from elements;
+    else(no)
+        If(Is another element \n assigned to subtask k?) then (yes)
+            :Delete element assignment to subtask k;
+            endif
+
+            :Insert E into element_assignments as subtask k;
+        endif
+
+    endif
+else (delete assignment)
+
+endif
+@enduml
+

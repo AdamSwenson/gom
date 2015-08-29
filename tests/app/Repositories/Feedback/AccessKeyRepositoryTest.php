@@ -9,13 +9,20 @@
 namespace App\Repositories\Feedback;
 
 
+use App\AccessKey;
 use App\Exam;
 use App\Student;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class AccessKeyRepositoryTest extends \TestCase
 {
 
     protected $object;
+    public $expiration_date;
+    public $key;
+    protected $exam;
+    protected $student;
 
     public function setUp()
     {
@@ -23,45 +30,80 @@ class AccessKeyRepositoryTest extends \TestCase
         $this->object = new AccessKeyRepository;
         $this->exam = Exam::all()->random();
         $this->student = Student::all()->random();
+
+        $ak = AccessKey::where('exam_id', $this->exam->id)->where('student_id', $this->student->id)->first();
+        if ($ak)
+        {
+            $ak->delete();
+        }
+
+    }
+
+
+    /**
+     * Deletes any existing record and then creates an entry in the db with
+     * an access key for the $this->student which expires tomorrow
+     *
+     */
+    public function createAccessKeyRecordForTest($expired = false)
+    {
+        //setup
+        $this->expiration_date = ($expired ? Carbon::yesterday() : Carbon::tomorrow());
+
+        $a = AccessKey::where('exam_id', $this->exam->id)->where('student_id', $this->student->id)->first();
+        if (!is_null($a))
+        {
+            $a->delete();
+        }
+        $this->key = $this->faker->md5();
+        $ak = new AccessKey();
+        $ak->setExamId($this->exam->id);
+        $ak->setStudentId($this->student->id);
+        $ak->setKey($this->key);
+        $ak->setExpirationDate($this->expiration_date);
+        $ak->save();
     }
 
     public function testGetAccessKeyForStudent()
     {
-        $this->markTestIncomplete();
-//        $key = AccessKey::onExam($examId)->where('student_id', $studentId)->first();
-//        return $key->getKey();
+        //prep
+        $this->createAccessKeyRecordForTest();
+
+        //call
+        $result = $this->object->getAccessKeyForStudent($this->exam->id, $this->student->id);
+
+        //check
+        $this->assertNotNull($result);
+        $this->assertEquals($this->key, $result);
     }
 
 
     public function testGetAccessKeysForExam()
     {
-        $this->markTestIncomplete();
-//        return AccessKey::onExam($examId)->get();
+        //prep
+        $this->createAccessKeyRecordForTest();
+
+        //call
+        $result = $this->object->getAccessKeysForExam($this->exam->id);
+
+        //check
+        $this->assertNotNull($result);
+        $this->assertInstanceOf('Illuminate\Support\Collection', $result);
     }
 
 
     public function testCreateAccessKey()
     {
-        $result = $this->object->createAccessKey(1,1);
-        var_dump($result);
-$this->assertNotEmpty($result);
-//        $this->markTestIncomplete();
-//        $accessKey = $this->generateNewKey();
-//        if($accessKey)
-//        {
-//            $k = new AccessKey();
-//            $k->setKey($accessKey);
-//            $k->setExamId($examId);
-//            $k->setStudentId($studentId);
-//            $k->save();
-//
-//            if($k)
-//            {
-//                return $k->getKey();
-//            }
-//        }
-    }
+        $ak = AccessKey::where('exam_id', $this->exam->id)->where('student_id', $this->student->id)->first();
+        if ($ak)
+        {
+            $ak->delete();
+        }
 
+        $result = $this->object->createAccessKey($this->exam->id, $this->student->id);
+
+        $this->assertNotEmpty($result);
+    }
 
 
     public function testRetrieveFeedback()
@@ -77,7 +119,15 @@ $this->assertNotEmpty($result);
 
     public function testRemoveAccessKey()
     {
-$this->markTestIncomplete();
+        //prep
+        $this->createAccessKeyRecordForTest();
+        $this->seeInDatabase('access_keys', ['access_key' => $this->key]);
+
+        //call
+        $this->object->removeAccessKey($this->key);
+
+        //check
+        $this->notSeeInDatabase('access_keys', ['access_key' => $this->key]);
     }
 
 }
