@@ -54,6 +54,11 @@
 
 @section('jsArea')
     <script type="text/javascript">
+
+        // set 'Setup' tab as active
+        $('[id^="nav"]').attr('class', '');
+        $('#navSetup').attr('class', 'active');
+
         $(document).ready(function() {
 
 

@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('pageTitle', 'Grade Exam')
-@section('description', 'Grade the exam')
+@section('description', 'Grade an exam')
 @section('cssLinks')
 
 @endsection
@@ -13,8 +13,8 @@
             <div class="col-md-8">
                 <h3 data-exam-id="{{ $exam->getId() }}"><span class="glyphicon glyphicon-list-alt"
                                                               aria-hidden="true"></span>
-                    {{ $exam->getTerm() }}, {{ $exam->getYear() }}: "{{ $exam->getName() }}" </h3>
-                <h4 id="selectPrompt">Select a student to begin grading.</h4>
+                    {{ $exam->getTerm() }}, {{ $exam->getYear() }} "{{ $exam->getName() }}" </h3>
+                <h4 id="selectPrompt">Select a student to begin grading</h4>
 
                 <div id="questionArea" style="display: none">
                     <!-- Centered Question Pills -->
@@ -82,17 +82,17 @@
                     <div class="col-md-7">
                         <h4>
                             <span class="glyphicon glyphicon-pencil"> </span>
-                            <span id="selectedStudentName">No Student Selected</span>
+                            <span id="activeStudentName">No Student Selected</span>
                         </h4>
                     </div>
                     <div class="col-md-5">
-                        <h4>ID <span id="studentId">--</span></h4>
+                        <h4>ID <span id="activeStudentIdentifier">--</span></h4>
                     </div>
                 </div>
                 <!-- graded / remaining counters -->
                 <p>Graded: <span id="graded">0</span> Remaining: <span id="remaining">0</span></p>
                 <!-- save & finish button -->
-                <a class="btn btn-success col-md-12" id="finishButton" style="display: none;">
+                <a class="btn btn-success col-md-12" href="{{ url('report/') }}" id="finishButton" style="display: none;">
                     <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish
                 </a>
                 <!-- student table -->
@@ -126,7 +126,9 @@
 
         updateExamGrades();
 
-        /* Set valenceCutoffs for comments. These represent the maximum value for each valence group.
+        /*
+         * Set valenceCutoffs for comments.
+         * These represent the maximum value for each valence group.
          * Magic numbers for now, but will accept data from the server if valenceCutoffs and valenceLabels are modified
          */
         var valenceCutoffs = [0, 3.25, 6.75, 10];
@@ -144,11 +146,15 @@
             ticks_position: valenceLabels
         });
 
+        // set 'Grade' tab as active
+        $('[id^="nav"]').attr('class', '');
+        $('#navGrade').attr('class','active');
+
         /*
          * GENERAL FUNCTIONS
          */
 
-        // Returns which valence group (int) a given score belongs to by comparing to valenceCutoffs[]
+        // Returns which valence group [score] belongs to by comparing with valenceCutoffs[]
         function getValence(score) {
             var valence = 0;
             for (var j = valenceCutoffs.length - 2; j >= 0; j--) {
@@ -191,19 +197,25 @@
             return graded;
         }
 
-        // updates the parameter [$comment] in the local structure and saves to server
+        // updates [$comment] in the client structure and saves to server
         function updateAndSaveComment($comment) {
+            // TODO: get 'readonly' attributes working again
             $comment.removeAttr('readonly');
-            var index = $comment.parents('[id^="element"]').attr('data-element-index');
+            var eleIndex = $comment.parents('[id^="element"]').attr('data-element-index');
             var elementId = $comment.parents('[id^="element"]').attr('data-element-id');
-            var score = elementScores[activeStudent][index];
-            elementComments[activeStudent][index] = $comment.val();
+            var score = elementScores[activeStudent][eleIndex];
+            elementComments[activeStudent][eleIndex] = $comment.val();
 
             createGradeRequest('element_id', elementId, score, $comment.val());
         }
 
-        // Creates a key/value array GradeRequest. 
-        // Comments and scores will be added to requests if not null.
+        /* Creates a key/value array GradeRequest. This will update the DB via ajax.
+         * Params: dataType: string, the label for thing to be modified
+         *      elementId: question or element ID
+         *      score: the score on the question or element
+         *      comment: text of the comment to update. Null unless modifying an element comment.
+         * Requests will only include non-null scores and comments
+         */
         function createGradeRequest(dataType, dataId, score, comment) {
             var gradeRequest = {};
 
@@ -219,7 +231,8 @@
             saveDataWithTime(gradeRequest);
         }
 
-        // add time info to the grading request array and save to server
+        // add time info to the grading request array and pass to server
+        // ( all DB updates include grading time info )
         function saveDataWithTime(gradeRequest) {
             if (!gradeRequest) {
                 gradeRequest = {};
@@ -227,19 +240,18 @@
             }
             gradeRequest['time'] = examGradingTimes[activeStudent];
             console.log(gradeRequest);
-            // TODO: AJAX THIS BITCH
             var examId = $('h3').attr('data-exam-id');
 
             $.ajax({
-                url:  'http://localhost:8000/grade/exam/' + examId,
+                url: examId,
                 data: gradeRequest,
                 type: 'POST',
                 success: function() {
                     console.log('success! ');
                 },
                 error: function( ) {
-                    alert( "Sorry, there was a problem!" );
-                },
+                    alert( "Sorry, there was a problem saving this exam!\nPlease try again." );
+                }
             });
         }
 
@@ -247,13 +259,13 @@
             return $('#studentListItem' + activeStudent).attr('data-sid');
         }
 
-        // sets the selectedStudentName and studentId fields
+        // sets the activeStudentName and studentId fields
         function setSelectedNameAndId() {
             var $student = $('#studentListItem' + activeStudent);
             var name = $student.attr('data-lName') + ", " + $student.attr('data-fName');
-            var id = $('#studentListItem' + activeStudent).data('student-identifier');
-            $("#selectedStudentName").text(name);
-            $("#studentId").text(id);
+            var id = $student.data('student-identifier');
+            $("#activeStudentName").text(name);
+            $("#activeStudentIdentifier").text(id);
         }
 
         // update the "graded: xx remaining: xx" counters
@@ -280,7 +292,9 @@
             }
         }
 
-        // set backgrounds for all students who have graded exams
+        // set roster background colors for all students
+        // "graded" exams are marked green
+        // "ungraded" exams are marked white
         function setStudentBackgroundColors() {
             for (var i = 0; i < examGrades.length; i++) {
                 var name = "#studentListItem" + i;
@@ -315,15 +329,16 @@
 
         // sorts the StudentRoster by the clicked header. Sort order reverses with each press.
         function sortRosterBy(value) {
-            $('#studentRosterBody').append(
-                    $('#studentRosterBody').find('[id^="studentListItem"]').sort(function (a, b) {
+            var $roster = $('#studentRosterBody');
+            $roster.append(
+                    $roster.find('[id^="studentListItem"]').sort(function (a, b) {
                         var i = $(a).find('[id^="' + value + '"]');
                         var j = $(b).find('[id^="' + value + '"]');
                         var result;
                         if (value == 'studentName') {
                             result = $(i).text().toUpperCase().localeCompare(
                                     $(j).text().toUpperCase());
-                        } else if (value == 'studentId') {
+                        } else if (value == 'studentIdentifier') {
                             result = parseFloat($(i).text()) - parseFloat($(j).text());
                         } else {
                             var gradeA = examGrades[$(a).attr('data-index')];
@@ -408,7 +423,7 @@
         function convertSecondsToHHMMSS(seconds) {
             var date = new Date(null);
             date.setSeconds(seconds);
-            if (seconds < 3600) return date.toISOString().substr(14, 5)
+            if (seconds < 3600) return date.toISOString().substr(14, 5);
             else return date.toISOString().substr(11, 8);
         }
 
@@ -465,10 +480,11 @@
                 var score = parseFloat($(this).val());
                 questionScores[activeStudent][qNumber - 1] = score;
                 var questionId = $(this).attr('data-question-assignment-id');
-                if (score === NaN) {
-                    // TODO: if the question score is deleted, we need to delete that object
-                } else {
+                if (score >= 0) {
                     createGradeRequest('question_assignment_id', questionId, score, null);
+                } else {
+                    // TODO: if the question score is deleted, we need to delete that object
+                    console.log('delete the score');
                 }
 
                 updateStudentDataArea();
@@ -527,10 +543,6 @@
                 });
             });
 
-            // finish & save button routes to reports
-            $('#finishButton').click(function () {
-                // TODO: make this button do things
-            });
             return false;
         });
 

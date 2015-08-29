@@ -12,19 +12,19 @@
         </div>
         <div class="collapse navbar-collapse" id="navbar-ex-collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li id="setupHead">
+                <li id="navSetup">
                     <a href="{{url('setup')}}">Setup</a>
                 </li>
-                <li>
+                <li id="navGrade">
                     <a href="{{url('grade')}}">Grade</a>
                 </li>
-                <li id="reportHead">
+                <li id="navReport">
                     <a href="{{url('report')}}">Reports</a>
                 </li>
-                <li id="accountHead">
+                <li id="navAccount">
                     <a href="{{url('account/home')}}">Account</a>
                 </li>
-                <li id="logOutHead">
+                <li id="navLogout">
                     <a href="{{url('auth/logout')}}">Log out</a>
                 </li>
             </ul>

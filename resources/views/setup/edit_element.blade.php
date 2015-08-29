@@ -87,10 +87,27 @@
                 handle: '.handle',
                 ghostClass: "sortable-ghost",
                 onFilter: function (evt) {
-                    // TODO: on delete confirmation
                     var el = editableList.closest(evt.item); // get dragged item
-                    if (el && el.parentNode.removeChild(el))
-                        updateNumbers();
+                    bootbox.dialog({
+                        message: "Warning: This will delete any scores associated with this element",
+                        title: "Delete Element",
+                        buttons: {
+                            success: {
+                                label: 'Cancel',
+                                className: "btn-sm",
+                                callback: function() {
+                                }
+                            },
+                            danger: {
+                                label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
+                                className: "btn-danger btn-sm",
+                                callback: function() {
+                                    if (el && el.parentNode.removeChild(el))
+                                        updateNumbers();
+                                }
+                            }
+                        }
+                    });
                 },
                 store: {
                     // store the ordering to localStorage

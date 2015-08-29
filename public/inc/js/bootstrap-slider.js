@@ -985,8 +985,8 @@
 
 					var styleSize = this.options.orientation === 'vertical' ? 'height' : 'width';
 					var styleMargin = this.options.orientation === 'vertical' ? 'marginTop' : 'marginLeft';
-					var labelSize = this._state.size / (this.options.ticks.length - 1);
-
+					//var labelSize = this._state.size / (this.options.ticks.length - 1);
+                    var labelSize = 230 / (this.options.ticks.length - 1); // hack sets the length to always == size set in CSS
 					if (this.tickLabelContainer) {
 						var extraMargin = 0;
 						if (this.options.ticks_positions.length === 0) {
