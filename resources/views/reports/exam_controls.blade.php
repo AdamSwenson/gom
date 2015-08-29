@@ -27,9 +27,9 @@
                             </td>
                             <!-- control buttons -->
                             <td class="col-md-3" style="text-align:right">
-                                <a class="btn btn-warning" id="{{'exam' . $exam->getId()}}"
+                                <a class="btn btn-warning" id="{{'exam'.$exam->getId()}}"
                                    title="Release Exam" data-released="{{ $exam->getReleased() }}"
-                                   onclick="releaseExam({{ $exam->getId()}} )">
+                                   onclick="confirmRelease({{ $exam->getId()}})">
                                     <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
                                     Release Exam
                                 </a>
@@ -62,13 +62,53 @@
         $('[id^="nav"]').attr('class', '');
         $('#navReport').attr('class', 'active');
 
+        //set the display for all released exams
+        $('[id^="exam"]').each( function() {
+            if ($(this).attr('data-released') == '1'){
+                setAsReleased( $(this) );
+            }
+        });
+
+
+        function confirmRelease(examId) {
+            var released = $('#exam' + examId).attr('data-released');
+            var confirmMsg = "Releasing the exam will email all students with their feedback and grades";
+            if (released === '1') {
+                confirmMsg = "Re-releasing this exam will notify all students who have been graded, but not yet received an email";
+            }
+            bootbox.confirm(confirmMsg, function(result) {
+                if (result) {
+                    releaseExam(examId);
+                }
+            });
+        }
+
         // Compiles student scores and stats, then sends notification emails to all graded students
         // who have not yet received an email. Normally, this will be most (if not all) of the class.
         // Any late graded exams can be processed by releasing again
         // or individually via the student controls page
         function releaseExam(examId) {
-
+            var path = "/report/" + examId + "/release";
+            $.ajax({
+                url: path,
+                type: 'GET',
+                success: function() {
+                    setAsReleased( $('#exam' + examId) );
+                },
+                error: function( ) {
+                    alert( "Sorry, there was a problem releasing this exam!\nPlease try again." );
+                }
+            });
         }
+
+        // changes the visuals and status for a released exam
+        function setAsReleased($exam) {
+            $exam.attr('data-released', '1');
+            $exam.attr('class', 'btn btn-success');
+            $exam.html("<span class='glyphicon glyphicon-envelope' aria-hidden='true'></span>" +
+                    " Released");
+        }
+
     </script>
 
 

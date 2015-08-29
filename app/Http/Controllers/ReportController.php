@@ -10,6 +10,7 @@ namespace App\Http\Controllers;
 
 use App\Events\ExamReleasedEvent;
 use App\Exam;
+use App\Student;
 use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Exam\IExamRepository;
@@ -113,6 +114,24 @@ class ReportController extends Controller
         //   return view('feedback.feedback', compact('data'));
     }
 
+    // Sends an email notification to the student that their exam has been graded
+    public function notifyStudent(Exam $exam, Student $student) {
+
+        // TODO: need API for emailing an individual student
+    }
+
+    // will release the exam, update stats and email all students who haven't been emailed to date.
+    // Re-releasing an exam can send a different emailing letting all students know that scores have been changed
+    public function releaseExam(Exam $exam) {
+        $this->createFeedback($exam);
+        if ($exam->released) {
+            // TODO send 're-release' email to all students with grades
+        } else {
+            $exam->setReleased(true);
+            // TODO send 'release' email to all students with grades
+        }
+    }
+
     public function showAnalytics(Exam $exam)
     {
         $students = $this->studentRepository->load_students_by_exam($exam->getId());
@@ -137,15 +156,18 @@ class ReportController extends Controller
 
     }
 
+    // displays the student_controls page to review feedback and send emails
     public function showStudents(Exam $exam)
     {
+        // TODO: COMPILE RESULTS FOR THIS EXAM BEFORE VIEW HAPPENS
         $students = $this->studentRepository->load_students_by_exam($exam->getId());
 
         return view('reports.student_controls')->with(['exam' => $exam, 'students' => $students]);
     }
 
-    // Show feedback on $exam for the selected student
+    // Show feedback for the selected student
+    // TODO: create page with nav bars, etc to hold the doc
     public function showStudentFeedback(Exam $exam, Student $student) {
-
+        return ('feedback for a student');
     }
 }
