@@ -23,7 +23,6 @@ use Mockery\Mock;
 
 class FeedbackBuilderTest extends \TestCase
 {
-//    use \TestTraits;
 
     protected $object;
     protected $questionAssignmentRepository;
@@ -105,11 +104,13 @@ class FeedbackBuilderTest extends \TestCase
     }
 
 
-    public function testFunctionalTest()
+    /**
+     * @test
+     */
+    public function functional_test_of_build_feedback()
     {
         $questionAssignments = collect([$this->buildQuestionAssignmentMock(1), $this->buildQuestionAssignmentMock(2)]);
         $elementAssignments = collect([$this->buildElementAssignmentMock(1), $this->buildElementAssignmentMock(2)]);
-
 
         $students = factory('App\Student', 3)->make();
         $elementScores = factory('App\ElementScore', 3)->make();
@@ -129,15 +130,16 @@ class FeedbackBuilderTest extends \TestCase
 
         $elscore = factory('App\ElementScore')->make();
         $elscore->score = 4.3;
+        $elscore->comment_text = $this->faker->text();
 
         $this->studentRepository->shouldReceive('load_students_by_exam')->with($examId)->andReturn($students);
         $this->questionScoreRepository->shouldReceive('load')->andReturn($elscore);
 
         $this->elementScoreRepository->shouldReceive('load')->andReturn($elscore);
 
-        $comment = factory('App\Comment')->make();
-        $comment->body = 'comment text';
-        $this->commentRepository->shouldReceive('getCommentForScore')->andReturn($comment);
+//        $comment = factory('App\Comment')->make();
+//        $comment->body = 'comment text';
+//        $this->commentRepository->shouldReceive('getCommentForScore')->andReturn($comment);
 
         $this->accessKeyRepository->shouldReceive('createAccessKey')->andReturnUsing(function(){return $this->faker->sha256();});
 

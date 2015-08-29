@@ -20,13 +20,8 @@ use App\Repositories\Student\IStudentRepository;
 
 class FeedbackBuilder implements IFeedbackBuilder
 {
-
-    public $feedback = [];
-    public $questionAssignments;
-
-
-
-    protected $pseudoIdMaker;
+    # ------- repositories
+    /** @var IAccessKeyRepository */
     protected $accessKeyRepository;
 
     /** @var IStudentRepository */
@@ -47,8 +42,15 @@ class FeedbackBuilder implements IFeedbackBuilder
     /** @var ICommentRepository */
     public $commentRepository;
 
+    #-------- data holders
     /** @var array Will hold all the question and element assignments for the exam */
     public $assignments = array();
+
+    /** @var array Will hold the feedback assembled for a student */
+    public $feedback = [];
+
+    /** @var  Collection The question assignments for the exam */
+    public $questionAssignments;
 
     /** @var  Collection Will hold all of the students for whom feedback is assembled */
     public $students;
@@ -62,8 +64,6 @@ class FeedbackBuilder implements IFeedbackBuilder
         $this->commentRepository = app()->make('App\Repositories\Element\ICommentRepository');
         $this->studentRepository = app()->make('App\Repositories\Student\IStudentRepository');
         $this->accessKeyRepository = app()->make('App\Repositories\Feedback\IAccessKeyRepository');
-
-//        $this->pseudoIdMaker = app()->make('App\Repositories\Feedback\IPseudoIDMaker');
     }
 
     /**
@@ -154,6 +154,8 @@ class FeedbackBuilder implements IFeedbackBuilder
                         $element['score'] = $scoreObject->getScore();
                         $element['average'] = 5.0;
                         $element['comment'] = $scoreObject->comment_text;
+
+                        //old way
 //                        $commentObj = $this->commentRepository->getCommentForScore($element['elementId'],
 //                            $element['score']);
 //                        $element['comment'] = $commentObj->getBody();

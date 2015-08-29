@@ -26,7 +26,6 @@ use Illuminate\Support\Facades\DB;
 class AccessKeyRepository implements IAccessKeyRepository
 {
 
-
     protected $validKey;
 
     /**
