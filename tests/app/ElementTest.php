@@ -37,7 +37,11 @@ class ElementTest extends \ReseedingTestCase
     }
 
 
-    public function testSetAsQuestionTask()
+    /**
+     * @test
+     * @group slowTests
+     */
+    public function setAsQuestionTask_sets_without_disturbing_other_assignments()
     {
         /* Completely reset and re-seed the database */
         $this->prepareDatabase();
@@ -109,6 +113,7 @@ class ElementTest extends \ReseedingTestCase
 
     /**
      * @test
+     * @group slowTests
      */
     public function setAsQuestionTask_does_not_leave_duplicate_when_update_was_deletion()
     {

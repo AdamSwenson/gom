@@ -1,10 +1,9 @@
 <?php
 use Auth;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class TestCase extends Illuminate\Foundation\Testing\TestCase
 {
-//    use DatabaseTransactions;
+
     /**
      * The base URL to use while testing the application.
      *
@@ -15,6 +14,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
     public $faker;
 
     public static $userid = 1;
+
     /**
      * Creates the application.
      *

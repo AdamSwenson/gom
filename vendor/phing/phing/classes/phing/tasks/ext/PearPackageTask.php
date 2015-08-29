@@ -62,7 +62,7 @@ include_once 'phing/types/FileSet.php';
  *   <element>
  *    <element key="handle" value="hlellelid"/>
  *    <element key="name" value="Hans"/>
- *    <element key="emails" value="hans@xmpl.org"/>
+ *    <element key="email" value="hans@xmpl.org"/>
  *    <element key="role" value="lead"/>
  *   </element>
  *  </mapping>

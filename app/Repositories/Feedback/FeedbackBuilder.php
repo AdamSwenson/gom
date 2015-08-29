@@ -24,42 +24,35 @@ class FeedbackBuilder implements IFeedbackBuilder
     public $feedback = [];
     public $questionAssignments;
 
-    public $students;
+
 
     protected $pseudoIdMaker;
     protected $accessKeyRepository;
-    /**
-     * @var IStudentRepository
-     */
+
+    /** @var IStudentRepository */
     private $studentRepository;
-    /**
-     * @var IQuestionAssignmentRepository
-     */
+
+    /** @var IQuestionAssignmentRepository */
     public $questionAssignmentRepository;
 
-
-    /**
-     * @var IElementAssignmentRepository
-     */
+    /** @var IElementAssignmentRepository */
     public $elementAssignmentRepository;
-    /**
-     * @var IQuestionScoreRepository
-     */
+
+    /** @var IQuestionScoreRepository */
     public $questionScoreRepository;
-    /**
-     * @var IElementScoreRepository
-     */
+
+    /** @var IElementScoreRepository */
     public $elementScoreRepository;
-    /**
-     * @var ICommentRepository
-     */
+
+    /** @var ICommentRepository */
     public $commentRepository;
 
+    /** @var array Will hold all the question and element assignments for the exam */
     public $assignments = array();
 
-    /**
-     *
-     */
+    /** @var  Collection Will hold all of the students for whom feedback is assembled */
+    public $students;
+
     public function __construct()
     {
         $this->questionAssignmentRepository = app()->make('App\Repositories\Question\IQuestionAssignmentRepository');
@@ -104,15 +97,6 @@ class FeedbackBuilder implements IFeedbackBuilder
                 'elements' => $elements
             ];
 
-//            $examName = 'testName';
-//            $grade = 'testGrade';
-//
-//            $outer = [
-//                'examName' => $examName,
-//                'grade' => $grade,
-//                'questions' => $data
-//            ];
-
             array_push($this->assignments, $data);
         }
     }
@@ -126,7 +110,6 @@ class FeedbackBuilder implements IFeedbackBuilder
     {
         $this->students = $this->studentRepository->load_students_by_exam($examId);
     }
-
 
 
     /**
@@ -170,9 +153,10 @@ class FeedbackBuilder implements IFeedbackBuilder
                     {
                         $element['score'] = $scoreObject->getScore();
                         $element['average'] = 5.0;
-                        $commentObj = $this->commentRepository->getCommentForScore($element['elementId'],
-                            $element['score']);
-                        $element['comment'] = $commentObj->getBody();
+                        $element['comment'] = $scoreObject->comment_text;
+//                        $commentObj = $this->commentRepository->getCommentForScore($element['elementId'],
+//                            $element['score']);
+//                        $element['comment'] = $commentObj->getBody();
                     }
                 }
             }
