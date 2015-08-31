@@ -26,7 +26,7 @@
                             Edit Exam</a>
                     </li>
                     <li class="next">
-                        <a id="submit-span" style="cursor:pointer;">Done <span
+                        <a id="submit-span" style="cursor:pointer;">Add / Edit Elements <span
                                     class="glyphicon glyphicon-chevron-right"
                                     aria-hidden="true"></span></a>
                     </li>

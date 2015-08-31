@@ -88,6 +88,8 @@
                 ghostClass: "sortable-ghost",
                 onFilter: function (evt) {
                     var el = editableList.closest(evt.item); // get dragged item
+
+                    // show warning message on delete
                     bootbox.dialog({
                         message: "Warning: This will delete any scores associated with this element",
                         title: "Delete Element",
@@ -196,7 +198,7 @@
             var prevQuestion = parseInt(btnPrevious.getAttribute('data-prevQ'));
             if ((prevQuestion === 0)) {
                 // set text to "Edit questions"
-                $('#prev-question').text('Edit Questions');
+                $('#prev-question').html("<span class='glyphicon glyphicon-chevron-left' aria-hidden='true'></span> Add / Edit Questions");
             }
 
             btnPrevious.onclick = function () {
@@ -214,7 +216,7 @@
             var nextQuestion = parseInt(btnNext.getAttribute('data-nextQ'));
             // If we're at the last element, set text to "done"
             if ((nextQuestion === 0)) {
-                $('#next-question').text('Done');
+                $('#next-question').html("Edit Student Roster <span class='glyphicon glyphicon-chevron-right' aria-hidden='true'></span>");
             }
 
             btnNext.onclick = function () {

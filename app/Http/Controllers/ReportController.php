@@ -166,8 +166,7 @@ class ReportController extends Controller
     }
 
     // Show feedback for the selected student
-    // TODO: create page with nav bars, etc to hold the doc
     public function showStudentFeedback(Exam $exam, Student $student) {
-        return ('feedback for a student');
+        return view('reports.student_feedback')->with(['exam' => $exam, 'student' => $student]);
     }
 }

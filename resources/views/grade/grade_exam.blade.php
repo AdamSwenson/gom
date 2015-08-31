@@ -211,8 +211,8 @@
 
         /* Creates a key/value array GradeRequest. This will update the DB via ajax.
          * Params: dataType: string, the label for thing to be modified
-         *      elementId: question or element ID
-         *      score: the score on the question or element
+         *      elementId: question or element ID to receive the update
+         *      score: the score for the question or element
          *      comment: text of the comment to update. Null unless modifying an element comment.
          * Requests will only include non-null scores and comments
          */
@@ -239,7 +239,6 @@
                 gradeRequest['student_id'] = getActiveStudentId();
             }
             gradeRequest['time'] = examGradingTimes[activeStudent];
-            console.log(gradeRequest);
             var examId = $('h3').attr('data-exam-id');
 
             $.ajax({
@@ -247,7 +246,7 @@
                 data: gradeRequest,
                 type: 'POST',
                 success: function() {
-                    console.log('success! ');
+                    //console.log('success! ');
                 },
                 error: function( ) {
                     alert( "Sorry, there was a problem saving this exam!\nPlease try again." );
@@ -256,7 +255,8 @@
         }
 
         function getActiveStudentId() {
-            return $('#studentListItem' + activeStudent).attr('data-sid');
+            if (activeStudent == null) { return null; }
+            else return $('#studentListItem' + activeStudent).attr('data-sid');
         }
 
         // sets the activeStudentName and studentId fields
@@ -470,7 +470,6 @@
 
                 // update exam scores and student data area
                 updateStudentDataArea();
-                //saveTimer();
                 resumeTimerIfPaused();
             });
 
@@ -534,8 +533,9 @@
                 // set comments
                 $('[name^="commentQ"]').each(function (index) {
                     var thisComment = elementComments[activeStudent][index];
+                    console.log(elementScores[activeStudent]);
                     // if NULL, disable comment text area until a slider is moved.
-                    if (thisComment === null) {
+                    if (elementScores[activeStudent][index] === null) {
                         $(this).prop('readonly', 'true');
                     } else {
                         $(this).val(thisComment);

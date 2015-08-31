@@ -19,7 +19,7 @@
                                 Setup</a>
                         </li>
                         <li class="next">
-                        <a id="submitLink" style="cursor:pointer;">Create <span class="glyphicon glyphicon-chevron-right"
+                        <a id="submitLink" style="cursor:pointer;">Create Exam <span class="glyphicon glyphicon-chevron-right"
                                                            aria-hidden="true"></span></a>
 
                         </li>
