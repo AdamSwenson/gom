@@ -17,6 +17,7 @@ use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Score\IElementScoreRepository;
 use App\Repositories\Score\IQuestionScoreRepository;
 use App\Repositories\Student\IStudentRepository;
+use App\Student;
 
 class FeedbackBuilder implements IFeedbackBuilder
 {
@@ -69,35 +70,42 @@ class FeedbackBuilder implements IFeedbackBuilder
     /**
      * This stores the question and element assignments in self::assignments so that
      * they can be iterated through for multiple students.
+     *
+     * Note, will only run if the assignments array is empty.
+     *
      * @param integer $examId
+     * @param bool $forceReRun Whether to run again
      */
-    public function loadAssignments($examId)
+    public function loadAssignments($examId, $forceReRun = false)
     {
-        $this->questionAssignments = $this->questionAssignmentRepository->load_all_for_exam($examId);
-        foreach ($this->questionAssignments as $qa)
+        if (empty($this->assignments) || ($forceReRun === true))
         {
-            $elementAssignments = $this->elementAssignmentRepository->load_element_assignments_by_question_number($examId,
-                $qa->getQuestionNumber());
-            $elements = [];
-            foreach ($elementAssignments as $ea)
+            $this->questionAssignments = $this->questionAssignmentRepository->load_all_for_exam($examId);
+            foreach ($this->questionAssignments as $qa)
             {
-                $elements[$ea->getSubtask()] = [
-                    'questionNumber' => $ea->getQuestionNumber(),
-                    'subtask' => $ea->getSubtask(),
-                    'elementId' => $ea->getElementId(),
-                    'elementAssignmentId' => $ea->getElementAssignmentId(),
-                    'elementName' => $ea->getElementName()
+                $elementAssignments = $this->elementAssignmentRepository->load_element_assignments_by_question_number($examId,
+                                                                                                                      $qa->getQuestionNumber());
+                $elements = [];
+                foreach ($elementAssignments as $ea)
+                {
+                    $elements[$ea->getSubtask()] = [
+                        'questionNumber' => $ea->getQuestionNumber(),
+                        'subtask' => $ea->getSubtask(),
+                        'elementId' => $ea->getElementId(),
+                        'elementAssignmentId' => $ea->getElementAssignmentId(),
+                        'elementName' => $ea->getElementName()
+                    ];
+                }
+                $data = [
+                    'questionNumber' => $qa->getQuestionNumber(),
+                    'questionId' => $qa->getQuestionId(),
+                    'questionName' => $qa->getQuestionName(),
+                    'questionAssignmentId' => $qa->getQuestionAssignmentId(),
+                    'elements' => $elements
                 ];
-            }
-            $data = [
-                'questionNumber' => $qa->getQuestionNumber(),
-                'questionId' => $qa->getQuestionId(),
-                'questionName' => $qa->getQuestionName(),
-                'questionAssignmentId' => $qa->getQuestionAssignmentId(),
-                'elements' => $elements
-            ];
 
-            array_push($this->assignments, $data);
+                array_push($this->assignments, $data);
+            }
         }
     }
 
@@ -113,82 +121,128 @@ class FeedbackBuilder implements IFeedbackBuilder
 
 
     /**
-     * Creates the feedback structure
+     * Creates the feedback structure for all students taking the exam
      * This is the main publicly called method
+     * @param int $examId
+     * @return array
      */
     public function buildFeedback($examId)
     {
         //Create one master array with all the questions and elements
-        if (empty($this->assignments))
-        {
-            $this->loadAssignments($examId);
-        }
+        //it will check whether it has already been run
+        $this->loadAssignments($examId);
 
         //Get all students who are associated with the exam
         $this->loadStudents($examId);
 
         foreach ($this->students as $student)
         {
-            //Copy the assignments array for the present student
-            $studentScores = &$this->assignments;
+            //Compile the feedback
+            $studentFeedback = $this->compileFeedbackForStudent($student);
 
-            //todo Set up grade assignment
-//            $studentScores['grade'] = "F-";
-
-            //Iterate through the new copy and add scores and comment content
-            foreach ($studentScores as &$question)
-            {
-                $questionScoreObject = $this->questionScoreRepository->load($question['questionAssignmentId'],
-                    $student->id);
-
-                if (!empty($questionScoreObject))
-                {
-                    $question['score'] = $questionScoreObject->getScore();
-                    $question['average'] = 5.0;
-                }
-                foreach ($question['elements'] as &$element)
-                {
-                    $scoreObject = $this->elementScoreRepository->load($element['elementAssignmentId'], $student->id);
-                    if (!empty($scoreObject) && !empty($scoreObject->score))
-                    {
-                        $element['score'] = $scoreObject->getScore();
-                        $element['average'] = 5.0;
-                        $element['comment'] = $scoreObject->comment_text;
-
-                        //old way
-//                        $commentObj = $this->commentRepository->getCommentForScore($element['elementId'],
-//                            $element['score']);
-//                        $element['comment'] = $commentObj->getBody();
-                    }
-                }
-            }
-
+            //Create a unique hash to access the feedback
             $accessKey = $this->accessKeyRepository->createAccessKey($examId, $student->id);
 
-            $this->feedback[$accessKey] = $studentScores;
-            $this->storeFeedback($accessKey, $studentScores);
+            //Store the feedback in our array with the unique hash as key
+            $this->feedback[$accessKey] = $studentFeedback;
+
+            //Save the feedback and key to the database
+            $this->storeFeedback($accessKey, $studentFeedback);
         }
 
         return $this->feedback;
     }
 
+
     /**
-     * Saves the content to the database.
+     * Does the work of compiling the feedback for a single student.
+     * This does not create the access key or save the feedback to the database.
      *
-     * TODO: Mark as protected once testing is better set up
+     * @param Student $student
+     * @return array
+     */
+    protected function compileFeedbackForStudent(Student $student)
+    {
+        //Copy the assignments array for the present student
+        $studentScores = &$this->assignments;
+
+        //todo Set up grade assignment
+//            $studentScores['grade'] = "F-";
+
+        //Iterate through the new copy and add scores and comment content
+        foreach ($studentScores as &$question)
+        {
+            //Load question scores for the student
+            $questionScoreObject = $this->questionScoreRepository->load($question['questionAssignmentId'], $student->id);
+
+            if (!empty($questionScoreObject))
+            {
+                $question['score'] = $questionScoreObject->getScore();
+                $question['average'] = 5.0;
+            }
+            foreach ($question['elements'] as &$element)
+            {
+                $scoreObject = $this->elementScoreRepository->load($element['elementAssignmentId'], $student->id);
+                if (!empty($scoreObject) && !empty($scoreObject->score))
+                {
+                    $element['score'] = $scoreObject->getScore();
+                    $element['average'] = 5.0;
+                    $element['comment'] = $scoreObject->comment_text;
+
+                    //old way
+//                        $commentObj = $this->commentRepository->getCommentForScore($element['elementId'],
+//                            $element['score']);
+//                        $element['comment'] = $commentObj->getBody();
+                }
+            }
+        }
+        
+        return $studentScores;
+    }
+
+    /**
+     * Run the compilation process for a single student and replace the existing
+     * feedback in the db with the results (and keep the same access key)
      *
-     * @param $accessKey
-     * @param $content
+     * @param $examId
+     * @param Student $student
+     * @return boolean
+     */
+    public function recompileFeedbackForStudent($examId, Student $student)
+    {
+        //Create one master array with all the questions and elements
+        //it will check whether it has already been run
+        $this->loadAssignments($examId);
+
+        //Compile the feedback
+        $studentFeedback = $this->compileFeedbackForStudent($student);
+
+        //Load the already existing access key (important since student might have already received it)
+        $accessKey = $this->accessKeyRepository->getAccessKeyForStudent($examId, $student->id);
+
+        //Update the db record
+        $this->storeFeedback($accessKey, $studentFeedback);
+
+        //Store the feedback in our array with the unique hash as key
+        $this->feedback[$accessKey] = $studentFeedback;
+
+        return $this->feedback;
+    }
+
+    /**
+     * Saves or updates the feedback content to the database.
+     *
+     * @param string $accessKey
+     * @param array $content
      * @return bool
      */
     public function storeFeedback($accessKey, $content)
     {
-        $feedback = new Feedback();
-        $feedback->setAccessKey($accessKey);
+        $feedback = Feedback::firstOrNew(['access_key' => $accessKey]);
         $feedback->content = $content;
-//        $feedback->setContent($content);
         return $feedback->save();
     }
+
 
 //
 //    public

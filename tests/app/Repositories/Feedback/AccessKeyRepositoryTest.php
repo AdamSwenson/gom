@@ -11,6 +11,7 @@ namespace App\Repositories\Feedback;
 
 use App\AccessKey;
 use App\Exam;
+use App\Feedback;
 use App\Student;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -108,13 +109,12 @@ class AccessKeyRepositoryTest extends \TestCase
 
     public function testRetrieveFeedback()
     {
-        $this->markTestIncomplete();
-//        $accessKey
-//        $this->validateKey($accessKey);
-//        if(!empty($this->validKey))
-//        {
-//            return $this->loadFeedback();
-//        }
+        $f = Feedback::all()->random();
+        $result = $this->object->retrieveFeedback($f->access_key);
+
+        //check
+        $this->assertInstanceOf('App\Feedback', $result);
+        $this->assertEquals($f->content, $result->content);
     }
 
     public function testRemoveAccessKey()

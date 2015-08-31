@@ -19,6 +19,12 @@ class Feedback extends Migration
             $table->timestamps();
 
             $table->primary('access_key');
+
+            $table->foreign('access_key')
+                ->references('access_key')
+                ->on('access_keys')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
 
 

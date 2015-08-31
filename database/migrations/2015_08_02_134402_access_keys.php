@@ -25,6 +25,8 @@ class AccessKeys extends Migration
                 $table->date('access_expires')->nullable();
                 $table->timestamps();
 
+                $table->unique(['student_id', 'exam_id']);
+
                 $table->foreign('user_id')
                     ->references('id')
                     ->on('users')

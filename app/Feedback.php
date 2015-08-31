@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Feedback extends Model
 {
+    protected $fillable = ['access_key', 'content'];
 
     protected $casts = [
         'content' => 'array'
     ];
-
 
     protected $table = 'feedback';
 

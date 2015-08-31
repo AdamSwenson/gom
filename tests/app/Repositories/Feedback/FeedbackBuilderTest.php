@@ -9,7 +9,9 @@
 namespace App\Repositories\Feedback;
 
 
+use App\AccessKey;
 use App\Exam;
+use App\Feedback;
 use App\QuestionAssignment;
 use App\Repositories\Element\CommentRepository;
 use App\Repositories\Element\ElementAssignmentRepository;
@@ -109,6 +111,7 @@ class FeedbackBuilderTest extends \TestCase
      */
     public function functional_test_of_build_feedback()
     {
+        //Prep
         $questionAssignments = collect([$this->buildQuestionAssignmentMock(1), $this->buildQuestionAssignmentMock(2)]);
         $elementAssignments = collect([$this->buildElementAssignmentMock(1), $this->buildElementAssignmentMock(2)]);
 
@@ -137,33 +140,138 @@ class FeedbackBuilderTest extends \TestCase
 
         $this->elementScoreRepository->shouldReceive('load')->andReturn($elscore);
 
-//        $comment = factory('App\Comment')->make();
-//        $comment->body = 'comment text';
-//        $this->commentRepository->shouldReceive('getCommentForScore')->andReturn($comment);
+        $ak = AccessKey::all()->random();
+        $f = Feedback::where('access_key', $ak->access_key)->first();
+        if($f) $f->delete();
+        $this->accessKeyRepository
+            ->shouldReceive('createAccessKey')
+            ->andReturn($ak->access_key);
 
-        $this->accessKeyRepository->shouldReceive('createAccessKey')->andReturnUsing(function(){return $this->faker->sha256();});
-
-
+        //Call
         $fb = new FeedbackBuilder();
-
         $result = $fb->buildFeedback($examId);
+
+        //Check
         $this->assertNotEmpty($result);
         $this->assertTrue(is_array($result));
         $this->assertEquals(count($students), count($fb->students), "correct number of student arrays");
     }
 
-    public function testStoreFeedback()
+
+    public function testRecompileFeedbackForStudent()
     {
-        $accessKey = $this->faker->sha256();
+        //Prep
+        /*  Since we're going to be simulating recompiling feedback for
+            a student once they already have an access_key, let's grab one from the db
+            and use their properties */
+        $f = Feedback::all()->random();
+        $ak = AccessKey::where('access_key', $f->access_key)->first();
+        $examId = $ak->exam_id;
+        $studentId = $ak->student_id;
+        $keyString = $ak->access_key;
+        $student = Student::find($studentId);
+
+        //check that loaded properly
+        $this->assertInstanceOf('App\Student', $student);
+        $this->assertEquals($studentId, $student->id);
+
+        //Build mocks
+        $questionAssignments = collect([$this->buildQuestionAssignmentMock(1), $this->buildQuestionAssignmentMock(2)]);
+        $elementAssignments = collect([$this->buildElementAssignmentMock(1), $this->buildElementAssignmentMock(2)]);
+
+        $this->questionAssignmentRepository->shouldReceive('load_all_for_exam')
+            ->with($examId)
+            ->andReturn($questionAssignments);
+
+        $this->elementAssignmentRepository
+            ->shouldReceive('load_element_assignments_by_question_number')
+            ->with($examId, 1)
+            ->andReturn($elementAssignments);
+        $this->elementAssignmentRepository
+            ->shouldReceive('load_element_assignments_by_question_number')
+            ->with($examId, 2)
+            ->andReturn($elementAssignments);
+
+        $elscore = factory('App\ElementScore')->make();
+        $elscore->score = 4.3;
+        $elscore->comment_text = $this->faker->text();
+
+        $this->questionScoreRepository
+            ->shouldReceive('load')
+            ->andReturn($elscore);
+        $this->elementScoreRepository
+            ->shouldReceive('load')
+            ->andReturn($elscore);
+
+        $this->accessKeyRepository
+            ->shouldReceive('getAccessKeyForStudent')
+            ->with($examId, $studentId)
+            ->andReturn($keyString);
+
+        //Call
+        $fb = new FeedbackBuilder();
+        $result = $fb->recompileFeedbackForStudent($examId, $student);
+
+        //Check
+        $this->assertNotEmpty($result);
+        $this->assertTrue(is_array($result));
+        $this->assertEquals(1, count($fb->feedback), "correct number of feedback arrays");
+        $this->assertEquals($keyString, key($fb->feedback));
+    }
+
+    /**
+     * @test
+     */
+    public function StoreFeedback_with_new_data()
+    {
+        $ak = AccessKey::all()->random();
+        Feedback::destroy($ak->access_key);
+
         $content = [
             'item1' => $this->faker->text(1000),
             'item2' => $this->faker->text(1000),
             'item3' => $this->faker->text(1000)
         ];
 
-        $this->object->storeFeedback($accessKey, $content);
-        $this->seeInDatabase('feedback', ['access_key' => $accessKey]);
+        $this->object->storeFeedback($ak->access_key, $content);
+        $this->seeInDatabase('feedback', [
+            'access_key' => $ak->access_key,
+            'content' => json_encode($content)
+        ]);
     }
 
+    /**
+     * @test
+     */
+    public function StoreFeedback_where_updating_existing_record()
+    {
+        //Prep
+        $testFeedback = Feedback::all()->random();
+        $accessKey = $testFeedback->access_key;
+        $existingContent = $testFeedback->content;
+
+        //Call
+        $testContent = [
+            'item1' => $this->faker->text(100),
+            'item2' => $this->faker->text(100),
+            'item3' => $this->faker->text(100)
+        ];
+        $result = $this->object->storeFeedback($accessKey, $testContent);
+
+        //Check
+        $this->assertTrue($result, "update feedback returns boolean");
+
+        //New content written to db with same access key
+        $this->seeInDatabase('feedback', [
+                                 'access_key' => $accessKey,
+                                 'content' => json_encode($testContent)
+        ]);
+
+        //Make sure that the old content has been replaced
+        $this->notSeeInDatabase('feedback', [
+            'access_key' => $accessKey,
+            'content' => json_encode($existingContent)
+        ]);
+    }
 
 }

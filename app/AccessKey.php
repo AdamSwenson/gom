@@ -25,7 +25,7 @@ class AccessKey extends BaseModel
 
     const MAX_ATTEMPTS = 10;
 
-    protected $fillable = [];
+    protected $fillable = ['student_id', 'exam_id', 'access_key'];
 
     protected $casts = [
         'accessKey' => 'string'
