@@ -33,7 +33,8 @@
                 </ul>
             </nav>
             <h2 id="examName">Add / Edit Questions: "{{ $examName }}" </h2>
-            <h5>Add the questions that will appear on this exam. When you're finished, press "done".</h5>
+            <h5>Add the questions that will appear on this exam. When you're finished, press "Add / Edit Elements" to
+                move to the next step.</h5>
             <!-- form will update all given questions and create new ones where required -->
             <form id="questionForm" name="questionForm" method="post" role="form"
                   action="{{ url('exam/'.$examId.'/question/updateAll') }}"

@@ -35,7 +35,7 @@
             </nav>
             <h2>Add / Edit Elements: Question #{{ isset($qNumber) ? $qNumber : '1'}}
                 "{{ isset($questionName) ? $questionName : '' }}"</h2>
-            <h5>Each element is composed of one or more elements, representing individual items that the student
+            <h5>Each question is composed of elements, representing individual items that the student
                 should address.</h5>
             <!-- form will update all given elements and create new ones where required -->
             <form id="elementForm" name="elementForm" method="post" role="form"

@@ -80,6 +80,7 @@ Route::get('report/{exam}/students', 'ReportController@showStudents'); // shows 
 Route::get('report/{exam}/students/{student}', 'ReportController@showStudentFeedback'); // show feedback for the student
 Route::post('report/{exam}/students/{student}', 'ReportController@notifyStudent'); // email the student with feedback
 Route::get('report/{exam}/release', 'ReportController@releaseExam'); // releases {exam}
+Route::get('report/{exam}/unrelease', 'ReportController@unreleaseExam'); // delete student access and set to unreleased
 Route::get('report/{exam}/analytics','ReportController@showAnalytics');
 Route::get('report/{exam}/qualitycontrol', 'ReportController@showQualityControl');
 
