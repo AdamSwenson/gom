@@ -87,4 +87,23 @@ class QuestionScoreRepositoryTest extends \TestCase
         $this->assertEquals($score, $result->score);
         $this->seeInDatabase('question_scores', ['question_assignment_id' => $questionAssignmentId, 'student_id' => $studentId, 'score' => $score]);
     }
+
+
+    public function testDeleteScore()
+    {
+        //prep
+        $qs = QuestionScore::all()->random();
+        $questionAssignmentId = $qs->question_assignment_id;
+        $studentId = $qs->student_id;
+
+        //call
+        $result = $this->object->deleteScore($questionAssignmentId, $studentId);
+
+        //check
+        $this->assertTrue($result, "returns as expected");
+        $this->notSeeInDatabase('question_scores', [
+            'question_assignment_id' => $questionAssignmentId,
+            'student_id' => $studentId
+        ]);
+    }
 }

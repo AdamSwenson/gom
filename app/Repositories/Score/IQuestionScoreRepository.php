@@ -58,4 +58,13 @@ interface IQuestionScoreRepository
      * @return QuestionScore
      */
     public function update($questionAssignmentId, $studentId, $score);
+
+
+    /**
+     * Deletes a question score for a student
+     * @param integer $questionAssignmentId
+     * @param integer $studentId
+     * @return boolean
+     */
+    public function deleteScore($questionAssignmentId, $studentId);
 }

@@ -31,6 +31,8 @@ class FeedbackRepository
     }
 
 
+    public function delete()
+    {}
 
 
 

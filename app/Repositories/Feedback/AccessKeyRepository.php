@@ -72,6 +72,11 @@ class AccessKeyRepository implements IAccessKeyRepository
         }
     }
 
+    public function removeAccessForExam()
+    {}
+
+    public function removeAccessForStudent()
+    {}
 
     /**
      * Loads the stored feedback by access key

@@ -130,4 +130,19 @@ MYSQL;
             return $questionScore;
         }*/
     }
+
+
+    /**
+     * Deletes a question score for a student
+     * @param integer $questionAssignmentId
+     * @param integer $studentId
+     * @return boolean
+     */
+    public function deleteScore($questionAssignmentId, $studentId)
+    {
+        $score = QuestionScore::where('question_assignment_id', $questionAssignmentId)->where('student_id', $studentId)->firstOrFail();
+        return $score->delete();
+    }
+
+
 }

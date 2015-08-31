@@ -63,4 +63,12 @@ interface IElementScoreRepository
      **/
     public function update($elementAssignmentId, $studentId, $score);
 
+
+    /**
+     * Deletes the score and comment for a student
+     * @param integer $elementAssignmentId
+     * @param integer $studentId
+     * @return bool
+     */
+    public function deleteScore($elementAssignmentId, $studentId);
 }

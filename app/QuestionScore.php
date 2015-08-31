@@ -97,7 +97,6 @@ class QuestionScore extends BaseModel
 
 
 
-
     #--------------------------------- getters and setters
 
     /**

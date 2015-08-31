@@ -78,6 +78,7 @@ class ElementScore extends BaseModel
         return $this;
     }
 
+
     /**
      * Returns results limited to the particular student
      * @param $query

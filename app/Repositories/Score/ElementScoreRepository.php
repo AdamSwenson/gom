@@ -173,4 +173,18 @@ MYSQL;
 //        $this->score_object->update();
         return $this->score_object;
     }
+
+
+    /**
+     * Deletes the score and comment for a student
+     * @param integer $elementAssignmentId
+     * @param integer $studentId
+     * @return bool
+     */
+    public function deleteScore($elementAssignmentId, $studentId)
+    {
+        $score = ElementScore::where('element_assignment_id', $elementAssignmentId)->where('student_id', $studentId)->firstOrFail();
+        return $score->delete();
+    }
+
 }

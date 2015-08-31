@@ -126,6 +126,22 @@ public function testRecordCommentText()
     }
 
 
+    public function testDeleteScore()
+    {
+        //prep
+        $es = ElementScore::all()->random();
+        $elementAssignmentId = $es->element_assignment_id;
+        $studentId = $es->student_id;
+
+        //call
+        $result = $this->object->deleteScore($elementAssignmentId, $studentId);
+
+        //check
+        $this->assertTrue($result, "returns as expected");
+        $this->notSeeInDatabase('element_scores', ['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId]);
+    }
+
+
     /*
     public function testScoreTooBig()
     {}
