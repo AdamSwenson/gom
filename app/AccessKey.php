@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -24,7 +25,7 @@ class AccessKey extends BaseModel
 
     const MAX_ATTEMPTS = 10;
 
-    protected $fillable = [];
+    protected $fillable = ['student_id', 'exam_id', 'access_key'];
 
     protected $casts = [
         'accessKey' => 'string'
@@ -60,6 +61,45 @@ class AccessKey extends BaseModel
     {
         $this->attributes['student_id'] = $studentId;
     }
+
+    /**
+     * Returns the date the student's access to feedback expires
+     */
+    public function getExpirationDate()
+    {
+        return Carbon::parse($this->attributes['access_expires']);
+    }
+
+    /**
+     * Updates the date on which access will expire.
+     * Saves to database. Do not need to call update independently.
+     * @param $date
+     */
+    public function setExpirationDate($date)
+    {
+        $this->attributes['access_expires'] = Carbon::parse($date);
+        $this->update();
+    }
+
+    /**
+     * Returns true if the student has been sent an email with feedback/ link to feedback.
+     * @return boolean
+     */
+    public function getEmailSent()
+    {
+        return $this->attributes['email_sent'];
+    }
+
+    /**
+     * Updates the database to indicate that the student has been sent an email with
+     * feedback / link to feedback.
+     */
+    public function markEmailSent()
+    {
+        $this->attributes['email_sent'] = true;
+        $this->update();
+    }
+
 
     #------------------------------------------ queries
     public function scopeOnExam($query, $examId)

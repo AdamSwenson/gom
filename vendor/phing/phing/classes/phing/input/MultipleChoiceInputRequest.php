@@ -17,7 +17,7 @@
  * <http://phing.info>.
  */
 
-require_once 'phing/input/GradingRequest.php';
+require_once 'phing/input/InputRequest.php';
 
 /**
  * Encapsulates an input request.

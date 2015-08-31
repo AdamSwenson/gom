@@ -17,49 +17,45 @@ use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Score\IElementScoreRepository;
 use App\Repositories\Score\IQuestionScoreRepository;
 use App\Repositories\Student\IStudentRepository;
+use App\Student;
 
 class FeedbackBuilder implements IFeedbackBuilder
 {
-
-    public $feedback = [];
-    public $questionAssignments;
-
-    public $students;
-
-    protected $pseudoIdMaker;
+    # ------- repositories
+    /** @var IAccessKeyRepository */
     protected $accessKeyRepository;
-    /**
-     * @var IStudentRepository
-     */
+
+    /** @var IStudentRepository */
     private $studentRepository;
-    /**
-     * @var IQuestionAssignmentRepository
-     */
+
+    /** @var IQuestionAssignmentRepository */
     public $questionAssignmentRepository;
 
-
-    /**
-     * @var IElementAssignmentRepository
-     */
+    /** @var IElementAssignmentRepository */
     public $elementAssignmentRepository;
-    /**
-     * @var IQuestionScoreRepository
-     */
+
+    /** @var IQuestionScoreRepository */
     public $questionScoreRepository;
-    /**
-     * @var IElementScoreRepository
-     */
+
+    /** @var IElementScoreRepository */
     public $elementScoreRepository;
-    /**
-     * @var ICommentRepository
-     */
+
+    /** @var ICommentRepository */
     public $commentRepository;
 
+    #-------- data holders
+    /** @var array Will hold all the question and element assignments for the exam */
     public $assignments = array();
 
-    /**
-     *
-     */
+    /** @var array Will hold the feedback assembled for a student */
+    public $feedback = [];
+
+    /** @var  Collection The question assignments for the exam */
+    public $questionAssignments;
+
+    /** @var  Collection Will hold all of the students for whom feedback is assembled */
+    public $students;
+
     public function __construct()
     {
         $this->questionAssignmentRepository = app()->make('App\Repositories\Question\IQuestionAssignmentRepository');
@@ -69,51 +65,115 @@ class FeedbackBuilder implements IFeedbackBuilder
         $this->commentRepository = app()->make('App\Repositories\Element\ICommentRepository');
         $this->studentRepository = app()->make('App\Repositories\Student\IStudentRepository');
         $this->accessKeyRepository = app()->make('App\Repositories\Feedback\IAccessKeyRepository');
+    }
 
-//        $this->pseudoIdMaker = app()->make('App\Repositories\Feedback\IPseudoIDMaker');
+
+    /**
+     * Creates the feedback structure for all students taking the exam
+     *
+     * This is the main publicly called method
+     *
+     * @param int $examId
+     * @return array
+     */
+    public function buildFeedback($examId)
+    {
+        //Create one master array with all the questions and elements
+        //it will check whether it has already been run
+        $this->loadAssignments($examId);
+
+        //Get all students who are associated with the exam
+        $this->loadStudents($examId);
+
+        foreach ($this->students as $student)
+        {
+            //Compile the feedback
+            $studentFeedback = $this->compileFeedbackForStudent($student);
+
+            //Create a unique hash to access the feedback
+            $accessKey = $this->accessKeyRepository->createAccessKey($examId, $student->id);
+
+            //Store the feedback in our array with the unique hash as key
+            $this->feedback[$accessKey] = $studentFeedback;
+
+            //Save the feedback and key to the database
+            $this->storeFeedback($accessKey, $studentFeedback);
+        }
+
+        return $this->feedback;
+    }
+
+
+    /**
+     * Run the compilation process for a single student and replace the existing
+     * feedback in the db with the results (and keep the same access key)
+     *
+     * This is the other main publicly called method
+     *
+     * @param integer $examId
+     * @param Student $student
+     * @return array
+     */
+    public function recompileFeedbackForStudent($examId, Student $student)
+    {
+        //Create one master array with all the questions and elements
+        //it will check whether it has already been run
+        $this->loadAssignments($examId);
+
+        //Compile the feedback
+        $studentFeedback = $this->compileFeedbackForStudent($student);
+
+        //Load the already existing access key (important since student might have already received it)
+        $accessKey = $this->accessKeyRepository->getAccessKeyForStudent($examId, $student->id);
+
+        //Update the db record
+        $this->storeFeedback($accessKey, $studentFeedback);
+
+        //Store the feedback in our array with the unique hash as key
+        $this->feedback[$accessKey] = $studentFeedback;
+
+        return $this->feedback;
     }
 
     /**
      * This stores the question and element assignments in self::assignments so that
      * they can be iterated through for multiple students.
+     *
+     * Note, will only run if the assignments array is empty.
+     *
      * @param integer $examId
+     * @param bool $forceReRun Whether to run again
      */
-    public function loadAssignments($examId)
+    public function loadAssignments($examId, $forceReRun = false)
     {
-        $this->questionAssignments = $this->questionAssignmentRepository->load_all_for_exam($examId);
-        foreach ($this->questionAssignments as $qa)
+        if (empty($this->assignments) || ($forceReRun === true))
         {
-            $elementAssignments = $this->elementAssignmentRepository->load_element_assignments_by_question_number($examId,
-                $qa->getQuestionNumber());
-            $elements = [];
-            foreach ($elementAssignments as $ea)
+            $this->questionAssignments = $this->questionAssignmentRepository->load_all_for_exam($examId);
+            foreach ($this->questionAssignments as $qa)
             {
-                $elements[$ea->getSubtask()] = [
-                    'questionNumber' => $ea->getQuestionNumber(),
-                    'subtask' => $ea->getSubtask(),
-                    'elementId' => $ea->getElementId(),
-                    'elementAssignmentId' => $ea->getElementAssignmentId(),
-                    'elementName' => $ea->getElementName()
+                $elementAssignments = $this->elementAssignmentRepository->load_element_assignments_by_question_number($examId,
+                                                                                                                      $qa->getQuestionNumber());
+                $elements = [];
+                foreach ($elementAssignments as $ea)
+                {
+                    $elements[$ea->getSubtask()] = [
+                        'questionNumber' => $ea->getQuestionNumber(),
+                        'subtask' => $ea->getSubtask(),
+                        'elementId' => $ea->getElementId(),
+                        'elementAssignmentId' => $ea->getElementAssignmentId(),
+                        'elementName' => $ea->getElementName()
+                    ];
+                }
+                $data = [
+                    'questionNumber' => $qa->getQuestionNumber(),
+                    'questionId' => $qa->getQuestionId(),
+                    'questionName' => $qa->getQuestionName(),
+                    'questionAssignmentId' => $qa->getQuestionAssignmentId(),
+                    'elements' => $elements
                 ];
+
+                array_push($this->assignments, $data);
             }
-            $data = [
-                'questionNumber' => $qa->getQuestionNumber(),
-                'questionId' => $qa->getQuestionId(),
-                'questionName' => $qa->getQuestionName(),
-                'questionAssignmentId' => $qa->getQuestionAssignmentId(),
-                'elements' => $elements
-            ];
-
-//            $examName = 'testName';
-//            $grade = 'testGrade';
-//
-//            $outer = [
-//                'examName' => $examName,
-//                'grade' => $grade,
-//                'questions' => $data
-//            ];
-
-            array_push($this->assignments, $data);
         }
     }
 
@@ -128,190 +188,65 @@ class FeedbackBuilder implements IFeedbackBuilder
     }
 
 
-
     /**
-     * Creates the feedback structure
-     * This is the main publicly called method
+     * Does the work of compiling the feedback for a single student.
+     * This does not create the access key or save the feedback to the database.
+     *
+     * @param Student $student
+     * @return array
      */
-    public function buildFeedback($examId)
+    protected function compileFeedbackForStudent(Student $student)
     {
-        //Create one master array with all the questions and elements
-        if (empty($this->assignments))
-        {
-            $this->loadAssignments($examId);
-        }
+        //Copy the assignments array for the present student
+        $studentScores = &$this->assignments;
 
-        //Get all students who are associated with the exam
-        $this->loadStudents($examId);
-
-        foreach ($this->students as $student)
-        {
-            //Copy the assignments array for the present student
-            $studentScores = &$this->assignments;
-
-            //todo Set up grade assignment
+        //todo Set up grade assignment
 //            $studentScores['grade'] = "F-";
 
-            //Iterate through the new copy and add scores and comment content
-            foreach ($studentScores as &$question)
-            {
-                $questionScoreObject = $this->questionScoreRepository->load($question['questionAssignmentId'],
-                    $student->id);
+        //Iterate through the new copy and add scores and comment content
+        foreach ($studentScores as &$question)
+        {
+            //Load question scores for the student
+            $questionScoreObject = $this->questionScoreRepository->load($question['questionAssignmentId'], $student->id);
 
-                if (!empty($questionScoreObject))
+            if (!empty($questionScoreObject))
+            {
+                $question['score'] = $questionScoreObject->getScore();
+                $question['average'] = 5.0;
+            }
+            foreach ($question['elements'] as &$element)
+            {
+                $scoreObject = $this->elementScoreRepository->load($element['elementAssignmentId'], $student->id);
+                if (!empty($scoreObject) && !empty($scoreObject->score))
                 {
-                    $question['score'] = $questionScoreObject->getScore();
-                    $question['average'] = 5.0;
-                }
-                foreach ($question['elements'] as &$element)
-                {
-                    $scoreObject = $this->elementScoreRepository->load($element['elementAssignmentId'], $student->id);
-                    if (!empty($scoreObject) && !empty($scoreObject->score))
-                    {
-                        $element['score'] = $scoreObject->getScore();
-                        $element['average'] = 5.0;
-                        $commentObj = $this->commentRepository->getCommentForScore($element['elementId'],
-                            $element['score']);
-                        $element['comment'] = $commentObj->getBody();
-                    }
+                    $element['score'] = $scoreObject->getScore();
+                    $element['average'] = 5.0;
+                    $element['comment'] = $scoreObject->comment_text;
+
+                    //old way
+//                        $commentObj = $this->commentRepository->getCommentForScore($element['elementId'],
+//                            $element['score']);
+//                        $element['comment'] = $commentObj->getBody();
                 }
             }
-
-            $accessKey = $this->accessKeyRepository->createAccessKey($examId, $student->id);
-
-            $this->feedback[$accessKey] = $studentScores;
-            $this->storeFeedback($accessKey, $studentScores);
         }
 
-        return $this->feedback;
+        return $studentScores;
     }
 
+
     /**
-     * Saves the content to the database.
+     * Saves or updates the feedback content to the database.
      *
-     * TODO: Mark as protected once testing is better set up
-     *
-     * @param $accessKey
-     * @param $content
+     * @param string $accessKey
+     * @param array $content
      * @return bool
      */
     public function storeFeedback($accessKey, $content)
     {
-        $feedback = new Feedback();
-        $feedback->setAccessKey($accessKey);
+        $feedback = Feedback::firstOrNew(['access_key' => $accessKey]);
         $feedback->content = $content;
-//        $feedback->setContent($content);
+
         return $feedback->save();
     }
-
-//
-//    public
-//    function buildOneQuestion(
-//        IElementAssignmentRepository $elementAssignmentRepository,
-//        $examId,
-//        $questionName,
-//        $questionNumber,
-//        $studentId,
-//        &$data
-//    ) {
-////        $questionTitle = $questionAssignment->question->question_name;
-////        $questionNumber = $questionAssignment->question_number;
-//        $comments = [];
-//
-//        $elementAssignments = $elementAssignmentRepository->load_element_assignments_by_question_number($examId,
-//            $questionNumber);
-//        $this->buildElementScore($elementAssignments, $studentId, $comments);
-//        $data[$questionNumber] = [
-//            'questionTitle' => $questionName,
-//            'questionNumber' => $questionNumber,
-//            'comments' => $comments
-//        ];
-//    }
-//
-//
-//    /**
-//     * Builds an array of feedback for a single student on the exam
-//     */
-//    public
-//    function buildStudent(
-//        $examName,
-//        $grade,
-//        $questionsArray
-//    ) {
-//
-//        $this->buildTopLevelContent($studentArray, $examName, $grade);
-//        foreach ($questionsArray as $q)
-//        {
-//            $this->buildQuestion($studentArray, $q['questionNumber'], $q['questionTitle'], $q['commentsArray']);
-//        }
-//
-//    }
-//
-//
-//    /**
-//     * Adds data to the outermost area of a student's array
-//     * @param $studentArray
-//     * @param $examName
-//     * @param $grade
-//     */
-//    public
-//    function buildTopLevelContent(
-//        &$studentArray,
-//        $examName,
-//        $grade
-//    ) {
-//        $studentArray['examName'] = $examName;
-//        $studentArray['grade'] = $grade;
-//    }
-//
-//
-//    /**
-//     * Adds an entry for a question to the studentArray
-//     * @param $studentArray
-//     * @param $questionNumber
-//     * @param $questionTitle
-//     * @param $commentsArray
-//     * @return mixed
-//     */
-//    public
-//    function buildQuestion(
-//        &$studentArray,
-//        $questionNumber,
-//        $questionTitle,
-//        $commentsArray
-//    ) {
-//        $studentArray["question_{$questionNumber}"] =
-//            [
-//                'questionTitle' => $questionTitle,
-//                'comments' => $commentsArray
-//            ];
-//
-//        return $studentArray;
-//    }
-//
-//    /**
-//     * @param $elementAssignments
-//     * @param $student
-//     * @param $comments
-//     */
-//    public
-//    function buildElementScore(
-//        $elementAssignments,
-//        $studentId,
-//        &$comments
-//    ) {
-//        foreach ($elementAssignments as $elementAssignment)
-//        {
-//            $score = $this->elementScoreRepository->load($elementAssignment->id, $studentId);
-//            $comments[$elementAssignment->subtask] =
-//                [
-//                    'subtask' => $elementAssignment->subtask,
-//                    'score' => $score,
-//                    'comment' => $this->commentRepository->getCommentForScore($elementAssignment->element->id,
-//                        $score)
-//                ];
-//        }
-//    }
-
-
 }

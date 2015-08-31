@@ -9,7 +9,7 @@ namespace App;
  * a questionNumber on the exam), and a subtask (which determines the order of
  * elements for the question).
  *
- * The corresponding table ('element_assignments') has the following fields
+ * The corresponding table ('element_assignments') has the following fields, and so this has the following attributes
  *
  * id: integer
  * exam_id: integer
@@ -84,7 +84,9 @@ class ElementAssignment extends BaseModel
      */
     public function getQuestionNumber()
     {
-        $qa = QuestionAssignment::where('exam_id', $this->attributes['exam_id'])->where('question_id', $this->attributes['question_id'])->first();
+        $qa = QuestionAssignment::where('exam_id', $this->attributes['exam_id'])
+            ->where('question_id', $this->attributes['question_id'])
+            ->first();
         return $qa->question_number;
 
         //return $this->questionAssignment->question_number;
@@ -121,14 +123,6 @@ class ElementAssignment extends BaseModel
         return $this->belongsTo('App\User');
     }
 
-//    /**
-//     * Get comments associated with element
-//     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-//     */
-//    public function comments()
-//    {
-//        return $this->hasManyThrough('App\Comment', 'App\Element');
-//    }
 
     /**
      * Link to the exam which partially comprises the assignment
@@ -159,9 +153,5 @@ class ElementAssignment extends BaseModel
 //        return $this->belongsTo('App\Question', 'question_assignments');
     }
 
-//    public function questionAssignment()
-//    {
-//        return $this->belongsTo('App\QuestionAssignment');
-//    }
 
 }

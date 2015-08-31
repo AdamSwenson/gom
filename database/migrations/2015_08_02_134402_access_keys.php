@@ -21,7 +21,11 @@ class AccessKeys extends Migration
                 $table->string('access_key')->index();
                 $table->integer('student_id')->unsigned()->index();
                 $table->integer('exam_id')->unsigned()->index();
+                $table->boolean('email_sent')->default(0);
+                $table->date('access_expires')->nullable();
                 $table->timestamps();
+
+                $table->unique(['student_id', 'exam_id']);
 
                 $table->foreign('user_id')
                     ->references('id')

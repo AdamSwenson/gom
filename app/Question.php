@@ -89,7 +89,6 @@ class Question extends BaseModel
     public function getQuestionNumber($examId)
     {
         $exam = $this->exam()->where('exam_id', $examId)->first();
-
         return $exam->pivot->question_number;
     }
 

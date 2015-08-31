@@ -19,7 +19,7 @@ class ElementScoreRepository implements IElementScoreRepository
 
 
     /**
-     * Load score for a student by the id of the element assigment
+     * Load score for a student by the id of the element assignment
      * @param integer $elementAssignmentId
      * @param integer $studentId
      * @return ElementScore

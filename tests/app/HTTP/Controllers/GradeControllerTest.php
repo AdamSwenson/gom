@@ -66,7 +66,7 @@ class GradeControllerTest extends \TestCase
         $this->assertNotNull($response);
     }
 
-    public function testRecordScoreElement()
+/*    public function testRecordScoreElement()
     {
         $data = ['examId' => 1, 'element_assignment_id' => 1, 'student_id' => 2, 'score' => 3.4];
         $mock = $this->createMock('App\Repositories\Score\IElementScoreRepository');
@@ -75,7 +75,7 @@ class GradeControllerTest extends \TestCase
             ->andReturn(ElementScore::all()->random());
         $response = $this->action('POST', 'GradeController@recordScore', $data);
         $this->assertNotNull($response);
-    }
+    }*/
 
     /*
     public function testRecordScoreUnset()

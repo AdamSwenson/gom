@@ -12,6 +12,7 @@ use App\AccessKey;
 use App\Exceptions\InputTypeException;
 use App\Feedback;
 use App\Repositories\Feedback\PseudoIDMaker;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -24,24 +25,44 @@ use Illuminate\Support\Facades\DB;
  */
 class AccessKeyRepository implements IAccessKeyRepository
 {
+
+    const TRIM_TO_LENGTH = 100;
+
     protected $validKey;
 
     /**
      * Creates an access key, checks its validity, and records it in the database.
+     * If there is already an existing key for the exam/student combo, will return the
+     * existing key unless $forceNew is true
+     *
      * Returns only the string, not the model object.
+     *
+     * TODO: Improve localization so that expiration date will occur as expected
+     *
      * @param $examId
      * @param $studentId
+     * @param int $daysUntilExpiration
      * @return string
      */
-    public function createAccessKey($examId, $studentId)
+    public function createAccessKey($examId, $studentId, $daysUntilExpiration=10, $forceNew=false)
     {
         $accessKey = $this->generateNewKey();
         if($accessKey)
         {
-            $k = new AccessKey();
-            $k->setKey($accessKey);
+            $expire = Carbon::now()->addDays($daysUntilExpiration);
+
+            $k = AccessKey::firstOrNew(['exam_id' => $examId, 'student_id' => $studentId]);
+
+            //Keep the existing key if one already exists
+            //of if have been instructed to create a new access key
+            if(empty($k->access_key) || $forceNew)
+            {
+                $k->setKey($accessKey);
+            }
+
             $k->setExamId($examId);
             $k->setStudentId($studentId);
+            $k->setExpirationDate($expire);
             $k->save();
 
             if($k)
@@ -78,7 +99,7 @@ class AccessKeyRepository implements IAccessKeyRepository
      */
     public function getAccessKeyForStudent($examId, $studentId)
     {
-        $key = AccessKey::onExam($examId)->where('student_id', $studentId)->first();
+        $key = AccessKey::where('exam_id', $examId)->where('student_id', $studentId)->first();
         return $key->getKey();
     }
 
@@ -104,7 +125,8 @@ class AccessKeyRepository implements IAccessKeyRepository
     }
 
     /**
-     * Helper to check if an incoming key has the properties of an access key
+     * Helper to check if an incoming key has the properties of an access key.
+     * Does not actually check if the key exists in the database
      *
      * @param $accessKey
      * @return mixed
@@ -112,35 +134,36 @@ class AccessKeyRepository implements IAccessKeyRepository
      */
     protected function validateKey($accessKey)
     {
-     //   dd($accessKey);
+        //Remove whitespace
         $trimmed = \trim($accessKey);
-       // dd($trimmed);
-        $cleaned = \filter_var($trimmed, \FILTER_SANITIZE_STRING);
-        //dd($cleaned);
+
+        //Check that not longer than allowed length
+        if(\mb_strlen($trimmed) <= self::TRIM_TO_LENGTH)
+        {
+            //Clean it to make sure it is just nice stringy goodness
+            $cleaned = \filter_var($trimmed, \FILTER_SANITIZE_STRING);
+        }
+
         if(!empty($cleaned))
-//        if((!empty($cleaned)) && (\mb_strlen($cleaned) === AccessKey::LOOKUP_SIZE))
         {
             $this->validKey = $cleaned;
             return $this->validKey;
         }
-        else{
+
             throw new InputTypeException(InputTypeException::STRING);
-        }
+
     }
 
     /**
      * Actually gets the feedback from storage
-     * @return array
+     * @return Feedback
      */
     protected function loadFeedback()
     {
         if(!empty($this->validKey))
         {
-//            echo 'j';
-//Todo: Implement loader of feedback
             $data = Feedback::findOrFail($this->validKey);
             return $data;
-
         }
     }
 

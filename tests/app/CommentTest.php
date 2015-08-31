@@ -23,7 +23,6 @@ class CommentTest extends \TestCase
 
     public function tearDown()
     {
-        unset($this->object);
     }
 
     public function testGetBody()
@@ -51,13 +50,6 @@ class CommentTest extends \TestCase
         }
     }
 
-    /**
-     * @expectedException \Exception
-     */
-    public function testSetValenceExceptionOnInvalidValence()
-    {
-        $this->object->setValence('catfood');
-    }
 
     #---------------------------------------- queries
     public function testScopeOnValence()

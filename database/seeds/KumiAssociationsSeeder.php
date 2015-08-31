@@ -12,6 +12,7 @@ class KumiAssociationsSeeder extends Seeder
     public $students;
     public $kumis;
     public $faker;
+
     /**
      * Run the database seeds.
      *
@@ -36,31 +37,43 @@ class KumiAssociationsSeeder extends Seeder
 
     protected function populateExamKumi()
     {
-
-        foreach($this->exams as $exam)
+        $cnt = 0;
+        foreach ($this->exams as $exam)
         {
-         //   $exam->user()->attach(\App\User::findOrNew(1));
             try
             {
-                $exam->classes()->attach(\App\Kumi::all()->random());
-                $exam->classes()->attach(\App\Kumi::all()->random());
-            }catch(\Exception $e){}
-            //$this->faker->randomElement($this->kumis));
+                $exam->classes()->attach($this->kumis[$cnt]);
+//                $exam->classes()->attach(\App\Kumi::all()->random());
+                // $exam->classes()->attach(\App\Kumi::all()->random());
+            } catch (\Exception $e)
+            {
+            }
+            $cnt += 1;
         }
     }
 
-    protected function populateStudentKumi($studentsPerClass=5)
+    /**
+     * This seeds the students_kumi table with 10 students per kumi and one student shared between two kumis
+     * to simulate someone in multiple classes.
+     * @param int $studentsPerClass
+     */
+    protected function populateStudentKumi($studentsPerClass = 10)
     {
-
-        foreach($this->kumis as $kumi)
+        $cnt = 0;
+        foreach ($this->kumis as $kumi)
         {
-            for($i=0; $i<=$studentsPerClass; $i++)
-            try
+            for ($i = 0; $i <= $studentsPerClass; $i++)
             {
-                $kumi->students()->attach(\App\Student::all()->random());
-            }catch(\Exception $e){
+                try
+                {
+                    $kumi->students()->attach($this->students[$i + $cnt]);
+//                $kumi->students()->attach(\App\Student::all()->random());
+                } catch (\Exception $e)
+                {
 //                $i -=1;
+                }
             }
+            $cnt += $studentsPerClass;
         }
     }
 }

@@ -157,7 +157,7 @@ class MailTask extends Task
     }
 
     /**
-     * Sets emails address of sender
+     * Sets email address of sender
      * @param $from
      */
     public function setFrom($from)

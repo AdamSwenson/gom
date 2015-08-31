@@ -6,9 +6,13 @@
  * Time: 10:21 PM
  */
 
-//use App\classes\DbTestAids;
+//it likes this if running test individually
+//require_once '../../vendor/autoload.php';
 
+//it likes this if it is running normally
 require_once 'vendor/autoload.php';
+
+
 
 //
 //$username = putenv("DB_USERNAME=testuser4");

@@ -152,7 +152,7 @@ class StudentRepository implements IStudentRepository
      *
      *
      * @param Exam|int $exam_or_examId
-     * @return mixed
+     * @return Collection Ordered by last name
      */
     public function load_students_by_exam($exam_or_examId)
     {
@@ -170,6 +170,9 @@ class StudentRepository implements IStudentRepository
                 }
             }
         }
+        //Make into an array and sort in descending order
+        $students = collect($students);
+        $students = $students->sortBy('last_name');
         return $students;
     }
 

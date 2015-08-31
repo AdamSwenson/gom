@@ -30,7 +30,8 @@ class ElementController extends Controller
      * @param IElementAssignmentRepository $assignmentDao
      * @param IQuestionAssignmentRepository $questionAssignmentDao
      */
-    public function __construct(IElementRepository $elementDao, IElementAssignmentRepository $assignmentDao,
+    public function __construct(IElementRepository $elementDao,
+                                IElementAssignmentRepository $assignmentDao,
                                 IQuestionAssignmentRepository $questionAssignmentDao)
     {
         $this->middleware('auth');
@@ -90,7 +91,6 @@ class ElementController extends Controller
             $this->assignmentDao->record($request->input('examId'), $request->input('questionNumber'), $element->getId(), $request->input('subtask'));
         }
         return $element;
-//todo: add view
     }
 
     /**
@@ -114,9 +114,7 @@ class ElementController extends Controller
      * @return Response
      */
     public function edit(Element $element, ElementRequest $request)
-    {
-
-    }
+    {}
 
     /** Edit all elements associated with given question
      * @param Exam $exam
@@ -133,7 +131,6 @@ class ElementController extends Controller
         // given the current $question, find previous and next $questionId...
         // loadByIds() will loop if the same questionId appears several times on the same exam,
         // as it matches with the first Id found in the ordered Assignments.
-
         $index = 0;
         foreach ($allQuestionAss as $questionAss) {
               if ($questionId === $questionAss->question_id) {
@@ -179,9 +176,7 @@ class ElementController extends Controller
      * @return Response
      */
     public function update(Element $element, ElementRequest $request)
-    {
-
-    }
+    {}
 
     /**
      * Update all elements passed in from the web form.

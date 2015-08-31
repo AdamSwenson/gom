@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Carbon\Carbon;
+
 /**
  * Class Student
  *
@@ -53,43 +55,69 @@ class Student extends BaseModel
         parent::boot();
     }
 
-    public function setStudentId($studentId)
-    {
-        $this->attributes['student_identifier'] = $studentId;
-    }
-
+    /**
+     * Returns the identifier that a user has entered for the student. It does
+     * not return the database's id for the student. The database id for the
+     * student should be accessed via $student->id.
+     *
+     * @return integer
+     */
     public function getStudentId()
     {
         return $this->attributes['student_identifier'];
     }
 
+    /**
+     * Sets the user-given identifying number for the student
+     * @param integer $studentId
+     */
+    public function setStudentId($studentId)
+    {
+        $this->attributes['student_identifier'] = $studentId;
+    }
 
 
+    /**
+     * Sets the student's first name
+     * NB., does not save the change. So update needs to be independently called.
+     * @param string $firstname
+     */
     public function setStudentFName($firstname)
     {
         $this->attributes['first_name'] = $firstname;
     }
 
+    /**
+     * Returns the student's first name
+     * @return string
+     */
     public function getStudentFName()
     {
        return $this->attributes['first_name'];
     }
 
+    /**
+     * Sets the student's last name
+     * NB., does not save the change. So update needs to be independently called.
+     * @param string $lastname
+     */
     public function setStudentLName($lastname)
     {
         $this->attributes['last_name'] = $lastname;
     }
 
+    /**
+     * Returns the student's last name
+     * @return string
+     */
     public function getStudentLName()
     {
         return $this->attributes['last_name'];
     }
 
-
-
-
     /**
-     * Change email address for student
+     * Change email address for student.
+     * NB., does not save the change. So update needs to be independently called.
      * @param string $email
      */
     public function setEmail($email)
@@ -97,9 +125,70 @@ class Student extends BaseModel
         $this->attributes['email'] = $email;
     }
 
+    /**
+     * Returns the student's email address.
+     * @return mixed
+     */
     public function getEmail()
     {
        return $this->attributes['email'];
+    }
+#------------------------- Access to complicated properties
+
+    /**
+     * Returns true if the student has been sent an email in order to access their feedback
+     * for the specified exam.
+     *
+     * @param integer $examId
+     * @return boolean
+     */
+    public function feedbackEmailSent($examId)
+    {
+        $ak = AccessKey::where('exam_id', $examId)->where('student_id', $this->attributes['id'])->first();
+        return $ak ? $ak->getEmailSent() : false;
+    }
+
+    /**
+     * Returns true if their exam has been graded (viz., if there is
+     * at least one question score recorded).
+     *
+     * @param integer $examId
+     * @return boolean
+     */
+    public function hasBeenGraded($examId)
+    {
+
+    }
+
+    /**
+     * Returns true if feedback has been created and access to the feedback
+     * has not expired.
+     *
+     * @param integer $examId
+     * @return bool
+     */
+    public function isFeedbackAvailable($examId)
+    {
+        $expirationDate = $this->getFeedbackAccessExpirationDate($examId);
+        if(! is_null($expirationDate))
+        {
+            if(Carbon::now()->lte($expirationDate))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns the date feedback will begin no longer being available to the student
+     * @param integer $examId
+     * @return bool|Carbon
+     */
+    public function getFeedbackAccessExpirationDate($examId)
+    {
+        $ak = AccessKey::where('exam_id', $examId)->where('student_id', $this->attributes['id'])->first();
+        return $ak ? $ak->getExpirationDate() : false;
     }
 
 #-------- foreign keys
