@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
-@section('pageTitle', 'Student Controls')
-@section('description', 'Email or review student feedback')
+@section('pageTitle', 'Exam Analytics')
+@section('description', 'View information about the exam')
 
 @section('cssLinks')
 @endsection
