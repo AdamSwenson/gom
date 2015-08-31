@@ -1,6 +1,6 @@
 <h4 class=" row">
-    <div class="col-md-7">
-        <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+    <div class="col-md-7" style="vertical-align:middle">
+        <span class="glyphicon glyphicon-time" aria-hidden="true" ></span>
         Statistics
     </div>
     <div class="col-md-5">

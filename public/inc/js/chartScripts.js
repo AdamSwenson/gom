@@ -192,7 +192,7 @@ function makeOverallChart(QuestionHolder) {
 }
 
 function makeElementCharts(ElementHolder, QuestionHolder) {
-    console.log(ElementHolder, QuestionHolder);
+    //console.log(ElementHolder, QuestionHolder);
     var numQ = QuestionHolder.answeredQuestions.length;
     var me = this;
     $.each(QuestionHolder.answeredQuestions, function (k, v) {
@@ -208,11 +208,11 @@ function makeElementCharts(ElementHolder, QuestionHolder) {
                 window.console.log('iterating elements', this);
                 scores.push(this.score);
                 titles.push(this.elementAbbr);
-                averages.push(this.average);
+                averages.push(this.average); // this looks to be compiling element scores, but we care about questions
             });
         }
         var target = 'Q' + qnum + 'Chart';
-        console.log(target, scores, averages, titles);
+        //console.log('target', target , 'scores', scores, 'averages', averages, 'titles', titles);
         chartDrawer(target, scores, averages, titles);
     });
 }

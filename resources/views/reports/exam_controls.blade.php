@@ -22,16 +22,20 @@
                                 {{ $exam->getTerm() }}
                                 {{ $exam->getYear() }}
                             </td>
-                            <td class="col-md-8" style="vertical-align:middle">
+                            <td class="col-md-7" style="vertical-align:middle">
                                 {{ $exam->getName() }}
                             </td>
                             <!-- control buttons -->
-                            <td class="col-md-3" style="text-align:right">
-                                <a class="btn btn-warning" id="{{'exam'.$exam->getId()}}"
+                            <td class="col-md-4" style="text-align:right">
+                                <a class="btn btn-primary" id="{{'exam'.$exam->getId()}}"
                                    title="Release Exam" data-released="{{ $exam->getReleased() }}"
                                    onclick="confirmRelease({{ $exam->getId()}})">
-                                    <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
+                                    <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
                                     Release Exam
+                                </a>
+                                <a class="btn btn-default disabled" id="lock" title="Remove Access"
+                                   onclick="removeAccess({{ $exam->getId() }})" >
+                                    <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
                                 </a>
                                 <a class="btn btn-primary" title="Exam Analytics"
                                    href="{{url('report/' . $exam->getId() . '/analytics')}}"><span
@@ -62,19 +66,19 @@
         $('[id^="nav"]').attr('class', '');
         $('#navReport').attr('class', 'active');
 
-        //set the display for all released exams
+        //set controls for all released exams
         $('[id^="exam"]').each( function() {
             if ($(this).attr('data-released') == '1'){
                 setAsReleased( $(this) );
+                enableLock( $(this).siblings('#lock') );
             }
         });
-
 
         function confirmRelease(examId) {
             var released = $('#exam' + examId).attr('data-released');
             var confirmMsg = "Releasing this exam will email all students \n their grades and personalized feedback. " +
                             "Do you wish to continue?";
-            if (released) confirmMsg = "Re-releasing this exam sends all students an additional message informing them " +
+            if (released === '1') confirmMsg = "Re-releasing this exam sends all students an additional message informing them " +
                     "that exam grades or comments may have changed. Do you wish to continue?";
             bootbox.confirm(confirmMsg, function(result) {
                 if (result) {
@@ -93,10 +97,34 @@
                 url: path,
                 type: 'GET',
                 success: function() {
-                    setAsReleased( $('#exam' + examId) );
+                    var $exam = $('#exam' + examId);
+                    setAsReleased( $exam );
+                    enableLock( $exam.siblings('#lock') );
                 },
                 error: function( ) {
                     alert( "Sorry, there was a problem releasing this exam!\nPlease try again." );
+                }
+            });
+        }
+
+        // removes student access to the exam, deleting any response keys that have been generated.
+        function removeAccess(examId) {
+            bootbox.confirm('Removing access will prevent students from viewing feedback on the exam. Access can ' +
+                    'be restored by releasing the exam again.', function(result) {
+                if (result) {
+                    var path = "/report/" + examId + "/unrelease";
+                    $.ajax({
+                        url: path,
+                        type: 'GET',
+                        success: function() {
+                            var $exam = $('#exam' + examId);
+                            disableLock( $exam.siblings('#lock'));
+                            setAsUnreleased($exam);
+                        },
+                        error: function( ) {
+                            alert( "Sorry, there was a problem locking this exam!\nPlease try again." );
+                        }
+                    });
                 }
             });
         }
@@ -107,6 +135,25 @@
             $exam.attr('class', 'btn btn-success');
             $exam.html("<span class='glyphicon glyphicon-envelope' aria-hidden='true'></span>" +
                     " Released");
+        }
+
+        // sets release exam button
+        function setAsUnreleased($exam) {
+            $exam.attr('data-released', '0');
+            $exam.attr('class', 'btn btn-primary');
+            $exam.html("<span class='glyphicon glyphicon-envelope' aria-hidden='true'></span>" +
+                    " Release Exam");
+        }
+
+        // Enables the "remove access" button for the exam
+        function enableLock($btnLock) {
+            $btnLock.removeClass('btn-default disabled');
+            $btnLock.addClass('btn-primary');
+        }
+
+        function disableLock($btnLock) {
+            $btnLock.removeClass('btn-primary');
+            $btnLock.addClass('btn-default disabled');
         }
 
     </script>

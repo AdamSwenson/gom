@@ -1,9 +1,11 @@
 @extends('layouts.master')
 
 @section('pageTitle', 'Student Feedback')
-@section('description', "Review feedback for the student")
+@section('description', "Review student feedback")
 
 @section('cssLinks')
+    <link href="{{ asset('inc/jqplot/jquery.jqplot.min.css')}}" />
+    {!! \HTML::style(asset('/css/output.css')) !!}
 @endsection
 
 @section('body')
@@ -25,23 +27,83 @@
         </h3>
         <h4>{{ $exam->getTerm() }} {{ $exam->getYear() }} "{{ $exam->getName() }}"</h4>
         <hr>
+        <!-- student feedback copypasta from feedback.blade -->
+        <?php $h = '400px'; $w = '800px'; ?>
         <div>
-            student feedback goes here.
+            <div id="studentInfo">
+                <ul>
+                    <li>
+                        <label for='grade' class="studentInfoLabel">Grade: </label>
+                        <input type="text" readonly="readonly" id="grade" class="grade"
+                               value="{{ $data['grade'] or ''}}"/>
+                    </li>
+                    <li>
+                        <span class="studentInfoLabel">Entry Code:</span> <span class="pseudoID"> {{ $data->access_key }}</span>
+                    </li>
+                </ul>
+            </div> <!--//close studentInfo-->
+
+            <div id="overall">
+                <p class="small">Here's how you did on each question in comparison to the class average. <br/>
+                    The blue bar is you (on an arbitrary scale); the gold bar is the average
+                </p>
+
+                <div id="allQuestionsChart" style="height:{{$h}};width:{{$w}}; "></div>
+            </div> <!--overall-->
+
+            <div id="questionResultsHere">
+                @foreach($data['content'] as $question)
+                    @include('feedback.question')
+                @endforeach
+            </div>
+            <div id="elementCharts"></div>
         </div>
     </div>
     @include('errors.list')
 
 @endsection
 
-
 @section('jsArea')
+    <!-- copied from feedback.blade until we have a better idea of what the presentation should be -->
+    <script type="text/javascript">
+        var data = {!! ($data ? json_encode($data['content'], JSON_FORCE_OBJECT) : '') !!};
+        //console.log(data);
+    </script>
+
+    <script language="javascript" type="text/javascript" src="{{ asset('inc/js/jqplot/jquery.jqplot.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.json2.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.barRenderer.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.pointLabels.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.canvasTextRenderer.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js') }}"></script>
+
+    <script type="text/javascript" src="{{ asset('inc/js/outputScripts.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('inc/js/chartScripts.js') }}"></script>
 
     <script type="text/javascript">
+        $(document).ready(function () {
+            var questionHolder = new QuestionHolder();
+            questionHolder.loadScores(data);
+            questionHolder.loadAverages(data);
+            questionHolder.setAnsweredQuestions();
+            var elementHolder = new ElementHolder();
+            var elScores = consolidateElementScores(data);
+            elementHolder.loadScores(data);
+            //elementHolder.loadAverages(data);
+            //divMaker(questionHolder);
+            //Make charts
+            makeOverallChart(questionHolder);
+            makeElementCharts(elementHolder, questionHolder);
 
+        });
+    </script>
+
+    <script type="text/javascript">
         // set 'Reports' tab as active
         $('[id^="nav"]').attr('class', '');
         $('#navReport').attr('class', 'active');
-
     </script>
 
 @endsection
