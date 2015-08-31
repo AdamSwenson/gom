@@ -72,10 +72,10 @@
 
         function confirmRelease(examId) {
             var released = $('#exam' + examId).attr('data-released');
-            var confirmMsg = "Releasing the exam will email all students with their feedback and grades";
-            if (released === '1') {
-                confirmMsg = "Re-releasing this exam will notify all students who have been graded, but not yet received an email";
-            }
+            var confirmMsg = "Releasing this exam will email all students \n their grades and personalized feedback. " +
+                            "Do you wish to continue?";
+            if (released) confirmMsg = "Re-releasing this exam sends all students an additional message informing them " +
+                    "that exam grades or comments may have changed. Do you wish to continue?";
             bootbox.confirm(confirmMsg, function(result) {
                 if (result) {
                     releaseExam(examId);

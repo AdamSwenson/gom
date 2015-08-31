@@ -34,7 +34,7 @@
                                     Setup</a>
                             </li>
                             <li class="next">
-                                <a id="submitLink" style="cursor:pointer;">Next <span class="glyphicon glyphicon-chevron-right"
+                                <a id="submitLink" style="cursor:pointer;">Add / Edit Questions <span class="glyphicon glyphicon-chevron-right"
                                                                    aria-hidden="true"></span></a>
                             </li>
                         </ul>
