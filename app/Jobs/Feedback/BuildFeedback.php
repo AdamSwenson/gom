@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Feedback;
 
+use App\Exam;
 use App\Jobs\Job;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -16,24 +17,27 @@ class BuildFeedback extends Job implements SelfHandling, ShouldQueue
 
     public $examId;
 
+    /** @var \App\Repositories\Feedback\IFeedbackBuilder */
+    protected $feedbackBuilder;
+
     /**
      * Create a new job instance.
      *
      */
     public function __construct()
     {
-        //
+        $this->feedbackBuilder = app()->make('App\Repositories\Feedback\IFeedbackBuilder');
+
     }
 
     /**
      * Execute the job.
      *
-     * @return void
+     * @param Exam $exam
      */
-    public function handle()
+    public function handle(Exam $exam)
     {
-
-        //
+        $this->feedbackBuilder->buildFeedback($exam->id);
     }
 
 

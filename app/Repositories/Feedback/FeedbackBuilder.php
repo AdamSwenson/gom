@@ -69,7 +69,9 @@ class FeedbackBuilder implements IFeedbackBuilder
 
 
     /**
-     * Creates the feedback structure for all students taking the exam
+     * Creates the feedback structure for all students taking the exam.
+     * Will create new access keys if none already exist. If there are already
+     * access keys, it will update the associated content (but not create new keys).
      *
      * This is the main publicly called method
      *
@@ -246,7 +248,6 @@ class FeedbackBuilder implements IFeedbackBuilder
     {
         $feedback = Feedback::firstOrNew(['access_key' => $accessKey]);
         $feedback->content = $content;
-
         return $feedback->save();
     }
 }

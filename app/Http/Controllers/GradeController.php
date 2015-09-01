@@ -27,6 +27,21 @@ use Illuminate\Support\Facades\View;
  */
 class GradeController extends Controller
 {
+    /** @var  IExamRepository */
+    protected $examDao;
+    /** @var  IQuestionAssignmentRepository */
+    protected $questionAssignmentDao;
+    /** @var  IElementRepository */
+    protected $elementDao;
+    /** @var  IElementAssignmentRepository */
+    protected $elementAssignmentDao;
+    /** @var  IElementScoreRepository */
+    protected $elementScoreDao;
+    /** @var  IQuestionScoreRepository */
+    protected $questionScoreDao;
+    /** @var  IGradingTimeRepository */
+    protected $gradingTimeDao;
+
     protected $dao;
     protected $reportController;
 
@@ -248,7 +263,6 @@ class GradeController extends Controller
             $time = $dao->load($exam->id, $request->input('student_id'));
             return $time;
         }
-
     }
 
     /**
