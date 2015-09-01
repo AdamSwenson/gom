@@ -219,6 +219,22 @@ class GradeController extends Controller
     }
 
     /**
+     * Removes a question or element score when it has been deleted.
+     * @param Exam $exam
+     * @param GradingRequest $request
+     * @return mixed
+     */
+    public function removeScore(Exam $exam, GradingRequest $request){
+        if ($request->has('questionAssignmentId')) {
+            $this->questionScoreDao->deleteScore($request['questionAssignmentId'], $request['studentId']);
+        }
+
+        if ($request->has('elementAssignmentId')) {
+            $this->elementScoreDao->deleteScore($request['elementAssignmentId'], $request['studentId']);
+        }
+    }
+
+    /**
      * Load the time spent grading a particular student exam
      *
      * @param Exam $exam

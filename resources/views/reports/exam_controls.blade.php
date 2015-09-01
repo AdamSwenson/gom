@@ -27,7 +27,7 @@
                             </td>
                             <!-- control buttons -->
                             <td class="col-md-4" style="text-align:right">
-                                <a class="btn btn-primary" id="{{'exam'.$exam->getId()}}"
+                                <a class="btn btn-primary" id="{{'exam'.$exam->getId()}}" style="width:140px;"
                                    title="Release Exam" data-released="{{ $exam->getReleased() }}"
                                    onclick="confirmRelease({{ $exam->getId()}})">
                                     <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
@@ -92,17 +92,21 @@
         // Any late graded exams can be processed by releasing again
         // or individually via the student controls page
         function releaseExam(examId) {
+            var $exam = $('#exam' + examId);
+            $exam.addClass('disabled');
             var path = "/report/" + examId + "/release";
             $.ajax({
                 url: path,
                 type: 'GET',
                 success: function() {
-                    var $exam = $('#exam' + examId);
                     setAsReleased( $exam );
                     enableLock( $exam.siblings('#lock') );
                 },
                 error: function( ) {
                     alert( "Sorry, there was a problem releasing this exam!\nPlease try again." );
+                },
+                complete: function(){
+                    $exam.removeClass('disabled');
                 }
             });
         }
@@ -110,19 +114,24 @@
         // removes student access to the exam, deleting any response keys that have been generated.
         function removeAccess(examId) {
             bootbox.confirm('Removing access will prevent students from viewing feedback on the exam. Access can ' +
-                    'be restored by releasing the exam again.', function(result) {
+                    'be restored by releasing the exam again.', function(result){
+                var $exam = $('#exam' + examId);
+                $exam.addClass('disabled');
                 if (result) {
                     var path = "/report/" + examId + "/unrelease";
                     $.ajax({
                         url: path,
                         type: 'GET',
                         success: function() {
-                            var $exam = $('#exam' + examId);
                             disableLock( $exam.siblings('#lock'));
                             setAsUnreleased($exam);
                         },
                         error: function( ) {
+                            $exam.removeClass('disabled');
                             alert( "Sorry, there was a problem locking this exam!\nPlease try again." );
+                        },
+                        complete: function(){
+                            $exam.removeClass('disabled');
                         }
                     });
                 }

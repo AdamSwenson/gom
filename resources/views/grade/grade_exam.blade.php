@@ -129,7 +129,8 @@
         /*
          * Set valenceCutoffs for comments.
          * These represent the maximum value for each valence group.
-         * Magic numbers for now, but will accept data from the server if valenceCutoffs and valenceLabels are modified
+         * Magic numbers for now, but will accept data from the server for valenceCutoffs, valenceLabels and valenceLabelPositions
+         *
          */
         var valenceCutoffs = [0, 3.25, 6.75, 10];
         var valenceLabels = ["Missing", "Poor", "Fair", "Excellent"];
@@ -154,7 +155,7 @@
          * GENERAL FUNCTIONS
          */
 
-        // Returns which valence group [score] belongs to by comparing with valenceCutoffs[]
+        // Returns which valence group a [score] belongs to by comparing with valenceCutoffs[]
         function getValence(score) {
             var valence = 0;
             for (var j = valenceCutoffs.length - 2; j >= 0; j--) {
@@ -188,7 +189,7 @@
             }
         }
 
-        // returns number of exams graded
+        // returns: # of exams graded
         function examsGraded() {
             var graded = 0;
             for (var i = 0; i < examGrades.length; i++) {
@@ -197,9 +198,8 @@
             return graded;
         }
 
-        // updates [$comment] in the client structure and saves to server
+        // updates a comment locally and saves to server
         function updateAndSaveComment($comment) {
-            // TODO: get 'readonly' attributes working again
             $comment.removeAttr('readonly');
             var eleIndex = $comment.parents('[id^="element"]').attr('data-element-index');
             var elementId = $comment.parents('[id^="element"]').attr('data-element-id');
@@ -209,8 +209,8 @@
             createGradeRequest('element_id', elementId, score, $comment.val());
         }
 
-        /* Creates a key/value array GradeRequest. This will update the DB via ajax.
-         * Params: dataType: string, the label for thing to be modified
+        /* Creates a key/value array GradeRequest to upload.
+         * Params: dataType: the label for thing to be modified
          *      elementId: question or element ID to receive the update
          *      score: the score for the question or element
          *      comment: text of the comment to update. Null unless modifying an element comment.
@@ -231,8 +231,7 @@
             saveDataWithTime(gradeRequest);
         }
 
-        // add time info to the grading request array and pass to server
-        // ( all DB updates include grading time info )
+        // add time info to the gradeRequest and pass to server
         function saveDataWithTime(gradeRequest) {
             if (!gradeRequest) {
                 gradeRequest = {};
@@ -255,7 +254,7 @@
         }
 
         function getActiveStudentId() {
-            if (activeStudent == null) { return null; }
+            if (activeStudent === null) { return null; }
             else return $('#studentListItem' + activeStudent).attr('data-sid');
         }
 
@@ -478,12 +477,28 @@
                 var qNumber = $(this).attr('data-number');
                 var score = parseFloat($(this).val());
                 questionScores[activeStudent][qNumber - 1] = score;
-                var questionId = $(this).attr('data-question-assignment-id');
+                var questionAssId = $(this).attr('data-question-assignment-id');
                 if (score >= 0) {
-                    createGradeRequest('question_assignment_id', questionId, score, null);
+                    createGradeRequest('question_assignment_id', questionAssId, score, null);
                 } else {
-                    // TODO: if the question score is deleted, we need to delete that object
-                    console.log('delete the score');
+                    // delete the score
+                    // TODO Complete this correctly
+                    var examId = $('h3').attr('data-exam-id');
+                    var gradeRequest = {};
+                    gradeRequest['questionAssignmentId'] = questionAssId;
+                    gradeRequest['studentId'] = getActiveStudentId();
+                    $.ajax({
+                        url: examId + '/remove',
+                        data: gradeRequest,
+                        type: 'POST',
+                        success: function() {
+                            //console.log('success! ');
+                        },
+                        error: function( ) {
+                            alert( "Sorry, there was a problem deleting this score.\nPlease try again." );
+                        }
+                    });
+
                 }
 
                 updateStudentDataArea();
@@ -533,7 +548,6 @@
                 // set comments
                 $('[name^="commentQ"]').each(function (index) {
                     var thisComment = elementComments[activeStudent][index];
-                    console.log(elementScores[activeStudent]);
                     // if NULL, disable comment text area until a slider is moved.
                     if (elementScores[activeStudent][index] === null) {
                         $(this).prop('readonly', 'true');

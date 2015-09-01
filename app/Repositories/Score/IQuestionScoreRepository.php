@@ -59,7 +59,6 @@ interface IQuestionScoreRepository
      */
     public function update($questionAssignmentId, $studentId, $score);
 
-
     /**
      * Deletes a question score for a student
      * @param integer $questionAssignmentId

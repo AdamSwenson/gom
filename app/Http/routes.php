@@ -68,6 +68,7 @@ Route::get('grade', 'GradeController@index'); // present list of exams to grade.
 Route::get('grade/exam/{exam}', 'GradeController@grade');  // begin grading the specified exam
 Route::get('grade/exam/{exam}/student/{student}', 'GradeController@grade');  // begin grading the specified exam
 Route::post('grade/exam/{exam}', 'GradeController@recordScore');
+Route::post('grade/exam/{exam}/remove', 'GradeController@removeScore');
 Route::get('grade/exam/{exam}/time','GradeController@loadTime');
 Route::post('grade/exam/{exam}/time','GradeController@recordTime');
 Route::get('grade/exam/{exam}/stats', 'GradeController@loadStats');

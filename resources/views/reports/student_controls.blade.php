@@ -30,7 +30,7 @@
                         <td style="vertical-align:middle">{{ $student->getEmail() }}</td>
                         <td style="vertical-align:middle">{{ $student->getStudentId()}}</td>
                         <td style="text-align: right;">
-                            <a class="btn btn-default" id="{{ 'studentId'.$student->getId() }}" title="Email Student"
+                            <a class="btn btn-default" style="width:120px;" id="{{ 'studentId'.$student->getId() }}" title="Email Student"
                                onclick="confirmEmail({{ $student->getId() }})" data-emailed="0">
                                 <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Email
                             </a>
@@ -44,7 +44,6 @@
                 @endforeach
                 </tbody>
             </table>
-
         </div>
     </div>
     @include('errors.list')
@@ -68,29 +67,30 @@
 
         function confirmEmail(studentId) {
             var released = $('#studentId' + studentId).attr('data-emailed');
-            var confirmMsg = "This will email the student, informing them that their exam has been graded along with a link" +
-                    "where they can view their feedback.";
+            var confirmMsg = "This will email the student with a link containing their grade and feedback.";
             if (released === '1') {
-                confirmMsg = "This will send an additional email to the student, informing them that their exam has been graded.";
+                confirmMsg = "This will re-send the notification email, informing the student that their exam has been graded.";
             }
+            // confirm and email student
             bootbox.confirm(confirmMsg, function(result) {
                 if (result) {
-                    emailStudent(studentId);
-                }
-            });
-        }
-
-        function emailStudent(id) {
-            var examId = $('#examTitle').attr('data-exam-id');
-            var path = "/report/" + examId + "/students/" + id;
-            $.ajax({
-                url: path,
-                type: 'POST',
-                success: function() {
-                    setAsEmailed( $('#studentId' + id) );
-                },
-                error: function( ) {
-                    alert( "Sorry, there was a problem emailing this student!" );
+                    var examId = $('#examTitle').attr('data-exam-id');
+                    var $student = $('#studentId' + studentId);
+                    $student.addClass('disabled');
+                    var path = "/report/" + examId + "/students/" + studentId;
+                    $.ajax({
+                        url: path,
+                        type: 'POST',
+                        success: function() {
+                            setAsEmailed( $student );
+                        },
+                        error: function( ) {
+                            alert( "Sorry, there was a problem emailing this student!" );
+                        },
+                        complete: function() {
+                            $student.removeClass('disabled');
+                        }
+                    });
                 }
             });
         }

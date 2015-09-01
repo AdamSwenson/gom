@@ -15,7 +15,7 @@ use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Exam\IExamRepository;
 use App\Repositories\Feedback\IAccessKeyRepository;
-
+use App\Repositories\Feedback\IFeedbackBuilder;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Score\IElementScoreRepository;
 use App\Repositories\Score\IQuestionScoreRepository;
@@ -44,6 +44,7 @@ class ReportController extends Controller
     /**
      * @param IAccessKeyRepository $accessKeyRepository
      * @param IExamRepository $examRepository
+     * @param IFeedbackBuilder $feedbackBuilder
      * @param IStudentRepository $studentRepository
      * @param IQuestionAssignmentRepository $questionAssignmentRepository
      * @param IElementAssignmentRepository $elementAssignmentRepository
@@ -55,6 +56,7 @@ class ReportController extends Controller
     public function __construct(
         IAccessKeyRepository $accessKeyRepository,
         IExamRepository $examRepository,
+        IFeedbackBuilder $feedbackBuilder,
         IStudentRepository $studentRepository,
         IQuestionAssignmentRepository $questionAssignmentRepository,
         IElementAssignmentRepository $elementAssignmentRepository,
@@ -67,6 +69,7 @@ class ReportController extends Controller
         $this->middleware('auth');
         $this->accessKeyDao = $accessKeyRepository;
         $this->examDao = $examRepository;
+        $this->feedbackBuilder = $feedbackBuilder;
         $this->questionAssignmentRepository = $questionAssignmentRepository;
         $this->elementAssignmentRepository = $elementAssignmentRepository;
         $this->questionScoreRepository = $questionScoreRepository;
@@ -129,8 +132,7 @@ class ReportController extends Controller
     // will release the exam, update stats and email all students who haven't been emailed to date.
     // Re-releasing an exam can send a different emailing letting all students know that scores have been changed
     public function releaseExam(Exam $exam) {
-        // TODO: enable this once event bug is fixed
-        //$this->createFeedback($exam);
+        $this->createFeedback($exam);
         if ($exam->getReleased()) {
             // TODO send 're-release' email to all students with grades
         } else {
@@ -140,11 +142,14 @@ class ReportController extends Controller
     }
 
     // deletes access keys for the exam and sets released flag to false
+    // deleting keys will remove flags for student emails as well
     public function unreleaseExam(Exam $exam){
         $exam->setReleased(false);
         $keys = $this->accessKeyDao->getAccessKeysForExam($exam->getId());
-        foreach($keys as $key) {
-            $this->accessKeyDao->removeAccessKey($key);
+        if (!empty($keys)) {
+            foreach ($keys as $key) {
+                $this->accessKeyDao->removeAccessKey($key->getKey());
+            }
         }
     }
 
@@ -158,8 +163,6 @@ class ReportController extends Controller
     public function showExams()
     {
         $exams = $this->examDao->load_all_exams();
-
-        //$students = $this->studentDao->load_all_students();
         return view('reports.exam_controls', compact('exams'));
     }
 
@@ -175,15 +178,22 @@ class ReportController extends Controller
     // displays the student_controls page to review feedback and send emails
     public function showStudents(Exam $exam)
     {
-        // TODO: enable once error is fixed
-        //event(new ExamReleasedEvent($exam));
+        // compile feedback for all students
+        $examId = $exam->getId();
         $students = $this->studentRepository->load_students_by_exam($exam->getId());
 
+        if ( !$exam->getReleased() ) {
+            $this->feedbackBuilder->buildFeedback($examId);
+        }
+        foreach($students as $student) {
+            $this->feedbackBuilder->recompileFeedbackForStudent($examId, $student);
+        }
         return view('reports.student_controls')->with(['exam' => $exam, 'students' => $students]);
     }
 
     // Show feedback for the selected student
-    public function showStudentFeedback(Exam $exam, Student $student) {
+    public function showStudentFeedback(Exam $exam, Student $student)
+    {
         $accessKey = $this->accessKeyDao->getAccessKeyForStudent($exam->getId(), $student->getId());
         $data = $this->accessKeyDao->retrieveFeedback($accessKey);
         return view('reports.student_feedback')->with(['exam' => $exam, 'student' => $student, 'data' => $data]);
