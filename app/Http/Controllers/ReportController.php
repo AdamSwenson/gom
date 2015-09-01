@@ -28,17 +28,32 @@ use Illuminate\Support\Facades\Auth;
  *
  * This handles requests having to do with the generation and editing of reports.
  *
- * All operations require the user to be logged in. This does NOT handle student's access to
+ * All operations require the user to be logged in.
+ *
+ * This does NOT handle student's access to
  * their comments.
  *
  * @package App\Http\Controllers
  */
 class ReportController extends Controller
 {
-    /**
-     * @var IStudentRepository
-     */
-    private $studentRepository;
+    /** @var IElementScoreRepository  */
+    protected $elementScoreRepository;
+    /** @var IAccessKeyRepository  */
+    protected $accessKeyDao;
+    /** @var IFeedbackBuilder  */
+    protected $feedbackBuilder;
+    /** @var IQuestionAssignmentRepository  */
+    protected $questionAssignmentRepository;
+    /** @var IElementAssignmentRepository  */
+    protected $elementAssignmentRepository;
+    /** @var IQuestionScoreRepository  */
+    protected $questionScoreRepository;
+    /** @var ICommentRepository  */
+    protected $commentRepository;
+    /** @var IStudentRepository */
+    protected $studentRepository;
+    /** @var IExamRepository  */
     protected $examDao;
 
     /**
@@ -91,19 +106,20 @@ class ReportController extends Controller
      * This is mainly used if the exam has already been released and the teacher goes back and edits
      * the comment field for a particular student.
      *
+     * TODO: set up queue-able event to handle this asynchronously
+     *
      * @param Exam $exam
      * @param $studentId
      */
     public function updateFeedbackForStudent(Exam $exam, $studentId)
     {
-        //magic
-        //TODO: set up queue-able event to look up the student's access key and then update the output comment
-
+        $this->feedbackBuilder->recompileFeedbackForStudent($exam->id, $studentId);
     }
 
     /**
      * Receives the command to create feedback for the exam and dispatches the
      * events to take care of it
+     *
      * @param Exam $exam
      * @return \Illuminate\View\View
      */
@@ -123,14 +139,23 @@ class ReportController extends Controller
         //   return view('feedback.feedback', compact('data'));
     }
 
-    // Sends an email notification to the student that their exam has been graded
+
+    /**
+     * Sends an email notification to the student that their exam has been graded
+     * @param Exam $exam
+     * @param Student $student
+     */
     public function notifyStudent(Exam $exam, Student $student) {
 
         // TODO: need API for emailing an individual student
     }
 
-    // will release the exam, update stats and email all students who haven't been emailed to date.
-    // Re-releasing an exam can send a different emailing letting all students know that scores have been changed
+
+    /**
+     * Will release the exam, update stats and email all students who haven't been emailed to date.
+     * Re-releasing an exam can send a different emailing letting all students know that scores have been changed
+     * @param Exam $exam
+     */
     public function releaseExam(Exam $exam) {
         $this->createFeedback($exam);
         if ($exam->getReleased()) {
@@ -141,8 +166,11 @@ class ReportController extends Controller
         }
     }
 
-    // deletes access keys for the exam and sets released flag to false
-    // deleting keys will remove flags for student emails as well
+    /**
+     * Deletes access keys for the exam and sets released flag to false.
+     * Deleting keys will remove flags for student emails as well
+     * @param Exam $exam
+     */
     public function unreleaseExam(Exam $exam){
         $exam->setReleased(false);
         $keys = $this->accessKeyDao->getAccessKeysForExam($exam->getId());
@@ -153,6 +181,11 @@ class ReportController extends Controller
         }
     }
 
+    /**
+     * Display the analytics page for the exam
+     * @param Exam $exam
+     * @return $this
+     */
     public function showAnalytics(Exam $exam)
     {
         $students = $this->studentRepository->load_students_by_exam($exam->getId());
@@ -160,6 +193,10 @@ class ReportController extends Controller
         return view('reports.exam_analytics')->with(['exam' => $exam, 'students' => $students]);
     }
 
+    /**
+     * 
+     * @return \Illuminate\View\View
+     */
     public function showExams()
     {
         $exams = $this->examDao->load_all_exams();
@@ -171,11 +208,13 @@ class ReportController extends Controller
      * @param Exam $exam
      */
     public function showQualityControl(Exam $exam)
-    {
+    {}
 
-    }
-
-    // displays the student_controls page to review feedback and send emails
+    /**
+     * Displays the student_controls page to review feedback and send emails
+     * @param Exam $exam
+     * @return $this
+     */
     public function showStudents(Exam $exam)
     {
         // compile feedback for all students
@@ -191,7 +230,12 @@ class ReportController extends Controller
         return view('reports.student_controls')->with(['exam' => $exam, 'students' => $students]);
     }
 
-    // Show feedback for the selected student
+    /**
+     * Show feedback for the selected student
+     * @param Exam $exam
+     * @param Student $student
+     * @return $this
+     */
     public function showStudentFeedback(Exam $exam, Student $student)
     {
         $accessKey = $this->accessKeyDao->getAccessKeyForStudent($exam->getId(), $student->getId());
