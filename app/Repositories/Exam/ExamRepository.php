@@ -25,11 +25,7 @@ class ExamRepository implements IExamRepository
     {
         $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\ICleanerFactory');
     }
-//
-//    public function __construct(ICleanerFactory $cleaner)
-//    {
-//        $this->cleaner = $cleaner;
-//    }
+
 
     /**
      * Sets a connection object for use with transactions
@@ -42,34 +38,34 @@ class ExamRepository implements IExamRepository
     }
 
     /**
-     * Deletes the exam
-     * @param int $examId
+     * Deletes the exam.
+     * Accepts either an exam object or an integer examId
+     * @param int|Exam $examOrExamId
      * @return mixed|void
+     * @throws \Exception
      */
-    public function delete_exam($examId)
+    public function delete_exam($examOrExamId)
     {
         try{
-            $clean_id = $this->cleaner->sanitize($examId, CleanerFactory::INTEGER);
-            $toDelete = $this->load_exam($clean_id);
-            return $this->delete_exam_object($toDelete);
-//            return $toDelete->delete();
-//            return Exam::destroy($clean_id);
+            //Case where an exam object has been passed in
+            if($examOrExamId instanceof Exam)
+            {
+                return $examOrExamId->delete();
+            }
+            else{
+                //If it wasn't an exam object, assume it is an integer and clean accordingly
+                $clean_id = $this->cleaner->sanitize($examOrExamId, CleanerFactory::INTEGER);
+                return Exam::destroy([$clean_id]);
+            }
+
         }catch(\Exception $e)
         {
-            //error handling
+             throw $e;
         }
     }
 
+
     /**
-     * Deletes the exam
-     * @param Exam $exam
-     * @return boolean
-     */
-    public function delete_exam_object(Exam $exam)
-    {
-        return $exam->delete();
-    }
-        /**
      * Creates a new exam object, saves it, then returns it
      * @param  integer $year
      * @param string $term

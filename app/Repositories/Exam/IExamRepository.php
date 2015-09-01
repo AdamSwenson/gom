@@ -53,18 +53,13 @@ interface IExamRepository
     public function update_exam_object(Exam $exam, $year, $term, $name);
 
     /**
-     * Deletes the exam by id
-     * @param int $examId
+     * Deletes the exam.
+     * Accepts either an exam object or an integer examId
+     * @param int|Exam $examOrExamId
      * @return mixed|void
+     * @throws \Exception
      */
-    public function delete_exam($examId);
-
-    /**
-     * Deletes the exam when passed in the object
-     * @param Exam $exam
-     * @return boolean
-     */
-    public function delete_exam_object(Exam $exam);
+    public function delete_exam($examOrExamId);
 
     /**
      * Load exam by id

@@ -9,17 +9,30 @@
 namespace App\Repositories\Exam;
 use App\classes\SecurityClasses\cleaning\CleanerFactory;
 use App\Exam;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 
 
-class ExamRepositoryTest extends \TestCase
+class ExamRepositoryTest extends \ReseedingTestCase
 {
+//    use DatabaseTransactions;
 
     protected $object;
+
+    /** @var array Tables which a deletion should cascade to cover */
+    static public $tables_using_exam = [
+        'access_keys',
+        'element_assignments',
+        'exam_kumi',
+        'grading_times',
+        'question_assignments'
+    ];
 
     public function setUp()
     {
         parent::setUp();
+        $this->prepareDatabase();
+
         $this->object = new ExamRepository;
 
         //random exam
@@ -41,37 +54,81 @@ class ExamRepositoryTest extends \TestCase
 //        }
     }
 
+    /**
+     * Helper method to check that an exam deletion properly cascades.
+     * NB, This doesn't check questionScores or elementScores which should
+     * have rows deleted via cascade even though they do not have an exam_id field.
+     *
+     * @param $examId
+     */
+    public function checkThatExamRemovedFromAllTables($examId)
+    {
+        foreach(self::$tables_using_exam as $table)
+        {
+            $this->notSeeInDatabase($table, ['exam_id' => $examId]);
+        }
+    }
 #----------------------------------------------- delete exam
     /**
-     * TODO Test that on delete this cascades to other things like question scores
+     * @test
      */
-    public function testDelete_exam()
+    public function testDelete_exam_from_exam_object()
     {
+        //prep
         $eid = $this->exam->id;
-        $this->object->delete_exam($eid);
+
+        //call
+        $result = $this->object->delete_exam($this->exam);
+
+        //check
+        $this->assertTrue($result);
         $this->assertEmpty(Exam::find($eid));
+        $this->notSeeInDatabase('exams', ['id' => $eid]);
+        $this->checkThatExamRemovedFromAllTables($eid);
+    }
+    /**
+     * @test
+     */
+    public function testDelete_exam_from_exam_id()
+    {
+        //prep
+        $eid = $this->exam->id;
+
+        //call
+        $result = $this->object->delete_exam($eid);
+
+        //check
+        $this->assertTrue( $result || $result === 1);
+        $this->assertEmpty(Exam::find($eid));
+        $this->notSeeInDatabase('exams', ['id' => $eid]);
+        $this->checkThatExamRemovedFromAllTables($eid);
     }
 
+
 //    /**
+//     * @test
 //     * @expectedException \App\Exceptions\InputTypeException
 //     */
-//    public function testDelete_examExceptionIdWrongType()
+//    public function delete_exam_throws_exception_if_id_is_a_string()
 //    {
 //        $this->object->delete_exam('catfish');
 //    }
 //
 //    /**
-//     * @expectedException \App\Exceptions\InputTypeException
+//     * @test
+//     * @expectedException \Exception
 //     */
-//    public function testDelete_examExceptionIdEmpty()
+//    public function delete_exam_throws_exception_if_id_is_empty_string()
 //    {
 //        $this->object->delete_exam('');
 //    }
 //
+//
 //    /**
-//     * @expectedException \App\Exceptions\InputTypeException
+//     * @test
+//     * @expectedException \Exception
 //     */
-//    public function testDelete_examExceptionIdNotMatchExam()
+//    public function delete_exam_throws_exception_if_id_does_not_match_existing_exam()
 //    {
 //        $this->object->delete_exam(23422222223);
 //    }
