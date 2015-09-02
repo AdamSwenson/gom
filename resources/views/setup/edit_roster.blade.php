@@ -20,24 +20,20 @@
                 <nav>
                     <ul class="pager">
                         <li class="next">
-                            <a href="#" onclick="document.getElementById('formFileData').submit();">Done <span
-                                        class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+                            <a href="#" onclick="document.getElementById('formFileData').submit();"><span
+                                        class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save & Finish</a>
                         </li>
                         <li class="previous">
                             <a href="{{url('exam/'. $exam->getId() . '/edit')}}"><span
-                                        class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Edit Exam</a>
+                                        class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Edit Exam</a>
                         </li>
                     </ul>
                 </nav>
 
                 <h2>Import Roster</h2>
 
-                <p>
-                    Student rosters should be a text or .csv file with each student's information on a single row in the
-                    following format:</p>
-
-                <p>Last Name,First Name,Student ID, Email</p>
-
+                <p>Student rosters should be a csv file with each student's information on a single row in the following format:
+                    Last Name, First Name, Student ID, Email</p>
 
                 <form enctype="multipart/form-data" method="post"
                       action='{{url('exam/'. $exam->getId() . '/student/store')}}' role="form">
@@ -52,7 +48,7 @@
                             <input type="file" name="studentsFile" id="studentsFile" size="150">
                         </div>
                         <div id="buttonArea" class="formArea">
-                            <button type="submit" class="prettyButton" name="Import" value="Import">Upload</button>
+                            <button type="submit" class="btn btn-success" name="Import" value="Import">Upload</button>
                         </div>
                     </div>
 
@@ -87,29 +83,45 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th>Firstname</th>
-                            <th>Lastname</th>
-                            <th>Student ID</th>
-                            <th>Email</th>
+                            <th class="col-md-3">Last Name</th>
+                            <th class="col-md-3">First Name</th>
+                            <th class="col-md-2">Student ID</th>
+                            <th class="col-md-3">Email</th>
+                            <th class="col-md-1"></th>
                         </tr>
                         </thead>
                         <!-- temp data to give a sense of a short roster -->
-                        <tbody id="data">
+                        <tbody id="roster">
                         @if(isset($students) && (count($students) > 0))
                             @foreach($students as $s)
-                                <tr>
-                                    <td>{{ $s['first_name'] }}</td>
-                                    <td>{{ $s['last_name'] }}</td>
-                                    <td>{{ $s['student_identifier'] }}</td>
-                                    <td>{{ $s['email'] }}</td>
+                                <tr class="dataRow" id="{{ $s['id'] }}">
+                                    <td><input class="form-control" type="text" name="lname" value="{{ $s['last_name'] }}"
+                                               style="border:none;">
+                                    </td>
+                                    <td><input class="form-control" type="text" name="fname" value="{{ $s['first_name'] }}"
+                                                style="border:none;">
+                                    </td>
+                                    <td><input class="form-control" type="text" name="sIdentifier" value="{{ $s['student_identifier'] }}"
+                                               style="border:none;">
+                                    </td>
+                                    <td><input class="form-control" type="text" name="email" value="{{ $s['email'] }}"
+                                               style="border:none;">
+                                    </td>
+                                    <td align="center" style="vertical-align: middle;"> <a id="deleteButton">
+                                            <span class="glyphicon glyphicon-remove-sign" aria-hidden="true" ></span>
+                                        </a>
+                                    </td>
                                 </tr>
                                 @endforeach
                         @endif
-                        <!--javascript populates table here -->
-
                         </tbody>
                     </table>
                 </div>
+                <a class="btn btn-primary" onclick="addStudent()" id="deleteRoster"><span
+                            class="glyphicon glyphicon-plus"
+                            aria-hidden="true"></span>
+                    Add Student
+                </a>
                 <a class="btn btn-danger" onclick="deleteRoster()" id="deleteRoster"><span
                             class="glyphicon glyphicon-minus"
                             aria-hidden="true"></span>
@@ -127,6 +139,9 @@
 @section('jsArea')
 
     <script language="javascript" type="text/javascript" src="{{ asset('inc/js/rosterTable.js') }}"></script>
+    <script type="text/javascript">
+
+    </script>
 @endsection
 
 

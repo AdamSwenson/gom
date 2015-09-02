@@ -107,6 +107,7 @@ class StudentController extends Controller
                 array_push($students, $newStudent);
             }
         }
+
         return view('setup.edit_roster')->with(['exam' => $exam, 'students' => $students]);
     }
 

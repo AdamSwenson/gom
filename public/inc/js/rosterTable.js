@@ -79,11 +79,27 @@ function handleFileSelect() {
 
 function deleteRoster(){
 
-    var  tabBody=document.getElementsByTagName("tbody").item(0);
-    for( var i= 0; i < rows.length-1;i++)
-    {
-        tabBody.removeChild(document.getElementById('row' + (i+1)));
-
-    }
+    bootbox.dialog({
+        message: "Warning: This will remove all students from the current roster",
+        title: "Delete Roster",
+        buttons: {
+            success: {
+                label: 'Cancel',
+                className: "btn-sm",
+                callback: function() {
+                }
+            },
+            danger: {
+                label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
+                className: "btn-danger btn-sm",
+                callback: function() {
+                    var  $roster = $('.dataRow');
+                    $roster.each(function(index) {
+                        $(this).remove();
+                    });
+                }
+            }
+        }
+    });
 }
 
