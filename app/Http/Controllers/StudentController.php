@@ -152,11 +152,15 @@ class StudentController extends Controller
     public function editAll(Exam $exam, StudentRequest $request)
     {
         $students = array();
-        $kumi = $this->kumiRepository->load($exam->name, $exam->year);
-        if ($kumi)
-        {
-            $students = $this->dao->load_students_by_exam($exam->getId());
-        }
+        // TODO: how to associate rosters / students with kumis?
+        // maybe we can share rosters between exams as a primitive "class" abstraction?
+        // would need a tool to hook another roster to the current exam.
+        //$kumi = $this->kumiRepository->load($exam->getName(), $exam->getYear());
+
+        // leveraging the "create or load" functionality here
+        $kumi =  $this->kumiRepository->create($exam->getName(), $exam->getYear(), $exam);
+        $students = $this->dao->load_students_by_exam($exam->getId());
+
 
         return view('setup/edit_roster')->with(['exam' => $exam, 'students' => $students]);
     }
@@ -175,11 +179,8 @@ class StudentController extends Controller
 
     public function updateAll(Exam $exam, Request $request)
     {
-        //
+
         $data = $request->input('filedata');
-
-        //  dd($data);
-
 
         return redirect()->action('ExamController@index')->with(['exam' => $exam]);
     }

@@ -45,7 +45,7 @@ class Student extends BaseModel
      *     'id' , 'user_id' , 'student_identifier' , 'first_name' , 'last_name' , 'email' , 'created_at' , 'updated_at' ,
      *
      *  'pivot'  which contains:
-     *        'kumi_id' , 'student_id' , 'created_at' , 'updated_at'
+     *        '_id' , 'student_id' , 'created_at' , 'updated_at'
      */
 
 
