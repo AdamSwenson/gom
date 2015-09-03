@@ -8,7 +8,7 @@
 
 @section('body')
     <div class="container">
-        <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Report & Release</h3>
+        <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Reports & Release</h3>
         <h4>Release grades to students or view data about an exam</h4>
 
         <div class="well-lg">
@@ -45,7 +45,6 @@
                                    href="{{url('report/' . $exam->getId() . '/students')}}"><span
                                             class="glyphicon glyphicon-user" aria-hidden="true"></span> </a>
                             </td>
-
                         </tr>
                     @endforeach
                     </tbody>

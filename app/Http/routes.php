@@ -57,7 +57,7 @@ Route::resource('exam.question.element', 'ElementController');
 
 /* Manage students */
 Route::post('exam/{exam}/student/store', 'StudentController@store');
-Route::get('exam/{exam}/student/update','StudentController@updateAll');
+Route::post('exam/{exam}/student/updateAll','StudentController@updateAll');
 Route::get('exam/{exam}/student/edit', array('as' => 'editAllStudents', 'uses' => 'StudentController@editAll'));
 Route::resource('exam.student', 'StudentController');
 

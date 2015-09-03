@@ -426,12 +426,6 @@
             else return date.toISOString().substr(11, 8);
         }
 
-        /*
-         *
-         * ONLOAD AREA
-         *
-         */
-
         $(document).ready(function () {
 
             updateStudentDataArea();

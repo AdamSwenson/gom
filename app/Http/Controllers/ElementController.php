@@ -8,10 +8,8 @@ use App\Http\Requests\ElementRequest;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
-use Illuminate\Http\Request;
 
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
 
 class ElementController extends Controller
 {
@@ -239,8 +237,6 @@ class ElementController extends Controller
                 }
             }
         }
-
-        //dd($currentElements);
 
         /* Choose next action based on 'questionDirection' param:
             1. go back to QuestionController

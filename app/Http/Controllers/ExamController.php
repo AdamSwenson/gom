@@ -117,6 +117,7 @@ class ExamController extends Controller
     public function update(Exam $exam, ExamRequest $request)
     {
         $exam = $this->examDao->update_exam_object($exam, $request->input('examYear'), $request->input('examTerm'), $request->input('name'));
+
         Session::flash(self::SUCCESS_FLASH_NAME, self::UPDATE_SUCCESS);
         $eid = $exam->getId();
         return redirect()->route('editAllQuestions', $eid);
