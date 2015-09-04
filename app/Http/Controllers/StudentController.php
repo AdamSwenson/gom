@@ -161,7 +161,6 @@ class StudentController extends Controller
         $kumi =  $this->kumiRepository->create($exam->getName(), $exam->getYear(), $exam);
         $students = $this->dao->load_students_by_exam($exam->getId());
 
-
         return view('setup/edit_roster')->with(['exam' => $exam, 'students' => $students]);
     }
 
@@ -180,9 +179,56 @@ class StudentController extends Controller
     public function updateAll(Exam $exam, Request $request)
     {
 
-        $data = $request->input('filedata');
+        $kumi = $this->kumiRepository->load($exam->getName(), $exam->getYear());
+        if (!$kumi) {
+            $kumi = $this->kumiRepository->create($exam->getName(), $exam->getYear(), $exam);
+        }
 
-        return redirect()->action('ExamController@index')->with(['exam' => $exam]);
+        $currentStudents = [];
+        $i = 1;
+        while( $request->input('lastName'.$i) ) {
+            $lName = $request->input('lastName'.$i);
+            $fName = $request->input('firstName'.$i);
+            $email = $request->input('email'.$i);
+            $identifier = $request->input('studentIdentifier'.$i);
+            $id = $request->input('id'.$i);
+            $student = null;
+            if ($id == 0) {
+                // create new student
+                $student = $this->dao->create_student($lName, $fName, $identifier, $email);
+                $id = $student->getId();
+                $student->kumis()->attach($kumi); // add the student to the kumi
+            } else {
+                // update existing -- test if id is valid?
+                $student = $this->dao->load_student_by_id($id);
+                $student->setStudentFName($fName);
+                $student->setStudentLName($lName);
+                $student->setStudentId($identifier);
+                $student->setEmail($email);
+            }
+            $currentStudents[$id] = $student;
+            $i++;
+        }
+
+        // delete any students not on this roster
+        $allStudents = $this->dao->load_students_by_exam($exam->getId());
+        if ( count($allStudents) > 0 ) {
+            foreach ($allStudents as $student) {
+                if ( !array_key_exists($student->getId(), $currentStudents) ) {
+                    $this->dao->delete_student_by_object($student);
+                }
+            }
+        }
+
+        $navigate = $request->input('navigateTo');
+        switch ($navigate) {
+            case ('editElement'):
+                // move back to edit elements for the last question
+                break;
+            case ('selectExam'):
+            default:
+                return redirect()->action('ExamController@index')->with(['exam' => $exam]);
+        }
     }
 
 
