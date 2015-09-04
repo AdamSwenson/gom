@@ -8,17 +8,40 @@
 @endsection
 
 @section('body')
+    <style>
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            background: white;
+            cursor: inherit;
+            display: block;
+        }
+    </style>
+
     <div id="editRoster">
         <div class="section">
             <div class="container">
                 <nav>
                     <ul class="pager">
                         <li class="next">
-                            <a href="" onclick="document.getElementById('rosterData').submit();"><span
+                            <a onclick="submitAndNavigateTo('selectExam')" style="cursor:pointer;"><span
                                         class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save & Finish</a>
                         </li>
                         <li class="previous">
-                            <a href=""><span
+                            <a onclick="submitAndNavigateTo('editElements')" style="cursor:pointer;"><span
                                         class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Edit
                                 Exam</a>
                         </li>
@@ -27,12 +50,14 @@
                 <!-- File Import -->
                 <h2>Import Roster</h2>
 
-                <p>Student rosters should be a csv file with each student's information on a single row in the following
-                    format:
-                    Last Name, First Name, Student ID, Email</p>
+                <p>Roster files can be any CSV file having each student's information on a single row in the following
+                    format: Last Name, First Name, Student ID (optional), Email (optional)</p>
 
                 <form>
-                    <input type="file" id="fileInput" name="file" accept=".csv, text/plain" onchange="startRead()">
+                    <span class="btn btn-primary btn-file"><span class="glyphicon glyphicon-upload"
+                                                                 aria-hidden="true"></span> Import Roster
+                        <input type="file" id="fileInput" name="file" accept=".csv, text/plain">
+                    </span>
                 </form>
                 <h2>Edit Roster</h2>
 
@@ -68,6 +93,7 @@
                             @endif
                             </tbody>
                         </table>
+                        <input type="hidden" name="navigateTo" value="selectExam"/>
                     </form>
                 </div>
                 <a class="btn btn-primary" onclick="addStudent()" id="addStudent"><span
@@ -101,6 +127,7 @@
 
     <script language="javascript" type="text/javascript" src="{{ asset('inc/js/rosterTable.js') }}"></script>
     <script type="text/javascript">
+        localStorage.clear();
 
         /*
          THINGS TODO:
@@ -108,8 +135,18 @@
          5-upload form to server
          6-process data in controller
          */
+        function submitAndNavigateTo(target) {
+            $('[name="navigateTo"]').val(target);
+            $('#rosterData').submit();
+        }
 
         $(document).ready(function () {
+            // file input listener
+            $('#fileInput').change(function () {
+                startRead();
+                $('input[type="file"]').val(null);
+            });
+
             return false;
         });
     </script>

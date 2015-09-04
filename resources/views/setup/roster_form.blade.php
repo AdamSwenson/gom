@@ -8,11 +8,11 @@
                style="border:none;">
     </td>
     <td><input class="form-control" type="text" id="studentIdentifier" placeholder="Student ID"
-               name="studentIdentifier{{ $row }}" value="{{ $s['student_identifier'] or '--' }}"
+               name="studentIdentifier{{ $row }}" value="{{ $s['student_identifier'] or '' }}"
                style="border:none;">
     </td>
-    <td><input class="form-control" type="text" id="email" name="email{{ $row }}" placeholder="e-mail"
-               value="{{ $s['email'] or '--' }}"
+    <td><input class="form-control" type="text" id="email" name="email{{ $row }}" placeholder="Email"
+               value="{{ $s['email'] or '' }}"
                style="border:none;">
     </td>
     <td align="center" style="vertical-align: middle;">

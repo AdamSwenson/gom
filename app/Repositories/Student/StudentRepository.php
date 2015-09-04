@@ -88,6 +88,7 @@ class StudentRepository implements IStudentRepository
      * @param $lastName
      * @param $firstName
      * @param null $studentId
+     * @param null $email
      * @return Student
      */
     public function create_student($lastName, $firstName, $studentId = null, $email = null)
@@ -98,6 +99,10 @@ class StudentRepository implements IStudentRepository
         if (!empty($email))
         {
             $cleanEmail = $email;
+        }
+        // added lines to prevent crash when checking if ($cleanEmail) later (9/4/15 BB)
+        else {
+            $cleanEmail = "";
         }
 
         $preExisting = $this->load_student_by_sid($cleanStudentId);
@@ -166,7 +171,8 @@ class StudentRepository implements IStudentRepository
             {
                 foreach ($c->students as $s)
                 {
-                    array_push($students, $s);
+                    //array_push($students, $s);
+                    $students[$s->getId()] = $s;
                 }
             }
         }

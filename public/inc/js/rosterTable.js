@@ -1,20 +1,23 @@
 var file;
 var rows;
 
+// define values for each column, if they exist
 function addRow(row) {
-    var fName = "--";
+    var defaultChar = '';
+
+    var fName = defaultChar;
     if (firstNameCol >= 0)
         fName = row[firstNameCol];
 
-    var lName = "--";
+    var lName = defaultChar;
     if (lastNameCol >= 0)
         lName = row[lastNameCol];
 
-    var id = "--";
+    var id = defaultChar;
     if (idCol >= 0)
         id = row[idCol];
 
-    var email = "--";
+    var email = defaultChar;
     if (emailCol >= 0)
         email = row[emailCol];
 
@@ -76,15 +79,7 @@ function startRead() {
                     }
                 }
 
-                var numColumns = lines[0].length;
-                for (var i = 0; i < lines.length; i++) {
-                    // make sure all lines have the same number of elements
-                    if (numColumns != lines[i].length) {
-                        // TODO: print "not all lines are of equal length" error
-                    }
-                }
-
-                // analyze the file and look for
+                // analyze the file and look for column headers
                 var firstLine = lines[0];
                 var startRow = 0;
                 if (firstRowContainsTitles(firstLine)) {
@@ -94,7 +89,7 @@ function startRead() {
                     guessColumnDataByContent(lines);
                 }
 
-                console.log('lname:' + lastNameCol + ' fname:' + firstNameCol + ' id:' + idCol + ' email:' + emailCol);
+                console.log('lnameCol:' + lastNameCol + ' fnameCol:' + firstNameCol + ' idCol:' + idCol + ' emailCol:' + emailCol);
 
                 for (var i = startRow; i < rows.length - 1; i++) {
                     addRow(lines[i]);
@@ -166,14 +161,13 @@ function guessColumnDataByContent(lines) {
     var commonNames = ['Michael', 'Christopher', 'Matthew', 'Joshua', 'Jacob', 'Nicholas', 'Jessica', 'Ashley', 'Emily',
         'Sarah', 'Samantha', 'Amanda'];
 
-    // look for first names in each remaining column
     for (i = startCol; i < numColumns; i++) {
         // skip any columns which have already been flagged as email or student ID
         if (foundColumns.indexOf(i) > -1) {
             continue;
         }
         for (var j = startRow; j < lines.length; j++) {
-            // any column with 3 more letters is set as last name. Next column with letters is first name
+            // any column with 3 more letters is set as last name. Next column found with letters is first name
             if (lines[j][i].search(/.{3,}/) > -1) {
                 if (lastNameCol == -1)
                     lastNameCol = i;
@@ -194,7 +188,19 @@ function guessColumnDataByContent(lines) {
     }
 }
 
+
 function deleteStudent(row) {
+    // skip confirmation if row is empty
+    var $student = $('#dataRow'+row);
+    if (!$student.find('#lastName').val() &&
+        !$student.find('#firstName').val() &&
+        !$student.find('#email').val() &&
+        !$student.find('#studentIdentifier').val() )
+        {
+        $student.remove();
+        return;
+    }
+
     bootbox.dialog({
         message: "Warning: this will delete the student, including their feedback and scores.",
         title: "Delete Student",
@@ -209,7 +215,7 @@ function deleteStudent(row) {
                 label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
                 className: "btn-danger btn-sm",
                 callback: function () {
-                    $('#dataRow' + row).remove();
+                    $student.remove();
                     updateRowValues();
                 }
             }
@@ -218,6 +224,9 @@ function deleteStudent(row) {
 }
 
 function deleteRoster() {
+    var $roster = $('#studentRosterBody').find('tr');
+    if ($roster.length == 0 ) return;
+
     bootbox.dialog({
         message: "Warning: This will remove all students from the current roster",
         title: "Delete Roster",
@@ -232,7 +241,6 @@ function deleteRoster() {
                 label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
                 className: "btn-danger btn-sm",
                 callback: function () {
-                    var $roster = $('#studentRosterBody').find('tr');
                     $roster.each(function (index) {
                         $(this).remove();
                     });
