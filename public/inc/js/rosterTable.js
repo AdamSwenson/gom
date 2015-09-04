@@ -47,38 +47,43 @@ function startRead() {
             return function (e) {
                 rows = e.target.result.toString().split('\n');
                 var lines = [];
-                var lineLength = 0;
-                // break each row into its CSVs
-                for (var i = 0; i < rows.length; i++) {
-                    lines[i] = rows[i].toString().split(separatorChar);
-                    if (i === 0) {
-                        lineLength = lines[0].length;
-                    }
-                    // make sure all lines have the same number of elements
-                    if (lineLength != lines[i].length) {
-                        console.log(' line ' + i + ' not of length ' + lineLength + '. Removing.');
-                        // TODO: print "not all lines are of equal length" error
-                    }
 
-                    if (lines[i].length < 2) {
-                        lines.splice(i, 1); // remove any lines with 1 or no elements
+                // break each row into its CSVs, ignoring empty lines
+                for (var i = 0; i < rows.length; i++) {
+                    if (rows[i].length > 0 )
+                        lines[i] = rows[i].toString().split(separatorChar);
+                }
+
+                // remove any lines with no elements
+                for (var i = lines.length-1; i >= 0; i--) {
+                    if (lines[i].length == rows[i].length) {
+                        lines.splice(i, 1);
+                        rows.splice(i, 1);
                     }
                 }
+
+                var numColumns = lines[0].length;
+                for (var i = 0; i < lines.length; i++) {
+                    // make sure all lines have the same number of elements
+                    if (numColumns != lines[i].length) {
+                        // TODO: print "not all lines are of equal length" error
+                    }
+                }
+
+                // analyze the file and look for
                 var firstLine = lines[0];
                 var startRow = 0;
                 if (firstRowContainsTitles(firstLine)) {
                     startRow = 1;
-                    //console.log('file contains titles');
                     guessColumnDataByTitles(firstLine);
                 } else {
-                    //console.log('file does not contain titles');
                     guessColumnDataByContent(lines);
                 }
 
                 console.log('lname:' + lastNameCol + ' fname:' + firstNameCol + ' id:' + idCol + ' email:' + emailCol);
 
                 for (var i = startRow; i < rows.length - 1; i++) {
-                    addRow(rows[i].toString().split(separatorChar));
+                    addRow(lines[i]);
                 }
             };
         })($inputFile);
@@ -124,9 +129,10 @@ function guessColumnDataByTitles(titles) {
 function guessColumnDataByContent(lines) {
     var startCol = 0;
     var startRow = 0;
+
     numColumns = lines[0].length;
     var foundColumns = [];
-    for (var i = 0; i < numColumns; i++) {
+    for (var i = startCol; i < numColumns; i++) {
         if (lines[0][i].search(/@/) >= 0) {
             // look for @, that's the email
             emailCol = i;
@@ -148,12 +154,12 @@ function guessColumnDataByContent(lines) {
 
     // look for first names in each remaining column
     for (i = startCol; i < numColumns; i++) {
+        // skip any columns which have already been flagged as email or student ID
         if (foundColumns.indexOf(i) > -1) {
             continue;
         }
         for (var j = startRow; j < lines.length; j++) {
-            console.log('looking at ' + j + ',' + i + ': ' + lines[j][i]);
-            // any column with 3 more letters is last name. Next one found is first name
+            // any column with 3 more letters is set as last name. Next column with letters is first name
             if (lines[j][i].search(/.{3,}/) > -1) {
                 if (lastNameCol == -1)
                     lastNameCol = i;
