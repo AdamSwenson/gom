@@ -18,6 +18,11 @@ function addRow(row) {
     if (emailCol >= 0)
         email = row[emailCol];
 
+    addStudentToTable(lName, fName, id, email);
+}
+
+// clone and populate a new row in the roster table
+function addStudentToTable(lName, fName, id, email){
     var $newRow = $('#dataRow0').clone();
     $newRow.find('#lastName').attr('value', lName);
     $newRow.find('#firstName').attr('value', fName);
@@ -25,6 +30,15 @@ function addRow(row) {
     $newRow.find('#email').attr('value', email);
     $newRow.appendTo($('#studentRosterBody'));
     updateRowValues();
+
+    return $newRow;
+}
+
+
+// called by 'Add Student' button
+function addStudent() {
+    var $newRow = addStudentToTable('', '', '', '');
+    $newRow.find('#lastName').focus();
 }
 
 // basic setup for # of columns and column ordering. These will change based on the imported roster file
@@ -178,12 +192,6 @@ function guessColumnDataByContent(lines) {
             }
         }
     }
-}
-
-
-// creates a modal that allows the user to add a new student.
-function addStudent() {
-    updateRowValues();
 }
 
 function deleteStudent(row) {

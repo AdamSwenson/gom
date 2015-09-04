@@ -1,17 +1,17 @@
 <tr class="dataRow" id="dataRow{{ $row }}">
-    <td><input class="form-control" type="text" id="lastName" name="lastName{{ $row }}"
+    <td><input class="form-control" type="text" id="lastName" name="lastName{{ $row }}" placeholder="Last Name"
                value="{{ $s['last_name'] or '' }}"
                style="border:none;">
     </td>
-    <td><input class="form-control" type="text" id="firstName" name="firstName{{ $row }}"
+    <td><input class="form-control" type="text" id="firstName" name="firstName{{ $row }}" placeholder="First Name"
                value="{{ $s['first_name'] or '' }}"
                style="border:none;">
     </td>
-    <td><input class="form-control" type="text" id="studentIdentifier"
+    <td><input class="form-control" type="text" id="studentIdentifier" placeholder="Student ID"
                name="studentIdentifier{{ $row }}" value="{{ $s['student_identifier'] or '--' }}"
                style="border:none;">
     </td>
-    <td><input class="form-control" type="text" id="email" name="email{{ $row }}"
+    <td><input class="form-control" type="text" id="email" name="email{{ $row }}" placeholder="e-mail"
                value="{{ $s['email'] or '--' }}"
                style="border:none;">
     </td>
