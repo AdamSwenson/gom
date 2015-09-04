@@ -99,6 +99,36 @@ class ExamRepository implements IExamRepository
     }
 
     /**
+     * After creating a new exam this can be called and it will copy
+     * the question and element assignments from a specified previous
+     * exam and make those assignments for the new exam.
+     *
+     * TODO: This should be done with transaction
+     *
+     * @param integer $examToCloneId The id of the exam whose assignments to copy
+     * @param integer $examToBeClonedIntoId The id of the exam to make the assignments into
+     */
+    public function clone_exam($examToCloneId, $examToBeClonedIntoId)
+    {
+        $questionAssignDao = app()->make('App\Repositories\Question\IQuestionAssignmentRepository');
+        $elementAssignDao = app()->make('App\Repositories\Element\IElementAssignmentRepository');
+
+        $questionsToClone = $questionAssignDao->load_all_for_exam($examToCloneId);
+        $elementsToClone = $elementAssignDao->load_by_exam($examToCloneId);
+
+        foreach($questionsToClone as $questionAssignment)
+        {
+            $questionAssignDao->record($examToBeClonedIntoId, $questionAssignment->question_id, $questionAssignment->question_number);
+        }
+
+        foreach($elementsToClone as $elementAssignment)
+        {
+            $elementAssignDao->record($examToBeClonedIntoId, $elementAssignment->question_id, $elementAssignment->element_id, $elementAssignment->subtask);
+        }
+
+    }
+
+    /**
      * Load exam by id
      *
      * @param $examId
@@ -121,6 +151,7 @@ class ExamRepository implements IExamRepository
     /**
      * Returns exams for the class/kumi
      * @param integer $classId
+     * @return mixed|void
      */
     public function load_exams_by_class($classId)
     {
