@@ -9,19 +9,15 @@
 namespace App\Http\Controllers;
 
 
-use App\classes\ExamClasses\service\CurrentExamManager;
-use App\classes\ImportExportClasses\StudentUpload\StudentCsvProcessor;
-use App\classes\ImportExportClasses\dao\Uploader;
-use App\classes\RequestClasses\FileRequest;
-use App\Http\Controllers\helpers\ExamSelectorHelper;
 use App\Http\Requests\StudentRequest;
 use App\Jobs\ImportStudentsFromCsv;
 use App\Kumi;
 use App\Repositories\Student\IStudentRepository;
+use App\Repositories\Question\IQuestionAssignmentRepository;
+use \App\Repositories\Question\IQuestionRepository;
 use App\Student;
 use App\Exam;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Repositories\Student\IKumiRepository;
 
 /**
@@ -41,13 +37,18 @@ class StudentController extends Controller
 
     /**
      * @param IStudentRepository $studentRepository
+     * @param IQuestionAssignmentRepository $questionAssignmentRepository
+     * @param IQuestionRepository $questionRepository
      * @param IKumiRepository $kumiRepository
      */
-    public function __construct(IStudentRepository $studentRepository, IKumiRepository $kumiRepository)
+    public function __construct(IStudentRepository $studentRepository, IKumiRepository $kumiRepository,
+            IQuestionAssignmentRepository $questionAssignmentRepository, IQuestionRepository $questionRepository)
     {
         $this->middleware('auth');
         $this->dao = $studentRepository;
         $this->kumiRepository = $kumiRepository;
+        $this->questionAssignmentDao = $questionAssignmentRepository;
+        $this->questionDao = $questionRepository;
     }
 
     /**
@@ -151,14 +152,7 @@ class StudentController extends Controller
      */
     public function editAll(Exam $exam, StudentRequest $request)
     {
-        $students = array();
-        // TODO: how to associate rosters / students with kumis?
-        // maybe we can share rosters between exams as a primitive "class" abstraction?
-        // would need a tool to hook another roster to the current exam.
-        //$kumi = $this->kumiRepository->load($exam->getName(), $exam->getYear());
-
-        // leveraging the "create or load" functionality here
-        $kumi =  $this->kumiRepository->create($exam->getName(), $exam->getYear(), $exam);
+        $this->kumiRepository->create($exam->getName(), $exam->getYear(), $exam);
         $students = $this->dao->load_students_by_exam($exam->getId());
 
         return view('setup/edit_roster')->with(['exam' => $exam, 'students' => $students]);
@@ -178,7 +172,8 @@ class StudentController extends Controller
 
     public function updateAll(Exam $exam, Request $request)
     {
-
+        // TODO: validate that first and last names are non-empty
+        $examId = $exam->getId();
         $kumi = $this->kumiRepository->load($exam->getName(), $exam->getYear());
         if (!$kumi) {
             $kumi = $this->kumiRepository->create($exam->getName(), $exam->getYear(), $exam);
@@ -199,19 +194,20 @@ class StudentController extends Controller
                 $id = $student->getId();
                 $student->kumis()->attach($kumi); // add the student to the kumi
             } else {
-                // update existing -- test if id is valid?
+                // why do we need to call save for a setter - and only on this class?
                 $student = $this->dao->load_student_by_id($id);
                 $student->setStudentFName($fName);
                 $student->setStudentLName($lName);
                 $student->setStudentId($identifier);
                 $student->setEmail($email);
+                $student->save();
             }
             $currentStudents[$id] = $student;
             $i++;
         }
 
         // delete any students not on this roster
-        $allStudents = $this->dao->load_students_by_exam($exam->getId());
+        $allStudents = $this->dao->load_students_by_exam($examId);
         if ( count($allStudents) > 0 ) {
             foreach ($allStudents as $student) {
                 if ( !array_key_exists($student->getId(), $currentStudents) ) {
@@ -220,17 +216,23 @@ class StudentController extends Controller
             }
         }
 
+        // move to next task based on button pressed
         $navigate = $request->input('navigateTo');
         switch ($navigate) {
-            case ('editElement'):
+            case ('editElements'):
                 // move back to edit elements for the last question
+                // why does this have to be a 4 step process?
+                $questions = $this->questionAssignmentDao->load_all_for_exam($examId);
+                $lastQuestionId = $this->questionAssignmentDao->load($examId, sizeof($questions))->getQuestionId();
+                $lastQuestion = $this->questionDao->loadQuestionById($lastQuestionId);
+                return redirect()->action('ElementController@editAll', array('examId' => $examId,
+                    'question' => $lastQuestion));
                 break;
             case ('selectExam'):
             default:
                 return redirect()->action('ExamController@index')->with(['exam' => $exam]);
         }
     }
-
 
     /**
      * Remove the specified resource from storage.

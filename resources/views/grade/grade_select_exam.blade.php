@@ -7,10 +7,14 @@
 @endsection
 
 @section('body')
-
+    <style>
+        tr:hover {
+            background-color: #E3E3E3;
+        }
+    </style>
     <div class="container">
         <h3><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Grade Exam</h3>
-        <h4>Select an exam to grade or modify</h4>
+        <h4>Select an exam to grade</h4>
 
         <div class="well-lg">
             <div class="panel panel-default">
