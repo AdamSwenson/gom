@@ -6,6 +6,7 @@
  * Time: 9:13 AM
  */
 namespace App;
+use Exceptions\NotLoggedInException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ScopeInterface;
@@ -22,11 +23,12 @@ class UserOnlyScope implements ScopeInterface
      *
      * @param  Builder $builder
      * @param  Model $model
-     * @return void
+     * @throws NotLoggedInException
      */
     public function apply(Builder $builder, Model $model)
     {
         $user = \Auth::user();
+        if(! $user ){ throw new NotLoggedInException;}
         $builder->where('user_id', $user->id);
     }
 

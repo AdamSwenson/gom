@@ -3,6 +3,7 @@
 namespace App;
 
 use App\UserOnlyScope;
+use Exceptions\NotLoggedInException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -18,18 +19,21 @@ class BaseModel extends Model
 
         static::creating(function($model)
         {
-            $user = \Auth::user();
+            $user = self::getLoggedInUser();
+//            $user = \Auth::user();
             $model->user_id = $user->id;
         });
 
         static::updating(function($model)
         {
-            $user = \Auth::user();
+            $user = self::getLoggedInUser();
+//            $user = \Auth::user();
             $model->user_id = $user->id;
         });
 
         static::deleting(function($model){
-            $user = \Auth::user();
+            $user = self::getLoggedInUser();
+//            $user = \Auth::user();
             $model->user_id = $user->id;
         });
 
@@ -41,18 +45,22 @@ class BaseModel extends Model
 
         static::creating(function($model)
         {
-            $user = \Auth::user();
+            $user = self::getLoggedInUser();
+//            $user = \Auth::user();
             $model->owner_id = $user->id;
         });
 
         static::updating(function($model)
         {
-            $user = \Auth::user();
+            $user = self::getLoggedInUser();
+//            $user = \Auth::user();
             $model->owner_id = $user->id;
         });
 
         static::deleting(function($model){
-            $user = \Auth::user();
+            $user = self::getLoggedInUser();
+//            $user = \Auth::user();
+
             $model->owner_id = $user->id;
         });
     }
@@ -65,6 +73,13 @@ class BaseModel extends Model
     public function getId()
     {
         return $this->attributes['id'];
+    }
+
+    static private function getLoggedInUser()
+    {
+        $user = \Auth::user();
+        if(! $user){ throw new NotLoggedInException;}
+        return $user;
     }
 
 //    /**
