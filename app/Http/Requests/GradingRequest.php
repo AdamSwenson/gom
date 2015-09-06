@@ -25,7 +25,18 @@ class GradingRequest extends Request
     public function rules()
     {
         return [
-            //
+            'comment_text' => 'max:10000',
+
+            'elementAssignmentId' => 'integer',
+            'element_id' => 'integer',
+
+            'question_assignment_id' => 'integer',
+            'questionAssignmentId' => 'integer',
+
+            'score' => 'numeric',
+            'student_id' => 'integer',
+            'time' => 'numeric',
+            
         ];
     }
 }

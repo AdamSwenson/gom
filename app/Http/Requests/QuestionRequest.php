@@ -5,6 +5,13 @@ namespace App\Http\Requests;
 use App\Http\Requests\Request;
 use App\Question;
 
+/**
+ * Class QuestionRequest
+ *
+ * Holds the incoming form data and handles validation for a question creation request
+ *
+ * @package App\Http\Requests
+ */
 class QuestionRequest extends Request
 {
     /**
@@ -26,12 +33,8 @@ class QuestionRequest extends Request
     public function rules()
     {
         return [
-//            'questionName' => ['required', min(Question::MIN_NAME_LENGTH), max(Question::MAX_NAME_LENGTH)],
-//            'questionText' => [min(Question::MIN_TEXT_LENGTH), max(Question::MAX_TEXT_LENGTH)],
-//            'questionDesc' => [min(Question::MIN_TEXT_LENGTH), max(Question::MAX_TEXT_LENGTH)],
-//            'order' => 'integer',
-//            'examId' => 'integer',
-//            'classId' => 'integer'
+            'questionName' => 'min:1|max:225',
+            'questionText' => 'max:5000'
         ];
     }
 }

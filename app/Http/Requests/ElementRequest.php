@@ -32,7 +32,10 @@ class ElementRequest extends Request
     public function rules()
     {
         return [
-            //
+            'elementName' => 'max:225',
+            'respGeneric' => 'max:5000',
+            'elementId' =>'integer',
+            'elementText' => 'max:5000'
         ];
     }
 }

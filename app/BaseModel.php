@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\UserOnlyJunctionScope;
 use App\UserOnlyScope;
 use Exceptions\NotLoggedInException;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,10 +12,17 @@ use Illuminate\Support\Facades\DB;
 class BaseModel extends Model
 {
 
+    /**
+     * Retrieves the logged in user. If user is not logged in, will throw
+     * an exception which redirects to the log in page.
+     *
+     * @return User
+     * @throws NotLoggedInException
+     */
     static protected function getLoggedInUser()
     {
         $user = \Auth::user();
-        if(! $user){ throw new NotLoggedInException;}
+        if(! $user ){ throw new NotLoggedInException;}
         return $user;
     }
 
@@ -48,7 +56,7 @@ class BaseModel extends Model
 
     public static function junctionBoot()
     {
-        static::addGlobalScope(new \App\UserOnlyJunctionScope());
+        static::addGlobalScope(new UserOnlyJunctionScope());
 
         static::creating(function($model)
         {
@@ -81,16 +89,5 @@ class BaseModel extends Model
     {
         return $this->attributes['id'];
     }
-
-//    /**
-//     * Get random models
-//     * @param $query
-//     * @return
-//     */
-//    public function scopeRandomObject($query, $table)
-//    {
-//        return $query->orderByRaw('RAND()');
-//    }
-
 
 }
