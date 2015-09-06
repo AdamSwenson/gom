@@ -29,6 +29,23 @@
             cursor: inherit;
             display: block;
         }
+
+        .form-control:hover {
+            background-color: #E3E3E3;
+        }
+
+        .glyphicon-remove {
+            sfont-size: 1.2em;
+            color: #d9534f;
+        "
+        }
+
+        .glyphicon-remove:hover {
+            cursor: pointer;
+            sfont-size: 1.2em;
+            color: #d43f3a;
+        "
+        }
     </style>
 
     <div id="editRoster">
@@ -43,7 +60,7 @@
                         <li class="previous">
                             <a onclick="submitAndNavigateTo('editElements')" style="cursor:pointer;"><span
                                         class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Edit
-                                Exam</a>
+                                Elements</a>
                         </li>
                     </ul>
                 </nav>
@@ -128,20 +145,31 @@
     <script language="javascript" type="text/javascript" src="{{ asset('inc/js/rosterTable.js') }}"></script>
     <script type="text/javascript">
         localStorage.clear();
-
         /*
          THINGS TODO:
-         4-allow column swapping (?)
-         5-upload form to server
-         6-process data in controller
+         4- column swapping (?)
          */
         function submitAndNavigateTo(target) {
-            $('[name="navigateTo"]').val(target);
-            $('#rosterData').submit();
+            var $table = $('#studentRosterBody');
+            var valid = true;
+            $table.find('[id$="Name"]').each(function () {
+                console.log($(this).val());
+                if ($(this).val() == '') {
+                    valid = false;
+                }
+            });
+
+            if (valid) {
+                $('[name="navigateTo"]').val(target);
+                $('#rosterData').submit();
+            } else {
+               bootbox.alert("Name missing! Make sure all students have a first and last name before proceeding.",
+                       function() {});
+            }
         }
 
         $(document).ready(function () {
-            // file input listener
+            // 'upload file' listener
             $('#fileInput').change(function () {
                 startRead();
                 $('input[type="file"]').val(null);

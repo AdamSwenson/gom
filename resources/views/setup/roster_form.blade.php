@@ -17,7 +17,7 @@
     </td>
     <td align="center" style="vertical-align: middle;">
         <a onclick="deleteStudent({{ $row }})" id="deleteButton" >
-            <span class="glyphicon glyphicon-remove" style="font-size: 1.2em; color: #EE0000;" aria-hidden="true"></span>
+            <span class="glyphicon glyphicon-remove"  aria-hidden="true"></span>
         </a>
     </td>
     <input type="hidden" name="id{{ $row }}" value="{{ $s['id'] or '0' }}">
