@@ -11,6 +11,13 @@ use Illuminate\Support\Facades\DB;
 class BaseModel extends Model
 {
 
+    static protected function getLoggedInUser()
+    {
+        $user = \Auth::user();
+        if(! $user){ throw new NotLoggedInException;}
+        return $user;
+    }
+
     public static function boot()
     {
         parent::boot();
@@ -73,13 +80,6 @@ class BaseModel extends Model
     public function getId()
     {
         return $this->attributes['id'];
-    }
-
-    static private function getLoggedInUser()
-    {
-        $user = \Auth::user();
-        if(! $user){ throw new NotLoggedInException;}
-        return $user;
     }
 
 //    /**
