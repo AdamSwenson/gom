@@ -157,7 +157,8 @@ class Student extends BaseModel
      */
     public function hasBeenGraded($examId)
     {
-
+        // returning true to test UI for now
+        return true;
     }
 
     /**

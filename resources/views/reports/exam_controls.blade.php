@@ -37,11 +37,11 @@
                                    onclick="removeAccess({{ $exam->getId() }})" >
                                     <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
                                 </a>
-                                <a class="btn btn-primary" title="Exam Analytics"
+                                <a class="btn btn-info" title="Exam Analytics"
                                    href="{{url('report/' . $exam->getId() . '/analytics')}}"><span
                                             class="glyphicon glyphicon-stats"
                                             aria-hidden="true"></span> </a>
-                                <a class="btn btn-default" title="Student Controls"
+                                <a class="btn btn-info" title="Student Controls"
                                    href="{{url('report/' . $exam->getId() . '/students')}}"><span
                                             class="glyphicon glyphicon-user" aria-hidden="true"></span> </a>
                             </td>
@@ -75,7 +75,7 @@
 
         function confirmRelease(examId) {
             var released = $('#exam' + examId).attr('data-released');
-            var confirmMsg = "Releasing this exam will email all students \n their grades and personalized feedback. " +
+            var confirmMsg = "Releasing this exam will e-mail all students \n their grades and personalized feedback. " +
                             "Do you wish to continue?";
             if (released === '1') confirmMsg = "Re-releasing this exam sends all students an additional message informing them " +
                     "that exam grades or comments may have changed. Do you wish to continue?";
@@ -99,6 +99,7 @@
                 type: 'GET',
                 success: function() {
                     setAsReleased( $exam );
+                    alertEmailSent();
                     enableLock( $exam.siblings('#lock') );
                 },
                 error: function( ) {
@@ -108,6 +109,10 @@
                     $exam.removeClass('disabled');
                 }
             });
+        }
+
+        function alertEmailSent() {
+            bootbox.alert("All students have been e-mailed!", function() {});
         }
 
         // removes student access to the exam, deleting any response keys that have been generated.

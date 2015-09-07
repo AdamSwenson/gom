@@ -7,15 +7,11 @@ namespace App\Http\Controllers;
 use App\Exam;
 use App\Http\Requests\ExamRequest;
 use App\Repositories\Exam\IExamRepository;
-use Illuminate\Http\Request;
 
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use Illuminate\Routing\Route;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
+use Illuminate\Http\Response;
 
 /*
     ExamController routes requests to appropriate page of the create exam workflow
@@ -63,11 +59,15 @@ class ExamController extends Controller
     public function create()
     {
         //create new exam
-
-        // probably handle cloning here:
-        // If the request includes an examId, send to clone() function
-        //$data['examName'] = '';
         return view('setup/create_exam');
+    }
+
+    // copies the selected exam and returns to select exam page
+    public function cloneExam(Exam $exam) {
+
+        // TODO: clone the thing here!
+
+        return redirect()->action('ExamController@index');
     }
 
     /**
@@ -139,7 +139,9 @@ class ExamController extends Controller
         {
             Session::flash(self::SUCCESS_FLASH_NAME, self::DELETE_SUCCESS);
         }
-        return redirect()->action('ExamController@index');
+
+        return [ 'url_redirect' => 'exam' ] ;
+        //return redirect()->action('ExamController@index');
     }
 
 }
