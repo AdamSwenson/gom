@@ -37,15 +37,15 @@
         .glyphicon-remove {
             sfont-size: 1.2em;
             color: #d9534f;
-        "
         }
 
         .glyphicon-remove:hover {
             cursor: pointer;
             sfont-size: 1.2em;
             color: #d43f3a;
-        "
         }
+
+
     </style>
 
     <div id="editRoster">

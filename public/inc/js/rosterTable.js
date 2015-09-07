@@ -228,7 +228,7 @@ function deleteRoster() {
     if ($roster.length == 0 ) return;
 
     bootbox.dialog({
-        message: "Warning: This will remove all students from the current roster",
+        message: "Warning: This will remove all students from the current roster, including grades and feedback.",
         title: "Delete Roster",
         buttons: {
             success: {

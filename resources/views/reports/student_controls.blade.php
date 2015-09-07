@@ -30,11 +30,14 @@
                         <td style="vertical-align:middle">{{ $student->getEmail() }}</td>
                         <td style="vertical-align:middle">{{ $student->getStudentId()}}</td>
                         <td style="text-align: right;">
-                            <a class="btn btn-default" style="width:120px;" id="{{ 'studentId'.$student->getId() }}" title="Email Student"
-                               onclick="confirmEmail({{ $student->getId() }})" data-emailed="0">
+                            <a class="btn btn-default" style="width:120px;" id="{{ 'studentId'.$student->getId() }}"
+                               title="Email Student"  data-graded="{{ $student->hasBeenGraded($exam->getId()) }}"
+                               onclick="confirmEmail({{ $student->getId() }})"
+                               data-emailed="{{ $student->feedBackEmailSent($exam->getId()) }}">
                                 <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Email
                             </a>
-                            <a class="btn btn-primary" title="Review Student Feedback"
+                            <a class="btn btn-primary" title="Review Student Feedback" id="btnReview"
+                               data-feedback-available="{{ $student->isFeedBackAvailable($exam->getId()) }}"
                                href="{{ url('report/'.$exam->getId().'/students/'.$student->getId()) }}">
                                 <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
                                  Review
@@ -60,8 +63,18 @@
 
         //set the display for all emailed students
         $('[id^="studentId"]').each( function() {
-            if ( $(this).attr('data-emailed')  == '1'){
+            if ( !$(this).attr('data-graded') ){
+                $(this).addClass('disabled');
+                $(this).text('Not Graded');
+            } else if ( $(this).attr('data-emailed')  == '1'){
                 setAsEmailed( $(this) );
+            }
+        });
+
+        // Disable 'review' button if feedback is not available
+        $('#btnReview').each( function(){
+            if ( !$(this).data('feedback-available') ){
+                $(this).addClass('disabled');
             }
         });
 
@@ -83,6 +96,7 @@
                         type: 'POST',
                         success: function() {
                             setAsEmailed( $student );
+                            alertEmailSent();
                         },
                         error: function( ) {
                             alert( "Sorry, there was a problem emailing this student!" );
@@ -93,6 +107,10 @@
                     });
                 }
             });
+        }
+
+        function alertEmailSent() {
+            bootbox.alert("Email sent!", function() {});
         }
 
         // changes the visuals and status for a released exam

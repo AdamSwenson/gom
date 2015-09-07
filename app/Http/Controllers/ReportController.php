@@ -158,11 +158,12 @@ class ReportController extends Controller
      */
     public function releaseExam(Exam $exam) {
         $this->createFeedback($exam);
-        if ($exam->getReleased()) {
-            // TODO send 're-release' email to all students with grades
+        if ( $exam->getReleased() ) {
+            // TODO send 're-release' email to all students with grades. Also marks all students as having been emailed.
         } else {
             $exam->setReleased(true);
-            // TODO send 'release' email to all students with grades
+            $exam->save();
+            // TODO send 'release' email to all students with grades. Also marks all students as having been emailed.
         }
     }
 
@@ -173,6 +174,7 @@ class ReportController extends Controller
      */
     public function unreleaseExam(Exam $exam){
         $exam->setReleased(false);
+        $exam->save();
         $keys = $this->accessKeyDao->getAccessKeysForExam($exam->getId());
         if (!empty($keys)) {
             foreach ($keys as $key) {
