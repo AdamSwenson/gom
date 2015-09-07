@@ -26,8 +26,8 @@
                 <tbody>
                 @foreach($students as $student)
                     <tr>
-                        <td style="vertical-align:middle">{{ $student->last_name }}, {{ $student->first_name }}</td>
-                        <td style="vertical-align:middle">{{ $student->getEmail() }}</td>
+                        <td style="vertical-align:middle" id="studentName">{{ $student->last_name }}, {{ $student->first_name }}</td>
+                        <td style="vertical-align:middle" id="studentEmail">{{ $student->getEmail() }}</td>
                         <td style="vertical-align:middle">{{ $student->getStudentId()}}</td>
                         <td style="text-align: right;">
                             <a class="btn btn-default" style="width:120px;" id="{{ 'studentId'.$student->getId() }}"
@@ -36,7 +36,7 @@
                                data-emailed="{{ $student->feedBackEmailSent($exam->getId()) }}">
                                 <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Email
                             </a>
-                            <a class="btn btn-primary" title="Review Student Feedback" id="btnReview"
+                            <a class="btn btn-info" title="Review Student Feedback" id="btnReview"
                                data-feedback-available="{{ $student->isFeedBackAvailable($exam->getId()) }}"
                                href="{{ url('report/'.$exam->getId().'/students/'.$student->getId()) }}">
                                 <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
@@ -96,7 +96,7 @@
                         type: 'POST',
                         success: function() {
                             setAsEmailed( $student );
-                            alertEmailSent();
+                            alertEmailSent( $student.closest('tr') );
                         },
                         error: function( ) {
                             alert( "Sorry, there was a problem emailing this student!" );
@@ -109,8 +109,9 @@
             });
         }
 
-        function alertEmailSent() {
-            bootbox.alert("Email sent!", function() {});
+        function alertEmailSent($tr) {
+            var email = $tr.find('#studentEmail').text();
+            bootbox.alert("An email has been sent to " + email + ".", function() {});
         }
 
         // changes the visuals and status for a released exam

@@ -37,11 +37,11 @@
                                    onclick="removeAccess({{ $exam->getId() }})" >
                                     <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
                                 </a>
-                                <a class="btn btn-primary" title="Exam Analytics"
+                                <a class="btn btn-info" title="Exam Analytics"
                                    href="{{url('report/' . $exam->getId() . '/analytics')}}"><span
                                             class="glyphicon glyphicon-stats"
                                             aria-hidden="true"></span> </a>
-                                <a class="btn btn-default" title="Student Controls"
+                                <a class="btn btn-info" title="Student Controls"
                                    href="{{url('report/' . $exam->getId() . '/students')}}"><span
                                             class="glyphicon glyphicon-user" aria-hidden="true"></span> </a>
                             </td>

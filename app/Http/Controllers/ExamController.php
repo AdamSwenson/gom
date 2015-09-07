@@ -11,6 +11,7 @@ use App\Repositories\Exam\IExamRepository;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
+use Illuminate\Http\Response;
 
 /*
     ExamController routes requests to appropriate page of the create exam workflow
@@ -138,7 +139,9 @@ class ExamController extends Controller
         {
             Session::flash(self::SUCCESS_FLASH_NAME, self::DELETE_SUCCESS);
         }
-        return redirect()->action('ExamController@index');
+
+        return [ 'url_redirect' => 'exam' ] ;
+        //return redirect()->action('ExamController@index');
     }
 
 }

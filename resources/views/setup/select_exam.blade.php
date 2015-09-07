@@ -51,7 +51,7 @@
                             {{ $exam->getName() }}
                         </td>
                         <td class="col-md-5" style="text-align:right">
-                            <a class="btn btn-primary" href="{{ url('exam/'.$exam->getId().'/edit') }}">
+                            <a class="btn btn-info" href="{{ url('exam/'.$exam->getId().'/edit') }}">
                                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                 Edit Exam
                             </a>
@@ -59,7 +59,7 @@
                                 <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>
                                 Clone
                             </a>
-                            <a class="btn btn-warning" onclick="showConfirmation({{ $exam->getId() }})">
+                            <a class="btn btn-danger" onclick="showConfirmation({{ $exam->getId() }})">
                                 <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
                                 Delete
                             </a>
@@ -87,7 +87,8 @@
 
         function showConfirmation(examId) {
             bootbox.dialog({
-                message: "Warning: This will delete all students, scores, questions and elements. Do you wish to proceed?",
+                message: "Warning: This will delete all associated students, scores, questions and elements. " +
+                    "Do you wish to proceed?",
                 title: "Delete Exam",
                 buttons: {
                     success: {
@@ -109,12 +110,13 @@
         }
 
         function deleteExam(examId) {
-            // TODO: this call isn't refreshing the page
+
             $.ajax({
                 url: 'exam/' + examId,
                 type:"post",
                 data: { _method:"DELETE" },
-                success: function() {
+                success: function(data) {
+                    window.location.replace(data.url_redirect);
                 },
                 error: function() {
                     bootbox.alert("Whoops! The exam failed to delete. Please try again.");
