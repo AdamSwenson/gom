@@ -37,15 +37,15 @@
         .glyphicon-remove {
             sfont-size: 1.2em;
             color: #d9534f;
-        "
         }
 
         .glyphicon-remove:hover {
             cursor: pointer;
             sfont-size: 1.2em;
             color: #d43f3a;
-        "
         }
+
+
     </style>
 
     <div id="editRoster">
@@ -145,10 +145,11 @@
 
     <script language="javascript" type="text/javascript" src="{{ asset('inc/js/rosterTable.js') }}"></script>
     <script type="text/javascript">
-        localStorage.clear();
+
         /*
          THINGS TODO:
-         4- column swapping (?)
+         - column swapping
+         - XLS support
          */
         function submitAndNavigateTo(target) {
             var $table = $('#studentRosterBody');

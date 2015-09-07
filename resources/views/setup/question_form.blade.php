@@ -15,7 +15,7 @@
     <div class="form-group">
         <textarea class="form-control" rows="3" id="questionText{{ $counter }}"
                   name="questionText{{ $counter }}"
-                  placeholder="Enter the full question text(optional)">{{ isset($q) ? $q['qObj']->getQuestionText() : '' }}</textarea>
+                  placeholder="Enter the full question text (optional)">{{ isset($q) ? $q['qObj']->getQuestionText() : '' }}</textarea>
     </div>
     <div class="form-group">
         <span class="btn btn-info btn-sm handle">

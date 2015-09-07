@@ -79,8 +79,7 @@
         $(document).ready(function () {
             // clear local storage to dump Sortable data - or it may display items out of order
             localStorage.clear();
-            // magic 4 for now...
-            // TODO:
+            // magic 4 for now... this could change if given as an option
             var numValences = 4;
             // set up Sortable list
             var eList = document.getElementById('elementList');

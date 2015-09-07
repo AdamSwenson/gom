@@ -1,4 +1,9 @@
 <!-- general nav bar -->
+<style>
+    li:hover {
+        background-color: #E9E9E9;
+    }
+</style>
 <div class="navbar navbar-default navbar-static-top">
     <div class="container">
         <div class="navbar-header">

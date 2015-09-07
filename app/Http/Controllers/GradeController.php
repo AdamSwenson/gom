@@ -98,11 +98,13 @@ class GradeController extends Controller
         $studentDao = app()->make('App\Repositories\Student\IStudentRepository');
         $students = $studentDao->load_students_by_exam($exam);
 
-        // TODO: do verification for exams on select
-        if( empty($students) ) return ("No students found for this exam");
+        // TODO: do verification for exams. Must have 1 student and at least 1 question.
+        if (sizeof($students) == 0 ) return ("No students found for this exam");
 
         // load all question assignments and all elements for those questions
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
+
+        if(sizeof($questionAssignments) == 0) return ('No questions found for this exam');
         foreach ($questionAssignments as $qAssignment) {
             $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qAssignment->getQuestionNumber());
         }
@@ -115,7 +117,7 @@ class GradeController extends Controller
             $elementComments = NULL;
             foreach ($allElementAssignments as $eleAssignment) {
                 $aCommentScore = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
-                if ( isset($aCommentScore->score) ) {
+                if (isset($aCommentScore->score)) {
                     $aScore = $aCommentScore->getScore();
                 } else {
                     $aScore = NULL;
@@ -123,9 +125,11 @@ class GradeController extends Controller
                 $elementScores[] = $aScore;
 
                 // grab the student-specific comment for this element
-                if ( isset($aCommentScore->comment_text) ) {
+                if (isset($aCommentScore->comment_text)) {
                     $aCommentText = $aCommentScore->comment_text;
-                } else  { $aCommentText = ""; }
+                } else {
+                    $aCommentText = "";
+                }
                 $elementComments[] = $aCommentText;
             }
             $studentElementScores[] = $elementScores;
@@ -135,7 +139,7 @@ class GradeController extends Controller
             $questionScores = NULL;
             foreach ($questionAssignments as $questionAssignment) {
                 $aScore = $this->questionScoreDao->load($questionAssignment->getId(), $student->getId());
-                if ( isset($aScore->score) ) {
+                if (isset($aScore->score)) {
                     $aScore = $aScore->getScore();
                 } else
                     $aScore = NULL;
@@ -144,8 +148,8 @@ class GradeController extends Controller
             $studentQuestionScores[] = $questionScores;
 
             // load grading times for each student
-            if (isset ($this->gradingTimeDao->load($exam->getId(), $student->getId())->seconds) ) {
-                $examGradingTimes[] =  $this->gradingTimeDao->load($exam->getId(), $student->getId() )->seconds;
+            if (isset ($this->gradingTimeDao->load($exam->getId(), $student->getId())->seconds)) {
+                $examGradingTimes[] = $this->gradingTimeDao->load($exam->getId(), $student->getId())->seconds;
             } else
                 $examGradingTimes[] = 0;
         }
@@ -182,7 +186,7 @@ class GradeController extends Controller
     public function recordScore(Exam $exam, GradingRequest $request)
     {
         //Don't even get started if there's no student id
-        if ($request->has('student_id') ) {
+        if ($request->has('student_id')) {
             $studentId = $request->input('student_id');
 
             $itemId = null;
@@ -196,11 +200,11 @@ class GradeController extends Controller
             if ($request->has('element_id')) {
                 $this->dao = app()->make('App\Repositories\Score\IElementScoreRepository');
                 $itemId = $this->elementAssignmentDao->load_element_assignment_by_element($exam->getId(),
-                                                        $request->input('element_id') )->getId();
+                    $request->input('element_id'))->getId();
 
                 // if a comment has text with it, record that as well.
-                if ( $request->exists('comment_text') ) {
-                    $this->dao->recordCommentText($itemId, $studentId, $request->input('comment_text') );
+                if ($request->exists('comment_text')) {
+                    $this->dao->recordCommentText($itemId, $studentId, $request->input('comment_text'));
                 }
             }
 
@@ -217,7 +221,7 @@ class GradeController extends Controller
 
             // Check if the exam has been released.
             // A released exam will have its compiled feedback updated  for this student
-            if ( $exam->getReleased() ) {
+            if ($exam->getReleased()) {
                 $reportController = app()->make('App\Http\Controllers\ReportController');
                 $reportController->updateFeedbackForStudent($exam, $studentId);
             }
@@ -254,7 +258,8 @@ class GradeController extends Controller
      * @param GradingRequest $request
      * @return mixed
      */
-    public function removeScore(Exam $exam, GradingRequest $request){
+    public function removeScore(Exam $exam, GradingRequest $request)
+    {
         if ($request->has('questionAssignmentId')) {
             $this->questionScoreDao->deleteScore($request['questionAssignmentId'], $request['studentId']);
         }
