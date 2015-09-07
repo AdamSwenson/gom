@@ -9,11 +9,11 @@
 @section('body')
     <style>
         tr:hover {
-            background-color: #E3E3E3;
+            background-color: #E3E33;
         }
     </style>
     <div class="container">
-        <h3><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Grade Exam</h3>
+        <h3><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Grade Exam</h3>
         <h4>Select an exam to grade</h4>
 
         <div class="well-lg">

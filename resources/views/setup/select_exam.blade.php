@@ -13,117 +13,65 @@
 
 @section('pageTitle', 'Select Exam')
 
-@section('description', 'edit, create or clone an exam')
+@section('description', 'Create, edit, clone or delete an exam')
 
 @section('cssLinks')
 
 @endsection
 
 @section('body')
-        <!-- style exam names with year and term -->
+
 <style type="text/css">
-    .exam-name {
-        display: inline-block;
-        width: 110px;
+    a {
+        cursor: pointer;
     }
 </style>
 
-<div id="selectExam">
-    <div class="section">
-        <div class="container">
-            <nav>
-                <ul class="pager" style="visibility:hidden">
-                    <li class="next">
-                        <a href="#">Next <span aria-hidden="true">?</span></a>
-                    </li>
-                </ul>
-            </nav>
-            <h2>Exam Setup</h2>
-
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="list-group">
-
-                        <!-- create exam -->
-                        <a id="createExamLink" href="{{url('exam/create')}}" class="list-group-item">
-                            <h4><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create Exam</h4>
-                        </a>
-                        <!-- edit exam -->
-                        <a id="editExamLink" style="cursor:pointer;" class="list-group-item" data-toggle="collapse"
-                           data-target="#examListEdit" data-parent="#examAction">
-                            <h4><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit Exam </h4>
-                        </a>
-
-                        <div id="examListEdit" class="sublinks collapse">
-                            <div class="container">
-                                @foreach($exams as $exam)
-                                    <div class="row">
-                                        <form method="GET" action="{{url('exam/'. $exam->getId() . '/edit')}}"
-                                              accept-charset="UTF-8">
-                                            <button type="submit"
-                                                    class="list-group-item"><span class="exam-name">{{ $exam->getYear() }}
-                                                    , {{ $exam->getTerm() }}
-                                                     </span>| {{ $exam->getName() }}</button>
-                                        </form>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        <!-- clone exam -->
-                        <a id="cloneExamLink" class="list-group-item" data-toggle="collapse"
-                           data-target="#examListClone" data-parent="#examAction" style="cursor:pointer;">
-                            <h4><span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> Clone Exam</h4>
-                        </a>
-
-                        <div id="examListClone" class="sublinks collapse">
-                            <div class="container">
-                                @foreach($exams as $exam)
-                                    <div class="row">
-                                        <!-- pass in examId so it can be cloned -->
-                                        <form method="GET" action="{{url('exam/'. $exam->getId() . '/edit')}}"
-                                              accept-charset="UTF-8">
-                                            <div style="width:97%">
-                                                <button type="submit" name="cloneExamName"
-                                                        class="list-group-item"><span class="exam-name">{{ $exam->getYear() }}
-                                                        , {{ $exam->getTerm() }}
-                                                     </span>| {{ $exam->getName() }}</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        <!-- delete exam -->
-                        <a id="deleteExamLink" class="list-group-item" data-toggle="collapse"
-                           data-target="#examListDelete" data-parent="#examAction" style="cursor:pointer;">
-                            <h4><span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete Exam</h4>
-                        </a>
-                        <div id="examListDelete" class="sublinks collapse">
-                            <div class="container">
-                                @foreach($exams as $exam)
-                                    <div class="row">
-                                        <form method="POST" action="{{url('exam/'. $exam->getId() )}}"
-                                              accept-charset="UTF-8">
-                                            <input type="hidden" name="_method" value="DELETE">
-                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-
-                                            <div style="width:97%">
-                                                <button type="submit" name="deleteExamName"
-                                                        class="list-group-item"><span class="exam-name">{{ $exam->getYear() }}
-                                                        , {{ $exam->getTerm() }}
-                                                     </span>| {{ $exam->getName() }}</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="container">
+    <nav>
+        <ul class="pager" >
+            <li class="next">
+                <a href="{{ url('exam/create') }}">Create New Exam <span class="glyphicon glyphicon-chevron-right"
+                                                                         aria-hidden="true"></span></a>
+            </li>
+        </ul>
+    </nav>
+    <h3><span class="glyphicon glyphicon-list" aria-hidden="true"></span> Exam Setup</h3>
+    <h4>Create, edit and delete exams</h4>
+    <div class="well-lg">
+        <div class="panel panel-default" <?php if( sizeof($exams) == 0 ) { echo('style="display:none;"');} ?> >
+            <table class="table">
+                <tbody>
+                @foreach($exams as $exam)
+                    <tr>
+                        <td class="col-md-2" style="vertical-align:middle">
+                            {{ $exam->getTerm() }} {{ $exam->getYear() }}
+                        </td>
+                        <td class="col-md-5" style="vertical-align:middle">
+                            {{ $exam->getName() }}
+                        </td>
+                        <td class="col-md-5" style="text-align:right">
+                            <a class="btn btn-primary" href="{{ url('exam/'.$exam->getId().'/edit') }}">
+                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                Edit Exam
+                            </a>
+                            <a class="btn btn-default" href="{{ url('exam/'.$exam->getId().'/clone') }}">
+                                <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>
+                                Clone
+                            </a>
+                            <a class="btn btn-warning" onclick="showConfirmation({{ $exam->getId() }})">
+                                <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+
 @include('errors.list')
 
 @endsection
@@ -137,6 +85,42 @@
         $('[id^="nav"]').attr('class', '');
         $('#navSetup').attr('class', 'active');
 
+        function showConfirmation(examId) {
+            bootbox.dialog({
+                message: "Warning: This will delete all students, scores, questions and elements. Do you wish to proceed?",
+                title: "Delete Exam",
+                buttons: {
+                    success: {
+                        label: 'Cancel',
+                        className: "btn-sm",
+                        callback: function() {
+                        }
+                    },
+                    danger: {
+                        label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
+                        className: "btn-danger btn-sm",
+                        callback: function() {
+                            // do deletion for examId
+                            deleteExam(examId);
+                        }
+                    }
+                }
+            });
+        }
+
+        function deleteExam(examId) {
+            // TODO: this call isn't refreshing the page
+            $.ajax({
+                url: 'exam/' + examId,
+                type:"post",
+                data: { _method:"DELETE" },
+                success: function() {
+                },
+                error: function() {
+                    bootbox.alert("Whoops! The exam failed to delete. Please try again.");
+                }
+            });
+        }
         $(document).ready(function () {
             return false;
         });

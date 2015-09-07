@@ -144,10 +144,11 @@
 
     <script language="javascript" type="text/javascript" src="{{ asset('inc/js/rosterTable.js') }}"></script>
     <script type="text/javascript">
-        localStorage.clear();
+
         /*
          THINGS TODO:
-         4- column swapping (?)
+         - column swapping
+         - XLS support
          */
         function submitAndNavigateTo(target) {
             var $table = $('#studentRosterBody');

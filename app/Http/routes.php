@@ -43,6 +43,7 @@ Route::post('setup/api', array('uses' => 'AjaxController@handleRequest'));
 /* Select exam page */
 Route::get('setup','ExamController@index');
 Route::post('setup','ExamController@index');
+Route::get('exam/{exam}/clone','ExamController@cloneExam');
 Route::resource('exam', 'ExamController');
 
 /* Routes for questions */
