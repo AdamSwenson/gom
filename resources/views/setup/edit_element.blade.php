@@ -35,8 +35,11 @@
             </nav>
             <h2>Add / Edit Elements: Question #{{ isset($qNumber) ? $qNumber : '1'}}
                 "{{ isset($questionName) ? $questionName : '' }}"</h2>
-            <h5>Each question is composed of elements, representing individual items that the student
+            <h5>Each question is composed of elements. Each element is a concept or issue that a correct answer
                 should address.</h5>
+
+            @include('errors.list')
+                    
             <!-- form will update all given elements and create new ones where required -->
             <form id="elementForm" name="elementForm" method="post" role="form"
                   action="{{ url('exam/'.$examId.'/question/'.$questionId.'/element/updateAll') }}"
@@ -66,7 +69,7 @@
         $e = NULL; ?>
         @include('setup.element_form')
     </ul>
-    @include('errors.list')
+
 @endsection
 
 

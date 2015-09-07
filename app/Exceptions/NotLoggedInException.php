@@ -6,7 +6,7 @@
  * Time: 3:25 PM
  */
 
-namespace Exceptions;
+namespace App\Exceptions;
 
 /**
  * Class NotLoggedInException

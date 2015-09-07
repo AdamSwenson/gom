@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\QuestionRequest;
 use App\Question;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -14,6 +15,8 @@ use App\Repositories\Question\IQuestionRepository;
 
 class QuestionController extends Controller
 {
+    //use ValidatesRequests;
+
     const SUCCESS_FLASH_NAME = "flash_message_success";
     const FAIL_FLASH_NAME = "flash_message_fail";
 
@@ -25,6 +28,7 @@ class QuestionController extends Controller
 
     const DELETE_SUCCESS = 'you have successfully destroyed a question. I hope you are proud of yourself.';
     const DELETE_FAIL = 'There was a problem deleting the question';
+
 
     /**@var IQuestionRepository */
     protected $questionDao;
@@ -146,7 +150,7 @@ class QuestionController extends Controller
      * @param QuestionRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateAll($exam, QuestionRequest $request)
+    public function updateAll(Exam $exam, QuestionRequest $request)
     {
         // NOTE: Right now, all existing questions in a form have their full contents updated every time
         // the edit_questions form is submitted by the user. The 'updated_at' field thus reflects
@@ -156,6 +160,12 @@ class QuestionController extends Controller
 
         // Process uploaded form: Update questions and create new questions as necessary
         $currentQuestions = [];
+
+//        //prepare validation
+//        $this->makeQuestionValidationRules($request);
+//        //validate
+//        $this->validate($request, $this->rulesArray);
+
         $i = 1;
         while ($request->input('questionName' . $i)) {
             // new questions arrive with id == 0
@@ -246,4 +256,5 @@ class QuestionController extends Controller
         return view('Destroyed Question #' . $result);
 
     }
+
 }

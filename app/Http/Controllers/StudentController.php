@@ -170,7 +170,7 @@ class StudentController extends Controller
         //
     }
 
-    public function updateAll(Exam $exam, Request $request)
+    public function updateAll(Exam $exam, StudentRequest $request)
     {
         // TODO: validate that first and last names are non-empty
         $examId = $exam->getId();

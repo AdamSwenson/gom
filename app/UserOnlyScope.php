@@ -6,7 +6,7 @@
  * Time: 9:13 AM
  */
 namespace App;
-use Exceptions\NotLoggedInException;
+use App\Exceptions\NotLoggedInException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ScopeInterface;

@@ -32,9 +32,9 @@ class ExamRequest extends Request
     public function rules()
     {
         return [
-//            'term' => 'required|min:1|max:225',
-//            'name' => 'required|min:1|max:225',
-//            'year' => 'required|integer|min:2000|max:3000'
+            'examYear' => 'date_format:Y',
+            'examTerm' => 'max:225',
+            'name' => 'max:225'
         ];
 //
 //        $minTerm = Exam::MIN_TERM_LENGTH;

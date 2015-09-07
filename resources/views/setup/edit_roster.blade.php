@@ -78,6 +78,8 @@
                 </form>
                 <h2>Edit Roster</h2>
 
+                @include('errors.list')
+
                 <div class="container">
                     <form id="rosterData" method="post" role="form"
                           action="{{ url('exam/'.$exam->getId().'/student/updateAll') }}">
@@ -135,7 +137,6 @@
         </table>
     </div>
 
-    @include('errors.list')
 
 @endsection
 
