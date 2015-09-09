@@ -196,9 +196,12 @@ class QuestionController extends Controller
         $firstQId = $firstQuestionAssign->getQuestionId();
         $firstQuestionObject = $this->questionDao->loadQuestionById($firstQId);
 
-        return redirect()->action('ElementController@editAll', array('examId' => $examId,
-            'question' => $firstQuestionObject));
-
+        if ($request->input('nextAction') == 'editExam') {
+            return redirect()->action('ExamController@edit', array('examId' => $examId) );
+        } else {
+            return redirect()->action('ElementController@editAll', array('examId' => $examId,
+                'question' => $firstQuestionObject));
+        }
     }
 
     /** Get all questions $exam obj and send to edit_question view

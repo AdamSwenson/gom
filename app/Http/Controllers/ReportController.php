@@ -125,7 +125,7 @@ class ReportController extends Controller
      */
     public function createFeedback(Exam $exam)
     {
-        event(new ExamReeleasedEvent($exam));
+        event(new ExamReleasedEvent($exam));
 
         return view('feedback.progress_compiling');
 //

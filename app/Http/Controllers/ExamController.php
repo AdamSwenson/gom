@@ -38,6 +38,9 @@ class ExamController extends Controller
     {
         $this->middleware('auth');
         $this->examDao = $examDao;
+        // $terms defines the terms the user can choose from in the create / edit exam pages.
+        // I've it defined here, but custom terms could be a preference later on.
+        $this->terms = [ 'Winter', 'Spring', 'Summer', 'Fall'];
     }
 
     /**
@@ -59,7 +62,9 @@ class ExamController extends Controller
     public function create()
     {
         //create new exam
-        return view('setup/create_exam');
+        $years[] = date('Y');
+        $years[] = strval( $years[0] + 1 );
+        return view('setup/create_exam', [ 'years' => $years, 'terms' => $this->terms ]);
     }
 
     // copies the selected exam and returns to select exam page
@@ -104,7 +109,11 @@ class ExamController extends Controller
      */
     public function edit(Exam $exam)
     {
-        return view('setup/edit_exam', compact('exam'));
+        // create a list of years to choose from
+        $years[] = $exam->getYear();
+        $years[] = date('Y');
+        $years[] = strval( $years[1] + 1 );
+        return view('setup/edit_exam', [ 'exam' => $exam, 'years' => $years, 'terms' => $this->terms ]);
     }
 
     /**
@@ -120,7 +129,11 @@ class ExamController extends Controller
 
         Session::flash(self::SUCCESS_FLASH_NAME, self::UPDATE_SUCCESS);
         $eid = $exam->getId();
-        return redirect()->route('editAllQuestions', $eid);
+        if ($request->input('nextAction') == 'selectExam') {
+            return redirect()->action('ExamController@index');
+        }
+        else
+            return redirect()->route('editAllQuestions', $eid);
     }
 
     /**
@@ -141,7 +154,6 @@ class ExamController extends Controller
         }
 
         return [ 'url_redirect' => 'exam' ] ;
-        //return redirect()->action('ExamController@index');
     }
 
 }

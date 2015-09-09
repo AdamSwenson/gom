@@ -476,7 +476,6 @@
                     createGradeRequest('question_assignment_id', questionAssId, score, null);
                 } else {
                     // delete the score
-                    // TODO Complete this correctly
                     var examId = $('h3').attr('data-exam-id');
                     var gradeRequest = {};
                     gradeRequest['questionAssignmentId'] = questionAssId;

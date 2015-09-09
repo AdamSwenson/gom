@@ -53,7 +53,7 @@
                         @include('setup.element_form')
                     @endif
                 </ul>
-                <input type="hidden" id="questionDirection" name="questionDirection" value="0"/>
+                <input type="hidden" id="nextAction" name="nextAction" value="0"/>
             </form>
             <a class="btn btn-primary" id="addElement">
                 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
@@ -84,7 +84,7 @@
                 filter: '.js-remove',
                 animation: 150,
                 handle: '.handle',
-                ghostClass: "sortable-ghost",
+                ghostClass: 'sortable-ghost',
                 onFilter: function (evt) {
                     var el = editableList.closest(evt.item); // get dragged item
 
@@ -203,9 +203,9 @@
             btnPrevious.onclick = function () {
                 if (prevQuestion === 0) {
                     // set the hidden field to either the questionId to view next, or 'back'
-                    $('#questionDirection').attr('value', 'back');
+                    $('#nextAction').attr('value', 'editQuestions');
                 } else {
-                    $('#questionDirection').attr('value', prevQuestion);
+                    $('#nextAction').attr('value', prevQuestion);
                 }
                 submitForm();
             }
@@ -221,9 +221,9 @@
             btnNext.onclick = function () {
                 if (nextQuestion === 0) {
                     // set the hidden field to either the elementId to view next, or 'previous' to return to edit question
-                    $('#questionDirection').attr('value', 'forward');
+                    $('#nextAction').attr('value', 'editStudents');
                 } else {
-                    $('#questionDirection').attr('value', nextQuestion);
+                    $('#nextAction').attr('value', nextQuestion);
                 }
                 submitForm();
             }

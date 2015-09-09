@@ -19,7 +19,7 @@
                                 Setup</a>
                         </li>
                         <li class="next">
-                        <a id="submitLink" style="cursor:pointer;">Add / Edit Questions <span class="glyphicon glyphicon-chevron-right"
+                        <a id="saveExam" style="cursor:pointer;">Add / Edit Questions <span class="glyphicon glyphicon-chevron-right"
                                                            aria-hidden="true"></span></a>
 
                         </li>
@@ -40,36 +40,34 @@
     <script type="text/javascript">
 
         // set 'Setup' tab as active
-        $('[id^="nav"]').attr('class', '');
-        $('#navSetup').attr('class', 'active');
+        $('[id^="nav"]').removeClass('active');
+        $('#navSetup').addClass('active');
         
         $(document).ready(function() {
 
             $('#termList li').on('click', function () {
                 $('#hiddenTerm').val($(this).text());
-
-                var $icon = $('#term').find('span');
-                $('#term').html($(this).text());
-                $('#term').append(" ");
-                $('#term').append($icon);
-
-
+                var $term = $('#term');
+                var $icon = $term.find('span');
+                $term.html($(this).text());
+                $term.append(" ");
+                $term.append($icon);
             });
 
             $('#yearList li').on('click', function () {
                 $('#hiddenYear').val($(this).text());
-
-                var $icon = $('#year').find('span');
-                $('#year').text($(this).text());
-                $('#year').append(" ");
-                $('#year').append($icon);
+                var $year = $('#year');
+                var $icon = $year.find('span');
+                $year.text($(this).text());
+                $year.append(" ");
+                $year.append($icon);
             });
 
-            var btnDone = document.getElementById("submitLink");
+            var btnDone = document.getElementById("saveExam");
 
             btnDone.onclick = function () {
                 document.getElementById("examForm").submit();
-            }
+            };
 
             return false;
         });

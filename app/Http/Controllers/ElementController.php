@@ -199,7 +199,6 @@ class ElementController extends Controller
             // We're not using the 'displayText' parameter at this time.
             if ($elementId == 0) {
                 // Add new Elements
-                // TODO: this fails if the name is empty !
                 $element = $this->elementDao->createElement( $request->input('elementName' . $i), '' ,
                         $request->input('elementText' . $i));
                 $this->assignmentDao->record($examId, $questionId, $element->getId(), $i);
@@ -238,15 +237,15 @@ class ElementController extends Controller
             }
         }
 
-        /* Choose next action based on 'questionDirection' param:
+        /* Choose next action based on 'nextAction' param:
             1. go back to QuestionController
             2. go forward to StudentController
             3. load another question for element editing
         */
-        $nextAction = $request->input('questionDirection');
-        if ($nextAction === 'back') {
+        $nextAction = $request->input('nextAction');
+        if ($nextAction === 'editQuestions') {
             return redirect()->route('editAllQuestions', $examId);
-        } else if ($nextAction === 'forward') {
+        } else if ($nextAction === 'editStudents') {
             return redirect()->route('editAllStudents', $examId);
         } else {
             return redirect()->action('ElementController@editAll', array('examId' => $examId,

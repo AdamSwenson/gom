@@ -28,19 +28,21 @@
                     <nav>
                         <ul class="pager">
                             <li class="previous">
-                                <a href="{{ url('exam/') }}" id="prev-question" style="cursor:pointer;"> <span
+                                <a onclick="submitForm('selectExam')"
+                                   style="cursor:pointer;"> <span
                                             class="glyphicon glyphicon-chevron-left"
                                             aria-hidden="true"></span>
                                     Setup</a>
                             </li>
                             <li class="next">
-                                <a id="submitLink" style="cursor:pointer;">Add / Edit Questions <span class="glyphicon glyphicon-chevron-right"
-                                                                   aria-hidden="true"></span></a>
+                                <a onclick="submitForm('editQuestions')" style="cursor:pointer;">Add / Edit Questions
+                                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
                             </li>
                         </ul>
                     </nav>
                     <h2>Edit Exam</h2>
                     @include('setup.exam_form')
+                    <input type="hidden" id="nextAction" name="nextAction" value="editQuestions"/>
                 </form>
 
             </div>
@@ -58,6 +60,11 @@
         // set 'Setup' tab as active
         $('[id^="nav"]').attr('class', '');
         $('#navSetup').attr('class', 'active');
+
+        function submitForm(target) {
+            $('#nextAction').val(target);
+            document.getElementById("examForm").submit();
+        }
 
         $(document).ready(function() {
 
@@ -81,12 +88,6 @@
                 $('#year').append(" ");
                 $('#year').append($icon);
             });
-
-            var btnDone = document.getElementById("submitLink");
-
-            btnDone.onclick = function () {
-                document.getElementById("examForm").submit();
-            }
 
             return false;
         });

@@ -20,13 +20,13 @@
             <nav>
                 <ul class="pager">
                     <li class="previous">
-                        <a href="{{ url('exam/'.$examId.'/edit') }}" style="cursor:pointer;"> <span
+                        <a onclick="submitForm('editExam')" style="cursor:pointer;"> <span
                                     class="glyphicon glyphicon-chevron-left"
                                     aria-hidden="true"></span>
                             Edit Exam</a>
                     </li>
                     <li class="next">
-                        <a id="submit-span" style="cursor:pointer;">Add / Edit Elements <span
+                        <a onclick="submitForm('editElements')" style="cursor:pointer;">Add / Edit Elements <span
                                     class="glyphicon glyphicon-chevron-right"
                                     aria-hidden="true"></span></a>
                     </li>
@@ -50,8 +50,8 @@
                     @else
                         @include('setup.question_form')
                     @endif
-
                 </ul>
+                <input type="hidden" id="nextAction" name="nextAction" value="editQuestions"/>
             </form>
             <a class="btn btn-primary" id="addQuestion"><span class="glyphicon glyphicon-plus"
                                                               aria-hidden="true"></span>
@@ -73,6 +73,11 @@
 
 @section('jsArea')
     <script type="text/javascript">
+
+        function submitForm(target) {
+            $('#nextAction').val(target);
+            document.getElementById("questionForm").submit();
+        }
 
         // Sortable is the lib for deag and drop elements
         // create an editable list and set up some filters to handle callbacks
@@ -162,14 +167,6 @@
                     function getQuestionCount() {
                         // return number of questions currently in the questionList
                         return $("[id^='questionItem']").length;
-                    }
-
-                    // handle form submission
-
-                    var btnDone = document.getElementById('submit-span');
-
-                    btnDone.onclick = function () {
-                        document.getElementById("questionForm").submit();
                     }
 
                     return false;
