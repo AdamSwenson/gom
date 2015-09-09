@@ -25,11 +25,7 @@ class ExamRepository implements IExamRepository
     {
         $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\ICleanerFactory');
     }
-//
-//    public function __construct(ICleanerFactory $cleaner)
-//    {
-//        $this->cleaner = $cleaner;
-//    }
+
 
     /**
      * Sets a connection object for use with transactions
@@ -42,34 +38,34 @@ class ExamRepository implements IExamRepository
     }
 
     /**
-     * Deletes the exam
-     * @param int $examId
+     * Deletes the exam.
+     * Accepts either an exam object or an integer examId
+     * @param int|Exam $examOrExamId
      * @return mixed|void
+     * @throws \Exception
      */
-    public function delete_exam($examId)
+    public function delete_exam($examOrExamId)
     {
         try{
-            $clean_id = $this->cleaner->sanitize($examId, CleanerFactory::INTEGER);
-            $toDelete = $this->load_exam($clean_id);
-            return $this->delete_exam_object($toDelete);
-//            return $toDelete->delete();
-//            return Exam::destroy($clean_id);
+            //Case where an exam object has been passed in
+            if($examOrExamId instanceof Exam)
+            {
+                return $examOrExamId->delete();
+            }
+            else{
+                //If it wasn't an exam object, assume it is an integer and clean accordingly
+                $clean_id = $this->cleaner->sanitize($examOrExamId, CleanerFactory::INTEGER);
+                return Exam::destroy([$clean_id]);
+            }
+
         }catch(\Exception $e)
         {
-            //error handling
+             throw $e;
         }
     }
 
+
     /**
-     * Deletes the exam
-     * @param Exam $exam
-     * @return boolean
-     */
-    public function delete_exam_object(Exam $exam)
-    {
-        return $exam->delete();
-    }
-        /**
      * Creates a new exam object, saves it, then returns it
      * @param  integer $year
      * @param string $term
@@ -103,6 +99,36 @@ class ExamRepository implements IExamRepository
     }
 
     /**
+     * After creating a new exam this can be called and it will copy
+     * the question and element assignments from a specified previous
+     * exam and make those assignments for the new exam.
+     *
+     * TODO: This should be done with transaction
+     *
+     * @param integer $examToCloneId The id of the exam whose assignments to copy
+     * @param integer $examToBeClonedIntoId The id of the exam to make the assignments into
+     */
+    public function clone_exam($examToCloneId, $examToBeClonedIntoId)
+    {
+        $questionAssignDao = app()->make('App\Repositories\Question\IQuestionAssignmentRepository');
+        $elementAssignDao = app()->make('App\Repositories\Element\IElementAssignmentRepository');
+
+        $questionsToClone = $questionAssignDao->load_all_for_exam($examToCloneId);
+        $elementsToClone = $elementAssignDao->load_by_exam($examToCloneId);
+
+        foreach($questionsToClone as $questionAssignment)
+        {
+            $questionAssignDao->record($examToBeClonedIntoId, $questionAssignment->question_id, $questionAssignment->question_number);
+        }
+
+        foreach($elementsToClone as $elementAssignment)
+        {
+            $elementAssignDao->record($examToBeClonedIntoId, $elementAssignment->question_id, $elementAssignment->element_id, $elementAssignment->subtask);
+        }
+
+    }
+
+    /**
      * Load exam by id
      *
      * @param $examId
@@ -125,6 +151,7 @@ class ExamRepository implements IExamRepository
     /**
      * Returns exams for the class/kumi
      * @param integer $classId
+     * @return mixed|void
      */
     public function load_exams_by_class($classId)
     {

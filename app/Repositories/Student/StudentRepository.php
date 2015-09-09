@@ -216,7 +216,6 @@ class StudentRepository implements IStudentRepository
      *
      * @param $clean_id
      * @return \Student
-     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function load_student_by_sid($clean_id)
     {

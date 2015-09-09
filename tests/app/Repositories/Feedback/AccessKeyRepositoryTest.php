@@ -32,25 +32,21 @@ class AccessKeyRepositoryTest extends \TestCase
         $this->exam = Exam::all()->random();
         $this->student = Student::all()->random();
 
-        $ak = AccessKey::where('exam_id', $this->exam->id)->where('student_id', $this->student->id)->first();
-        if ($ak)
-        {
-            $ak->delete();
-        }
-
+        $ak = AccessKey::where('exam_id', $this->exam->id)->where('student_id', $this->student->id)->delete();
     }
 
 
     /**
      * Deletes any existing record and then creates an entry in the db with
      * an access key for the $this->student which expires tomorrow
-     *
+     * Also creates feedback record
      */
     public function createAccessKeyRecordForTest($expired = false)
     {
-        //setup
+        //expiration date depending on parameter
         $this->expiration_date = ($expired ? Carbon::yesterday() : Carbon::tomorrow());
 
+        //Create access key
         $a = AccessKey::where('exam_id', $this->exam->id)->where('student_id', $this->student->id)->first();
         if (!is_null($a))
         {
@@ -63,6 +59,11 @@ class AccessKeyRepositoryTest extends \TestCase
         $ak->setKey($this->key);
         $ak->setExpirationDate($this->expiration_date);
         $ak->save();
+
+        //Create feedback record
+        $f = Feedback::firstOrNew(['access_key' => $ak->access_key]);
+        $f->content = $this->faker->text(100);
+        $f->save();
     }
 
     public function testGetAccessKeyForStudent()
@@ -95,15 +96,21 @@ class AccessKeyRepositoryTest extends \TestCase
 
     public function testCreateAccessKey()
     {
-        $ak = AccessKey::where('exam_id', $this->exam->id)->where('student_id', $this->student->id)->first();
+        //Prep
+        $ak = AccessKey::where('exam_id', $this->exam->id)
+            ->where('student_id', $this->student->id)
+            ->first();
         if ($ak)
         {
             $ak->delete();
         }
 
+        //Call
         $result = $this->object->createAccessKey($this->exam->id, $this->student->id);
 
+        //Check
         $this->assertNotEmpty($result);
+        $this->seeInDatabase('access_keys', ['exam_id' => $this->exam->id, 'student_id' => $this->student->id]);
     }
 
 
@@ -115,6 +122,33 @@ class AccessKeyRepositoryTest extends \TestCase
         //check
         $this->assertInstanceOf('App\Feedback', $result);
         $this->assertEquals($f->content, $result->content);
+    }
+
+    /**
+     * @test
+     * @expectedException \Exception
+     */
+    public function retrieveFeedback_throws_exception_when_access_key_not_in_db()
+    {
+        $this->object->retrieveFeedback('catfood');
+    }
+
+    /**
+     * @test
+     * @expectedException \App\Exceptions\InputTypeException
+     */
+    public function retrieveFeedback_throws_exception_when_access_key_is_too_long()
+    {
+        //Prep
+        $badKey = 'a1';
+        for($i=0; $i<=AccessKeyRepository::TRIM_TO_LENGTH; $i++)
+        {
+            $badKey .= 'b2';
+        }
+        $this->assertTrue(mb_strlen($badKey) > AccessKeyRepository::TRIM_TO_LENGTH, "Key is genuinely bad");
+
+        //Call
+        $this->object->retrieveFeedback($badKey);
     }
 
     public function testRemoveAccessKey()
@@ -129,5 +163,41 @@ class AccessKeyRepositoryTest extends \TestCase
         //check
         $this->notSeeInDatabase('access_keys', ['access_key' => $this->key]);
     }
+
+
+    public function testRemoveAccessForExam()
+    {
+        //Prep
+        $this->createAccessKeyRecordForTest();
+        $this->seeInDatabase('access_keys', ['access_key' => $this->key]);
+
+        //Call
+        $this->object->removeAccessForExam($this->exam->id);
+
+        //Check
+        $this->notSeeInDatabase('access_keys', ['exam_id' => $this->exam->id]);
+        //make sure delete cascaded to feedback table
+        $this->notSeeInDatabase('feedback', ['access_key' => $this->key]);
+    }
+
+
+    public function testRemoveAccessForStudent()
+    {
+        //Prep
+        $this->createAccessKeyRecordForTest();
+        $this->seeInDatabase('access_keys', ['access_key' => $this->key]);
+
+        //Call
+        $this->object->removeAccessForStudent($this->exam->id, $this->student->id);
+
+        //Check
+        $this->notSeeInDatabase('access_keys', ['exam_id' => $this->exam->id, 'student_id' => $this->student->id]);
+        //check deletion of key separately to help disentangle possible errors
+        $this->notSeeInDatabase('access_keys', ['access_key' => $this->key]);
+        //make sure delete cascaded to feedback table
+        $this->notSeeInDatabase('feedback', ['access_key' => $this->key]);
+    }
+
+
 
 }

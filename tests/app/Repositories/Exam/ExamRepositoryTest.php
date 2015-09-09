@@ -9,28 +9,31 @@
 namespace App\Repositories\Exam;
 use App\classes\SecurityClasses\cleaning\CleanerFactory;
 use App\Exam;
+use App\Repositories\Element\ElementAssignmentRepository;
+use App\Repositories\Question\QuestionAssignmentRepository;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 
 
-class ExamRepositoryTest extends \TestCase
+class ExamRepositoryTest extends \ReseedingTestCase
 {
+//    use DatabaseTransactions;
 
     protected $object;
+
+    /** @var array Tables which a deletion should cascade to cover */
+    static public $tables_using_exam = [
+        'access_keys',
+        'element_assignments',
+        'exam_kumi',
+        'grading_times',
+        'question_assignments'
+    ];
 
     public function setUp()
     {
         parent::setUp();
         $this->object = new ExamRepository;
-
-        //random exam
-        $this->exam = Exam::all()->random();
-
-        //ensure at least one exam is locked and released
-//        $this->locked = Exam::find($this->faker->randomNumber(1));
-        $this->locked = Exam::all()->random();
-        $this->locked->locked = 1;
-        $this->locked->released = 1;
-        $this->locked->save();
     }
 
     public function tearDown()
@@ -41,37 +44,92 @@ class ExamRepositoryTest extends \TestCase
 //        }
     }
 
-#----------------------------------------------- delete exam
-    /**
-     * TODO Test that on delete this cascades to other things like question scores
-     */
-    public function testDelete_exam()
+    public function prepareDatabase()
     {
-        $eid = $this->exam->id;
-        $this->object->delete_exam($eid);
-        $this->assertEmpty(Exam::find($eid));
+        parent::prepareDatabase();
+        //random exam
+        $this->exam = Exam::all()->random();
+
+
     }
 
+    /**
+     * Helper method to check that an exam deletion properly cascades.
+     * NB, This doesn't check questionScores or elementScores which should
+     * have rows deleted via cascade even though they do not have an exam_id field.
+     *
+     * @param $examId
+     */
+    public function checkThatExamRemovedFromAllTables($examId)
+    {
+        foreach(self::$tables_using_exam as $table)
+        {
+            $this->notSeeInDatabase($table, ['exam_id' => $examId]);
+        }
+    }
+#----------------------------------------------- delete exam
+    /**
+     * @test
+     */
+    public function testDelete_exam_from_exam_object()
+    {
+        $this->prepareDatabase();
+        //prep
+        $eid = $this->exam->id;
+
+        //call
+        $result = $this->object->delete_exam($this->exam);
+
+        //check
+        $this->assertTrue($result);
+        $this->assertEmpty(Exam::find($eid));
+        $this->notSeeInDatabase('exams', ['id' => $eid]);
+        $this->checkThatExamRemovedFromAllTables($eid);
+    }
+    /**
+     * @test
+     */
+    public function testDelete_exam_from_exam_id()
+    {
+        $this->prepareDatabase();
+        //prep
+        $eid = $this->exam->id;
+
+        //call
+        $result = $this->object->delete_exam($eid);
+
+        //check
+        $this->assertTrue( $result || $result === 1);
+        $this->assertEmpty(Exam::find($eid));
+        $this->notSeeInDatabase('exams', ['id' => $eid]);
+        $this->checkThatExamRemovedFromAllTables($eid);
+    }
+
+
 //    /**
+//     * @test
 //     * @expectedException \App\Exceptions\InputTypeException
 //     */
-//    public function testDelete_examExceptionIdWrongType()
+//    public function delete_exam_throws_exception_if_id_is_a_string()
 //    {
 //        $this->object->delete_exam('catfish');
 //    }
 //
 //    /**
-//     * @expectedException \App\Exceptions\InputTypeException
+//     * @test
+//     * @expectedException \Exception
 //     */
-//    public function testDelete_examExceptionIdEmpty()
+//    public function delete_exam_throws_exception_if_id_is_empty_string()
 //    {
 //        $this->object->delete_exam('');
 //    }
 //
+//
 //    /**
-//     * @expectedException \App\Exceptions\InputTypeException
+//     * @test
+//     * @expectedException \Exception
 //     */
-//    public function testDelete_examExceptionIdNotMatchExam()
+//    public function delete_exam_throws_exception_if_id_does_not_match_existing_exam()
 //    {
 //        $this->object->delete_exam(23422222223);
 //    }
@@ -79,6 +137,7 @@ class ExamRepositoryTest extends \TestCase
 #----------------------------------------------------- save exam
     public function testSave_new_exam()
     {
+        $this->prepareDatabase();
         $examName = $this->faker->text(5);
         $term = $this->faker->text(5);
         $year = $this->faker->year();
@@ -184,6 +243,8 @@ class ExamRepositoryTest extends \TestCase
 
     public function testLoad_exam()
     {
+        $this->prepareDatabase();
+
         $exam = Exam::all()->random();
         $eid = $exam->getId();
         $result = $this->object->load_exam($eid);
@@ -207,9 +268,62 @@ class ExamRepositoryTest extends \TestCase
 //        $this->object->load_exam('catfish');
 //    }
 
+
+#----------------------------------------------------------------- clone
+
+    public function testClone_exam()
+    {
+        //Prep
+        //prepare source exam and database
+        $this->prepareDatabase();
+        $examToCloneId = 1;
+        $questionAssignDao = new QuestionAssignmentRepository();
+        $elementAssignDao = new ElementAssignmentRepository();
+
+        $questionsToClone = $questionAssignDao->load_all_for_exam($examToCloneId);
+        $elementsToClone = $elementAssignDao->load_by_exam($examToCloneId);
+
+        //make target exam
+        $target = new Exam();
+        $target->id = 99;
+        $target->term = 'testTerm';
+        $target->year = 2100;
+        $target->name = 'testName';
+        $target->save();
+
+        //Call
+        $this->object->clone_exam($examToCloneId, $target->id);
+
+        //Check
+        foreach($questionsToClone as $qa)
+        {
+            $this->seeInDatabase('question_assignments',
+                                 [
+                                     'exam_id' => $target->id,
+                                     'question_id' => $qa->question_id,
+                                     'question_number' => $qa->question_number
+                                 ]);
+        }
+
+        foreach($elementsToClone as $ea)
+        {
+            $this->seeInDatabase('element_assignments',
+                                 [
+                                     'exam_id' => $target->id,
+                                     'question_id' => $ea->question_id,
+                                     'element_id' => $ea->element_id,
+                                     'subtask' => $ea->subtask
+                                 ]);
+        }
+
+    }
+
+
+
 #-------------------------------------------------------------- load all
     public function testLoad_all_exams()
     {
+        $this->prepareDatabase();
         $result = $this->object->load_all_exams();
         $this->assertNotEmpty($result);
         foreach($result as $e)
@@ -233,6 +347,14 @@ class ExamRepositoryTest extends \TestCase
 
     public function testLoad_unlocked_exams()
     {
+        $this->prepareDatabase();
+
+        $ex = Exam::all()->random(1);
+        $ex->locked = 0;
+        $ex->update();
+        $this->assertInstanceOf('\App\Exam', $ex);
+     //   $knownUnlocked = $ex->getId();
+
         $result = $this->object->load_unlocked_exams();
 //        $this->assertNotEmpty($result);
         foreach($result as $e)
@@ -244,6 +366,8 @@ class ExamRepositoryTest extends \TestCase
 
     public function testLock_exam()
     {
+        $this->prepareDatabase();
+
         $ex = Exam::all()->random(1);
         $ex->locked = 0;
         $ex->update();
@@ -260,8 +384,10 @@ class ExamRepositoryTest extends \TestCase
 
     public function testUnlock_exam()
     {
+        $this->prepareDatabase();
+        $exam = Exam::all()->random(1);
         //Ensure that we have a locked exam to unlock
-        $toUnlock = $this->exam;
+        $toUnlock = $exam;
         $eid = $toUnlock->id;
         $toUnlock->locked = 1;
         $toUnlock->save();

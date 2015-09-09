@@ -2,13 +2,29 @@
 
 namespace App;
 
+use App\UserOnlyJunctionScope;
 use App\UserOnlyScope;
+use Exceptions\NotLoggedInException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class BaseModel extends Model
 {
+
+    /**
+     * Retrieves the logged in user. If user is not logged in, will throw
+     * an exception which redirects to the log in page.
+     *
+     * @return User
+     * @throws NotLoggedInException
+     */
+    static protected function getLoggedInUser()
+    {
+        $user = \Auth::user();
+        if(! $user ){ throw new NotLoggedInException;}
+        return $user;
+    }
 
     public static function boot()
     {
@@ -18,18 +34,21 @@ class BaseModel extends Model
 
         static::creating(function($model)
         {
-            $user = \Auth::user();
+            $user = self::getLoggedInUser();
+//            $user = \Auth::user();
             $model->user_id = $user->id;
         });
 
         static::updating(function($model)
         {
-            $user = \Auth::user();
+            $user = self::getLoggedInUser();
+//            $user = \Auth::user();
             $model->user_id = $user->id;
         });
 
         static::deleting(function($model){
-            $user = \Auth::user();
+            $user = self::getLoggedInUser();
+//            $user = \Auth::user();
             $model->user_id = $user->id;
         });
 
@@ -37,22 +56,26 @@ class BaseModel extends Model
 
     public static function junctionBoot()
     {
-        static::addGlobalScope(new \App\UserOnlyJunctionScope());
+        static::addGlobalScope(new UserOnlyJunctionScope());
 
         static::creating(function($model)
         {
-            $user = \Auth::user();
+            $user = self::getLoggedInUser();
+//            $user = \Auth::user();
             $model->owner_id = $user->id;
         });
 
         static::updating(function($model)
         {
-            $user = \Auth::user();
+            $user = self::getLoggedInUser();
+//            $user = \Auth::user();
             $model->owner_id = $user->id;
         });
 
         static::deleting(function($model){
-            $user = \Auth::user();
+            $user = self::getLoggedInUser();
+//            $user = \Auth::user();
+
             $model->owner_id = $user->id;
         });
     }
@@ -66,16 +89,5 @@ class BaseModel extends Model
     {
         return $this->attributes['id'];
     }
-
-//    /**
-//     * Get random models
-//     * @param $query
-//     * @return
-//     */
-//    public function scopeRandomObject($query, $table)
-//    {
-//        return $query->orderByRaw('RAND()');
-//    }
-
 
 }

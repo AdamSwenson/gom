@@ -2,6 +2,17 @@
 
 namespace App;
 
+/**
+ * Class QuestionAssignment
+ *
+ * This has the following attributes:
+ *      id: integer
+ *      exam_id: integer        The id of the exam to which the question is assigned
+ *      question_id: integer    The id of the question being assigned
+ *      questionNumber: integer The number of the question on the exam (i.e., the order of the question)
+ *
+ * @package App
+ */
 class QuestionAssignment extends BaseModel
 {
     protected $fillable = [];
@@ -10,33 +21,8 @@ class QuestionAssignment extends BaseModel
       'questionNumber' => 'integer'
     ];
 
-//    public static function boot()
-//    {
-//        static::addGlobalScope(new \App\UserOnlyJunctionScope());
-//
-//        static::creating(function($model)
-//        {
-//            $user = \Auth::user();
-//            $model->owner_id = $user->id;
-//        });
-//
-//        static::updating(function($model)
-//        {
-//            $user = \Auth::user();
-//            $model->owner_id = $user->id;
-//        });
-//
-//        static::deleting(function($model){
-//            $user = \Auth::user();
-//            $model->owner_id = $user->id;
-//        });
-//    }
-
     public function __construct()
-    {
-//self::boot();
-//        parent::junctionBoot();
-    }
+    {}
 
     /**
      * Returns the name of the associated question object
@@ -47,8 +33,6 @@ class QuestionAssignment extends BaseModel
         $qid = $this->question_id;
         $question = Question::where('id', $qid)->first();
         return $question->getQuestionName();
-//        $obj = $this->question->first();
-//        return $obj->getQuestionName();
     }
 
     /**
@@ -111,31 +95,36 @@ class QuestionAssignment extends BaseModel
     }
 
 # -------------- Foreign key associations
-//    public function user()
-//    {
-//        return $this->belongsTo('App\User', 'owner_id', 'id');
-//    }
-
     /**
      * Elements associated with this question
      */
     public function elementAssignments()
     {
         return ElementAssignment::where('exam_id', $this->attributes['exam_id'])->where('question_id', $this->attributes['question_id'])->get();
-//        return $this->hasMany('App\ElementAssignment');
     }
 
+    /**
+     * Junction to exam
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function exam()
     {
         return $this->belongsToMany('App\Exam', 'question_assignments', 'exam_id');
     }
 
+    /**
+     * Junction to question table
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function question()
     {
-//        return $this->hasOne('App\Question', 'question_assignments', 'question_id');
         return $this->belongsToMany('App\Question', 'question_assignments', 'question_id');
     }
 
+    /**
+     * Junction to question scores table
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function questionScores()
     {
         return $this->hasMany('App\QuestionScore');

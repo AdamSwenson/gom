@@ -147,7 +147,7 @@ class ExamController extends Controller
      */
     public function destroy(Exam $exam)
     {
-        $result = $this->examDao->delete_exam_object($exam);
+        $result = $this->examDao->delete_exam($exam);
         if (!empty($result))
         {
             Session::flash(self::SUCCESS_FLASH_NAME, self::DELETE_SUCCESS);

@@ -2,19 +2,24 @@
 
 namespace App\Http\Requests;
 
+use App\Exam;
 use App\Http\Requests\Request;
+use Illuminate\Support\Facades\Auth;
 
 class GradingRequest extends Request
 {
+    const COMMENT_TEXT_MAX_LENGTH = 10000;
+
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the user is authorized to make this request
+     * by checking whether the exam belongs to them.
      *
      * @return bool
      */
     public function authorize()
     {
-     //Todo add authorization
-        return true;
+        $exam = $this->route('exam');
+        return $exam->user_id === Auth::id();
     }
 
     /**
@@ -25,7 +30,21 @@ class GradingRequest extends Request
     public function rules()
     {
         return [
-            //
+            'comment_text' => 'max:' . self::COMMENT_TEXT_MAX_LENGTH,
+
+            'elementAssignmentId' => 'integer',
+
+            'element_id' => 'integer',
+
+            'question_assignment_id' => 'integer',
+
+            'questionAssignmentId' => 'integer',
+
+            'score' => 'numeric',
+
+            'student_id' => 'required|integer',
+
+            'time' => 'numeric',
         ];
     }
 }

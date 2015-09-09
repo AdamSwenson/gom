@@ -196,7 +196,7 @@ class ReportController extends Controller
     }
 
     /**
-     * 
+     *
      * @return \Illuminate\View\View
      */
     public function showExams()

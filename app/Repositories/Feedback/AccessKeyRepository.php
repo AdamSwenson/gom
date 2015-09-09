@@ -9,6 +9,7 @@
 namespace App\Repositories\Feedback;
 
 use App\AccessKey;
+use App\Exceptions\FeedbackCreationException;
 use App\Exceptions\InputTypeException;
 use App\Feedback;
 use App\Repositories\Feedback\PseudoIDMaker;
@@ -42,12 +43,14 @@ class AccessKeyRepository implements IAccessKeyRepository
      * @param $examId
      * @param $studentId
      * @param int $daysUntilExpiration
+     * @param bool $forceNew
      * @return string
+     * @throws FeedbackCreationException
      */
-    public function createAccessKey($examId, $studentId, $daysUntilExpiration=10, $forceNew=false)
+    public function createAccessKey($examId, $studentId, $daysUntilExpiration = 10, $forceNew = false)
     {
         $accessKey = $this->generateNewKey();
-        if($accessKey)
+        if ($accessKey)
         {
             $expire = Carbon::now()->addDays($daysUntilExpiration);
 
@@ -55,7 +58,7 @@ class AccessKeyRepository implements IAccessKeyRepository
 
             //Keep the existing key if one already exists
             //of if have been instructed to create a new access key
-            if(empty($k->access_key) || $forceNew)
+            if (empty($k->access_key) || $forceNew)
             {
                 $k->setKey($accessKey);
             }
@@ -65,18 +68,56 @@ class AccessKeyRepository implements IAccessKeyRepository
             $k->setExpirationDate($expire);
             $k->save();
 
-            if($k)
+            if ($k)
             {
                 return $k->getKey();
             }
         }
+        throw new FeedbackCreationException(FeedbackCreationException::ACCESS_KEY_CREATION);
     }
 
-    public function removeAccessForExam()
-    {}
 
-    public function removeAccessForStudent()
-    {}
+    /**
+     * Removes an access key (and associated feedback) from storage
+     *
+     * @param string $accessKey
+     */
+    public function removeAccessKey($accessKey)
+    {
+        $key = AccessKey::where('access_key', $accessKey)->firstOrFail();
+        return $key->delete();
+    }
+
+    /**
+     * Deletes all access keys and feedback for the exam.
+     * Students will no longer be able to access their feedback.
+     *
+     * If feedback is rebuilt after calling this, there will be all new access keys
+     *
+     * @param integer $examId
+     * @return boolean
+     */
+    public function removeAccessForExam($examId)
+    {
+        return AccessKey::where('exam_id', $examId)->delete();
+    }
+
+    /**
+     * Removes the access key and feedback for the exam for a single student.
+     * That student will no longer be able to access their feedback.
+     *
+     * If feedback is rebuilt after calling this, the student will have a new access key
+     *
+     * @param integer $examId
+     * @param integer $studentId
+     * @return boolean
+     */
+    public function removeAccessForStudent($examId, $studentId)
+    {
+        return AccessKey::where('student_id', $studentId)
+            ->where('exam_id', $examId)
+            ->delete();
+    }
 
     /**
      * Loads the stored feedback by access key
@@ -86,7 +127,7 @@ class AccessKeyRepository implements IAccessKeyRepository
     public function retrieveFeedback($accessKey)
     {
         $this->validateKey($accessKey);
-        if(!empty($this->validKey))
+        if (!empty($this->validKey))
         {
             return $this->loadFeedback();
         }
@@ -105,6 +146,7 @@ class AccessKeyRepository implements IAccessKeyRepository
     public function getAccessKeyForStudent($examId, $studentId)
     {
         $key = AccessKey::where('exam_id', $examId)->where('student_id', $studentId)->first();
+
         return $key->getKey();
     }
 
@@ -117,17 +159,6 @@ class AccessKeyRepository implements IAccessKeyRepository
         return AccessKey::onExam($examId)->get();
     }
 
-
-    /**
-     * Removes an access key (and associated feedback) from storage
-     *
-     * @param string $accessKey
-     */
-    public function removeAccessKey($accessKey)
-    {
-        $key = AccessKey::where('access_key', $accessKey)->firstOrFail();
-        return $key->delete();
-    }
 
     /**
      * Helper to check if an incoming key has the properties of an access key.
@@ -143,20 +174,20 @@ class AccessKeyRepository implements IAccessKeyRepository
         $trimmed = \trim($accessKey);
 
         //Check that not longer than allowed length
-        if(\mb_strlen($trimmed) <= self::TRIM_TO_LENGTH)
+        if (\mb_strlen($trimmed) <= self::TRIM_TO_LENGTH)
         {
             //Clean it to make sure it is just nice stringy goodness
             $cleaned = \filter_var($trimmed, \FILTER_SANITIZE_STRING);
         }
 
-        if(!empty($cleaned))
+        if (!empty($cleaned))
         {
             $this->validKey = $cleaned;
+
             return $this->validKey;
         }
 
-            throw new InputTypeException(InputTypeException::STRING);
-
+        throw new InputTypeException(InputTypeException::STRING);
     }
 
     /**
@@ -165,13 +196,13 @@ class AccessKeyRepository implements IAccessKeyRepository
      */
     protected function loadFeedback()
     {
-        if(!empty($this->validKey))
+        if (!empty($this->validKey))
         {
             $data = Feedback::findOrFail($this->validKey);
+
             return $data;
         }
     }
-
 
     /**
      * Creates a unique key
@@ -181,7 +212,7 @@ class AccessKeyRepository implements IAccessKeyRepository
     protected function generateNewKey()
     {
         $candidate = $this->createCandidateKey();
-        if($this->checkIfKeyIsUnique($candidate))
+        if ($this->checkIfKeyIsUnique($candidate))
         {
             return $candidate;
         }
@@ -196,7 +227,7 @@ class AccessKeyRepository implements IAccessKeyRepository
     protected function checkIfKeyIsUnique($candidate)
     {
         $key = DB::table('access_keys')->where('access_key', $candidate)->first();
-        if(empty($key))
+        if (empty($key))
         {
             return $candidate;
         }
@@ -210,6 +241,7 @@ class AccessKeyRepository implements IAccessKeyRepository
     protected function createCandidateKey()
     {
         $candidate = hash('sha256', \openssl_random_pseudo_bytes(AccessKey::LOOKUP_SIZE));
+
         return $candidate;
     }
 }
