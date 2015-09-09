@@ -110,9 +110,13 @@ class ExamController extends Controller
     public function edit(Exam $exam)
     {
         // create a list of years to choose from
-        $years[] = $exam->getYear();
+        $offset = 0;
+        if ( $exam->getYear() < date('Y') ) {
+            $years[] = $exam->getYear();
+            $offset = 1;
+        }
         $years[] = date('Y');
-        $years[] = strval( $years[1] + 1 );
+        $years[] = strval( $years[$offset] + 1 );
         return view('setup/edit_exam', [ 'exam' => $exam, 'years' => $years, 'terms' => $this->terms ]);
     }
 

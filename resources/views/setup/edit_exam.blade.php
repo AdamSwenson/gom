@@ -1,12 +1,3 @@
-<!--
-/**
- * Created by PhpStorm.
- * User: Brian
- * Date: 7/17/2015
- * Time: 4:59 PM
- */
- -->
-
 @extends('layouts.master')
 
 @section('pageTitle', 'Edit Exam')
@@ -55,45 +46,10 @@
 
 
 @section('jsArea')
+    <script language="javascript" type="text/javascript" src="{{ asset('inc/js/examForm.js') }}"></script>
     <script type="text/javascript">
 
-        // set 'Setup' tab as active
-        $('[id^="nav"]').attr('class', '');
-        $('#navSetup').attr('class', 'active');
-
-        function submitForm(target) {
-            $('#nextAction').val(target);
-            document.getElementById("examForm").submit();
-        }
-
-        $(document).ready(function() {
-
-
-            $('#termList li').on('click', function () {
-                $('#hiddenTerm').val($(this).text());
-
-                var $icon = $('#term').find('span');
-                $('#term').html($(this).text());
-                $('#term').append(" ");
-                $('#term').append($icon);
-
-
-            });
-
-            $('#yearList li').on('click', function () {
-                $('#hiddenYear').val($(this).text());
-
-                var $icon = $('#year').find('span');
-                $('#year').text($(this).text());
-                $('#year').append(" ");
-                $('#year').append($icon);
-            });
-
-            return false;
-        });
     </script>
-
-
 @endsection
 
 

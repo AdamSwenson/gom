@@ -15,13 +15,13 @@
                         <li class="previous">
                             <a href="{{ url('exam/') }}" id="prev-question" style="cursor:pointer;"> <span
                                         class="glyphicon glyphicon-chevron-left"
-                                        aria-hidden="true"></span>
-                                Setup</a>
+                                        aria-hidden="true"></span> Setup
+                            </a>
                         </li>
                         <li class="next">
-                        <a id="saveExam" style="cursor:pointer;">Add / Edit Questions <span class="glyphicon glyphicon-chevron-right"
-                                                           aria-hidden="true"></span></a>
-
+                            <a onclick="submitForm('editQuestions')" id="saveExam" style="cursor:pointer;">
+                                Add / Edit Questions <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                            </a>
                         </li>
                     </ul>
                     <h2>Create Exam</h2>
@@ -37,8 +37,9 @@
 
 
 @section('jsArea')
+    <script language="javascript" type="text/javascript" src="{{ asset('inc/js/examForm.js') }}"></script>
     <script type="text/javascript">
-
+/*
         // set 'Setup' tab as active
         $('[id^="nav"]').removeClass('active');
         $('#navSetup').addClass('active');
@@ -66,11 +67,12 @@
             var btnDone = document.getElementById("saveExam");
 
             btnDone.onclick = function () {
-                document.getElementById("examForm").submit();
+                $("#examForm").submit();
             };
 
             return false;
         });
+        */
     </script>
 @endsection
 

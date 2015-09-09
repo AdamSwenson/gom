@@ -21,15 +21,16 @@
             <nav>
                 <ul class="pager">
                     <li class="previous">
-                        <a id="prev-question" data-prevQ="{{ $prevqId }}" style="cursor:pointer;"> <span
-                                    class="glyphicon glyphicon-chevron-left"
+                        <a onclick="submitForm('{{ $prevAction  }}')" id="prev-question" data-questionId="{{ $prevAction }}"
+                           style="cursor:pointer;"> <span class="glyphicon glyphicon-chevron-left"
                                     aria-hidden="true"></span>
-                            Previous Question</a>
+                            <?php if( $prevAction == 'editQuestions') echo('Edit Questions'); else echo('Previous Question'); ?></a>
                     </li>
                     <li class="next">
-                        <a id="next-question" data-nextQ="{{ $nextqId }}" style="cursor:pointer;">Next Question <span
-                                    class="glyphicon glyphicon-chevron-right"
-                                    aria-hidden="true"></span></a>
+                        <a onclick="submitForm('{{ $nextAction  }}')" id="next-question" data-questionId="{{ $nextAction }}"
+                           style="cursor:pointer;">
+                            <?php if( $nextAction == 'editStudents') echo('Edit Roster'); else echo('Next Question'); ?>
+                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
                     </li>
                 </ul>
             </nav>
@@ -75,6 +76,27 @@
 
 @section('jsArea')
     <script type="text/javascript">
+
+        // validate and submit form
+        function submitForm(target) {
+            if ( formFieldsValid() ) {
+                $('#nextAction').val(target);
+                $('#elementForm').submit();
+            } else {
+                bootbox.alert('One or more elements is missing a name.');
+            }
+        }
+
+        function formFieldsValid() {
+            var valid = true;
+            var $names = $('#elementForm').find('[id^="elementName"]');
+            $names.each( function() {
+                if ($(this).val() == '') {
+                    valid = false;
+                }
+            });
+            return valid;
+        }
 
         $(document).ready(function () {
             // clear local storage to dump Sortable data - or it may display items out of order
@@ -144,7 +166,7 @@
             }
             registerCustomtizeHandlers();
 
-            // handle addelement button
+            // handle add element button
             document.getElementById("addElement").onclick = function () {
                 // copy empty form
                 var order = getElementCount() + 1;
@@ -194,50 +216,6 @@
             function getElementCount() {
                 return $('elementForm').find("[id^='elementItem']").length;
             }
-
-            // Previous Question button
-            var btnPrevious = document.getElementById('prev-question');
-            var prevQuestion = parseInt(btnPrevious.getAttribute('data-prevQ'));
-            if ((prevQuestion === 0)) {
-                // set text to "Edit questions"
-                $('#prev-question').html("<span class='glyphicon glyphicon-chevron-left' aria-hidden='true'></span> Add / Edit Questions");
-            }
-
-            btnPrevious.onclick = function () {
-                if (prevQuestion === 0) {
-                    // set the hidden field to either the questionId to view next, or 'back'
-                    $('#nextAction').attr('value', 'editQuestions');
-                } else {
-                    $('#nextAction').attr('value', prevQuestion);
-                }
-                submitForm();
-            }
-
-            // "Next Question" button
-            var btnNext = document.getElementById('next-question');
-            var nextQuestion = parseInt(btnNext.getAttribute('data-nextQ'));
-            // If we're at the last element, set text to "done"
-            if ((nextQuestion === 0)) {
-                $('#next-question').html("Edit Student Roster <span class='glyphicon glyphicon-chevron-right' aria-hidden='true'></span>");
-            }
-
-            btnNext.onclick = function () {
-                if (nextQuestion === 0) {
-                    // set the hidden field to either the elementId to view next, or 'previous' to return to edit question
-                    $('#nextAction').attr('value', 'editStudents');
-                } else {
-                    $('#nextAction').attr('value', nextQuestion);
-                }
-                submitForm();
-            }
-
-            function submitForm() {
-                document.getElementById("elementForm").submit();
-            }
-
-            $("input[type='submit']").click(function (e) {
-                e.preventDefault();
-            });
 
             return false;
         });

@@ -77,9 +77,25 @@
 @section('jsArea')
     <script type="text/javascript">
 
+        // DO basic form validation.
         function submitForm(target) {
-            $('#nextAction').val(target);
-            document.getElementById("questionForm").submit();
+            if ( formFieldsValid() ) {
+                $('#nextAction').val(target);
+                $('#questionForm').submit();
+            } else {
+                bootbox.alert('One or more questions is missing a name.');
+            }
+        }
+
+        function formFieldsValid() {
+            var valid = true;
+            var $names = $('#questionForm').find('[id^="questionName"]');
+            $names.each( function() {
+                if ( $(this).val() === '') {
+                    valid = false;
+                }
+            });
+            return valid;
         }
 
         // Sortable is the lib for deag and drop elements

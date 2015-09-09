@@ -140,8 +140,8 @@ class ElementController extends Controller
 
         // once we found the index, get the question IDs for the previous and next questions
         // if previous or next does not exist, set to 0.
-        $pQId = 0;
-        $nQId = 0;
+        $pQId = 'editQuestions'; // 'edit_questions'
+        $nQId = 'editStudents'; // 'edit_roster'
         if (isset($index)) {
             if ($index < count($allQuestionAss) - 1) {
                 $next = $allQuestionAss[$index + 1];
@@ -158,8 +158,8 @@ class ElementController extends Controller
 
         // show all elements for a given question along with the ids for 'next' and 'previous'
         return view('setup.edit_element')->with(['examId' => $examId,
-            'nextqId' => $nQId,
-            'prevqId' => $pQId,
+            'nextAction' => $nQId,
+            'prevAction' => $pQId,
             'questionId' => $questionId,
             'qNumber' => $qNumber,
             'questionName' => $question->getQuestionName(),

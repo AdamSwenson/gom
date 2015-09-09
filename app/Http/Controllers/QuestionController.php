@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\QuestionRequest;
 use App\Question;
+use App\Exam;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 
@@ -109,7 +110,6 @@ class QuestionController extends Controller
      */
     public function show(QuestionResponse $question)
     {
-        dd($question);
         //TODO: Add view here
         return view('', compact('question'));
     }
@@ -207,7 +207,7 @@ class QuestionController extends Controller
         $firstQuestionObject = $this->questionDao->loadQuestionById($firstQId);
 
         if ($request->input('nextAction') == 'editExam') {
-            return redirect()->action('ExamController@edit', array('examId' => $examId) );
+            return redirect()->action('ExamController@edit', [ 'exam' => $exam ] );
         } else {
             return redirect()->action('ElementController@editAll', array('examId' => $examId,
                 'question' => $firstQuestionObject));
