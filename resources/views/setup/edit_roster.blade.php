@@ -83,7 +83,7 @@
                     <form id="rosterData" method="post" role="form"
                           action="{{ url('exam/'.$exam->getId().'/student/updateAll') }}">
                         {!! csrf_field() !!}
-                        <table class="table table-striped">
+                        <table class="table">
                             <thead>
                             <!-- table headers -->
                             <tr>

@@ -25,7 +25,7 @@ function addRow(row) {
 }
 
 // clone and populate a new row in the roster table
-function addStudentToTable(lName, fName, id, email){
+function addStudentToTable(lName, fName, id, email) {
     var $newRow = $('#dataRow0').clone();
     $newRow.find('#lastName').attr('value', lName);
     $newRow.find('#firstName').attr('value', fName);
@@ -54,56 +54,67 @@ var emailCol = -1;
 // by default, this is ',' for a CSV file.
 var separatorChar = ',';
 
+function browserSupportFileUpload() {
+    var isCompatible = false;
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+        isCompatible = true;
+    }
+    return isCompatible;
+}
+
 function startRead() {
-    var fr = new FileReader();
+
+    if (!browserSupportFileUpload()) {
+        alert('The File APIs are not fully supported in this browser!');
+        return;
+    }
+
+    var reader = new FileReader();
     var $inputFile = $('#fileInput')[0].files[0];
 
-    if ('name' in $inputFile) {
-        fr.onload = (function (theFile) {
-            // this is called once the readAsText($inputFile) function reports done.
-            return function (e) {
-                //rows = e.target.result.toString().replace(/\r/, "\n").split("\n"); // such hax! -b.b.
-                rows = e.target.result.toString().split("\n");
-                var lines = [];
+    reader.readAsText($inputFile);
 
-                // break each row into its CSVs, ignoring empty lines
-                for (var i = 0; i < rows.length; i++) {
-                    if (rows[i].length > 0 ) {
-                        lines[i] = rows[i].toString().split(separatorChar);
-                    }
-                }
+    reader.onload = function (event) {
+        rows = event.target.result.toString().replace(/\r/, "\n").split("\n"); // such hax! -b.b.
+        //rows = event.target.result.toString().split("\n");
+        var students = [];
 
-                console.log('rows:' + rows);
-                console.log('lines:' + lines);
+        // break each row into its elements, ignoring empty lines
+        for (var i = 0; i < rows.length; i++) {
+            students[i] = rows[i].toString().split(separatorChar);
+        }
 
-                // remove any lines with no elements
-                for (var i = lines.length-1; i >= 0; i--) {
-                    if (lines[i].length == rows[i].length) {
-                        lines.splice(i, 1);
-                        rows.splice(i, 1);
-                    }
-                }
+        // remove any resulting lines with 1 or fewer elements
+        for (i = students.length - 1; i >= 0; i--) {
+            // < 2 here is dirty, there's a better way to throw out "" lines
+            if (students[i].length < 2) {
+                students.splice(i, 1);
+                rows.splice(i, 1);
+            }
+        }
 
-                // analyze the file and look for column headers
-                var firstLine = lines[0];
-                var startRow = 0;
-                if (firstRowContainsTitles(firstLine)) {
-                    startRow = 1;
-                    guessColumnDataByTitles(firstLine);
-                } else {
-                    guessColumnDataByContent(lines);
-                }
+        // analyze the file and look for column headers
+        var firstLine = students[0];
+        var startRow = 0;
+        if (firstRowContainsTitles(firstLine)) {
+            guessColumnDataByTitles(firstLine);
+            rows.splice(0, 1);
+            students.splice(0, 1);
+            console.log(students);
+        } else {
+            guessColumnDataByContent(students);
+        }
 
-                console.log('lnameCol:' + lastNameCol + ' fnameCol:' + firstNameCol + ' idCol:' + idCol + ' emailCol:' + emailCol);
+        console.log('lnameCol:' + lastNameCol + ' fnameCol:' + firstNameCol + ' idCol:' + idCol + ' emailCol:' + emailCol);
 
-                for (var i = startRow; i < rows.length - 1; i++) {
-                    addRow(lines[i]);
-                }
-            };
-        })($inputFile);
-
-        fr.readAsText($inputFile);
+        for (var i = startRow; i < rows.length - 1; i++) {
+            addRow(students[i]);
+        }
     }
+
+    reader.onerror = function () {
+        alert('Unable to read ' + file.fileName);
+    };
 }
 
 // determines if the first row contains column headers that describe the column's content
@@ -140,22 +151,22 @@ function guessColumnDataByTitles(titles) {
 }
 
 // examine table data to pick out column ordering
-function guessColumnDataByContent(lines) {
+function guessColumnDataByContent(students) {
     var startCol = 0;
     var startRow = 0;
 
-    numColumns = lines[0].length;
+    numColumns = students[0].length;
     var foundColumns = [];
     for (var i = startCol; i < numColumns; i++) {
-        if (lines[0][i].search(/@/) >= 0) {
+        if (students[0][i].search(/@/) >= 0) {
             // look for @, that's the email
             emailCol = i;
             foundColumns.push(i);
-        } else if (lines[0][i].search(/[0-9]{3}/) >= 0) {
+        } else if (students[0][i].search(/[0-9]{3}/) >= 0) {
             // look for 3 digits in a row, that's the studentId
             idCol = i;
             foundColumns.push(i);
-        } else if (lines[0][i] == '') {
+        } else if (students[0][i] == '') {
             // add any empty columns to the blacklist so they are skipped later
             foundColumns.push(i);
         }
@@ -171,9 +182,9 @@ function guessColumnDataByContent(lines) {
         if (foundColumns.indexOf(i) > -1) {
             continue;
         }
-        for (var j = startRow; j < lines.length; j++) {
+        for (var j = startRow; j < students.length; j++) {
             // any column with 3 more letters is set as last name. Next column found with letters is first name
-            if (lines[j][i].search(/.{3,}/) > -1) {
+            if (students[j][i].search(/.{3,}/) > -1) {
                 if (lastNameCol == -1)
                     lastNameCol = i;
                 else if (lastNameCol != i) {
@@ -181,7 +192,7 @@ function guessColumnDataByContent(lines) {
                 }
             }
             // look for common names and set firstNameCol if any are found
-            if ($.inArray(lines[j][i], commonNames) > -1) {
+            if ($.inArray(students[j][i], commonNames) > -1) {
                 firstNameCol = i;
                 if (lastNameCol == firstNameCol) {
                     lastNameCol = -1;
@@ -196,12 +207,8 @@ function guessColumnDataByContent(lines) {
 
 function deleteStudent(row) {
     // skip confirmation if row is empty
-    var $student = $('#dataRow'+row);
-    if (!$student.find('#lastName').val() &&
-        !$student.find('#firstName').val() &&
-        !$student.find('#email').val() &&
-        !$student.find('#studentIdentifier').val() )
-        {
+    var $student = $('#dataRow' + row);
+    if (!$student.find('#lastName').val() && !$student.find('#firstName').val() && !$student.find('#email').val() && !$student.find('#studentIdentifier').val()) {
         $student.remove();
         return;
     }
@@ -230,7 +237,7 @@ function deleteStudent(row) {
 
 function deleteRoster() {
     var $roster = $('#studentRosterBody').find('tr');
-    if ($roster.length == 0 ) return;
+    if ($roster.length == 0) return;
 
     bootbox.dialog({
         message: "Warning: This will remove all students from the current roster, including grades and feedback.",

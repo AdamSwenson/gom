@@ -21,10 +21,19 @@
 
 @section('body')
 
-<style type="text/css">
+<style>
     a {
         cursor: pointer;
     }
+
+    .table th {
+        border: none;
+    }
+
+    .panel {
+        border: none;
+    }
+
 </style>
 
 <div class="container">
@@ -38,31 +47,32 @@
     </nav>
     <h3><span class="glyphicon glyphicon-list" aria-hidden="true"></span> Exam Setup</h3>
     <h4>Create, edit and delete exams</h4>
-    <div class="well-lg">
-        <div class="panel panel-default" <?php if( sizeof($exams) == 0 ) { echo('style="display:none;"');} ?> >
+    <div class="container">
+        <div <?php if( sizeof($exams) == 0 ) { echo('style="display:none;"');} ?> >
             <table class="table">
                 <thead>
+                <tr>
                     <th class="col-md-2">Term</th>
-                    <th class="col-md-4">Name</th>
+                    <th class="col-md-5">Name</th>
                     <th class="col-md-1">Questions</th>
                     <th class="col-md-1">Students</th>
-                    <th class="col-md-4"></th>
+                    <th class="col-md-3"></th>
+                </tr>
                 </thead>
                 <tbody>
                 @foreach($exams as $exam)
                     <tr>
-                        <td class="col-md-2" style="vertical-align:middle">
-                            {{ $exam->getTerm() }} {{ $exam->getYear() }}
-                        </td>
-                        <td class="col-md-4" style="vertical-align:middle">
-                            {{ $exam->getName() }}
-                        </td>
-                        <td class="col-md-1">{{ $numberOfQuestions[$exam->getId()] or '0' }}</td>
-                        <td class="col-md-1">{{ $numberOfStudents[$exam->getId()] or '0' }}</td>
-                        <td class="col-md-4" style="text-align:right">
+                        <td style="vertical-align:middle" >
+                            {{ $exam->getTerm() }} {{ $exam->getYear() }}</td>
+                        <td style="vertical-align:middle">
+                            {{ $exam->getName() }}</td>
+                        <td style="vertical-align: middle">{{ $numberOfQuestions[$exam->getId()] or '0' }}</td>
+                        <td style="vertical-align:middle">{{ $numberOfStudents[$exam->getId()] or '0' }}</td>
+                        <!-- edit / clone / delete buttons -->
+                        <td style="text-align:right">
                             <a class="btn btn-info" href="{{ url('exam/'.$exam->getId().'/edit') }}">
                                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-                                Edit Exam
+                                Edit
                             </a>
                             <a class="btn btn-default" href="{{ url('exam/'.$exam->getId().'/clone') }}">
                                 <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>
