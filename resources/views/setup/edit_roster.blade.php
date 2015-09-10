@@ -58,9 +58,8 @@
                                         class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save & Finish</a>
                         </li>
                         <li class="previous">
-                            <a onclick="submitAndNavigateTo('editElements')" style="cursor:pointer;"><span
-                                        class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Edit
-                                Elements</a>
+                            <a onclick="submitAndNavigateTo('{{ $prevAction }}')" style="cursor:pointer;"><span
+                                        class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> {{ $prevActionLabel }}</a>
                         </li>
                     </ul>
                 </nav>

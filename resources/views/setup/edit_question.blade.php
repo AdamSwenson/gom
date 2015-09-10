@@ -8,7 +8,7 @@
  -->
 
 @extends('layouts.master')
-@section('pageTitle', 'Edit Questions')
+@section('pageTitle', 'Edit Questions | Grade-O-Matic')
 @section('description', 'Add or edit questions')
 @section('cssLinks')
 @endsection
@@ -77,9 +77,12 @@
 @section('jsArea')
     <script type="text/javascript">
 
-        // DO basic form validation.
+        // Basic form validation and prompts
         function submitForm(target) {
-            if ( formFieldsValid() ) {
+            if ( hasNoQuestions() ) {
+                bootbox.alert('Exams must have at least one question.');
+                return;
+            } else if ( formFieldsValid() ) {
                 $('#nextAction').val(target);
                 $('#questionForm').submit();
             } else {
@@ -87,11 +90,17 @@
             }
         }
 
+        function hasNoQuestions(){
+            var $names = $('#questionForm').find('[id^="questionName"]');
+            if ($names.length == 0 ) { return true; }
+            else { return false;}
+        }
+
         function formFieldsValid() {
             var valid = true;
             var $names = $('#questionForm').find('[id^="questionName"]');
             $names.each( function() {
-                if ( $(this).val() === '') {
+                if ( $(this).val() == '' ) {
                     valid = false;
                 }
             });

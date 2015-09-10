@@ -41,16 +41,25 @@
     <div class="well-lg">
         <div class="panel panel-default" <?php if( sizeof($exams) == 0 ) { echo('style="display:none;"');} ?> >
             <table class="table">
+                <thead>
+                    <th class="col-md-2">Term</th>
+                    <th class="col-md-4">Name</th>
+                    <th class="col-md-1">Questions</th>
+                    <th class="col-md-1">Students</th>
+                    <th class="col-md-4"></th>
+                </thead>
                 <tbody>
                 @foreach($exams as $exam)
                     <tr>
                         <td class="col-md-2" style="vertical-align:middle">
                             {{ $exam->getTerm() }} {{ $exam->getYear() }}
                         </td>
-                        <td class="col-md-5" style="vertical-align:middle">
+                        <td class="col-md-4" style="vertical-align:middle">
                             {{ $exam->getName() }}
                         </td>
-                        <td class="col-md-5" style="text-align:right">
+                        <td class="col-md-1">{{ $numberOfQuestions[$exam->getId()] or '0' }}</td>
+                        <td class="col-md-1">{{ $numberOfStudents[$exam->getId()] or '0' }}</td>
+                        <td class="col-md-4" style="text-align:right">
                             <a class="btn btn-info" href="{{ url('exam/'.$exam->getId().'/edit') }}">
                                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                 Edit Exam

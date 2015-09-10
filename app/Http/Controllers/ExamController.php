@@ -7,7 +7,8 @@ namespace App\Http\Controllers;
 use App\Exam;
 use App\Http\Requests\ExamRequest;
 use App\Repositories\Exam\IExamRepository;
-
+use App\Repositories\Question\IQuestionAssignmentRepository;
+use App\Repositories\Student\IStudentRepository;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
@@ -34,10 +35,13 @@ class ExamController extends Controller
     /**@var IExamRepository */
     protected $examDao;
 
-    public function __construct(IExamRepository $examDao)
+    public function __construct(IExamRepository $examDao, IQuestionAssignmentRepository $questionAssignmentRepository,
+            IStudentRepository $studentRepository)
     {
         $this->middleware('auth');
         $this->examDao = $examDao;
+        $this->questionAssignmentDao = $questionAssignmentRepository;
+        $this->studentDao = $studentRepository;
         // $terms defines the terms the user can choose from in the create / edit exam pages.
         // I've it defined here, but custom terms could be a preference later on.
         $this->terms = [ 'Winter', 'Spring', 'Summer', 'Fall'];
@@ -51,7 +55,19 @@ class ExamController extends Controller
     public function index()
     {
         $exams = $this->examDao->load_all_exams();
-        return View::make('setup.select_exam', compact('exams'));
+        $numberOfStudents = [];
+        $numberOfQuestions = [];
+        foreach($exams as $exam) {
+            $examId = $exam->getId();
+            $numberStudents = sizeof($this->studentDao->load_students_by_exam($exam->getId()));
+            $numberQuestions = sizeof($this->questionAssignmentDao->load_all_for_exam($exam->getId()));
+            $numberOfStudents[$examId] = $numberStudents;
+            $numberOfQuestions[$examId] = $numberQuestions;
+        }
+
+        //dd($numberOfStudents);
+        return View::make('setup.select_exam', ['exams' => $exams, 'numberOfStudents' => $numberOfStudents,
+                        'numberOfQuestions' => $numberOfQuestions ]);
     }
 
     /**
@@ -71,6 +87,7 @@ class ExamController extends Controller
     public function cloneExam(Exam $exam) {
 
         // TODO: clone the thing here!
+        $this->examDao->clone_exam($exam->getId());
 
         return redirect()->action('ExamController@index');
     }

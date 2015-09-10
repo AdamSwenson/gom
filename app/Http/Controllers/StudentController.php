@@ -152,10 +152,21 @@ class StudentController extends Controller
      */
     public function editAll(Exam $exam, StudentRequest $request)
     {
+        $examId = $exam->getId();
         $this->kumiRepository->create($exam->getName(), $exam->getYear(), $exam);
-        $students = $this->dao->load_students_by_exam($exam->getId());
+        $students = $this->dao->load_students_by_exam($examId);
 
-        return view('setup/edit_roster')->with(['exam' => $exam, 'students' => $students]);
+        // find out where the 'back' button should navigate. Default is editElements.
+        $prevAction = 'editElements';
+        $prevActionLabel = 'Edit Elements';
+        // if no questions, back button goes to exam
+        if ( sizeof($this->questionAssignmentDao->load_all_for_exam($examId)) == 0 ) {
+            $prevAction = 'editExam';
+            $prevActionLabel = 'Edit Exam';
+        }
+
+        return view('setup/edit_roster')->with(['exam' => $exam, 'students' => $students,
+            'prevAction' => $prevAction, 'prevActionLabel' => $prevActionLabel ]);
     }
 
     /**
@@ -179,6 +190,9 @@ class StudentController extends Controller
             $kumi = $this->kumiRepository->create($exam->getName(), $exam->getYear(), $exam);
         }
 
+        // process the request, either creating new students, or updating existing students.
+        // this will write the data for all students with every pass, modifying the time updated field,
+        // regardless of whether the data has changed.
         $currentStudents = [];
         $i = 1;
         while( $request->input('lastName'.$i) ) {
@@ -194,7 +208,7 @@ class StudentController extends Controller
                 $id = $student->getId();
                 $student->kumis()->attach($kumi); // add the student to the kumi
             } else {
-                // why do we need to call save for a setter - and only on this class?
+                // why do we need to call save for some classes and not others?
                 $student = $this->dao->load_student_by_id($id);
                 $student->setStudentFName($fName);
                 $student->setStudentLName($lName);
@@ -219,9 +233,13 @@ class StudentController extends Controller
         // move to next task based on button pressed
         $navigate = $request->input('navigateTo');
         switch ($navigate) {
+            case ('editExam'):
+                return redirect()->action('ExamController@edit', [ 'examId' => $examId ]);
+                break;
             case ('editElements'):
                 // move back to edit elements for the last question
                 // why does this have to be a 4 step process?
+                // easiest would be $exam->getQuestions() [ returns array of question objects ]
                 $questions = $this->questionAssignmentDao->load_all_for_exam($examId);
                 $lastQuestionId = $this->questionAssignmentDao->load($examId, sizeof($questions))->getQuestionId();
                 $lastQuestion = $this->questionDao->loadQuestionById($lastQuestionId);

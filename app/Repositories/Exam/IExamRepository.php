@@ -43,6 +43,15 @@ interface IExamRepository
     public function update_exam($examId, $year, $term, $name);
 
     /**
+     * Clones the exam specified by $examToCloneId, copying name, questions and elements
+     *
+     * @param integer $examToCloneId The id of the exam whose assignments to copy
+     * @return Exam
+     */
+    public function clone_exam($examToCloneId);
+
+
+    /**
      * Updates an exam object, saves it, then returns it
      * @param Exam $exam
      * @param  integer $year

@@ -48,7 +48,6 @@
 @section('jsArea')
     <script language="javascript" type="text/javascript" src="{{ asset('inc/js/examForm.js') }}"></script>
     <script type="text/javascript">
-
     </script>
 @endsection
 

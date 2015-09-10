@@ -7,15 +7,15 @@ function submitForm(target) {
     if  ( formFieldsValid() )
         $("#examForm").submit();
     else {
-        bootbox.alert('The exam must have a name, year and term to continue.');
+        bootbox.alert('Please enter a name, year and term for this exam.');
     }
 }
 
 function formFieldsValid() {
     var valid = true;
     if( $('#name').val() == ''     ||
-        $('#term').text() == 'Term' ||
-        $('#year').text() == 'Year' )
+        $('#hiddenTerm').val() == '' ||
+        $('#hiddenYear').val() == '' )
     {
         valid = false;
     }
