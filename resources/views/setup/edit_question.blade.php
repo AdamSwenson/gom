@@ -1,11 +1,5 @@
-<!--
-/**
- * Created by PhpStorm.
- * User: Brian
- * Date: 7/17/2015
- * Time: 4:59 PM
- */
- -->
+<!-- 'edit_question' defines the page for adding and creating questions.
+    Includes 'add question' and 'import question' buttons -->
 
 @extends('layouts.master')
 @section('pageTitle', 'Edit Questions | Grade-O-Matic')
@@ -37,13 +31,12 @@
                 move to the next step.</h5>
 
             @include('errors.list')
-
-            <!-- form will update all given questions and create new ones where required -->
             <form id="questionForm" name="questionForm" method="post" role="form"
                   action="{{ url('exam/'.$examId.'/question/updateAll') }}"
                   accept-charset="UTF-8">
                 <input type="hidden" id="token" name="_token" value="{{ csrf_token() }}">
                 <ul class="form-group" id="questionList">
+                    <!-- display all questions passed from the server. If 0, display one empty question -->
                     <?php $counter = 1; ?>
                     @if (!empty($questions))
                         @foreach($questions as $q)
@@ -64,7 +57,7 @@
             </a>
         </div>
     </div>
-    <!-- a blank question form to use for clones -->
+    <!-- this blank question is duplicated and appended to the page when creating a new question -->
     <ul style="display: none" id="hiddenQuestionList">
         <?php $counter = 0;
         $q = NULL; ?>
@@ -77,23 +70,21 @@
 @section('jsArea')
     <script type="text/javascript">
 
-        // Basic form validation and prompts
-        function submitForm(target) {
-            if ( hasNoQuestions() ) {
+        // Basic form validation and prompts.
+        // Exams must have 1 question and they must all have names.
+        function submitForm(targetForm) {
+            if ( numberOfQuestions() == 0 ) {
                 bootbox.alert('Exams must have at least one question.');
-                return;
             } else if ( formFieldsValid() ) {
-                $('#nextAction').val(target);
+                $('#nextAction').val(targetForm);
                 $('#questionForm').submit();
             } else {
                 bootbox.alert('One or more questions is missing a name.');
             }
         }
 
-        function hasNoQuestions(){
-            var $names = $('#questionForm').find('[id^="questionName"]');
-            if ($names.length == 0 ) { return true; }
-            else { return false;}
+        function numberOfQuestions(){
+            return  $('#questionForm').find('[id^="questionName"]').length;
         }
 
         function formFieldsValid() {
@@ -151,8 +142,6 @@
                                 //window.console.log(localStorage.getItem(sortable.options.group));
                                 return order ? order.split('|') : [];
                             },
-
-
                             set: function (sortable) {
                                 var order = sortable.toArray();
                                 localStorage.setItem(sortable.options.group, order.join('|'));
@@ -173,9 +162,8 @@
                         updateNumbers();
                     };
 
-                    // update all questions
+                    // update all "questionItem" ids. These define the ordering when saved to the DB.
                     function updateNumbers() {
-
                         $('#questionForm').find("[id^='questionItem']").each(function (index, el) {
                             updateListItemData(el, (index + 1));
                         });

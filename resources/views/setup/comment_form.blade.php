@@ -1,4 +1,4 @@
-<!-- comment_form displays the custom response modal -->
+<!-- comment_form describes the "customize response" modal, allowing the user to write comments for each grade valence -->
 <div class="modal fade" id="commentForm{{ $counter }}" role="dialog">
     <div class="modal-dialog">
 

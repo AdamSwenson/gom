@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('pageTitle', 'Create Exam')
+@section('pageTitle', 'Create Exam | Grade-O-Matic')
 @section('description', 'create an exam')
 @section('cssLinks')
 @endsection

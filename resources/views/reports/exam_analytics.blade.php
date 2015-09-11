@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('pageTitle', 'Exam Analytics')
+@section('pageTitle', 'Analytics | Grade-O-Matic')
 @section('description', 'View information about the exam')
 
 @section('cssLinks')

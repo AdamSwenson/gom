@@ -1,3 +1,8 @@
+/*
+    Functions used by create_exam and edit_exam pages to perform validation,
+    submit the form and set the navigation buttons (prev / next) to their proper targets
+ */
+
 // set 'Setup' tab as active
 $('[id^="nav"]').attr('class', '');
 $('#navSetup').attr('class', 'active');

@@ -1,11 +1,4 @@
-<!--
-/**
-* Created by PhpStorm.
-* User: Brian
-* Date: 7/20/2015
-* Time: 12:37 AM
-*/
--->
+<!-- Used by 'edit_exam' and 'create_exam' to display the fields for exam name, term, year -->
 
 <!-- name input -->
 <div class="input-group">

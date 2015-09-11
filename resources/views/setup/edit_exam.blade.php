@@ -1,6 +1,7 @@
+<!-- 'edit_exam' houses controls for exam name, term, and year -->
 @extends('layouts.master')
 
-@section('pageTitle', 'Edit Exam')
+@section('pageTitle', 'Edit Exam | Grade-O-Matic')
 @section('description', 'Edit an exam')
 
 @section('cssLinks')

@@ -1,3 +1,5 @@
+<!-- template used by "edit_roster" to display one table row displaying a single student.
+    Holds student lname, fname, id, email and delete button -->
 <tr class="dataRow" id="dataRow{{ $row }}">
     <td><input class="form-control" type="text" id="lastName" name="lastName{{ $row }}" placeholder="Last Name"
                value="{{ $s['last_name'] or '' }}"

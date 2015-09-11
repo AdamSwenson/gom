@@ -1,7 +1,7 @@
-<!-- this form describes the input form and buttons for an individual element -->
+<!-- Template used by 'edit_element' to hold the fields and buttons for an individual element.  -->
 <li class="list-group-item" id="elementItem{{ $counter }}">
     <h4 id="displayNumber">Element #{{ $counter }}</h4>
-
+    <!-- element name -->
     <div class="input-group">
         <span class="input-group-addon">Element Name</span>
         <input id="elementName{{ $counter }}"
@@ -11,7 +11,7 @@
                aria-describedby="basic-addon1">
     </div>
     <h5>Element Response</h5>
-
+    <!-- element description (the "stock comment") -->
     <div class="form-group">
         <textarea class="form-control" rows="3" id="elementText{{ $counter }}"
                   name="elementText{{ $counter }}"
@@ -30,9 +30,9 @@
             <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
             Customize Responses
         </a>
-        <!-- comment form describes modal for custom responses -->
+        <!-- 'comment form' displays the modal triggered by 'customize response' button -->
         @include('setup.comment_form')
-                <!-- delete button -->
+        <!-- delete button -->
         <a class="btn btn-warning btn-sm js-remove" >
             <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
             Delete

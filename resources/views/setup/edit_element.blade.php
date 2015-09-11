@@ -1,16 +1,7 @@
-<!-- EDIT element -->
-
-<!--
-/**
- * Created by PhpStorm.
- * User: Brian
- * Date: 7/17/2015
- * Time: 4:59 PM
- */
- -->
+<!-- 'edit_element' contains the controls for adding, editing and deleting elements  -->
 
 @extends('layouts.master')
-@section('pageTitle', 'Edit elements')
+@section('pageTitle', 'Edit Elements | Grade-O-Matic')
 @section('description', 'Add or edit elements')
 @section('cssLinks')
 @endsection
@@ -47,6 +38,7 @@
                   accept-charset="UTF-8">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <ul class="form-group" id="elementList">
+                    <!-- display all elements passed from the server. If 0, display one element -->
                     <?php $counter = 1; ?>
                     @if( !empty($elements) )
                         @foreach($elements as $e)
@@ -66,6 +58,7 @@
         </div>
     </div>
     <ul style="display: none" id="hiddenElementList">
+        <!-- this blank element is duplicated and appended to the page when creating a new element -->
         <?php $counter = 0;
         $e = NULL; ?>
         @include('setup.element_form')
@@ -77,14 +70,20 @@
 @section('jsArea')
     <script type="text/javascript">
 
-        // validate and submit form
+        // validate and submit form. Currently, questions are valid with 0 elements.
         function submitForm(target) {
-            if ( formFieldsValid() ) {
+            if ( numberOfElements() == 0) {
+                bootbox.alert('A question can have no elements, however, students will not receive written feedback');
+            } else if ( formFieldsValid() ) {
                 $('#nextAction').val(target);
                 $('#elementForm').submit();
             } else {
                 bootbox.alert('One or more elements is missing a name.');
             }
+        }
+
+        function numberOfElements(){
+            return  $('#elementForm').find('[id^="elementName"]').length;
         }
 
         function formFieldsValid() {

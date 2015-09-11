@@ -1,17 +1,8 @@
-<!--
-/**
-* Created by PhpStorm.
-* User: Brian
-* Date: 7/17/2015
-* Time: 4:59 PM
-*/
-
-
--->
+<!-- Starting page for the setup task. User can create, edit, clone and delete exams -->
 
 @extends('layouts.master')
 
-@section('pageTitle', 'Select Exam')
+@section('pageTitle', 'Exam Setup | Grade-O-Matic')
 
 @section('description', 'Create, edit, clone or delete an exam')
 

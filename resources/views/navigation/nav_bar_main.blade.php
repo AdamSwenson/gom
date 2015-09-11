@@ -1,4 +1,4 @@
-<!-- general nav bar -->
+<!-- Generic nav bar template used by all pages once logged in. The active tab is set in JS by the page -->
 <style>
     li:hover {
         background-color: #E9E9E9;

@@ -1,4 +1,4 @@
-<!-- this form describes the input form and buttons for an individual question -->
+<!-- Used by "edit_question" to hold fields and buttons for an individual question -->
 <li class="list-group-item" id="questionItem{{ $counter }}">
     <h4 id="displayNumber">Question #{{ $counter }}</h4>
 

@@ -1,6 +1,7 @@
+<!-- Edit_roster manages student creation, editing and file imports -->
 @extends('layouts.master')
 
-@section('pageTitle', 'Edit Roster')
+@section('pageTitle', 'Edit Roster | Grade-O-Matic')
 @section('description', 'Upload and modify student roster')
 
 @section('cssLinks')
@@ -8,6 +9,7 @@
 @endsection
 
 @section('body')
+        <!-- styling to change file button into bootstrap style and hide the file name -->
     <style>
         .btn-file {
             position: relative;
@@ -44,8 +46,6 @@
             sfont-size: 1.2em;
             color: #d43f3a;
         }
-
-
     </style>
 
     <div id="editRoster">
@@ -131,6 +131,7 @@
         <table>
             <tbody>
             <?php $s = null; $row = 0; ?>
+            <!-- this hidden field is duplicated and appended to the roster table when adding a new student -->
             @include('setup.roster_form')
             </tbody>
         </table>
@@ -148,7 +149,7 @@
         /*
          THINGS TODO:
          - column swapping
-         - XLS support
+         - XLS / XLSX support
          */
         function submitAndNavigateTo(target) {
             var $table = $('#studentRosterBody');
