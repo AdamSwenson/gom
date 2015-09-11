@@ -3,6 +3,7 @@
 # Defines a single server with a list of roles and multiple properties.
 # You can define all roles on a single server, or split them:
 server 'gradeomatic.net', user: 'nico', roles: %w{app db web}, my_property: :my_value
+
 #server 'gradeomatic.net', user: 'nico', roles: %w{web}, my_property: :my_value
 
 # server 'example.com', user: 'deploy', roles: %w{app web}, other_property: :other_value
@@ -17,6 +18,7 @@ server 'gradeomatic.net', user: 'nico', roles: %w{app db web}, my_property: :my_
 # property set. Specify the username and a domain or IP for the server.
 # Don't use `:all`, it's a meta role.
 role :web, %w{nico@gradeomatic.net gradeomatic.net}
+
 #role :web, %w{nico@45.75.99.151 gradeomatic.net}
 
 # role :app, %w{deploy@example.com}, my_property: :my_value
