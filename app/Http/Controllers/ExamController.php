@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Exam;
 use App\Http\Requests\ExamRequest;
 use App\Repositories\Exam\IExamRepository;
-
+use App\Repositories\Question\IQuestionAssignmentRepository;
+use App\Repositories\Student\IStudentRepository;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
@@ -32,10 +33,16 @@ class ExamController extends Controller
     /**@var IExamRepository */
     protected $examDao;
 
-    public function __construct(IExamRepository $examDao)
+    public function __construct(IExamRepository $examDao, IQuestionAssignmentRepository $questionAssignmentRepository,
+            IStudentRepository $studentRepository)
     {
         $this->middleware('auth');
         $this->examDao = $examDao;
+        $this->questionAssignmentDao = $questionAssignmentRepository;
+        $this->studentDao = $studentRepository;
+        // $terms defines the terms the user can choose from in the create / edit exam pages.
+        // I've it defined here, but custom terms could be a preference later on.
+        $this->terms = [ 'Winter', 'Spring', 'Summer', 'Fall'];
     }
 
     /**
@@ -46,7 +53,19 @@ class ExamController extends Controller
     public function index()
     {
         $exams = $this->examDao->load_all_exams();
-        return View::make('setup.select_exam', compact('exams'));
+        $numberOfStudents = [];
+        $numberOfQuestions = [];
+        foreach($exams as $exam) {
+            $examId = $exam->getId();
+            $numberStudents = sizeof($this->studentDao->load_students_by_exam($exam->getId()));
+            $numberQuestions = sizeof($this->questionAssignmentDao->load_all_for_exam($exam->getId()));
+            $numberOfStudents[$examId] = $numberStudents;
+            $numberOfQuestions[$examId] = $numberQuestions;
+        }
+
+        //dd($numberOfStudents);
+        return View::make('setup.select_exam', ['exams' => $exams, 'numberOfStudents' => $numberOfStudents,
+                        'numberOfQuestions' => $numberOfQuestions ]);
     }
 
     /**
@@ -57,13 +76,16 @@ class ExamController extends Controller
     public function create()
     {
         //create new exam
-        return view('setup/create_exam');
+        $years[] = date('Y');
+        $years[] = strval( $years[0] + 1 );
+        return view('setup/create_exam', [ 'years' => $years, 'terms' => $this->terms ]);
     }
 
     // copies the selected exam and returns to select exam page
     public function cloneExam(Exam $exam) {
 
         // TODO: clone the thing here!
+        $this->examDao->clone_exam($exam->getId());
 
         return redirect()->action('ExamController@index');
     }
@@ -102,7 +124,15 @@ class ExamController extends Controller
      */
     public function edit(Exam $exam)
     {
-        return view('setup/edit_exam', compact('exam'));
+        // create a list of years to choose from
+        $offset = 0;
+        if ( $exam->getYear() < date('Y') ) {
+            $years[] = $exam->getYear();
+            $offset = 1;
+        }
+        $years[] = date('Y');
+        $years[] = strval( $years[$offset] + 1 );
+        return view('setup/edit_exam', [ 'exam' => $exam, 'years' => $years, 'terms' => $this->terms ]);
     }
 
     /**
@@ -118,7 +148,11 @@ class ExamController extends Controller
 
         Session::flash(self::SUCCESS_FLASH_NAME, self::UPDATE_SUCCESS);
         $eid = $exam->getId();
-        return redirect()->route('editAllQuestions', $eid);
+        if ($request->input('nextAction') == 'selectExam') {
+            return redirect()->action('ExamController@index');
+        }
+        else
+            return redirect()->route('editAllQuestions', $eid);
     }
 
     /**
@@ -139,7 +173,6 @@ class ExamController extends Controller
         }
 
         return [ 'url_redirect' => 'exam' ] ;
-        //return redirect()->action('ExamController@index');
     }
 
 }

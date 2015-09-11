@@ -37,23 +37,23 @@ use Illuminate\Support\Facades\Auth;
  */
 class ReportController extends Controller
 {
-    /** @var IElementScoreRepository  */
+    /** @var IElementScoreRepository */
     protected $elementScoreRepository;
-    /** @var IAccessKeyRepository  */
+    /** @var IAccessKeyRepository */
     protected $accessKeyDao;
-    /** @var IFeedbackBuilder  */
+    /** @var IFeedbackBuilder */
     protected $feedbackBuilder;
-    /** @var IQuestionAssignmentRepository  */
+    /** @var IQuestionAssignmentRepository */
     protected $questionAssignmentRepository;
-    /** @var IElementAssignmentRepository  */
+    /** @var IElementAssignmentRepository */
     protected $elementAssignmentRepository;
-    /** @var IQuestionScoreRepository  */
+    /** @var IQuestionScoreRepository */
     protected $questionScoreRepository;
-    /** @var ICommentRepository  */
+    /** @var ICommentRepository */
     protected $commentRepository;
     /** @var IStudentRepository */
     protected $studentRepository;
-    /** @var IExamRepository  */
+    /** @var IExamRepository */
     protected $examDao;
 
     /**
@@ -145,7 +145,8 @@ class ReportController extends Controller
      * @param Exam $exam
      * @param Student $student
      */
-    public function notifyStudent(Exam $exam, Student $student) {
+    public function notifyStudent(Exam $exam, Student $student)
+    {
 
         // TODO: need API for emailing an individual student
     }
@@ -156,9 +157,10 @@ class ReportController extends Controller
      * Re-releasing an exam can send a different emailing letting all students know that scores have been changed
      * @param Exam $exam
      */
-    public function releaseExam(Exam $exam) {
+    public function releaseExam(Exam $exam)
+    {
         $this->createFeedback($exam);
-        if ( $exam->getReleased() ) {
+        if ($exam->getReleased()) {
             // TODO send 're-release' email to all students with grades. Also marks all students as having been emailed.
         } else {
             $exam->setReleased(true);
@@ -172,7 +174,8 @@ class ReportController extends Controller
      * Deleting keys will remove flags for student emails as well
      * @param Exam $exam
      */
-    public function unreleaseExam(Exam $exam){
+    public function unreleaseExam(Exam $exam)
+    {
         $exam->setReleased(false);
         $exam->save();
         $keys = $this->accessKeyDao->getAccessKeysForExam($exam->getId());
@@ -192,7 +195,40 @@ class ReportController extends Controller
     {
         $students = $this->studentRepository->load_students_by_exam($exam->getId());
 
-        return view('reports.exam_analytics')->with(['exam' => $exam, 'students' => $students]);
+        // $meanScores holds the class average for each question on the exam
+        // $stdDeviations holds, amazingly, the SDs for each question
+        $meanScores = [];
+        $stdDeviations = [];
+        $numberOfQuestions = count($this->questionAssignmentRepository->load_all_for_exam($exam->getId()));
+        if ($numberOfQuestions > 0) {
+            for ($i = 1; $i <= $numberOfQuestions; $i++) {
+                $oneSetOfScores = $this->questionScoreRepository->load_all_for_question_number($exam->getId(), $i);
+                $oneSetOfScores[] = $i;
+
+                $sum = array_sum($oneSetOfScores);
+                $meanScores[$i] = $sum / count($oneSetOfScores);
+                $meanScores[$i] = $i;
+                if ( count($oneSetOfScores) > 1)
+                    $stdDeviations[$i] = $this->standardDeviation($oneSetOfScores);
+            }
+        }
+
+        return view('reports.exam_analytics')->with(['exam' => $exam, 'students' => $students,
+            'meanScores' => $meanScores, 'stdDeviations' => $stdDeviations]);
+    }
+
+    function standardDeviation($array)
+    {
+        // square root of sum of squares devided by N-1
+        return sqrt(array_sum(array_map(function ($x, $mean)
+            { return pow($x - $mean, 2); }, $array, array_fill(0, count($array),
+                (array_sum($array) / count($array))))) / (count($array) - 1));
+    }
+
+    // Function to calculate square of value - mean
+    function sd_square($x, $mean)
+    {
+        return pow($x - $mean, 2);
     }
 
     /**
@@ -210,7 +246,8 @@ class ReportController extends Controller
      * @param Exam $exam
      */
     public function showQualityControl(Exam $exam)
-    {}
+    {
+    }
 
     /**
      * Displays the student_controls page to review feedback and send emails
@@ -223,10 +260,10 @@ class ReportController extends Controller
         $examId = $exam->getId();
         $students = $this->studentRepository->load_students_by_exam($exam->getId());
 
-        if ( !$exam->getReleased() ) {
+        if (!$exam->getReleased()) {
             $this->feedbackBuilder->buildFeedback($examId);
         }
-        foreach($students as $student) {
+        foreach ($students as $student) {
             $this->feedbackBuilder->recompileFeedbackForStudent($examId, $student);
         }
         return view('reports.student_controls')->with(['exam' => $exam, 'students' => $students]);

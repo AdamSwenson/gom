@@ -1,4 +1,4 @@
-<!-- general nav bar -->
+<!-- Generic nav bar template used by all pages once logged in. The active tab is set in JS by the page -->
 <style>
     li:hover {
         background-color: #E9E9E9;
@@ -13,7 +13,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url('home/') }}"><span class="standard">Grade-o-Matic</span></a>
+            <a class="navbar-brand" href="{{ url('home/') }}"><span class="standard">Grade-O-Matic</span></a>
         </div>
         <div class="collapse navbar-collapse" id="navbar-ex-collapse">
             <ul class="nav navbar-nav navbar-right">

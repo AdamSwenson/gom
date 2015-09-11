@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('pageTitle', 'Student Feedback')
+@section('pageTitle', 'Feedback | Grade-O-Matic')
 @section('description', "Review student feedback")
 
 @section('cssLinks')

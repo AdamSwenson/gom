@@ -1,14 +1,8 @@
-<!--
-/**
- * Created by PhpStorm.
- * User: Brian
- * Date: 7/17/2015
- * Time: 4:59 PM
- */
- -->
+<!-- 'edit_question' defines the page for adding and creating questions.
+    Includes 'add question' and 'import question' buttons -->
 
 @extends('layouts.master')
-@section('pageTitle', 'Edit Questions')
+@section('pageTitle', 'Edit Questions | Grade-O-Matic')
 @section('description', 'Add or edit questions')
 @section('cssLinks')
 @endsection
@@ -20,13 +14,13 @@
             <nav>
                 <ul class="pager">
                     <li class="previous">
-                        <a href="{{ url('exam/'.$examId.'/edit') }}" style="cursor:pointer;"> <span
+                        <a onclick="submitForm('editExam')" style="cursor:pointer;"> <span
                                     class="glyphicon glyphicon-chevron-left"
                                     aria-hidden="true"></span>
                             Edit Exam</a>
                     </li>
                     <li class="next">
-                        <a id="submit-span" style="cursor:pointer;">Add / Edit Elements <span
+                        <a onclick="submitForm('editElements')" style="cursor:pointer;">Add / Edit Elements <span
                                     class="glyphicon glyphicon-chevron-right"
                                     aria-hidden="true"></span></a>
                     </li>
@@ -37,13 +31,12 @@
                 move to the next step.</h5>
 
             @include('errors.list')
-
-            <!-- form will update all given questions and create new ones where required -->
             <form id="questionForm" name="questionForm" method="post" role="form"
                   action="{{ url('exam/'.$examId.'/question/updateAll') }}"
                   accept-charset="UTF-8">
                 <input type="hidden" id="token" name="_token" value="{{ csrf_token() }}">
                 <ul class="form-group" id="questionList">
+                    <!-- display all questions passed from the server. If 0, display one empty question -->
                     <?php $counter = 1; ?>
                     @if (!empty($questions))
                         @foreach($questions as $q)
@@ -53,8 +46,8 @@
                     @else
                         @include('setup.question_form')
                     @endif
-
                 </ul>
+                <input type="hidden" id="nextAction" name="nextAction" value="editQuestions"/>
             </form>
             <a class="btn btn-primary" id="addQuestion"><span class="glyphicon glyphicon-plus"
                                                               aria-hidden="true"></span>
@@ -64,7 +57,7 @@
             </a>
         </div>
     </div>
-    <!-- a blank question form to use for clones -->
+    <!-- this blank question is duplicated and appended to the page when creating a new question -->
     <ul style="display: none" id="hiddenQuestionList">
         <?php $counter = 0;
         $q = NULL; ?>
@@ -76,6 +69,34 @@
 
 @section('jsArea')
     <script type="text/javascript">
+
+        // Basic form validation and prompts.
+        // Exams must have 1 question and they must all have names.
+        function submitForm(targetForm) {
+            if ( numberOfQuestions() == 0 ) {
+                bootbox.alert('Exams must have at least one question.');
+            } else if ( formFieldsValid() ) {
+                $('#nextAction').val(targetForm);
+                $('#questionForm').submit();
+            } else {
+                bootbox.alert('One or more questions is missing a name.');
+            }
+        }
+
+        function numberOfQuestions(){
+            return  $('#questionForm').find('[id^="questionName"]').length;
+        }
+
+        function formFieldsValid() {
+            var valid = true;
+            var $names = $('#questionForm').find('[id^="questionName"]');
+            $names.each( function() {
+                if ( $(this).val() == '' ) {
+                    valid = false;
+                }
+            });
+            return valid;
+        }
 
         // Sortable is the lib for deag and drop elements
         // create an editable list and set up some filters to handle callbacks
@@ -121,8 +142,6 @@
                                 //window.console.log(localStorage.getItem(sortable.options.group));
                                 return order ? order.split('|') : [];
                             },
-
-
                             set: function (sortable) {
                                 var order = sortable.toArray();
                                 localStorage.setItem(sortable.options.group, order.join('|'));
@@ -143,9 +162,8 @@
                         updateNumbers();
                     };
 
-                    // update all questions
+                    // update all "questionItem" ids. These define the ordering when saved to the DB.
                     function updateNumbers() {
-
                         $('#questionForm').find("[id^='questionItem']").each(function (index, el) {
                             updateListItemData(el, (index + 1));
                         });
@@ -165,14 +183,6 @@
                     function getQuestionCount() {
                         // return number of questions currently in the questionList
                         return $("[id^='questionItem']").length;
-                    }
-
-                    // handle form submission
-
-                    var btnDone = document.getElementById('submit-span');
-
-                    btnDone.onclick = function () {
-                        document.getElementById("questionForm").submit();
                     }
 
                     return false;

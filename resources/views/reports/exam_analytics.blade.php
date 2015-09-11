@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('pageTitle', 'Exam Analytics')
+@section('pageTitle', 'Analytics | Grade-O-Matic')
 @section('description', 'View information about the exam')
 
 @section('cssLinks')
@@ -13,8 +13,11 @@
         <h3><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Analytics: {{ $exam->getTerm() }}
             {{ $exam->getYear() }} "{{ $exam->getName() }}"</h3>
         <div>
-            @foreach($students as $student)
-
+            <?php $i = 1; ?>
+            @foreach($meanScores as $meanScore)
+                Mean for {{ $i }}: {{ $meanScore  or '0' }}<br>
+                StdDeviation for {{ $i }}: {{ $stdDeviations[$i] or 'NA' }}<br>
+                <?php $i++; ?>
             @endforeach
         </div>
     </div>

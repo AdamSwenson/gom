@@ -1,15 +1,7 @@
-<!--
-/**
- * Created by PhpStorm.
- * User: Brian
- * Date: 7/17/2015
- * Time: 4:59 PM
- */
- -->
-
+<!-- 'edit_exam' houses controls for exam name, term, and year -->
 @extends('layouts.master')
 
-@section('pageTitle', 'Edit Exam')
+@section('pageTitle', 'Edit Exam | Grade-O-Matic')
 @section('description', 'Edit an exam')
 
 @section('cssLinks')
@@ -28,19 +20,21 @@
                     <nav>
                         <ul class="pager">
                             <li class="previous">
-                                <a href="{{ url('exam/') }}" id="prev-question" style="cursor:pointer;"> <span
+                                <a onclick="submitForm('selectExam')"
+                                   style="cursor:pointer;"> <span
                                             class="glyphicon glyphicon-chevron-left"
                                             aria-hidden="true"></span>
                                     Setup</a>
                             </li>
                             <li class="next">
-                                <a id="submitLink" style="cursor:pointer;">Add / Edit Questions <span class="glyphicon glyphicon-chevron-right"
-                                                                   aria-hidden="true"></span></a>
+                                <a onclick="submitForm('editQuestions')" style="cursor:pointer;">Add / Edit Questions
+                                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
                             </li>
                         </ul>
                     </nav>
                     <h2>Edit Exam</h2>
                     @include('setup.exam_form')
+                    <input type="hidden" id="nextAction" name="nextAction" value="editQuestions"/>
                 </form>
 
             </div>
@@ -53,46 +47,9 @@
 
 
 @section('jsArea')
+    <script language="javascript" type="text/javascript" src="{{ asset('inc/js/examForm.js') }}"></script>
     <script type="text/javascript">
-
-        // set 'Setup' tab as active
-        $('[id^="nav"]').attr('class', '');
-        $('#navSetup').attr('class', 'active');
-
-        $(document).ready(function() {
-
-
-            $('#termList li').on('click', function () {
-                $('#hiddenTerm').val($(this).text());
-
-                var $icon = $('#term').find('span');
-                $('#term').html($(this).text());
-                $('#term').append(" ");
-                $('#term').append($icon);
-
-
-            });
-
-            $('#yearList li').on('click', function () {
-                $('#hiddenYear').val($(this).text());
-
-                var $icon = $('#year').find('span');
-                $('#year').text($(this).text());
-                $('#year').append(" ");
-                $('#year').append($icon);
-            });
-
-            var btnDone = document.getElementById("submitLink");
-
-            btnDone.onclick = function () {
-                document.getElementById("examForm").submit();
-            }
-
-            return false;
-        });
     </script>
-
-
 @endsection
 
 

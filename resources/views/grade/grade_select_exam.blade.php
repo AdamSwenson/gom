@@ -9,14 +9,18 @@
 @section('body')
     <style>
         tr:hover {
-            background-color: #E3E33;
+            background-color: #E3E3E3;
         }
     </style>
     <div class="container">
         <h3><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Grade Exam</h3>
-        <h4>Select an exam to grade</h4>
-
-        <div class="well-lg">
+        <h4><?php if( sizeof($exams) == 0 )
+                $subtitle = 'No exams found';
+            else
+                $subtitle = 'Select an exam to grade';
+            echo($subtitle)?>
+        </h4>
+        <div class="well-lg" <?php if( sizeof($exams) == 0 ) echo('style="display:none;"');?>>
             <div class="panel panel-default">
                 <table class="table">
                     <tbody>

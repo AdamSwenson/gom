@@ -1,16 +1,7 @@
-<!-- EDIT element -->
-
-<!--
-/**
- * Created by PhpStorm.
- * User: Brian
- * Date: 7/17/2015
- * Time: 4:59 PM
- */
- -->
+<!-- 'edit_element' contains the controls for adding, editing and deleting elements  -->
 
 @extends('layouts.master')
-@section('pageTitle', 'Edit elements')
+@section('pageTitle', 'Edit Elements | Grade-O-Matic')
 @section('description', 'Add or edit elements')
 @section('cssLinks')
 @endsection
@@ -21,15 +12,16 @@
             <nav>
                 <ul class="pager">
                     <li class="previous">
-                        <a id="prev-question" data-prevQ="{{ $prevqId }}" style="cursor:pointer;"> <span
-                                    class="glyphicon glyphicon-chevron-left"
+                        <a onclick="submitForm('{{ $prevAction  }}')" id="prev-question" data-questionId="{{ $prevAction }}"
+                           style="cursor:pointer;"> <span class="glyphicon glyphicon-chevron-left"
                                     aria-hidden="true"></span>
-                            Previous Question</a>
+                            <?php if( $prevAction == 'editQuestions') echo('Edit Questions'); else echo('Previous Question'); ?></a>
                     </li>
                     <li class="next">
-                        <a id="next-question" data-nextQ="{{ $nextqId }}" style="cursor:pointer;">Next Question <span
-                                    class="glyphicon glyphicon-chevron-right"
-                                    aria-hidden="true"></span></a>
+                        <a onclick="submitForm('{{ $nextAction  }}')" id="next-question" data-questionId="{{ $nextAction }}"
+                           style="cursor:pointer;">
+                            <?php if( $nextAction == 'editStudents') echo('Edit Roster'); else echo('Next Question'); ?>
+                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
                     </li>
                 </ul>
             </nav>
@@ -46,6 +38,7 @@
                   accept-charset="UTF-8">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <ul class="form-group" id="elementList">
+                    <!-- display all elements passed from the server. If 0, display one element -->
                     <?php $counter = 1; ?>
                     @if( !empty($elements) )
                         @foreach($elements as $e)
@@ -56,7 +49,7 @@
                         @include('setup.element_form')
                     @endif
                 </ul>
-                <input type="hidden" id="questionDirection" name="questionDirection" value="0"/>
+                <input type="hidden" id="nextAction" name="nextAction" value="0"/>
             </form>
             <a class="btn btn-primary" id="addElement">
                 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
@@ -65,6 +58,7 @@
         </div>
     </div>
     <ul style="display: none" id="hiddenElementList">
+        <!-- this blank element is duplicated and appended to the page when creating a new element -->
         <?php $counter = 0;
         $e = NULL; ?>
         @include('setup.element_form')
@@ -75,6 +69,33 @@
 
 @section('jsArea')
     <script type="text/javascript">
+
+        // validate and submit form. Currently, questions are valid with 0 elements.
+        function submitForm(target) {
+            if ( numberOfElements() == 0) {
+                bootbox.alert('A question can have no elements, however, students will not receive written feedback');
+            } else if ( formFieldsValid() ) {
+                $('#nextAction').val(target);
+                $('#elementForm').submit();
+            } else {
+                bootbox.alert('One or more elements is missing a name.');
+            }
+        }
+
+        function numberOfElements(){
+            return  $('#elementForm').find('[id^="elementName"]').length;
+        }
+
+        function formFieldsValid() {
+            var valid = true;
+            var $names = $('#elementForm').find('[id^="elementName"]');
+            $names.each( function() {
+                if ($(this).val() == '') {
+                    valid = false;
+                }
+            });
+            return valid;
+        }
 
         $(document).ready(function () {
             // clear local storage to dump Sortable data - or it may display items out of order
@@ -87,7 +108,7 @@
                 filter: '.js-remove',
                 animation: 150,
                 handle: '.handle',
-                ghostClass: "sortable-ghost",
+                ghostClass: 'sortable-ghost',
                 onFilter: function (evt) {
                     var el = editableList.closest(evt.item); // get dragged item
 
@@ -144,7 +165,7 @@
             }
             registerCustomtizeHandlers();
 
-            // handle addelement button
+            // handle add element button
             document.getElementById("addElement").onclick = function () {
                 // copy empty form
                 var order = getElementCount() + 1;
@@ -194,50 +215,6 @@
             function getElementCount() {
                 return $('elementForm').find("[id^='elementItem']").length;
             }
-
-            // Previous Question button
-            var btnPrevious = document.getElementById('prev-question');
-            var prevQuestion = parseInt(btnPrevious.getAttribute('data-prevQ'));
-            if ((prevQuestion === 0)) {
-                // set text to "Edit questions"
-                $('#prev-question').html("<span class='glyphicon glyphicon-chevron-left' aria-hidden='true'></span> Add / Edit Questions");
-            }
-
-            btnPrevious.onclick = function () {
-                if (prevQuestion === 0) {
-                    // set the hidden field to either the questionId to view next, or 'back'
-                    $('#questionDirection').attr('value', 'back');
-                } else {
-                    $('#questionDirection').attr('value', prevQuestion);
-                }
-                submitForm();
-            }
-
-            // "Next Question" button
-            var btnNext = document.getElementById('next-question');
-            var nextQuestion = parseInt(btnNext.getAttribute('data-nextQ'));
-            // If we're at the last element, set text to "done"
-            if ((nextQuestion === 0)) {
-                $('#next-question').html("Edit Student Roster <span class='glyphicon glyphicon-chevron-right' aria-hidden='true'></span>");
-            }
-
-            btnNext.onclick = function () {
-                if (nextQuestion === 0) {
-                    // set the hidden field to either the elementId to view next, or 'previous' to return to edit question
-                    $('#questionDirection').attr('value', 'forward');
-                } else {
-                    $('#questionDirection').attr('value', nextQuestion);
-                }
-                submitForm();
-            }
-
-            function submitForm() {
-                document.getElementById("elementForm").submit();
-            }
-
-            $("input[type='submit']").click(function (e) {
-                e.preventDefault();
-            });
 
             return false;
         });

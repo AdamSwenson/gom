@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('pageTitle', 'Reports')
+@section('pageTitle', 'Reports | Grade-O-Matic')
 @section('description', 'Select an exam action')
 
 @section('cssLinks')
@@ -9,9 +9,13 @@
 @section('body')
     <div class="container">
         <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Reports & Release</h3>
-        <h4>Release grades to students or view data about an exam</h4>
-
-        <div class="well-lg">
+        <h4><?php if( sizeof($exams) == 0 )
+                    $subtitle = 'No exams found';
+            else
+                    $subtitle = 'Release grades to students or view data about an exam';
+            echo($subtitle)?>
+        </h4>
+        <div class="well-lg" <?php if( sizeof($exams) == 0 ) echo('style="display:none;"');?>>
             <div class="panel panel-default">
                 <table class="table">
                     <tbody>
