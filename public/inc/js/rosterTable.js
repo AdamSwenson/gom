@@ -62,13 +62,15 @@ function startRead() {
         fr.onload = (function (theFile) {
             // this is called once the readAsText($inputFile) function reports done.
             return function (e) {
-                rows = e.target.result.toString().split('\n');
+                rows = e.target.result.toString().replace(/\r/g, "\n").split("\n");
                 var lines = [];
 
                 // break each row into its CSVs, ignoring empty lines
                 for (var i = 0; i < rows.length; i++) {
-                    if (rows[i].length > 0 )
+                    if (rows[i].length > 0 ) {
+                        window.console.log(rows[i]);
                         lines[i] = rows[i].toString().split(separatorChar);
+                    }
                 }
 
                 // remove any lines with no elements

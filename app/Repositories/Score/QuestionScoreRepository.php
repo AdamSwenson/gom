@@ -56,13 +56,26 @@ MYSQL;
     }
 
     /**
-     * Loads all scores for a given question on an exam
+     * Loads all scores for a given question on an exam.
+     * This returns an array of stdClass objects, each of which has a score property.
+     * So to access the score of the first item you would do $result[0]->score
      * @param $examId
      * @param $questionNumber
+     * @return array of StdClass objects
      */
     public function load_all_for_question_number($examId, $questionNumber)
     {
-
+        $query = <<<MYSQL
+        SELECT score
+        FROM question_scores qs INNER JOIN question_assignments qa ON qs.`question_assignment_id` = qa.id
+        WHERE qa.exam_id = :examId
+        AND qa.question_number = :questionNumber
+MYSQL;
+        $values = [
+            'examId' => $examId,
+            'questionNumber' => $questionNumber
+        ];
+        return \DB::select($query, $values);
     }
 
 

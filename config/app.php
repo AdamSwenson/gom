@@ -151,6 +151,11 @@ return [
         Illuminate\Html\HtmlServiceProvider::class,
 
         /*
+         * Third party tools
+         */
+        Barryvdh\DomPDF\ServiceProvider::class,
+
+        /*
          * Custom service providers
          */
         App\Providers\StorageServiceProvider::class,
@@ -211,7 +216,8 @@ return [
         'View'      => Illuminate\Support\Facades\View::class,
         //added
         'Form'      => Illuminate\Html\FormFacade::class,
-        'HTML'      => Illuminate\Html\HtmlFacade::class
+        'HTML'      => Illuminate\Html\HtmlFacade::class,
+        'PDF'       => Barryvdh\DomPDF\Facade::class,
 
     ],
 

@@ -23,6 +23,24 @@ class NotifyStudents extends Job implements SelfHandling, ShouldQueue
     const INITIAL_EMAIL_VIEW = 'feedback.initial_student_notification';
     const SECOND_EMAIL_VIEW = 'feedback.additional_student_notification';
 
+    const FEEDBACK_PAGE_LINK = 'http://www.gradeomatic.net/feedback';
+
+    /** @var  \App\Repositories\Feedback\IAccessKeyRepository */
+    protected $accessKeyRepository;
+
+    /** @var \App\Repositories\Student\IStudentRepository */
+    protected $studentRepository;
+
+    /** @var  array Holds the students who should receive emails */
+    protected $students;
+
+
+    public function __construct()
+    {
+        $this->accessKeyRepository = app()->make('App\Repositories\Feedback\IAccessKeyRepository');
+        $this->studentRepository = app()->make('App\Repositories\Student\IStudentRepository');
+    }
+
     /**
      * Sends a notification email with link to feedback to all students whose exams
      * have been graded. Uses database flags to determine which version of the email to send.
@@ -31,48 +49,133 @@ class NotifyStudents extends Job implements SelfHandling, ShouldQueue
      */
     public function sendEmailToAllGradedStudents(Exam $exam)
     {
-        /*
         //check whether already sent, if not
-        $this->sendInitialEmailToEveryone($exam);
-        //if already sent
-        $this->sendEmailToAllGradedStudents($exam);
-    */
-    }
+        $initial = true;
 
-    /**
-     * Should choose whether initial or second email view via a flag in the db
-     * @param $student
-     */
-    public function sendEmailToStudent(Student $student)
-    {
+        $this->sendEmailToEveryone($exam, $initial);
     }
-
 
     /**
      * Sends a notification email with link to feedback to all students whose exams
      * have been graded.
      *
      * @param Exam $exam
+     * @param bool $initial Whether to use the initial email template
      */
-    protected function sendInitialEmailToEveryone(Exam $exam)
+    protected function sendEmailToEveryone(Exam $exam, $initial=true)
     {
+        $this->students = $this->studentRepository->load_students_by_exam($exam);
+        foreach($this->students as $student)
+        {
+            $this->sendEmailToStudent($exam, $student, $initial);
+        }
+    }
+
+
+    /**
+     * Prepares and sends notification email to one student
+     * @param Exam $exam
+     * @param Student $student
+     * @param bool|true $initial
+     */
+    public function sendEmailToStudent(Exam $exam, Student $student, $initial=true)
+    {
+        $accessKey = $this->loadAccessKey($exam, $student);
+        if( ! empty($accessKey) )
+        {
+            $data = [
+                'studentName' => $student->getFullName(),
+                'examName' => $exam->getName(),
+                'feedbackLink' => $this->buildLink($accessKey),
+                'siteLink' => self::FEEDBACK_PAGE_LINK,
+                'accessKey' => $accessKey
+            ];
+
+            $view = $initial ? self::INITIAL_EMAIL_VIEW : self::SECOND_EMAIL_VIEW;
+
+            $this->send($student->email, $student->getFullName(), $data, $view, $this->buildSubject());
+        }
+    }
+
+
+
+    /**
+     * Updates the db flags to show that the student has had the email sent.
+     * Adds entry to the mail log
+     *
+     * @param Exam $exam
+     * @param Student $student
+     */
+    public function logSent(Exam $exam, Student $student)
+    {
+       // TODO: Set up mail logging
     }
 
     /**
-     * Sends emails to everyone in class but with different
-     * subject and text which indicate that something has been updated.
+     * Constructs the link that the student will click to access feedback
+     * @param $accessKey
+     * @return string
+     */
+    protected function buildLink($accessKey)
+    {
+        return self::FEEDBACK_PAGE_LINK . '?accessKey=' . $accessKey;
+    }
+
+    /**
+     * Prepares the subject line for the notification email
+     * @param $exam
+     * @return string
+     */
+    protected function buildSubject($exam)
+    {
+        return "Your feedback for " . $exam->getName();
+    }
+
+
+
+    /**
+     * Checks that there is an email address for the student and that
+     * the student has feedback compiled.
+     *
+     * If both are true, then it will return the access key.
      *
      * @param Exam $exam
+     * @param Student $student
+     * @return bool|string
      */
-    protected function sendReReleaseEmailToEveryone(Exam $exam)
+    public function loadAccessKey(Exam $exam, Student $student)
     {
-        //get all students
-        $students = [];
-        foreach($students as $s)
+        if(!empty($student->getEmail()))
         {
-
+            $key = $this->accessKeyRepository->getAccessKeyForStudent($exam->id, $student->id);
+            if($key)
+            {
+                return $key;
+            }
         }
+        return false;
+    }
 
+    public function buildPdf(Exam $exam, Student $student)
+    {
+
+        $key = $this->accessKeyRepository->getAccessKeyForStudent($exam->id, $student->id);
+
+        $fb = $this->accessKeyRepository->retrieveFeedback($key);
+
+        $data = $fb->content;
+
+        $pdf = \PDF::loadView('feedback.feedback', $data);
+
+        return $pdf;
+//        Mail::send($emailView, $data, function($message) use($pdf)
+//        {
+//            $message->from('us@example.com', 'Your Name');
+//
+//            $message->to('foo@example.com')->subject('Invoice');
+//
+//            $message->attachData($pdf->output(), "invoice.pdf");
+//        });
     }
 
     protected function send($to_address, $to_name, $contentArray, $emailView, $subject)

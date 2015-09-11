@@ -73,6 +73,8 @@ class FeedbackBuilder implements IFeedbackBuilder
      * Will create new access keys if none already exist. If there are already
      * access keys, it will update the associated content (but not create new keys).
      *
+     * TODO: make sure skips if there are no scores
+     *
      * This is the main publicly called method
      *
      * @param int $examId
