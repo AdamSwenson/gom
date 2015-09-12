@@ -1,7 +1,7 @@
 <!-- 'edit_element' contains the controls for adding, editing and deleting elements  -->
 
 @extends('layouts.master')
-@section('pageTitle', 'Edit Elements | Grade-O-Matic')
+@section('pageTitle', 'Edit Elements | GradeOmatic')
 @section('description', 'Add or edit elements')
 @section('cssLinks')
 @endsection

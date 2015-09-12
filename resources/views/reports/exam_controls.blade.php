@@ -1,7 +1,7 @@
 <!-- Release an exam, un-release an exam, view analytics and review student feedback -->
 
 @extends('layouts.master')
-@section('pageTitle', 'Reports | Grade-O-Matic')
+@section('pageTitle', 'Reports | GradeOmatic')
 @section('description', 'Select an exam action')
 
 @section('cssLinks')

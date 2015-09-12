@@ -2,7 +2,7 @@
 
 @extends('layouts.master')
 
-@section('pageTitle', 'Exam Setup | Grade-O-Matic')
+@section('pageTitle', 'Exam Setup | GradeOmatic')
 
 @section('description', 'Create, edit, clone or delete an exam')
 

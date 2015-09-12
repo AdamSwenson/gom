@@ -2,7 +2,7 @@
     Includes 'add question' and 'import question' buttons -->
 
 @extends('layouts.master')
-@section('pageTitle', 'Edit Questions | Grade-O-Matic')
+@section('pageTitle', 'Edit Questions | GradeOmatic')
 @section('description', 'Add or edit questions')
 @section('cssLinks')
 @endsection
@@ -98,7 +98,7 @@
             return valid;
         }
 
-        // Sortable is the lib for deag and drop elements
+        // Sortable is the lib for drag and drop questions
         // create an editable list and set up some filters to handle callbacks
         $(document).ready(function () {
 
