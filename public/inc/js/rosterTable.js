@@ -1,3 +1,8 @@
+/*  9/11/2015 -bb
+    Functions used by the edit_roster page to add / edit / delete students.
+    Also includes CSV importing.
+ */
+
 var file;
 var rows;
 

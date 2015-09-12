@@ -38,27 +38,14 @@
 @endsection
 
 @section('jsArea')
-    <script type="text/javascript" src="<?php echo asset("inc/js/common.js");?>"></script>
+
     <script type="text/javascript">
         $(document).ready(function () {
-            var scripts = [
-                "inc/js/common.js",
-                "inc/js/examSetup.js"
-            ];
-
             /**
              * Do any styling or activities required by the page
              * @returns {undefined}
              */
-            function onLoad() {
-                $('.navMenuItem').menu();
-                $('.prettyButton').button();
-                bindListeners();
-                console.log('onload fired');
-            }
 
-            onLoad();
-//                    scriptLoader(scripts.length, 0);
         });
     </script>
 @endsection
