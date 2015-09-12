@@ -179,7 +179,7 @@ class GradeController extends Controller
     }
 
     /**
-     * Records scores as well as time and any other information
+     * Records scores, comments and grading time
      * @param Exam $exam
      * @param GradingRequest $request
      */
@@ -231,8 +231,6 @@ class GradeController extends Controller
         } else {
             //TODO Error handling
         }
-
-
     }
 
     /**
