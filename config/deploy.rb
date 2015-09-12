@@ -2,6 +2,7 @@
 lock '3.4.0'
 
 set :application, 'gradeomatic'
+
 set :repo_url, 'git@bitbucket.org:merpCo/gradeomatic3.git'
 
 # Default branch is :master
@@ -36,12 +37,15 @@ set :deploy_to, '/var/www/gradeomatic.net'
 
 set :action_path, "/var/www/gradeomatic.net/current"
 
+set :laravel_roles, :all
+set :laravel_artisan_flags, "--env=production"
+set :laravel_server_user, "www-data"
 
 namespace :deploy do
     #change owner of templates back to nico
     after :updated,:build do
         on roles :all do
-           # execute :mv, "#{release_path}/src/www #{release_path}/public_html"
+            execute :mv, "#{release_path}/public #{release_path}/public_html"
         end
     end
 end
