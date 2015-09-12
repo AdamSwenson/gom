@@ -166,7 +166,7 @@ return [
          * TODO: Remove this or put it somewhere nice for production
          */
         //
-        Laracasts\Generators\GeneratorsServiceProvider::class
+  //      Laracasts\Generators\GeneratorsServiceProvider::class
     ],
 
     /*
