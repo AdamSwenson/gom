@@ -47,7 +47,7 @@ return array(
     'App\\HTTP\\Controllers\\helpers\\cleaning\\InputCleaner' => $baseDir . '/app/Http/Controllers/helpers/cleaning/InputCleaner.php',
     'App\\HTTP\\Controllers\\helpers\\cleaning\\IntegerCleaner' => $baseDir . '/app/Http/Controllers/helpers/cleaning/IntegerCleaner.php',
     'App\\HTTP\\Controllers\\helpers\\cleaning\\TextCleaner' => $baseDir . '/app/Http/Controllers/helpers/cleaning/TextCleaner.php',
-    'App\\Http\\Controllers\\AjaxController' => $baseDir . '/app/Http/Controllers/AjaxController.php',
+
     'App\\Http\\Controllers\\Auth\\AuthController' => $baseDir . '/app/Http/Controllers/Auth/AuthController.php',
     'App\\Http\\Controllers\\Auth\\PasswordController' => $baseDir . '/app/Http/Controllers/Auth/PasswordController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',

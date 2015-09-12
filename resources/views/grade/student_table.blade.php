@@ -1,4 +1,4 @@
-<!-- holds the student roster listing within Grade Exam -->
+<!-- Used by 'grade_exam'. holds the student roster listing -->
 <style>
     .table-fixed thead {
         width: 97%;

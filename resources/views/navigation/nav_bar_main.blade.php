@@ -27,7 +27,7 @@
                     <a href="{{url('report')}}">Reports</a>
                 </li>
                 <li id="navAccount">
-                    <a href="{{url('account/home')}}">Account</a>
+                    <a href="{{url('account')}}">Account</a>
                 </li>
                 <li id="navLogout">
                     <a href="{{url('auth/logout')}}">Log out</a>

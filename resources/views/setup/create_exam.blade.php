@@ -1,3 +1,4 @@
+<!-- create a new exam -->
 @extends('layouts.master')
 @section('pageTitle', 'Create Exam | Grade-O-Matic')
 @section('description', 'create an exam')

@@ -1,6 +1,7 @@
+<!-- the grade exam tool -->
 @extends('layouts.master')
 
-@section('pageTitle', 'Grade Exam')
+@section('pageTitle', 'Grade Exam | Grade-O-Matic')
 @section('description', 'Grade an exam')
 @section('cssLinks')
 
@@ -17,7 +18,7 @@
                 <h4 id="selectPrompt">Select a student to begin grading</h4>
 
                 <div id="questionArea" style="display: none">
-                    <!-- Centered Question Pills -->
+                    <!-- Create one Question Tab for each question -->
                     <ul class="nav nav-pills nav-justified">
                         @foreach($questionAssignments as $qAssignment)
                             <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
@@ -95,9 +96,9 @@
                 <a class="btn btn-success col-md-12" href="{{ url('report/') }}" id="finishButton" style="display: none;">
                     <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish
                 </a>
-                <!-- student table -->
+                <!-- student table shows the student roster -->
                 @include('grade.student_table')
-                        <!-- timing and data -->
+                <!-- statistics area holds time info -->
                 @include('grade.statistics_table')
             </div>
         </div>
@@ -127,8 +128,7 @@
         updateExamGrades();
 
         /*
-         * Set valenceCutoffs for comments.
-         * These represent the maximum value for each valence group.
+         * Set valenceCutoffs for comments --  these represent the maximum value for each valence group.
          * Magic numbers for now, but will accept data from the server for valenceCutoffs, valenceLabels and valenceLabelPositions
          *
          */
@@ -137,7 +137,7 @@
         var valenceLabelPositions = [0, 33, 67, 100];
         var sliderStep = .25;
 
-        /* initialize Sliders */
+        /* initialize Sliders with valenceCutoffs */
         var $sliders = $('input.slider').slider({
             tooltip: 'show',
             value: 0,
@@ -156,6 +156,7 @@
          */
 
         // Returns which valence group a [score] belongs to by comparing with valenceCutoffs[]
+        // i.e. a score > 0 and <= 2.5 will be in the 'poor' valence (1)
         function getValence(score) {
             var valence = 0;
             for (var j = valenceCutoffs.length - 2; j >= 0; j--) {
@@ -376,7 +377,7 @@
             $('#btnTimerIcon').attr('class', 'glyphicon glyphicon-play');
             timerPaused = false;
 
-            // set a new timer to fire every second
+            // set a new timer to fire every second. Update examGradingTimes[]
             activeStudentTime = examGradingTimes[activeStudent];
             timer = setInterval(function () {
                 examGradingTimes[activeStudent] = ++activeStudentTime;
@@ -403,7 +404,7 @@
             }
         }
 
-        /// Updates the timer for the student and refreshes the display. Called once per second by the timer.
+        /// Updates the statistics area. Called once per second by the timer.
         function updateTimer() {
             var totalTime = 0;
             $.each(examGradingTimes, function (index, value) {

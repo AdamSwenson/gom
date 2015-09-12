@@ -28,7 +28,7 @@ var selGrade = gradeArray[Math.floor(Math.random() * gradeArray.length)];
 var studentGrade = [{'gradeLetter' : selGrade}];
 //                    var studentGrade = [<?php //echo $grade_getter->returnJson(); ?>];
 
-var elementScores = [{{<?php $student_scores->json_element_scores(); ?>];
+var elementScores = <?php $student_scores->json_element_scores(); ?>;
 var questionScores = <?php $student_scores->json_question_scores(); ?>;
 var elementAverages = <?php echo $exam_stats->averages($exam, new \Element()); ?>;
 var questionAverages = <?php echo $exam_stats->averages($exam, new \Question()); ?>;

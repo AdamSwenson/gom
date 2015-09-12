@@ -1,3 +1,4 @@
+<!-- Analytics page holds visualizations for student performance -->
 @extends('layouts.master')
 
 @section('pageTitle', 'Analytics | Grade-O-Matic')
