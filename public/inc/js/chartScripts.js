@@ -17,7 +17,7 @@ Question.prototype.setAverage = function (average) {
 };
 
 
-function uestionHolder() {
+function QuestionHolder() {
     this.questions = [];
     this.questionNumbers = [];
     this.answeredQuestions = [];
