@@ -40,6 +40,7 @@ class ExamRepository implements IExamRepository
     /**
      * Deletes the exam.
      * Accepts either an exam object or an integer examId
+     * 
      * @param int|Exam $examOrExamId
      * @return mixed|void
      * @throws \Exception
