@@ -10,7 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 /**
- * Listens for the command to notify all students and dispatches the
+ * Listens for feedback compilation to be complete. Once it is, it dispatches the
  * job which handles notification
  *
  * @package App\Listeners
@@ -18,6 +18,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 class NotifyStudentsListener
 {
     use DispatchesJobs;
+
+    /** Which worker queue should handle the task */
+    const QUEUE_TO_USE = 'emails';
 
     /**
      * Create the event listener.
@@ -28,13 +31,13 @@ class NotifyStudentsListener
     }
 
     /**
-     * Handle the event. Dispatches a NotifyAllStudents event to the emails queue.
+     * Handle the FeedbackCompilationComplete event. Dispatches a NotifyAllStudents event to the emails queue.
      *
      * @param ExamReleasedEvent|FeedbackCompilationCompleteEvent $event
      */
     public function handle(FeedbackCompilationCompleteEvent $event)
     {
-        $job = (new NotifyAllStudents($event->getExam()))->onQueue('emails');
+        $job = (new NotifyAllStudents($event->getExam()))->onQueue(self::QUEUE_TO_USE);
         $this->dispatch($job);
     }
 

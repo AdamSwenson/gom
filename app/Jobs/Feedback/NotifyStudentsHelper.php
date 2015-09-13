@@ -21,10 +21,10 @@ use Illuminate\Support\Facades\Auth;
 class NotifyStudentsHelper implements INotifyStudentsHelper
 {
     /** The text of the email sent the first time a student is notified */
-    const INITIAL_EMAIL_VIEW = 'emails.initial_student_notification';
+    const INITIAL_EMAIL_VIEW = 'emails.studentNotification.initial';
 
     /** The text of the email on any additional notification  */
-    const SECOND_EMAIL_VIEW = 'emails.additional_student_notification';
+    const SECOND_EMAIL_VIEW = 'emails.studentNotification.additional';
 
     /** The route to which the link in the email will direct  */
     const FEEDBACK_PAGE_LINK = 'http://www.gradeomatic.net/feedback';

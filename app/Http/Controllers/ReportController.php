@@ -104,22 +104,19 @@ class ReportController extends Controller
 
 
     /**
-     * Recompiles the feedback for a particular student.
+     * Re-compiles the feedback for a particular student.
      *
      * This is mainly used if the exam has already been released and the teacher goes back and edits
      * the comment field for a particular student.
      *
-     * TODO: set up queue-able event to handle this asynchronously
-     *
      * @param Exam $exam
-     * @param $studentId
+     * @param integer $studentId
      */
     public function updateFeedbackForStudent(Exam $exam, $studentId)
     {
         $student = Student::findOrFail($studentId);
         $job = (new BuildFeedbackOneStudent($exam, $student))->onQueue('default');
         $this->dispatch($job);
-//        $this->feedbackBuilder->recompileFeedbackForStudent($exam->id, $studentId);
     }
 
     /**
@@ -127,24 +124,11 @@ class ReportController extends Controller
      * events to take care of it
      *
      * @param Exam $exam
-     * @return \Illuminate\View\View
      */
     public function createFeedback(Exam $exam)
     {
         $job = (new BuildFeedbackAllStudents($exam))->onQueue('default');
         $this->dispatch($job);
-        //event(new ExamReleasedEvent($exam));
-
-      //  return view('feedback.progress_compiling');
-//
-//        $feedbackBuilder = new FeedbackBuilder();
-//
-//        $feedback = $feedbackBuilder->buildFeedback($exam->getId());
-//        $accessKeys = array_keys($feedback);
-////        dd($feedback[5]);
-//        $data = $feedback[$accessKeys[0]];
-
-        //   return view('feedback.feedback', compact('data'));
     }
 
 
