@@ -4,4 +4,25 @@
  * User: adam
  * Date: 9/2/15
  * Time: 3:22 PM
- */
+ */?>
+
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<p>
+Dear {{ $data['studentName'] }},
+</p>
+
+<p>Your instructor's feedback for your {{ $data['examName'] }} has been updated and is ready to be viewed  </p>
+
+<p>To view your feedback please use the following link <br />
+    {{ $data['feedbackLink'] }}
+</p>
+
+<p>If you have trouble with the link, please go to {{ $data['siteLink'] }} <br />
+    and enter the access key: <br />
+    {{  $data['accessKey'] }}
+
+</p>
+
+
+</html>
