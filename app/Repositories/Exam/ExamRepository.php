@@ -23,7 +23,7 @@ class ExamRepository implements IExamRepository
 
     public function __construct()
     {
-        $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\ICleanerFactory');
+        $this->cleaner = app()->make('\App\HTTP\Controllers\helpers\cleaning\ICleanerFactory');
     }
 
 

@@ -59,7 +59,7 @@ class RestrictToInstitutions
         }
     }
 
-    
+
     /**
      * Set error message and redirect back to an information page
      */
