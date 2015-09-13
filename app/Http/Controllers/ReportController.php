@@ -10,7 +10,9 @@ namespace App\Http\Controllers;
 
 use App\Events\ExamReleasedEvent;
 use App\Exam;
-use App\Jobs\Feedback\NotifySingleStudents;
+use App\Jobs\Feedback\BuildFeedbackAllStudents;
+use App\Jobs\Feedback\BuildFeedbackOneStudent;
+use App\Jobs\Feedback\NotifySingleStudent;
 use App\Student;
 use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
@@ -114,7 +116,10 @@ class ReportController extends Controller
      */
     public function updateFeedbackForStudent(Exam $exam, $studentId)
     {
-        $this->feedbackBuilder->recompileFeedbackForStudent($exam->id, $studentId);
+        $student = Student::findOrFail($studentId);
+        $job = (new BuildFeedbackOneStudent($exam, $student))->onQueue('default');
+        $this->dispatch($job);
+//        $this->feedbackBuilder->recompileFeedbackForStudent($exam->id, $studentId);
     }
 
     /**
@@ -126,9 +131,11 @@ class ReportController extends Controller
      */
     public function createFeedback(Exam $exam)
     {
-        event(new ExamReleasedEvent($exam));
+        $job = (new BuildFeedbackAllStudents($exam))->onQueue('default');
+        $this->dispatch($job);
+        //event(new ExamReleasedEvent($exam));
 
-        return view('feedback.progress_compiling');
+      //  return view('feedback.progress_compiling');
 //
 //        $feedbackBuilder = new FeedbackBuilder();
 //
@@ -142,15 +149,15 @@ class ReportController extends Controller
 
 
     /**
-     * Sends an email notification to the student that their exam has been graded
+     * Sends an email notification to the student that their
+     * exam has been graded with a link to access their feedback
      * @param Exam $exam
      * @param Student $student
      */
     public function notifyStudent(Exam $exam, Student $student)
     {
-        $this->dispatch(new NotifySingleStudents($exam, $student));
-
-        // TODO: need API for emailing an individual student
+        $job = (new NotifySingleStudent($exam, $student))->onQueue('emails');
+        $this->dispatch($job);
     }
 
 

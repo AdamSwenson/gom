@@ -13,15 +13,20 @@ use App\Student;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Does all the work for any job which notifies students
+ * Does all the work (loads access key, constructs feedback link, looks up email addresses,
+ * and sends the message) for any job which notifies students that feedback is ready.
+ *
  * @package App\Jobs\Feedback
  */
-class NotifyStudentsHelper
+class NotifyStudentsHelper implements INotifyStudentsHelper
 {
-
+    /** The text of the email sent the first time a student is notified */
     const INITIAL_EMAIL_VIEW = 'emails.initial_student_notification';
+
+    /** The text of the email on any additional notification  */
     const SECOND_EMAIL_VIEW = 'emails.additional_student_notification';
 
+    /** The route to which the link in the email will direct  */
     const FEEDBACK_PAGE_LINK = 'http://www.gradeomatic.net/feedback';
 
     /** @var  \App\Repositories\Feedback\IAccessKeyRepository */
@@ -48,20 +53,21 @@ class NotifyStudentsHelper
      */
     public function sendEmailToAllGradedStudents(Exam $exam)
     {
-        //check whether already sent, if not
+        //TODO check whether already sent, if not
         $initial = true;
 
         $this->sendEmailToEveryone($exam, $initial);
     }
 
     /**
-     * Prepares and sends notification email to one student
+     * Prepares and sends a notification email to one student.
+     * The $initial parameter governs whether to send the initial email or a re-notification email.
      * @param Exam $exam
      * @param Student $student
-     * @param bool|true $initial
+     * @param bool|true $initial Whether to send the initial email
      */
     public function sendEmailToStudent(Exam $exam, Student $student, $initial=true)
-    {\error_log('jjjj');
+    {
         $accessKey = $this->loadAccessKey($exam, $student);
         if( ! empty($accessKey) )
         {
@@ -73,10 +79,13 @@ class NotifyStudentsHelper
                 'accessKey' => $accessKey
             ];
 
+            //Pick which email to send
             $view = $initial ? self::INITIAL_EMAIL_VIEW : self::SECOND_EMAIL_VIEW;
 
+            //Handle the send
             $this->send($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam));
         }
+        //TODO Error handling if an access key hasn't already been set
     }
 
 
@@ -95,9 +104,6 @@ class NotifyStudentsHelper
             $this->sendEmailToStudent($exam, $student, $initial);
         }
     }
-
-
-
 
 
     /**
@@ -132,8 +138,6 @@ class NotifyStudentsHelper
         return "Your feedback for " . $exam->getName();
     }
 
-
-
     /**
      * Checks that there is an email address for the student and that
      * the student has feedback compiled.
@@ -157,6 +161,32 @@ class NotifyStudentsHelper
         return false;
     }
 
+    /**
+     * Actually sends the email to the student.
+     *
+     * @param string $to_address Recipient's email address
+     * @param string $to_name Recipient's name
+     * @param array $data Data to be passed to the view
+     * @param string $emailView Which email text to use
+     * @param string $subject Subject line of the email
+     */
+    protected function send($to_address, $to_name, $data, $emailView, $subject)
+    {
+        \Mail::send($emailView, $data, function ($message) use ($to_address, $to_name, $subject)
+        {
+            $message->to($to_address, $to_name)->subject($subject);
+        });
+    }
+
+    /**
+     * NOT YET WORKING
+     *
+     * Builds a pdf of the student's feedback and mails the pdf
+     *
+     * @param Exam $exam
+     * @param Student $student
+     * @return mixed
+     */
     public function buildPdf(Exam $exam, Student $student)
     {
 
@@ -179,14 +209,5 @@ class NotifyStudentsHelper
 //        });
     }
 
-    protected function send($to_address, $to_name, $data, $emailView, $subject)
-    {
-        error_log('sending');
 
-        \Mail::send($emailView, $data, function ($message) use ($to_address, $to_name, $subject)
-        {
-            $message->to($to_address, $to_name)->subject($subject);
-        });
-        error_log('sent');
-    }
 }

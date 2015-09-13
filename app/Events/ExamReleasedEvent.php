@@ -8,10 +8,17 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 /**
- * Class ExamReleasedEvent
+ * DEPRECATED
+ * DOES NOT REALLY MAKE SENSE TO RUN THIS VIA LISTENERS SINCE THERE'S ONLY
+ * ONE THING THAT NEEDS TO LISTEN. RATHER, BETTER TO DISPATCH DIRECTLY TO QUEUE
+ * AND THEN LET THE LATER EVENT BE RESPONSIBLE FOR THE NEXT STEPS
+ *
+ * HOWEVER, NOT GOING TO DELETE THIS EVENT OR PREVENT IT FROM BEING FIRED YET.
+ * FUTURE NEEDS MAY MAKE USE OF IT.
+ *
  * Event which fires when the user clicks 'release exam'
  *
- * The various listeners will compile feedback and then handle notifications
+ * (LIES: ) The various listeners will compile feedback and then handle notifications
  *
  * @package App\Events
  */

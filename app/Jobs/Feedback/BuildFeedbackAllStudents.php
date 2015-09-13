@@ -1,13 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: adam
- * Date: 8/22/15
- * Time: 3:51 PM
- */
+
 namespace App\Jobs\Feedback;
 
-use App\Events\StudentNotificationCompleteEvent;
+use App\Events\FeedbackCompilationCompleteEvent;
 use App\Exam;
 use App\Jobs\Job;
 use Illuminate\Queue\SerializesModels;
@@ -16,17 +11,22 @@ use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Auth;
 
-class NotifyAllStudents extends Job implements SelfHandling, ShouldQueue
+/**
+ * Job which takes care of compiling student feedback for all graded students
+ *
+ * @package App\Jobs\Feedback
+ */
+class BuildFeedbackAllStudents extends Job implements SelfHandling, ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
-    /** @var \App\Jobs\Feedback\INotifyStudentsHelper */
-    protected $helper;
+    /** @var Exam  */
+    public $exam;
 
-    /** @var Exam */
-    protected $exam;
+    /** @var \App\Repositories\Feedback\IFeedbackBuilder */
+    protected $feedbackBuilder;
 
-    /** @var  integer The user's id (for logging again upon hydration) */
+    /** @var integer Holds for rehydration */
     protected $userId;
 
     /**
@@ -40,6 +40,7 @@ class NotifyAllStudents extends Job implements SelfHandling, ShouldQueue
     }
 
     /**
+     * Create a new job instance.
      * @param Exam $exam
      */
     public function __construct(Exam $exam)
@@ -50,23 +51,28 @@ class NotifyAllStudents extends Job implements SelfHandling, ShouldQueue
             $this->userId = Auth::user()->id;
         }
         $this->exam = $exam;
-        //Load helper which actually does the sending
-        $this->helper = app()->make('App\Jobs\Feedback\INotifyStudentsHelper');
+
+        //Instantiate the class which will actually do the work
+        $this->feedbackBuilder = app()->make('App\Repositories\Feedback\IFeedbackBuilder');
     }
 
     /**
-     * Send emails to every graded student. Then trigger a StudentNotificationCompleteEvent to
-     * signal that the emails have been sent.
+     * Execute the build feedback job. Once done, fires a FeedbackCompilationCompleteEvent
      */
     public function handle()
     {
         /* Loading the exam model should be handled automatically, but it was having
         problems (perhaps related to the wakeup and BaseModel issues).
-        So doing it explicitly for now. */
+        So doing it explicitly for now (and on separate line to help with debugging. */
         $exam = Exam::findOrFail($this->exam->id);
-        $this->helper->sendEmailToAllGradedStudents($exam);
-
-        //Signal that the emails have been sent (or, more correctly, been pushed to mailgun)
-        event(new StudentNotificationCompleteEvent());
+        $feedback = $this->feedbackBuilder->buildFeedback($exam->id);
+        if(!empty($feedback))
+        {
+            //once done, fire the notification that ready for distribution
+            event(new FeedbackCompilationCompleteEvent($exam));
+        }
+        //TODO Error handling in case fails
     }
+
+
 }

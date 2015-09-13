@@ -9,6 +9,12 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 /**
+ * DEPRECATED
+ * DOES NOT REALLY MAKE SENSE TO RUN THIS VIA LISTENERS SINCE THERE'S ONLY
+ * ONE THING THAT NEEDS TO LISTEN. RATHER, BETTER TO DISPATCH DIRECTLY TO QUEUE
+ * AND THEN LET THE LATER EVENT BE RESPONSIBLE FOR THE NEXT STEPS
+ *
+ *
  * Class FeedbackCompileListener
  *
  * This gets notified when an exam is released. It compiles and stores the feedback for the exam.

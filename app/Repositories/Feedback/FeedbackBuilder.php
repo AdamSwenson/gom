@@ -19,6 +19,11 @@ use App\Repositories\Score\IQuestionScoreRepository;
 use App\Repositories\Student\IStudentRepository;
 use App\Student;
 
+/**
+ * Does all the work of compiling the feedback.
+ * Usually called by a queuable job.
+ * @package App\Repositories\Feedback
+ */
 class FeedbackBuilder implements IFeedbackBuilder
 {
     # ------- repositories

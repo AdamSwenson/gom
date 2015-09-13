@@ -68,7 +68,8 @@ class StorageServiceProvider extends ServiceProvider
         # Jobs
         //Students
         $this->app->bind('App\Jobs\StudentImport\IImportStudentsFromCsv', 'App\Jobs\StudentImport\ImportStudentsFromCsv');
-
+        //Email notifications
+        $this->app->bind('App\Jobs\Feedback\INotifyStudentsHelper', 'App\Jobs\Feedback\NotifyStudentsHelper');
 
         # Tools
         $this->app->bind('App\HTTP\Controllers\helpers\cleaning\ICleanerFactory', 'App\HTTP\Controllers\helpers\cleaning\CleanerFactory');
