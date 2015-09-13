@@ -182,7 +182,8 @@ class NotifyStudentsHelper
     protected function send($to_address, $to_name, $contentArray, $emailView, $subject)
     {
         error_log('sending');
-        \Mail::send($emailView, $contentArray, function ($message) use ($to_address, $to_name, $subject)
+        $data = $contentArray;
+        \Mail::send($emailView, $data, function ($message) use ($to_address, $to_name, $subject)
         {
             $message->to($to_address, $to_name)->subject($subject);
         });
