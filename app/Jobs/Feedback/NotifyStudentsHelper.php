@@ -183,7 +183,7 @@ class NotifyStudentsHelper
     {
         error_log('sending');
 
-        \Mail::send($emailView, $data, function ($message) use ($to_address, $to_name, $subject)
+        \Mail::send($emailView, compact($data), function ($message) use ($to_address, $to_name, $subject)
         {
             $message->to($to_address, $to_name)->subject($subject);
         });
