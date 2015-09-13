@@ -20,7 +20,6 @@ class ExamRequest extends Request
      */
     public function authorize()
     {
-        //TODO Update to use authorization
         return true;
     }
 

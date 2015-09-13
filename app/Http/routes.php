@@ -77,13 +77,16 @@ Route::get('report/{exam}/qualitycontrol', 'ReportController@showQualityControl'
 
 
 
-/* Feedback */
-//If arrived via link in email to student
-Route::get('feedback', 'PublicFeedbackController@showFeedback');
-//Route::get('feedback', 'StudentAccessController@show');
-// If arrived via feedback login page */
-Route::post('feedback/login', 'StudentAccessController@show');
+/* ------------------------------------------------- Feedback ------------------------------------------------------------*/
+/* Creation */
 Route::get('feedback/make/{exam}', 'ReportController@createFeedback');
+
+/* Public access (i.e., student arriving) */
+# If arrived via link in email to student
+Route::get('feedback', 'PublicFeedbackController@showFeedback');
+# If arrived via feedback login page
+Route::post('feedback/login', 'PublicFeedbackController@showFeedback');
+Route::get('feedback/login', 'PublicFeedbackController@showLogin');
 Route::get('feedback/view', 'PublicFeedbackController@showFeedback');
 
 

@@ -19,6 +19,11 @@ use App\Repositories\Feedback\IAccessKeyRepository;
  */
 class PublicFeedbackController extends Controller
 {
+    /** The main feedback view which displays the feedback for the student */
+    const FEEDBACK_DISPLAY_VIEW = 'feedback.feedback';
+
+    /** The log in page for viewing feedback */
+    const FEEDBACK_LOGIN = 'feedback.login';
 
     /**
      * @var IAccessKeyRepository
@@ -51,7 +56,7 @@ class PublicFeedbackController extends Controller
             $fb = $this->accessKeyRepository->retrieveFeedback($accessKey);
             $data = $fb->content;
 
-            return view('feedback.feedback', compact('data'));
+            return view(self::FEEDBACK_DISPLAY_VIEW, compact('data'));
         } catch (\Exception $e)
         {
             $this->showLogin();
@@ -63,7 +68,7 @@ class PublicFeedbackController extends Controller
      */
     public function showLogin()
     {
-        return view('feedback.login');
+        return view(self::FEEDBACK_LOGIN);
     }
 
 

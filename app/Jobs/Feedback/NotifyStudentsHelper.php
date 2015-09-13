@@ -75,7 +75,7 @@ class NotifyStudentsHelper implements INotifyStudentsHelper
                 'studentName' => $student->getFullName(),
                 'examName' => $exam->getName(),
                 'feedbackLink' => $this->buildLink($accessKey),
-                'siteLink' => self::FEEDBACK_PAGE_LINK,
+                'siteLink' => self::FEEDBACK_PAGE_LINK . '/login',
                 'accessKey' => $accessKey
             ];
 
