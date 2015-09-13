@@ -2,23 +2,18 @@
 /**
  * Created by PhpStorm.
  * User: adam
- * Date: 8/22/15
- * Time: 3:51 PM
+ * Date: 9/12/15
+ * Time: 6:41 PM
  */
+
 namespace App\Jobs\Feedback;
 
-use App\Exam;
-use App\Jobs\Job;
-use App\Student;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\Mail;
-
-class NotifyStudents extends Job implements SelfHandling, ShouldQueue
+/**
+ * Does all the work for any job which notifies students
+ * @package App\Jobs\Feedback
+ */
+class NotifyStudentsHelper
 {
-    use InteractsWithQueue, SerializesModels;
 
     const INITIAL_EMAIL_VIEW = 'feedback.initial_student_notification';
     const SECOND_EMAIL_VIEW = 'feedback.additional_student_notification';
@@ -108,7 +103,7 @@ class NotifyStudents extends Job implements SelfHandling, ShouldQueue
      */
     public function logSent(Exam $exam, Student $student)
     {
-       // TODO: Set up mail logging
+        // TODO: Set up mail logging
     }
 
     /**
