@@ -63,24 +63,23 @@
                 </li>
             </ul>
         </nav>
-        <!-- File Import -->
+
         <h2>Import Roster</h2>
 
         <p>Roster files can be any CSV file having each student's information on a single row in the following
             format: Last Name, First Name, Student ID (optional), Email (optional)</p>
 
-        <form>
+            <!-- file import button -->
             <span class="btn btn-primary btn-file">
+                <input type="file" id="fileInput" name="file" accept=".csv, text/plain"/>
                 <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
                 Import Roster
-                <input type="file" id="fileInput" name="file" accept=".csv, text/plain">
             </span>
-            <span onclick="showImportHelp()" class="btn btn-info">
+            <!-- import help -->
+            <a onclick="showImportHelp()" class="btn btn-info">
                 <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
                 Import Help
-            </span>
-        </form>
-
+            </a>
 
         <h2>Edit Roster</h2>
 
@@ -121,11 +120,13 @@
                 <input type="hidden" name="navigateTo" value="selectExam"/>
             </form>
         </div>
+        <!-- add student button -->
         <a class="btn btn-primary" onclick="addStudent()" id="addStudent"><span
                     class="glyphicon glyphicon-plus"
                     aria-hidden="true"></span>
             Add Student
         </a>
+        <!-- delete roster button -->
         <a class="btn btn-danger" onclick="deleteRoster()" id="deleteRoster"><span
                     class="glyphicon glyphicon-minus"
                     aria-hidden="true"></span>
@@ -164,7 +165,7 @@
         function showImportHelp() {
             bootbox.dialog({
                 message: "Student roster files should be formatted as .CSV, .XLS, or .XLSX file types. Each " +
-                "row holds one student's data, with values for last name, first name, ID and email in a column. " + "" +
+                "row holds one student's data, with values for last name, first name, ID and email in a column. " +
                 "Some columns are optional, however all students must at least have first and last names.",
                 title: "Import Help",
                 buttons: {
@@ -184,7 +185,6 @@
 
             // check that first and last names have values
             $table.find('[id$="Name"]').each(function () {
-                console.log($(this).val());
                 if ($(this).val() == '') {
                     valid = false;
                 }
@@ -204,9 +204,8 @@
             // 'upload file' listener
             $('#fileInput').change(function () {
                 startRead();
-                $('input[type="file"]').val(null);
+                $(this).val(null);
             });
-
             return false;
         });
     </script>

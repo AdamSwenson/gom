@@ -43,8 +43,8 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th class="col-md-2">Term</th>
-                    <th class="col-md-5">Name</th>
+                    <th class="col-md-1">Term</th>
+                    <th class="col-md-6">Name</th>
                     <th class="col-md-1">Questions</th>
                     <th class="col-md-1">Students</th>
                     <th class="col-md-3"></th>
@@ -53,12 +53,12 @@
                 <tbody>
                 @foreach($exams as $exam)
                     <tr>
-                        <td style="vertical-align:middle" >
+                        <td style="vertical-align:middle; width: 10%;" >
                             {{ $exam->getTerm() }} {{ $exam->getYear() }}</td>
                         <td style="vertical-align:middle">
                             {{ $exam->getName() }}</td>
                         <td style="vertical-align: middle">{{ $numberOfQuestions[$exam->getId()] or '0' }}</td>
-                        <td style="vertical-align:middle">{{ $numberOfStudents[$exam->getId()] or '0' }}</td>
+                        <td style="vertical-align: middle">{{ $numberOfStudents[$exam->getId()] or '0' }}</td>
                         <!-- edit / clone / delete buttons -->
                         <td style="text-align:right">
                             <a class="btn btn-info" href="{{ url('exam/'.$exam->getId().'/edit') }}">
