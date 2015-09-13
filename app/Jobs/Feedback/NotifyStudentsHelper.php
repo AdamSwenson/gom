@@ -8,6 +8,8 @@
 
 namespace App\Jobs\Feedback;
 
+use App\Exam;
+use App\Student;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -180,7 +182,7 @@ class NotifyStudentsHelper
     protected function send($to_address, $to_name, $contentArray, $emailView, $subject)
     {
         error_log('sending');
-        Mail::send($emailView, $contentArray, function ($message) use ($to_address, $to_name, $subject)
+        \Mail::send($emailView, $contentArray, function ($message) use ($to_address, $to_name, $subject)
         {
             $message->to($to_address, $to_name)->subject($subject);
         });
