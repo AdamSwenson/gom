@@ -181,5 +181,6 @@ class NotifyStudentsHelper
         {
             $message->to($to_address, $to_name)->subject($subject);
         });
+        error_log('sent');
     }
 }
