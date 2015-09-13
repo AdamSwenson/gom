@@ -51,23 +51,6 @@ class NotifyStudentsHelper
     }
 
     /**
-     * Sends a notification email with link to feedback to all students whose exams
-     * have been graded.
-     *
-     * @param Exam $exam
-     * @param bool $initial Whether to use the initial email template
-     */
-    protected function sendEmailToEveryone(Exam $exam, $initial=true)
-    {
-        $this->students = $this->studentRepository->load_students_by_exam($exam);
-        foreach($this->students as $student)
-        {
-            $this->sendEmailToStudent($exam, $student, $initial);
-        }
-    }
-
-
-    /**
      * Prepares and sends notification email to one student
      * @param Exam $exam
      * @param Student $student
@@ -91,6 +74,25 @@ class NotifyStudentsHelper
             $this->send($student->email, $student->getFullName(), $data, $view, $this->buildSubject());
         }
     }
+
+
+    /**
+     * Sends a notification email with link to feedback to all students whose exams
+     * have been graded.
+     *
+     * @param Exam $exam
+     * @param bool $initial Whether to use the initial email template
+     */
+    protected function sendEmailToEveryone(Exam $exam, $initial=true)
+    {
+        $this->students = $this->studentRepository->load_students_by_exam($exam);
+        foreach($this->students as $student)
+        {
+            $this->sendEmailToStudent($exam, $student, $initial);
+        }
+    }
+
+
 
 
 
@@ -175,7 +177,7 @@ class NotifyStudentsHelper
 
     protected function send($to_address, $to_name, $contentArray, $emailView, $subject)
     {
-        Mail::queue($emailView, $contentArray, function ($message) use ($to_address, $to_name, $subject)
+        Mail::send($emailView, $contentArray, function ($message) use ($to_address, $to_name, $subject)
         {
             $message->to($to_address, $to_name)->subject($subject);
         });
