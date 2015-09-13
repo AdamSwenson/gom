@@ -32,6 +32,12 @@ class NotifySingleStudents extends Job implements SelfHandling, ShouldQueue
 
     protected $userId;
 
+    public function __wakeup()
+    {
+        Auth::loginUsingId($this->userId);
+        parent::__wakeup();
+    }
+
     /**
      * @param Exam $exam
      * @param Student $student
