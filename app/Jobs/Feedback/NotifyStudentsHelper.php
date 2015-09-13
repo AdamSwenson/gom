@@ -65,13 +65,13 @@ class NotifyStudentsHelper
         $accessKey = $this->loadAccessKey($exam, $student);
         if( ! empty($accessKey) )
         {
-            $data = collect([
+            $data =[
                 'studentName' => $student->getFullName(),
                 'examName' => $exam->getName(),
                 'feedbackLink' => $this->buildLink($accessKey),
                 'siteLink' => self::FEEDBACK_PAGE_LINK,
                 'accessKey' => $accessKey
-            ]);
+            ];
 
             $view = $initial ? self::INITIAL_EMAIL_VIEW : self::SECOND_EMAIL_VIEW;
 
@@ -183,7 +183,7 @@ class NotifyStudentsHelper
     {
         error_log('sending');
 
-        \Mail::send($emailView, compact($data), function ($message) use ($to_address, $to_name, $subject)
+        \Mail::send($emailView, $data, function ($message) use ($to_address, $to_name, $subject)
         {
             $message->to($to_address, $to_name)->subject($subject);
         });
