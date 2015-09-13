@@ -75,7 +75,7 @@ class NotifyStudentsHelper
 
             $view = $initial ? self::INITIAL_EMAIL_VIEW : self::SECOND_EMAIL_VIEW;
 
-            $this->send($student->email, $student->getFullName(), $data, $view, $this->buildSubject());
+            $this->send($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam));
         }
     }
 
