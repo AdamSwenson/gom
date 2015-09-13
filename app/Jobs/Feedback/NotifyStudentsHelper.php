@@ -57,7 +57,7 @@ class NotifyStudentsHelper
      * @param bool|true $initial
      */
     public function sendEmailToStudent(Exam $exam, Student $student, $initial=true)
-    {
+    {\error_log('jjjj');
         $accessKey = $this->loadAccessKey($exam, $student);
         if( ! empty($accessKey) )
         {
