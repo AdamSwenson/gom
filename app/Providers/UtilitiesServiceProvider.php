@@ -21,7 +21,7 @@ class UtilitiesServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->bind('\App\classes\SecurityClasses\cleaning\ICleanerFactory', '\App\classes\SecurityClasses\cleaning\CleanerFactory');
+       // $this->app->bind('\App\classes\SecurityClasses\cleaning\ICleanerFactory', '\App\classes\SecurityClasses\cleaning\CleanerFactory');
 
     }
 
@@ -32,7 +32,7 @@ class UtilitiesServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('\App\classes\SecurityClasses\cleaning\ICleanerFactory', '\App\classes\SecurityClasses\cleaning\CleanerFactory');
+        //$this->app->bind('\App\classes\SecurityClasses\cleaning\ICleanerFactory', '\App\classes\SecurityClasses\cleaning\CleanerFactory');
         //
     }
 }
