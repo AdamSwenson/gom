@@ -65,13 +65,13 @@ class NotifyStudentsHelper
         $accessKey = $this->loadAccessKey($exam, $student);
         if( ! empty($accessKey) )
         {
-            $data = [
+            $data = collect([
                 'studentName' => $student->getFullName(),
                 'examName' => $exam->getName(),
                 'feedbackLink' => $this->buildLink($accessKey),
                 'siteLink' => self::FEEDBACK_PAGE_LINK,
                 'accessKey' => $accessKey
-            ];
+            ]);
 
             $view = $initial ? self::INITIAL_EMAIL_VIEW : self::SECOND_EMAIL_VIEW;
 
