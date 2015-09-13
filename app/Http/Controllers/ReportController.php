@@ -10,6 +10,7 @@ namespace App\Http\Controllers;
 
 use App\Events\ExamReleasedEvent;
 use App\Exam;
+use App\Jobs\Feedback\NotifySingleStudents;
 use App\Student;
 use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
@@ -147,6 +148,7 @@ class ReportController extends Controller
      */
     public function notifyStudent(Exam $exam, Student $student)
     {
+        $this->dispatch(new NotifySingleStudents($exam, $student));
 
         // TODO: need API for emailing an individual student
     }
