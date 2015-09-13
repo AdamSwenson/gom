@@ -15,6 +15,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
 /**
@@ -29,12 +30,18 @@ class NotifySingleStudents extends Job implements SelfHandling, ShouldQueue
     protected $exam;
     protected $student;
 
+    protected $userId;
+
     /**
      * @param Exam $exam
      * @param Student $student
      */
     public function __construct(Exam $exam, Student $student)
     {
+        if( empty($this->userId) )
+        {
+            $this->userId = \Auth::user()->id;
+        }
         $this->exam = $exam;
         $this->student = $student;
         $this->helper = new NotifyStudentsHelper();
@@ -42,7 +49,7 @@ class NotifySingleStudents extends Job implements SelfHandling, ShouldQueue
 
     public function handle()
     {
-        $this->helper->sendEmailToStudent($this->exam, $this->student);
+        $this->helper->sendEmailToStudent($this->userId, $this->exam, $this->student);
 
     }
 }
