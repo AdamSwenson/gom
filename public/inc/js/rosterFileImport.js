@@ -51,6 +51,13 @@ function browserSupportFileUpload() {
 
 function startRead() {
 
+    // reset columns. prevents bugs if two files with different orderings are imported.
+    lastNameCol = -1;
+    firstNameCol = -1;
+    emailCol = -1;
+    idCol = -1;
+
+    console.log('reading file');
     if (!browserSupportFileUpload()) {
         alert('The File APIs are not fully supported in this browser!');
         return;
@@ -60,12 +67,12 @@ function startRead() {
     var $inputFile = $('#fileInput')[0].files[0];
 
     reader.readAsText($inputFile);
-ro
+
     reader.onload = function (event) {
         rows = event.target.result.toString().replace(/\r/, "\n").split("\n"); // such hax! -b.b.
         var students = [];
 
-        // break each row into its elements, ignoring empty lines
+        // break each row into its elements
         for (var i = 0; i < rows.length; i++) {
             students[i] = rows[i].toString().split(separatorChar);
         }
@@ -73,7 +80,7 @@ ro
         // remove any resulting lines with 1 or fewer elements
         for (i = students.length - 1; i >= 0; i--) {
             // <= 1 here is dirty, there's a better way to throw out "" lines
-            if (students[i].length <= 1) {
+            if (students[i].length <= 1 || (rows[i].search(/,,+/) >= 0 )) {
                 students.splice(i, 1);
                 rows.splice(i, 1);
             }
@@ -84,16 +91,17 @@ ro
         var startRow = 0;
         if (firstRowContainsTitles(firstLine)) {
             guessColumnDataByTitles(firstLine);
+            // remove the header line as we don't need it any longer
             rows.splice(0, 1);
             students.splice(0, 1);
-            console.log(students);
+            console.log(rows);
         } else {
             guessColumnDataByContent(students);
         }
-
+        console.log(rows);
         console.log('lnameCol:' + lastNameCol + ' fnameCol:' + firstNameCol + ' idCol:' + idCol + ' emailCol:' + emailCol);
 
-        for (i = startRow; i < rows.length - 1; i++) {
+        for (i = startRow; i < rows.length; i++) {
             addRow(students[i]);
         }
     };

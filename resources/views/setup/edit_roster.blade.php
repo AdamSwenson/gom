@@ -37,13 +37,13 @@
     }
 
     .glyphicon-remove {
-        sfont-size: 1.2em;
+        font-size: 1.2em;
         color: #d9534f;
     }
 
     .glyphicon-remove:hover {
         cursor: pointer;
-        sfont-size: 1.2em;
+        font-size: 1.2em;
         color: #d43f3a;
     }
 </style>
@@ -69,21 +69,17 @@
         <p>Roster files can be any CSV file having each student's information on a single row in the following
             format: Last Name, First Name, Student ID (optional), Email (optional)</p>
 
-        <div class="container">
-            <form>
-                <div class="row">
+        <form>
             <span class="btn btn-primary btn-file">
                 <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
-                    Import Roster
-                    <input type="file" id="fileInput" name="file" accept=".csv, text/plain">
+                Import Roster
+                <input type="file" id="fileInput" name="file" accept=".csv, text/plain">
             </span>
-                    <a onclick="showImportHelp()" class="btn btn-info">
-                        <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
-                        Import Help
-                    </a>
-                </div>
-            </form>
-        </div>
+            <span onclick="showImportHelp()" class="btn btn-info">
+                <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+                Import Help
+            </span>
+        </form>
 
 
         <h2>Edit Roster</h2>
@@ -138,7 +134,7 @@
     </div>
 </div>
 
-</div>
+
 <div style="display: none">
     <table>
         <tbody>
@@ -169,7 +165,7 @@
             bootbox.dialog({
                 message: "Student roster files should be formatted as .CSV, .XLS, or .XLSX file types. Each " +
                 "row holds one student's data, with values for last name, first name, ID and email in a column. " + "" +
-                "You can omit columns, however all students must at least have first and last names.",
+                "Some columns are optional, however all students must at least have first and last names.",
                 title: "Import Help",
                 buttons: {
                     success: {
@@ -185,6 +181,8 @@
         function submitAndNavigateTo(target) {
             var $table = $('#studentRosterBody');
             var valid = true;
+
+            // check that first and last names have values
             $table.find('[id$="Name"]').each(function () {
                 console.log($(this).val());
                 if ($(this).val() == '') {
