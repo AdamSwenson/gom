@@ -19,8 +19,8 @@ use Illuminate\Support\Facades\Auth;
 class NotifyStudentsHelper
 {
 
-    const INITIAL_EMAIL_VIEW = 'feedback.initial_student_notification';
-    const SECOND_EMAIL_VIEW = 'feedback.additional_student_notification';
+    const INITIAL_EMAIL_VIEW = 'emails.initial_student_notification';
+    const SECOND_EMAIL_VIEW = 'emails.additional_student_notification';
 
     const FEEDBACK_PAGE_LINK = 'http://www.gradeomatic.net/feedback';
 
