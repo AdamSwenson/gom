@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset = utf-8"/>
@@ -11,10 +12,10 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
     @yield('cssLinks')
-    @include('layouts.js_jqueryCss')
 </head>
 
 <body>
+    <!-- no longer have NavBar, so this may produce side effects -->
     @yield('NavBar')
     <div id="container">
     @yield('body')
@@ -23,12 +24,10 @@
     </div>
 
     <div id="scriptBox">
-    @include('layouts.js_jqueryJs')
+    @include('layouts.js_jquery_loader')
+    @include('layouts.js_bootstrap_loader')
     @include('layouts.js_scriptloader')
 
-
-      <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-      <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
       <script type="text/javascript" src="<?php echo asset("inc/js/bootbox.min.js");?>"></script>
        <!-- bootbox for easy modals -->
            <script type="text/javascript" src="<?php echo asset("inc/js/bootbox.min.js");?>"></script>

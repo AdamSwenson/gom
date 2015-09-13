@@ -1,7 +1,7 @@
 <!-- 'edit_element' contains the controls for adding, editing and deleting elements  -->
 
 @extends('layouts.master')
-@section('pageTitle', 'Edit Elements | Grade-O-Matic')
+@section('pageTitle', 'Edit Elements | GradeOmatic')
 @section('description', 'Add or edit elements')
 @section('cssLinks')
 @endsection
@@ -72,9 +72,7 @@
 
         // validate and submit form. Currently, questions are valid with 0 elements.
         function submitForm(target) {
-            if ( numberOfElements() == 0) {
-                bootbox.alert('A question can have no elements, however, students will not receive written feedback');
-            } else if ( formFieldsValid() ) {
+            if ( formFieldsValid() ) {
                 $('#nextAction').val(target);
                 $('#elementForm').submit();
             } else {
@@ -127,8 +125,7 @@
                                 label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
                                 className: "btn-danger btn-sm",
                                 callback: function() {
-                                    if (el && el.parentNode.removeChild(el))
-                                        updateNumbers();
+                                    deleteElement(el);
                                 }
                             }
                         }
@@ -214,6 +211,14 @@
 
             function getElementCount() {
                 return $('elementForm').find("[id^='elementItem']").length;
+            }
+
+            function deleteElement(el) {
+                if (el && el.parentNode.removeChild(el))
+                    updateNumbers();
+                if ( !numberOfElements() )
+                    bootbox.alert('A question can have no elements, however, students will not ' +
+                            'receive written feedback');
             }
 
             return false;

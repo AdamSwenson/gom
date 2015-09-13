@@ -13,7 +13,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url('home/') }}"><span class="standard">Grade-O-Matic</span></a>
+            <a class="navbar-brand" href="{{ url('home/') }}"><span class="standard">GradeOmatic</span></a>
         </div>
         <div class="collapse navbar-collapse" id="navbar-ex-collapse">
             <ul class="nav navbar-nav navbar-right">
@@ -27,7 +27,7 @@
                     <a href="{{url('report')}}">Reports</a>
                 </li>
                 <li id="navAccount">
-                    <a href="{{url('account/home')}}">Account</a>
+                    <a href="{{url('account')}}">Account</a>
                 </li>
                 <li id="navLogout">
                     <a href="{{url('auth/logout')}}">Log out</a>

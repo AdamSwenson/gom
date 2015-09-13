@@ -20,7 +20,7 @@
         document.documentElement.className += ' js';
     </script>
 
-        @include('layouts.js_jqueryJs')
+        @include('layouts.js_jquery_loader')
         @include('layouts.js_scriptloader')
 
         <script type="text/javascript"

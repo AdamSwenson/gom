@@ -13,6 +13,7 @@ use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
 use App\Repositories\Score\IElementScoreRepository;
 use App\Repositories\Score\IQuestionScoreRepository;
+use App\Repositories\Student\IStudentRepository;
 use App\Repositories\Time\IGradingTimeRepository;
 
 use Illuminate\Support\Facades\View;
@@ -59,6 +60,7 @@ class GradeController extends Controller
      * @param IQuestionAssignmentRepository $questionAssignmentRepository
      * @param IQuestionScoreRepository $questionScoreRepository
      * @param IGradingTimeRepository $gradingTimeRepository
+     * @param IStudentRepository $studentRepository
      */
     public function __construct(IExamRepository $IExamRepository,
                                 IElementRepository $elementRepository,
@@ -66,7 +68,8 @@ class GradeController extends Controller
                                 IElementScoreRepository $elementScoreRepository,
                                 IQuestionAssignmentRepository $questionAssignmentRepository,
                                 IQuestionScoreRepository $questionScoreRepository,
-                                IGradingTimeRepository $gradingTimeRepository)
+                                IGradingTimeRepository $gradingTimeRepository,
+                                IStudentRepository $studentRepository)
     {
         $this->middleware('auth');
         $this->examDao = $IExamRepository;
@@ -76,6 +79,7 @@ class GradeController extends Controller
         $this->elementScoreDao = $elementScoreRepository;
         $this->questionScoreDao = $questionScoreRepository;
         $this->gradingTimeDao = $gradingTimeRepository;
+        $this->studentDao = $studentRepository;
     }
 
     /**
@@ -84,8 +88,20 @@ class GradeController extends Controller
     public function index()
     {
         $exams = $this->examDao->load_all_exams();
+        $numStudents = [];
+        $numQuestions = [];
+        $numGraded = [];
+        foreach($exams as $exam) {
+            $examId = $exam->getId();
+            $numStudents[$examId] = count($this->studentDao->load_students_by_exam($examId));;
+            $numQuestions[$examId] = count($this->questionAssignmentDao->load_all_for_exam($examId));
+            // calculating and loading all the graded exams is a lot of work ( #students * #questions * #exams)
+            // so maybe we should cache that value. Alternative is just to not display...
+            $numGraded[$examId] = '--';
+        }
 
-        return View::make('grade.grade_select_exam', compact('exams'));
+        return View::make('grade.grade_select_exam', ['exams' => $exams,
+            'numStudents' => $numStudents, 'numQuestions' => $numQuestions, 'numGraded' => $numGraded ]);
     }
 
     /**
@@ -95,8 +111,7 @@ class GradeController extends Controller
      */
     public function grade(Exam $exam)
     {
-        $studentDao = app()->make('App\Repositories\Student\IStudentRepository');
-        $students = $studentDao->load_students_by_exam($exam);
+        $students = $this->studentDao->load_students_by_exam($exam);
 
         // TODO: do verification for exams. Must have 1 student and at least 1 question.
         if (sizeof($students) == 0 ) return ("No students found for this exam");
@@ -179,7 +194,7 @@ class GradeController extends Controller
     }
 
     /**
-     * Records scores as well as time and any other information
+     * Records scores, comments and grading time
      * @param Exam $exam
      * @param GradingRequest $request
      */
@@ -231,8 +246,6 @@ class GradeController extends Controller
         } else {
             //TODO Error handling
         }
-
-
     }
 
     /**
@@ -280,7 +293,7 @@ class GradeController extends Controller
     {
         if ($request->has('student_id')) {
             $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
-            $time = $dao->load($exam->id, $request->input('student_id'));
+            $time = $dao->load($exam->getId(), $request->input('student_id'));
             return $time;
         }
     }
@@ -295,7 +308,7 @@ class GradeController extends Controller
     public function loadStats(Exam $exam)
     {
         $dao = app()->make('App\Repositories\Time\IGradingStatsRepository');
-        $stats = $dao->get_grading_time_stats($exam->id);
+        $stats = $dao->get_grading_time_stats($exam->getId());
         return $stats;
     }
 

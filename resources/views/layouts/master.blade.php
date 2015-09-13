@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset = utf-8"/>
@@ -8,19 +9,10 @@
     <meta name="description" content="@yield('description')">
     <link href='inc/images/favicon.ico' rel='icon' type='image/x-icon'/>
 
+    @include('layouts.js_jquery_loader')
+    @include('layouts.js_bootstrap_loader')
+    @include('layouts.js_additional_libs')
 
-    @yield('cssLinks')
-    <link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet">
-    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.2.js"></script>
-    @include('layouts.js_scriptloader')
-            <!-- bootstrap -->
-    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-
-    <!-- bootbox: was going to use for warning easy modals NOT CURRENTLY USED -->
-    <script type="text/javascript" src="<?php echo asset("inc/js/bootbox.min.js");?>"></script>
-    <!--  rubaXA Sortable for drag and drop -->
-    <script src="http://rubaxa.github.io/Sortable/Sortable.js"></script>
 </head>
 
 <body>

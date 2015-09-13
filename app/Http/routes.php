@@ -11,12 +11,6 @@
 |
 */
 
-
-Route::get('test', function () {
-    return view('reports.grade_range_assignment');
-  // return view('auth.reset');
-});
-
 /* Authentication and registration */
 Route::controllers([
     'auth' => 'Auth\AuthController',
@@ -25,8 +19,8 @@ Route::controllers([
 
 
 /* Account */
-Route::post('account/home', 'LandingController@loggedIn');
-Route::get('account/home', 'LandingController@loggedIn');
+//Route::post('account/home', 'LandingController@loggedIn');
+Route::get('account', 'LandingController@loggedIn');
 
 /* Home page */
 Route::get('/', 'LandingController@showLanding');
@@ -34,15 +28,10 @@ Route::get('home', 'LandingController@showLanding');
 Route::get('landing', 'LandingController@showLanding');
 Route::get('index', 'LandingController@showLanding');
 
-/* AJAX requests */
-Route::post('api', array('uses' => 'AjaxController@handleRequest'));
-Route::post('setup/api', array('uses' => 'AjaxController@handleRequest'));
-
-
 /* ----------------------------------------------- Exam set up  -------------------------------------------------------- */
 /* Select exam page */
-Route::get('setup','ExamController@index');
-Route::post('setup','ExamController@index');
+Route::get('setup','ExamController@index'); // not sure we need this
+Route::post('setup','ExamController@index'); // or this, as they duplicate /exam
 Route::get('exam/{exam}/clone','ExamController@cloneExam');
 Route::resource('exam', 'ExamController');
 

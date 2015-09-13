@@ -1,6 +1,7 @@
+<!-- the grade exam tool -->
 @extends('layouts.master')
 
-@section('pageTitle', 'Grade Exam')
+@section('pageTitle', 'Grade Exam | GradeOmatic')
 @section('description', 'Grade an exam')
 @section('cssLinks')
 
@@ -17,7 +18,7 @@
                 <h4 id="selectPrompt">Select a student to begin grading</h4>
 
                 <div id="questionArea" style="display: none">
-                    <!-- Centered Question Pills -->
+                    <!-- Create one Question Tab for each question -->
                     <ul class="nav nav-pills nav-justified">
                         @foreach($questionAssignments as $qAssignment)
                             <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
@@ -95,9 +96,9 @@
                 <a class="btn btn-success col-md-12" href="{{ url('report/') }}" id="finishButton" style="display: none;">
                     <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish
                 </a>
-                <!-- student table -->
+                <!-- student table shows the student roster -->
                 @include('grade.student_table')
-                        <!-- timing and data -->
+                <!-- statistics area holds time info -->
                 @include('grade.statistics_table')
             </div>
         </div>
@@ -111,8 +112,8 @@
 
         var elementComments = <?= json_encode($studentElementComments) ?>;
         var elementScores = <?= json_encode($studentElementScores) ?>;
-        var questionScores = <?= json_encode($studentQuestionScores) ?>;
         var stockComments = <?= json_encode($stockComments) ?>;
+        var questionScores = <?= json_encode($studentQuestionScores) ?>;
         var examGradingTimes = <?= json_encode($examGradingTimes) ?>;
         var numStudents = {{ count($students) }};
         var numQuestions = {{ count($questionAssignments) }};
@@ -127,8 +128,7 @@
         updateExamGrades();
 
         /*
-         * Set valenceCutoffs for comments.
-         * These represent the maximum value for each valence group.
+         * Set valenceCutoffs for comments --  these represent the maximum value for each valence group.
          * Magic numbers for now, but will accept data from the server for valenceCutoffs, valenceLabels and valenceLabelPositions
          *
          */
@@ -137,7 +137,7 @@
         var valenceLabelPositions = [0, 33, 67, 100];
         var sliderStep = .25;
 
-        /* initialize Sliders */
+        /* initialize Sliders with valenceCutoffs */
         var $sliders = $('input.slider').slider({
             tooltip: 'show',
             value: 0,
@@ -156,6 +156,7 @@
          */
 
         // Returns which valence group a [score] belongs to by comparing with valenceCutoffs[]
+        // i.e. a score > 0 and <= 2.5 will be in the 'poor' valence (1)
         function getValence(score) {
             var valence = 0;
             for (var j = valenceCutoffs.length - 2; j >= 0; j--) {
@@ -168,7 +169,7 @@
         }
 
         // examGrades[] keeps a persistent total of the exam score for each student.
-        // Exams without grades have a value of -1, because dealing with null and NaN is annoying.
+        // Exams without grades have a value of -1, because dealing with null and NaN is .unpredictable across js and PHP.
         // This shouldn't be an issue, as the DB has no notion of exam grades, they're only used here as a shorthand
         // to store and quickly find information about the exam state.
         function updateExamGrades() {
@@ -286,12 +287,13 @@
                 if (examGrades[i] >= 0) {
                     $('#examGrade' + i).text(examGrades[i]);
                 } else {
+                    // the student has no grade (val of -1)
                     $('#examGrade' + i).text('--');
                 }
             }
         }
 
-        // set roster background colors for all students
+        // set background colors in the student roster
         // "graded" exams are marked green
         // "ungraded" exams are marked white
         function setStudentBackgroundColors() {
@@ -318,7 +320,7 @@
             $(item).css('color', 'black');
         }
 
-        // bulk function updates all the student data fields
+        // bulk function updates all the dependent data in the roster area.
         function updateStudentDataArea() {
             updateExamGrades();
             updateGradedRemainingCounter();
@@ -340,6 +342,7 @@
                         } else if (value == 'studentIdentifier') {
                             result = parseFloat($(i).text()) - parseFloat($(j).text());
                         } else {
+                            // sort by exam grade
                             var gradeA = examGrades[$(a).attr('data-index')];
                             var gradeB = examGrades[$(b).attr('data-index')];
                             result = gradeA - gradeB;
@@ -354,7 +357,7 @@
             sortAsc = !sortAsc;
         }
 
-        // sums elements scores and sets question scores - used for StandardScoring
+        // sums elements scores and sets question scores - will be used for StandardScoring
         function updateStandardScores() {
             //
         }
@@ -367,7 +370,7 @@
             updateTimer();
         }
 
-        // loads timer for the active student and sets to running
+        // load timer for the active student and sets state to running
         function loadTimer() {
             if (activeStudent === null) return;
             clearInterval(timer);
@@ -376,7 +379,7 @@
             $('#btnTimerIcon').attr('class', 'glyphicon glyphicon-play');
             timerPaused = false;
 
-            // set a new timer to fire every second
+            // set a new timer to fire every second. Update examGradingTimes[]
             activeStudentTime = examGradingTimes[activeStudent];
             timer = setInterval(function () {
                 examGradingTimes[activeStudent] = ++activeStudentTime;
@@ -403,7 +406,7 @@
             }
         }
 
-        /// Updates the timer for the student and refreshes the display. Called once per second by the timer.
+        /// Updates the statistics area. Called once per second by the timer.
         function updateTimer() {
             var totalTime = 0;
             $.each(examGradingTimes, function (index, value) {
@@ -434,7 +437,7 @@
             /* When an element slider stops movement, do things */
             $('input.slider').on('slideStop', function (slideEvt) {
 
-                // update element score
+                // update the element's score visually and in elementScores[]
                 var elementNumber = $(this).closest('[id^="element"]').attr('data-element-index');
                 var oldScore = elementScores[activeStudent][elementNumber];
                 var newScore = slideEvt.value;
@@ -445,18 +448,19 @@
                 var $parent = $(this).parents('[id^="element"]');
                 var $elementComment = $parent.find('textArea');
                 if (getValence(newScore) != getValence(oldScore)) {
-                    // update comment and save to server
+                    // Score is in a new valence region.
+                    // plug in the appropriate comment text and save to DB
                     var stockResponse = stockComments[elementNumber][getValence(newScore)];
                     $elementComment.val(stockResponse);
                     updateAndSaveComment($elementComment);
                 } else {
+                    // Score is in the same valence region.
                     // Jump straight to saving without changing the elementComment
                     var elementId = $(this).closest('[id^="element"]').attr('data-element-id');
                     createGradeRequest('element_id', elementId, newScore, null);
                 }
 
-                // If using bell curve scoring, element score affects the total question score.
-                // Update question and exam scores
+                // If using bell curve (standardScoring), element score affects the total question score, so update
                 if (standardScoring) {
                     updateStandardScores();
                 }

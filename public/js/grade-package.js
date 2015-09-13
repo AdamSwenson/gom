@@ -236,7 +236,7 @@ new Vue({
 // shim for using process in browser
 
 var process = module.exports = {};
-var queue = [];
+ar queue = [];
 var draining = false;
 
 function drainQueue() {

@@ -1,9 +1,11 @@
+<!-- template used by 'grade_exam' to host -->
 <div class="list-group-item" style="background-color: #DDDDDD;" id="element{{ $count }}" data-element-index="{{ $count }}"
      data-element-id="{{ $elements[$eNumber]->getId() }}">
     <h5>Element #{{ $eNumber+1 }}: "{{ $elements[$eNumber]->getElementName() }}"</h5>
     <div class="row">
                 <span class="col-md-5">
                     <!-- score slider -->
+                    <label for="sliderQ{{ $qNumber }}E{{ $eNumber+1 }}"></label>
                     <input class="slider" id="sliderQ{{ $qNumber }}E{{ $eNumber+1 }}" type="text"/>
                 </span>
                     <!-- comment area -->

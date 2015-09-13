@@ -1,14 +1,15 @@
-<h4 class=" row">
-    <div class="col-md-7" style="vertical-align:middle">
+<!-- Used by 'grade_exam'. Displays the exam timers -->
+<h4 class="row">
+    <span class="col-md-7" style="vertical-align:middle">
         <span class="glyphicon glyphicon-time" aria-hidden="true" ></span>
         Statistics
-    </div>
-    <div class="col-md-5">
+    </span>
+    <span class="col-md-5">
         <a class="btn btn-warning" id="btnTimer" href="javascript:toggleTimer()">
             <span id="btnTimerIcon" class="glyphicon glyphicon-pause" aria-hidden="true"></span>
             <span id="btnTimerLabel">Paused</span>
         </a>
-    </div>
+    </span>
 </h4>
 
 <div class="panel panel-default">
