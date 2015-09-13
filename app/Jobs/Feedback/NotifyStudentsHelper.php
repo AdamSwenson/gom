@@ -58,9 +58,8 @@ class NotifyStudentsHelper
      * @param Student $student
      * @param bool|true $initial
      */
-    public function sendEmailToStudent($userId, Exam $exam, Student $student, $initial=true)
+    public function sendEmailToStudent(Exam $exam, Student $student, $initial=true)
     {\error_log('jjjj');
-        Auth::loginUsingId($userId);
         $accessKey = $this->loadAccessKey($exam, $student);
         if( ! empty($accessKey) )
         {

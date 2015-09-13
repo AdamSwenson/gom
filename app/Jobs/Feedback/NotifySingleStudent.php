@@ -55,7 +55,7 @@ class NotifySingleStudents extends Job implements SelfHandling, ShouldQueue
 
     public function handle()
     {
-        $this->helper->sendEmailToStudent($this->userId, $this->exam, $this->student);
+        $this->helper->sendEmailToStudent($this->exam, $this->student);
 
     }
 }
