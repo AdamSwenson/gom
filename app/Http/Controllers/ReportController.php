@@ -211,7 +211,19 @@ class ReportController extends Controller
         $numberOfQuestions = count($this->questionAssignmentRepository->load_all_for_exam($exam->getId()));
         if ($numberOfQuestions > 0) {
             for ($i = 1; $i <= $numberOfQuestions; $i++) {
-                $oneSetOfScores = $this->questionScoreRepository->load_all_for_question_number($exam->getId(), $i);
+
+                /*
+                 * Was getting error because this method on questionScoreRepository
+                 * returns an array of stdClass objects. So updating to extract the scores from
+                 * those objects
+                 */
+                $oneSetOfScores = [];
+                $arrayOfStdObjects = $this->questionScoreRepository->load_all_for_question_number($exam->getId(), $i);
+                foreach($arrayOfStdObjects as $obj)
+                {
+                    array_push($oneSetOfScores, $obj->score);
+                }
+                //back to what was originally here
                 $oneSetOfScores[] = $i;
 
                 $sum = array_sum($oneSetOfScores);
