@@ -11,6 +11,10 @@
 |
 */
 
+Route::get('test', function(){
+   throw new Exception('test error ');
+});
+
 /* Authentication and registration */
 Route::controllers([
     'auth' => 'Auth\AuthController',
