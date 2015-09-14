@@ -25,7 +25,7 @@ $w = '800px';
                        value="{{ $data['grade'] or ''}}"/>
             </li>
             <li>
-                <span class="studentInfoLabel">Entry Code:</span> <span class="pseudoID"> </span>
+                <span class="studentInfoLabel">Entry Code:</span> <span class="pseudoID"> {{ $data['accessKey'] or '' }}</span>
             </li>
         </ul>
     </div> <!--//close studentInfo-->

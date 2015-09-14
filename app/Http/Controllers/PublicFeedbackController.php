@@ -55,6 +55,7 @@ class PublicFeedbackController extends Controller
         {
             $fb = $this->accessKeyRepository->retrieveFeedback($accessKey);
             $data = $fb->content;
+            $data['accessKey'] = $accessKey;
 
             return view(self::FEEDBACK_DISPLAY_VIEW, compact('data'));
         } catch (\Exception $e)
