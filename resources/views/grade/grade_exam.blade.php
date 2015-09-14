@@ -183,6 +183,7 @@
                         totalScore += gradeEntry;
                     }
                 });
+                // TODO: crash here on live server !!
                 if (totalScore !== null) examGrades[i] = totalScore.toPrecision(3);
                 else {
                     examGrades[i] = -1;

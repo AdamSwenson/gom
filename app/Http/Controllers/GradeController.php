@@ -95,8 +95,9 @@ class GradeController extends Controller
             $examId = $exam->getId();
             $numStudents[$examId] = count($this->studentDao->load_students_by_exam($examId));;
             $numQuestions[$examId] = count($this->questionAssignmentDao->load_all_for_exam($examId));
-            // calculating and loading all the graded exams is a lot of work ( #students * #questions * #exams)
-            // so maybe we should cache that value. Alternative is just to not display...
+            // I'd like to have an indicator showing how many exams have been graded for each exam in the list.
+            // Calculating and loading all the graded exams is a lot of work ( #students * #questions * #exams)
+            // so maybe we should cache that value in the DB. For now it's not displayed.
             $numGraded[$examId] = '--';
         }
 
