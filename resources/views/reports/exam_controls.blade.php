@@ -1,57 +1,50 @@
 <!-- Release an exam, un-release an exam, view analytics and review student feedback -->
-
 @extends('layouts.master')
 @section('pageTitle', 'Reports | GradeOmatic')
 @section('description', 'Select an exam action')
-
 @section('cssLinks')
 @endsection
 
 @section('body')
+    <style>
+        a {
+            cursor: pointer;
+        }
+
+        .table th {
+            border: none;
+        }
+
+        .panel {
+            border: none;
+        }
+    </style>
     <div class="container">
         <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Reports & Release</h3>
-        <h4><?php if( sizeof($exams) == 0 )
-                    $subtitle = 'No exams found';
-            else
-                    $subtitle = 'Release grades to students or view data about an exam';
-            echo($subtitle)?>
-        </h4>
-        <div class="well-lg" <?php if( sizeof($exams) == 0 ) echo('style="display:none;"');?>>
+        <h4>Release grades to students or view data about an exam</h4>
+        <div class="well-lg">
             <div class="panel panel-default">
                 <table class="table">
+                    <thead>
+                    <tr>
+                        <th class="col-md-1">Term</th>
+                        <th class="col-md-7">Name</th>
+                        <th class="col-md-4"></th>
+                    </tr>
+                    </thead>
                     <tbody>
-                    @foreach($exams as $exam)
+                    @if ( sizeof($exams) > 0 )
+                        @foreach($exams as $exam)
+                            <?php $examId = $exam->id or '0'; ?>
+                            @include('reports.exam_controls_tr')
+                        @endforeach
+                    @else
                         <tr>
-                            <!-- width will override the column width setting for term info -->
-                            <td class="col-md-1" style="vertical-align:middle; width: 10%;">
-                                {{ $exam->getTerm() }}
-                                {{ $exam->getYear() }}
-                            </td>
-                            <td class="col-md-7" style="vertical-align:middle">
-                                {{ $exam->getName() }}
-                            </td>
-                            <!-- control buttons -->
-                            <td class="col-md-4" style="text-align:right">
-                                <a class="btn btn-primary" id="{{'exam'.$exam->getId()}}" style="width:140px;"
-                                   title="Release Exam" data-released="{{ $exam->getReleased() }}"
-                                   onclick="confirmRelease({{ $exam->getId()}})">
-                                    <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
-                                    Release Exam
-                                </a>
-                                <a class="btn btn-default disabled" id="lock" title="Remove Access"
-                                   onclick="removeAccess({{ $exam->getId() }})" >
-                                    <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
-                                </a>
-                                <a class="btn btn-info" title="Exam Analytics"
-                                   href="{{url('report/' . $exam->getId() . '/analytics')}}"><span
-                                            class="glyphicon glyphicon-stats"
-                                            aria-hidden="true"></span> </a>
-                                <a class="btn btn-info" title="Student Controls"
-                                   href="{{url('report/' . $exam->getId() . '/students')}}"><span
-                                            class="glyphicon glyphicon-user" aria-hidden="true"></span> </a>
-                            </td>
+                            <td style="vertical-align:middle; width: 10%;"></td>
+                            <td style="vertical-align:middle"><i>No Exams Found</i></td>
+                            <td></td>
                         </tr>
-                    @endforeach
+                    @endif
                     </tbody>
                 </table>
             </div>
@@ -71,20 +64,21 @@
         $('#navReport').attr('class', 'active');
 
         //set controls for all released exams
-        $('[id^="exam"]').each( function() {
-            if ($(this).attr('data-released') == '1'){
-                setAsReleased( $(this) );
-                enableLock( $(this).siblings('#lock') );
+
+        $('[id^="exam"]').each(function () {
+            if ($(this).attr('data-released') == '1') {
+                setAsReleased($(this));
+                enableLock($(this).siblings('#lock'));
             }
         });
 
         function confirmRelease(examId) {
             var released = $('#exam' + examId).attr('data-released');
             var confirmMsg = "Releasing this exam will e-mail all students \n their grades and personalized feedback. " +
-                            "Do you wish to continue?";
+                    "Do you wish to continue?";
             if (released === '1') confirmMsg = "Re-releasing this exam sends all students an additional message informing them " +
                     "that exam grades or comments may have changed. Do you wish to continue?";
-            bootbox.confirm(confirmMsg, function(result) {
+            bootbox.confirm(confirmMsg, function (result) {
                 if (result) {
                     releaseExam(examId);
                 }
@@ -102,28 +96,29 @@
             $.ajax({
                 url: path,
                 type: 'GET',
-                success: function() {
-                    setAsReleased( $exam );
+                success: function () {
+                    setAsReleased($exam);
                     alertEmailSent();
-                    enableLock( $exam.siblings('#lock') );
+                    enableLock($exam.siblings('#lock'));
                 },
-                error: function( ) {
-                    alert( "Sorry, there was a problem releasing this exam!\nPlease try again." );
+                error: function () {
+                    alert("Sorry, there was a problem releasing this exam!\nPlease try again.");
                 },
-                complete: function(){
+                complete: function () {
                     $exam.removeClass('disabled');
                 }
             });
         }
 
         function alertEmailSent() {
-            bootbox.alert("All students have been e-mailed!", function() {});
+            bootbox.alert("All students have been e-mailed!", function () {
+            });
         }
 
         // removes student access to the exam, deleting any response keys that have been generated.
         function removeAccess(examId) {
             bootbox.confirm('Removing access will prevent students from viewing feedback on the exam. Access can ' +
-                    'be restored by releasing the exam again.', function(result){
+                    'be restored by releasing the exam again.', function (result) {
                 var $exam = $('#exam' + examId);
                 $exam.addClass('disabled');
                 if (result) {
@@ -131,15 +126,15 @@
                     $.ajax({
                         url: path,
                         type: 'GET',
-                        success: function() {
-                            disableLock( $exam.siblings('#lock'));
+                        success: function () {
+                            disableLock($exam.siblings('#lock'));
                             setAsUnreleased($exam);
                         },
-                        error: function( ) {
+                        error: function () {
                             $exam.removeClass('disabled');
-                            alert( "Sorry, there was a problem locking this exam!\nPlease try again." );
+                            alert("Sorry, there was a problem locking this exam!\nPlease try again.");
                         },
-                        complete: function(){
+                        complete: function () {
                             $exam.removeClass('disabled');
                         }
                     });
@@ -175,8 +170,6 @@
         }
 
     </script>
-
-
 @endsection
 
 

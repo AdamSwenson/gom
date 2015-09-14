@@ -42,9 +42,7 @@ class ExamController extends Controller
         $this->examDao = $examDao;
         $this->questionAssignmentDao = $questionAssignmentRepository;
         $this->studentDao = $studentRepository;
-        // $terms defines the terms the user can choose from in the create / edit exam pages.
-        // I've it defined here, but custom terms could be a preference later on.
-        $this->terms = [ 'Winter', 'Spring', 'Summer', 'Fall'];
+
     }
 
     /**
@@ -80,7 +78,11 @@ class ExamController extends Controller
         //create new exam
         $years[] = date('Y');
         $years[] = strval( $years[0] + 1 );
-        return view('setup/create_exam', [ 'years' => $years, 'terms' => $this->terms ]);
+
+        // $terms defines the various yearly divisions the user can choose from in the create / edit exam pages.
+        // I've it defined here, but custom terms could be a modified as a preference later on.
+        $terms = [ 'Winter', 'Spring', 'Summer', 'Fall'];
+        return view('setup/create_exam', [ 'years' => $years, 'terms' => $terms ]);
     }
 
     // copies the selected exam and returns to select exam page
@@ -126,7 +128,7 @@ class ExamController extends Controller
      */
     public function edit(Exam $exam)
     {
-        // create a list of years to choose from
+        // create a list of years to choose from. Includes the year of the exam, plus this year and the next year.
         $offset = 0;
         if ( $exam->getYear() < date('Y') ) {
             $years[] = $exam->getYear();
@@ -134,7 +136,9 @@ class ExamController extends Controller
         }
         $years[] = date('Y');
         $years[] = strval( $years[$offset] + 1 );
-        return view('setup/edit_exam', [ 'exam' => $exam, 'years' => $years, 'terms' => $this->terms ]);
+
+        $terms = [ 'Winter', 'Spring', 'Summer', 'Fall'];
+        return view('setup/edit_exam', [ 'exam' => $exam, 'years' => $years, 'terms' => $terms ]);
     }
 
     /**
