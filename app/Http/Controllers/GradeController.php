@@ -122,7 +122,8 @@ class GradeController extends Controller
 
         if(sizeof($questionAssignments) == 0) return ('No questions found for this exam');
         foreach ($questionAssignments as $qAssignment) {
-            $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qAssignment->getQuestionNumber());
+            $qNumber = $qAssignment->getQuestionNumber();
+            $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qNumber );
         }
 
         // load all current student scores & comments
