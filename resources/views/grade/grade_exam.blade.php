@@ -37,16 +37,14 @@
                                 @foreach($questionAssignments as $qAssignment)
                                     <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
                                     <div id="panelQuestion{{ $qNumber }}" data-question-number="{{ $qNumber }}" class="tab-pane fade
-                                                    <?php if ($qNumber === 1) {
-                                        echo "in active";
-                                    } ?>">
+                                                <?php if ($qNumber === 1) {echo "in active"; } ?>">
                                         <div class="form-horizontal" role="form">
                                             <div class="form-group ">
-                                            <span class="col-md-9">
+                                            <div class="col-md-9">
                                                 <!-- question Name -->
                                                 <h4 id="questionName">Question #{{ $qNumber }}:
                                                     "{{ $qAssignment->getQuestionName() }}"</h4>
-                                            </span>
+                                            </div>
                                                 <label class="col-md-1 control-label" for="questionScore{{ $qNumber }}">
                                                     Score:</label>
                                                 <!-- question Score -->
@@ -61,8 +59,8 @@
                                         <!-- element area holds all sliders and comments for this question -->
                                         <div class="list-group">
                                             <?php $elements = $allElements[$qNumber - 1];
-                                            $eNumber = 0;
-                                            while ($eNumber < count($elements) ) { ?>
+                                            $eNumber = 1;
+                                            while ($eNumber <= count($elements) ) { ?>
                                                     <!-- add element panels -->
                                             @include('grade.element_panel')
                                             <?php $count++; $eNumber++; } ?>
@@ -70,7 +68,6 @@
                                     </div>
                                 @endforeach
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -180,9 +177,10 @@
                         if (totalScore === null) {
                             totalScore = 0;
                         }
-                        totalScore += gradeEntry;
+                        totalScore += parseFloat(gradeEntry); // added this to try and relieve the crash
                     }
                 });
+                // TODO: crash here on live server !!
                 if (totalScore !== null) examGrades[i] = totalScore.toPrecision(3);
                 else {
                     examGrades[i] = -1;
@@ -536,9 +534,9 @@
 
                 // set slider values, if any exist
                 if ($sliders) {
-                    $.each($sliders, function (index, item) {
+                    $sliders.each( function (index, item) {
                         var score = elementScores[activeStudent][index];
-                        item.slider('setValue', score);
+                        $(item).slider('setValue', score);
                     });
                 }
 

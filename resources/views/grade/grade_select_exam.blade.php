@@ -27,36 +27,40 @@
     </style>
     <div class="container">
         <h3><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Grade Exam</h3>
-        <h4><?php if (sizeof($exams) == 0)
-                $subtitle = 'No exams found';
-            else
-                $subtitle = 'Select an exam to grade';
-            echo($subtitle)?>
-        </h4>
+        <h4>Select an exam to grade</h4>
 
-        <div class="well-lg" <?php if (sizeof($exams) == 0) echo('style="display:none;"');?>>
+        <div class="well-lg">
             <div class="panel panel-default">
                 <table class="table">
                     <thead>
-                    <tr class="row" style="cursor: default;">
+                    <tr style="cursor: default;">
                         <th class="col-md-1">Term</th>
-                        <th class="col-md-8">Name</th>
+                        <th class="col-md-9">Name</th>
                         <th class="col-md-1">Questions</th>
                         <th class="col-md-1">Students</th>
-                        <th class="col-md-1">Graded</th>
+                        {{-- <th class="col-md-1">Graded</th> taking this out for now --}}
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($exams as $exam)
-                        <?php $examId = $exam->getId() ?>
-                        <tr class="row" style="cursor: pointer;" data-href="{{ url('grade/exam/'.$exam->getId()) }}">
-                            <td class="col-md-1" style="width:10%;">{{ $exam->getYear() }} {{ $exam->getTerm() }}</td>
-                            <td class="col-md-8">{{ $exam->getName() }}</td>
-                            <td class="col-md-1">{{ $numQuestions[ $examId ] or '0' }}</td>
-                            <td class="col-md-1">{{ $numStudents[ $examId ] or '0' }}</td>
-                            <td class="col-md-1">{{ $numGraded[ $examId ] or '0' }}</td>
+                    @if( sizeof($exams) > 0 )
+                        @foreach($exams as $exam)
+                            <?php $examId = $exam->id or '0' ?>
+                            <tr style="cursor: pointer;" data-href="{{ url('grade/exam/'.$examId) }}">
+                                <td style="width:10%;">{{ $exam->year or '' }} {{ $exam->term or '' }}</td>
+                                <td>{{ $exam->name or 'No Name Found' }}</td>
+                                <td>{{ $numQuestions[ $examId ] or '0' }}</td>
+                                <td>{{ $numStudents[ $examId ] or '0' }}</td>
+                                {{-- <td class="col-md-1">{{ $numGraded[ $examId ] or '0' }}</td> --}}
+                            </tr>
+                        @endforeach
+                    @else
+                        <tr>
+                            <td style="vertical-align:middle; width: 10%;"></td>
+                            <td style="vertical-align:middle"><i>No Exams Found</i></td>
+                            <td></td>
+                            <td></td>
                         </tr>
-                    @endforeach
+                    @endif
                     </tbody>
                 </table>
             </div>

@@ -12,6 +12,11 @@ var elixir = require('laravel-elixir');
  */
 
 elixir(function(mix) {
+    //mix.scripts([
+    //    'jquery-1.11.3.js',
+    //
+    //], 'public/js/libraries.js');
+
   mix.browserify('app.js')
   .browserify('grade.js', 'public/js/grade-package.js');
 
