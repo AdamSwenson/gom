@@ -14,13 +14,13 @@ var elixir = require('laravel-elixir');
         <!-- Other scripts -->
 elixir(function(mix) {
     mix.scripts([
-        'jquery-1.8.3.min.js',
-        'museutils.js',
-        'webpro.js',
-        'musewpslideshow.js',
-        'jquery.museoverlay.js',
-        'touchswipe.js',
-        'jquery.watch.js'
+        'homepage/jquery-1.8.3.min.js',
+        'homepage/museutils.js',
+        'homepage/webpro.js',
+        'homepage/musewpslideshow.js',
+        'homepage/jquery.museoverlay.js',
+        'homepage/touchswipe.js',
+        'homepage/jquery.watch.js'
     ], 'public/js/home-package.js');
 
     //mix.scripts([
@@ -28,10 +28,10 @@ elixir(function(mix) {
     //
     //], 'public/js/libraries.js');
 
-  mix.browserify('app.js')
-  .browserify('grade.js', 'public/js/grade-package.js');
+  //mix.browserify('app.js')
+  //.browserify('grade.js', 'public/js/grade-package.js');
 
-    mix.sass('app.scss');
+    //mix.sass('app.scss');
 
     mix.sass(['feedback/chartStyling.scss', 'feedback/textStyling.scss'], 'public/css/output.css');
 });

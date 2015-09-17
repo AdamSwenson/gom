@@ -6,7 +6,7 @@
  * Time: 6:38 PM
  */ ?>
 
-@extends('auth.auth_master')
+@extends('auth.auth_master.bladeOLD.php')
 @section('title')
     Reset your password
 @endsection

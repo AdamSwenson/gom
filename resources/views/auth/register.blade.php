@@ -1,4 +1,4 @@
-@extends('auth.auth_master')
+@extends('auth.auth_master.bladeOLD.php')
 
 @section('title')
     Sign up for the Gradeomatic

@@ -5,7 +5,7 @@
  * Date: 8/6/15
  * Time: 6:41 PM
  */?>
-@extends('auth.auth_master')
+@extends('auth.auth_master.bladeOLD.php')
 @section('title')
     Reset Password
 @endsection

@@ -10,8 +10,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <title>Welcome to the Gradeomatic</title>
     <!-- CSS -->
-    <link rel="stylesheet" type="text/css" href="{{secure_asset('/inc/home/css/site_global.css?4052507572')}}"/>
-    <link rel="stylesheet" type="text/css" href="{{secure_asset('/inc/home/css/index.css?273850682')}}" id="pagesheet"/>
+    <link rel="stylesheet" type="text/css" href="{{asset('/inc/home/css/site_global.css?4052507572', env('APP_ENV') == 'production')}}"/>
+    <link rel="stylesheet" type="text/css" href="{{asset('/inc/home/css/index.css?273850682', env('APP_ENV') == 'production')}}" id="pagesheet"/>
     <!-- Other scripts -->
     <script type="text/javascript">
         document.documentElement.className += ' js';
@@ -20,9 +20,6 @@
         @include('layouts.js_jquery_loader')
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
         <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-
-        @yield('jsArea')
-
 </head>
 <body>
 
@@ -76,32 +73,11 @@
                                 <!-- Something goes here -->
                             </div>
                             @include('auth.login_form')
-                            {{--<form method="POST" action="{{url('/setup')}}" accept-charset="UTF-8" class="form-horizontal col-xs-4">--}}
-                                {{--<input type="hidden" name="_token" value="{{ csrf_token() }}">--}}
-                                {{--<div class="form-group">--}}
-                                    {{--<div class="col-xs-8">--}}
-                                        {{--<label>Email:</label>--}}
-                                        {{--<input class="form-control" type="email" name="email"  placeholder="Enter email">--}}
-                                    {{--</div>--}}
-                                {{--</div>--}}
-                                {{--<div class="form-group">--}}
-
-                                    {{--<div class="col-xs-8">--}}
-                                        {{--<label>Password:</label>--}}
-                                        {{--<input class="form-control" type="password" name="password" placeholder="Enter password">--}}
-                                    {{--</div>--}}
-                                {{--</div>--}}
-                                {{--<div class="checkbox">--}}
-                                    {{--<label><input type="checkbox"> Remember me</label>--}}
-                                    {{--<label><a href={{url('account/retrieve')}}>Forgot Password</a></label>--}}
-                                {{--</div>--}}
-                                {{--<input class="btn btn-primary" value="Log In" type="submit" >--}}
-                            {{--</form>--}}
 
                         </div>
                     </div>
                     <div class="SSSlide clip_frame grpelem" id="u284"><!-- image -->
-                        <img class="ImageInclude" id="u284_img" data-src="{{secure_asset('inc/home/images/stack%20of%20papers.jpg')}}" src="{{secure_asset('inc/home/images/blank.gif')}}" alt="" data-width="1160" data-height="774"/>
+                        <img class="ImageInclude" id="u284_img" data-src="{{asset('inc/home/images/stack%20of%20papers.jpg', env('APP_ENV') == 'production')}}" src="{{asset('inc/home/images/blank.gif', env('APP_ENV') == 'production')}}" alt="" data-width="1160" data-height="774"/>
                     </div>
                 </div>
             </div>
@@ -137,7 +113,7 @@
                 <div class="popup_anchor" id="u197popup">
                     <div class="SlideShowContentPanel clearfix" id="u197"><!-- stack box -->
                         <div class="SSSlide clip_frame grpelem" id="u198"><!-- image -->
-                            <img class="ImageInclude" id="u198_img" data-src="{{secure_asset('inc/home/images/teacher%20grading_1.png')}}" src="{{secure_asset('inc/home/images/blank.gif')}}" alt="picture of teacher grading" data-width="1160" data-height="774"/>
+                            <img class="ImageInclude" id="u198_img" data-src="{{asset('inc/home/images/teacher%20grading_1.png', env('APP_ENV') == 'production')}}" src="{{asset('inc/home/images/blank.gif', env('APP_ENV') == 'production')}}" alt="picture of teacher grading" data-width="1160" data-height="774"/>
                         </div>
                     </div>
                 </div>
@@ -153,7 +129,7 @@
             <div id="u98"><!-- group -->
                 <div class="clearfix" id="u98_align_to_page">
                     <div class="clip_frame grpelem" id="u272"><!-- image -->
-                        <img class="block" id="u272_img" src="{{secure_asset('inc/home/images/guage.png')}}" alt="large gauge" width="938" height="630"/>
+                        <img class="block" id="u272_img" src="{{asset('inc/home/images/guage.png', env('APP_ENV') == 'production')}}" alt="large gauge" width="938" height="630"/>
                     </div>
                     <div class="clearfix grpelem" id="pu103-4"><!-- column -->
                         <div class="clearfix colelem" id="u103-4"><!-- content -->
@@ -172,7 +148,7 @@
             <div class="popup_anchor" id="u149popup">
                 <div class="SlideShowContentPanel clearfix" id="u149"><!-- stack box -->
                     <div class="SSSlide clip_frame grpelem" id="u150"><!-- image -->
-                        <img class="ImageInclude" id="u150_img" data-src="{{secure_asset('inc/home/images/students_1.png')}}" src="{{secure_asset('inc/home/images/blank.gif')}}" alt="" data-width="1160" data-height="774"/>
+                        <img class="ImageInclude" id="u150_img" data-src="{{asset('inc/home/images/students_1.png', env('APP_ENV') == 'production')}}" src="{{asset('inc/home/images/blank.gif', env('APP_ENV') == 'production')}}" alt="" data-width="1160" data-height="774"/>
                     </div>
                 </div>
             </div>
@@ -227,13 +203,13 @@
     </div>
 </div>
 <!-- JS includes -->
-<script src="{{secure_asset('inc/home/scripts/jquery-1.8.3.min.js')}}" type="text/javascript"></script>
-<script src="{{secure_asset('inc/home/scripts/museutils.js?275725342')}}" type="text/javascript"></script>
-<script src="{{secure_asset('inc/home/scripts/webpro.js?3883484123')}}" type="text/javascript"></script>
-<script src="{{secure_asset('inc/home/scripts/musewpslideshow.js?360574455')}}" type="text/javascript"></script>
-<script src="{{secure_asset('inc/home/scripts/jquery.museoverlay.js?342093292')}}" type="text/javascript"></script>
-<script src="{{secure_asset('inc/home/scripts/touchswipe.js?4218319045')}}" type="text/javascript"></script>
-<script src="{{secure_asset('inc/home/scripts/jquery.watch.js?3999102769')}}" type="text/javascript"></script>
+<script src="{{asset('inc/home/scripts/jquery-1.8.3.min.js', env('APP_ENV') == 'production')}}" type="text/javascript"></script>
+<script src="{{asset('inc/home/scripts/museutils.js?275725342', env('APP_ENV') == 'production')}}" type="text/javascript"></script>
+<script src="{{asset('inc/home/scripts/webpro.js?3883484123', env('APP_ENV') == 'production')}}" type="text/javascript"></script>
+<script src="{{asset('inc/home/scripts/musewpslideshow.js?360574455', env('APP_ENV') == 'production')}}" type="text/javascript"></script>
+<script src="{{asset('inc/home/scripts/jquery.museoverlay.js?342093292', env('APP_ENV') == 'production')}}" type="text/javascript"></script>
+<script src="{{asset('inc/home/scripts/touchswipe.js?4218319045', env('APP_ENV') == 'production')}}" type="text/javascript"></script>
+<script src="{{asset('inc/home/scripts/jquery.watch.js?3999102769', env('APP_ENV') == 'production')}}" type="text/javascript"></script>
 <!-- Other scripts -->
 <script type="text/javascript">
     $(document).ready(function() { try {

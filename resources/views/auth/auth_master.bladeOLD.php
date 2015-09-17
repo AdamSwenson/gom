@@ -78,17 +78,17 @@
     </div>
 </div>
 <!-- JS includes -->
-<script type="text/javascript">
-    if (document.location.protocol != 'https:') document.write('\x3Cscript src="http://musecdn2.businesscatalyst.com/scripts/4.0/jquery-1.8.3.min.js" type="text/javascript">\x3C/script>');
-</script>
-
-<script src="{{secure_asset('inc/home/scripts/jquery-1.8.3.min.js')}}" type="text/javascript"></script>
-<script src="{{secure_asset('inc/home/scripts/museutils.js?275725342')}}" type="text/javascript"></script>
-<script src="{{secure_asset('inc/home/scripts/webpro.js?3883484123')}}" type="text/javascript"></script>
-<script src="{{secure_asset('inc/home/scripts/musewpslideshow.js?360574455')}}" type="text/javascript"></script>
-<script src="{{secure_asset('inc/home/scripts/jquery.museoverlay.js?342093292')}}" type="text/javascript"></script>
-<script src="{{secure_asset('inc/home/scripts/touchswipe.js?4218319045')}}" type="text/javascript"></script>
-<script src="{{secure_asset('inc/home/scripts/jquery.watch.js?3999102769')}}" type="text/javascript"></script>
+{{--<script type="text/javascript">--}}
+    {{--if (document.location.protocol != 'https:') document.write('\x3Cscript src="http://musecdn2.businesscatalyst.com/scripts/4.0/jquery-1.8.3.min.js" type="text/javascript">\x3C/script>');--}}
+{{--</script>--}}
+<script src="{{ asset('js/home-package.js') }}" type="text/javascript"></script>
+{{--<script src="{{secure_asset('inc/home/scripts/jquery-1.8.3.min.js')}}" type="text/javascript"></script>--}}
+{{--<script src="{{secure_asset('inc/home/scripts/museutils.js?275725342')}}" type="text/javascript"></script>--}}
+{{--<script src="{{secure_asset('inc/home/scripts/webpro.js?3883484123')}}" type="text/javascript"></script>--}}
+{{--<script src="{{secure_asset('inc/home/scripts/musewpslideshow.js?360574455')}}" type="text/javascript"></script>--}}
+{{--<script src="{{secure_asset('inc/home/scripts/jquery.museoverlay.js?342093292')}}" type="text/javascript"></script>--}}
+{{--<script src="{{secure_asset('inc/home/scripts/touchswipe.js?4218319045')}}" type="text/javascript"></script>--}}
+{{--<script src="{{secure_asset('inc/home/scripts/jquery.watch.js?3999102769')}}" type="text/javascript"></script>--}}
 <!-- Other scripts -->
 <script type="text/javascript">
     $(document).ready(function () {
