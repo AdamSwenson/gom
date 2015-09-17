@@ -5,12 +5,13 @@
  * Date: 8/6/15
  * Time: 6:41 PM
  */?>
-@extends('auth.auth_master.bladeOLD.php')
+@extends('layouts.master')
 @section('title')
     Reset Password
 @endsection
 
-@section('formArea')
+@section('body')
+    <div class="row">
     <form role="form" method="POST" action="{{url('password/reset')}}" accept-charset="UTF-8" class="col-xs-4">
         {!! csrf_field() !!}
         <input type="hidden" name="token" value="{{ $token }}">
@@ -30,5 +31,5 @@
 
         <input class="btn btn-default" value="Reset Password" type="submit">
     </form>
-
+    </div>
 @endsection
