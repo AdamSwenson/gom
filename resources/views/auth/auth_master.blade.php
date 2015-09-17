@@ -11,34 +11,19 @@
 
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
     <meta name="generator" content="2015.0.2.310"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <title>@yield('title')</title>
     <!-- CSS -->
-    <link rel="stylesheet" type="text/css" href={{asset('/inc/home/css/site_global.css?4052507572')}}/>
-    <link rel="stylesheet" type="text/css" href="{{asset('/inc/home/css/index.css?273850682')}}" id="pagesheet"/>
+    <link rel="stylesheet" type="text/css" href={{secure_asset('/inc/home/css/site_global.css?4052507572')}}/>
+    <link rel="stylesheet" type="text/css" href="{{secure_asset('/inc/home/css/index.css?273850682')}}" id="pagesheet"/>
     <!-- Other scripts -->
     <script type="text/javascript">
         document.documentElement.className += ' js';
     </script>
 
-        @include('layouts.js_jquery_loader')
-        @include('layouts.js_scriptloader')
+    @include('layouts.js_jquery_loader')
+    @include('layouts.js_bootstrap_loader')
 
-        <script type="text/javascript"
-                src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-        <script type="text/javascript" src="<?php echo asset("inc/js/bootbox.min.js");?>"></script>
-        <!-- bootbox for easy modals -->
-        <script type="text/javascript" src="<?php echo asset("inc/js/bootbox.min.js");?>"></script>
-        <!--  rubaXA Sortable for drag and drop -->
-        <script src="http://rubaxa.github.io/Sortable/Sortable.js"></script>
-
-        <script type="text/javascript">
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-        </script>
 </head>
 <body>
 
@@ -96,15 +81,14 @@
 <script type="text/javascript">
     if (document.location.protocol != 'https:') document.write('\x3Cscript src="http://musecdn2.businesscatalyst.com/scripts/4.0/jquery-1.8.3.min.js" type="text/javascript">\x3C/script>');
 </script>
-<script type="text/javascript">
-    window.jQuery || document.write('\x3Cscript src="scripts/jquery-1.8.3.min.js" type="text/javascript">\x3C/script>');
-</script>
-<script src="{{asset('inc/home/scripts/museutils.js?275725342')}}" type="text/javascript"></script>
-<script src="{{asset('inc/home/scripts/webpro.js?3883484123')}}" type="text/javascript"></script>
-<script src="{{asset('inc/home/scripts/musewpslideshow.js?360574455')}}" type="text/javascript"></script>
-<script src="{{asset('inc/home/scripts/jquery.museoverlay.js?342093292')}}" type="text/javascript"></script>
-<script src="{{asset('inc/home/scripts/touchswipe.js?4218319045')}}" type="text/javascript"></script>
-<script src="{{asset('inc/home/scripts/jquery.watch.js?3999102769')}}" type="text/javascript"></script>
+
+<script src="{{secure_asset('inc/home/scripts/jquery-1.8.3.min.js')}}" type="text/javascript"></script>
+<script src="{{secure_asset('inc/home/scripts/museutils.js?275725342')}}" type="text/javascript"></script>
+<script src="{{secure_asset('inc/home/scripts/webpro.js?3883484123')}}" type="text/javascript"></script>
+<script src="{{secure_asset('inc/home/scripts/musewpslideshow.js?360574455')}}" type="text/javascript"></script>
+<script src="{{secure_asset('inc/home/scripts/jquery.museoverlay.js?342093292')}}" type="text/javascript"></script>
+<script src="{{secure_asset('inc/home/scripts/touchswipe.js?4218319045')}}" type="text/javascript"></script>
+<script src="{{secure_asset('inc/home/scripts/jquery.watch.js?3999102769')}}" type="text/javascript"></script>
 <!-- Other scripts -->
 <script type="text/javascript">
     $(document).ready(function () {

@@ -8,7 +8,7 @@
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
     <meta name="generator" content="2015.0.2.310"/>
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
-    <title>Home</title>
+    <title>Welcome to the Gradeomatic</title>
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{{secure_asset('/inc/home/css/site_global.css?4052507572')}}"/>
     <link rel="stylesheet" type="text/css" href="{{secure_asset('/inc/home/css/index.css?273850682')}}" id="pagesheet"/>
