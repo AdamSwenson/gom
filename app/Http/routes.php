@@ -18,16 +18,20 @@ Route::controllers([
     'password' => 'Auth\PasswordController'
 ]);
 
-
-/* Account */
-//Route::post('account/home', 'LandingController@loggedIn');
-Route::get('account', 'LandingController@loggedIn');
-
 /* Home page */
 Route::get('/', 'LandingController@showLanding');
 Route::get('home', 'LandingController@showLanding');
 Route::get('landing', 'LandingController@showLanding');
 Route::get('index', 'LandingController@showLanding');
+
+
+/* --------------------------------------------- Account ---------------------------------------------------------------*/
+Route::get('account', 'LandingController@loggedIn');
+
+/* Limitations on registration */
+Route::get('registrationRestrictions', 'RestrictedRegistrationController@showRestrictedAccessPage');
+Route::post('registrationRestrictions', 'RestrictedRegistrationController@recordInterestToWaitlist');
+
 
 /* ----------------------------------------------- Exam set up  -------------------------------------------------------- */
 /* Select exam page */

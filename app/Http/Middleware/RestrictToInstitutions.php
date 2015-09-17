@@ -33,6 +33,12 @@ class RestrictToInstitutions
      */
     public function handle($request, Closure $next)
     {
+        //Only apply this middleware to registration requests
+        if (! $request->is('auth/register')){ return $next($request); }
+
+        //Only apply to post requests
+        if(! $request->isMethod('post')){ return $next($request); }
+
         try
         {
             if (!$request->has('email')) { throw new UnpermittedDomainException('none-email_not_set'); }
@@ -55,7 +61,7 @@ class RestrictToInstitutions
         } catch (UnpermittedDomainException $e)
         {
             //If any of the conditions failed, redirect
-            $this->refuseRequest();
+            $this->refuseRequest($request);
         }
     }
 
@@ -63,9 +69,12 @@ class RestrictToInstitutions
     /**
      * Set error message and redirect back to an information page
      */
-    protected function refuseRequest()
+    protected function refuseRequest($request)
     {
-        return view(self::REDIRECT_VIEW);
+        //Return the email address to pre populate the form on the waiting list page
+        $email = $request->has('email') ? $request->input('email') : '';
+
+        return redirect('registrationRestrictions')->with('email', $email);
     }
 
 

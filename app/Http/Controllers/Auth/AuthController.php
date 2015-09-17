@@ -36,27 +36,22 @@ class AuthController extends Controller
 
     /**
      * Create a new authentication controller instance.
-     *
-     * @return void
      */
     public function __construct()
     {
         $this->middleware('guest', ['except' => 'getLogout']);
+        $this->middleware('restrictRegistration');
     }
-
+//
 //    /**
 //     * Create new account
 //     * @param AuthRequest $request
 //     */
 //    public function postRegister(AuthRequest $request)
 //    {
-////        $validator = $this->validator($request->all());
-////        if ($validator->fails())
-////        {
-////            $this->throwValidationException($request, $validator);
-////        }
-//auth()->login($this->create($request->all()));
-//        redirect($this->redirectPath);
+////        $this->middleware('restrictRegistration');
+//        parent::postRegister($request);
+//
 //    }
 //
 //    /**
