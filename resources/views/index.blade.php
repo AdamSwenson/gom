@@ -185,7 +185,7 @@
             <div class="popup_anchor" id="u149popup">
                 <div class="SlideShowContentPanel clearfix" id="u149"><!-- stack box -->
                     <div class="SSSlide clip_frame grpelem" id="u150"><!-- image -->
-                        <img class="ImageInclude" id="u150_img" data-src="{{secure_asset('inc/home/images/students_1.png')}}" src="{secure_{asset('inc/home/images/blank.gif')}}" alt="" data-width="1160" data-height="774"/>
+                        <img class="ImageInclude" id="u150_img" data-src="{{secure_asset('inc/home/images/students_1.png')}}" src="{{secure_asset('inc/home/images/blank.gif')}}" alt="" data-width="1160" data-height="774"/>
                     </div>
                 </div>
             </div>
