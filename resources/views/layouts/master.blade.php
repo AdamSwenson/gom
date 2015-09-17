@@ -18,6 +18,7 @@
 <body>
     @include('navigation.nav_bar_main')
     <div id="container">
+    @include('temp.warning_not_to_use_student_data')
     @yield('body')
     @include('layouts.footer')
     <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">

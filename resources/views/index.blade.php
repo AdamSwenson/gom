@@ -7,6 +7,7 @@
 
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
     <meta name="generator" content="2015.0.2.310"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <title>Home</title>
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{{secure_asset('/inc/home/css/site_global.css?4052507572')}}"/>
@@ -17,22 +18,9 @@
     </script>
 
         @include('layouts.js_jquery_loader')
-        {{--@include('layouts.js_scriptloader')--}}
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
         <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
-        <!-- bootbox for easy modals -->
-        {{--<script type="text/javascript" src="<?php echo secure_asset("inc/js/bootbox.min.js");?>"></script>--}}
-        {{--<!--  rubaXA Sortable for drag and drop -->--}}
-        {{--<script src="{{ secure_asset('inc/js/Sortable.js') }}"></script>--}}
-
-        <script type="text/javascript">
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-        </script>
         @yield('jsArea')
 
 </head>
@@ -149,7 +137,7 @@
                 <div class="popup_anchor" id="u197popup">
                     <div class="SlideShowContentPanel clearfix" id="u197"><!-- stack box -->
                         <div class="SSSlide clip_frame grpelem" id="u198"><!-- image -->
-                            <img class="ImageInclude" id="u198_img" data-src="{{secure_asset('inc/home/images/teacher%20grading_1.png')}}" src="{{secure_asset('inc/home/images/blank.gif')}}" alt="" data-width="1160" data-height="774"/>
+                            <img class="ImageInclude" id="u198_img" data-src="{{secure_asset('inc/home/images/teacher%20grading_1.png')}}" src="{{secure_asset('inc/home/images/blank.gif')}}" alt="picture of teacher grading" data-width="1160" data-height="774"/>
                         </div>
                     </div>
                 </div>
@@ -165,7 +153,7 @@
             <div id="u98"><!-- group -->
                 <div class="clearfix" id="u98_align_to_page">
                     <div class="clip_frame grpelem" id="u272"><!-- image -->
-                        <img class="block" id="u272_img" src="{{secure_asset('inc/home/images/guage.png')}}" alt="" width="938" height="630"/>
+                        <img class="block" id="u272_img" src="{{secure_asset('inc/home/images/guage.png')}}" alt="large gauge" width="938" height="630"/>
                     </div>
                     <div class="clearfix grpelem" id="pu103-4"><!-- column -->
                         <div class="clearfix colelem" id="u103-4"><!-- content -->
