@@ -11,7 +11,18 @@ var elixir = require('laravel-elixir');
  |
  */
 
+        <!-- Other scripts -->
 elixir(function(mix) {
+    mix.scripts([
+        'jquery-1.8.3.min.js',
+        'museutils.js',
+        'webpro.js',
+        'musewpslideshow.js',
+        'jquery.museoverlay.js',
+        'touchswipe.js',
+        'jquery.watch.js'
+    ], 'public/js/home-package.js');
+
     //mix.scripts([
     //    'jquery-1.11.3.js',
     //

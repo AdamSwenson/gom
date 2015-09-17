@@ -19,11 +19,13 @@
     @include('navigation.nav_bar_main')
     <div id="container">
         @if(env('APP_ENV') == 'production')
-    @include('temp.warning_not_to_use_student_data')
+            @include('temp.warning_not_to_use_student_data')
         @endif
-    @yield('body')
-    @include('layouts.footer')
-    <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
+
+        @yield('body')
+
+        @include('layouts.footer')
+        <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
     </div>
 <div id="scriptBox">
     <script type="text/javascript">
