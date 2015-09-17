@@ -16,8 +16,7 @@
         document.documentElement.className += ' js';
     </script>
 
-    <div id="scriptBox">
-        {{--@include('layouts.js_jquery_loader')--}}
+        @include('layouts.js_jquery_loader')
         {{--@include('layouts.js_scriptloader')--}}
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
         <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
@@ -35,7 +34,7 @@
             });
         </script>
         @yield('jsArea')
-    </div>
+
 </head>
 <body>
 
@@ -240,12 +239,7 @@
     </div>
 </div>
 <!-- JS includes -->
-<script type="text/javascript">
-    if (document.location.protocol != 'https:') document.write('\x3Cscript src="http://musecdn2.businesscatalyst.com/scripts/4.0/jquery-1.8.3.min.js" type="text/javascript">\x3C/script>');
-</script>
-<script type="text/javascript">
-    window.jQuery || document.write('\x3Cscript src="scripts/jquery-1.8.3.min.js" type="text/javascript">\x3C/script>');
-</script>
+<script src="{{secure_asset('inc/home/scripts/jquery-1.8.3.min.js')}}" type="text/javascript"></script>
 <script src="{{secure_asset('inc/home/scripts/museutils.js?275725342')}}" type="text/javascript"></script>
 <script src="{{secure_asset('inc/home/scripts/webpro.js?3883484123')}}" type="text/javascript"></script>
 <script src="{{secure_asset('inc/home/scripts/musewpslideshow.js?360574455')}}" type="text/javascript"></script>
