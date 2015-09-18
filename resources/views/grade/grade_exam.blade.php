@@ -33,18 +33,20 @@
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <div class="tab-content">
-                                <?php $count = 0 ?>
+                                <?php $elementIndex = 0; ?>
                                 @foreach($questionAssignments as $qAssignment)
                                     <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
                                     <div id="panelQuestion{{ $qNumber }}" data-question-number="{{ $qNumber }}" class="tab-pane fade
-                                                <?php if ($qNumber === 1) {echo "in active"; } ?>">
+                                            <?php if ($qNumber === 1) {
+                                        echo "in active";
+                                    } ?>">
                                         <div class="form-horizontal" role="form">
                                             <div class="form-group ">
-                                            <div class="col-md-9">
-                                                <!-- question Name -->
-                                                <h4 id="questionName">Question #{{ $qNumber }}:
-                                                    "{{ $qAssignment->getQuestionName() }}"</h4>
-                                            </div>
+                                                <div class="col-md-9">
+                                                    <!-- question Name -->
+                                                    <h4 id="questionName">Question #{{ $qNumber }}:
+                                                        "{{ $qAssignment->getQuestionName() }}"</h4>
+                                                </div>
                                                 <label class="col-md-1 control-label" for="questionScore{{ $qNumber }}">
                                                     Score:</label>
                                                 <!-- question Score -->
@@ -58,12 +60,20 @@
                                         </div>
                                         <!-- element area holds all sliders and comments for this question -->
                                         <div class="list-group">
+
+                                            {{-- add element panels --}}
                                             <?php $elements = $allElements[$qNumber - 1];
                                             $eNumber = 1;
                                             while ($eNumber <= count($elements) ) { ?>
-                                                    <!-- add element panels -->
                                             @include('grade.element_panel')
-                                            <?php $count++; $eNumber++; } ?>
+                                            <?php $elementIndex++; $eNumber++; } ?>
+
+                                            {{-- add some text if no elements for this question --}}
+                                            @if( count($elements) == 0 )
+                                                <div class="list-group-item" style="background-color: #DDDDDD;">
+                                                    <i>No elements for this question</i>
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 @endforeach
@@ -90,12 +100,13 @@
                 <!-- graded / remaining counters -->
                 <p>Graded: <span id="graded">0</span> Remaining: <span id="remaining">0</span></p>
                 <!-- save & finish button -->
-                <a class="btn btn-success col-md-12" href="{{ url('report/') }}" id="finishButton" style="display: none;">
+                <a class="btn btn-success col-md-12" href="{{ url('report/') }}" id="finishButton"
+                   style="display: none;">
                     <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish
                 </a>
                 <!-- student table shows the student roster -->
                 @include('grade.student_table')
-                <!-- statistics area holds time info -->
+                        <!-- statistics area holds time info -->
                 @include('grade.statistics_table')
             </div>
         </div>
@@ -116,7 +127,7 @@
         var numQuestions = {{ count($questionAssignments) }};
         var examGrades = [];
         var activeStudent = null;
-        var standardScoring = true;
+        var standardScoring = false;
         var sortAsc = true;
         var timer;
         var timerPaused = true;
@@ -146,7 +157,7 @@
 
         // set 'Grade' tab as active
         $('[id^="nav"]').attr('class', '');
-        $('#navGrade').attr('class','active');
+        $('#navGrade').attr('class', 'active');
 
         /*
          * GENERAL FUNCTIONS
@@ -177,11 +188,10 @@
                         if (totalScore === null) {
                             totalScore = 0;
                         }
-                        totalScore += parseFloat(gradeEntry); // added this to try and relieve the crash
+                        totalScore += parseFloat(gradeEntry);
                     }
                 });
-                // TODO: crash here on live server !!
-                if (totalScore !== null) examGrades[i] = totalScore.toPrecision(3);
+                if (totalScore != null) examGrades[i] = totalScore.toPrecision(3);
                 else {
                     examGrades[i] = -1;
                 }
@@ -243,17 +253,19 @@
                 url: examId,
                 data: gradeRequest,
                 type: 'POST',
-                success: function() {
+                success: function () {
                     //console.log('success! ');
                 },
-                error: function( ) {
-                    alert( "Sorry, there was a problem saving this exam!\nPlease try again." );
+                error: function () {
+                    alert("Sorry, there was a problem saving this exam!\nPlease try again.");
                 }
             });
         }
 
         function getActiveStudentId() {
-            if (activeStudent === null) { return null; }
+            if (activeStudent === null) {
+                return null;
+            }
             else return $('#studentListItem' + activeStudent).attr('data-sid');
         }
 
@@ -414,7 +426,9 @@
             var estTime = avgTime * numStudents;
             var timeRemaining = estTime - totalTime;
 
-            $('#thisExamTime').text(convertSecondsToHHMMSS(examGradingTimes[activeStudent]));
+            if (activeStudent) {
+                $('#thisExamTime').text(convertSecondsToHHMMSS(examGradingTimes[activeStudent]));
+            }
             $('#avgTime').text(convertSecondsToHHMMSS(avgTime));
             $('#totalTime').text(convertSecondsToHHMMSS(totalTime));
             $('#timeRemaining').text(convertSecondsToHHMMSS(timeRemaining));
@@ -431,6 +445,7 @@
 
             updateStudentDataArea();
             sortRosterBy('studentName');
+            updateTimer(); // this may error without an active student.
 
             /* When an element slider stops movement, do things */
             $('input.slider').on('slideStop', function (slideEvt) {
@@ -486,11 +501,11 @@
                         url: examId + '/remove',
                         data: gradeRequest,
                         type: 'POST',
-                        success: function() {
+                        success: function () {
                             //console.log('success! ');
                         },
-                        error: function( ) {
-                            alert( "Sorry, there was a problem deleting this score.\nPlease try again." );
+                        error: function () {
+                            alert("Sorry, there was a problem deleting this score.\nPlease try again.");
                         }
                     });
 
@@ -534,7 +549,7 @@
 
                 // set slider values, if any exist
                 if ($sliders) {
-                    $sliders.each( function (index, item) {
+                    $sliders.each(function (index, item) {
                         var score = elementScores[activeStudent][index];
                         $(item).slider('setValue', score);
                     });
