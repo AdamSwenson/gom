@@ -56,6 +56,14 @@ class Student extends BaseModel
     }
 
     /**
+     * Returns the concatenated first name  and last name
+     */
+    public function getFullName()
+    {
+        return $this->getStudentFName() . ' ' . $this->getStudentLName();
+    }
+
+    /**
      * Returns the identifier that a user has entered for the student. It does
      * not return the database's id for the student. The database id for the
      * student should be accessed via $student->id.

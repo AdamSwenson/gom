@@ -10,6 +10,9 @@ namespace App\Http\Controllers;
 
 use App\Events\ExamReleasedEvent;
 use App\Exam;
+use App\Jobs\Feedback\BuildFeedbackAllStudents;
+use App\Jobs\Feedback\BuildFeedbackOneStudent;
+use App\Jobs\Feedback\NotifySingleStudent;
 use App\Student;
 use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
@@ -101,19 +104,19 @@ class ReportController extends Controller
 
 
     /**
-     * Recompiles the feedback for a particular student.
+     * Re-compiles the feedback for a particular student.
      *
      * This is mainly used if the exam has already been released and the teacher goes back and edits
      * the comment field for a particular student.
      *
-     * TODO: set up queue-able event to handle this asynchronously
-     *
      * @param Exam $exam
-     * @param $studentId
+     * @param integer $studentId
      */
     public function updateFeedbackForStudent(Exam $exam, $studentId)
     {
-        $this->feedbackBuilder->recompileFeedbackForStudent($exam->id, $studentId);
+        $student = Student::findOrFail($studentId);
+        $job = (new BuildFeedbackOneStudent($exam, $student))->onQueue('default');
+        $this->dispatch($job);
     }
 
     /**
@@ -121,34 +124,24 @@ class ReportController extends Controller
      * events to take care of it
      *
      * @param Exam $exam
-     * @return \Illuminate\View\View
      */
     public function createFeedback(Exam $exam)
     {
-        event(new ExamReleasedEvent($exam));
-
-        return view('feedback.progress_compiling');
-//
-//        $feedbackBuilder = new FeedbackBuilder();
-//
-//        $feedback = $feedbackBuilder->buildFeedback($exam->getId());
-//        $accessKeys = array_keys($feedback);
-////        dd($feedback[5]);
-//        $data = $feedback[$accessKeys[0]];
-
-        //   return view('feedback.feedback', compact('data'));
+        $job = (new BuildFeedbackAllStudents($exam))->onQueue('default');
+        $this->dispatch($job);
     }
 
 
     /**
-     * Sends an email notification to the student that their exam has been graded
+     * Sends an email notification to the student that their
+     * exam has been graded with a link to access their feedback
      * @param Exam $exam
      * @param Student $student
      */
     public function notifyStudent(Exam $exam, Student $student)
     {
-
-        // TODO: need API for emailing an individual student
+        $job = (new NotifySingleStudent($exam, $student))->onQueue('emails');
+        $this->dispatch($job);
     }
 
 
@@ -202,7 +195,19 @@ class ReportController extends Controller
         $numberOfQuestions = count($this->questionAssignmentRepository->load_all_for_exam($exam->getId()));
         if ($numberOfQuestions > 0) {
             for ($i = 1; $i <= $numberOfQuestions; $i++) {
-                $oneSetOfScores = $this->questionScoreRepository->load_all_for_question_number($exam->getId(), $i);
+
+                /*
+                 * Was getting error because this method on questionScoreRepository
+                 * returns an array of stdClass objects. So updating to extract the scores from
+                 * those objects
+                 */
+                $oneSetOfScores = [];
+                $arrayOfStdObjects = $this->questionScoreRepository->load_all_for_question_number($exam->getId(), $i);
+                foreach($arrayOfStdObjects as $obj)
+                {
+                    array_push($oneSetOfScores, $obj->score);
+                }
+                //back to what was originally here
                 $oneSetOfScores[] = $i;
 
                 $sum = array_sum($oneSetOfScores);

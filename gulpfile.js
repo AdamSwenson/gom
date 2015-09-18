@@ -11,11 +11,27 @@ var elixir = require('laravel-elixir');
  |
  */
 
+        <!-- Other scripts -->
 elixir(function(mix) {
-  mix.browserify('app.js')
-  .browserify('grade.js', 'public/js/grade-package.js');
+    mix.scripts([
+        'homepage/jquery-1.8.3.min.js',
+        'homepage/museutils.js',
+        'homepage/webpro.js',
+        'homepage/musewpslideshow.js',
+        'homepage/jquery.museoverlay.js',
+        'homepage/touchswipe.js',
+        'homepage/jquery.watch.js'
+    ], 'public/js/home-package.js');
 
-    mix.sass('app.scss');
+    //mix.scripts([
+    //    'jquery-1.11.3.js',
+    //
+    //], 'public/js/libraries.js');
+
+  //mix.browserify('app.js')
+  //.browserify('grade.js', 'public/js/grade-package.js');
+
+    //mix.sass('app.scss');
 
     mix.sass(['feedback/chartStyling.scss', 'feedback/textStyling.scss'], 'public/css/output.css');
 });

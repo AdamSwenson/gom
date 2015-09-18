@@ -1,10 +1,11 @@
-@extends('auth.auth_master')
+@extends('layouts.master')
 
 @section('title')
     Sign up for the Gradeomatic
 @endsection
 
-@section('formArea')
+@section('body')
+    <div class="row">
     <form role="form" method="POST" action="{{url('auth/register')}}" accept-charset="UTF-8" class="col-xs-4">
         {!! csrf_field() !!}
         <h3 class="text-left"> Create Account</h3>
@@ -27,4 +28,5 @@
 
         <input class="btn btn-default" value="Create Account" type="submit">
     </form>
+    </div>
 @endsection

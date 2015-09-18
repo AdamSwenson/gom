@@ -5,16 +5,18 @@
  * Date: 7/27/15
  * Time: 9:12 PM
  */?>
-@extends('layouts.master')
+@extends('layouts.primalMaster')
 
 @section('body')
+
     <form id="feedbackLogin" method="post" action="{{ url('feedback/login') }}" accept-charset="UTF-8">
     <fieldset>
-        <legend class="displayBig">Log In</legend>
-        <label for="lookup" class="displayBig">Access key:</label>
-        <input type="text" name="lookup" class="displayBig" /><br />
-        <label for="accessKey" class="displayBig">Access code:</label>
+        <legend class="displayBig">Log in to view your feedback</legend>
+        @include('errors.list')
+
+        <label for="accessKey" class="displayBig">Please enter the access key which was emailed to you</label><br/>
         <input type="text" id="accessKey" name="accessKey" class="displayBig"/>
+        <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
     </fieldset>
     <input type="submit" id="submitButton" value="Log In" class="displayBig" name="submit" />
 </form>

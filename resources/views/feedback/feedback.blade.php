@@ -12,12 +12,8 @@ $w = '800px';
 
 @section('pageTitle', 'Comments on your exam')
 @section('cssLinks')
-    <link href="{{ asset('inc/jqplot/jquery.jqplot.min.css')}}" />
-
+    {!! \HTML::style(asset('inc/jqplot/jquery.jqplot.min.css')) !!}
     {!! \HTML::style(asset('/css/output.css')) !!}
-
-
-    {{--<link href="{{ asset('inc/css/outputStyles.css')}}" type="text/css" rel="stylesheet"/>--}}
 @endsection
 
 @section('body')
@@ -29,7 +25,7 @@ $w = '800px';
                        value="{{ $data['grade'] or ''}}"/>
             </li>
             <li>
-                <span class="studentInfoLabel">Entry Code:</span> <span class="pseudoID"> </span>
+                <span class="studentInfoLabel">Entry Code:</span> <span class="pseudoID"> {{ $data['accessKey'] or '' }}</span>
             </li>
         </ul>
     </div> <!--//close studentInfo-->

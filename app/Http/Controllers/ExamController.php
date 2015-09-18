@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
-
 use App\Exam;
 use App\Http\Requests\ExamRequest;
 use App\Repositories\Exam\IExamRepository;
@@ -14,10 +12,10 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Response;
 
-/*
-    ExamController routes requests to appropriate page of the create exam workflow
-*/
-
+/**
+ * ExamController routes requests to appropriate page of the create exam workflow
+ *
+ */
 class ExamController extends Controller
 {
     const SUCCESS_FLASH_NAME = "flash_message_success";

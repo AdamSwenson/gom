@@ -19,6 +19,11 @@ use App\Repositories\Score\IQuestionScoreRepository;
 use App\Repositories\Student\IStudentRepository;
 use App\Student;
 
+/**
+ * Does all the work of compiling the feedback.
+ * Usually called by a queuable job.
+ * @package App\Repositories\Feedback
+ */
 class FeedbackBuilder implements IFeedbackBuilder
 {
     # ------- repositories
@@ -72,6 +77,8 @@ class FeedbackBuilder implements IFeedbackBuilder
      * Creates the feedback structure for all students taking the exam.
      * Will create new access keys if none already exist. If there are already
      * access keys, it will update the associated content (but not create new keys).
+     *
+     * TODO: make sure skips if there are no scores
      *
      * This is the main publicly called method
      *

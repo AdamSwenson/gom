@@ -1,8 +1,10 @@
-@extends('auth.auth_master')
+@extends('layouts.master')
 @section('title')
     Login to the Gradeomatic
 @endsection
 
-@section('formArea')
+@section('body')
+    <div class="row">
     @include('auth.login_form')
+    </div>
 @endsection

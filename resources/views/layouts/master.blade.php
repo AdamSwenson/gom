@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <title>@yield('pageTitle')</title>
     <meta name="description" content="@yield('description')">
-    <link href='inc/images/favicon.ico' rel='icon' type='image/x-icon'/>
+    <link href='{{secure_asset('inc/images/favicon.ico')}}' rel='icon' type='image/x-icon'/>
 
     @include('layouts.js_jquery_loader')
     @include('layouts.js_bootstrap_loader')
@@ -18,9 +18,14 @@
 <body>
     @include('navigation.nav_bar_main')
     <div id="container">
-    @yield('body')
-    @include('layouts.footer')
-    <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
+        @if(env('APP_ENV') == 'production')
+            @include('temp.warning_not_to_use_student_data')
+        @endif
+
+        @yield('body')
+
+        @include('layouts.footer')
+        <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
     </div>
 <div id="scriptBox">
     <script type="text/javascript">

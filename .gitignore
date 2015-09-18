@@ -5,3 +5,6 @@ Homestead.yaml
 .DS_store
 vendor/.DS_Store
 build
+Capfile
+config/deploy
+config/deploy.rb

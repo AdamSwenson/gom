@@ -15,8 +15,8 @@ return array(
     $vendorDir . '/guzzlehttp/promises/src/functions_include.php',
     $vendorDir . '/guzzlehttp/psr7/src/functions_include.php',
     $vendorDir . '/laracasts/testdummy/src/functions.php',
-    $vendorDir . '/guzzlehttp/guzzle/src/functions_include.php',
+    $vendorDir . '/illuminate/html/helpers.php',
     $vendorDir . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
     $vendorDir . '/laravel/framework/src/Illuminate/Support/helpers.php',
-    $vendorDir . '/illuminate/html/helpers.php',
+    $vendorDir . '/guzzlehttp/guzzle/src/functions_include.php',
 );
