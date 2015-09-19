@@ -1071,6 +1071,7 @@ return array(
     'VersionCompareCondition' => $vendorDir . '/phing/phing/classes/phing/tasks/system/condition/VersionCompareCondition.php',
     'VersionTask' => $vendorDir . '/phing/phing/classes/phing/tasks/ext/VersionTask.php',
     'WaitForTask' => $vendorDir . '/phing/phing/classes/phing/tasks/system/WaitForTask.php',
+    'Waitlist' => $baseDir . '/database/migrations/2015_09_17_161132_waitlist.php',
     'WarnTask' => $vendorDir . '/phing/phing/classes/phing/tasks/system/WarnTask.php',
     'WikiPublishTask' => $vendorDir . '/phing/phing/classes/phing/tasks/ext/WikiPublishTask.php',
     'Win32FileSystem' => $vendorDir . '/phing/phing/classes/phing/system/io/Win32FileSystem.php',

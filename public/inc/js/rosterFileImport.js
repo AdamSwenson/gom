@@ -69,7 +69,7 @@ function startRead() {
     reader.readAsText($inputFile);
 
     reader.onload = function (event) {
-        rows = event.target.result.toString().replace(/\r/, "\n").split("\n"); // such hax! -b.b.
+        rows = event.target.result.toString().replace(/[\r\n]+/g, "\n").split("\n"); // such hax! -b.b.
         var students = [];
 
         // break each row into its elements

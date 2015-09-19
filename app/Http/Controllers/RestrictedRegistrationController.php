@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\WaitlistRequest;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Since at the outset we will be restricting who can register,
@@ -33,12 +35,18 @@ class RestrictedRegistrationController extends Controller
     /**
      * Records those wishing to be notified of expanded access to
      * the database
-     * @param Request $request
+     * @param WaitlistRequest|Request $request
+     * @return \Illuminate\View\View
      */
-    public function recordInterestToWaitlist(Request $request)
+    public function recordInterestToWaitlist(WaitlistRequest $request)
     {
+        //Check optional fields
+        $name =  $request->has('name') ? $request->input('name') : null;
+        $institution = $request->has('institutionType') ? $request->input('institutionType') : null;
+        //Write to db
+        $this->record($request->input('email'), $name, $institution);
+        //Notify of success (even if failed)
         return $this->notifyRecorded();
-
     }
 
     /**
@@ -47,10 +55,23 @@ class RestrictedRegistrationController extends Controller
      */
     protected function notifyRecorded()
     {
-//        return view('account.permittedInstitutions')->with('message', self::SUCCESS_MESSAGE);
         return redirect('registrationRestrictions')->with('message', self::SUCCESS_MESSAGE);
-//        return back();
-//        return back()->with(['message' =>self::SUCCESS_MESSAGE]);
+    }
 
+    /**
+     * Handles actual recording to the database
+     *
+     * @param $email
+     * @param null $name
+     * @param null $institutionType
+     */
+    protected function record($email, $name=null, $institutionType=null)
+    {
+        DB::table('waitlist')->insert(
+            [
+                'email' => $email,
+                'requesterName' => $name,
+                'institutionType' => $institutionType
+            ]);
     }
 }

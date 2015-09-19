@@ -33,6 +33,8 @@
             <p>If you would like to be notified when access is expanded, please provide your name and email address</p>
             {!! Form::open(['url' => '/registrationRestrictions', 'method' => 'post']) !!}
 
+            {{ csrf_field() }}
+
             <div class="form-group ">
                 <label for="name">Name</label>
                 <input class="form-control" id="name" type="text" name="name" value=""
