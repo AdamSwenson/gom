@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\DB;
 class RestrictedRegistrationController extends Controller
 {
     const SUCCESS_MESSAGE = "Thank you! We will notify you when the gradeomatic is available.";
+    const REDIRECT_TO_ROUTE = 'registrationRestrictions';
 
     /**
      * Displays the restricted access page with information about
@@ -45,7 +46,7 @@ class RestrictedRegistrationController extends Controller
         $institution = $request->has('institutionType') ? $request->input('institutionType') : null;
         //Write to db
         $this->record($request->input('email'), $name, $institution);
-        //Notify of success (even if failed)
+        //Notify of success (even if failed --we don't care that much)
         return $this->notifyRecorded();
     }
 
@@ -55,7 +56,7 @@ class RestrictedRegistrationController extends Controller
      */
     protected function notifyRecorded()
     {
-        return redirect('registrationRestrictions')->with('message', self::SUCCESS_MESSAGE);
+        return redirect(self::REDIRECT_TO_ROUTE)->with('message', self::SUCCESS_MESSAGE);
     }
 
     /**

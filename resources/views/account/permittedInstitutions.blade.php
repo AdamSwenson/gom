@@ -42,8 +42,8 @@
             </div>
 
             <div class="form-group ">
-                <label for="email">Email</label>
-                <input class="form-control" id="email" type="email" name="email" value="{{ session('email') or '' }}"
+                <label for="email">Email (required)</label>
+                <input class="form-control" id="email" type="email" name="email" value="{{ $email or '' }}"
                        placeholder="jill@PlaceWherePeopleLearn.edu">
             </div>
             <div class="form-group ">

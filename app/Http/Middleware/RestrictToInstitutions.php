@@ -16,6 +16,7 @@ use Closure;
  */
 class RestrictToInstitutions
 {
+    const REDIRECT_TO_ROUTE = 'registrationRestrictions';
     /** The view to send rejected folks to  */
     const REDIRECT_VIEW = 'account.permittedInstitutions';
 
@@ -61,20 +62,23 @@ class RestrictToInstitutions
         } catch (UnpermittedDomainException $e)
         {
             //If any of the conditions failed, redirect
-            $this->refuseRequest($request);
+            return $this->refuseRequest($request);
         }
     }
 
 
     /**
      * Set error message and redirect back to an information page
+     * @param $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     protected function refuseRequest($request)
     {
         //Return the email address to pre populate the form on the waiting list page
         $email = $request->has('email') ? $request->input('email') : '';
 
-        return redirect('registrationRestrictions')->with('email', $email);
+        return view(self::REDIRECT_VIEW)->with('email', $email);
+//        return redirect( self::REDIRECT_TO_ROUTE )->with('email', $email);
     }
 
 
