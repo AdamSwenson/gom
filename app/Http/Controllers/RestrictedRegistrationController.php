@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WaitlistRequest;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -23,6 +24,7 @@ class RestrictedRegistrationController extends Controller
 {
     const SUCCESS_MESSAGE = "Thank you! We will notify you when the gradeomatic is available.";
     const REDIRECT_TO_ROUTE = 'registrationRestrictions';
+    const REDIRECT_TO_VIEW = 'account.permittedInstitutions';
 
     /**
      * Displays the restricted access page with information about
@@ -30,7 +32,7 @@ class RestrictedRegistrationController extends Controller
      */
     public function showRestrictedAccessPage()
     {
-        return view('account.permittedInstitutions');
+        return view(self::REDIRECT_TO_VIEW);
     }
 
     /**
@@ -62,6 +64,8 @@ class RestrictedRegistrationController extends Controller
     /**
      * Handles actual recording to the database
      *
+     * Eventually this should be refactored out....
+     *
      * @param $email
      * @param null $name
      * @param null $institutionType
@@ -72,7 +76,8 @@ class RestrictedRegistrationController extends Controller
             [
                 'email' => $email,
                 'requesterName' => $name,
-                'institutionType' => $institutionType
+                'institutionType' => $institutionType,
+                'created_at' => Carbon::now()
             ]);
     }
 }

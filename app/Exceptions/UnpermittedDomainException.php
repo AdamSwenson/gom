@@ -9,6 +9,8 @@
 namespace App\Exceptions;
 
 
+use Illuminate\Support\Facades\Log;
+
 class UnpermittedDomainException extends \Exception
 {
 
@@ -20,7 +22,7 @@ class UnpermittedDomainException extends \Exception
     public function logAttemptedDomain($domain)
     {
         $toLog = "[" . __CLASS__ . "] [AttemptedRegistration] Domain " . $domain;
-        \error_log($toLog);
+        Log::notice($toLog);
     }
 
 }
