@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Exceptions\UnpermittedDomainException;
 use Closure;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * This prevents sign up attempts from succeeding if the person enters an
@@ -16,14 +17,13 @@ use Closure;
  */
 class RestrictToInstitutions
 {
-    const REDIRECT_TO_ROUTE = 'registrationRestrictions';
+    /** The file holding a list of permitted domains */
+    const PERMITTED_DOMAINS_CSV = 'permittedDomains.csv';
     /** The view to send rejected folks to  */
     const REDIRECT_VIEW = 'account.permittedInstitutions';
 
     /** @var array Institutions which are okay */
-    public static $permittedDomains = [
-        'csun.edu'
-    ];
+    public static $permittedDomains = [];
 
     /**
      * Handle an incoming request.
@@ -34,6 +34,8 @@ class RestrictToInstitutions
      */
     public function handle($request, Closure $next)
     {
+        $this->readPermittedList();
+
         //Only apply this middleware to registration requests
         if (! $request->is('auth/register')){ return $next($request); }
 
@@ -94,6 +96,18 @@ class RestrictToInstitutions
         if ($domain)
         {
             return mb_strtolower(trim($domain));
+        }
+    }
+
+    /**
+     * Checks whether the list of permitted domains is empty. If it is, it reads the file
+     * holding the list of permitted email domains into the array
+     */
+    protected static function readPermittedList()
+    {
+        if(empty(self::$permittedDomains))
+        {
+            self::$permittedDomains = str_getcsv(Storage::get(self::PERMITTED_DOMAINS_CSV), "\n");
         }
     }
 }
