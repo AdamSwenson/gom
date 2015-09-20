@@ -48,8 +48,8 @@
                             <tr style="cursor: pointer;" data-href="{{ url('grade/exam/'.$examId) }}">
                                 <td style="width:10%;">{{ $exam->year or '' }} {{ $exam->term or '' }}</td>
                                 <td>{{ $exam->name or 'No Name Found' }}</td>
-                                <td>{{ $numQuestions[ $examId ] or '0' }}</td>
-                                <td>{{ $numStudents[ $examId ] or '0' }}</td>
+                                <td id="numQuestions">{{ $numQuestions[ $examId ] or '0' }}</td>
+                                <td id="numStudents">{{ $numStudents[ $examId ] or '0' }}</td>
                                 {{-- <td class="col-md-1">{{ $numGraded[ $examId ] or '0' }}</td> --}}
                             </tr>
                         @endforeach
@@ -77,8 +77,29 @@
         $('#navGrade').attr('class', 'active');
 
         $('tr[data-href]').on("click", function () {
-            document.location = $(this).data('href');
+            if ( parseInt($(this).find('#numStudents').text()) == 0 ) {
+               showError("No Students", "An exam must have at least one student in order to be graded.")
+            } else if ( parseInt($(this).find('#numQuestions').text()) == 0 ) {
+                showError("No Questions", "An exam must have at least one question in order to be graded.")
+            } else {
+                document.location = $(this).data('href');
+            }
         });
+
+        function showError(msgTitle, message) {
+            bootbox.dialog({
+                message: message,
+                title: msgTitle ,
+                buttons: {
+                    default: {
+                        label: 'Ok',
+                        className: "btn-sm",
+                        callback: function () {
+                        }
+                    }
+                }
+            });
+        }
     </script>
 
 @endsection

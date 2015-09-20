@@ -1,10 +1,12 @@
 <!-- Generic nav bar template used by all pages once logged in. The active tab is set in JS by the page -->
+{{--
 <style>
     li:hover {
-        background-color: #E9E9E9;
+        background-color: #393939;
     }
 </style>
-<div class="navbar navbar-default navbar-static-top">
+--}}
+<div class="navbar navbar-inverse navbar-static-top">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-ex-collapse">
