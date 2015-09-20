@@ -283,23 +283,36 @@ class ExamRepositoryTest extends \ReseedingTestCase
         $questionsToClone = $questionAssignDao->load_all_for_exam($examToCloneId);
         $elementsToClone = $elementAssignDao->load_by_exam($examToCloneId);
 
-        //make target exam
-        $target = new Exam();
-        $target->id = 99;
-        $target->term = 'testTerm';
-        $target->year = 2100;
-        $target->name = 'testName';
-        $target->save();
+//        //make target exam
+//        $target = new Exam();
+//        $target->id = 99;
+//        $target->term = 'testTerm';
+//        $target->year = 2100;
+//        $target->name = 'testName';
+//        $target->save();
+//
+//        //Check that both exams are ready
+//        $this->seeInDatabase('exams', ['id' => 99]);
+//        $this->seeInDatabase('exams', ['id' => 1]);
 
         //Call
-        $this->object->clone_exam($examToCloneId, $target->id);
+        $newExam = $this->object->clone_exam($examToCloneId);
 
         //Check
+        //make sure made new exam with expected naming scheme
+        $clonedExam = Exam::where('id', $examToCloneId)->first();
+        $expectedName = 'Clone of "' . $clonedExam->name . '"';
+        $this->assertEquals($expectedName, $newExam->name, "new exam has expected name");
+        //make sure other exam properties copied
+        $this->assertEquals($clonedExam->term, $newExam->term, "term properly copied");
+        $this->assertEquals($clonedExam->year, $newExam->year, "year properly copied");
+
+        //make sure questions were copied
         foreach($questionsToClone as $qa)
         {
             $this->seeInDatabase('question_assignments',
                                  [
-                                     'exam_id' => $target->id,
+                                     'exam_id' => $newExam->id,
                                      'question_id' => $qa->question_id,
                                      'question_number' => $qa->question_number
                                  ]);
@@ -309,7 +322,7 @@ class ExamRepositoryTest extends \ReseedingTestCase
         {
             $this->seeInDatabase('element_assignments',
                                  [
-                                     'exam_id' => $target->id,
+                                     'exam_id' => $newExam->id,
                                      'question_id' => $ea->question_id,
                                      'element_id' => $ea->element_id,
                                      'subtask' => $ea->subtask
