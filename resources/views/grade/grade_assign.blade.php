@@ -95,6 +95,7 @@
 
             examScores.forEach(function (score, i) {
                 barColor = getColorForGrade(score);
+                console.log(barColor);
                 gradeLetter = getLetterForGrade(score);
                 examData.push([(i + 1).toString(), score, '#' + barColor, gradeLetter ]);
             });
@@ -109,7 +110,7 @@
             }
         }
 
-        // returns hex color
+        // returns hex color -- alg is arbitrary, but needs to have enough variation from one grade group to the next
         function getColorForGrade(score) {
             var gradeGroup = 0;
             for (var i = 0; i < gradeCutoffs.length; i++) {
@@ -118,17 +119,25 @@
                     break;
                 }
             }
-            var c1 = "FF0000"; // base color
-            var color = (16 * gradeGroup);
+
+            var c1 = "00FF00"; // base color
+            //var colorWidth = parseInt(65536 / gradeCutoffs.length);
+            var colorWidth = 4096;
+            //var color = colorWidth * gradeGroup;
+            var color = (colorWidth * gradeGroup);
             var c2 = color.toString(16); // amount to add to base
-            return addHexColor(c1, c2);
+            return addHexColor(c1, c2, false);
         }
 
-        function addHexColor(c1, c2) {
-            var hexStr = (parseInt(c1, 16) + parseInt(c2, 16)).toString(16);
+        function addHexColor(c1, c2, add) {
+            if (add) {
+                var hexStr = (parseInt(c1, 16) + parseInt(c2, 16)).toString(16);
+            } else {
+                var hexStr = (parseInt(c1, 16) - parseInt(c2, 16)).toString(16);
+            }
             while (hexStr.length < 6) {
                 hexStr = '0' + hexStr;
-            } // Zero pad.
+            }
             return hexStr;
         }
 
