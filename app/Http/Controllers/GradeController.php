@@ -83,7 +83,37 @@ class GradeController extends Controller
     }
 
     /**
-     *  Presents a list of exams to grade
+     *  Launch the grade assignment page
+     * @param Exam $exam
+     */
+    public function assign(Exam $exam){
+        $gradeTypes = [ 'A+', 'A', 'A-',
+                        'B+', 'B', 'B-',
+                        'C+', 'C', 'C-',
+                        'D+', 'D', 'D-',
+                        'F' ];
+        // gradeCutoffs are the lowest values for each grade type
+        $gradeCutoffs = [ 97, 93, 90,
+                          87, 83, 80,
+                          77, 73, 70,
+                          67, 64, 60,
+                          0];
+        return View::make('grade.grade_assign', ['exam' => $exam, 'gradeTypes' => $gradeTypes,
+                        'gradeCutoffs' => $gradeCutoffs]);
+    }
+
+    /**
+     * Store grade assignments
+     * @param Exam $exam
+     * @return redirect
+     */
+    public function recordAssignments(Exam $exam) {
+        // do stuff
+        return redirect()->action('GradeController@index');
+    }
+
+    /**
+     *  Presents a list of exams for grading and assignment of scores
      */
     public function index()
     {
@@ -93,11 +123,11 @@ class GradeController extends Controller
         $numGraded = [];
         foreach($exams as $exam) {
             $examId = $exam->getId();
-            $numStudents[$examId] = count($this->studentDao->load_students_by_exam($examId));;
+            $numStudents[$examId] = count($this->studentDao->load_students_by_exam($examId));
             $numQuestions[$examId] = count($this->questionAssignmentDao->load_all_for_exam($examId));
             // I'd like to have an indicator showing how many exams have been graded for each exam in the list.
             // Calculating and loading all the graded exams is a lot of work ( #students * #questions * #exams)
-            // so maybe we should cache that value in the DB. For now it's not displayed.
+            // so maybe we should cache that value in the DB / redis.
             $numGraded[$examId] = '--';
         }
 

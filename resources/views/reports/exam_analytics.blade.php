@@ -30,11 +30,9 @@
 @section('jsArea')
 
     <script type="text/javascript">
-
         // set 'Reports' tab as active
         $('[id^="nav"]').attr('class', '');
         $('#navReport').attr('class', 'active');
-
     </script>
 
 @endsection

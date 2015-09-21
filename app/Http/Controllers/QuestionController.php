@@ -226,8 +226,8 @@ class QuestionController extends Controller
         foreach ($assignments as $ass) {
             $id = $ass->question_id;
             // load the question with given id by its index: ['0','1', ...]
-            $q['qObj'] = $this->questionDao->loadQuestionById($id);
-            $questions[] = $q;
+            //$q['qObj'] = $this->questionDao->loadQuestionById($id);
+            $questions[] = $this->questionDao->loadQuestionById($id);
         }
         $examName = $exam->getName();
         $examId = $exam->getId();

@@ -38,7 +38,8 @@
                 data-student-identifier="{{ $student->getStudentId() }}">
                 <td class="col-md-6" id="studentName{{ $count }}">{{ $student->getStudentLName() }},
                     {{ $student->getStudentFName() }}</td>
-                <td class="col-md-4" id="studentIdentifier{{ $count }}">{{ $student->getStudentId() }}</td>
+                <td class="col-md-4" id="studentIdentifier{{ $count }}">
+                    {{ !empty($student['student_identifier']) ? $student['student_identifier'] : '--' }}</td>
                 <td class="col-md-2" id="examGrade<?= $count++; ?>">--</td>
             </tr>
         @endforeach

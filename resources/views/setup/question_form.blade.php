@@ -6,7 +6,7 @@
         <span class="input-group-addon">Question Name</span>
         <input id="questionName{{ $counter }}"
                name="questionName{{ $counter }}" type="text" class="form-control input"
-               value="{{ isset($q) ? $q['qObj']->getQuestionName() : '' }}"
+               value="{{ isset($q) ? $q->getQuestionName() : '' }}"
                placeholder="Enter a brief description of the question, i.e. &quot;Causes of the Civil War&quot;"
                aria-describedby="basic-addon1">
     </div>
@@ -15,7 +15,7 @@
     <div class="form-group">
         <textarea class="form-control" rows="3" id="questionText{{ $counter }}"
                   name="questionText{{ $counter }}"
-                  placeholder="Enter the full question text (optional)">{{ isset($q) ? $q['qObj']->getQuestionText() : '' }}</textarea>
+                  placeholder="Enter the full question text (optional)">{{ isset($q) ? $q->getQuestionText() : '' }}</textarea>
     </div>
     <div class="form-group">
         <span class="btn btn-info btn-sm handle">
@@ -28,5 +28,5 @@
         </a>
     </div>
     <input type="hidden" id="questionId" name="questionId{{ $counter }}"
-           value="{{ isset($q) ? $q['qObj']->getId() : '0' }}"/>
+           value="{{ isset($q) ? $q->getId() : '0' }}"/>
 </li>

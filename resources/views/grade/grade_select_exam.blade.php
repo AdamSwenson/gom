@@ -13,14 +13,6 @@
             border: none;
         }
 
-        tr:hover {
-            background-color: #E3E3E3;
-        }
-
-        thead tr:hover {
-            background-color: white;
-        }
-
         .panel {
             border: none;
         }
@@ -35,22 +27,27 @@
                     <thead>
                     <tr style="cursor: default;">
                         <th class="col-md-1">Term</th>
-                        <th class="col-md-9">Name</th>
+                        <th class="col-md-6">Name</th>
                         <th class="col-md-1">Questions</th>
                         <th class="col-md-1">Students</th>
-                        {{-- <th class="col-md-1">Graded</th> taking this out for now --}}
+                        <th class="col-md-3"></th>
                     </tr>
                     </thead>
                     <tbody>
                     @if( sizeof($exams) > 0 )
                         @foreach($exams as $exam)
                             <?php $examId = $exam->id or '0' ?>
-                            <tr style="cursor: pointer;" data-href="{{ url('grade/exam/'.$examId) }}">
-                                <td style="width:10%;">{{ $exam->year or '' }} {{ $exam->term or '' }}</td>
-                                <td>{{ $exam->name or 'No Name Found' }}</td>
-                                <td id="numQuestions">{{ $numQuestions[ $examId ] or '0' }}</td>
-                                <td id="numStudents">{{ $numStudents[ $examId ] or '0' }}</td>
-                                {{-- <td class="col-md-1">{{ $numGraded[ $examId ] or '0' }}</td> --}}
+                            <tr>
+                                <td style="vertical-align:middle; width:10%;">{{ $exam->year or '' }} {{ $exam->term or '' }}</td>
+                                <td style="vertical-align:middle;">{{ $exam->name or 'No Name Found' }}</td>
+                                <td style="vertical-align:middle;" id="numQuestions">{{ $numQuestions[ $examId ] or '0' }}</td>
+                                <td style="vertical-align:middle;" id="numStudents">{{ $numStudents[ $examId ] or '0' }}</td>
+                                <td style="text-align: right">
+                                    <a data-href="{{ url('grade/exam/'.$examId) }}" class="btn btn-primary" title="Grade exam">
+                                        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Grade</a>
+                                    <a data-href="{{ url('grade/exam/'.$examId.'/assign') }}" class="btn btn-primary" title="Assign letter grades">
+                                        <span class="glyphicon glyphicon-signal" aria-hidden="true"></span> Assign</a>
+                                </td>
                             </tr>
                         @endforeach
                     @else
@@ -76,7 +73,7 @@
         $('[id^="nav"]').attr('class', '');
         $('#navGrade').attr('class', 'active');
 
-        $('tr[data-href]').on("click", function () {
+        $('a[data-href]').on("click", function () {
             if ( parseInt($(this).find('#numStudents').text()) == 0 ) {
                showError("No Students", "An exam must have at least one student in order to be graded.")
             } else if ( parseInt($(this).find('#numQuestions').text()) == 0 ) {

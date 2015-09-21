@@ -114,7 +114,8 @@
                             var el = editableList.closest(evt.item); // get dragged item
 
                             bootbox.dialog({
-                                message: "Warning: This will delete all elements and scores associated with the question",
+                                message: "<span class='glyphicon glyphicon-warning-sign'></span>" +
+                                " Warning: This will delete all elements and scores associated with the question",
                                 title: "Delete Question",
                                 buttons: {
                                     success: {

@@ -12,6 +12,7 @@ use App\Events\ExamReleasedEvent;
 use App\Exam;
 use App\Jobs\Feedback\BuildFeedbackAllStudents;
 use App\Jobs\Feedback\BuildFeedbackOneStudent;
+use App\Jobs\Feedback\NotifyAllStudents;
 use App\Jobs\Feedback\NotifySingleStudent;
 use App\Student;
 use App\Repositories\Element\ICommentRepository;
@@ -140,8 +141,11 @@ class ReportController extends Controller
      */
     public function notifyStudent(Exam $exam, Student $student)
     {
-        $job = (new NotifySingleStudent($exam, $student))->onQueue('emails');
-        $this->dispatch($job);
+        // added cutoff in case of empty email address
+        if ($student->getEmail()) {
+            $job = (new NotifySingleStudent($exam, $student))->onQueue('emails');
+            $this->dispatch($job);
+        }
     }
 
 
@@ -153,13 +157,12 @@ class ReportController extends Controller
     public function releaseExam(Exam $exam)
     {
         $this->createFeedback($exam);
-        if ($exam->getReleased()) {
-            // TODO send 're-release' email to all students with grades. Also marks all students as having been emailed.
-        } else {
+        if (!$exam->getReleased()) {
             $exam->setReleased(true);
             $exam->save();
-            // TODO send 'release' email to all students with grades. Also marks all students as having been emailed.
         }
+        $job = (new NotifyAllStudents($exam))->onQueue('emails');
+        $this->dispatch($job);
     }
 
     /**
@@ -203,8 +206,7 @@ class ReportController extends Controller
                  */
                 $oneSetOfScores = [];
                 $arrayOfStdObjects = $this->questionScoreRepository->load_all_for_question_number($exam->getId(), $i);
-                foreach($arrayOfStdObjects as $obj)
-                {
+                foreach ($arrayOfStdObjects as $obj) {
                     array_push($oneSetOfScores, $obj->score);
                 }
                 //back to what was originally here
@@ -213,7 +215,7 @@ class ReportController extends Controller
                 $sum = array_sum($oneSetOfScores);
                 $meanScores[$i] = $sum / count($oneSetOfScores);
                 $meanScores[$i] = $i;
-                if ( count($oneSetOfScores) > 1)
+                if (count($oneSetOfScores) > 1)
                     $stdDeviations[$i] = $this->standardDeviation($oneSetOfScores);
             }
         }
@@ -225,8 +227,9 @@ class ReportController extends Controller
     function standardDeviation($array)
     {
         // square root of sum of squares devided by N-1
-        return sqrt(array_sum(array_map(function ($x, $mean)
-            { return pow($x - $mean, 2); }, $array, array_fill(0, count($array),
+        return sqrt(array_sum(array_map(function ($x, $mean) {
+                return pow($x - $mean, 2);
+            }, $array, array_fill(0, count($array),
                 (array_sum($array) / count($array))))) / (count($array) - 1));
     }
 

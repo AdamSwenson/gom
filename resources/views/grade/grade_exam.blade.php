@@ -346,11 +346,9 @@
                         var i = $(a).find('[id^="' + value + '"]');
                         var j = $(b).find('[id^="' + value + '"]');
                         var result;
-                        if (value == 'studentName') {
+                        if (value == 'studentName' || value == 'studentIdentifier' ) {
                             result = $(i).text().toUpperCase().localeCompare(
                                     $(j).text().toUpperCase());
-                        } else if (value == 'studentIdentifier') {
-                            result = parseFloat($(i).text()) - parseFloat($(j).text());
                         } else {
                             // sort by exam grade
                             var gradeA = examGrades[$(a).attr('data-index')];

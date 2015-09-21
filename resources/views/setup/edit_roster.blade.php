@@ -164,9 +164,10 @@
 
         function showImportHelp() {
             bootbox.dialog({
-                message: "Student roster files should be formatted as .CSV, .XLS, or .XLSX file types. Each " +
-                "row holds one student's data, with values for last name, first name, ID and email in a column. " +
-                "Some columns are optional, however all students must at least have first and last names.",
+                message: "Student roster files should be formatted as .CSV, .XLS, or .XLSX file types.<br/>" +
+                "Each row holds one student's data, with the following data:<br/>" +
+                "Last name, first name, ID (optional), email (optional)<br/>" +
+                "Data with a header row, though not required, is more likely to import successfully:",
                 title: "Import Help",
                 buttons: {
                     success: {

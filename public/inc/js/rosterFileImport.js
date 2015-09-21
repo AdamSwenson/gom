@@ -69,7 +69,7 @@ function startRead() {
     reader.readAsText($inputFile);
 
     reader.onload = function (event) {
-        //rows = event.target.result.toString().replace(/\r/, "\n").split("\n"); // such hax! -b.b.
+        // convert line endings
         rows = event.target.result.toString().replace(/[\r\n]+/g, "\n").split("\n");
         var students = [];
 
@@ -80,7 +80,8 @@ function startRead() {
 
         // remove any resulting lines with 1 or fewer elements
         for (i = students.length - 1; i >= 0; i--) {
-            // <= 1 here is dirty, there's a better way to throw out "" lines
+            // since this looks for rows with 2 or more consecutive commas, rows that import with a few empty columns
+            // at the beginning (eg:  [,,,data,data,data] ) will be spliced. IT should remove lines with only commas.
             if (students[i].length <= 1 || (rows[i].search(/,,+/) >= 0 )) {
                 students.splice(i, 1);
                 rows.splice(i, 1);
@@ -95,11 +96,10 @@ function startRead() {
             // remove the header line as we don't need it any longer
             rows.splice(0, 1);
             students.splice(0, 1);
-            console.log(rows);
         } else {
             guessColumnDataByContent(students);
         }
-        console.log(rows);
+
         console.log('lnameCol:' + lastNameCol + ' fnameCol:' + firstNameCol + ' idCol:' + idCol + ' emailCol:' + emailCol);
 
         for (i = startRow; i < rows.length; i++) {
