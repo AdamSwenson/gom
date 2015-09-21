@@ -183,8 +183,6 @@ class StudentController extends Controller
 
     public function updateAll(Exam $exam, StudentRequest $request)
     {
-        dd($request);
-
         $examId = $exam->getId();
         $kumi = $this->kumiRepository->load($exam->getName(), $exam->getYear());
         if (!$kumi) {

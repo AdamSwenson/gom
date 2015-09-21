@@ -15,6 +15,7 @@ interface IQuestionScoreRepository
      * Loads all question scores for a student on an exam
      * @param $examId
      * @param $studentId
+     * @return Array of objects - NOT GRADE OBJECTS
      */
     public function load_for_student_on_exam($examId, $studentId);
 

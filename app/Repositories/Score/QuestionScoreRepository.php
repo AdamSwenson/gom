@@ -24,8 +24,11 @@ class QuestionScoreRepository implements IQuestionScoreRepository
      *      questionAssignmentId: The id of the assignment of the question to the exam
      *      questionScore: Float of the score the student received on this question. (Null if not answered)
      *
+     * NOTE: actually returning array of objects: must be accessed by item->value !! (bb 9/20)
+     *
      * @param $examId
      * @param $studentId
+     * @return array
      */
     public function load_for_student_on_exam($examId, $studentId)
     {

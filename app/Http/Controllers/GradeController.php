@@ -98,7 +98,23 @@ class GradeController extends Controller
                           77, 73, 70,
                           67, 64, 60,
                           0];
-        return View::make('grade.grade_assign', ['exam' => $exam, 'gradeTypes' => $gradeTypes,
+        $examId = $exam->getId();
+        $students = $this->studentDao->load_students_by_exam($examId);
+
+        // calculate exam scores
+        $examScores = [];
+        foreach($students as $student) {
+            $questionItems = $this->questionScoreDao->load_for_student_on_exam($examId, $student->getId());
+            $examScore = 0;
+            foreach($questionItems as $score) {
+                if ( isset($score->questionScore ))
+                    $examScore += $score->questionScore;
+            }
+            $examScores[] = $examScore;
+        }
+        return View::make('grade.grade_assign', ['exam' => $exam,
+                        'examScores' => $examScores,
+                        'gradeTypes' => $gradeTypes,
                         'gradeCutoffs' => $gradeCutoffs]);
     }
 
