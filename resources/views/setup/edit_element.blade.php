@@ -112,7 +112,8 @@
 
                     // show warning message on delete
                     bootbox.dialog({
-                        message: "Warning: This will delete any scores associated with this element",
+                        message: "<span class='glyphicon glyphicon-warning-sign'></span> " +
+                        "Warning: This will delete any scores associated with this element",
                         title: "Delete Element",
                         buttons: {
                             success: {

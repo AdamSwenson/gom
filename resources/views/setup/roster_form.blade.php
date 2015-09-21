@@ -10,8 +10,8 @@
                style="border:none;">
     </td>
     <td><input class="form-control" type="text" id="studentIdentifier" placeholder="Student ID"
-               name="studentIdentifier{{ $row }}" value="{{ $s['student_identifier'] or '' }}"
-               style="border:none;">
+               name="studentIdentifier{{ $row }}" style="border:none;"
+               value="{{ !empty($s['student_identifier']) ? $s['student_identifier'] : '' }}">
     </td>
     <td><input class="form-control" type="text" id="email" name="email{{ $row }}" placeholder="Email"
                value="{{ $s['email'] or '' }}"

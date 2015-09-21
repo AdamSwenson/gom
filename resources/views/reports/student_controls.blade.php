@@ -13,6 +13,7 @@
             <span class="glyphicon glyphicon-user" aria-hidden="true"> </span> Student Controls:
             {{ $exam->getTerm() }} {{ $exam->getYear() }} "{{ $exam->getName() }}"</h3>
         <h4>Send email notifications or review student feedback</h4>
+
         <div class="well-lg">
             <table class="table table-striped">
                 <thead>
@@ -26,12 +27,14 @@
                 <tbody>
                 @foreach($students as $student)
                     <tr>
-                        <td style="vertical-align:middle" id="studentName">{{ $student->last_name }}, {{ $student->first_name }}</td>
-                        <td style="vertical-align:middle" id="studentEmail">{{ $student->getEmail() }}</td>
+                        <td style="vertical-align:middle" id="studentName">{{ $student->last_name }}
+                            , {{ $student->first_name }}</td>
+                        <td style="vertical-align:middle"
+                            id="studentEmail{{ $student->getId()}}">{{ $student->getEmail() }}</td>
                         <td style="vertical-align:middle">{{ $student->getStudentId()}}</td>
                         <td style="text-align: right;">
                             <a class="btn btn-default" style="width:120px;" id="{{ 'studentId'.$student->getId() }}"
-                               title="Email Student"  data-graded="{{ $student->hasBeenGraded($exam->getId()) }}"
+                               title="Email Student" data-graded="{{ $student->hasBeenGraded($exam->getId()) }}"
                                onclick="confirmEmail({{ $student->getId() }})"
                                data-emailed="{{ $student->feedBackEmailSent($exam->getId()) }}">
                                 <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Email
@@ -40,7 +43,7 @@
                                data-feedback-available="{{ $student->isFeedBackAvailable($exam->getId()) }}"
                                href="{{ url('report/'.$exam->getId().'/students/'.$student->getId()) }}">
                                 <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
-                                 Review
+                                Review
                             </a>
                         </td>
                     </tr>
@@ -62,30 +65,37 @@
         $('#navReport').attr('class', 'active');
 
         //set the display for all emailed students
-        $('[id^="studentId"]').each( function() {
-            if ( !$(this).attr('data-graded') ){
+        $('[id^="studentId"]').each(function () {
+            if (!$(this).attr('data-graded')) {
                 $(this).addClass('disabled');
                 $(this).text('Not Graded');
-            } else if ( $(this).attr('data-emailed')  == '1'){
-                setAsEmailed( $(this) );
+            } else if ($(this).attr('data-emailed') == '1') {
+                setAsEmailed($(this));
             }
         });
 
         // Disable 'review' button if feedback is not available
-        $('#btnReview').each( function(){
-            if ( !$(this).data('feedback-available') ){
+        $('#btnReview').each(function () {
+            if (!$(this).data('feedback-available')) {
                 $(this).addClass('disabled');
             }
         });
 
         function confirmEmail(studentId) {
+            
+            // Display error if email is blank
+            var email = $('[id^="studentEmail' + studentId + '"]').text();
+            if ( email.length == 0 ) {
+                bootbox.alert('No email for this student');
+                return false;
+            }
             var released = $('#studentId' + studentId).attr('data-emailed');
             var confirmMsg = "This will email the student with a link containing their grade and feedback.";
             if (released === '1') {
                 confirmMsg = "This will re-send the notification email, informing the student that their exam has been graded.";
             }
             // confirm and email student
-            bootbox.confirm(confirmMsg, function(result) {
+            bootbox.confirm(confirmMsg, function (result) {
                 if (result) {
                     var examId = $('#examTitle').attr('data-exam-id');
                     var $student = $('#studentId' + studentId);
@@ -94,14 +104,14 @@
                     $.ajax({
                         url: path,
                         type: 'POST',
-                        success: function() {
-                            setAsEmailed( $student );
-                            alertEmailSent( $student.closest('tr') );
+                        success: function () {
+                            setAsEmailed($student);
+                            alertEmailSent($student.closest('tr'));
                         },
-                        error: function( ) {
-                            alert( "Sorry, there was a problem emailing this student!" );
+                        error: function () {
+                            alert("Sorry, there was a problem emailing this student!");
                         },
-                        complete: function() {
+                        complete: function () {
                             $student.removeClass('disabled');
                         }
                     });
@@ -111,7 +121,8 @@
 
         function alertEmailSent($tr) {
             var email = $tr.find('#studentEmail').text();
-            bootbox.alert("An email has been sent to " + email + ".", function() {});
+            bootbox.alert("An email has been sent to " + email + ".", function () {
+            });
         }
 
         // changes the visuals and status for a released exam

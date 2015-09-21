@@ -183,7 +183,8 @@ class StudentController extends Controller
 
     public function updateAll(Exam $exam, StudentRequest $request)
     {
-        // TODO: validate that first and last names are non-empty
+        dd($request);
+
         $examId = $exam->getId();
         $kumi = $this->kumiRepository->load($exam->getName(), $exam->getYear());
         if (!$kumi) {

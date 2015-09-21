@@ -105,8 +105,9 @@
 
         function showConfirmation(examId) {
             bootbox.dialog({
-                message: "Warning: This will delete all associated students, scores, questions and elements. " +
-                "Do you wish to proceed?",
+                message: "<span class='glyphicon glyphicon-warning-sign'></span>" +
+                        " Warning: This will delete all associated students, scores, questions and elements. " +
+                "<br/>Do you wish to proceed?",
                 title: "Delete Exam",
                 buttons: {
                     success: {
