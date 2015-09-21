@@ -35,9 +35,10 @@ class QuestionRepository implements IQuestionRepository
      * Creates a new question
      * @param string $questionName
      * @param string $questionText
+     * @param null|integer $maxScore
      * @return Question
      */
-    public function createQuestion($questionName, $questionText)
+    public function createQuestion($questionName, $questionText, $maxScore=null)
     {
         $clean_name = $this->cleaner->sanitize($questionName, CleanerFactory::STRING, Question::MAX_NAME_LENGTH);
         $clean_text = $this->cleaner->sanitize($questionText, CleanerFactory::STRING, Question::MAX_TEXT_LENGTH);
@@ -45,6 +46,7 @@ class QuestionRepository implements IQuestionRepository
         $question = new Question();
         $question->setQuestionName($clean_name);
         $question->setQuestionText($clean_text);
+        $question->setMaxScore($maxScore);
         $question->save();
         return $question;
     }
@@ -54,9 +56,10 @@ class QuestionRepository implements IQuestionRepository
      * @param $questionId
      * @param string $questionName
      * @param string $questionText
+     * @param null|integer $maxScore
      * @return Question
      */
-    public function updateQuestion($questionId, $questionName, $questionText)
+    public function updateQuestion($questionId, $questionName, $questionText, $maxScore=null)
     {
         $question = $this->loadQuestionById($questionId);
         $this->updateQuestionObject($question, $questionName, $questionText);
@@ -68,15 +71,17 @@ class QuestionRepository implements IQuestionRepository
      * @param Question $question
      * @param string $questionName
      * @param string $questionText
+     * @param null|integer $maxScore
      * @return Question
      */
-    public function updateQuestionObject(Question $question, $questionName, $questionText)
+    public function updateQuestionObject(Question $question, $questionName, $questionText, $maxScore=null)
     {
         $clean_name = $this->cleaner->sanitize($questionName, CleanerFactory::STRING, Question::MAX_NAME_LENGTH);
         $clean_text = $this->cleaner->sanitize($questionText, CleanerFactory::STRING, Question::MAX_TEXT_LENGTH);
 
         $question->setQuestionName($clean_name);
         $question->setQuestionText($clean_text);
+        $question->setMaxScore($maxScore);
         $question->update();
         return $question;
     }

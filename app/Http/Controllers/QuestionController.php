@@ -87,8 +87,10 @@ class QuestionController extends Controller
     public function store(QuestionRequest $request)
     {
         //store and return the question
-        $question = $this->questionDao->createQuestion($request->input('questionName'),
-            $request->input('questionDesc'));
+        $question = $this->questionDao->createQuestion(
+            $request->input('questionName'),
+            $request->input('questionDesc'),
+            $request->input('maxScore'));
 
         //associate it with the exam
         $questionAssignment = $this->assignmentDao->record($request->input('examId'), $question->getId(),
@@ -135,8 +137,12 @@ class QuestionController extends Controller
      */
     public function update(Question $question, QuestionRequest $request, $returnView = true)
     {
-        $question = $this->questionDao->updateQuestionObject($question, $request->input('questionName'),
-            $request->input('questionText'));
+        $question = $this->questionDao->updateQuestionObject(
+            $question,
+            $request->input('questionName'),
+            $request->input('questionText'),
+            $request->input('maxScore'));
+
         if ($returnView) {
             //TODO: Add view here
             return view('', compact('question'));
@@ -170,14 +176,20 @@ class QuestionController extends Controller
         while ($request->input('questionName' . $i)) {
             // new questions arrive with id == 0
             if (($request->input('questionId' . $i)) == 0) {
-                $question = $this->questionDao->createQuestion($request->input('questionName' . $i),
-                    $request->input('questionText' . $i));
+                $question = $this->questionDao->createQuestion(
+                    $request->input('questionName' . $i),
+                    $request->input('questionText' . $i),
+                    $request->input('maxScore' . $i));
                 $this->assignmentDao->record($examId, $question->getId(), $i);
             } else
             // other items already exist and should be updated
             {
-                $question = $this->questionDao->updateQuestion($request->input('questionId' . $i),
-                    $request->input('questionName' . $i), $request->input('questionText' . $i));
+                $question = $this->questionDao->updateQuestion(
+                    $request->input('questionId' . $i),
+                    $request->input('questionName' . $i),
+                    $request->input('questionText' . $i),
+                    $request->input('maxScore' . $i));
+
                 $this->assignmentDao->record($examId, $request->input('questionId' . $i), $i);
             }
             $currentQuestions[$question->getId()] = $question;

@@ -19,13 +19,15 @@ use App\Question;
  */
 interface IQuestionRepository
 {
+
     /**
      * Creates a new question
      * @param string $questionName
      * @param string $questionText
+     * @param null|float $maxScore
      * @return Question
      */
-    public function createQuestion($questionName, $questionText);
+    public function createQuestion($questionName, $questionText, $maxScore=null);
 
     /**
      * Delete a question from the database (and from any exams it is associated with).
@@ -48,19 +50,20 @@ interface IQuestionRepository
      * @param $questionId
      * @param string $questionName
      * @param string $questionText
+     * @param null|float $maxScore
      * @return Question
      */
-    public function updateQuestion($questionId, $questionName, $questionText);
-
+    public function updateQuestion($questionId, $questionName, $questionText, $maxScore=null);
 
     /**
      * Updates a question when the model has been passed in
      * @param Question $question
      * @param string $questionName
      * @param string $questionText
+     * @param null|float $maxScore
      * @return Question
      */
-    public function updateQuestionObject(Question $question, $questionName, $questionText);
+    public function updateQuestionObject(Question $question, $questionName, $questionText, $maxScore=null);
 
     /**
      * Load all questions for the user

@@ -21,19 +21,39 @@ class Question extends BaseModel
     protected $fillable = [
         'questionText',
         'questionName',
+        'max_score',
         'created_at',
         'updated_at'
     ];
 
     protected $casts = [
         'questionText' => 'string',
-        'questionName' => 'string'
+        'questionName' => 'string',
+        'max_score' => 'float'
     ];
 
 
     public function __construct()
     {
         parent::boot();
+    }
+
+    /**
+     * Sets the maximum score that can be entered for a question
+     * @param float $maxScore
+     */
+    public function setMaxScore($maxScore)
+    {
+        $this->attributes['max_score'] = $maxScore;
+    }
+
+    /**
+     * Returns the maximum score that can be achieved for a question
+     * @return float
+     */
+    public function getMaxScore()
+    {
+        return $this->attributes['max_score'];
     }
 
     /**
@@ -158,53 +178,5 @@ class Question extends BaseModel
         return $this->hasManyThrough('App\QuestionScore', 'App\QuestionAssignment', 'question_id',
             'question_assignment_id');
     }
-
-    //    public function elements()
-//    {
-//        $this->hasManyThrough('App\Element', 'App\Q')
-//    }
-
-
-//    /**
-//     * Handles legacy and alias method names.
-//     *
-//     * @param  string $method
-//     * @param  array $parameters
-//     * @return mixed
-//     * @throws \Exception
-//     */
-//    public function __call($method, $parameters)
-//    {
-//        try
-//        {
-//            parent::$method($parameters);
-//        } catch (\Exception $e)
-//        {
-//            switch ($method)
-//            {
-//                case 'getText':
-//                    $this->getQuestionText();
-//                    break;
-//                case 'getName':
-//                    $this->getQuestionName();
-//                    break;
-//                case 'getQuestiontext':
-//                    $this->getQuestionText();
-//                    break;
-//                case 'getQuestionname':
-//                    $this->getQuestionName();
-//                    break;
-//                case 'setQuestiontext':
-//                    $this->setQuestionText($parameters);
-//                    break;
-//                case 'setQuestionname':
-//                    $this->setQuestionName($parameters);
-//                    break;
-//                default:
-//                    throw new \Exception('bad method request');
-//            }
-//        }
-//    }
-
 
 }
