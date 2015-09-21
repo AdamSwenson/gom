@@ -913,6 +913,7 @@ return array(
     'Register' => $vendorDir . '/phing/phing/classes/phing/system/util/Register.php',
     'RegisterSlot' => $vendorDir . '/phing/phing/classes/phing/system/util/Register.php',
     'RegularExpression' => $vendorDir . '/phing/phing/classes/phing/types/RegularExpression.php',
+    'RemoveUniqueIdentifierConstraintFromStudents' => $baseDir . '/database/migrations/2015_09_20_172258_remove_unique_identifier_constraint_from_students.php',
     'Renderer' => $vendorDir . '/dompdf/dompdf/include/renderer.cls.php',
     'ReplaceRegexp' => $vendorDir . '/phing/phing/classes/phing/filters/ReplaceRegexp.php',
     'ReplaceRegexpTask' => $vendorDir . '/phing/phing/classes/phing/tasks/ext/ReplaceRegexpTask.php',

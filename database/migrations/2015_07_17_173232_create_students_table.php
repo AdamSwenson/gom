@@ -21,8 +21,8 @@ class CreateStudentsTable extends Migration
             $table->string('email')->nullable();
             $table->timestamps();
 
-            //          $table->unique(['user_id', 'student_identifier']);
-//            $table->unique(['user_id', 'studentId', 'email']);
+            //Modify existing
+            //$table->dropUnique('students_user_id_student_identifier_unique');
 
             $table->foreign('user_id')
                 ->references('id')
