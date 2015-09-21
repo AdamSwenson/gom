@@ -8,31 +8,22 @@
 @endsection
 
 @section('body')
-    <style>
-        .chart rect {
-            fill: steelblue;
-        }
-
-        .chart text {
-            fill: white;
-            font: 10px sans-serif;
-            text-anchor: middle;
-        }
-    </style>
     <div class="container">
+
         @include('errors.list')
 
         <h3><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Assign Grades: {{ $exam->getTerm() }}
             {{ $exam->getYear() }} "{{ $exam->getName() }}"</h3>
         <h4>Enter the minimum exam grade for each letter assignment. Blank grades will not be used.</h4>
+        <br/>
 
         <div class="row">
-            {{-- Left column holds grade assignment regions --}}
-            <div class="col-md-5">
-                <form class="form-horizontal" id="rosterData" method="post" role="form"
+            <!-- Left column holds grade assignment regions -->
+            <div class="col-lg-5">
+                <form class="form-horizontal" method="post" role="form" name="frmGradeCutoffs"
                       action="{{ url('grade/exam/'.$exam->getId().'/assign') }}">
                     <input type="hidden" id="token" name="_token" value="{{ csrf_token() }}">
-                    {{-- Grade Assignment fields. These will form into 2 columns of up to 7 items each --}}
+                    <!-- Grade Assignment fields. These will form into 2 columns of up to 7 items each -->
                     <div class="row">
                         <div class="col-md-1"></div>
                         <div class="col-md-5">
@@ -52,21 +43,18 @@
                         <div class="col-md-1"></div>
                     </div>
                     <div class="col-md-offset-4 col-md-8">
-                        <button type="submit" class="btn btn-success">
+                        <a type="submit" onclick="document.frmGradeCutoffs.submit();" class="btn btn-success">
                             <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span> Save Assignments
-                        </button>
+                        </a>
                     </div>
                 </form>
             </div>
-            {{-- Right column may hold some data, maybe a chart or list of grades? --}}
-            <div class="col-md-7">
-                <div class="container">
-                    <div id="chart_div" style="width:400px; height:300px;"></div>
-                </div>
+            <br/>
+            <div class="col-lg-7">
+                <div id="chart" style="width: 600px; height: 400px;"></div>
             </div>
         </div>
     </div>
-
 @endsection
 
 
@@ -78,23 +66,98 @@
         $('[id^="nav"]').attr('class', '');
         $('#navGrade').attr('class', 'active');
 
-        google.load('visualization', '1', {packages: ['corechart', 'bar']});
+        var strExamScores = <?= json_encode( $examScores ) ?>; // student's exam scores
+        var gradeTypes = <?= json_encode( $gradeTypes ) ?>; // array holding letter grades passed in "A+", "A", etc
+        var examScores = strExamScores.map(Number);
+        examScores.sort(function (a, b) {
+            return a - b
+        });
+        var examData = [];
+        var gradeCutoffs = [];
+
+        updateColorData();
+
+        function updateChartColors() {
+            updateColorData();
+            drawChart();
+        }
+
+        // rebuild examData with new color values based on current grade cutoffs
+        function updateColorData() {
+            examData = [];
+            examData.push(['Student', 'Score', {role: 'style'}, { role: 'annotation' }]);
+
+            // gradeCutoffs grabs current values from gradeGroup fields
+            gradeCutoffs = [];
+            $('[id^="gradeGroup"]').each(function () {
+                gradeCutoffs.push($(this).val());
+            });
+
+            examScores.forEach(function (score, i) {
+                barColor = getColorForGrade(score);
+                gradeLetter = getLetterForGrade(score);
+                examData.push([(i + 1).toString(), score, '#' + barColor, gradeLetter ]);
+            });
+        }
+
+        // returns grade letter -- this is shoddy because it does the same loop as getColorForGrade.
+        function getLetterForGrade(score) {
+            for (var i = 0; i < gradeCutoffs.length; i++) {
+                if (score >= parseFloat(gradeCutoffs[i])) {
+                    return gradeTypes[i];
+                }
+            }
+        }
+
+        // returns hex color
+        function getColorForGrade(score) {
+            var gradeGroup = 0;
+            for (var i = 0; i < gradeCutoffs.length; i++) {
+                if (score >= parseFloat(gradeCutoffs[i])) {
+                    gradeGroup = i;
+                    break;
+                }
+            }
+            var c1 = "FF0000"; // base color
+            var color = (16 * gradeGroup);
+            var c2 = color.toString(16); // amount to add to base
+            return addHexColor(c1, c2);
+        }
+
+        function addHexColor(c1, c2) {
+            var hexStr = (parseInt(c1, 16) + parseInt(c2, 16)).toString(16);
+            while (hexStr.length < 6) {
+                hexStr = '0' + hexStr;
+            } // Zero pad.
+            return hexStr;
+        }
+
+        // load and display the chart
+        google.load("visualization", "1.1", {packages: ['corechart', 'bar']});
         google.setOnLoadCallback(drawChart);
 
         function drawChart() {
-            var data = google.visualization.arrayToDataTable([
-                ['Year', 'Visitations', { role: 'style' } ],
-                ['2010', 10, 'color: gray'],
-                ['2010', 14, 'color: #76A7FA'],
-                ['2020', 16, 'opacity: 0.2'],
-                ['2040', 22, 'stroke-color: #703593; stroke-width: 4; fill-color: #C5A5CF'],
-                ['2040', 28, 'stroke-color: #871B47; stroke-opacity: 0.6; stroke-width: 8; fill-color: #BC5679; fill-opacity: 0.2']
-            ]);
+            var data = google.visualization.arrayToDataTable(examData);
 
-            var chart = new google.visualization.ColumnChart(document.getElementById("chart_div"));
+            var options = {
+                chart: {
+                    title: 'Student Grades',
+                },
+                vAxis: {
+                    title: 'Score'
+                },
+                hAxis: {
+                    title: 'Student'
+                },
+                legend: {
+                    position: 'none'
+                }
+            };
+
+            var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
+
             chart.draw(data, options);
         }
-
     </script>
 
 @endsection
