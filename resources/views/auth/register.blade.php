@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('title')
-    Sign up for the Gradeomatic
+    Sign up for the gradeomatic
 @endsection
 
 @section('body')

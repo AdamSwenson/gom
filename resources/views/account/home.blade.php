@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('pageTitle', 'Welcome to GradeOmatic')
+@section('pageTitle', 'Welcome to gradeomatic')
 
 @section('cssLinks')
 

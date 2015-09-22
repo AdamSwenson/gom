@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('title')
-    Login to the Gradeomatic
+    Login to the gradeomatic
 @endsection
 
 @section('body')

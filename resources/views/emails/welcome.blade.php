@@ -17,6 +17,6 @@
 <p>Getting started guide</p>
 
 <p>Thank you,<br />
-    The Gradeomatic Team
+    The gradeomatic Team
 </p>
 </html>

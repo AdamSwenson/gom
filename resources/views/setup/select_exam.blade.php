@@ -2,7 +2,7 @@
 
 @extends('layouts.master')
 
-@section('pageTitle', 'Exam Setup | GradeOmatic')
+@section('pageTitle', 'Exam Setup | gradeomatic')
 
 @section('description', 'Create, edit, clone or delete an exam')
 
@@ -31,7 +31,7 @@
                 </li>
             </ul>
         </nav>
-        <h3><span class="glyphicon glyphicon-list" aria-hidden="true"></span> Exam Setup</h3>
+        <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Exam Setup</h3>
         <h4>Create, edit and delete exams</h4>
 
         <div class="container">

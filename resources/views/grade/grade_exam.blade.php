@@ -1,7 +1,7 @@
 <!-- the grade exam tool -->
 @extends('layouts.master')
 
-@section('pageTitle', 'Grade Exam | GradeOmatic')
+@section('pageTitle', 'Grade Exam | gradeomatic')
 @section('description', 'Grade an exam')
 @section('cssLinks')
 

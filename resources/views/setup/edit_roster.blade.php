@@ -1,7 +1,7 @@
 <!-- Edit_roster manages student creation, editing and file imports -->
 @extends('layouts.master')
 
-@section('pageTitle', 'Edit Roster | GradeOmatic')
+@section('pageTitle', 'Edit Roster | gradeomatic')
 @section('description', 'Upload and modify student roster')
 
 @section('cssLinks')

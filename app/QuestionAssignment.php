@@ -36,6 +36,16 @@ class QuestionAssignment extends BaseModel
     }
 
     /**
+     * Returns the question object associated with this assignment
+     * @return Question
+     */
+    public function getQuestion()
+    {
+        $qid = $this->question_id;
+        return Question::where('id', $qid)->first();
+    }
+
+    /**
      * Returns the number (i.e., the order) of the associated question on the exam
      * @return integer
      */

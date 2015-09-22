@@ -2,7 +2,7 @@
     Includes 'add question' and 'import question' buttons -->
 
 @extends('layouts.master')
-@section('pageTitle', 'Edit Questions | GradeOmatic')
+@section('pageTitle', 'Edit Questions | gradeomatic')
 @section('description', 'Add or edit questions')
 @section('cssLinks')
 @endsection
@@ -78,8 +78,6 @@
             } else if ( formFieldsValid() ) {
                 $('#nextAction').val(targetForm);
                 $('#questionForm').submit();
-            } else {
-                bootbox.alert('One or more questions is missing a name.');
             }
         }
 
@@ -88,13 +86,27 @@
         }
 
         function formFieldsValid() {
+            var msg = '';
             var valid = true;
             var $names = $('#questionForm').find('[id^="questionName"]');
             $names.each( function() {
                 if ( $(this).val() == '' ) {
                     valid = false;
+                    msg = 'One or more questions is missing a name.';
                 }
             });
+            var $maxScores = $('#questionForm').find('[id^="maxScore"]');
+            $maxScores.each( function() {
+                if ( $(this).val() == '' ) {
+                    valid = false;
+                    msg = 'One or more questions is missing a maximum score.'
+                }
+            });
+
+            if (!valid) {
+                bootbox.alert(msg);
+            }
+
             return valid;
         }
 
@@ -179,6 +191,9 @@
                         $(item).find('textarea').attr('id', 'questionText' + order);
                         $(item).find('textarea').attr('name', 'questionText' + order);
                         $(item).find('#questionId').attr('name', 'questionId' + order);
+                        $(item).find("[id^='maxScore']").attr('id', 'maxScore' + order);
+                        $(item).find("[id^='maxScore']").attr('name', 'maxScore' + order);
+
                     }
 
                     function getQuestionCount() {
