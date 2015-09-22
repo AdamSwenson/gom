@@ -181,7 +181,7 @@ public function tearDown()
         $result = $this->object->load_student_by_sid($student->student_identifier);
         $this->assertNotEmpty($result, 'returned object');
         $this->assertInstanceOf('\App\Student', $result);
-        $this->assertEquals($this->student, $result);
+        $this->assertEquals($student, $result);
     }
 
 
