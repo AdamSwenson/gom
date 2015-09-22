@@ -21,11 +21,12 @@ class ElementScoresTableSeeder extends Seeder
 
         foreach ($assigns as $qa)
         {
-            for ($i = 0; $i <= $studentsPerQuestion; $i++)
+            foreach($studentIds as $sid)
+//            for ($i = 0; $i <= $studentsPerQuestion; $i++)
             {
                 try
                 {
-                    $sid = $faker->randomElement($studentIds);;
+                   // $sid = $faker->randomElement($studentIds);;
 //                    var_dump($sid);
                     $score = $faker->randomFloat(2, 0, 10);
 //                    var_dump($score);

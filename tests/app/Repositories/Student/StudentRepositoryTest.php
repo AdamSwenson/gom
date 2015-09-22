@@ -12,6 +12,7 @@ namespace App\Repositories\Student;
 use App\Exam;
 use App\Kumi;
 use App\Student;
+use Illuminate\Support\Facades\Auth;
 
 class StudentRepositoryTest extends \TestCase
 {
@@ -46,10 +47,6 @@ public function tearDown()
             $this->assertInstanceOf('\App\Student', $r, "returns a student object");
         }
 
-
-//        $kumiIds = DB::table('kumi_student')->lists('kumi_id');
-        //      DB::table('exam_kumi')->where('kumi_id', $kumiIds)->lists('exam_id');
-
     }
 
     public function testCreate_student()
@@ -70,10 +67,97 @@ public function tearDown()
     }
 
     /*    Todo Implement important test cases
-        public function testCreate_studentEmailNull(){}
-        public function testCreate_studentStudentIdNull(){}
+
         public function testCreate_studentPreexistingStudent(){}
     */
+
+    /**
+     * @test
+     */
+    public function create_student_with_no_email()
+    {
+        //prep
+        $lastName = $this->faker->lastName();
+        $firstName = $this->faker->firstName();
+        $studentId = $this->faker->randomNumber(9);
+
+        //call
+        $result = $this->object->create_student($lastName, $firstName, $studentId);
+
+        //check
+        $this->assertNotEmpty($result);
+        $this->assertInstanceOf('\App\Student', $result, "returns a student object");
+        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'student_identifier' => $studentId]);
+     }
+
+    /**
+     * @test
+     */
+    public function create_student_who_already_exists_but_for_different_user()
+    {
+        $userId = 2;
+
+        \Auth::loginUsingId($userId);
+
+        //call
+        $result = $this->object->create_student(
+            $this->student->last_name,
+            $this->student->first_name,
+            $this->student->student_identifier,
+            $this->student->email);
+
+        //check
+        $this->assertNotEmpty($result);
+        $this->assertInstanceOf('\App\Student', $result, "returns a student object");
+        $this->seeInDatabase('students',
+                             [
+                                 'last_name' => $this->student->last_name,
+                                 'first_name' => $this->student->first_name,
+                                 'student_identifier' => $this->student->student_identifier,
+                                 'email' => $this->student->email,
+                                 'user_id' => $userId
+                             ]);
+
+        //cleanup: log back in as normal
+        \Auth::loginUsingId(self::$userid);
+    }
+
+    /**
+     * @test
+     */
+    public function create_student_with_no_student_identifier()
+    {
+        //prep
+        $lastName = $this->faker->lastName();
+        $firstName = $this->faker->firstName();
+        $email = $this->faker->unique()->email();
+
+        //call
+        $result = $this->object->create_student($lastName, $firstName, null, $email);
+
+        //check
+        $this->assertNotEmpty($result);
+        $this->assertInstanceOf('\App\Student', $result, "returns a student object");
+        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'email' => $email]);
+    }
+
+    /**
+     * @test
+     */
+    public function create_student_with_no_student_identifier_or_email()
+    {
+        //prep
+        $lastName = $this->faker->lastName();
+        $firstName = $this->faker->firstName();
+
+        //call
+        $result = $this->object->create_student($lastName, $firstName);
+
+        //check
+        $this->assertNotEmpty($result);
+        $this->assertInstanceOf('\App\Student', $result, "returns a student object");
+        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName]);
+    }
 
     /*
      * Todo Enable once error handling set up
@@ -93,8 +177,8 @@ public function tearDown()
 
     public function testLoad_student_by_sid()
     {
-        $sid = $this->student->student_identifier;
-        $result = $this->object->load_student_by_sid($sid);
+        $student = Student::where('student_identifier', '>', 0)->first();
+        $result = $this->object->load_student_by_sid($student->student_identifier);
         $this->assertNotEmpty($result, 'returned object');
         $this->assertInstanceOf('\App\Student', $result);
         $this->assertEquals($this->student, $result);
@@ -132,16 +216,12 @@ public function tearDown()
 
     public function testDelete_student_by_sid()
     {
-        $sid = $this->student->id;
-        $studentId = $this->student->student_identifier;
-        $this->assertEquals(1, $this->object->delete_student_by_sid($studentId));
-        $this->assertEmpty(Student::find($sid));
+        $student = Student::where('student_identifier', '>', 0)->first();
+
+        $this->assertEquals(1, $this->object->delete_student_by_sid($student->student_identifier));
+        $this->notSeeInDatabase('students', ['user_id' => self::$userid, 'student_identifier' => $student->student_identifier] );
     }
 
-    public function testLookup_autocomplete()
-    {
-        //$examId, $param);
-    }
 
 
     /**
