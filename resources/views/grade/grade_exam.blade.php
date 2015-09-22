@@ -41,20 +41,26 @@
                                         echo "in active";
                                     } ?>">
                                         <div class="form-horizontal" role="form">
-                                            <div class="form-group ">
-                                                <div class="col-md-9">
-                                                    <!-- question Name -->
-                                                    <h4 id="questionName">Question #{{ $qNumber }}:
-                                                        "{{ $qAssignment->getQuestionName() }}"</h4>
-                                                </div>
+
+                                            <div class="col-md-8">
+                                                <!-- question Name -->
+                                                <h4 id="questionName">Question #{{ $qNumber }}:
+                                                    "{{ $qAssignment->getQuestionName() }}"</h4>
+                                            </div>
+                                            <div class="form-group">
                                                 <label class="col-md-1 control-label" for="questionScore{{ $qNumber }}">
                                                     Score:</label>
                                                 <!-- question Score -->
                                                 <div class="col-md-2">
                                                     <input class="form-control questionScore" type="number" min="0"
+                                                           max="{{ $maxQuestionScores[$qNumber] }}"
+                                                           style="width: 5em;"
                                                            data-number="{{ $qNumber }}"
                                                            data-question-assignment-id="{{ $qAssignment->getId() }}"
                                                            id="questionScore{{ $qNumber }}"/>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <b>/ {{ $maxQuestionScores[$qNumber] }}</b>
                                                 </div>
                                             </div>
                                         </div>
@@ -346,7 +352,7 @@
                         var i = $(a).find('[id^="' + value + '"]');
                         var j = $(b).find('[id^="' + value + '"]');
                         var result;
-                        if (value == 'studentName' || value == 'studentIdentifier' ) {
+                        if (value == 'studentName' || value == 'studentIdentifier') {
                             result = $(i).text().toUpperCase().localeCompare(
                                     $(j).text().toUpperCase());
                         } else {
@@ -439,6 +445,7 @@
             else return date.toISOString().substr(11, 8);
         }
 
+
         $(document).ready(function () {
 
             updateStudentDataArea();
@@ -485,8 +492,15 @@
             $('.questionScore').change(function () {
                 var qNumber = $(this).attr('data-number');
                 var score = parseFloat($(this).val());
+                var maxScore = parseFloat( $(this).attr('max') );
+                // TODO: check whether question score inputs <= max
+                if ( score > maxScore ) {
+                    score = maxScore;
+                    $(this).val(maxScore);
+                }
                 questionScores[activeStudent][qNumber - 1] = score;
                 var questionAssId = $(this).attr('data-question-assignment-id');
+
                 if (score >= 0) {
                     createGradeRequest('question_assignment_id', questionAssId, score, null);
                 } else {
