@@ -86,36 +86,56 @@ class GradeController extends Controller
      *  Launch the grade assignment page
      * @param Exam $exam
      */
-    public function assign(Exam $exam){
-        $gradeTypes = [ 'A+', 'A', 'A-',
-                        'B+', 'B', 'B-',
-                        'C+', 'C', 'C-',
-                        'D+', 'D', 'D-',
-                        'F' ];
-        // gradeCutoffs are the lowest values for each grade type
-        $gradeCutoffs = [ 97, 93, 90,
-                          87, 83, 80,
-                          77, 73, 70,
-                          67, 64, 60,
-                          0];
+    public function assign(Exam $exam)
+    {
         $examId = $exam->getId();
+        // get the max_scores and compute examMaxScore
+        $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($examId);
+        $examMaxScore = 20;
+
+        foreach ($questionAssignments as $assignment) {
+            //$examMaxScore += $assignment->getQuestion()->getMaxScore();
+        }
+
+        $gradeTypes = ['A+', 'A', 'A-',
+            'B+', 'B', 'B-',
+            'C+', 'C', 'C-',
+            'D+', 'D', 'D-',
+            'F'];
+
+        // gradeCutoffs are the lowest values for each grade type
+        // normally these will be retrieved from the values saved in the DB.
+
+        $gradeCutoffs = [];
+        //$gradeCutoffs = $exam->getGradeCutoffs(); // use cookie to hold these??
+        // if gradecutoffs aren't set, calculate them...
+        if ( empty($gradeCutoffs)) {
+            $standardCutoffs = [.97, .93, .90, .87, .83, .80, .77, .73, .70, .67, .63, .60, 0];
+            foreach ($standardCutoffs as $val) {
+                // allow decimals if the exam has a very low maximum grade
+                if ($examMaxScore < 25) $decRound = 1;
+                else $decRound = 0;
+                $gradeCutoffs[] = round($examMaxScore * $val, $decRound);
+            }
+        }
+
         $students = $this->studentDao->load_students_by_exam($examId);
 
         // calculate exam scores
         $examScores = [];
-        foreach($students as $student) {
+        foreach ($students as $student) {
             $questionItems = $this->questionScoreDao->load_for_student_on_exam($examId, $student->getId());
             $examScore = 0;
-            foreach($questionItems as $score) {
-                if ( isset($score->questionScore ))
+            foreach ($questionItems as $score) {
+                if (isset($score->questionScore))
                     $examScore += $score->questionScore;
             }
             $examScores[] = $examScore;
         }
         return View::make('grade.grade_assign', ['exam' => $exam,
-                        'examScores' => $examScores,
-                        'gradeTypes' => $gradeTypes,
-                        'gradeCutoffs' => $gradeCutoffs]);
+            'examScores' => $examScores,
+            'gradeTypes' => $gradeTypes,
+            'gradeCutoffs' => $gradeCutoffs]);
     }
 
     /**
@@ -123,7 +143,8 @@ class GradeController extends Controller
      * @param Exam $exam
      * @return redirect
      */
-    public function recordAssignments(Exam $exam) {
+    public function recordAssignments(Exam $exam)
+    {
         // do stuff
         return redirect()->action('GradeController@index');
     }
@@ -137,7 +158,7 @@ class GradeController extends Controller
         $numStudents = [];
         $numQuestions = [];
         $numGraded = [];
-        foreach($exams as $exam) {
+        foreach ($exams as $exam) {
             $examId = $exam->getId();
             $numStudents[$examId] = count($this->studentDao->load_students_by_exam($examId));
             $numQuestions[$examId] = count($this->questionAssignmentDao->load_all_for_exam($examId));
@@ -148,7 +169,7 @@ class GradeController extends Controller
         }
 
         return View::make('grade.grade_select_exam', ['exams' => $exams,
-            'numStudents' => $numStudents, 'numQuestions' => $numQuestions, 'numGraded' => $numGraded ]);
+            'numStudents' => $numStudents, 'numQuestions' => $numQuestions, 'numGraded' => $numGraded]);
     }
 
     /**
@@ -161,15 +182,15 @@ class GradeController extends Controller
         $students = $this->studentDao->load_students_by_exam($exam);
 
         // TODO: do verification for exams. Must have 1 student and at least 1 question.
-        if (sizeof($students) == 0 ) return ("No students found for this exam");
+        if (sizeof($students) == 0) return ("No students found for this exam");
 
         // load all question assignments and all elements for those questions
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
 
-        if(sizeof($questionAssignments) == 0) return ('No questions found for this exam');
+        if (sizeof($questionAssignments) == 0) return ('No questions found for this exam');
         foreach ($questionAssignments as $qAssignment) {
             $qNumber = $qAssignment->getQuestionNumber();
-            $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qNumber );
+            $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qNumber);
         }
 
         // load all current student scores & comments

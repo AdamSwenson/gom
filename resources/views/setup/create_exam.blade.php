@@ -1,6 +1,6 @@
 <!-- create a new exam -->
 @extends('layouts.master')
-@section('pageTitle', 'Create Exam | GradeOmatic')
+@section('pageTitle', 'Create Exam | gradeomatic')
 @section('description', 'create an exam')
 @section('cssLinks')
 @endsection

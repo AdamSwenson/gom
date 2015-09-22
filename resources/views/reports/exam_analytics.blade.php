@@ -1,7 +1,7 @@
 <!-- Analytics page holds visualizations for student performance -->
 @extends('layouts.master')
 
-@section('pageTitle', 'Analytics | GradeOmatic')
+@section('pageTitle', 'Analytics | gradeomatic')
 @section('description', 'View information about the exam')
 
 @section('cssLinks')

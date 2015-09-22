@@ -1,7 +1,7 @@
 <!-- select an exam to grade -->
 @extends('layouts.master')
 
-@section('pageTitle', 'Grade Exam | GradeOmatic')
+@section('pageTitle', 'Grade Exam | gradeomatic')
 @section('description', 'Select an exam for grading')
 @section('cssLinks')
 
@@ -74,9 +74,12 @@
         $('#navGrade').attr('class', 'active');
 
         $('a[data-href]').on("click", function () {
-            if ( parseInt($(this).find('#numStudents').text()) == 0 ) {
+
+            var parent = $(this).closest('tr');
+            console.log( parent.find('#numStudents').text() );
+            if ( parent.find('#numStudents').text() == '0' ) {
                showError("No Students", "An exam must have at least one student in order to be graded.")
-            } else if ( parseInt($(this).find('#numQuestions').text()) == 0 ) {
+            } else if ( parent.find('#numQuestions').text() == '0' ) {
                 showError("No Questions", "An exam must have at least one question in order to be graded.")
             } else {
                 document.location = $(this).data('href');

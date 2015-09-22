@@ -50,7 +50,7 @@
                     <div class="shadow" id="u88"><!-- simple frame --></div>
                 </div>
                 <div class="clearfix" id="u82-4"><!-- content -->
-                    <p>GradeOmatic</p>
+                    <p>gradeomatic</p>
                 </div>
             </div>
             </a>
@@ -81,7 +81,7 @@
                     <div id="u106"><!-- group -->
                         <div class="clearfix" id="u106_align_to_page">
                             <div class="clearfix grpelem" id="u116-4"><!-- content -->
-                                <p>2015 Gradeomatic</p>
+                                <p>2015 gradeomatic</p>
                             </div>
                             <div class="clearfix grpelem" id="u114-4"><!-- content -->
                                 <p>About</p>

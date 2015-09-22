@@ -167,6 +167,7 @@ class QuestionController extends Controller
 //        $this->validate($request, $this->rulesArray);
 
         $i = 1;
+        // TODO: add max grades to create and update paths
         while ($request->input('questionName' . $i)) {
             // new questions arrive with id == 0
             if (($request->input('questionId' . $i)) == 0) {

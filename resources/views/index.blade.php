@@ -8,7 +8,7 @@
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
     <meta name="generator" content="2015.0.2.310"/>
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
-    <title>Welcome to the Gradeomatic</title>
+    <title>Welcome to gradeomatic</title>
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{{asset('/inc/home/css/site_global.css?4052507572', env('APP_ENV') == 'production')}}"/>
     <link rel="stylesheet" type="text/css" href="{{asset('/inc/home/css/index.css?273850682', env('APP_ENV') == 'production')}}" id="pagesheet"/>
@@ -34,7 +34,7 @@
                 <div class="shadow" id="u88"><!-- simple frame --></div>
             </div>
             <div class="clearfix" id="u82-4"><!-- content -->
-                <p>GradeOmatic</p>
+                <p>gradeomatic</p>
             </div>
         </div>
         </a>
@@ -122,7 +122,7 @@
                 <p>Grade faster</p>
             </div>
             <div class="clearfix grpelem" id="u102-4"><!-- content -->
-                <p>Designed by a teacher, GradeOMatic helps educators create and grade written assignments, cutting work time and improving test quality.</p>
+                <p>Designed by a teacher, gradeomatic helps educators create and grade written assignments, cutting work time and improving test quality.</p>
             </div>
         </div>
         <div class="browser_width colelem" id="u98-bw">
@@ -185,7 +185,7 @@
                 <div id="u106"><!-- group -->
                     <div class="clearfix" id="u106_align_to_page">
                         <div class="clearfix grpelem" id="u116-4"><!-- content -->
-                            <p>2015 Gradeomatic</p>
+                            <p>2015 gradeomatic</p>
                         </div>
                         <div class="clearfix grpelem" id="u114-4"><!-- content -->
                             <p>About</p>
