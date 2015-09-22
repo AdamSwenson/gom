@@ -12,36 +12,55 @@
 */
 
 use Carbon\Carbon;
-use Faker\Generator;
 
 $factory->define(App\User::class, function (Faker\Generator $faker)
 {
     return [
         'name' => $faker->name,
-        'emails' => $faker->email,
+        'email' => $faker->email,
         'password' => str_random(10),
         'remember_token' => str_random(10),
     ];
 });
 
 
-$factory->define(App\Exam::class, function ($faker)
+$factory->define(App\Exam::class, function (Faker\Generator $faker)
 {
+
     return [
-        'term' => $faker->text(10),
-        'name' => $faker->text(10),
-        'year' => $faker->year()
+        'term' => $faker->text,
+        'name' => $faker->text,
+        'year' => $faker->year,
+        'released' => 0,
+        'locked' => 0
     ];
 });
 
-$factory->define('App\Question', function ($faker)
+$factory->define(App\Question::class, function (Faker\Generator $faker)
 {
+    $faker2 = Faker\Factory::create();
+    $possibleMaxScores = [10, 25, 100, 200, 1000];
+    $name = $faker2->text(20);
+    $text = $faker2->text(200);
     return [
-//        'user_id' => 1,
-        'question_name' => str_random(20),
-        'question_text' => str_random(200),
-        'created_at' => new Carbon,
-        'updated_at' => new Carbon
+        'questionName' => $name,
+        'questionText' => $text,
+        'max_score' => 200,
+        //'max_score' => $faker->randomElement($possibleMaxScores),
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now()
+    ];
+});
+
+$factory->define(App\Element::class, function(Faker\Generator $faker){
+    $name = $faker->text(20);
+    $display = $faker->text(200);
+    $text = $faker->paragraph();
+
+    return [
+        'elementName' => $name,
+        'displayText' =>  $display,
+        'commentText' => $text
     ];
 });
 

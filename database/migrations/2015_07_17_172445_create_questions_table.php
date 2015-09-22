@@ -17,7 +17,6 @@ class CreateQuestionsTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->string('questionName');
             $table->text('questionText');
-            $table->float('max_score')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')
