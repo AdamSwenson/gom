@@ -186,11 +186,14 @@ class GradeController extends Controller
 
         // load all question assignments and all elements for those questions
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
-
+        $maxQuestionScores = NULL;
         if (sizeof($questionAssignments) == 0) return ('No questions found for this exam');
         foreach ($questionAssignments as $qAssignment) {
             $qNumber = $qAssignment->getQuestionNumber();
             $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qNumber);
+            // load maxQuestionScores TODO: uncomment thid when DB is built
+            //$maxQuestionScores[$qNumber] = $qAssignment->getQuestion()->getMaxScore();
+            $maxQuestionScores[$qNumber] = 20;
         }
 
         // load all current student scores & comments
@@ -253,6 +256,7 @@ class GradeController extends Controller
         return View::make('grade.grade_exam')->with(['exam' => $exam,
             'students' => $students,
             'questionAssignments' => $questionAssignments,
+            'maxQuestionScores' => $maxQuestionScores,
             'allElements' => $allElements,
             'stockComments' => $stockComments,
             'examGradingTimes' => $examGradingTimes,
