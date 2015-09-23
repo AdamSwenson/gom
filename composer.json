@@ -10,7 +10,8 @@
         "guzzlehttp/guzzle": "~5.3|~6.0",
         "illuminate/html": "5.*",
         "barryvdh/laravel-dompdf": "0.6.*",
-        "pda/pheanstalk": "~3.1"
+        "pda/pheanstalk": "~3.1",
+        "doctrine/dbal": "~2.5"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -19,8 +20,7 @@
         "phpspec/phpspec": "~2.1",
         "phing/phing": "2.*",
         "laracasts/generators": "~1.1",
-        "laracasts/testdummy": "~2.3",
-        "doctrine/dbal": "~2.5"
+        "laracasts/testdummy": "~2.3"
 
     },
     "autoload": {

@@ -25,20 +25,41 @@ class QuestionRepositoryTest extends \TestCase
 
     public function testCreateQuestion()
     {
+        //prep
         $questionName = $this->faker->text(20);
         $questionDesc = $this->faker->text(20);
+        $maxScore = $this->faker->randomFloat(2, 0, 100);
 
-//        $preexist = Question::whereRaw('questionName = ? and questionText = ?', [$questionName, $questionDesc])->get();
-//        if (!empty($preexist))
-//        {
-//            $preexist->delete();
-//        }
+        //call
+        $result = $this->object->createQuestion($questionName, $questionDesc, $maxScore);
 
-        $result = $this->object->createQuestion($questionName, $questionDesc);
+        //check
         $this->assertInstanceOf('\App\Question', $result, "returns question");
 
         $exists = Question::find($result->id);
 //        $exists = Question::whereRaw('questionName = ? and questionText = ?', [$questionName, $questionDesc])->get();
+        $this->assertNotEmpty($exists);
+        $this->assertEquals($questionName, $exists->questionName);
+        $this->assertEquals($questionDesc, $exists->questionText);
+        $this->assertEquals($maxScore, $exists->max_score);
+    }
+
+    /**
+     * @test
+     */
+    public function create_question_w_no_maxScore_set()
+    {
+        //Prep
+        $questionName = $this->faker->text(20);
+        $questionDesc = $this->faker->text(20);
+
+        //Call
+        $result = $this->object->createQuestion($questionName, $questionDesc);
+
+        //Check
+        $this->assertInstanceOf('\App\Question', $result, "returns question");
+
+        $exists = Question::find($result->id);
         $this->assertNotEmpty($exists);
         $this->assertEquals($questionName, $exists->questionName);
         $this->assertEquals($questionDesc, $exists->questionText);

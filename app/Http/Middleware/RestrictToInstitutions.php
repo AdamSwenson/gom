@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Exceptions\UnpermittedDomainException;
 use Closure;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * This prevents sign up attempts from succeeding if the person enters an
@@ -16,13 +17,13 @@ use Closure;
  */
 class RestrictToInstitutions
 {
+    /** The file holding a list of permitted domains */
+    const PERMITTED_DOMAINS_CSV = 'permittedDomains.csv';
     /** The view to send rejected folks to  */
     const REDIRECT_VIEW = 'account.permittedInstitutions';
 
     /** @var array Institutions which are okay */
-    public static $permittedDomains = [
-        'csun.edu'
-    ];
+    public static $permittedDomains = [];
 
     /**
      * Handle an incoming request.
@@ -33,6 +34,14 @@ class RestrictToInstitutions
      */
     public function handle($request, Closure $next)
     {
+        $this->readPermittedList();
+
+        //Only apply this middleware to registration requests
+        if (! $request->is('auth/register')){ return $next($request); }
+
+        //Only apply to post requests
+        if(! $request->isMethod('post')){ return $next($request); }
+
         try
         {
             if (!$request->has('email')) { throw new UnpermittedDomainException('none-email_not_set'); }
@@ -55,17 +64,23 @@ class RestrictToInstitutions
         } catch (UnpermittedDomainException $e)
         {
             //If any of the conditions failed, redirect
-            $this->refuseRequest();
+            return $this->refuseRequest($request);
         }
     }
 
 
     /**
      * Set error message and redirect back to an information page
+     * @param $request
+     * @return \Illuminate\Http\RedirectResponse
      */
-    protected function refuseRequest()
+    protected function refuseRequest($request)
     {
-        return view(self::REDIRECT_VIEW);
+        //Return the email address to pre populate the form on the waiting list page
+        $email = $request->has('email') ? $request->input('email') : '';
+
+        return view(self::REDIRECT_VIEW)->with('email', $email);
+//        return redirect( self::REDIRECT_TO_ROUTE )->with('email', $email);
     }
 
 
@@ -81,6 +96,18 @@ class RestrictToInstitutions
         if ($domain)
         {
             return mb_strtolower(trim($domain));
+        }
+    }
+
+    /**
+     * Checks whether the list of permitted domains is empty. If it is, it reads the file
+     * holding the list of permitted email domains into the array
+     */
+    protected static function readPermittedList()
+    {
+        if(empty(self::$permittedDomains))
+        {
+            self::$permittedDomains = str_getcsv(Storage::get(self::PERMITTED_DOMAINS_CSV), "\n");
         }
     }
 }

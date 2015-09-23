@@ -22,18 +22,20 @@ public static $studentsPerQuestion = 5;
 
         foreach ($assigns as $qa)
         {
-            for ($i = 0; $i <= self::$studentsPerQuestion; $i++)
+            foreach($studentIds as $sid)
             {
+//            for ($i = 0; $i <= self::$studentsPerQuestion; $i++)
+//            {
                 try
                 {
                     $q =  new \App\QuestionScore();
                     $q->question_assignment_id = $qa->id;
-                    $q->student_id = $faker->randomElement($studentIds);
-                    $q->score = $faker->randomFloat(2, 0, 10);
+                    $q->student_id = $sid;
+                    $q->score = $faker->randomFloat(2, 0, 100);
                     $q->save();
                 }catch(\Exception $e)
                 {
-                    $i -= 1;
+//                    $i -= 1;
                 }
             }
         }

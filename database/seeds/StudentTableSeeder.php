@@ -15,7 +15,7 @@ class StudentTableSeeder extends Seeder
 
     public $faker;
 
-    public function run($num = 30)
+    public function run($num = 100)
     {
         $this->faker = \Faker\Factory::create();
 
@@ -24,13 +24,24 @@ class StudentTableSeeder extends Seeder
         {
             $lastName = $this->faker->lastName();
             $firstName = $this->faker->firstName();
-            $studentId = $this->faker->unique()->randomNumber(9);
+
 
             $student = new \App\Student();
             $student->last_name = $lastName;
             $student->first_name = $firstName;
-            $student->student_identifier = $studentId;
-            $student->email = $this->faker->unique()->email();
+
+            //Randomly assign some students student identifiers, others blank
+            if(rand(0,1))
+            {
+                $student->student_identifier = $this->faker->unique()->randomNumber(9);
+            }
+
+            //Randomly assign some students email addresses, others blank
+            if(rand(0,1))
+            {
+                $student->email = $this->faker->unique()->email();
+            }
+
             $student->save();
         }
     }
