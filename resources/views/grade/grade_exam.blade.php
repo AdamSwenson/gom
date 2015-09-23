@@ -8,6 +8,10 @@
 @endsection
 
 @section('body')
+    <style>
+
+
+    </style>
     <div class="container">
         <div class="row">
             <!-- Left column holds questions and sliders -->
@@ -41,7 +45,6 @@
                                         echo "in active";
                                     } ?>">
                                         <div class="form-horizontal" role="form">
-
                                             <div class="col-md-8">
                                                 <!-- question Name -->
                                                 <h4 id="questionName">Question #{{ $qNumber }}:
@@ -50,16 +53,16 @@
                                             <div class="form-group">
                                                 <label class="col-md-1 control-label" for="questionScore{{ $qNumber }}">
                                                     Score:</label>
-                                                <!-- question Score -->
+                                                <!-- question Score TODO: fix this cause it looks terrible -->
                                                 <div class="col-md-2">
-                                                    <input class="form-control questionScore" type="number" min="0"
+                                                    <input class="form-control questionScore pull-right" type="number" min="0"
                                                            max="{{ $maxQuestionScores[$qNumber] }}"
-                                                           style="width: 5em;"
+                                                           style="width:5em;"
                                                            data-number="{{ $qNumber }}"
                                                            data-question-assignment-id="{{ $qAssignment->getId() }}"
                                                            id="questionScore{{ $qNumber }}"/>
                                                 </div>
-                                                <div class="col-md-1">
+                                                <div class="col-md-1" style="vertical-align: middle;">
                                                     <b>/ {{ $maxQuestionScores[$qNumber] }}</b>
                                                 </div>
                                             </div>
@@ -106,7 +109,7 @@
                 <!-- graded / remaining counters -->
                 <p>Graded: <span id="graded">0</span> Remaining: <span id="remaining">0</span></p>
                 <!-- save & finish button -->
-                <a class="btn btn-success col-md-12" href="{{ url('report/') }}" id="finishButton"
+                <a class="btn btn-success col-md-12" href="{{ url('grade/') }}" id="finishButton"
                    style="display: none;">
                     <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish
                 </a>
@@ -493,7 +496,6 @@
                 var qNumber = $(this).attr('data-number');
                 var score = parseFloat($(this).val());
                 var maxScore = parseFloat( $(this).attr('max') );
-                // TODO: check whether question score inputs <= max
                 if ( score > maxScore ) {
                     score = maxScore;
                     $(this).val(maxScore);
