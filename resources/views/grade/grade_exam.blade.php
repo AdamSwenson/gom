@@ -44,28 +44,33 @@
                                             <?php if ($qNumber === 1) {
                                         echo "in active";
                                     } ?>">
-                                        <div class="form-horizontal" role="form">
+                                        {{--<div class="form-horizontal" role="form">--}}
+                                        <div class="row">
                                             <div class="col-md-8">
                                                 <!-- question Name -->
                                                 <h4 id="questionName">Question #{{ $qNumber }}:
                                                     "{{ $qAssignment->getQuestionName() }}"</h4>
                                             </div>
-                                            <div class="form-group">
-                                                <label class="col-md-1 control-label" for="questionScore{{ $qNumber }}">
-                                                    Score:</label>
-                                                <!-- question Score TODO: fix this cause it looks terrible -->
-                                                <div class="col-md-2">
-                                                    <input class="form-control questionScore pull-right" type="number" min="0"
-                                                           max="{{ $maxQuestionScores[$qNumber] }}"
-                                                           style="width:5em;"
-                                                           data-number="{{ $qNumber }}"
-                                                           data-question-assignment-id="{{ $qAssignment->getId() }}"
-                                                           id="questionScore{{ $qNumber }}"/>
+                                            <!-- question Score -->
+                                            <form class="form-horizontal" role="form">
+                                                <div class="form-group">
+                                                    <label class="col-md-1 control-label"
+                                                           for="questionScore{{ $qNumber }}">
+                                                        Score:</label>
+
+                                                    <div class="col-md-2">
+                                                        <input class="form-control pull-right" type="number" min="0"
+                                                               max="{{ $maxQuestionScores[$qNumber] }}"
+                                                               style="width:5em;"
+                                                               data-number="{{ $qNumber }}"
+                                                               data-question-assignment-id="{{ $qAssignment->getId() }}"
+                                                               id="questionScore{{ $qNumber }}"/>
+                                                    </div>
+                                                    <div class="col-md-1 control-label" style="text-align: left;" >
+                                                        <b>/ 200{{-- $maxQuestionScores[$qNumber] --}}</b>
+                                                    </div>
                                                 </div>
-                                                <div class="col-md-1" style="vertical-align: middle;">
-                                                    <b>/ {{ $maxQuestionScores[$qNumber] }}</b>
-                                                </div>
-                                            </div>
+                                            </form>
                                         </div>
                                         <!-- element area holds all sliders and comments for this question -->
                                         <div class="list-group">
@@ -495,8 +500,8 @@
             $('.questionScore').change(function () {
                 var qNumber = $(this).attr('data-number');
                 var score = parseFloat($(this).val());
-                var maxScore = parseFloat( $(this).attr('max') );
-                if ( score > maxScore ) {
+                var maxScore = parseFloat($(this).attr('max'));
+                if (score > maxScore) {
                     score = maxScore;
                     $(this).val(maxScore);
                 }
