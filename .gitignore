@@ -5,8 +5,8 @@ Homestead.yaml
 .DS_store
 vendor
 vendor/.DS_Store
+vendor
 build
 Capfile
 config/deploy
 config/deploy.rb
-vendor/

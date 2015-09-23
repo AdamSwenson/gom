@@ -23,9 +23,9 @@
     <table class="table table-fixed" id="studentRoster">
         <thead>
         <tr>
-            <th class="col-md-6" id="nameHeader" onclick="sortRosterBy('studentName')">Name</th>
-            <th class="col-md-4" id="idHeader" onclick="sortRosterBy('studentIdentifier')">ID</th>
-            <th class="col-md-2" id="gradeHeader" onclick="sortRosterBy('examGrade')">Grade</th>
+            <th class="col-md-6" id="nameHeader" title="Sort by name" onclick="sortRosterBy('studentName')">Name</th>
+            <th class="col-md-4" id="idHeader" title="Sort by ID" onclick="sortRosterBy('studentIdentifier')">ID</th>
+            <th class="col-md-2" id="gradeHeader" title="Sort by grade" onclick="sortRosterBy('examGrade')">Grade</th>
         </tr>
         </thead>
         <tbody id="studentRosterBody">
