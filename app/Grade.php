@@ -36,6 +36,23 @@ class Grade extends Model
 //    }
 
 
+    protected $displayValue;
+    protected $calcValue;
+    protected $gradeId;
+
+    public function __construct($gradeId, $displayValue, $calcValue)
+    {
+        $this->attributes['id'] = $gradeId;
+        $this->gradeId = $gradeId;
+
+        $this->attributes['display_value'] = $displayValue;
+        $this->displayValue = $displayValue;
+
+        $this->attributes['calc_value'] = $calcValue;
+        $this->calcValue = $calcValue;
+    }
+
+
     /**
      * Returns the string to be displayed to students
      * @return string

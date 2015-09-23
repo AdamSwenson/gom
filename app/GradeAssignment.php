@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Model;
 class GradeAssignment extends BaseModel
 {
 
+    protected $grade;
+
     /** @var array Fields that are mass assignable */
     protected $fillable = [
     ];
@@ -31,7 +33,7 @@ class GradeAssignment extends BaseModel
      * Any student with a score greater than this value (where there is no other
      * gradeAssignment with a higher value) will receive the associated grade.
      *
-     * @param $minScore
+     * @param float $minScore
      */
     public function setMinScore($minScore)
     {
@@ -40,10 +42,10 @@ class GradeAssignment extends BaseModel
 
     /**
      * Retrieves the lower bound for the grade assignment
-     * @param $minScore
-     * @return mixed
+     *
+     * @return float
      */
-    public function getMinScore($minScore)
+    public function getMinScore()
     {
         return $this->attributes['min_score'];
     }
@@ -54,15 +56,41 @@ class GradeAssignment extends BaseModel
         parent::boot();
     }
 
-    /* -------------------------------- Relationships ---------------------------------- */
+
+
     /**
-     * Junction to the grade object
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * Sets the grade property with the grade object and sets the grade_id attribute
+     * with the grade object's id.
+     *
+     * Note that this is not done via an eloquent relationship because don't want to accidentally
+     * delete the grade from the database.
+     * @param Grade $grade
      */
-    public function grade()
+    public function setGrade(Grade $grade)
     {
-       return $this->hasOne('App\Grade');
+        $this->grade = $grade;
+        $this->attributes['grade_id'] = $this->grade->getId();
     }
+
+    /**
+     * Returns the grade object
+     * @return Grade
+     */
+    public function getGrade()
+    {
+        return $this->grade;
+    }
+
+
+    /* -------------------------------- Relationships ---------------------------------- */
+//    /**
+//     * Junction to the grade object
+//     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+//     */
+//    public function grade()
+//    {
+//       return $this->hasOne('App\Grade');
+//    }
 
     /**
      * Junction to the exam object
