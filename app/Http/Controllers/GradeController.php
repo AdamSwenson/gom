@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Comment;
 use App\Http\Requests;
+use App\Http\Requests\GradeAssignmentRequest;
 use App\Http\Requests\GradingRequest;
 
 use App\Exam;
 use App\Repositories\Exam\IExamRepository;
+use App\Repositories\Grade\GradeFactory;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
@@ -28,6 +30,10 @@ use Illuminate\Support\Facades\View;
  */
 class GradeController extends Controller
 {
+    const INVALID_GRADE_ASSIGNMENT_MESSAGE = 'The criteria you entered were inconsistent.';
+    /** If there is no max score set in the database, use this */
+    const DEFAULT_MAX_QUESTION_SCORE = 20;
+
     /** @var  IExamRepository */
     protected $examDao;
 
@@ -95,8 +101,13 @@ class GradeController extends Controller
 
         foreach ($questionAssignments as $assignment) {
             // TODO: uncomment this when DB supports getMaxScore()
-            //$examMaxScore += $assignment->getQuestion()->getMaxScore();
-            $examMaxScore += 20;
+            $questionMax = $assignment->getQuestion()->getMaxScore();
+
+            //If max question score not set, use the default max score
+            if( empty($questionMax) ){ $questionMax = self::DEFAULT_MAX_QUESTION_SCORE; }
+
+            //Add to the total exam score
+            $examMaxScore += $questionMax;
         }
 
         $gradeTypes = ['A+', 'A', 'A-',
@@ -112,8 +123,7 @@ class GradeController extends Controller
         //$gradeCutoffs = $exam->getGradeCutoffs(); // use cookie to hold these??
         // if gradecutoffs aren't set, calculate them...
         if ( empty($gradeCutoffs)) {
-            $standardCutoffs = [.97, .93, .90, .87, .83, .80, .77, .73, .70, .67, .63, .60, 0];
-            foreach ($standardCutoffs as $val) {
+            foreach (GradeFactory::$standardCutoffs as $val) {
                 // allow decimals if the exam has a very low maximum grade
                 if ($examMaxScore < 25) $decRound = 1;
                 else $decRound = 0;
@@ -144,12 +154,80 @@ class GradeController extends Controller
     /**
      * Store grade assignments
      * @param Exam $exam
+     * @param GradeAssignmentRequest $request
      * @return redirect
      */
-    public function recordAssignments(Exam $exam)
+    public function recordAssignments(Exam $exam, GradeAssignmentRequest $request)
     {
-        // do stuff
+        $assignments = [];
+
+        $nonAssigned = [];
+
+        //Pull out each value to assign, make a grade object and push into $assignments
+        for($i=0; $i<=12; $i++)
+        {
+            if( ! empty($request->input('gradeGroup' . $i)))
+            {
+                $grade = GradeFactory::loadByOrder($i);
+                $minScore = $request->input('gradeGroup' . $i);
+                //push into array
+                $assignments[] = ['minScore' => $minScore, 'grade' => $grade];
+            }
+            else
+            {
+                //If a letter grade was not assigned, make note so any preexisting value can be removed
+                $nonAssigned[] = $i;
+            }
+
+        }
+
+        //Verify that the incoming values are consistent (i.e., minimum scores are transitive)
+        if( ! $this->checkAssignmentConsistency($assignments))
+        {
+            //set error message and send back
+            return back()->with('errors', self::INVALID_GRADE_ASSIGNMENT_MESSAGE);
+        }
+
+        //It's consistent, so write to the db
+        $gradeAssignmentDao = app()->make('App\Repositories\Grade\IGradeAssignmentRepository');
+
+        foreach($assignments as $assign)
+        {
+            $gradeAssignmentDao->record_grade_assignment($exam, $assign['grade'], $assign['minScore']);
+        }
+
+        //Delete any pre-existing grades which were not assigned on this request
+        if( ! empty($nonAssigned))
+        {
+            foreach($nonAssigned as $naOrder)
+            {
+                $grade = GradeFactory::loadByOrder($naOrder);
+                $gradeAssignmentDao->delete_grade_assignment($exam, $grade);
+            }
+        }
+
+
+        // TODO: Add error handling
+        // TODO: Add flash message about success? Otherwise it may be weird to just be kicked back to what seems to be an earlier page.
         return redirect()->action('GradeController@index');
+    }
+
+    /**
+     * Makes sure that transitivity holds for the minimum scores
+     * @param array $assignments Array with keys 'minScore' and 'grade'
+     * @return bool False if inconsistent; true if consistent
+     */
+    protected function checkAssignmentConsistency($assignments)
+    {
+        for($i=0; $i<count($assignments); $i++ )
+        {
+            //For each value except the last one, make sure it is greater than it's successor
+            if( ($i+1 != count($assignments)) && ($assignments[$i]['minScore'] <= $assignments[$i + 1]['minScore']))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

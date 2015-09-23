@@ -14,7 +14,7 @@ use App\Grade;
 class GradeFactory
 {
 
-    public static $grades = [
+    static public $grades = [
         ['grade_id' => 100, 'display_value' => 'A+', 'calc_value' => 98],
         ['grade_id' => 101, 'display_value' => 'A', 'calc_value' => 95],
         ['grade_id' => 102, 'display_value' => 'A-', 'calc_value' => 92],
@@ -30,7 +30,11 @@ class GradeFactory
         ['grade_id' => 112, 'display_value' => 'F', 'calc_value' => 55]
     ];
 
-    protected static $searchableGrades = [];
+    /** @var array The default cutoffs for each possible grade */
+    static public $standardCutoffs = [.97, .93, .90, .87, .83, .80, .77, .73, .70, .67, .63, .60, 0];
+
+    /** @var array Laravel collection of the grades  */
+    static protected $searchableGrades = [];
 
     /**
      * Factory method for grade object
@@ -47,9 +51,29 @@ class GradeFactory
         $gradeValues = self::getGradeFromDisplayValue($displayValue);
 
         //Throw exception if couldn't retrieve the display value
-        if( empty($gradeValues) ){ throw new \Exception('grade could not be loaded'); }
+        if (empty($gradeValues))
+        {
+            throw new \Exception('grade could not be loaded');
+        }
 
         //Make and return a new object
+        return new Grade($gradeValues['grade_id'], $gradeValues['display_value'], $gradeValues['calc_value']);
+    }
+
+    /**
+     * Factory method which returns a grade object based on the standard order of the grades.
+     * Legitimate values are integers from 0 to 12, where:
+     *      0 = A+,
+     *      1 = A,
+     *      2 = A-,
+     *      3 = B+,
+     *      etc
+     * @param integer $order
+     * @return Grade
+     */
+    static public function loadByOrder($order)
+    {
+        $gradeValues = self::$grades[$order];
         return new Grade($gradeValues['grade_id'], $gradeValues['display_value'], $gradeValues['calc_value']);
     }
 
@@ -60,7 +84,7 @@ class GradeFactory
      */
     static protected function makeSearchable()
     {
-        if( empty(self::$searchableGrades))
+        if (empty(self::$searchableGrades))
         {
             self::$searchableGrades = collect(self::$grades);
         }
@@ -74,6 +98,7 @@ class GradeFactory
     static protected function getGradeFromDisplayValue($displayValue)
     {
         self::makeSearchable();
+
         return self::$searchableGrades->where('display_value', $displayValue)->first();
     }
 

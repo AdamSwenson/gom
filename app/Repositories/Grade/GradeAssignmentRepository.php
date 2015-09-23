@@ -17,12 +17,17 @@ use App\GradeAssignment;
  *
  * @package App\Repositories\Grade
  */
-class GradeAssignmentRepository
+class GradeAssignmentRepository implements IGradeAssignmentRepository
 {
 
+    /**
+     * Retrieves grade assignments for the exam
+     * @param Exam $exam
+     * @return collection of GradeAssignment objects
+     */
     public function load_grade_assignments_for_exam(Exam $exam)
     {
-
+        return GradeAssignment::where('exam_id', $exam)->all();
     }
 
 
@@ -97,7 +102,7 @@ class GradeAssignmentRepository
     {
         $assignment = new GradeAssignment();
         $assignment->exam()->associate($exam);
-        $assignment->grade()->associate($grade);
+        $assignment->setGrade($grade);
         return $assignment;
     }
 }

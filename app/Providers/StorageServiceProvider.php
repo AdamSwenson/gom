@@ -33,7 +33,7 @@ class StorageServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        # Repositories
+        /* ---------------------------------------------- Repositories ---------------------------------------------- */
         //Exams
         $this->app->bind('App\Repositories\Exam\IExamRepository', 'App\Repositories\Exam\ExamRepository');
 
@@ -45,6 +45,9 @@ class StorageServiceProvider extends ServiceProvider
         //Feedback
         $this->app->bind('App\Repositories\Feedback\IAccessKeyRepository', 'App\Repositories\Feedback\AccessKeyRepository');
         $this->app->bind('App\Repositories\Feedback\IFeedbackBuilder', 'App\Repositories\Feedback\FeedbackBuilder');
+
+        //Grade and grade assignments
+        $this->app->bind('App\Repositories\Grade\IGradeAssignmentRepository', 'App\Repositories\Grade\GradeAssignmentRepository');
 
         //Kumi (classes)
         $this->app->bind('App\Repositories\Student\IKumiRepository', 'App\Repositories\Student\KumiRepository');
@@ -65,7 +68,7 @@ class StorageServiceProvider extends ServiceProvider
         $this->app->bind('App\Repositories\Time\IGradingStatsRepository', 'App\Repositories\Time\GradingStatsRepository');
 
 
-        # Jobs
+        /* ------------------------------------------------ Jobs -----------------------------------------------------*/
         //Students
         $this->app->bind('App\Jobs\StudentImport\IImportStudentsFromCsv', 'App\Jobs\StudentImport\ImportStudentsFromCsv');
         //Email notifications
