@@ -18,6 +18,7 @@ use App\Repositories\Score\IQuestionScoreRepository;
 use App\Repositories\Student\IStudentRepository;
 use App\Repositories\Time\IGradingTimeRepository;
 
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 
 /**
@@ -94,6 +95,8 @@ class GradeController extends Controller
      */
     public function assign(Exam $exam)
     {
+        $gradeAssignmentDao = app()->make('App\Repositories\Grade\IGradeAssignmentRepository');
+
         $examId = $exam->getId();
         // get the max_scores and compute examMaxScore
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($examId);
@@ -110,20 +113,22 @@ class GradeController extends Controller
             $examMaxScore += $questionMax;
         }
 
-        $gradeTypes = ['A+', 'A', 'A-',
-            'B+', 'B', 'B-',
-            'C+', 'C', 'C-',
-            'D+', 'D', 'D-',
-            'F'];
+        $gradeTypes = GradeFactory::getDisplayValuesOfGrades();
+//        $gradeTypes = ['A+', 'A', 'A-',
+//            'B+', 'B', 'B-',
+//            'C+', 'C', 'C-',
+//            'D+', 'D', 'D-',
+//            'F'];
 
         // gradeCutoffs are the lowest values for each grade type
         // normally these will be retrieved from the values saved in the DB.
 
-        $gradeCutoffs = [];
+        $gradeCutoffs = $gradeAssignmentDao->load_grade_min_scores_for_exam($exam);
+
         //$gradeCutoffs = $exam->getGradeCutoffs(); // use cookie to hold these??
         // if gradecutoffs aren't set, calculate them...
         if ( empty($gradeCutoffs)) {
-            foreach (GradeFactory::$standardCutoffs as $val) {
+            foreach (GradeFactory::getDefaultCutoffsOfGrades() as $val) {
                 // allow decimals if the exam has a very low maximum grade
                 if ($examMaxScore < 25) $decRound = 1;
                 else $decRound = 0;
@@ -178,15 +183,17 @@ class GradeController extends Controller
                 //If a letter grade was not assigned, make note so any preexisting value can be removed
                 $nonAssigned[] = $i;
             }
-
         }
 
         //Verify that the incoming values are consistent (i.e., minimum scores are transitive)
-        if( ! $this->checkAssignmentConsistency($assignments))
-        {
-            //set error message and send back
-            return back()->with('errors', self::INVALID_GRADE_ASSIGNMENT_MESSAGE);
-        }
+//        if( ! $this->checkAssignmentConsistency($assignments))
+//        {
+//            //set error message and send back
+//           // Session::flash('errors', self::INVALID_GRADE_ASSIGNMENT_MESSAGE);
+////            session()->flash('errors', [self::INVALID_GRADE_ASSIGNMENT_MESSAGE]);
+//            return back();
+//            //return back();
+//        }
 
         //It's consistent, so write to the db
         $gradeAssignmentDao = app()->make('App\Repositories\Grade\IGradeAssignmentRepository');

@@ -14,24 +14,28 @@ use App\Grade;
 class GradeFactory
 {
 
+    /** @var array The standardized grades and various associated values */
     static public $grades = [
-        ['grade_id' => 100, 'display_value' => 'A+', 'calc_value' => 98],
-        ['grade_id' => 101, 'display_value' => 'A', 'calc_value' => 95],
-        ['grade_id' => 102, 'display_value' => 'A-', 'calc_value' => 92],
-        ['grade_id' => 103, 'display_value' => 'B+', 'calc_value' => 88],
-        ['grade_id' => 104, 'display_value' => 'B', 'calc_value' => 85],
-        ['grade_id' => 105, 'display_value' => 'B-', 'calc_value' => 82],
-        ['grade_id' => 106, 'display_value' => 'C+', 'calc_value' => 78],
-        ['grade_id' => 107, 'display_value' => 'C', 'calc_value' => 75],
-        ['grade_id' => 108, 'display_value' => 'C-', 'calc_value' => 72],
-        ['grade_id' => 109, 'display_value' => 'D+', 'calc_value' => 68],
-        ['grade_id' => 110, 'display_value' => 'D', 'calc_value' => 65],
-        ['grade_id' => 111, 'display_value' => 'D-', 'calc_value' => 62],
-        ['grade_id' => 112, 'display_value' => 'F', 'calc_value' => 55]
+        ['grade_id' => 100, 'display_value' => 'A+', 'calc_value' => 98, 'default_cutoff' => 0.97 ],
+        ['grade_id' => 101, 'display_value' => 'A', 'calc_value' => 95, 'default_cutoff' => 0.93],
+        ['grade_id' => 102, 'display_value' => 'A-', 'calc_value' => 92, 'default_cutoff' => 0.90],
+        ['grade_id' => 103, 'display_value' => 'B+', 'calc_value' => 88, 'default_cutoff' => 0.87],
+        ['grade_id' => 104, 'display_value' => 'B', 'calc_value' => 85, 'default_cutoff' => 0.83],
+        ['grade_id' => 105, 'display_value' => 'B-', 'calc_value' => 82, 'default_cutoff' => 0.80],
+        ['grade_id' => 106, 'display_value' => 'C+', 'calc_value' => 78, 'default_cutoff' => 0.77],
+        ['grade_id' => 107, 'display_value' => 'C', 'calc_value' => 75, 'default_cutoff' => 0.73],
+        ['grade_id' => 108, 'display_value' => 'C-', 'calc_value' => 72, 'default_cutoff' => 0.70],
+        ['grade_id' => 109, 'display_value' => 'D+', 'calc_value' => 68, 'default_cutoff' => 0.67],
+        ['grade_id' => 110, 'display_value' => 'D', 'calc_value' => 65, 'default_cutoff' => 0.63],
+        ['grade_id' => 111, 'display_value' => 'D-', 'calc_value' => 62, 'default_cutoff' => 0.60],
+        ['grade_id' => 112, 'display_value' => 'F', 'calc_value' => 55, 'default_cutoff' => 0.50]
     ];
 
+    static public $defaultCutoffs = [];
+    static public $displayValues = [];
+    static public $calcValues = [];
     /** @var array The default cutoffs for each possible grade */
-    static public $standardCutoffs = [.97, .93, .90, .87, .83, .80, .77, .73, .70, .67, .63, .60, 0];
+//    static public $standardCutoffs = [.97, .93, .90, .87, .83, .80, .77, .73, .70, .67, .63, .60, 0];
 
     /** @var array Laravel collection of the grades  */
     static protected $searchableGrades = [];
@@ -75,6 +79,53 @@ class GradeFactory
     {
         $gradeValues = self::$grades[$order];
         return new Grade($gradeValues['grade_id'], $gradeValues['display_value'], $gradeValues['calc_value']);
+    }
+
+    /**
+     * Returns an array of the display values of the grades from highest to lowest (i.e, A+, A, A-, B+ ...)
+     * @return array
+     */
+    static public function getDisplayValuesOfGrades()
+    {
+        self::buildStaticArrays();
+        return self::$displayValues;
+    }
+
+    /**
+     * Returns an array of the values to be used in calculation for all the standard
+     * grades (i.e., the stuff stored in self::$grades)
+     * @returns array
+     */
+    static public function getCalcValuesOfGrades()
+    {
+        self::buildStaticArrays();
+        return self::$calcValues;
+    }
+
+    /**
+     * Returns array of floats representing the default cut offs for each grade to be displayed
+     * @return array
+     */
+    static public function getDefaultCutoffsOfGrades()
+    {
+        self::buildStaticArrays();
+        return self::$defaultCutoffs;
+    }
+
+    /**
+     * Populates the static arrays if all three are empty
+     */
+    static protected function buildStaticArrays()
+    {
+        if(empty(self::$displayValues) && empty(self::$calcValues) && empty(self::$displayValues))
+        {
+            foreach (self::$grades as $g )
+            {
+                self::$calcValues[] = $g['calc_value'];
+                self::$defaultCutoffs[] = $g['default_cutoff'];
+                self::$displayValues[] = $g['display_value'];
+            }
+        }
     }
 
     /**

@@ -30,6 +30,50 @@ class GradeAssignmentRepository implements IGradeAssignmentRepository
         return GradeAssignment::where('exam_id', $exam)->all();
     }
 
+    /**
+     * Returns an array of minimum scores for each grade in GradeFactory::$grades if at least
+     * one has a non null value. If no grade assignments have been made, it returns null.
+     *
+     * @param Exam $exam
+     * @return array|null
+     */
+    public function load_grade_min_scores_for_exam(Exam $exam)
+    {
+        $minScores = [];
+        foreach(GradeFactory::$grades as $g)
+        {
+            $assign = GradeAssignment::where('exam_id', $exam->getId())->where('grade_id', $g['grade_id'])->first();
+
+            //Add minimum score to the array. If no minimum score was saved, add null to the array
+            $minScores[] = !empty($assign) ? $assign->getMinScore() : null;
+        }
+
+        if( $this->checkIfContainsNonNull($minScores) )
+        {
+            return $minScores;
+        }
+        return null;
+    }
+
+    /**
+     * Determines whether any value of the array is non-null.
+     * This is needed because it would otherwise return an array of nulls which
+     * will evaluate as non-empty.
+     *
+     * @param $arrayToCheck
+     * @return bool
+     */
+    protected function checkIfContainsNonNull($arrayToCheck)
+    {
+        foreach($arrayToCheck as $a)
+        {
+            if( ! empty($a) )
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Record a grade assignment to the database
