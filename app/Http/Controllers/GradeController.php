@@ -91,10 +91,12 @@ class GradeController extends Controller
         $examId = $exam->getId();
         // get the max_scores and compute examMaxScore
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($examId);
-        $examMaxScore = 20;
+        $examMaxScore = 0;
 
         foreach ($questionAssignments as $assignment) {
+            // TODO: uncomment this when DB supports getMaxScore()
             //$examMaxScore += $assignment->getQuestion()->getMaxScore();
+            $examMaxScore += 20;
         }
 
         $gradeTypes = ['A+', 'A', 'A-',
@@ -134,6 +136,7 @@ class GradeController extends Controller
         }
         return View::make('grade.grade_assign', ['exam' => $exam,
             'examScores' => $examScores,
+            'examMaxScore' => $examMaxScore,
             'gradeTypes' => $gradeTypes,
             'gradeCutoffs' => $gradeCutoffs]);
     }
@@ -191,7 +194,7 @@ class GradeController extends Controller
         foreach ($questionAssignments as $qAssignment) {
             $qNumber = $qAssignment->getQuestionNumber();
             $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qNumber);
-            // load maxQuestionScores TODO: uncomment thid when DB is built
+            // load maxQuestionScores TODO: uncomment this when DB is built
             //$maxQuestionScores[$qNumber] = $qAssignment->getQuestion()->getMaxScore();
             $maxQuestionScores[$qNumber] = 20;
         }

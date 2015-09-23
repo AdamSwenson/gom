@@ -8,3 +8,4 @@ build
 Capfile
 config/deploy
 config/deploy.rb
+vendor/

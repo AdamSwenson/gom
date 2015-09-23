@@ -70,18 +70,26 @@
         var freqChartData = []; // array to be passed for the grade frequency chart
         var gradeCutoffs = <?= json_encode( $gradeCutoffs )?>; // numerical cutoffs assigned to each grade (indexed A+ = 0, A = 1, ...)
         var gradeFrequency = []; // number of students with a given grade (indexed A+ = 0, A = 1, ...)
+        var examMaxScore = <?= json_encode( $examMaxScore ) ?>;
 
         var examScores = strExamScores.map(Number);
         examScores.sort(function (a, b) {
             return a - b
         });
 
+        // when scores are changed, update grade assignments and draw charts
+        $('input').change( function(){
+            if ( $(this).val() > examMaxScore ) {
+                $(this).val(examMaxScore);
+            }
 
-        function updateChartData() {
+            if (  $(this).val() < 0 ) {
+                $(this).val(0);
+            }
             updateGradeFrequency();
             updateScoreChartData();
             drawCharts();
-        }
+        });
 
         function updateGradeFrequency() {
             // Update gradeCutoffs
@@ -90,7 +98,8 @@
                 gradeCutoffs.push($(this).val());
             });
 
-            // calculate frequency
+            // calculate frequency that each letter grade appears.
+            // this array is reversed, with gradeFrequency[0] = F, so the table shows grades in the expected ASC order
             gradeFrequency =[];
             examScores.forEach(function (score, i) {
                 for(var j = 0; j < gradeCutoffs.length; j++ ) {
@@ -145,14 +154,14 @@
                     break;
                 }
             }
-            var c1 = "00FF00"; // base color
+            var c1 = "00FF00"; // base color is pure green
             var colorWidth = 4096;
             var color = (colorWidth * gradeGroup);
             var c2 = color.toString(16); // amount to add to base
-            return addHexColor(c1, c2, false);
+            return addHexColor(c1, c2, false); // subtract 1000 hex for each grade group
         }
 
-        // adds c1 to c2. if 'add' is false, subtracts values
+        // adds c1 to c2. if 'add' is false, values are subtracted
         function addHexColor(c1, c2, add) {
             if (add) {
                 var hexStr = (parseInt(c1, 16) + parseInt(c2, 16)).toString(16);
@@ -178,6 +187,7 @@
             drawScoresChart();
         }
 
+        // displays the grade frequency chart
         function drawFrequencyChart() {
             var data = google.visualization.arrayToDataTable(freqChartData);
 
@@ -193,6 +203,7 @@
             chart.draw(data, options);
         }
 
+        // displays the bar chart of student scores
         function drawScoresChart() {
             var data = google.visualization.arrayToDataTable(scoreChartData);
 
