@@ -29,7 +29,7 @@
                             <li <?php if ($qNumber == 1) {
                                 echo "class='active'";
                             } ?> role="presentation">
-                                <a href="#panelQuestion{{ $qNumber }}" data-toggle="tab">
+                                <a href="#panelQuestion{{ $qNumber }}" title="Grade question {{ $qNumber }}" data-toggle="tab">
                                     Q{{ $qNumber }}</a></li>
                         @endforeach
                     </ul>
@@ -44,28 +44,33 @@
                                             <?php if ($qNumber === 1) {
                                         echo "in active";
                                     } ?>">
-                                        <div class="form-horizontal" role="form">
-                                            <div class="col-md-8">
+                                        {{--<div class="form-horizontal" role="form">--}}
+                                        <div class="row">
+                                            <div class="col-md-9">
                                                 <!-- question Name -->
                                                 <h4 id="questionName">Question #{{ $qNumber }}:
                                                     "{{ $qAssignment->getQuestionName() }}"</h4>
                                             </div>
-                                            <div class="form-group">
-                                                <label class="col-md-1 control-label" for="questionScore{{ $qNumber }}">
-                                                    Score:</label>
-                                                <!-- question Score TODO: fix this cause it looks terrible -->
-                                                <div class="col-md-2">
-                                                    <input class="form-control questionScore pull-right" type="number" min="0"
-                                                           max="{{ $maxQuestionScores[$qNumber] }}"
-                                                           style="width:5em;"
-                                                           data-number="{{ $qNumber }}"
-                                                           data-question-assignment-id="{{ $qAssignment->getId() }}"
-                                                           id="questionScore{{ $qNumber }}"/>
+                                            <!-- question Score -->
+                                            <form class="form-horizontal" role="form">
+                                                <div class="form-group">
+                                                    <label class="col-md-1 control-label"
+                                                           style="padding-right: 2px; padding-left: 0px;"
+                                                           for="questionScore{{ $qNumber }}">
+                                                        Score:</label>
+                                                    <div class="col-md-1" style="padding: 0px;">
+                                                        <input class="form-control pull-right" type="number" min="0"
+                                                               max="{{ $maxQuestionScores[$qNumber] }}"
+                                                               style="width: 4em; padding-right: 2px;"
+                                                               data-number="{{ $qNumber }}"
+                                                               data-question-assignment-id="{{ $qAssignment->getId() }}"
+                                                               id="questionScore{{ $qNumber }}"/>
+                                                    </div>
+                                                    <div class="col-md-1 control-label" style="text-align: left;" >
+                                                        <b>/ {{  $maxQuestionScores[$qNumber] }}</b>
+                                                    </div>
                                                 </div>
-                                                <div class="col-md-1" style="vertical-align: middle;">
-                                                    <b>/ {{ $maxQuestionScores[$qNumber] }}</b>
-                                                </div>
-                                            </div>
+                                            </form>
                                         </div>
                                         <!-- element area holds all sliders and comments for this question -->
                                         <div class="list-group">
@@ -98,7 +103,9 @@
                 <div class="row">
                     <div class="col-md-7">
                         <h4>
-                            <span class="glyphicon glyphicon-pencil"> </span>
+                            <span class="glyphicon glyphicon-pencil" title="Click to hide student names"
+                                  style="cursor: pointer;"
+                                  onclick="toggleNameVisibility()"> </span>
                             <span id="activeStudentName">No Student Selected</span>
                         </h4>
                     </div>
@@ -127,19 +134,25 @@
     <script type='text/javascript' src="{{ asset('inc/js/bootstrap-slider.js') }}"></script>
     <script type="text/javascript">
 
+        var stockComments = <?= json_encode($stockComments) ?>;
+
         var elementComments = <?= json_encode($studentElementComments) ?>;
         var elementScores = <?= json_encode($studentElementScores) ?>;
-        var stockComments = <?= json_encode($stockComments) ?>;
         var questionScores = <?= json_encode($studentQuestionScores) ?>;
         var examGradingTimes = <?= json_encode($examGradingTimes) ?>;
+        var examGrades = [];
+
         var numStudents = {{ count($students) }};
         var numQuestions = {{ count($questionAssignments) }};
-        var examGrades = [];
+
         var activeStudent = null;
         var standardScoring = false;
         var sortAsc = true;
         var timer;
         var timerPaused = true;
+        var studentNamesVisible = true;
+        var nameHiddenString = "Name Hidden"; // text to show when student names are invisible
+        var noActiveStudentString = "No Student Selected";
         var activeStudentTime;
 
         updateExamGrades();
@@ -186,7 +199,7 @@
         }
 
         // examGrades[] keeps a persistent total of the exam score for each student.
-        // Exams without grades have a value of -1, because dealing with null and NaN is .unpredictable across js and PHP.
+        // Exams without grades have a value of -1, because dealing with null and NaN is unpredictable across js and PHP.
         // This shouldn't be an issue, as the DB has no notion of exam grades, they're only used here as a shorthand
         // to store and quickly find information about the exam state.
         function updateExamGrades() {
@@ -281,10 +294,30 @@
         // sets the activeStudentName and studentId fields
         function setSelectedNameAndId() {
             var $student = $('#studentListItem' + activeStudent);
-            var name = $student.attr('data-lName') + ", " + $student.attr('data-fName');
+            var name = nameHiddenString;
+            if (studentNamesVisible) {
+                name = $student.attr('data-lName') + ", " + $student.attr('data-fName');
+            }
+            // if no student has been selected, always display noActiveStudentString
+            if (!activeStudent) {
+                name = noActiveStudentString;
+            }
             var id = $student.data('student-identifier');
             $("#activeStudentName").text(name);
             $("#activeStudentIdentifier").text(id);
+        }
+
+        // When the pencil icon is selected, toggle visibility of roster names and selected name area
+        function toggleNameVisibility() {
+            studentNamesVisible = !studentNamesVisible;
+            $('[id^="studentListItem"]').each( function() {
+                var nameToDisplay = nameHiddenString;
+                if (studentNamesVisible) {
+                   nameToDisplay = $(this).attr('data-lName') + ", " + $(this).attr('data-fName');
+                }
+                $(this).find('[id^="studentName"]').text(nameToDisplay);
+            });
+            setSelectedNameAndId();
         }
 
         // update the "graded: xx remaining: xx" counters
@@ -453,7 +486,7 @@
 
             updateStudentDataArea();
             sortRosterBy('studentName');
-            updateTimer(); // this may error without an active student.
+            updateTimer();
 
             /* When an element slider stops movement, do things */
             $('input.slider').on('slideStop', function (slideEvt) {
@@ -492,11 +525,11 @@
             });
 
             // Handle question score inputs. When focus is lost, store values, update grades and save timers.
-            $('.questionScore').change(function () {
+            $('[id^="questionScore"]').change(function () {
                 var qNumber = $(this).attr('data-number');
                 var score = parseFloat($(this).val());
-                var maxScore = parseFloat( $(this).attr('max') );
-                if ( score > maxScore ) {
+                var maxScore = parseFloat($(this).attr('max'));
+                if (score > maxScore) {
                     score = maxScore;
                     $(this).val(maxScore);
                 }
