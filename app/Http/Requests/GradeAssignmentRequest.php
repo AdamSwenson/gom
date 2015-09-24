@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Exceptions\SilentlyLoggedException;
 use App\Http\Requests\Request;
+use App\Repositories\Grade\GradeFactory;
 
 class GradeAssignmentRequest extends Request
 {
@@ -64,10 +65,13 @@ class GradeAssignmentRequest extends Request
             {
                 //add a small amount to the next highest grade's minimum score because can't be identical
                 $max = $this->presentFields[$i + 1]['minScore'] + 0.001;
+
                 //create the rule for the $ith item
                 $this->rulesArray[$this->presentFields[$i]['fieldName']] = 'numeric|min:' . $max;
+
                 //create the message if the rule for the $ith element fails
-                $this->messagesArray[$this->presentFields[$i]['fieldName'] . '.min'] = self::ERROR_MESSAGE;
+                $message = "The minimum score for " . $this->presentFields[$i]['gradeName'] . " cannot be less than the minimum score for " . $this->presentFields[$i + 1]['gradeName'] . ". Please fix the error and try again";
+                $this->messagesArray[$this->presentFields[$i]['fieldName'] . '.min'] = $message;
             }
         }
     }
@@ -82,7 +86,12 @@ class GradeAssignmentRequest extends Request
             $currentField = self::FIELD_BASE . $i;
             if( ! empty($this->input($currentField)) )
             {
-                $this->presentFields[] = ['fieldName' => $currentField, 'minScore' => $this->input($currentField)];
+                $grade = GradeFactory::loadByOrder($i);
+                $this->presentFields[] = [
+                    'fieldName' => $currentField,
+                    'minScore' => $this->input($currentField),
+                    'gradeName' => $grade['display_value']
+                ];
             }
         }
     }

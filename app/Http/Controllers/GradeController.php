@@ -32,6 +32,9 @@ use Illuminate\Support\Facades\View;
 class GradeController extends Controller
 {
     const INVALID_GRADE_ASSIGNMENT_MESSAGE = 'The criteria you entered were inconsistent.';
+
+    const GRADE_ASSIGNMENT_FIELD_BASE = 'gradeGroup';
+
     /** If there is no max score set in the database, use this */
     const DEFAULT_MAX_QUESTION_SCORE = 20;
 
@@ -55,6 +58,9 @@ class GradeController extends Controller
 
     /** @var  IGradingTimeRepository */
     protected $gradingTimeDao;
+
+    /** @var  IGradeAssignmentRespository */
+    protected $gradeAssignmentDao;
 
     protected $dao;
     protected $reportController;
@@ -95,9 +101,12 @@ class GradeController extends Controller
      */
     public function assign(Exam $exam)
     {
-        $gradeAssignmentDao = app()->make('App\Repositories\Grade\IGradeAssignmentRepository');
+        if( empty($this->gradeAssignmentDao) ){
+            $this->gradeAssignmentDao = app()->make('App\Repositories\Grade\IGradeAssignmentRepository');
+        }
 
         $examId = $exam->getId();
+
         // get the max_scores and compute examMaxScore
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($examId);
         $examMaxScore = 0;
@@ -120,21 +129,7 @@ class GradeController extends Controller
 //            'D+', 'D', 'D-',
 //            'F'];
 
-        // gradeCutoffs are the lowest values for each grade type
-        // normally these will be retrieved from the values saved in the DB.
-
-        $gradeCutoffs = $gradeAssignmentDao->load_grade_min_scores_for_exam($exam);
-
-        //$gradeCutoffs = $exam->getGradeCutoffs(); // use cookie to hold these??
-        // if gradecutoffs aren't set, calculate them...
-        if ( empty($gradeCutoffs)) {
-            foreach (GradeFactory::getDefaultCutoffsOfGrades() as $val) {
-                // allow decimals if the exam has a very low maximum grade
-                if ($examMaxScore < 25) $decRound = 1;
-                else $decRound = 0;
-                $gradeCutoffs[] = round($examMaxScore * $val, $decRound);
-            }
-        }
+        $gradeCutoffs = $this->getGradeCutoffs($exam, $examMaxScore);
 
         $students = $this->studentDao->load_students_by_exam($examId);
 
@@ -149,11 +144,39 @@ class GradeController extends Controller
             }
             $examScores[] = $examScore;
         }
-        return View::make('grade.grade_assign', ['exam' => $exam,
+        return View::make('grade.grade_assign', [
+            'exam' => $exam,
             'examScores' => $examScores,
             'examMaxScore' => $examMaxScore,
             'gradeTypes' => $gradeTypes,
-            'gradeCutoffs' => $gradeCutoffs]);
+            'gradeCutoffs' => $gradeCutoffs
+        ]);
+    }
+
+    /**
+     *  Grade cutoffs are the lowest values for each grade type
+     * normally these will be retrieved from the values saved in the DB.
+     *
+     * If no cutoffs are set in the database, this will generate default values.
+     * @param Exam $exam
+     * @param integer $examMaxScore
+     * @return array
+     */
+    protected function getGradeCutoffs(Exam $exam, $examMaxScore)
+    {
+        $gradeCutoffs = $this->gradeAssignmentDao->load_grade_min_scores_for_exam($exam);
+
+        // if gradecutoffs aren't set, calculate them...
+        if ( empty($gradeCutoffs)) {
+            foreach (GradeFactory::getDefaultCutoffsOfGrades() as $val) {
+                // allow decimals if the exam has a very low maximum grade
+                if ($examMaxScore < 25) $decRound = 1;
+                else $decRound = 0;
+                $gradeCutoffs[] = round($examMaxScore * $val, $decRound);
+            }
+        }
+
+        return $gradeCutoffs;
     }
 
     /**
@@ -171,10 +194,10 @@ class GradeController extends Controller
         //Pull out each value to assign, make a grade object and push into $assignments
         for($i=0; $i<=12; $i++)
         {
-            if( ! empty($request->input('gradeGroup' . $i)))
+            if( ! empty($request->input(self::GRADE_ASSIGNMENT_FIELD_BASE . '' . $i)))
             {
                 $grade = GradeFactory::loadByOrder($i);
-                $minScore = $request->input('gradeGroup' . $i);
+                $minScore = $request->input(self::GRADE_ASSIGNMENT_FIELD_BASE . $i);
                 //push into array
                 $assignments[] = ['minScore' => $minScore, 'grade' => $grade];
             }
@@ -185,17 +208,7 @@ class GradeController extends Controller
             }
         }
 
-        //Verify that the incoming values are consistent (i.e., minimum scores are transitive)
-//        if( ! $this->checkAssignmentConsistency($assignments))
-//        {
-//            //set error message and send back
-//           // Session::flash('errors', self::INVALID_GRADE_ASSIGNMENT_MESSAGE);
-////            session()->flash('errors', [self::INVALID_GRADE_ASSIGNMENT_MESSAGE]);
-//            return back();
-//            //return back();
-//        }
-
-        //It's consistent, so write to the db
+        //Request validator already checked for consistency, so let's write to the db
         $gradeAssignmentDao = app()->make('App\Repositories\Grade\IGradeAssignmentRepository');
 
         foreach($assignments as $assign)
@@ -219,23 +232,23 @@ class GradeController extends Controller
         return redirect()->action('GradeController@index');
     }
 
-    /**
-     * Makes sure that transitivity holds for the minimum scores
-     * @param array $assignments Array with keys 'minScore' and 'grade'
-     * @return bool False if inconsistent; true if consistent
-     */
-    protected function checkAssignmentConsistency($assignments)
-    {
-        for($i=0; $i<count($assignments); $i++ )
-        {
-            //For each value except the last one, make sure it is greater than it's successor
-            if( ($i+1 != count($assignments)) && ($assignments[$i]['minScore'] <= $assignments[$i + 1]['minScore']))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
+//    /**
+//     * Makes sure that transitivity holds for the minimum scores
+//     * @param array $assignments Array with keys 'minScore' and 'grade'
+//     * @return bool False if inconsistent; true if consistent
+//     */
+//    protected function checkAssignmentConsistency($assignments)
+//    {
+//        for($i=0; $i<count($assignments); $i++ )
+//        {
+//            //For each value except the last one, make sure it is greater than it's successor
+//            if( ($i+1 != count($assignments)) && ($assignments[$i]['minScore'] <= $assignments[$i + 1]['minScore']))
+//            {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 
     /**
      *  Presents a list of exams for grading and assignment of scores

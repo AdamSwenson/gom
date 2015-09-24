@@ -27,6 +27,15 @@ interface IGradeAssignmentRepository
     public function load_grade_assignments_for_exam(Exam $exam);
 
     /**
+     * Returns an array of minimum scores for each grade in GradeFactory::$grades if at least
+     * one has a non null value. If no grade assignments have been made, it returns null.
+     *
+     * @param Exam $exam
+     * @return array|null
+     */
+    public function load_grade_min_scores_for_exam(Exam $exam);
+
+    /**
      * Record a grade assignment to the database
      *
      * @param Exam $exam
