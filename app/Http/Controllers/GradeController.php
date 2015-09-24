@@ -10,6 +10,7 @@ use App\Http\Requests\GradingRequest;
 use App\Exam;
 use App\Repositories\Exam\IExamRepository;
 use App\Repositories\Grade\GradeFactory;
+use App\Repositories\Grade\IGradeAssignmentRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
@@ -59,7 +60,7 @@ class GradeController extends Controller
     /** @var  IGradingTimeRepository */
     protected $gradingTimeDao;
 
-    /** @var  IGradeAssignmentRespository */
+    /** @var  IGradeAssignmentRepository */
     protected $gradeAssignmentDao;
 
     protected $dao;
@@ -74,6 +75,7 @@ class GradeController extends Controller
      * @param IQuestionScoreRepository $questionScoreRepository
      * @param IGradingTimeRepository $gradingTimeRepository
      * @param IStudentRepository $studentRepository
+     * @param IGradeAssignmentRepository $gradeAssignmentRepository
      */
     public function __construct(IExamRepository $IExamRepository,
                                 IElementRepository $elementRepository,
@@ -82,7 +84,8 @@ class GradeController extends Controller
                                 IQuestionAssignmentRepository $questionAssignmentRepository,
                                 IQuestionScoreRepository $questionScoreRepository,
                                 IGradingTimeRepository $gradingTimeRepository,
-                                IStudentRepository $studentRepository)
+                                IStudentRepository $studentRepository,
+                                IGradeAssignmentRepository $gradeAssignmentRepository)
     {
         $this->middleware('auth');
         $this->examDao = $IExamRepository;
@@ -93,6 +96,7 @@ class GradeController extends Controller
         $this->questionScoreDao = $questionScoreRepository;
         $this->gradingTimeDao = $gradingTimeRepository;
         $this->studentDao = $studentRepository;
+        $this->gradeAssignmentDao = $gradeAssignmentRepository;
     }
 
     /**
@@ -101,10 +105,6 @@ class GradeController extends Controller
      */
     public function assign(Exam $exam)
     {
-        if( empty($this->gradeAssignmentDao) ){
-            $this->gradeAssignmentDao = app()->make('App\Repositories\Grade\IGradeAssignmentRepository');
-        }
-
         $examId = $exam->getId();
 
         // get the max_scores and compute examMaxScore
@@ -122,13 +122,10 @@ class GradeController extends Controller
             $examMaxScore += $questionMax;
         }
 
+        //Load an array of the letter grades (i.e., A+, A, A-)
         $gradeTypes = GradeFactory::getDisplayValuesOfGrades();
-//        $gradeTypes = ['A+', 'A', 'A-',
-//            'B+', 'B', 'B-',
-//            'C+', 'C', 'C-',
-//            'D+', 'D', 'D-',
-//            'F'];
 
+        //Load an array of minimum scores for each grade
         $gradeCutoffs = $this->getGradeCutoffs($exam, $examMaxScore);
 
         $students = $this->studentDao->load_students_by_exam($examId);
@@ -168,6 +165,7 @@ class GradeController extends Controller
 
         // if gradecutoffs aren't set, calculate them...
         if ( empty($gradeCutoffs)) {
+            $gradeCutoffs = [];
             foreach (GradeFactory::getDefaultCutoffsOfGrades() as $val) {
                 // allow decimals if the exam has a very low maximum grade
                 if ($examMaxScore < 25) $decRound = 1;
@@ -187,8 +185,10 @@ class GradeController extends Controller
      */
     public function recordAssignments(Exam $exam, GradeAssignmentRequest $request)
     {
+        //This will hold the incoming assignments after they have been processed and before they are written to the db
         $assignments = [];
 
+        //This will hold the grades which are not being assigned and slated for deletion if they were in the db
         $nonAssigned = [];
 
         //Pull out each value to assign, make a grade object and push into $assignments
@@ -209,11 +209,9 @@ class GradeController extends Controller
         }
 
         //Request validator already checked for consistency, so let's write to the db
-        $gradeAssignmentDao = app()->make('App\Repositories\Grade\IGradeAssignmentRepository');
-
         foreach($assignments as $assign)
         {
-            $gradeAssignmentDao->record_grade_assignment($exam, $assign['grade'], $assign['minScore']);
+            $this->gradeAssignmentDao->record_grade_assignment($exam, $assign['grade'], $assign['minScore']);
         }
 
         //Delete any pre-existing grades which were not assigned on this request
@@ -222,10 +220,9 @@ class GradeController extends Controller
             foreach($nonAssigned as $naOrder)
             {
                 $grade = GradeFactory::loadByOrder($naOrder);
-                $gradeAssignmentDao->delete_grade_assignment($exam, $grade);
+                $this->gradeAssignmentDao->delete_grade_assignment($exam, $grade);
             }
         }
-
 
         // TODO: Add error handling
         // TODO: Add flash message about success? Otherwise it may be weird to just be kicked back to what seems to be an earlier page.
