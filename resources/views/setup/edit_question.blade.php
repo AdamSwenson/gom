@@ -68,6 +68,7 @@
 
 
 @section('jsArea')
+    <script src="{{ asset("inc/js/Sortable.js") }}"></script>
     <script type="text/javascript">
 
         // Basic form validation and prompts.

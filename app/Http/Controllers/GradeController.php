@@ -94,9 +94,7 @@ class GradeController extends Controller
         $examMaxScore = 0;
 
         foreach ($questionAssignments as $assignment) {
-            // TODO: uncomment this when DB supports getMaxScore()
-            //$examMaxScore += $assignment->getQuestion()->getMaxScore();
-            $examMaxScore += 20;
+            $examMaxScore += $assignment->getQuestion()->getMaxScore();
         }
 
         $gradeTypes = ['A+', 'A', 'A-',
@@ -148,7 +146,7 @@ class GradeController extends Controller
      */
     public function recordAssignments(Exam $exam)
     {
-        // do stuff
+        // do stuff TODO: add logic to record the cutoffs to the DB (?)
         return redirect()->action('GradeController@index');
     }
 
@@ -194,9 +192,9 @@ class GradeController extends Controller
         foreach ($questionAssignments as $qAssignment) {
             $qNumber = $qAssignment->getQuestionNumber();
             $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qNumber);
-            // load maxQuestionScores TODO: uncomment this when DB is built
-            //$maxQuestionScores[$qNumber] = $qAssignment->getQuestion()->getMaxScore();
-            $maxQuestionScores[$qNumber] = 20;
+            // load maxQuestionScores
+            $maxQuestionScores[$qNumber] = $qAssignment->getQuestion()->getMaxScore();
+
         }
 
         // load all current student scores & comments

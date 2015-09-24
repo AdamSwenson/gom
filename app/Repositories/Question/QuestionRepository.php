@@ -62,7 +62,7 @@ class QuestionRepository implements IQuestionRepository
     public function updateQuestion($questionId, $questionName, $questionText, $maxScore=null)
     {
         $question = $this->loadQuestionById($questionId);
-        $this->updateQuestionObject($question, $questionName, $questionText);
+        $this->updateQuestionObject($question, $questionName, $questionText, $maxScore);
         return $question;
     }
 

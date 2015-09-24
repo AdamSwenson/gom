@@ -68,6 +68,7 @@
 
 
 @section('jsArea')
+    <script src="{{ asset("inc/js/Sortable.js") }}"></script>
     <script type="text/javascript">
 
         // validate and submit form. Currently, questions are valid with 0 elements.

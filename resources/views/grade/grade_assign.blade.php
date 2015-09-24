@@ -20,6 +20,7 @@
         <div class="row">
             <!-- Left column holds grade assignment regions -->
             <div class="col-lg-4">
+                <h4 style="text-align: center;">Max Grade: {{ $examMaxScore or '--' }}</h4>
                 <form class="form-horizontal" method="post" role="form" name="frmGradeCutoffs"
                       action="{{ url('grade/exam/'.$exam->getId().'/assign') }}">
                     <input type="hidden" id="token" name="_token" value="{{ csrf_token() }}">
@@ -119,9 +120,9 @@
                 freqChartData.push([ gradeTypes[i], freq, barColor ]);
             });
             freqChartData.push([ 'Grade', 'Frequency', {role: 'style' }]);
-            freqChartData.reverse(); //reverse the ordering: this makes it easier to iterate through the gradeFrequency array
+            // now reverse the chart data so that "F" is the first column and A+ the furthest right
+            freqChartData.reverse();
 
-            console.log(freqChartData);
         }
 
         // rebuild scoreChartData with new color values based on current grade cutoffs
@@ -196,7 +197,9 @@
                 vAxis: { title: 'Count', format: '#' },
                 hAxis: { title: 'Grade' },
                 chartArea: {'width': '80%', 'height': '70%'},
-                legend: { position: 'none' }
+                legend: { position: 'none' },
+                animation: { duration: 600,
+                            startup: "true" }
             };
 
             var chart = new google.visualization.ColumnChart(document.getElementById('gradeFreqChart'));
@@ -210,9 +213,11 @@
             var options = {
                 chart: { title: 'Student Grades' },
                 vAxis: { title: 'Score' },
-                hAxis: { title: 'Student' },
+                hAxis: { title: 'Student #' },
                 chartArea: {'width': '80%', 'height': '70%'},
-                legend: { position: 'none' }
+                legend: { position: 'none' },
+                animation: { duration: 600,
+                    startup: "true" }
             };
 
             var chart = new google.visualization.ColumnChart(document.getElementById('scoreChart'));

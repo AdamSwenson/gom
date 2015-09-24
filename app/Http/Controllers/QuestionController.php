@@ -173,7 +173,6 @@ class QuestionController extends Controller
 //        $this->validate($request, $this->rulesArray);
 
         $i = 1;
-        // TODO: add max grades to create and update paths
         while ($request->input('questionName' . $i)) {
             // new questions arrive with id == 0
             if (($request->input('questionId' . $i)) == 0) {
@@ -182,8 +181,7 @@ class QuestionController extends Controller
                     $request->input('questionText' . $i),
                     $request->input('maxScore' . $i));
                 $this->assignmentDao->record($examId, $question->getId(), $i);
-            } else
-            // other items already exist and should be updated
+            } else // other items already exist and should be updated
             {
                 $question = $this->questionDao->updateQuestion(
                     $request->input('questionId' . $i),
@@ -200,7 +198,7 @@ class QuestionController extends Controller
         // Handle item deletion
         // NOTE: any questions associated with this exam that weren't submitted with the form are deleted.
         $oldQuestions = $this->assignmentDao->load_all_for_exam($examId);
-        if ( count($oldQuestions) > 0) {
+        if (count($oldQuestions) > 0) {
             foreach ($oldQuestions as $oldQuestion) {
                 $qIdToFind = $oldQuestion->question_id;
                 if (!array_key_exists($qIdToFind, $currentQuestions)) {
@@ -211,7 +209,7 @@ class QuestionController extends Controller
 
         // If someone deletes all questions and defeat checks, redirect back to exam select...
         $checkIfEmpty = $this->assignmentDao->load_all_for_exam($examId);
-        if ( !count($checkIfEmpty) ) {
+        if (!count($checkIfEmpty)) {
             return redirect()->action('ExamController@index');
         }
         // ...because this line will crash if there is no question #1
@@ -220,7 +218,7 @@ class QuestionController extends Controller
         $firstQuestionObject = $this->questionDao->loadQuestionById($firstQId);
 
         if ($request->input('nextAction') == 'editExam') {
-            return redirect()->action('ExamController@edit', [ 'exam' => $exam ] );
+            return redirect()->action('ExamController@edit', ['exam' => $exam]);
         } else {
             return redirect()->action('ElementController@editAll', array('examId' => $examId,
                 'question' => $firstQuestionObject));
@@ -239,7 +237,6 @@ class QuestionController extends Controller
         foreach ($assignments as $ass) {
             $id = $ass->question_id;
             // load the question with given id by its index: ['0','1', ...]
-            //$q['qObj'] = $this->questionDao->loadQuestionById($id);
             $questions[] = $this->questionDao->loadQuestionById($id);
         }
         $examName = $exam->getName();
