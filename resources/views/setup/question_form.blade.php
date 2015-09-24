@@ -13,7 +13,7 @@
                 <span class="input-group-addon">Max Score</span>
                 <input id="maxScore{{ $counter }}" style="width:6em;" name="maxScore{{ $counter }}" type="number" min="0"
                        title="maximum score for this question"
-                       class="form-control input" aria-describedby="basic-addon" value="{{ $q['max_score'] or '100' }}">
+                       class="form-control input" aria-describedby="basic-addon" value="{{ $q['max_score'] or '' }}">
             </div>
         </div>
     </div>

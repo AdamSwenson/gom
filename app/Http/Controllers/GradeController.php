@@ -226,6 +226,7 @@ class GradeController extends Controller
 
         // TODO: Add error handling
         // TODO: Add flash message about success? Otherwise it may be weird to just be kicked back to what seems to be an earlier page.
+        // do stuff TODO: add logic to record the cutoffs to the DB (?)
         return redirect()->action('GradeController@index');
     }
 
@@ -289,9 +290,9 @@ class GradeController extends Controller
         foreach ($questionAssignments as $qAssignment) {
             $qNumber = $qAssignment->getQuestionNumber();
             $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qNumber);
-            // load maxQuestionScores TODO: uncomment this when DB is built
-            //$maxQuestionScores[$qNumber] = $qAssignment->getQuestion()->getMaxScore();
-            $maxQuestionScores[$qNumber] = 20;
+            // load maxQuestionScores
+            $maxQuestionScores[$qNumber] = $qAssignment->getQuestion()->getMaxScore();
+
         }
 
         // load all current student scores & comments

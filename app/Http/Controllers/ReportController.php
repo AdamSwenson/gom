@@ -195,6 +195,8 @@ class ReportController extends Controller
         // $stdDeviations holds, amazingly, the SDs for each question
         $meanScores = [];
         $stdDeviations = [];
+        $questionScores = [];
+
         $numberOfQuestions = count($this->questionAssignmentRepository->load_all_for_exam($exam->getId()));
         if ($numberOfQuestions > 0) {
             for ($i = 1; $i <= $numberOfQuestions; $i++) {
@@ -210,18 +212,19 @@ class ReportController extends Controller
                     array_push($oneSetOfScores, $obj->score);
                 }
                 //back to what was originally here
-                $oneSetOfScores[] = $i;
-
+                $questionScores[] = $oneSetOfScores;
                 $sum = array_sum($oneSetOfScores);
                 $meanScores[$i] = $sum / count($oneSetOfScores);
-                $meanScores[$i] = $i;
                 if (count($oneSetOfScores) > 1)
                     $stdDeviations[$i] = $this->standardDeviation($oneSetOfScores);
             }
         }
 
-        return view('reports.exam_analytics')->with(['exam' => $exam, 'students' => $students,
-            'meanScores' => $meanScores, 'stdDeviations' => $stdDeviations]);
+        return view('reports.exam_analytics')->with(['exam' => $exam,
+            'students' => $students,
+            'meanScores' => $meanScores,
+            'questionScores' => $questionScores,
+            'stdDeviations' => $stdDeviations]);
     }
 
     function standardDeviation($array)

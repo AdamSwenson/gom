@@ -61,7 +61,7 @@
                                                     <div class="col-md-1" style="padding: 0px;">
                                                         <input class="form-control pull-right" type="number" min="0"
                                                                max="{{ $maxQuestionScores[$qNumber] }}"
-                                                               style="width: 4em; padding-right: 2px;"
+                                                               style="width: 4.5em; padding-right: 2px;"
                                                                data-number="{{ $qNumber }}"
                                                                data-question-assignment-id="{{ $qAssignment->getId() }}"
                                                                id="questionScore{{ $qNumber }}"/>
@@ -131,6 +131,8 @@
 
 
 @section('jsArea')
+
+    <link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet">
     <script type='text/javascript' src="{{ asset('inc/js/bootstrap-slider.js') }}"></script>
     <script type="text/javascript">
 
