@@ -48,14 +48,13 @@ CREATE PROCEDURE `assign_question` (IN questionId INT, IN examId INT, IN questio
         AND question_number = questionNumber;
 
     IF (numPreExisting > 0) THEN
-        DELETE FROM question_assignments
-            WHERE exam_id = examId
-            AND question_number = questionNumber;
+        UPDATE question_assignments SET question_id = questionId, updated_at = NOW()
+        WHERE exam_id = examId AND question_number = questionNumber;
+    ELSE
+        INSERT INTO question_assignments (question_id, exam_id, question_number, created_at, updated_at)
+            VALUES (questionId, examId, questionNumber, NOW(), NOW())
+            ON DUPLICATE KEY UPDATE question_id = questionId, updated_at = NOW();
     END IF;
-
-    INSERT INTO question_assignments (question_id, exam_id, question_number, created_at, updated_at)
-        VALUES (questionId, examId, questionNumber, NOW(), NOW())
-        ON DUPLICATE KEY UPDATE question_id = questionId, updated_at = NOW();
   END
 MYSQL;
         DB::unprepared($assign_question);

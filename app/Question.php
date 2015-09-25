@@ -122,10 +122,10 @@ class Question extends BaseModel
     {
         //Since each question can be used only once per exam, check if this question is already in use
         //and, if so, delete it.
-        $q = QuestionAssignment::where('exam_id', $examId)->where('question_id', $this->attributes['id'])->first();
-        if($q){
-            $q->delete();
-        }
+//        $q = QuestionAssignment::where('exam_id', $examId)->where('question_id', $this->attributes['id'])->first();
+//        if($q){
+//            $q->delete();
+//        }
 
         //Assign the question to the exam as the specified question number. This call will take care
         //of removing the assignment of another question as that question number, if necessary.

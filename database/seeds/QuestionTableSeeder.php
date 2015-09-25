@@ -19,6 +19,7 @@ class QuestionTableSeeder extends Seeder
     public function run($num = 15)
     {
         $this->faker = \Faker\Factory::create();
+        $possibleMaxScores = [10, 25, 100, 200, 1000];
 
         DB::table('questions')->delete();
         \Auth::loginUsingId(1);
@@ -33,8 +34,7 @@ class QuestionTableSeeder extends Seeder
             $question = new \App\Question();
             $question->questionName = $name;
             $question->questionText = $text;
-////
-//////            $question->setUser(1);
+            $question->setMaxScore($this->faker->randomElement($possibleMaxScores));
             $question->save();
         }
     }
