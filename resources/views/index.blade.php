@@ -228,5 +228,6 @@
         Muse.Utils.transformMarkupToFixBrowserProblems();/* body */
     } catch(e) { if (e && 'function' == typeof e.notify) e.notify(); else Muse.Assert.fail('Error calling selector function:' + e); }});
 </script>
+@include('other.google_analytics_include')
 </body>
 </html>

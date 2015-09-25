@@ -28,11 +28,13 @@ class CreateQuestionScoresTable extends Migration
                 $table->foreign('question_assignment_id')
                     ->references('id')
                     ->on('question_assignments')
+                    ->onUpdate('cascade')
                     ->onDelete('cascade');
 
                 $table->foreign('student_id')
                     ->references('id')
                     ->on('students')
+                    ->onUpdate('cascade')
                     ->onDelete('cascade');
             });
         }

@@ -34,11 +34,13 @@ class CreateElementScoresTable extends Migration
                 $table->foreign('element_assignment_id')
                     ->references('id')
                     ->on('element_assignments')
+                    ->onUpdate('cascade')
                     ->onDelete('cascade');
 
                 $table->foreign('student_id')
                     ->references('id')
                     ->on('students')
+                    ->onUpdate('cascade')
                     ->onDelete('cascade');
             });
         }
