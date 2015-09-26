@@ -11,17 +11,29 @@ namespace App\Http\Controllers\helpers\assignments;
 
 class AssignmentHelper
 {
+    /** No alterations have been made */
+    const CASE_NO_CHANGE = 100;
 
-    const CASE_ADDITION = 100;
-    const CASE_DELETION = 101;
-    const CASE_REPLACEMENT = 102;
+    /** New items have been added; they do not replace anything old. No effect on student scores */
+    const CASE_PURE_ADDITION = 101;
+
+    /** Old items have been removed and not replaced with new items. Delete student scores */
+    const CASE_PURE_DELETION = 102;
+
+    /** Old items have been removed and replaced with new items. Delete student scores*/
+    const CASE_REPLACEMENT = 103;
+
+    /** Old items have been reordered. Keep scores associated with their elements  */
     const CASE_SHUFFLE = 104;
 
     /** @var array Ids of items which have not been previously assigned */
     public $newIds = [];
 
-    /** @var array Ids of items which were previously assigned but are not in the request  */
+    /** @var array Ids of items which were previously assigned but are not in the request */
     public $deletedIds = [];
+    protected $requestIds;
+
+    public $changedItems = [];
 
     /**
      * This covers all assignment possibilities
@@ -74,35 +86,70 @@ class AssignmentHelper
      *              -Delete assignment_id for A-i
      *
      *
-     * @param $existingIds array
-     * @param $requestIds array
+     * @param $existingIds array Ordered (ascending) by subtask or questionNumber
+     * @param $requestIds array Ordered (ascending) by subtask or questionNumber
      * @return int
      */
     public function determineCase($existingIds, $requestIds)
     {
-        $numExisting = count($existingIds);
-
-        /* Check whether any elements/questions have already been assigned  */
-        if( $existingIds  == 0){ return self::CASE_ADDITION;}
-
-        /* Check whether something has been have deleted */
-        if(count($requestIds) < $numExisting)
+        /* Easy case: nothing changed */
+        if ($existingIds === $requestIds)
         {
-            $this->deletedIds = array_diff($existingIds, $requestIds);
-            return self::CASE_DELETION;
+            return self::CASE_NO_CHANGE;
         }
+
+        /* Easy case: All element/question assignments are brand new  */
+        $numExisting = count($existingIds);
+        if ($numExisting == 0)
+        {
+            return self::CASE_PURE_ADDITION;
+        }
+
+        /* Easy case: All element/question assignments are deleted */
+        $numRequest = count($requestIds);
+        if ($numRequest == 0)
+        {
+            return self::CASE_PURE_DELETION;
+        }
+
+        $this->findDeleted($existingIds, $requestIds);
+
+        $this->findNew($existingIds, $requestIds);
+
+        /* Check whether items have been have deleted */
+//        if (count($requestIds) < $numExisting)
+//        {
+//            $this->deletedIds = array_diff($existingIds, $requestIds);
+//
+//            return self::CASE_DELETION;
+//        }
 
         /* Check whether something is new  */
         $newIds = array_diff($requestIds, $existingIds);
-        if( count($newIds) > 0 )
+        if (count($newIds) > 0)
         {
             $this->newIds = $newIds;
+
             return self::CASE_REPLACEMENT;
         }
 
         /* Nothing is new, so existing elements must have been shuffled */
-        for($i=0; $i<count($requestIds); $i++)
-        {}
+        if (count($this->deletedIds) == 0 && count($this->newIds) == 0)
+        {
+            for ($i = 0; $i < count($requestIds); $i++)
+            {
+                if ($existingIds[$i] !== $requestIds[$i])
+                {
+                    $this->changedItems[] = [
+                        'order' => $i,
+                        'existingId' => $existingIds[$i],
+                        'requestId' => $requestIds[$i]
+                    ];
+                }
+            }
+
+        }
+
         return self::CASE_SHUFFLE;
     }
 
@@ -110,28 +157,33 @@ class AssignmentHelper
     {
         $numExisting = count($existingIds);
         $numRequest = count($requestIds);
-        if( $numExisting == $numRequest )
+        if ($numExisting == $numRequest)
         {
             $differenceLocations = [];
-            for($i=0; $i<$numExisting; $i++)
+            for ($i = 0; $i < $numExisting; $i++)
             {
-                if($existingIds[$i] != $requestIds[$i])
+                if ($existingIds[$i] != $requestIds[$i])
                 {
                     $differenceLocations[] = $i;
                 }
             }
+
             return $differenceLocations;
         }
     }
 
     public function findNew($existingIds, $requestIds)
     {
-        return array_diff($requestIds, $existingIds);
+        $this->newIds = array_diff($requestIds, $existingIds);
+
+        return $this->newIds;
     }
 
     public function findDeleted($existingIds, $requestIds)
     {
-        return array_diff($existingIds, $requestIds);
+        $this->deletedIds = array_diff($existingIds, $requestIds);
+
+        return $this->deletedIds;
     }
 
     /**
@@ -152,9 +204,44 @@ MYSQL;
         $existingElements = \DB::select($query, $values);
 
         /* Check whether any elements have been assigned for the question  */
-        if( empty($existingElements) || count($existingElements) == 0){ return self::CASE_ADDITION;}
+        if (empty($existingElements) || count($existingElements) == 0)
+        {
+            return self::CASE_ADDITION;
+        }
 
         return $existingElements;
     }
+
+    //move to appropriate place later
+
+    public function handle($exam, $request)
+    {
+        //make lists
+        $existingIds = [];
+        $requestIds = [];
+
+        switch ($this->determineCase($existingIds, $requestIds))
+        {
+            case self::CASE_NO_CHANGE:
+                //do nothing
+                break;
+            case self::CASE_PURE_DELETION:
+                //delete the existing assignments (should cascade to delete scores)
+
+                break;
+            case self::CASE_PURE_ADDITION:
+                //add new assignments (no effect on scores)
+                break;
+            case self::CASE_REPLACEMENT:
+                //delete any changed assignments (should cascade to delete scores)
+                break;
+            case self::CASE_SHUFFLE:
+                //Change the subtask or question number fields in the assignment table.
+                //Should not affect scores.
+        }
+
+
+    }
+
 
 }
