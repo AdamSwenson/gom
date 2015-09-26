@@ -11,6 +11,9 @@ namespace App\Http\Controllers\helpers\assignments;
 
 class AssignmentHelper
 {
+    /** Some mix of additions, deletions, and reordering has occurred. */
+    const CASE_IMPURE = 105;
+
     /** No alterations have been made */
     const CASE_NO_CHANGE = 100;
 
@@ -20,20 +23,21 @@ class AssignmentHelper
     /** Old items have been removed and not replaced with new items. Delete student scores */
     const CASE_PURE_DELETION = 102;
 
-    /** Old items have been removed and replaced with new items. Delete student scores*/
-    const CASE_REPLACEMENT = 103;
+//    /** Old items have been removed and replaced with new items. Delete student scores*/
+//    const CASE_REPLACEMENT = 103;
+//
+//    /** Old items have been reordered. Keep scores associated with their elements  */
+//    const CASE_SHUFFLE = 104;
 
-    /** Old items have been reordered. Keep scores associated with their elements  */
-    const CASE_SHUFFLE = 104;
-
-    /** @var array Ids of items which have not been previously assigned */
+    /** @var array Ids of items which have not been previously assigned. If a new item, this should be non-0 */
     public $newIds = [];
 
     /** @var array Ids of items which were previously assigned but are not in the request */
     public $deletedIds = [];
-    protected $requestIds;
 
-    public $changedItems = [];
+//    protected $requestIds;
+
+//    public $changedItems = [];
 
     /**
      * This covers all assignment possibilities
@@ -90,158 +94,115 @@ class AssignmentHelper
      * @param $requestIds array Ordered (ascending) by subtask or questionNumber
      * @return int
      */
-    public function determineCase($existingIds, $requestIds)
+    public function determineCase(array $existingIds, array $requestIds)
     {
         /* Easy case: nothing changed */
-        if ($existingIds === $requestIds)
-        {
-            return self::CASE_NO_CHANGE;
-        }
+        if ($existingIds === $requestIds){ return self::CASE_NO_CHANGE; }
 
         /* Easy case: All element/question assignments are brand new  */
         $numExisting = count($existingIds);
-        if ($numExisting == 0)
-        {
-            return self::CASE_PURE_ADDITION;
-        }
+        if ($numExisting == 0) { return self::CASE_PURE_ADDITION; }
+
+        /* Build the deletedIds array. Do this here because the response to pure_deletion
+         * will delete everything in the deletedIds array.
+         */
+        $this->findDeleted($existingIds, $requestIds);
 
         /* Easy case: All element/question assignments are deleted */
         $numRequest = count($requestIds);
-        if ($numRequest == 0)
-        {
-            return self::CASE_PURE_DELETION;
-        }
+        if ($numRequest == 0) { return self::CASE_PURE_DELETION; }
 
-        $this->findDeleted($existingIds, $requestIds);
-
+        /* Build the newIds array. */
         $this->findNew($existingIds, $requestIds);
 
-        /* Check whether items have been have deleted */
-//        if (count($requestIds) < $numExisting)
-//        {
-//            $this->deletedIds = array_diff($existingIds, $requestIds);
+        return self::CASE_IMPURE;
+//        /* Check whether something is new  */
+//        if (count($this->newIds) > 0){ return self::CASE_REPLACEMENT; }
 //
-//            return self::CASE_DELETION;
+//        /* Nothing is new, so existing elements must have been shuffled */
+//        if (count($this->deletedIds) == 0 && count($this->newIds) == 0)
+//        {
+//            $this->checkOrder($existingIds, $requestIds);
 //        }
-
-        /* Check whether something is new  */
-        $newIds = array_diff($requestIds, $existingIds);
-        if (count($newIds) > 0)
-        {
-            $this->newIds = $newIds;
-
-            return self::CASE_REPLACEMENT;
-        }
-
-        /* Nothing is new, so existing elements must have been shuffled */
-        if (count($this->deletedIds) == 0 && count($this->newIds) == 0)
-        {
-            for ($i = 0; $i < count($requestIds); $i++)
-            {
-                if ($existingIds[$i] !== $requestIds[$i])
-                {
-                    $this->changedItems[] = [
-                        'order' => $i,
-                        'existingId' => $existingIds[$i],
-                        'requestId' => $requestIds[$i]
-                    ];
-                }
-            }
-
-        }
-
-        return self::CASE_SHUFFLE;
+//
+//        return self::CASE_SHUFFLE;
     }
 
-    public function checkOrder($existingIds, $requestIds)
+//    public function checkOrder($existingIds, $requestIds)
+//    {
+//        for ($i = 0; $i < count($requestIds); $i++)
+//        {
+//            if ($existingIds[$i] !== $requestIds[$i])
+//            {
+//                $this->changedItems[] = [
+//                    'order' => $i,
+//                    'existingId' => $existingIds[$i],
+//                    'requestId' => $requestIds[$i]
+//                ];
+//            }
+//        }
+//
+//        return $this->changedItems;
+//    }
+
+    /**
+     * Populate the $this->newIds array with ids that are present in $requestIds
+     * but not in the $existingIds array
+     * @param array $existingIds
+     * @param array $requestIds
+     * @return array
+     */
+    public function findNew(array $existingIds, array $requestIds)
     {
-        $numExisting = count($existingIds);
-        $numRequest = count($requestIds);
-        if ($numExisting == $numRequest)
-        {
-            $differenceLocations = [];
-            for ($i = 0; $i < $numExisting; $i++)
-            {
-                if ($existingIds[$i] != $requestIds[$i])
-                {
-                    $differenceLocations[] = $i;
-                }
-            }
-
-            return $differenceLocations;
-        }
-    }
-
-    public function findNew($existingIds, $requestIds)
-    {
-        $this->newIds = array_diff($requestIds, $existingIds);
-
+        $this->newIds = array_values(array_diff($requestIds, $existingIds));
         return $this->newIds;
     }
 
-    public function findDeleted($existingIds, $requestIds)
+    /**
+     * Populate $this->deletedIds with ids which are present in the existingIds
+     * array but not in the requestIds array.
+     * @param array $existingIds
+     * @param array $requestIds
+     * @return array
+     */
+    public function findDeleted(array $existingIds, array $requestIds)
     {
-        $this->deletedIds = array_diff($existingIds, $requestIds);
-
+        $this->deletedIds = array_values(array_diff($existingIds, $requestIds));
         return $this->deletedIds;
     }
 
-    /**
-     * Loads array of element ids from the existing element assignments ordered by subtask
-     * @param $examId
-     * @param $questionId
-     * @return int
-     */
-    public function load_for_element_assignment($examId, $questionId)
-    {
-        $query = <<<MYSQL
-            SELECT element_id
-            FROM element_assignments
-            WHERE exam_id = :examId AND question_id = :questionId
-            ORDER BY subtask
-MYSQL;
-        $values = ['examId' => $examId, 'questionId' => $questionId];
-        $existingElements = \DB::select($query, $values);
 
-        /* Check whether any elements have been assigned for the question  */
-        if (empty($existingElements) || count($existingElements) == 0)
-        {
-            return self::CASE_ADDITION;
-        }
-
-        return $existingElements;
-    }
-
-    //move to appropriate place later
-
-    public function handle($exam, $request)
-    {
-        //make lists
-        $existingIds = [];
-        $requestIds = [];
-
-        switch ($this->determineCase($existingIds, $requestIds))
-        {
-            case self::CASE_NO_CHANGE:
-                //do nothing
-                break;
-            case self::CASE_PURE_DELETION:
-                //delete the existing assignments (should cascade to delete scores)
-
-                break;
-            case self::CASE_PURE_ADDITION:
-                //add new assignments (no effect on scores)
-                break;
-            case self::CASE_REPLACEMENT:
-                //delete any changed assignments (should cascade to delete scores)
-                break;
-            case self::CASE_SHUFFLE:
-                //Change the subtask or question number fields in the assignment table.
-                //Should not affect scores.
-        }
-
-
-    }
+//
+//    //move to appropriate place later
+//
+//    public function handle($exam, $request)
+//    {
+//        //make lists
+//        $existingIds = [];
+//        $requestIds = [];
+//
+//        switch ($this->determineCase($existingIds, $requestIds))
+//        {
+//            case self::CASE_NO_CHANGE:
+//                //do nothing
+//                break;
+//            case self::CASE_PURE_DELETION:
+//                //delete the existing assignments (should cascade to delete scores)
+//
+//                break;
+//            case self::CASE_PURE_ADDITION:
+//                //add new assignments (no effect on scores)
+//                break;
+//            case self::CASE_REPLACEMENT:
+//                //delete any changed assignments (should cascade to delete scores)
+//                break;
+//            case self::CASE_SHUFFLE:
+//                //Change the subtask or question number fields in the assignment table.
+//                //Should not affect scores.
+//        }
+//
+//
+//    }
 
 
 }

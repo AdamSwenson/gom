@@ -19,6 +19,8 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
 
     public $assignments;
 
+    /** @var  Exam Holds the exam working on */
+    public $exam;
 
     /** @var ICleanerFactory */
     public $cleaner;
@@ -222,6 +224,32 @@ MYSQL;
             }
         }
         return true;
+    }
+
+    /**
+     * Loads array of element ids from the existing element assignments ordered by subtask
+     * @param $examId
+     * @param $questionId
+     * @return int
+     */
+    public function load_existing_ids_for_element_assignment($examId, $questionId)
+    {
+        $query = <<<MYSQL
+            SELECT element_id
+            FROM element_assignments
+            WHERE exam_id = :examId AND question_id = :questionId
+            ORDER BY subtask
+MYSQL;
+        $values = ['examId' => $examId, 'questionId' => $questionId];
+        $existingElements = \DB::select($query, $values);
+
+        /* Check whether any elements have been assigned for the question  */
+        if (empty($existingElements) || count($existingElements) == 0)
+        {
+            return self::CASE_ADDITION;
+        }
+
+        return $existingElements;
     }
 
 
