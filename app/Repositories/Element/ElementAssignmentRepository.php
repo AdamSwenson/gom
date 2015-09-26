@@ -9,10 +9,17 @@
 namespace App\Repositories\Element;
 
 
+use App\Comment;
 use App\ElementAssignment;
+use App\Exam;
+use App\Http\Controllers\helpers\assignments\AssignmentHelper;
+use App\Http\Requests\ElementRequest;
+use App\Question;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Question\QuestionAssignmentRepository;
 use App\Element;
+use Exception;
+use Illuminate\Support\Facades\DB;
 
 class ElementAssignmentRepository implements IElementAssignmentRepository
 {
@@ -27,6 +34,20 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
 
     /** @var  IQuestionAssignmentDAO */
     public $questionAssignmentDao;
+
+    /** @var  array Ids of elements which the incoming request asks to assign */
+    protected $requestIds = [];
+    /** @var  array Ids of elements which were assigned prior to the request */
+    protected $existingIds = [];
+
+    /** @var  array Array of element objects */
+    protected $elements = [];
+
+    /** @var  \App\Http\Controllers\helpers\assignments\IAssignmentHelper */
+    protected $helper;
+
+    /** @var  Question The question assignments are being made to */
+    protected $question;
 
 
     public function __construct()
@@ -144,26 +165,7 @@ MYSQL;
     public function record($examId, $questionId, $elementId, $subtask)
     {
         $element = Element::findOrFail($elementId);
-
         return $element->setAsQuestionTask($examId, $questionId, $subtask);
-
-
-//      return $element;
-
-//        $questionAssignment = $this->questionAssignmentDao->loadQuestionNumberById($examId, $questionId);
-//
-//        $ea = ElementAssignment::where('question_assignment_id', $questionAssignment->id)->where('subtask', $subtask);
-//        if($ea){
-//            $ea->delete();
-//        }
-////        $assign = new ElementAssignment();
-//        $assign = ElementAssignment::firstOrNew(['question_assignment_id' => $questionAssignment->getId(), 'elementId']);
-//        $assign->element()->associate($elementId);
-//        $assign->questionAssignment()->associate($questionAssignment);
-//        $assign->setSubtask($subtask);
-//        $assign->save();
-//
-//        return $assign;
     }
 
 
@@ -226,13 +228,168 @@ MYSQL;
         return true;
     }
 
+
+
+    /* ------------------------------------------------------------------------------------------------- */
     /**
-     * Loads array of element ids from the existing element assignments ordered by subtask
-     * @param $examId
-     * @param $questionId
-     * @return int
+     * Handles the request that comes to ElementController->updateAll. Had to be done here
+     * because cannot act on each element one by one without creating problems for existing scores.
+     *
+     * @param Exam $exam
+     * @param Question $question
+     * @param ElementRequest $request
+     * @throws Exception
      */
-    public function load_existing_ids_for_element_assignment($examId, $questionId)
+    public function updateAll(Exam $exam, Question $question, ElementRequest $request)
+    {
+        $this->exam = $exam;
+        $this->question = $question;
+
+        //Load and update element objects or make new ones. Hold in the elements array
+        $this->makeAndLoad($request);
+
+        //Load array of elementIds currently used in element assignments for the exam and question
+        $this->getExistingElementIds($this->exam->getId(), $this->question->getId());
+
+        //Record assignments
+        $this->helper = app()->make('App\Http\Controllers\helpers\assignments\IAssignmentHelper');
+
+        switch ($this->helper->determineCase($this->existingIds, $this->requestIds))
+        {
+            case AssignmentHelper::CASE_NO_CHANGE:
+                //do nothing
+                break;
+
+            case AssignmentHelper::CASE_PURE_DELETION:
+                //delete all the existing assignments (should cascade to delete scores)
+                $this->deleteElements();
+                break;
+
+            case AssignmentHelper::CASE_PURE_ADDITION:
+                //add new assignments (no effect on scores)
+                foreach ($this->elements as $e)
+                {
+                    $e[1]->setAsQuestionTask($this->exam->getId(), $this->question->getId(), $e[0]);
+                    $e[1]->save();
+                }
+                break;
+
+            case AssignmentHelper::CASE_IMPURE:
+                //Some potentially confusing mix of additions, deletions, and reordering has happened
+                $this->handleImpure();
+                break;
+
+            default:
+                throw new Exception('Case not covered by AssignmentHelper');
+        }
+    }
+
+    /**
+     * Deletes any questions (not just their assignments) which
+     * are in the list of deletedIds on the helper
+     */
+    public function deleteElements()
+    {
+        if (count($this->helper->deletedIds) > 0)
+        {
+            Element::destroy($this->helper->deletedIds);
+        }
+    }
+
+    /**
+     * There are a bunch of possible combinations of addition, deletion, and reordering which
+     * might have happened. We can't change the assignment ids for existing assignments because
+     * we will lose the associated scores. This handles those cases.
+     */
+    public function handleImpure()
+    {
+        if( !empty($this->exam) && !empty($this->question))
+        {
+            /*
+             * This all needs to be inside the transaction. If, for example, it fails before the cleanup step,
+             * the user will be very confused by having questions 6-10 when she thought she had 1-5.
+             */
+            DB::transaction(function ()
+            {
+
+                /* If an element was deleted, no need for fancy assignment nonsense. Just delete
+                   that bad boy and let it cascade to assignments and scores.*/
+                $this->deleteElements();
+
+                //Get the highest subtask that has been used on the exam for the question
+                $newSort = $this->getMaxSubtask($this->exam->getId(), $this->question->getId());
+
+                /* There are a bunch of possible combinations of addition, deletion, and reordering which
+                   might have happened. We can't change the assignment ids for existing assignments because
+                   we will lose the associated scores. So we're going to temporarily assign each subtask a number
+                   that is higher than any existing subtask (we will insert new elements and update the subtask of
+                   already assigned elements).*/
+                foreach ($this->requestIds as $id)
+                {
+                    //this is the ordinal value which temporarily replaces the subtask
+                    $newSort += 1;
+                    $query = <<<MYSQL
+             INSERT INTO element_assignments (exam_id, question_id, element_id, subtask, created_at, updated_at)
+            VALUES (:examId, :questionId, :elementId, :subtask, NOW(), NOW())
+            ON DUPLICATE KEY UPDATE subtask = :subtask2, updated_at = NOW();
+MYSQL;
+                    $values = [
+                        'examId' => $this->exam->getId(),
+                        'questionId' => $this->question->getId(),
+                        'elementId' => $id,
+                        'subtask' => $newSort,
+                        'subtask2' => $newSort
+                    ];
+                    DB::update($query, $values);
+                }
+
+                /*
+                 * Now that all the elements are in order in the element_assignments table, we need to
+                 * give them the correct subtasks (i.e., so that the order starts at 1).
+                 *
+                 * So we load all element assignments for the exam/question and then update their subtasks
+                 * accordingly.
+                 */
+                $assigns = ElementAssignment::where('exam_id', $this->exam->getId())
+                    ->where('question_id', $this->question->getId())
+                    ->orderBy('subtask')
+                    ->get();
+                for ($i = 0; $i < count($assigns); $i++)
+                {
+                    $assigns[$i]->subtask = $i + 1;
+                    $assigns[$i]->update();
+                }
+            });
+        }
+    }
+
+    /**
+     * Loads the highest question_number that has been assigned on the exam.
+     *
+     * @param integer $examId
+     * @param integer $questionId
+     * @return int mixed
+     */
+    public function getMaxSubtask($examId, $questionId)
+    {
+        $query = <<<MYSQL
+            SELECT MAX(subtask) AS max
+            FROM element_assignments
+            WHERE exam_id = :examId AND question_id = :questionId
+MYSQL;
+        $values = ['examId' => $examId, 'questionId' => $questionId];
+        $result = \DB::select($query, $values);
+
+        return $result[0]->max;
+    }
+
+    /**
+     * Retrieves ths elementIds for elements that have already been
+     * assigned on this exam and stores them in $this->existingIds
+     * @param integer $examId
+     * @param integer $questionId
+     */
+    public function getExistingElementIds($examId, $questionId)
     {
         $query = <<<MYSQL
             SELECT element_id
@@ -241,18 +398,66 @@ MYSQL;
             ORDER BY subtask
 MYSQL;
         $values = ['examId' => $examId, 'questionId' => $questionId];
-        $existingElements = \DB::select($query, $values);
-
-        /* Check whether any elements have been assigned for the question  */
-        if (empty($existingElements) || count($existingElements) == 0)
+        foreach (\DB::select($query, $values) as $obj)
         {
-            return self::CASE_ADDITION;
+            $this->existingIds[] = $obj->element_id;
         }
-
-        return $existingElements;
     }
 
+    /**
+     * Processes the request and makes new elements if the id is 0 and
+     * loads existing elements (updating them if necessary).
+     *
+     * Stores all the elements in the elements array as
+     * an array with the form: [subtask, elementObject].
+     *
+     * Also stores all ids from the incoming request (including newly created elements) in
+     * ascending order of subtask (starting at 1) in $requestIds.
+     *
+     * @param ElementRequest $request
+     */
+    public function makeAndLoad(ElementRequest $request)
+    {
+        $elementDao = app()->make('App\Repositories\Element\IElementRepository');
 
+        $numValences = count(Comment::$valences);
 
+        //  Update elements and create new elements as necessary
+        $i = 1;
+        while ($request->input('elementName' . $i))
+        {
+            $elementId = $request->input('elementId' . $i);
+            $elementName = $request->input('elementName' . $i);
+            $elementText = $request->input('elementText' . $i);
+            $displayText = ''; // We're not using the 'displayText' parameter at this time.
+
+            // New elements arrive with id == 0
+            if ($elementId == 0)
+            {
+                // Add new Elements
+                $element = $elementDao->createElement($elementName, $displayText, $elementText);
+            } else
+            {
+                // Update existing
+                $element = $elementDao->editElement($elementId, $elementName, $displayText, $elementText);
+            }
+            //Store the element and its order for assignment
+            $this->elements[] = [$i, $element];
+            //Store the id of the element
+            $this->requestIds[] = $element->getId();
+
+            // Loop through valences and add / edit comments. If the valence is empty, use the stock comment (element text)
+            for ($j = 0; $j < $numValences; $j++)
+            {
+                $valenceComment = $request->input('e' . $i . 'valence' . $j);
+                if (empty($valenceComment))
+                {
+                    $valenceComment = $elementText;
+                }
+                $elementDao->addValencedContent($element->getId(), $j, $valenceComment);
+            }
+            $i++;
+        }
+    }
 
 }

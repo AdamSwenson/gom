@@ -8,10 +8,15 @@
 
 //it likes this if running test individually
 //require_once '../../vendor/autoload.php';
-
+try
+{
 //it likes this if it is running normally
-require_once 'vendor/autoload.php';
-
+    require_once 'vendor/autoload.php';
+//    require_once '../vendor/autoload.php';
+}catch(Exception $e)
+{
+    require_once '../../vendor/autoload.php';
+}
 
 
 //

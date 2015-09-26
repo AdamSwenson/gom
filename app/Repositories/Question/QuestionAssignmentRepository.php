@@ -36,6 +36,8 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
     protected $requestIds = [];
 
     protected $existingIds = [];
+
+    /** @var  \App\Http\Controllers\helpers\assignments\IAssignmentHelper */
     protected $helper;
 
     public function __construct()
@@ -86,7 +88,6 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
     {
         $q = Question::findOrFail($questionId);
         $q->setQuestionNumber($examId, $question_number);
-
         return $q;
     }
 
@@ -96,8 +97,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
      * TODO: Add eager loading of question
      *
      * @param $examId
-     * @return
-     *
+     * @return QuestionAssignment
      */
     public function load_all_for_exam($examId)
     {
@@ -106,18 +106,26 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
 
     /**
      * Removes the assignment of a question to an exam
-     * @param $examId
-     * @param $questionId
+     * @param integer $examId
+     * @param integer $questionId
      * @return mixed
      */
     function remove($examId, $questionId)
     {
         $qa = QuestionAssignment::onExam($examId)->onQuestionId($questionId)->firstOrFail();
-
         return $qa->delete();
     }
 
     /* ------------------------------------------------------------------------------------------------- */
+    /**
+     * Handles all operations required by calls to QuestionController->updateAll
+     * It was necessary to do it all here because we cannot just update the question
+     * assignments one by one without causing trouble with preexisting scores.
+     *
+     * @param Exam $exam
+     * @param QuestionRequest $request
+     * @throws \Exception
+     */
     public function updateAll(Exam $exam, QuestionRequest $request)
     {
         $this->exam = $exam;
@@ -128,27 +136,20 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
         //Load array of questionIds currently used in question assignments for the exam
         $this->getExistingQuestionIds($exam->getId());
 
-
         //Record assignments
-        $this->helper = new AssignmentHelper();
-
-//        $case = $this->helper->determineCase($this->existingIds, $this->requestIds);
-//dd([$case, $this->existingIds, $this->requestIds]);
+        $this->helper = app()->make('App\Http\Controllers\helpers\assignments\IAssignmentHelper');
 
         switch ($this->helper->determineCase($this->existingIds, $this->requestIds))
         {
             case AssignmentHelper::CASE_NO_CHANGE:
                 //do nothing
                 break;
+
             case AssignmentHelper::CASE_PURE_DELETION:
                 //delete all the existing assignments (should cascade to delete scores)
                 $this->deleteQuestions();
-//                foreach ($this->existingIds as $id)
-//                {
-//                    //this should've already been handled by deletion
-//                    $this->remove($exam->getId(), $id);
-//                }
                 break;
+
             case AssignmentHelper::CASE_PURE_ADDITION:
                 //add new assignments (no effect on scores)
                 foreach ($this->questions as $q)
@@ -162,26 +163,9 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
                 $this->handleImpure();
                 break;
 
-//            case AssignmentHelper::CASE_REPLACEMENT:
-//                //delete any changed assignments (should cascade to delete scores)
-//                break;
-//            case AssignmentHelper::CASE_SHUFFLE:
-//                //Change the subtask or question number fields in the assignment table.
-//                //Should not affect scores.
-//                foreach ($this->helper->changedItems as $item)
-//                {
-//                    //TODO This should be done via a transaction
-//                    $questionNumber = $item['order'] + 1;
-//                    $assign = QuestionAssignment::where('exam_id', $exam->getId())
-//                        ->where('question_number', $questionNumber)
-//                        ->where('question_id', $item['existingId'])
-//                        ->first();
-//                    $assign->question_id = $item['requestId'];
-//                    $assign->update();
-//                }
-//                break;
+            default:
+                throw new \Exception('Case not covered by assignmentHelper');
         }
-
     }
 
     /**
@@ -203,7 +187,7 @@ class QuestionAssignmentRepository implements IQuestionAssignmentRepository
      */
     public function handleImpure()
     {
-        if( !empty($this->exam))
+        if( !empty($this->exam) && !empty($this->requestIds))
         {
             /*
              * This all needs to be inside the transaction. If, for example, it fails before the cleanup step,
