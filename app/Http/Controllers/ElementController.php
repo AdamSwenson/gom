@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Comment;
 use App\Element;
+use App\Exam;
 use App\Http\Requests\ElementRequest;
+use App\Question;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
@@ -185,58 +187,10 @@ class ElementController extends Controller
      * @param ElementRequest $request
      * @return Response
      */
-    public function updateAll($exam, $question, ElementRequest $request)
+    public function updateAll(Exam $exam, Question$question, ElementRequest $request)
     {
         $this->assignmentDao->updateAll($exam, $question, $request);
         $examId = $exam->getId();
-//        $questionId = $question->getId();
-//        $numValences = count( Comment::$valences );
-//        //  Update elements and create new elements as necessary
-//        $currentElements = [];
-//        $i = 1;
-//        while ($request->input('elementName' . $i)) {
-//            $elementId = $request->input('elementId' . $i);
-//            // New elements arrive with id == 0
-//            // We're not using the 'displayText' parameter at this time.
-//            if ($elementId == 0) {
-//                // Add new Elements
-//                $element = $this->elementDao->createElement( $request->input('elementName' . $i), '' ,
-//                        $request->input('elementText' . $i));
-//                $this->assignmentDao->record($examId, $questionId, $element->getId(), $i);
-//            } else {
-//                // Update existing
-//                $element = $this->elementDao->editElement($elementId, $request->input('elementName' . $i), '',
-//                        $request->input('elementText' . $i));
-//                $this->assignmentDao->record($examId, $questionId, $element->getId(), $i);
-//            }
-//            $currentElements[$element->getId()] = $element;
-//
-//            // Loop through valences and add / edit comments. If the valence is empty, use the stock comment (element text)
-//            for($j = 0; $j < $numValences; $j++) {
-//                $valenceComment = $request->input('e'.$i.'valence'.$j);
-//                if ( empty($valenceComment) ) {
-//                    $valenceComment = $request->input('elementText' . $i);
-//                }
-//                $this->elementDao->addValencedContent($element->getId(), $j, $valenceComment );
-//            }
-//            $i++;
-//        }
-//
-//
-//        // Handle item deletion
-//        // NOTE: any elements associated with this exam that weren't submitted with the form are deleted.
-//        $questionNumber = $question->getQuestionNumber($examId);
-//        $oldElements = $this->assignmentDao->load_elements($examId, $questionNumber );
-//        //dd($currentElements);
-//        if ( count($oldElements) > 0) {
-//            foreach ($oldElements as $oldElement) {
-//                $eIdToFind = $oldElement->getId();
-//                if (!array_key_exists($eIdToFind, $currentElements)) {
-//                    //$currentElements[] = $eIdToFind;
-//                    $this->elementDao->deleteElement($eIdToFind);
-//                }
-//            }
-//        }
 
         /* Choose next action based on 'nextAction' param:
             1. go back to QuestionController

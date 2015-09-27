@@ -154,6 +154,10 @@ class QuestionController extends Controller
     /** Update all questions passed in by $request and set order assignments
      *  If a question has id=0 a new question will be created
      *
+     *  NOTE: Right now, all existing questions in a form have their full contents updated every time
+     * the edit_questions form is submitted by the user. The 'updated_at' field thus reflects
+     * the last time the question was in a group of items saved, not necessarily when the item was modified.
+     *
      * @param $exam
      * @param QuestionRequest $request
      * @return \Illuminate\Http\RedirectResponse
@@ -161,58 +165,9 @@ class QuestionController extends Controller
     public function updateAll(Exam $exam, QuestionRequest $request)
     {
         $examId = $exam->getId();
+
+        //Do all the heavy lifting...
         $this->assignmentDao->updateAll($exam, $request);
-//
-//
-//
-//        // NOTE: Right now, all existing questions in a form have their full contents updated every time
-//        // the edit_questions form is submitted by the user. The 'updated_at' field thus reflects
-//        // the last time the question was in a group of items saved, not necessarily when the item was modified.
-//
-//        $examId = $exam->getId();
-//
-//        // Process uploaded form: Update questions and create new questions as necessary
-//        $currentQuestions = [];
-//
-////        //prepare validation
-////        $this->makeQuestionValidationRules($request);
-////        //validate
-////        $this->validate($request, $this->rulesArray);
-//
-//        $i = 1;
-//        while ($request->input('questionName' . $i)) {
-//            // new questions arrive with id == 0
-//            if (($request->input('questionId' . $i)) == 0) {
-//                $question = $this->questionDao->createQuestion(
-//                    $request->input('questionName' . $i),
-//                    $request->input('questionText' . $i),
-//                    $request->input('maxScore' . $i));
-//                $this->assignmentDao->record($examId, $question->getId(), $i);
-//            } else // other items already exist and should be updated
-//            {
-//                $question = $this->questionDao->updateQuestion(
-//                    $request->input('questionId' . $i),
-//                    $request->input('questionName' . $i),
-//                    $request->input('questionText' . $i),
-//                    $request->input('maxScore' . $i));
-//
-//                $this->assignmentDao->record($examId, $request->input('questionId' . $i), $i);
-//            }
-//            $currentQuestions[$question->getId()] = $question;
-//            $i++;
-//        }
-//
-//        // Handle item deletion
-//        // NOTE: any questions associated with this exam that weren't submitted with the form are deleted.
-//        $oldQuestions = $this->assignmentDao->load_all_for_exam($examId);
-//        if (count($oldQuestions) > 0) {
-//            foreach ($oldQuestions as $oldQuestion) {
-//                $qIdToFind = $oldQuestion->question_id;
-//                if (!array_key_exists($qIdToFind, $currentQuestions)) {
-//                    $this->questionDao->deleteQuestion($qIdToFind);
-//                }
-//            }
-//        }
 
         // If someone deletes all questions and defeat checks, redirect back to exam select...
         $checkIfEmpty = $this->assignmentDao->load_all_for_exam($examId);
