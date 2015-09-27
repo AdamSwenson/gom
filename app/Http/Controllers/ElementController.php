@@ -187,7 +187,7 @@ class ElementController extends Controller
      * @param ElementRequest $request
      * @return Response
      */
-    public function updateAll(Exam $exam, Question$question, ElementRequest $request)
+    public function updateAll(Exam $exam, Question $question, ElementRequest $request)
     {
         $this->assignmentDao->updateAll($exam, $question, $request);
         $examId = $exam->getId();

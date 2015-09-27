@@ -23,6 +23,7 @@ $I->submitForm('#questionForm', []);
 //Check that sent to next page
 $I->canSeeResponseCodeIs(200);
 $I->seeInTitle("Edit Elements | gradeomatic");
+$I->seeInCurrentUrl('/exam/1/question/1/element/edit');
 
 //Verify that assignments not altered
 $I->seeInDatabase('question_assignments', ['exam_id' => 1, 'question_id' => 1, 'question_number' => 1]);
