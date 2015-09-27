@@ -29,9 +29,6 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
     /** @var  Exam Holds the exam working on */
     public $exam;
 
-    /** @var ICleanerFactory */
-    public $cleaner;
-
     /** @var  IQuestionAssignmentDAO */
     public $questionAssignmentDao;
 
@@ -53,7 +50,6 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
     public function __construct()
     {
         $this->questionAssignmentDao = app()->make('App\Repositories\Question\IQuestionAssignmentRepository');
-//        $this->cleaner = new CleanerFactory();
     }
 
 
