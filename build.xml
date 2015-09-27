@@ -4,10 +4,11 @@
     <property name="toolsdir" value=""/>
 
     <!-- Uncomment the following when the tools are in ${basedir}/vendor/bin -->
-    <property name="toolsdir" value="${basedir}/vendor/bin/"/> 
+    <property name="toolsdir" value="${basedir}/vendor/bin/"/>
+
 
     <target name="build"
-         depends="prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpunit,phpdox"
+         depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpunit,phpdox"
          description=""/>
 
     <target name="build-parallel"
@@ -24,6 +25,17 @@
             <antcall target="phpcs-ci"/>
             <antcall target="phploc-ci"/>
         </parallel>
+    </target>
+
+    <target name="composer" description="Installing composer dependencies">
+        <exec executable="composer" failonerror="true">
+            <arg value="install" />
+            <arg value="--dev" />
+            <arg value="--prefer-dist" />
+            <arg value="--no-progress" />
+
+            <env key="SYMFONY_ENV" value="test"/>
+        </exec>
     </target>
 
     <target name="clean"
