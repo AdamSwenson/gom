@@ -13,9 +13,9 @@ modules:
         - Db
 #        - PhpBrowser
 #        - WebDriver
-    config:
-        Laravel5:
-            cleanup: false
+#    config:
+#        Laravel5:
+#            cleanup: false
 #        PhpBrowser:
 #            url: 'http://localhost:8000'
 #        WebDriver:
