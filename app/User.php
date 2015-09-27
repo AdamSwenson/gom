@@ -107,5 +107,17 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     }
 
+    /**
+     * Checks whether the logged in user is the same as the owner
+     * of the model.
+     *
+     * @param $related A model with a user_id attribute
+     * @return bool
+     */
+    public function owns($related)
+    {
+        return $this->id == $related->user_id;
+    }
+
 
 }

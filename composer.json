@@ -20,7 +20,11 @@
         "phpspec/phpspec": "~2.1",
         "phing/phing": "2.*",
         "laracasts/generators": "~1.1",
-        "laracasts/testdummy": "~2.3"
+        "laracasts/testdummy": "~2.3",
+        "codeception/codeception": "*",
+        "codeception/phpbuiltinserver": "*",
+        "codeception/verify": "*",
+        "codeception/specify": "*"
 
     },
     "autoload": {

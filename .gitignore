@@ -13,3 +13,5 @@ build
 Capfile
 config/deploy
 config/deploy.rb
+
+tests/_output/*
