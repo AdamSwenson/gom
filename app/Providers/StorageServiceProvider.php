@@ -73,13 +73,20 @@ class StorageServiceProvider extends ServiceProvider
         $this->app->bind('App\Jobs\StudentImport\IImportStudentsFromCsv', 'App\Jobs\StudentImport\ImportStudentsFromCsv');
         //Email notifications
         $this->app->bind('App\Jobs\Feedback\INotifyStudentsHelper', 'App\Jobs\Feedback\NotifyStudentsHelper');
+        //Backup
+        $this->app->bind('ExportScores', '\App\Jobs\Export\ExportScores');
 
-        # Tools
+        /* ------------------------------------------------ Tools ----------------------------------------------------- */
         $this->app->bind('App\HTTP\Controllers\helpers\cleaning\ICleanerFactory', 'App\HTTP\Controllers\helpers\cleaning\CleanerFactory');
 
         $this->app->bind('App\Http\Controllers\helpers\assignments\IAssignmentHelper', 'App\Http\Controllers\helpers\assignments\AssignmentHelper');
 
+        /* -------------------------------------------------- Generators ----------------------------------------------- */
+        $this->app->bind('QuestionsForExamGenerator', 'App\Repositories\Question\QuestionsForExamGenerator');
+        $this->app->bind('StudentsForExamGenerator', '\App\Repositories\Student\StudentsForExamGenerator');
 
+
+        /* -------------------------------------------------- Other ---------------------------------------------------- */
         //yes. dumb. i know.
         $this->app->bind('App\HTTP\Controllers\ReportController', 'App\HTTP\Controllers\ReportController');
 

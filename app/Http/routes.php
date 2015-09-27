@@ -97,8 +97,16 @@ Route::get('feedback/login', 'PublicFeedbackController@showLogin');
 Route::get('feedback/view', 'PublicFeedbackController@showFeedback');
 
 
+/* ---------------------------------------------- Backup -------------------------------------------------------------- */
+Route::get('backup/{exam}', function($exam){
+    $user = Auth::user();
+    if($user->owns($exam))
+    {
+        $exporter = app()->make('ExportScores');
+        $exporter->handle($exam);
+    }
+});
 
-//add
 
 
 

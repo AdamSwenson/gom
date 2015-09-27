@@ -31,6 +31,16 @@ interface IQuestionScoreRepository
     public function load_all_for_question_number($examId, $questionNumber);
 
     /**
+     * Loads all scores for a given question on an exam.
+     * This returns an array of stdClass objects, each of which has a score property.
+     * So to access the score of the first item you would do $result[0]->score
+     * @param integer $examId
+     * @param integer $questionId
+     * @return array of StdClass objects
+     */
+    public function load_all_for_question_id($examId, $questionId);
+
+    /**
      * @param $questionAssignmentId
      * @param $studentId
      * @return QuestionScore

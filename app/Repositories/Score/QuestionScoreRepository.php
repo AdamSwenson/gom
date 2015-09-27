@@ -28,7 +28,7 @@ class QuestionScoreRepository implements IQuestionScoreRepository
      *
      * @param $examId
      * @param $studentId
-     * @return array
+     * @return array of objects
      */
     public function load_for_student_on_exam($examId, $studentId)
     {
@@ -81,6 +81,28 @@ MYSQL;
         return \DB::select($query, $values);
     }
 
+    /**
+     * Loads all scores for a given question on an exam.
+     * This returns an array of stdClass objects, each of which has a score property.
+     * So to access the score of the first item you would do $result[0]->score
+     * @param integer $examId
+     * @param integer $questionId
+     * @return array of StdClass objects
+     */
+    public function load_all_for_question_id($examId, $questionId)
+    {
+        $query = <<<MYSQL
+        SELECT score
+        FROM question_scores qs INNER JOIN question_assignments qa ON qs.`question_assignment_id` = qa.id
+        WHERE qa.exam_id = :examId
+        AND qa.question_id = :questionId
+MYSQL;
+        $values = [
+            'examId' => $examId,
+            'questionNumber' => $questionId
+        ];
+        return \DB::select($query, $values);
+    }
 
     /**
      * @param $questionAssignmentId

@@ -71,4 +71,22 @@ interface IElementScoreRepository
      * @return bool
      */
     public function deleteScore($elementAssignmentId, $studentId);
+
+    /**
+     * Loads all of a students scores on elements associated with a question by the question's id number.
+     * The results will be in ascending order via subtask.
+     * Returns array with following keys:
+     *      elementId: The id of the element
+     *      elementName: The name of the element for display
+     *      subtask: The order in which the element appears for the question
+     *      elementAssignmentId: The id of the association between element and question
+     *      questionNumber: The number of the question on the exam
+     *      elementScore: Float value of the score or NULL if not yet graded.
+     *
+     * @param integer $examId
+     * @param integer $questionId
+     * @param integer $studentId
+     * @return mixed
+     */
+    public function load_all_for_student_by_question_id($examId, $questionId, $studentId);
 }
