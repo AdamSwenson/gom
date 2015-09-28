@@ -23,6 +23,10 @@
            href="{{url('report/' . $exam->id. '/analytics')}}"><span
                     class="glyphicon glyphicon-stats"
                     aria-hidden="true"></span> </a>
+        <a class="btn btn-default" href="{{ url('backup/'.$exam->getId()) }}"
+           title="Export Scores to Csv">
+            <span class="glyphicon glyphicon glyphicon-save" aria-hidden="true"></span>
+        </a>
         <a class="btn btn-info" title="Student Controls"
            href="{{url('report/' . $examId. '/students')}}"><span
                     class="glyphicon glyphicon-user" aria-hidden="true"></span> </a>

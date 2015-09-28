@@ -12,6 +12,7 @@
 
     .table-fixed thead, .table-fixed tbody, .table-fixed tr, .table-fixed td, .table-fixed th {
         display: block;
+        border-collapse: collapse;
     }
 
     .table-fixed tbody td, .table-fixed thead > tr > th {
@@ -29,18 +30,18 @@
         </tr>
         </thead>
         <tbody id="studentRosterBody">
-        <?php $count = 0; ?>
+        <?php $studentIndex = 0; ?>
         @foreach($students as $student)
-            <tr id="studentListItem{{ $count }}" data-index="{{ $count }}"
+            <tr id="studentListItem{{ $studentIndex }}" data-index="{{ $studentIndex }}"
                 data-fName="{{ $student->getStudentFName() }}"
                 data-lName="{{ $student->getStudentLName() }}"
                 data-sid="{{ $student->id }}"
                 data-student-identifier="{{ $student->getStudentId() }}">
-                <td class="col-md-6" id="studentName{{ $count }}">{{ $student->getStudentLName() }},
+                <td class="col-md-6" id="studentName{{ $studentIndex }}">{{ $student->getStudentLName() }},
                     {{ $student->getStudentFName() }}</td>
-                <td class="col-md-4" id="studentIdentifier{{ $count }}">
+                <td class="col-md-4" id="studentIdentifier{{ $studentIndex }}">
                     {{ !empty($student['student_identifier']) ? $student['student_identifier'] : '--' }}</td>
-                <td class="col-md-2" id="examGrade<?= $count++; ?>">--</td>
+                <td class="col-md-2" id="examGrade<?= $studentIndex++; ?>">--</td>
             </tr>
         @endforeach
         </tbody>

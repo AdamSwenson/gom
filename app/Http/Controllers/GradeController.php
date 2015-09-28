@@ -112,7 +112,6 @@ class GradeController extends Controller
         $examMaxScore = 0;
 
         foreach ($questionAssignments as $assignment) {
-            // TODO: uncomment this when DB supports getMaxScore()
             $questionMax = $assignment->getQuestion()->getMaxScore();
 
             //If max question score not set, use the default max score

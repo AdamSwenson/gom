@@ -65,8 +65,7 @@
                                 </a>
                                 <a class="btn btn-default" href="{{ url('exam/'.$exam->getId().'/clone') }}"
                                    title="Clone Exam">
-                                    <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>
-                                    Clone
+                                    <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> Clone
                                 </a>
                                 <a class="btn btn-danger" onclick="showConfirmation({{ $exam->getId() }})"
                                    title="Delete Exam">

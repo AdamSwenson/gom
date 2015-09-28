@@ -38,8 +38,6 @@ class GradingRequest extends Request
 
             'question_assignment_id' => 'integer',
 
-            'questionAssignmentId' => 'integer',
-
             'score' => 'numeric',
 
             'student_id' => 'required|integer',

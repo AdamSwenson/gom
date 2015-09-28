@@ -219,7 +219,6 @@ class ReportController extends Controller
                     $stdDeviations[$i] = $this->standardDeviation($oneSetOfScores);
             }
         }
-
         return view('reports.exam_analytics')->with(['exam' => $exam,
             'students' => $students,
             'meanScores' => $meanScores,
