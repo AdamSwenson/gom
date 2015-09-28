@@ -21,7 +21,7 @@
     }
 </style>
 <div class="panel panel-default">
-    <table class="table table-fixed" id="studentRoster">
+    <table class="table table-fixed table-hover" id="studentRoster">
         <thead>
         <tr>
             <th class="col-md-6" id="nameHeader" title="Sort by name" onclick="sortRosterBy('studentName')">Name</th>

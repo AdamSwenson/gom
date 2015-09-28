@@ -444,12 +444,15 @@ class GradeController extends Controller
      */
     public function removeScore(Exam $exam, GradingRequest $request)
     {
-        if ($request->has('questionAssignmentId')) {
-            $this->questionScoreDao->deleteScore($request['questionAssignmentId'], $request['studentId']);
+        if ($request->has('question_assignment_id')) {
+            $this->questionScoreDao->deleteScore($request['question_assignment_id'], $request['student_id']);
         }
 
-        if ($request->has('elementAssignmentId')) {
-            $this->elementScoreDao->deleteScore($request['elementAssignmentId'], $request['studentId']);
+        // at this point, this isn't used as there is no means to reset an element score to ungraded.
+        // Since the grade page doesn't store element assignment info, the element id must be used.
+        if ($request->has('element_id')) {
+            $eAssignid = $this->elementAssignmentDao->load_element_assignment_by_element($exam->getId(), $request['element_assignment_id']) ;
+            $this->elementScoreDao->deleteScore($eAssignid, $request['student_id']);
         }
     }
 

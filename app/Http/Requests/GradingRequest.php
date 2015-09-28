@@ -32,7 +32,7 @@ class GradingRequest extends Request
         return [
             'comment_text' => 'max:' . self::COMMENT_TEXT_MAX_LENGTH,
 
-            'elementAssignmentId' => 'integer',
+            'element_assignment_id' => 'integer',
 
             'element_id' => 'integer',
 

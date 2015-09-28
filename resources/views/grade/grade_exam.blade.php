@@ -311,12 +311,6 @@
             $("#activeStudentIdentifier").text(id);
         }
 
-        function setSelectedRosterBorder() {
-            var $student = $('#studentListItem' + activeStudent).find('tr');
-            var style = '2px solid black';
-            $student.css({'border-bottom': style, 'border-top': style});
-        }
-
         // When the pencil icon is selected, toggle visibility of roster names and selected name area
         function toggleNameVisibility() {
             studentNamesVisible = !studentNamesVisible;
@@ -363,23 +357,25 @@
                 var name = "#studentListItem" + i;
                 var item = $('#studentRoster').find(name);
                 if (examGrades[i] >= 0) {
-                    setRosterBackgroundGraded(item);
+                    setRosterBackgroundColor(item, '#5cb85c', 'white');
                 } else {
-                    setRosterBackgroundUngraded(item);
+                    setRosterBackgroundColor(item, 'white', 'black');
                 }
             }
         }
 
-        // set student roster background green when an exam has been scored
-        function setRosterBackgroundGraded(item) {
-            $(item).find('[class^="col"]').css('background-color', '#5cb85c');
-            $(item).css('color', 'white');
+        function setActiveStudentBackgroundColor() {
+            if (activeStudent) {
+                setStudentBackgroundColors(); // reset prev. selected student to it's color (white or green)
+                var item = $('#studentRoster').find('#studentListItem' + activeStudent); // set the activeStudent
+                setRosterBackgroundColor(item, '#337ab7', 'white');
+            }
         }
 
-        // set student roster background white when an exam has reverted to ungraded
-        function setRosterBackgroundUngraded(item) {
-            $(item).find('[class^="col"]').css('background-color', 'white');
-            $(item).css('color', 'black');
+        // set color for a student roster row
+        function setRosterBackgroundColor(item, backColor, textColor) {
+            $(item).find('[class^="col"]').css('background-color', backColor);
+            $(item).css('color', textColor);
         }
 
         // bulk function updates all the dependent data in the roster area.
@@ -554,19 +550,15 @@
                     var gradeRequest = {};
                     gradeRequest['question_assignment_id'] = questionAssId;
                     gradeRequest['student_id'] = getActiveStudentId();
-                    console.log(gradeRequest);
                     $.ajax({
                         url: examId + '/remove',
                         data: gradeRequest,
                         type: 'POST',
-                        success: function () {
-                            //console.log('success! ');
-                        },
+                        success: function () {},
                         error: function(data){
                             // Error...
                             //var errors = $.parseJSON(data.responseText);
                             //console.log(errors);
-
                             alert('There was a problem deleting this question score');
                         }
                     });
@@ -574,7 +566,6 @@
                 }
 
                 updateStudentDataArea();
-                //saveTimer();
                 resumeTimerIfPaused();
             });
 
@@ -599,7 +590,7 @@
                 // set the active student
                 activeStudent = $(this).attr("data-index");
                 setSelectedNameAndId();
-                setSelectedRosterBorder(); // adds colored border to the selected student, clears rest
+                setActiveStudentBackgroundColor();
 
                 // load the timer area with new values
                 loadTimer();
