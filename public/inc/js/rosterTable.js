@@ -34,7 +34,8 @@ function deleteStudent(row) {
     }
 
     bootbox.dialog({
-        message: "Warning: this will delete the student, including their feedback and scores.",
+        message: '<span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span> ' +
+                    'Warning: this will delete the student, including their feedback and scores.',
         title: "Delete Student",
         buttons: {
             success: {

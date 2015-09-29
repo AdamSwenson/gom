@@ -40,8 +40,8 @@
         <?php isset($exam) ? $examId = $exam->getId() : $examId = 0; ?>
         <div style="display: {{ isset($exam) ? 'visible' : 'none' }}">
             <a href="{{ url('exam/'.$examId.'/student/edit') }}" class="btn btn-info" title="Edit Student Roster"
-               style="cursor:pointer;"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>
-                Edit Student Roster</a>
+               style="cursor:pointer;"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+                 Edit Student Roster</a>
         </div>
         </p>
     </div>

@@ -551,9 +551,9 @@
                     gradeRequest['question_assignment_id'] = questionAssId;
                     gradeRequest['student_id'] = getActiveStudentId();
                     $.ajax({
-                        url: examId + '/remove',
+                        url: examId,
                         data: gradeRequest,
-                        type: 'POST',
+                        type: 'DELETE',
                         success: function () {},
                         error: function(data){
                             // Error...

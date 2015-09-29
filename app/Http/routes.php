@@ -25,7 +25,9 @@ Route::get('landing', 'LandingController@showLanding');
 Route::get('index', 'LandingController@showLanding');
 
 /* --------------------------------------------- Help ------------------------------------------------------------------*/
-Route::get('help', 'LandingController@help');
+Route::get('help', function() {
+    return view('other/help');
+});
 /* --------------------------------------------- Account ---------------------------------------------------------------*/
 Route::get('account', 'LandingController@loggedIn');
 
@@ -66,8 +68,8 @@ Route::get('grade/exam/{exam}', 'GradeController@grade');  // begin grading the 
 Route::get('grade/exam/{exam}/student/{student}', 'GradeController@grade');  // begin grading the specified exam
 Route::get('grade/exam/{exam}/assign', 'GradeController@assign'); // launch grade assigner
 Route::post('grade/exam/{exam}/assign', 'GradeController@recordAssignments'); // record grade assignments
-Route::post('grade/exam/{exam}', 'GradeController@recordScore');
-Route::delete('grade/exam/{exam}', 'GradeController@removeScore');
+Route::post('grade/exam/{exam}', 'GradeController@recordScore'); // record a question or element score
+Route::delete('grade/exam/{exam}', 'GradeController@removeScore'); // delete a question or element score
 Route::get('grade/exam/{exam}/time','GradeController@loadTime');
 Route::post('grade/exam/{exam}/time','GradeController@recordTime');
 Route::get('grade/exam/{exam}/stats', 'GradeController@loadStats');
