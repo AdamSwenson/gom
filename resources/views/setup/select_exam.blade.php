@@ -26,8 +26,8 @@
         <nav>
             <ul class="pager">
                 <li class="next">
-                    <a href="{{ url('exam/create') }}">Create New Exam <span class="glyphicon glyphicon-chevron-right"
-                                                                             aria-hidden="true"></span></a>
+                    <a href="{{ url('exam/create') }}" title="Create new exam">Create New Exam
+                        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
                 </li>
             </ul>
         </nav>
@@ -104,8 +104,8 @@
 
         function showConfirmation(examId) {
             bootbox.dialog({
-                message: "<span class='glyphicon glyphicon-warning-sign'></span>" +
-                        " Warning: This will delete all associated students, scores, questions and elements. " +
+                message: '<span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span> ' +
+                        "Warning: This will delete all associated students, scores, questions and elements. " +
                 "<br/>Do you wish to proceed?",
                 title: "Delete Exam",
                 buttons: {

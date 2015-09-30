@@ -24,7 +24,10 @@ Route::get('home', 'LandingController@showLanding');
 Route::get('landing', 'LandingController@showLanding');
 Route::get('index', 'LandingController@showLanding');
 
-
+/* --------------------------------------------- Help ------------------------------------------------------------------*/
+Route::get('help', function() {
+    return view('other/help');
+});
 /* --------------------------------------------- Account ---------------------------------------------------------------*/
 Route::get('account', 'LandingController@loggedIn');
 
@@ -59,13 +62,14 @@ Route::resource('exam.student', 'StudentController');
 
 /* ------------------------------------------------ Grade exams ---------------------------------------------------------- */
 //TODO Rework to be more coherent and restful
+// TODO: we don't need some of these currently as they aren't called (i.e. /time)
 Route::get('grade', 'GradeController@index'); // present list of exams to grade.
 Route::get('grade/exam/{exam}', 'GradeController@grade');  // begin grading the specified exam
 Route::get('grade/exam/{exam}/student/{student}', 'GradeController@grade');  // begin grading the specified exam
 Route::get('grade/exam/{exam}/assign', 'GradeController@assign'); // launch grade assigner
 Route::post('grade/exam/{exam}/assign', 'GradeController@recordAssignments'); // record grade assignments
-Route::post('grade/exam/{exam}', 'GradeController@recordScore');
-Route::post('grade/exam/{exam}/remove', 'GradeController@removeScore');
+Route::post('grade/exam/{exam}', 'GradeController@recordScore'); // record a question or element score
+Route::delete('grade/exam/{exam}', 'GradeController@removeScore'); // delete a question or element score
 Route::get('grade/exam/{exam}/time','GradeController@loadTime');
 Route::post('grade/exam/{exam}/time','GradeController@recordTime');
 Route::get('grade/exam/{exam}/stats', 'GradeController@loadStats');
@@ -95,6 +99,7 @@ Route::get('feedback', 'PublicFeedbackController@showFeedback');
 Route::post('feedback/login', 'PublicFeedbackController@showFeedback');
 Route::get('feedback/login', 'PublicFeedbackController@showLogin');
 Route::get('feedback/view', 'PublicFeedbackController@showFeedback');
+
 
 
 /* ---------------------------------------------- Backup -------------------------------------------------------------- */
