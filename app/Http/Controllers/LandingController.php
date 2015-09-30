@@ -34,7 +34,6 @@ class LandingController extends Controller
     public function accountCreate()
     {
         return view('auth.register');
-//        return view('account.createAccount');
     }
 
     public function accountConfirm(){

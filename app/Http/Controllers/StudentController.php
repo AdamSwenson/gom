@@ -21,8 +21,6 @@ use Illuminate\Http\Request;
 use App\Repositories\Student\IKumiRepository;
 
 /**
- * Class StudentController
- *
  * This handles requests concerning student management such as adding,
  * removing, and editing rosters.
  *
@@ -71,7 +69,7 @@ class StudentController extends Controller
      */
     public function create(StudentRequest $request)
     {
-        //
+        abort(403);
     }
 
     /**
@@ -84,6 +82,9 @@ class StudentController extends Controller
      */
     public function store(Exam $exam, StudentRequest $request)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         $kumi = $this->kumiRepository->create($exam->name, $exam->year, $exam);
 
         $processor = app()->make('App\Jobs\StudentImport\IImportStudentsFromCsv');//new ImportStudentsFromCsv();
@@ -120,8 +121,7 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
-
-        //todo add view for model bound
+        abort(403);
     }
 
     /**
@@ -134,6 +134,10 @@ class StudentController extends Controller
      */
     public function edit(Exam $exam, Student $student, StudentRequest $request)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+        $this->authorize('access-object', $student);
+
         $students = array();
         $kumi = $this->kumiRepository->load($exam->name, $exam->year);
         if ($kumi)
@@ -152,6 +156,9 @@ class StudentController extends Controller
      */
     public function editAll(Exam $exam, StudentRequest $request)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         $examId = $exam->getId();
         $this->kumiRepository->create($exam->getName(), $exam->getYear(), $exam);
         $students = $this->dao->load_students_by_exam($examId);
@@ -178,11 +185,14 @@ class StudentController extends Controller
      */
     public function update(Student $student, StudentRequest $request)
     {
-        //
+        abort(403);
     }
 
     public function updateAll(Exam $exam, StudentRequest $request)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         $examId = $exam->getId();
         $kumi = $this->kumiRepository->load($exam->getName(), $exam->getYear());
         if (!$kumi) {
@@ -259,6 +269,9 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
+        //Check that user owns the exam
+        $this->authorize('destroy-object', $student);
+
         $result = $this->dao->delete_student_by_object($student);
 
         //TODO Add view

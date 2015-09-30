@@ -115,6 +115,9 @@ class ReportController extends Controller
      */
     public function updateFeedbackForStudent(Exam $exam, $studentId)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         $student = Student::findOrFail($studentId);
         $job = (new BuildFeedbackOneStudent($exam, $student))->onQueue('default');
         $this->dispatch($job);
@@ -128,6 +131,9 @@ class ReportController extends Controller
      */
     public function createFeedback(Exam $exam)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         $job = (new BuildFeedbackAllStudents($exam))->onQueue('default');
         $this->dispatch($job);
     }
@@ -141,6 +147,10 @@ class ReportController extends Controller
      */
     public function notifyStudent(Exam $exam, Student $student)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+        $this->authorize('access-object', $student);
+
         // added cutoff in case of empty email address
         if ($student->getEmail()) {
             $job = (new NotifySingleStudent($exam, $student))->onQueue('emails');
@@ -156,6 +166,9 @@ class ReportController extends Controller
      */
     public function releaseExam(Exam $exam)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         $this->createFeedback($exam);
         if (!$exam->getReleased()) {
             $exam->setReleased(true);
@@ -172,6 +185,9 @@ class ReportController extends Controller
      */
     public function unreleaseExam(Exam $exam)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         $exam->setReleased(false);
         $exam->save();
         $keys = $this->accessKeyDao->getAccessKeysForExam($exam->getId());
@@ -189,6 +205,9 @@ class ReportController extends Controller
      */
     public function showAnalytics(Exam $exam)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         $students = $this->studentRepository->load_students_by_exam($exam->getId());
 
         // $meanScores holds the class average for each question on the exam
@@ -257,6 +276,9 @@ class ReportController extends Controller
      */
     public function showQualityControl(Exam $exam)
     {
+        abort(403);
+        //Check that user owns the exam
+//        $this->authorize('access-object', $exam);
     }
 
     /**
@@ -266,6 +288,9 @@ class ReportController extends Controller
      */
     public function showStudents(Exam $exam)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         // compile feedback for all students
         $examId = $exam->getId();
         $students = $this->studentRepository->load_students_by_exam($exam->getId());
@@ -287,6 +312,10 @@ class ReportController extends Controller
      */
     public function showStudentFeedback(Exam $exam, Student $student)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+        $this->authorize('access-object', $student);
+
         $accessKey = $this->accessKeyDao->getAccessKeyForStudent($exam->getId(), $student->getId());
         $data = $this->accessKeyDao->retrieveFeedback($accessKey);
         return view('reports.student_feedback')->with(['exam' => $exam, 'student' => $student, 'data' => $data]);

@@ -20,6 +20,7 @@ class ExamRequest extends Request
      */
     public function authorize()
     {
+//        $this->user()->id;
         return true;
     }
 

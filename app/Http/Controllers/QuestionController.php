@@ -55,6 +55,10 @@ class QuestionController extends Controller
     {
         //load all questions for exam
         if ($request->has('examId')) {
+            $exam = Exam::findOrFail($request->input('examId'));
+            //Check that user owns the exam
+            $this->authorize('access-object', $exam);
+
             $questions = $this->assignmentDao->load_all_for_exam($request->input('examId'));
         } // load all questions for class
         elseif ($request->has('classId')) {
@@ -77,6 +81,7 @@ class QuestionController extends Controller
      */
     public function create(QuestionRequest $request)
     {
+        abort(403);
         // $exam from URL: questions must know which exam to be associated with(?)
     }
 
@@ -88,6 +93,10 @@ class QuestionController extends Controller
      */
     public function store(QuestionRequest $request)
     {
+        //Check that user owns the exam
+        $exam = Exam::findOrFail($request->input('examId'));
+        $this->authorize('access-object', $exam);
+
         //store and return the question
         $question = $this->questionDao->createQuestion(
             $request->input('questionName'),
@@ -139,6 +148,9 @@ class QuestionController extends Controller
      */
     public function update(Question $question, QuestionRequest $request, $returnView = true)
     {
+        //Check that user owns the question
+        $this->authorize('alter-object', $question);
+
         $question = $this->questionDao->updateQuestionObject(
             $question,
             $request->input('questionName'),
@@ -164,6 +176,9 @@ class QuestionController extends Controller
      */
     public function updateAll(Exam $exam, QuestionRequest $request)
     {
+        //Check that user owns the exam
+        $this->authorize('alter-object', $exam);
+
         $examId = $exam->getId();
 
         //Do all the heavy lifting...
@@ -193,6 +208,9 @@ class QuestionController extends Controller
      */
     public function editAll($exam)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         $assignments = $this->assignmentDao->load_all_for_exam($exam->getId());
         $questions = [];
 
@@ -213,12 +231,16 @@ class QuestionController extends Controller
     /**
      * Remove the specified question from storage.
      *
+     * @param Exam $exam
      * @param Question $question
      * @return Response
-     * @throws \Exception
      */
-    public function destroy($exam, $question)
+    public function destroy(Exam $exam, Question $question)
     {
+        //Check that user owns the exam and question
+        $this->authorize('alter-object', $exam);
+        $this->authorize('destroy-object', $question);
+
         $questionObj = $this->questionDao->loadQuestionById($question);
         $result = $this->questionDao->deleteQuestionObject($questionObj);
 

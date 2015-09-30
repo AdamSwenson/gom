@@ -83,8 +83,14 @@ class ExamController extends Controller
         return view('setup/create_exam', [ 'years' => $years, 'terms' => $terms ]);
     }
 
-    // copies the selected exam and returns to select exam page
+    /**
+     * Copies the selected exam and returns to select exam page
+     * @param Exam $exam
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function cloneExam(Exam $exam) {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
 
         // TODO: clone the thing here!
         $this->examDao->clone_exam($exam->getId());
@@ -115,6 +121,7 @@ class ExamController extends Controller
      */
     public function show(Exam $exam)
     {
+        abort(403);
         // Maybe write a view to show an exam without editing?
     }
 
@@ -126,6 +133,9 @@ class ExamController extends Controller
      */
     public function edit(Exam $exam)
     {
+        //Check that user owns the exam
+        $this->authorize('alter-object', $exam);
+
         // create a list of years to choose from. Includes the year of the exam, plus this year and the next year.
         $offset = 0;
         if ( $exam->getYear() < date('Y') ) {
@@ -148,6 +158,9 @@ class ExamController extends Controller
      */
     public function update(Exam $exam, ExamRequest $request)
     {
+        //Check that user owns the exam
+        $this->authorize('alter-object', $exam);
+
         $exam = $this->examDao->update_exam_object($exam, $request->input('examYear'), $request->input('examTerm'), $request->input('name'));
 
         Session::flash(self::SUCCESS_FLASH_NAME, self::UPDATE_SUCCESS);
@@ -170,6 +183,9 @@ class ExamController extends Controller
      */
     public function destroy(Exam $exam)
     {
+        //Check that user owns the exam
+        $this->authorize('destroy-object', $exam);
+
         $result = $this->examDao->delete_exam($exam);
         if (!empty($result))
         {

@@ -12,6 +12,7 @@ use App\Repositories\Element\IElementRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 
 use App\Http\Requests;
+use Illuminate\Support\Facades\Gate;
 
 class ElementController extends Controller
 {
@@ -66,7 +67,7 @@ class ElementController extends Controller
      */
     public function create(ElementRequest $request)
     {
-        //todo add view
+        abort(403);
     }
 
     /**
@@ -77,6 +78,9 @@ class ElementController extends Controller
      */
     public function store(ElementRequest $request)
     {
+        //Check that user has permission to access the objects
+        $exam = Exam::findOrFail($request->input('examId'));
+        $this->authorize('access-object', $exam);
 
         $elementName = $request->input('elementName');
         $respGeneric = $request->input('respGeneric');
@@ -101,9 +105,9 @@ class ElementController extends Controller
      */
     public function show(Element $element)
     {
+        abort(403);
         //$element = $this->dao->loadElementById($elementId);
         //return $element;
-
     }
 
     /**
@@ -114,15 +118,21 @@ class ElementController extends Controller
      * @return Response
      */
     public function edit(Element $element, ElementRequest $request)
-    {}
+    {
+        abort(403);
+    }
 
     /** Edit all elements associated with given question
      * @param Exam $exam
      * @param Question $question
      * @return Response
      */
-    public function editAll($exam, $question)
+    public function editAll(Exam $exam, Question $question)
     {
+        //Check that user has permission to access the objects
+        $this->authorize('access-object', $exam);
+        $this->authorize('alter-object', $question);
+
         $questionId = $question->getId();
         $examId = $exam->getId();
         $allQuestionAss = $this->questionAssignmentDAO->load_all_for_exam($examId);
@@ -176,7 +186,9 @@ class ElementController extends Controller
      * @return Response
      */
     public function update(Element $element, ElementRequest $request)
-    {}
+    {
+        abort(403);
+    }
 
     /**
      * Update all elements passed in from the web form.
@@ -189,6 +201,10 @@ class ElementController extends Controller
      */
     public function updateAll(Exam $exam, Question $question, ElementRequest $request)
     {
+        //Check that user has permission to access the objects
+        $this->authorize('access-object', $exam);
+        $this->authorize('access-object', $question);
+
         $this->assignmentDao->updateAll($exam, $question, $request);
         $examId = $exam->getId();
 
@@ -217,6 +233,6 @@ class ElementController extends Controller
      */
     public function destroy(Element $element)
     {
-
+        abort(403);
     }
 }

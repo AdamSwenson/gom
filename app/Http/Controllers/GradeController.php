@@ -105,6 +105,9 @@ class GradeController extends Controller
      */
     public function assign(Exam $exam)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         $examId = $exam->getId();
 
         // get the max_scores and compute examMaxScore
@@ -160,6 +163,9 @@ class GradeController extends Controller
      */
     protected function getGradeCutoffs(Exam $exam, $examMaxScore)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         $gradeCutoffs = $this->gradeAssignmentDao->load_grade_min_scores_for_exam($exam);
 
         // if gradecutoffs aren't set, calculate them...
@@ -184,6 +190,9 @@ class GradeController extends Controller
      */
     public function recordAssignments(Exam $exam, GradeAssignmentRequest $request)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         //This will hold the incoming assignments after they have been processed and before they are written to the db
         $assignments = [];
 
@@ -277,6 +286,9 @@ class GradeController extends Controller
      */
     public function grade(Exam $exam)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         $students = $this->studentDao->load_students_by_exam($exam);
 
         // TODO: do verification for exams. Must have 1 student and at least 1 question.
@@ -371,6 +383,9 @@ class GradeController extends Controller
      */
     public function recordScore(Exam $exam, GradingRequest $request)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         //Don't even get started if there's no student id
         if ($request->has('student_id')) {
             $studentId = $request->input('student_id');
@@ -427,6 +442,9 @@ class GradeController extends Controller
      */
     public function recordTime(Exam $exam, GradingRequest $request)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         if ($request->has('student_id') && $request->has('time')) {
             $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
             $time = $dao->record($exam->getId(), $request->input('student_id'), $request->input('time'));
@@ -444,6 +462,9 @@ class GradeController extends Controller
      */
     public function removeScore(Exam $exam, GradingRequest $request)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         if ($request->has('question_assignment_id')) {
             $this->questionScoreDao->deleteScore($request['question_assignment_id'], $request['student_id']);
         }
@@ -465,6 +486,9 @@ class GradeController extends Controller
      */
     public function loadTime(Exam $exam, GradingRequest $request)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         if ($request->has('student_id')) {
             $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
             $time = $dao->load($exam->getId(), $request->input('student_id'));
@@ -481,19 +505,12 @@ class GradeController extends Controller
      */
     public function loadStats(Exam $exam)
     {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
         $dao = app()->make('App\Repositories\Time\IGradingStatsRepository');
         $stats = $dao->get_grading_time_stats($exam->getId());
         return $stats;
     }
 
-    public function getAutoSID()
-    {
-    }
-
-    /**
-     * Alters the total number of exams to use in statistics
-     */
-    public function setTotalExams()
-    {
-    }
 }
