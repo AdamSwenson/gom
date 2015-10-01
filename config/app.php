@@ -166,6 +166,7 @@ return [
          * Development
          * TODO: Remove this or put it somewhere nice for production
          */
+        App\Providers\TestingServiceProvider::class,
         //
   //      Laracasts\Generators\GeneratorsServiceProvider::class
     ],

@@ -13,8 +13,9 @@ modules:
         - Db
 #        - PhpBrowser
 #        - WebDriver
-#    config:
-#        Laravel5:
+    config:
+        Laravel5:
+            environment_file: .env.testing
 #            cleanup: false
 #        PhpBrowser:
 #            url: 'http://localhost:8000'
