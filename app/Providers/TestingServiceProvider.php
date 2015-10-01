@@ -27,7 +27,7 @@ class TestingServiceProvider extends ServiceProvider
 
         if ($this->app->environment() == 'codeceptWorld')
         {
-            echo $this->app->environment();
+            echo 'environment is: ' . $this->app->environment() . '\n';
             $this->app['config']['session.driver'] = 'native';
         }
 
