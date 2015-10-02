@@ -13,6 +13,7 @@ use App\Exam;
 use App\Kumi;
 use App\Student;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 
 class StudentRepositoryTest extends \TestCase
 {
@@ -63,7 +64,7 @@ public function tearDown()
         $check = Student::find($result->getId());
         $this->assertEquals($lastName, $check->last_name);
         $this->assertEquals($firstName, $check->first_name);
-        $this->assertEquals($studentId, $check->student_identifier);
+        $this->assertEquals($studentId, $check->getStudentId());
     }
 
     /*    Todo Implement important test cases
@@ -87,7 +88,7 @@ public function tearDown()
         //check
         $this->assertNotEmpty($result);
         $this->assertInstanceOf('\App\Student', $result, "returns a student object");
-        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'student_identifier' => $studentId]);
+        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'student_identifier' => Crypt::encrypt($studentId)]);
      }
 
     /**
@@ -102,9 +103,9 @@ public function tearDown()
         //call
         $result = $this->object->create_student(
             $this->student->last_name,
-            $this->student->first_name,
-            $this->student->student_identifier,
-            $this->student->email);
+            $this->student->setFfirst_name,
+            $this->student->getStudentId(),
+            $this->student->getEmail());
 
         //check
         $this->assertNotEmpty($result);
@@ -113,8 +114,8 @@ public function tearDown()
                              [
                                  'last_name' => $this->student->last_name,
                                  'first_name' => $this->student->first_name,
-                                 'student_identifier' => $this->student->student_identifier,
-                                 'email' => $this->student->email,
+                                 'student_identifier' => $this->student->student_identifier, //encrypted ok
+                                 'email' => $this->student->email,//encrypted version ok
                                  'user_id' => $userId
                              ]);
 
@@ -138,7 +139,7 @@ public function tearDown()
         //check
         $this->assertNotEmpty($result);
         $this->assertInstanceOf('\App\Student', $result, "returns a student object");
-        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'email' => $email]);
+        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'email' => Crypt::encrypt($email)]);
     }
 
     /**
@@ -178,7 +179,7 @@ public function tearDown()
     public function testLoad_student_by_sid()
     {
         $student = Student::where('student_identifier', '>', 0)->first();
-        $result = $this->object->load_student_by_sid($student->student_identifier);
+        $result = $this->object->load_student_by_sid($student->getStudentId());
         $this->assertNotEmpty($result, 'returned object');
         $this->assertInstanceOf('\App\Student', $result);
         $this->assertEquals($student, $result);
@@ -191,12 +192,12 @@ public function tearDown()
         $result = $this->object->update_email($this->student->id, $new);
         $this->assertNotEmpty($result, 'returned object');
         $this->assertInstanceOf('\App\Student', $result);
-        $this->assertEquals($new, $result->email);
+        $this->assertEquals($new, $result->getEmail());
 
         $check = Student::find($this->student->id);
         $this->assertNotEmpty($check, 'returned object');
         $this->assertInstanceOf('\App\Student', $check);
-        $this->assertEquals($new, $check->email, "email updated");
+        $this->assertEquals($new, $check->getEmail(), "email updated");
     }
 
     /*
@@ -216,7 +217,7 @@ public function tearDown()
 
     public function testDelete_student_by_sid()
     {
-        $student = Student::where('student_identifier', '>', 0)->first();
+        $student = Student::where('student_identifier', '!=', null)->first();
 
         $this->assertEquals(1, $this->object->delete_student_by_sid($student->student_identifier));
         $this->notSeeInDatabase('students', ['user_id' => self::$userid, 'student_identifier' => $student->student_identifier] );

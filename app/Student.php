@@ -3,6 +3,7 @@
 namespace App;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Crypt;
 
 /**
  * Class Student
@@ -11,11 +12,17 @@ use Carbon\Carbon;
  *
  * Each student can take an exam exactly once.
  *
- * The sid property is a unique integer provided by the user, it is not the same as the id.
+ * The sid property is a unique string (usually, but not necessarily, an integer provided by the user, it is not the same as the id.
+ *
+ * Here is a list keys that are available in the attributes array (08/04/15)
+ *     'id' , 'user_id' , 'student_identifier' , 'first_name' , 'last_name' , 'email' , 'created_at' , 'updated_at' ,
+ *
+ *  'pivot'  which contains:
+ *        '_id' , 'student_id' , 'created_at' , 'updated_at'
  *
  * @package App
  */
-class Student extends BaseModel
+class Student extends BaseModelEncrypted
 {
     /** Maximum length in digits of the sid field (used in sanitizing) */
     const MAX_SID_LENGTH = 15;
@@ -40,20 +47,18 @@ class Student extends BaseModel
         'email' => 'string'
     ];
 
-
-    /* Here is a list keys that are available in the atributes array (08/04/15)
-     *     'id' , 'user_id' , 'student_identifier' , 'first_name' , 'last_name' , 'email' , 'created_at' , 'updated_at' ,
-     *
-     *  'pivot'  which contains:
-     *        '_id' , 'student_id' , 'created_at' , 'updated_at'
-     */
-
+    /** @var array Attributes which should be encrypted in the database */
+    protected $encryptedAttributes = [
+        'student_identifier',
+        'email'
+    ];
 
 
     public function __construct()
     {
         parent::boot();
     }
+
 
     /**
      * Returns the concatenated first name  and last name
@@ -63,36 +68,158 @@ class Student extends BaseModel
         return $this->getStudentFName() . ' ' . $this->getStudentLName();
     }
 
+
+    /**
+     * Returns the student_identifier attribute
+     * Uses laravel convention for getter so will be called if
+     * someone tries to get directly with $student->student_identifier
+     * @return string
+     */
+    public function getStudentIdentifierAttribute()
+    {
+        return $this->attributes['student_identifier'];
+//        return $this->getAttribute('student_identifier');
+    }
+
+    /**
+     * Returns the first_name attribute
+     * Uses laravel convention for getter so will be called if
+     * someone tries to get directly with $student->first_name
+     * @return string
+     */
+    public function getFirstNameAttribute()
+    {
+        return $this->attributes['first_name'];
+//        return $this->getAttribute('first_name');
+    }
+
+    /**
+     * Returns the last_name attribute
+     * Uses laravel convention for getter so will be called if
+     * someone tries to get directly with $student->
+     * @return string
+     */
+    public function getLastNameAttribute()
+    {
+        return $this->attributes['last_name'];
+//        return $this->getAttribute('last_name');
+    }
+
+    /**
+     * Returns the decrypted student email address
+     * Uses laravel convention for getter so will be called if
+     * someone tries to get directly with $student->email
+     * @return string
+     */
+    public function getEmailAttribute()
+    {
+        return $this->attributes['email'];
+//        return $this->getAttribute('email');
+    }
+
+    /**
+     * Sets student_identifier attribute.
+     * Uses laravel convention for setter so will be called if
+     * someone tries to set directly with $student->student_identifier
+     * @param string $studentId
+     */
+    public function setStudentIdentifierAttribute($studentId)
+    {
+        $studentId = trim($studentId);
+        $this->attributes['student_identifier'] = $studentId;
+//        $this->setAttribute('student_identifier', $studentId);
+    }
+
+    /**
+     * Sets the first_name attribute
+     *
+     * Uses laravel convention for setter
+     * so will be called if someone tries $student->first_name = first_name
+     *
+     * @param string $firstName
+     */
+    public function setFirstNameAttribute($firstName)
+    {
+        $firstName = trim(ucfirst($firstName));
+        $this->attributes['first_name'] = $firstName;
+//        $this->setAttribute('first_name', $firstName);
+    }
+
+    /**
+     * Sets the last_name attribute.
+     *
+     * Uses laravel convention for setter
+     * so will be called if someone tries $student->last_name = last_name
+     * @param string $lastName
+     */
+    public function setLastNameAttribute($lastName)
+    {
+        $lastName = trim(ucfirst($lastName));
+        $this->attributes['last_name'] = $lastName;
+//        $this->setAttribute('last_name', $lastName);
+    }
+
+    /**
+     * Sets email attribute.
+     * Uses laravel convention for setter
+     * so will be called if someone tries $student->email = email_address
+     * @param $email
+     */
+    public function setEmailAttribute($email)
+    {
+        $email = trim($email);
+        $this->attributes['email'] = $email;
+//        $this->setAttribute('email', $email);
+    }
+
+    /* ----------------------- Non laravel convention using getters and setters */
+
     /**
      * Returns the identifier that a user has entered for the student. It does
      * not return the database's id for the student. The database id for the
      * student should be accessed via $student->id.
+     * THIS SHOULD ALWAYS BE USED BECAUSE THE ID IS STORED ENCRYPTED.
      *
      * @return integer
      */
     public function getStudentId()
     {
-        return $this->attributes['student_identifier'];
+        return $this->getStudentIdentifierAttribute();
+//        return $this->getAttribute('student_identifier');
+//        return $this->attributes['student_identifier'];
+//        if( ! empty($this->attributes['student_identifier']) )
+//        {
+//            return Crypt::decrypt($this->attributes['student_identifier']);
+//        }
+//        return null;
     }
 
+
+
     /**
-     * Sets the user-given identifying number for the student
+     * Sets the user-given identifying number for the student.
+     * Alias for the laravel convention using setter
+     * THIS SHOULD ALWAYS BE USED BECAUSE THE ID IS STORED ENCRYPTED.
      * @param integer $studentId
      */
     public function setStudentId($studentId)
     {
-        $this->attributes['student_identifier'] = $studentId;
+        $this->setStudentIdentifierAttribute($studentId);
+//        $this->attributes['student_identifier'] = $studentId;
+        //$this->attributes['student_identifier'] = Crypt::encrypt($studentId);
     }
 
 
     /**
      * Sets the student's first name
      * NB., does not save the change. So update needs to be independently called.
-     * @param string $firstname
+     * @param string $firstName
      */
-    public function setStudentFName($firstname)
+    public function setStudentFName($firstName)
     {
-        $this->attributes['first_name'] = $firstname;
+        $this->setFirstNameAttribute($firstName);
+//        $this->setAttribute('first_name', $firstName);
+//        $this->attributes['first_name'] = $firstName;
     }
 
     /**
@@ -101,17 +228,21 @@ class Student extends BaseModel
      */
     public function getStudentFName()
     {
-       return $this->attributes['first_name'];
+        return $this->getFirstNameAttribute();
+//        return $this->getAttribute('first_name');
+//       return $this->attributes['first_name'];
     }
 
     /**
      * Sets the student's last name
      * NB., does not save the change. So update needs to be independently called.
-     * @param string $lastname
+     * @param string $lastName
      */
-    public function setStudentLName($lastname)
+    public function setStudentLName($lastName)
     {
-        $this->attributes['last_name'] = $lastname;
+        $this->setLastNameAttribute($lastName);
+//        $this->setAttribute('last_name', $lastName);
+//        $this->attributes['last_name'] = $lastName;
     }
 
     /**
@@ -120,8 +251,28 @@ class Student extends BaseModel
      */
     public function getStudentLName()
     {
-        return $this->attributes['last_name'];
+        return $this->getLastNameAttribute();
+//        return $this->getAttribute('last_name');
+//        return $this->attributes['last_name'];
     }
+
+
+    /**
+     * Returns the student's email address.
+     * @return mixed
+     */
+    public function getEmail()
+    {
+        return $this->getEmailAttribute();
+//        return $this->getAttribute('email');
+//        return $this->attributes['email'];
+//        if( ! empty($this->attributes['email']) )
+//        {
+//            return Crypt::decrypt($this->attributes['email']);
+//        }
+//        return null;
+    }
+
 
     /**
      * Change email address for student.
@@ -130,17 +281,14 @@ class Student extends BaseModel
      */
     public function setEmail($email)
     {
-        $this->attributes['email'] = $email;
+        $this->setEmailAttribute($email);
+//        $this->setAttribute('email', $email);
+//        $this->attributes['email'] = $email;
+//        $this->attributes['email'] = Crypt::encrypt($email);
     }
 
-    /**
-     * Returns the student's email address.
-     * @return mixed
-     */
-    public function getEmail()
-    {
-       return $this->attributes['email'];
-    }
+
+
 #------------------------- Access to complicated properties
 
     /**

@@ -11,6 +11,7 @@ namespace App\Repositories\Student;
 
 use App\Exam;
 use App\Student;
+use Illuminate\Support\Facades\Crypt;
 
 class StudentRepository implements IStudentRepository
 {
@@ -20,16 +21,8 @@ class StudentRepository implements IStudentRepository
 
     public function __construct()
     {
-        $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\CleanerFactory');
+     //   $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\CleanerFactory');
     }
-//    /**
-//     * Loads the class which handles cleaning before query
-//     * @param ICleanerFactory $cleanerFactory
-//     */
-//    public function set_cleaner(ICleanerFactory $cleanerFactory)
-//    {
-//        $this->cleaner = $cleanerFactory;
-//    }
 
     /**
      * Since several functions can be passed either an exam object or
@@ -68,11 +61,11 @@ class StudentRepository implements IStudentRepository
             $cleanEmail = $email;
         }
 
-        $preExisting->last_name = $cleanLastName;
-        $preExisting->first_name = $cleanFirstName;
+        $preExisting->setStudentLName($cleanLastName);
+        $preExisting->setStudentFName($cleanFirstName);
         if ($cleanEmail)
         {
-            $preExisting->email = $cleanEmail;
+            $preExisting->setEmail($cleanEmail);
         }
         $preExisting->update();
 
@@ -83,7 +76,6 @@ class StudentRepository implements IStudentRepository
     /**
      * Add a new student to the database
      *
-     * Todo: Add sanitization
      *
      * @param $lastName
      * @param $firstName
@@ -96,14 +88,8 @@ class StudentRepository implements IStudentRepository
         $cleanLastName = $lastName;
         $cleanFirstName = $firstName;
         $cleanStudentId = $studentId;
-        if (!empty($email))
-        {
-            $cleanEmail = $email;
-        }
-        // added lines to prevent crash when checking if ($cleanEmail) later (9/4/15 BB)
-        else {
-            $cleanEmail = "";
-        }
+
+        $cleanEmail = !empty($email) ? $email : "";
 
         $preExisting = $this->load_student_by_sid($cleanStudentId);
         if (!empty($preExisting))
@@ -111,44 +97,21 @@ class StudentRepository implements IStudentRepository
             $student = $this->update($preExisting, $cleanLastName, $cleanFirstName, $cleanEmail=null);
        }else{
             $student = new Student();
-            $student->student_identifier = $cleanStudentId;
-            $student->last_name = $cleanLastName;
-            $student->first_name = $cleanFirstName;
+            $student->setStudentId($cleanStudentId);//needs to be used so id will be encrypted
+            $student->setStudentLName($cleanLastName);
+            $student->setStudentFName($cleanFirstName);
             if ($cleanEmail)
             {
-                $student->email = $cleanEmail;
+                $student->setEmail($cleanEmail); //needs to be used so email will be encrypted
             }
             $student->save();
     }
         return $student;
-
-//        Student::updateOrCreate()
-//$student = Student::firstOrCreate(['last_name' => $cleanLastName,
-//                                'first_name' => $cleanFirstName,
-//                                'student_identifier' => $cleanStudentId,
-//                                'email' => $cleanEmail
-//                                ]);
-////
-//        $student = Student::where('student_identifier', $cleanStudentId);
-//        if (!$student)
-//        {
-//            $student = new Student();
-//            $student->student_identifier = $cleanStudentId;
-//        }
-//        $student->last_name = $cleanLastName;
-//        $student->first_name = $cleanFirstName;
-//
-//        if ($cleanEmail)
-//        {
-//            $student->email = $cleanEmail;
-//        }
-//        $student->save();
-
-//        return $student;
     }
 
     /**
-     * Returns all students associated with an exam
+     * Returns all students associated with an exam sorted in
+     * descending order by last name
      *
      * this is essentially doing something like:
      * SELECT sxc.sid FROM studentsXclasses sxc
@@ -219,42 +182,43 @@ class StudentRepository implements IStudentRepository
      */
     public function load_student_by_sid($clean_id)
     {
-        return Student::where('student_identifier', $clean_id)->first();
+        $encryptedId = Crypt::encrypt($clean_id);
+        return Student::where('student_identifier', $encryptedId)->first();
     }
 
 
-    /**
-     * Handles the database queries for the autocomplete function
-     * on the main grading page
-     * @param \Exam $exam
-     * @param $param
-     * @return mixed
-     * @throws \Exception
-     */
-    public function lookup_autocomplete($examId, $param)
-    {
-//        try {
-//            $examid = $exam->getId();
-//            $query = "SELECT s.studentName, s.sid
-//		          FROM students s
-//                  INNER JOIN studentsXclasses sxc ON s.id = sxc.studentID
-//                  INNER JOIN examsXclasses exc ON exc.classID = sxc.classID
-//                  WHERE examID = :examID
-//                  AND s.user_id = :userID
-//                  AND sxc.user_id = :userID
-//                  AND exc.user_id = :userID
-//                  AND sid REGEXP '^{$param}'";
-//
-//            $con = Propel::getWriteConnection(StudentTableMap::DATABASE_NAME);
-//            $stmt = $con->prepare($query);
-//            $stmt->execute(array(':examID' => $examid, ':userID' => $this->user->getId()));
-//            $stmt->setFetchMode(\PDO::FETCH_ASSOC);
-//            $results = $stmt->fetchAll();
-//            return $results;
-//        } catch (\PDOException $e) {
-//            throw new StudentException(StudentException::INVALID_AUTOCOMPLETE, $e);
-//        }
-    }
+//    /**
+//     * Handles the database queries for the autocomplete function
+//     * on the main grading page
+//     * @param \Exam $exam
+//     * @param $param
+//     * @return mixed
+//     * @throws \Exception
+//     */
+//    public function lookup_autocomplete($examId, $param)
+//    {
+////        try {
+////            $examid = $exam->getId();
+////            $query = "SELECT s.studentName, s.sid
+////		          FROM students s
+////                  INNER JOIN studentsXclasses sxc ON s.id = sxc.studentID
+////                  INNER JOIN examsXclasses exc ON exc.classID = sxc.classID
+////                  WHERE examID = :examID
+////                  AND s.user_id = :userID
+////                  AND sxc.user_id = :userID
+////                  AND exc.user_id = :userID
+////                  AND sid REGEXP '^{$param}'";
+////
+////            $con = Propel::getWriteConnection(StudentTableMap::DATABASE_NAME);
+////            $stmt = $con->prepare($query);
+////            $stmt->execute(array(':examID' => $examid, ':userID' => $this->user->getId()));
+////            $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+////            $results = $stmt->fetchAll();
+////            return $results;
+////        } catch (\PDOException $e) {
+////            throw new StudentException(StudentException::INVALID_AUTOCOMPLETE, $e);
+////        }
+//    }
 
     /**
      * Alters the email associated with the student
@@ -270,7 +234,6 @@ class StudentRepository implements IStudentRepository
 
         return $student;
     }
-
 
 
     /**
@@ -293,7 +256,6 @@ class StudentRepository implements IStudentRepository
     public function delete_student_by_sid($sid)
     {
         $student = $this->load_student_by_sid($sid);
-
         return $student->delete();
     }
 

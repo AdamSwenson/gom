@@ -33,13 +33,13 @@ class StudentTableSeeder extends Seeder
             //Randomly assign some students student identifiers, others blank
             if(rand(0,1))
             {
-                $student->student_identifier = $this->faker->unique()->randomNumber(9);
+                $student->student_identifier = \Illuminate\Support\Facades\Crypt::encrypt($this->faker->unique()->randomNumber(9));
             }
 
             //Randomly assign some students email addresses, others blank
             if(rand(0,1))
             {
-                $student->email = $this->faker->unique()->email();
+                $student->email = \Illuminate\Support\Facades\Crypt::encrypt($this->faker->unique()->email());
             }
 
             $student->save();
