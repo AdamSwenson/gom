@@ -53,7 +53,7 @@ class BaseModelEncrypted extends BaseModel
 
         foreach ($attributes as $key => $value)
         {
-            if (in_array($key, $this->encryptedAttributes) && !empty($attributes[$key]))
+            if ( !empty($attributes[$key]) && in_array($key, $this->encryptedAttributes) )
             {
                 $attributes[$key] = Crypt::decrypt($value);
             }
