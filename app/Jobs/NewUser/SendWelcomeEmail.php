@@ -18,10 +18,22 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Mail;
 
 
+/**
+ * Sends the welcome email to the newly registered user.
+ *
+ * @package App\Jobs\NewUser
+ */
 class SendWelcomeEmail extends Job implements SelfHandling, ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
+    /** Email template to use for welcome email */
+    const EMAIL_TEMPLATE = 'emails.welcome';
+
+    /** Subject of the email sent to the new user */
+    const SUBJECT_LINE = 'Welcome to the Gradeomatic!';
+
+    /** @var User  */
     protected $user;
 
     /**
@@ -44,9 +56,9 @@ class SendWelcomeEmail extends Job implements SelfHandling, ShouldQueue
         $to_name = $this->user->name;
         $user = $this->user;
 
-        Mail::queue('emails.welcome', ['user' => $user], function ($message) use($to_address, $to_name)
+        Mail::send(self::EMAIL_TEMPLATE, ['user' => $user], function ($message) use($to_address, $to_name)
         {
-            $message->to($to_address, $to_name)->subject('Welcome to the Gradeomatic!');
+            $message->to($to_address, $to_name)->subject(self::SUBJECT_LINE);
         });
     }
 }

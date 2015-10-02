@@ -18,6 +18,14 @@ Route::controllers([
     'password' => 'Auth\PasswordController'
 ]);
 
+/* Limitations on registration */
+Route::get('registrationRestrictions', 'RestrictedRegistrationController@showRestrictedAccessPage');
+Route::post('registrationRestrictions', 'RestrictedRegistrationController@recordInterestToWaitlist');
+
+/* --------------------------------------------- Account ---------------------------------------------------------------*/
+Route::get('account', 'LandingController@loggedIn');
+
+
 /* Home page */
 Route::get('/', 'LandingController@showLanding');
 Route::get('home', 'LandingController@showLanding');
@@ -25,15 +33,12 @@ Route::get('landing', 'LandingController@showLanding');
 Route::get('index', 'LandingController@showLanding');
 
 /* --------------------------------------------- Help ------------------------------------------------------------------*/
-Route::get('help', function() {
-    return view('other/help');
-});
-/* --------------------------------------------- Account ---------------------------------------------------------------*/
-Route::get('account', 'LandingController@loggedIn');
+Route::get('help', 'InfoController@showGuides()');
+Route::get('gettingStarted', 'InfoController@showGettingStarted');
+Route::get('faq', 'InfoController@showFaq');
 
-/* Limitations on registration */
-Route::get('registrationRestrictions', 'RestrictedRegistrationController@showRestrictedAccessPage');
-Route::post('registrationRestrictions', 'RestrictedRegistrationController@recordInterestToWaitlist');
+
+
 
 
 /* ----------------------------------------------- Exam set up  -------------------------------------------------------- */

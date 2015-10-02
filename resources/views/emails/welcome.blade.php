@@ -10,13 +10,16 @@
 <html>
 <p>Hi {{ $user->name }},</p>
 
-<p>Welcome to the gradeomatic!</p>
+<p>Welcome to the Gradeomatic!</p>
 
-<p>Soon you'll be grading faster, giving your students helpful comments, and compiling the data that will help you teach better.</p>
+<p>Soon you'll be grading faster, giving your students helpful comments, and collecting the data that will help you teach better.</p>
 
-<p>Getting started guide</p>
+<p><a href="{{ url('/gettingStarted') }}">Getting started guide</a></p>
 
 <p>Thank you,<br />
-    The gradeomatic Team
+    The Gradeomatic Team
+</p>
+<p>
+    <a href="{{ url('/') }}">{{ url('/') }}</a>
 </p>
 </html>
