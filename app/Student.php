@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Crypt;
  *
  * @package App
  */
-class Student extends BaseModelEncrypted
+class Student extends BaseModel
 {
     /** Maximum length in digits of the sid field (used in sanitizing) */
     const MAX_SID_LENGTH = 15;
