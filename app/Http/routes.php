@@ -33,11 +33,9 @@ Route::get('landing', 'LandingController@showLanding');
 Route::get('index', 'LandingController@showLanding');
 
 /* --------------------------------------------- Help ------------------------------------------------------------------*/
-Route::get('help', 'InfoController@showGuides()');
+Route::get('help', 'InfoController@showGuides');
 Route::get('gettingStarted', 'InfoController@showGettingStarted');
 Route::get('faq', 'InfoController@showFaq');
-
-
 
 
 
