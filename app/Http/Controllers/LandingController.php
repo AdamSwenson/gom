@@ -25,7 +25,7 @@ class LandingController extends Controller
         $email = $request->get('emails');
         $password = $request->get('password');
 
-        return view("account.home")->with([
+        return view('account.settings')->with([
             'emails' => $email,
             'password' => $password,
         ]);

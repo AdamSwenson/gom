@@ -153,7 +153,11 @@
 
 
 @section('jsArea')
-
+    <script type="text/javascript">
+        // set 'Account' tab as active
+        $('[id^="nav"]').attr('class', '');
+        $('#navHelp').attr('class', 'active');
+    </script>
 
 @endsection
 

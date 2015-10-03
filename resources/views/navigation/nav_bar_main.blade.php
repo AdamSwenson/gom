@@ -27,18 +27,18 @@
                 <li id="navGrade" title="Grade an exam">
                     <a href="{{url('grade')}}">Grade</a>
                 </li>
-                <li id="navReport" title="Reports, analytics and student feedback">
+                <li id="navReport" title="Reports, Analytics and Student Feedback">
                     <a href="{{url('report')}}">Reports</a>
                 </li>
                 <li id="navHelp" title="Help">
                     <a href="{{url('help')}}"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>
                 </li>
                 <li id="navAccount">
-                    <a href="{{url('account')}}" title="Account & settings ">
+                    <a href="{{url('account')}}" title="Account & Settings ">
                         <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></a>
                 </li>
                 <li id="navLogout">
-                    <a href="{{url('auth/logout')}}" title="Log out">Log out</a>
+                    <a href="{{url('auth/logout')}}" title="Log Out">Log out</a>
                 </li>
             </ul>
         </div>
