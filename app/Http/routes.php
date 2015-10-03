@@ -36,6 +36,7 @@ Route::get('index', 'LandingController@showLanding');
 Route::get('help', 'InfoController@showGuides');
 Route::get('gettingStarted', 'InfoController@showGettingStarted');
 Route::get('faq', 'InfoController@showFaq');
+Route::get('tutorials', 'InfoController@showTutorials');
 
 
 
