@@ -133,6 +133,9 @@ class GradeController extends Controller
         $examScores = [];
         foreach ($students as $student) {
             $questionItems = $this->questionScoreDao->load_for_student_on_exam($examId, $student->getId());
+            // Don't include any students who haven't been graded
+            if (!$this->examGraded($questionItems)) continue;
+
             $examScore = 0;
             foreach ($questionItems as $score) {
                 if (isset($score->questionScore))
@@ -140,6 +143,7 @@ class GradeController extends Controller
             }
             $examScores[] = $examScore;
         }
+
         return View::make('grade.grade_assign', [
             'exam' => $exam,
             'examScores' => $examScores,
@@ -147,6 +151,21 @@ class GradeController extends Controller
             'gradeTypes' => $gradeTypes,
             'gradeCutoffs' => $gradeCutoffs
         ]);
+    }
+
+    /**
+     * @param $questionItems
+     * @return bool
+     */
+    protected function examGraded($questionItems) {
+        $graded = false;
+        foreach($questionItems as $questionItem) {
+            if ($questionItem->questionScore != null )  {
+                $graded = true;
+                break;
+            }
+        }
+        return $graded;
     }
 
     /**
@@ -278,14 +297,13 @@ class GradeController extends Controller
     public function grade(Exam $exam)
     {
         $students = $this->studentDao->load_students_by_exam($exam);
-
-        // TODO: do verification for exams. Must have 1 student and at least 1 question.
-        if (sizeof($students) == 0) return ("No students found for this exam");
-
         // load all question assignments and all elements for those questions
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
         $maxQuestionScores = NULL;
-        if (sizeof($questionAssignments) == 0) return ('No questions found for this exam');
+
+        // return to grade select if 0 students or 0 questions
+        if (sizeof($students) == 0 || sizeof($questionAssignments) == 0) return redirect()->action('GradeController@index');
+
         foreach ($questionAssignments as $qAssignment) {
             $qNumber = $qAssignment->getQuestionNumber();
             $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qNumber);

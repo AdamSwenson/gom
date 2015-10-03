@@ -156,6 +156,8 @@
         var nameHiddenString = "Name Hidden"; // text to show when student names are invisible
         var noActiveStudentString = "No Student Selected";
         var activeStudentTime;
+        var activeStudentColor = '#337ab7';
+        var gradedStudentColor = '#5cb85c';
 
         updateExamGrades();
 
@@ -375,8 +377,10 @@
             for (var i = 0; i < examGrades.length; i++) {
                 var name = "#studentListItem" + i;
                 var item = $('#studentRoster').find(name);
-                if (examGrades[i] >= 0) {
-                    setRosterBackgroundColor(item, '#5cb85c', 'white');
+                if (activeStudent == i){
+                    setRosterBackgroundColor(item, activeStudentColor, 'white')
+                } else if (examGrades[i] >= 0) {
+                    setRosterBackgroundColor(item, gradedStudentColor, 'white');
                 } else {
                     setRosterBackgroundColor(item, 'white', 'black');
                 }
@@ -387,7 +391,7 @@
             if (activeStudent) {
                 setStudentBackgroundColors(); // reset prev. selected student to it's color (white or green)
                 var item = $('#studentRoster').find('#studentListItem' + activeStudent); // set the activeStudent
-                setRosterBackgroundColor(item, '#337ab7', 'white');
+                setRosterBackgroundColor(item, activeStudentColor, 'white');
             }
         }
 
