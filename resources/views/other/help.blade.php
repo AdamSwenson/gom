@@ -31,7 +31,7 @@
 
             <p>
                 <b>Q.</b> Why didn't my roster file import correctly?<br/>
-                <b>A.</b> The file importer makes its best guess as to how your data is organized. To improve it's
+                <b>A.</b> The file importer makes its best guess as to how your data is organized. To improve its
                 accuracy, delete any extraneous data not used by gradeomatic and order the columns as listed on the page
                 (Last Name, First Name, Student ID, Email Address).
             </p>
@@ -61,7 +61,7 @@
 
             <p>
                 Exams are constructed out of <a href="#questions">questions</a>, which are assigned a maximum number of points. Each
-                question, in term, consists of one or more <a  href="#elements">elements</a>, which correspond to portions of a question
+                question, in term, consists of one or more <a  href="#elements">elements</a> corresponding to portions of a question
                 that the student must address. Exams also have a <a  href="#rosters">roster</a> of students, which can be imported from a
                 file or edited manually. During <a href="#grading">grading</a>, you enter a grade for each question, along with a feedback
                 level for each element based on how that student performed. That's it. You can then email the responses

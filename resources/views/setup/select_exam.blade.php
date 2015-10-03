@@ -31,7 +31,7 @@
                 </li>
             </ul>
         </nav>
-        <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Exam Setup</h3>
+        <h3><span class=\"glyphicon glyphicon-list-alt" aria-hidden="true"></span> Exam Setup</h3>
         <h4>Create, edit and delete exams</h4>
 
         <div class="container">
