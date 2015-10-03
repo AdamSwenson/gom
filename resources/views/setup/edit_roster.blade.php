@@ -53,7 +53,7 @@
         <nav>
             <ul class="pager">
                 <li class="next">
-                    <a onclick="submitAndNavigateTo('selectExam')" style="cursor:pointer;"><span
+                    <a onclick="submitAndNavigateTo('editExam')" style="cursor:pointer;"><span
                                 class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save & Finish</a>
                 </li>
                 <li class="previous">
