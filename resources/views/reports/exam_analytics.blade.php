@@ -89,16 +89,20 @@
             // Create and draw the visualization.
             var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
             chart.draw(data, {
-                title: 'Plot of Question Scores with Quartiles and Means',
+                title: 'Box Plot of Question Scores with Quartiles and Means',
                 width: 800,
                 height: 500,
                 vAxis: {title: "Score"},
-                hAxis: {title: "Question"},
-                legend: { position: 'none' },
+                hAxis: {title: "Question Number"},
+                legend: {position: 'right',
+                        textStyle: {
+                            color: 'black',
+                            fontSize: 16}
+                },
                 series: {
-                    0: {type: "candlesticks"},
-                    1: { type: "line", pointSize: 10, lineWidth: 0 },
-                    2: {type: "line", pointSize: 10, lineWidth: 0, color: 'black'}
+                    0: {type: "candlesticks", labelInLegend: 'Q2 and Q3'},
+                    1: { type: "line", labelInLegend: 'median', pointSize: 10, lineWidth: 0 },
+                    2: {type: "line", labelInLegend: 'mean', pointSize: 10, lineWidth: 0, color: 'black'}
                 }
             });
         }

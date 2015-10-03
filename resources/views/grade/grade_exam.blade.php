@@ -265,7 +265,6 @@
         }
 
         // add time info to the gradeRequest and pass to server
-        // this is broken out from createGradeRequest() as sometimes only the time will be saved
         function saveDataWithTime(gradeRequest) {
             if (!gradeRequest) {
                 gradeRequest = {};
@@ -282,7 +281,27 @@
                     //console.log('success! ');
                 },
                 error: function () {
-                    alert("Sorry, there was a problem saving this exam!\nPlease try again.");
+                    showWarningMessage("Error", "Sorry, there was a problem saving this exam!\nPlease try again.");
+                },
+                timeout: function() {
+                    showWarningMessage('No Response From Server', 'There was no response from the server. Either the server is down\n' +
+                    'or you may be experiencing connection issues.');
+                }
+            });
+        }
+
+        function showWarningMessage(title, msg) {
+            msg = '<span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span> ' + msg;
+            bootbox.dialog({
+                message: msg,
+                title: title,
+                buttons: {
+                    default: {
+                        label: 'Cancel',
+                        className: "btn-sm",
+                        callback: function () {
+                        }
+                    }
                 }
             });
         }
@@ -555,14 +574,17 @@
                         data: gradeRequest,
                         type: 'DELETE',
                         success: function () {},
-                        error: function(data){
+                        error: function () {
                             // Error...
                             //var errors = $.parseJSON(data.responseText);
                             //console.log(errors);
-                            alert('There was a problem deleting this question score');
+                            showWarningMessage("Error", "Sorry, there was a problem saving this exam!\nPlease try again.");
+                        },
+                        timeout: function() {
+                            showWarningMessage('No Response From Server', 'There was no response from the server. Either' +
+                                    ' the server is down\n or you may be experiencing connection issues.');
                         }
                     });
-
                 }
 
                 updateStudentDataArea();
