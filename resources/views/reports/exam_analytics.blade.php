@@ -27,8 +27,6 @@
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
         var questionScores = <?= json_encode( $questionScores ) ?>;
-        var meanScores = <?= json_encode( $meanScores ) ?>;
-        var stdDeviations = <?= json_encode( $stdDeviations ) ?>;
         var questionDataSets = [];
         var boxPlotData = [];
         function DataSet () {
@@ -47,8 +45,13 @@
 
             questionScores.forEach( function(scores, i) {
                 scores.sort(function(a, b){return a-b});
-
                 var num = scores.length;
+                var sum = 0;
+
+                scores.forEach( function (score) {
+                    sum += score;
+                });
+
                 var dataSet = new DataSet();
                 dataSet.min = scores[0];
                 dataSet.max = scores[num-1];
@@ -59,7 +62,7 @@
                 if ( num % 2 ) {
                    dataSet.median = (scores[parseInt(mid)] + scores[mid + 1]) / 2;
                 }
-                dataSet.mean = parseFloat(meanScores[i+1].toFixed(2));
+                dataSet.mean = parseFloat((sum / num).toFixed(2));
                 questionDataSets[i] = dataSet;
             });
         }
@@ -100,7 +103,7 @@
                             fontSize: 16}
                 },
                 series: {
-                    0: {type: "candlesticks", labelInLegend: 'Q2 and Q3'},
+                    0: {type: "candlesticks", labelInLegend: 'Q2-Q3'},
                     1: { type: "line", labelInLegend: 'median', pointSize: 10, lineWidth: 0 },
                     2: {type: "line", labelInLegend: 'mean', pointSize: 10, lineWidth: 0, color: 'black'}
                 }
