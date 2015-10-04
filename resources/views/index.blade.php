@@ -69,7 +69,7 @@
                 <div class="SlideShowContentPanel clearfix" id="u283"><!-- stack box -->
                     <div id="loginMenu" class="collapse">
                         <div class="row" >
-                            <div class="col-xs-8">
+                            <div class="col-xs-4">
                                 <!-- Something goes here -->
                             </div>
                             @include('auth.login_form')
