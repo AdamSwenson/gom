@@ -25,7 +25,7 @@ class InfoController extends Controller
 
     public function showGettingStarted()
     {
-        return view('other/help');
+        return view('other.help');
     }
 
     /**
@@ -33,7 +33,12 @@ class InfoController extends Controller
      */
     public function showGuides()
     {
-        return view('other/help');
+        return view('other.help');
+    }
+
+    public function showTutorials()
+    {
+        return view('other.video_tutorials');
     }
 
     /**
@@ -41,7 +46,7 @@ class InfoController extends Controller
      */
     public function showFaq()
     {
-        return view('other/help');
+        return view('other.help');
     }
 
     /**
