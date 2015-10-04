@@ -11,8 +11,24 @@
     Video tutorials
 @endsection
 
+@section('description')
+Video tutorials
+@endsection
+
+@section('otherCss')
+<style type="text/css">
+    #container{ margin-left: 5%;
+    padding-left: 4%;}
+</style>
+@endsection
+
 
 @section('body')
+    <div class="row">
+        <div class="col-md-4">
+            <h4>These are very rough. We'll make nicer ones later</h4>
+        </div>
+    </div>
     <div class="row">
         <div class="col-sm-6">
 

@@ -10,6 +10,8 @@
 
     <link href='{{secure_asset('inc/images/favicon.ico')}}' rel='icon' type='image/x-icon'/>
 
+    @yield('otherCss')
+
     @include('layouts.js_jquery_loader')
 
     @include('layouts.js_bootstrap_loader')
@@ -19,17 +21,19 @@
 
 <body>
 
-    @include('navigation.nav_bar_main')
-    <div id="container">
-        @if(env('APP_ENV') == 'production')
-            @include('temp.warning_not_to_use_student_data')
-        @endif
+@include('navigation.nav_bar_main')
 
-        @yield('body')
+<div id="container">
+    @if(env('APP_ENV') == 'production')
+        @include('temp.warning_not_to_use_student_data')
+    @endif
 
-        @include('layouts.footer')
-        <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
-    </div>
+    @yield('body')
+
+    @include('layouts.footer')
+    <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
+</div>
+
 <div id="scriptBox">
     <script type="text/javascript">
         $.ajaxSetup({
@@ -39,6 +43,9 @@
         });
     </script>
     @yield('jsArea')
+    @if(env('APP_ENV' == 'production'))
+        @include('other.google_analytics_include')
+    @endif
 </div>
 </body>
 </html>
