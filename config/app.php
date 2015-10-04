@@ -155,6 +155,7 @@ return [
          * Third party tools
          */
         Barryvdh\DomPDF\ServiceProvider::class,
+        Laracasts\Flash\FlashServiceProvider::class,
 
         /*
          * Custom service providers
@@ -221,6 +222,7 @@ return [
         'Form'      => Illuminate\Html\FormFacade::class,
         'HTML'      => Illuminate\Html\HtmlFacade::class,
         'PDF'       => Barryvdh\DomPDF\Facade::class,
+        'Flash'     => Laracasts\Flash\Flash::class,
 
     ],
 

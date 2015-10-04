@@ -46,6 +46,7 @@
     @if(env('APP_ENV' == 'production'))
         @include('other.google_analytics_include')
     @endif
+    <script type="text/javascript" src="{{ asset('js/commonScripts.js') }}"></script>
 </div>
 </body>
 </html>

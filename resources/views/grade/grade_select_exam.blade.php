@@ -3,11 +3,7 @@
 
 @section('pageTitle', 'Grade Exam | gradeomatic')
 @section('description', 'Select an exam for grading')
-@section('cssLinks')
-
-@endsection
-
-@section('body')
+@section('otherCss')
     <style>
         .table th {
             border: none;
@@ -17,7 +13,12 @@
             border: none;
         }
     </style>
+@endsection
+
+@section('body')
     <div class="container">
+        @include('flash::message')
+
         <h3><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Grade Exam</h3>
         <h4>Select an exam to grade</h4>
 
@@ -101,6 +102,7 @@
             });
         }
     </script>
+
 
 @endsection
 

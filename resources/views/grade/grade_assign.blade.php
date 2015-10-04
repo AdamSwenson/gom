@@ -9,7 +9,7 @@
 
 @section('body')
     <div class="container">
-
+        @include('flash::message')
         @include('errors.list')
 
         <h3><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> Assign Grades: {{ $exam->getTerm() }}
