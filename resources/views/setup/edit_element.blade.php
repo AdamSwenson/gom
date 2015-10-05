@@ -7,56 +7,54 @@
 @endsection
 
 @section('body')
-    <div class="section">
-        <div class="container">
-            <nav>
-                <ul class="pager">
-                    <li class="previous">
-                        <a onclick="submitForm('{{ $prevAction  }}')" id="prev-question" data-questionId="{{ $prevAction }}"
-                           style="cursor:pointer;"> <span class="glyphicon glyphicon-chevron-left"
-                                    aria-hidden="true"></span>
-                            <?php if( $prevAction == 'editQuestions') echo('Edit Questions'); else echo('Previous Question'); ?></a>
-                    </li>
-                    <li class="next">
-                        <a onclick="submitForm('{{ $nextAction  }}')" id="next-question" data-questionId="{{ $nextAction }}"
-                           style="cursor:pointer;">
-                            <?php if( $nextAction == 'editStudents') echo('Edit Roster'); else echo('Next Question'); ?>
-                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
-                    </li>
-                </ul>
-            </nav>
-            <h2>Add / Edit Elements: Question #{{ isset($qNumber) ? $qNumber : '1'}}
-                "{{ isset($questionName) ? $questionName : '' }}"</h2>
-            <h5>Each question is composed of elements. Each element is a concept or issue that a correct answer
-                should address.</h5>
+    <nav>
+        <ul class="pager">
+            <li class="previous">
+                <a onclick="submitForm('{{ $prevAction  }}')" id="prev-question" data-questionId="{{ $prevAction }}"
+                   style="cursor:pointer;"> <span class="glyphicon glyphicon-chevron-left"
+                                                  aria-hidden="true"></span>
+                    <?php if ($prevAction == 'editQuestions') echo('Edit Questions'); else echo('Previous Question'); ?>
+                </a>
+            </li>
+            <li class="next">
+                <a onclick="submitForm('{{ $nextAction  }}')" id="next-question" data-questionId="{{ $nextAction }}"
+                   style="cursor:pointer;">
+                    <?php if ($nextAction == 'editStudents') echo('Edit Roster'); else echo('Next Question'); ?>
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+            </li>
+        </ul>
+    </nav>
+    <h2>Add / Edit Elements: Question #{{ isset($qNumber) ? $qNumber : '1'}}
+        "{{ isset($questionName) ? $questionName : '' }}"</h2>
+    <h5>Each question is composed of elements. Each element is a concept or issue that a correct answer
+        should address.</h5>
 
-            @include('errors.list')
-                    
+
+
             <!-- form will update all given elements and create new ones where required -->
-            <form id="elementForm" name="elementForm" method="post" role="form"
-                  action="{{ url('exam/'.$examId.'/question/'.$questionId.'/element/updateAll') }}"
-                  accept-charset="UTF-8">
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <ul class="form-group" id="elementList">
-                    <!-- display all elements passed from the server. If 0, display one element -->
-                    <?php $counter = 1; ?>
-                    @if( !empty($elements) )
-                        @foreach($elements as $e)
-                            @include('setup.element_form')
-                            <?php $counter++; ?>
-                        @endforeach
-                    @else
-                        @include('setup.element_form')
-                    @endif
-                </ul>
-                <input type="hidden" id="nextAction" name="nextAction" value="0"/>
-            </form>
-            <a class="btn btn-primary" id="addElement">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                Add Element
-            </a>
-        </div>
-    </div>
+    <form id="elementForm" name="elementForm" method="post" role="form"
+          action="{{ url('exam/'.$examId.'/question/'.$questionId.'/element/updateAll') }}"
+          accept-charset="UTF-8">
+        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+        <ul class="form-group" id="elementList">
+            <!-- display all elements passed from the server. If 0, display one element -->
+            <?php $counter = 1; ?>
+            @if( !empty($elements) )
+                @foreach($elements as $e)
+                    @include('setup.element_form')
+                    <?php $counter++; ?>
+                @endforeach
+            @else
+                @include('setup.element_form')
+            @endif
+        </ul>
+        <input type="hidden" id="nextAction" name="nextAction" value="0"/>
+    </form>
+    <a class="btn btn-primary" id="addElement">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+        Add Element
+    </a>
+
     <ul style="display: none" id="hiddenElementList">
         <!-- this blank element is duplicated and appended to the page when creating a new element -->
         <?php $counter = 0;
@@ -73,7 +71,7 @@
 
         // validate and submit form. Currently, questions are valid with 0 elements.
         function submitForm(target) {
-            if ( formFieldsValid() ) {
+            if (formFieldsValid()) {
                 $('#nextAction').val(target);
                 $('#elementForm').submit();
             } else {
@@ -81,14 +79,14 @@
             }
         }
 
-        function numberOfElements(){
-            return  $('#elementForm').find('[id^="elementName"]').length;
+        function numberOfElements() {
+            return $('#elementForm').find('[id^="elementName"]').length;
         }
 
         function formFieldsValid() {
             var valid = true;
             var $names = $('#elementForm').find('[id^="elementName"]');
-            $names.each( function() {
+            $names.each(function () {
                 if ($(this).val() == '') {
                     valid = false;
                 }
@@ -120,13 +118,13 @@
                             success: {
                                 label: 'Cancel',
                                 className: "btn-sm",
-                                callback: function() {
+                                callback: function () {
                                 }
                             },
                             danger: {
                                 label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
                                 className: "btn-danger btn-sm",
-                                callback: function() {
+                                callback: function () {
                                     deleteElement(el);
                                 }
                             }
@@ -162,6 +160,7 @@
                     }
                 });
             }
+
             registerCustomtizeHandlers();
 
             // handle add element button
@@ -218,7 +217,7 @@
             function deleteElement(el) {
                 if (el && el.parentNode.removeChild(el))
                     updateNumbers();
-                if ( !numberOfElements() )
+                if (!numberOfElements())
                     bootbox.alert('A question can have no elements, however, students will not ' +
                             'receive written feedback');
             }

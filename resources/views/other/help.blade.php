@@ -7,7 +7,7 @@
 @endsection
 
 @section('body')
-    <div class="container">
+
         <h3><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Gradeomatic FAQ</h3>
 
         <div class="well">
@@ -146,9 +146,6 @@
             </p>
             <br/>
         </div>
-
-    </div>
-    @include('errors.list')
 @endsection
 
 

@@ -8,55 +8,52 @@
 @endsection
 
 @section('body')
+    <nav>
+        <ul class="pager">
+            <li class="previous">
+                <a onclick="submitForm('editExam')" style="cursor:pointer;"> <span
+                            class="glyphicon glyphicon-chevron-left"
+                            aria-hidden="true"></span>
+                    Edit Exam</a>
+            </li>
+            <li class="next">
+                <a onclick="submitForm('editElements')" style="cursor:pointer;">Add / Edit Elements <span
+                            class="glyphicon glyphicon-chevron-right"
+                            aria-hidden="true"></span></a>
+            </li>
+        </ul>
+    </nav>
+    <h2 id="examName">Add / Edit Questions: "{{ $examName }}" </h2>
+    <h5>Add the questions that will appear on this exam. When you're finished, press "Add / Edit Elements" to
+        move to the next step.</h5>
 
-    <div class="section">
-        <div class="container">
-            <nav>
-                <ul class="pager">
-                    <li class="previous">
-                        <a onclick="submitForm('editExam')" style="cursor:pointer;"> <span
-                                    class="glyphicon glyphicon-chevron-left"
-                                    aria-hidden="true"></span>
-                            Edit Exam</a>
-                    </li>
-                    <li class="next">
-                        <a onclick="submitForm('editElements')" style="cursor:pointer;">Add / Edit Elements <span
-                                    class="glyphicon glyphicon-chevron-right"
-                                    aria-hidden="true"></span></a>
-                    </li>
-                </ul>
-            </nav>
-            <h2 id="examName">Add / Edit Questions: "{{ $examName }}" </h2>
-            <h5>Add the questions that will appear on this exam. When you're finished, press "Add / Edit Elements" to
-                move to the next step.</h5>
 
-            @include('errors.list')
-            <form id="questionForm" name="questionForm" method="post" role="form"
-                  action="{{ url('exam/'.$examId.'/question/updateAll') }}"
-                  accept-charset="UTF-8">
-                <input type="hidden" id="token" name="_token" value="{{ csrf_token() }}">
-                <ul class="form-group" id="questionList">
-                    <!-- display all questions passed from the server. If 0, display one empty question -->
-                    <?php $counter = 1; ?>
-                    @if (!empty($questions))
-                        @foreach($questions as $q)
-                            @include('setup.question_form')
-                            <?php $counter++; ?>
-                        @endforeach
-                    @else
-                        @include('setup.question_form')
-                    @endif
-                </ul>
-                <input type="hidden" id="nextAction" name="nextAction" value="editQuestions"/>
-            </form>
-            <a class="btn btn-primary" id="addQuestion"><span class="glyphicon glyphicon-plus"
-                                                              aria-hidden="true"></span>
-                Add Question</a>
-            <a class="btn btn-primary" id="importQuestion"><span class="glyphicon glyphicon-import"
-                                                                 aria-hidden="true"></span>Import Question
-            </a>
-        </div>
-    </div>
+    <form id="questionForm" name="questionForm" method="post" role="form"
+          action="{{ url('exam/'.$examId.'/question/updateAll') }}"
+          accept-charset="UTF-8">
+        <input type="hidden" id="token" name="_token" value="{{ csrf_token() }}">
+        <ul class="form-group" id="questionList">
+            <!-- display all questions passed from the server. If 0, display one empty question -->
+            <?php $counter = 1; ?>
+            @if (!empty($questions))
+                @foreach($questions as $q)
+                    @include('setup.question_form')
+                    <?php $counter++; ?>
+                @endforeach
+            @else
+                @include('setup.question_form')
+            @endif
+        </ul>
+        <input type="hidden" id="nextAction" name="nextAction" value="editQuestions"/>
+    </form>
+    <a class="btn btn-primary" id="addQuestion"><span class="glyphicon glyphicon-plus"
+                                                      aria-hidden="true"></span>
+        Add Question</a>
+    {{-- Import question removed for time being
+    <a class="btn btn-primary" id="importQuestion"><span class="glyphicon glyphicon-import"
+                                                         aria-hidden="true"></span>Import Question
+    </a>
+    --}}
     <!-- this blank question is duplicated and appended to the page when creating a new question -->
     <ul style="display: none" id="hiddenQuestionList">
         <?php $counter = 0;
@@ -74,31 +71,31 @@
         // Basic form validation and prompts.
         // Exams must have 1 question and they must all have names.
         function submitForm(targetForm) {
-            if ( numberOfQuestions() == 0 ) {
+            if (numberOfQuestions() == 0) {
                 bootbox.alert('Exams must have at least one question.');
-            } else if ( formFieldsValid() ) {
+            } else if (formFieldsValid()) {
                 $('#nextAction').val(targetForm);
                 $('#questionForm').submit();
             }
         }
 
-        function numberOfQuestions(){
-            return  $('#questionForm').find('[id^="questionName"]').length;
+        function numberOfQuestions() {
+            return $('#questionForm').find('[id^="questionName"]').length;
         }
 
         function formFieldsValid() {
             var msg = '';
             var valid = true;
             var $names = $('#questionForm').find('[id^="questionName"]');
-            $names.each( function() {
-                if ( $(this).val() == '' ) {
+            $names.each(function () {
+                if ($(this).val() == '') {
                     valid = false;
                     msg = 'One or more questions is missing a name.';
                 }
             });
             var $maxScores = $('#questionForm').find('[id^="maxScore"]');
-            $maxScores.each( function() {
-                if ( $(this).val() == '' ) {
+            $maxScores.each(function () {
+                if ($(this).val() == '') {
                     valid = false;
                     msg = 'One or more questions is missing a maximum score.'
                 }
@@ -134,13 +131,13 @@
                                     success: {
                                         label: 'Cancel',
                                         className: "btn-sm",
-                                        callback: function() {
+                                        callback: function () {
                                         }
                                     },
                                     danger: {
                                         label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
                                         className: "btn-danger btn-sm",
-                                        callback: function() {
+                                        callback: function () {
                                             if (el && el.parentNode.removeChild(el))
                                                 updateNumbers();
                                         }

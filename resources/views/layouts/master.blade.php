@@ -19,17 +19,21 @@
 
 <body>
 
-    @include('navigation.nav_bar_main')
-    <div id="container">
-        @if(env('APP_ENV') == 'production')
-            @include('temp.warning_not_to_use_student_data')
-        @endif
+@include('navigation.nav_bar_main')
 
-        @yield('body')
+@if(env('APP_ENV') == 'production')
+    @include('temp.warning_not_to_use_student_data')
+@endif
+<div class="container">
+    {{-- @include('flash::message') --}}
+    @include('errors.list')
+    @yield('body')
+    @include('layouts.footer')
+</div>
 
-        @include('layouts.footer')
-        <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
-    </div>
+
+<input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
+
 <div id="scriptBox">
     <script type="text/javascript">
         $.ajaxSetup({

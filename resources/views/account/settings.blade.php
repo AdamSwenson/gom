@@ -8,7 +8,6 @@
 @endsection
 
 @section('body')
-    <div class="container">
         <h3><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Account & Settings</h3>
 
         <div class="list-group">
@@ -37,7 +36,6 @@
                 <p class="list-group-item-text"></p>
             </a>
         </div>
-    </div>
 @endsection
 
 @section('jsArea')

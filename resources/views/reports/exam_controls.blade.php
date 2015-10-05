@@ -19,38 +19,37 @@
             border: none;
         }
     </style>
-    <div class="container">
-        <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Reports & Release</h3>
-        <h4>Release grades to students or view data about an exam</h4>
-        <div class="well-lg">
-            <div class="panel panel-default">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th class="col-md-1">Term</th>
-                        <th class="col-md-7">Name</th>
-                        <th class="col-md-4"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @if ( sizeof($exams) > 0 )
-                        @foreach($exams as $exam)
-                            <?php $examId = $exam->id or '0'; ?>
-                            @include('reports.exam_controls_tr')
-                        @endforeach
-                    @else
-                        <tr>
-                            <td style="vertical-align:middle; width: 10%;"></td>
-                            <td style="vertical-align:middle"><i>No Exams Found</i></td>
-                            <td></td>
-                        </tr>
-                    @endif
-                    </tbody>
-                </table>
-            </div>
-        </div>
+
+    <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Reports & Release</h3>
+    <h4>Release grades to students or view data about an exam</h4>
+
+    <div class="panel panel-default">
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="col-md-1">Term</th>
+                <th class="col-md-7">Name</th>
+                <th class="col-md-4"></th>
+            </tr>
+            </thead>
+            <tbody>
+            @if ( sizeof($exams) > 0 )
+                @foreach($exams as $exam)
+                    <?php $examId = $exam->id or '0'; ?>
+                    @include('reports.exam_controls_tr')
+                @endforeach
+            @else
+                <tr>
+                    <td style="vertical-align:middle; width: 10%;"></td>
+                    <td style="vertical-align:middle"><i>No Exams Found</i></td>
+                    <td></td>
+                </tr>
+            @endif
+            </tbody>
+        </table>
     </div>
-    @include('errors.list')
+
+
 
 @endsection
 

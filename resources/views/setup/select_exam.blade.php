@@ -22,74 +22,66 @@
         }
     </style>
 
-    <div class="container">
-        <nav>
-            <ul class="pager">
-                <li class="next">
-                    <a href="{{ url('exam/create') }}" title="Create new exam">Create New Exam
-                        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
-                </li>
-            </ul>
-        </nav>
-        <h3><span class=\"glyphicon glyphicon-list-alt" aria-hidden="true"></span> Exam Setup</h3>
-        <h4>Create, edit and delete exams</h4>
-
-        <div class="container">
-
-            <table class="table">
-                <thead>
+    <nav>
+        <ul class="pager">
+            <li class="next">
+                <a href="{{ url('exam/create') }}" title="Create new exam">Create New Exam
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+            </li>
+        </ul>
+    </nav>
+    <h2><span class=\"glyphicon glyphicon-list-alt" aria-hidden="true"></span> Exam Setup</h2>
+    <h4>Create, edit and delete exams</h4>
+    <table class="table">
+        <thead>
+        <tr>
+            <th class="col-md-1">Term</th>
+            <th class="col-md-6">Name</th>
+            <th class="col-md-1">Questions</th>
+            <th class="col-md-1">Students</th>
+            <th class="col-md-3"></th>
+        </tr>
+        </thead>
+        <tbody>
+        @if ( sizeof($exams) > 0 )
+            @foreach($exams as $exam)
                 <tr>
-                    <th class="col-md-1">Term</th>
-                    <th class="col-md-6">Name</th>
-                    <th class="col-md-1">Questions</th>
-                    <th class="col-md-1">Students</th>
-                    <th class="col-md-3"></th>
+                    <td style="vertical-align:middle; width: 10%;">
+                        {{ $exam->getTerm() }} {{ $exam->getYear() }}</td>
+                    <td style="vertical-align:middle">
+                        {{ $exam->getName() }}</td>
+                    <td style="vertical-align: middle">{{ $numberOfQuestions[$exam->getId()] or '0' }}</td>
+                    <td style="vertical-align: middle">{{ $numberOfStudents[$exam->getId()] or '0' }}</td>
+                    <!-- edit / clone / delete buttons -->
+                    <td style="text-align:right">
+                        <a class="btn btn-info" href="{{ url('exam/'.$exam->getId().'/edit') }}"
+                           title="Edit Exam">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                            Edit
+                        </a>
+                        <a class="btn btn-default" href="{{ url('exam/'.$exam->getId().'/clone') }}"
+                           title="Clone Exam">
+                            <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> Clone
+                        </a>
+                        <a class="btn btn-danger" onclick="showConfirmation({{ $exam->getId() }})"
+                           title="Delete Exam">
+                            <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                            Delete
+                        </a>
+                    </td>
                 </tr>
-                </thead>
-                <tbody>
-                @if ( sizeof($exams) > 0 )
-                    @foreach($exams as $exam)
-                        <tr>
-                            <td style="vertical-align:middle; width: 10%;">
-                                {{ $exam->getTerm() }} {{ $exam->getYear() }}</td>
-                            <td style="vertical-align:middle">
-                                {{ $exam->getName() }}</td>
-                            <td style="vertical-align: middle">{{ $numberOfQuestions[$exam->getId()] or '0' }}</td>
-                            <td style="vertical-align: middle">{{ $numberOfStudents[$exam->getId()] or '0' }}</td>
-                            <!-- edit / clone / delete buttons -->
-                            <td style="text-align:right">
-                                <a class="btn btn-info" href="{{ url('exam/'.$exam->getId().'/edit') }}"
-                                   title="Edit Exam">
-                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-                                    Edit
-                                </a>
-                                <a class="btn btn-default" href="{{ url('exam/'.$exam->getId().'/clone') }}"
-                                   title="Clone Exam">
-                                    <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> Clone
-                                </a>
-                                <a class="btn btn-danger" onclick="showConfirmation({{ $exam->getId() }})"
-                                   title="Delete Exam">
-                                    <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
-                                    Delete
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-                @else
-                    <tr>
-                        <td></td>
-                        <td><i>No Exams Found</i></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                @endif
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    @include('errors.list')
+            @endforeach
+        @else
+            <tr>
+                <td></td>
+                <td><i>No Exams Found</i></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        @endif
+        </tbody>
+    </table>
 
 @endsection
 
@@ -105,7 +97,7 @@
         function showConfirmation(examId) {
             bootbox.dialog({
                 message: '<span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span> ' +
-                        "Warning: This will delete all associated students, scores, questions and elements. " +
+                "Warning: This will delete all associated students, scores, questions and elements. " +
                 "<br/>Do you wish to proceed?",
                 title: "Delete Exam",
                 buttons: {
