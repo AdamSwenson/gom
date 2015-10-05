@@ -38,7 +38,7 @@
             <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
             Move
         </span>
-        <a class="btn btn-warning btn-sm js-remove">
+        <a class="btn btn-danger btn-sm js-remove">
             <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
             Delete
         </a>

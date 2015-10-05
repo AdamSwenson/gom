@@ -9,10 +9,10 @@
     <meta name="description" content="@yield('description')">
 
     <link href='{{secure_asset('inc/images/favicon.ico')}}' rel='icon' type='image/x-icon'/>
-
     @include('layouts.js_jquery_loader')
     @include('layouts.js_bootstrap_loader')
     @include('layouts.js_additional_libs')
+
 
 </head>
 

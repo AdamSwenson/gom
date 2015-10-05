@@ -33,7 +33,7 @@
         <!-- 'comment form' displays the modal triggered by 'customize response' button -->
         @include('setup.comment_form')
         <!-- delete button -->
-        <a class="btn btn-warning btn-sm js-remove" >
+        <a class="btn btn-danger btn-sm js-remove" >
             <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
             Delete
         </a>

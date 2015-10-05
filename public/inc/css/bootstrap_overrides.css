@@ -1,0 +1,23 @@
+.btn {
+    border-radius: 2px;
+}
+
+.btn:focus, .btn:active:focus, .btn.active:focus {
+    outline: 0 none;
+}
+
+.btn-info {
+    background-color: #2d2d2d;
+    border-color: #2d2d2d;
+    color: white;
+}
+
+.btn-info:hover, .btn-info:focus, .btn-info:active, .btn-info.active, .open > .dropdown-toggle.btn-primary {
+    background-color: #666666;
+    border-color: #666666;
+    color: white;
+}
+
+.pager > li > a {
+    background-color: #E0E0E0;
+}
