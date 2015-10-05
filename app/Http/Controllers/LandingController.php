@@ -16,7 +16,7 @@ class LandingController extends Controller
 
     public function showLanding()
     {
-        return view('index');
+        return view('landing');
     }
 
     public function loggedIn(Request $request)
@@ -34,7 +34,6 @@ class LandingController extends Controller
     public function accountCreate()
     {
         return view('auth.register');
-//        return view('account.createAccount');
     }
 
     public function accountConfirm(){
