@@ -17,8 +17,11 @@
 </head>
 
 <body>
-
-@include('navigation.nav_bar_main')
+@if( Auth::check() )
+    @include('navigation.nav_bar_main')
+@else
+    @include('navigation.nav_bar_landing')
+@endif
 
 @if(env('APP_ENV') == 'production')
     @include('temp.warning_not_to_use_student_data')

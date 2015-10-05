@@ -1,6 +1,8 @@
 @extends('layouts.master')
-@section('title')
-    Login to the gradeomatic
+@section('pageTitle', 'Login | gradeomatic')
+@endsection
+
+@section('description', 'Login to gradeomatic')
 @endsection
 
 @section('body')

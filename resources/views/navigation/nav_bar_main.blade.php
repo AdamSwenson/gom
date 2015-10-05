@@ -15,14 +15,14 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url('home/') }}"><span class="standard" style="color: white;">
+            <a class="navbar-brand" href="{{ url('/exam') }}"><span class="standard" style="color: white;">
                     <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> gradeomatic</span>
             </a>
         </div>
         <div class="collapse navbar-collapse" id="navbar-ex-collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li id="navSetup" title="Create or edit an exam">
-                    <a href="{{url('setup')}}">Setup</a>
+                    <a href="{{url('exam')}}">Setup</a>
                 </li>
                 <li id="navGrade" title="Grade an exam">
                     <a href="{{url('grade')}}">Grade</a>

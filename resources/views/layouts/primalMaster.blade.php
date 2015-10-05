@@ -7,7 +7,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <title>@yield('pageTitle')</title>
     <meta name="description" content="@yield('description')">
-    <link href='inc/images/favicon.ico' rel='icon' type='image/x-icon'/>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
@@ -18,7 +17,7 @@
 <!-- no longer have NavBar, so this may produce side effects -->
 @yield('NavBar')
 <div id="container">
-    @include('flash::message')
+    {{-- @include('flash::message') --}}
     @include('errors.list')
     @yield('body')
     @include('layouts.footer')

@@ -18,11 +18,8 @@ Route::controllers([
     'password' => 'Auth\PasswordController'
 ]);
 
-/* Home page */
+/* Home page - now called 'landing' */
 Route::get('/', 'LandingController@showLanding');
-Route::get('home', 'LandingController@showLanding');
-Route::get('landing', 'LandingController@showLanding');
-Route::get('index', 'LandingController@showLanding');
 
 /* --------------------------------------------- Help ------------------------------------------------------------------*/
 Route::get('help', function() {
@@ -46,8 +43,6 @@ Route::post('registrationRestrictions', 'RestrictedRegistrationController@record
 
 /* ----------------------------------------------- Exam set up  -------------------------------------------------------- */
 /* Select exam page */
-Route::get('setup','ExamController@index'); // not sure we need this
-Route::post('setup','ExamController@index'); // or this, as they duplicate /exam
 Route::get('exam/{exam}/clone','ExamController@cloneExam');
 Route::resource('exam', 'ExamController');
 

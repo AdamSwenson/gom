@@ -4,7 +4,6 @@
 
 @section('cssLinks')
 
-
 @endsection
 
 @section('body')
