@@ -26,8 +26,6 @@
     <h2 id="examName">Add / Edit Questions: "{{ $examName }}" </h2>
     <h5>Add the questions that will appear on this exam. When you're finished, press "Add / Edit Elements" to
         move to the next step.</h5>
-
-
     <form id="questionForm" name="questionForm" method="post" role="form"
           action="{{ url('exam/'.$examId.'/question/updateAll') }}"
           accept-charset="UTF-8">

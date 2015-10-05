@@ -28,6 +28,14 @@ Route::get('index', 'LandingController@showLanding');
 Route::get('help', function() {
     return view('other/help');
 });
+/* --------------------------------------------- About -----------------------------------------------------------------*/
+Route::get('about', function() {
+    return view('other/about');
+});
+/* --------------------------------------------- Contact ---------------------------------------------------------------*/
+Route::get('contact', function() {
+    return view('other/contact');
+});
 /* --------------------------------------------- Account ---------------------------------------------------------------*/
 Route::get('account', 'LandingController@loggedIn');
 

@@ -30,7 +30,7 @@
             </li>
         </ul>
     </nav>
-    <h2><span class=\"glyphicon glyphicon-list-alt" aria-hidden="true"></span> Exam Setup</h2>
+    <h2><span class="glyphicon glyphicon-list" aria-hidden="true"></span> Exam Setup</h2>
     <h4>Create, edit and delete exams</h4>
     <table class="table">
         <thead>

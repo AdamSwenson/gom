@@ -24,7 +24,7 @@
                 <p class="list-group-item-text">Security & access options</p>
             </a>
             <a class="list-group-item">
-                <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-usd" aria-hidden="true"></span>
+                <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-credit-card" aria-hidden="true"></span>
                     Payment
                 </h4>
                 <p class="list-group-item-text">Payment details</p>
