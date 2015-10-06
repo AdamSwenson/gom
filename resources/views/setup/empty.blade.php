@@ -6,6 +6,8 @@ Just an empty blade, waiting for a purpose.
 
 @section('pageTitle', 'Empty')
 
+@endsection
+
 @section('cssLinks')
 
 @endsection

@@ -18,32 +18,38 @@ Route::controllers([
     'password' => 'Auth\PasswordController'
 ]);
 
-/* Limitations on registration */
+
+/* Temporary: Limitations on registration */
 Route::get('registrationRestrictions', 'RestrictedRegistrationController@showRestrictedAccessPage');
 Route::post('registrationRestrictions', 'RestrictedRegistrationController@recordInterestToWaitlist');
+
+
 
 /* --------------------------------------------- Account ---------------------------------------------------------------*/
 Route::get('account', 'LandingController@loggedIn');
 
-
-/* Home page */
+/* Home page - now called 'landing' */
 Route::get('/', 'LandingController@showLanding');
-Route::get('home', 'LandingController@showLanding');
-Route::get('landing', 'LandingController@showLanding');
-Route::get('index', 'LandingController@showLanding');
 
 /* --------------------------------------------- Help ------------------------------------------------------------------*/
 Route::get('help', 'InfoController@showGuides');
-Route::get('gettingStarted', 'InfoController@showGettingStarted');
 Route::get('faq', 'InfoController@showFaq');
 Route::get('tutorials', 'InfoController@showTutorials');
+Route::get('gettingStarted', 'InfoController@showGettingStarted');
 
+/* --------------------------------------------- About -----------------------------------------------------------------*/
+Route::get('about', function() {
+    return view('other/about');
+});
+
+/* --------------------------------------------- Contact ---------------------------------------------------------------*/
+Route::get('contact', function() {
+    return view('other/contact');
+});
 
 
 /* ----------------------------------------------- Exam set up  -------------------------------------------------------- */
 /* Select exam page */
-Route::get('setup','ExamController@index'); // not sure we need this
-Route::post('setup','ExamController@index'); // or this, as they duplicate /exam
 Route::get('exam/{exam}/clone','ExamController@cloneExam');
 Route::resource('exam', 'ExamController');
 

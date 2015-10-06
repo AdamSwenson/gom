@@ -4,11 +4,9 @@
 
 @section('cssLinks')
 
-
 @endsection
 
 @section('body')
-    <div class="container">
         <h3><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Account & Settings</h3>
 
         <div class="list-group">
@@ -25,7 +23,7 @@
                 <p class="list-group-item-text">Security & access options</p>
             </a>
             <a class="list-group-item">
-                <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-usd" aria-hidden="true"></span>
+                <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-credit-card" aria-hidden="true"></span>
                     Payment
                 </h4>
                 <p class="list-group-item-text">Payment details</p>
@@ -37,7 +35,6 @@
                 <p class="list-group-item-text"></p>
             </a>
         </div>
-    </div>
 @endsection
 
 @section('jsArea')

@@ -33,7 +33,7 @@ class AuthController extends Controller
     /** @var string Redirect on unsuccessful login */
     protected $loginPath = '/auth/login';
 
-    protected $redirectAfterLogout = '/index';
+    protected $redirectAfterLogout = '/';
 
     /**
      * Create a new authentication controller instance.

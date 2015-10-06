@@ -8,52 +8,49 @@
 @endsection
 
 @section('body')
-    <div class="container">
-        @include('flash::message')
-        @include('errors.list')
+    <h3><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> Assign Grades: {{ $exam->getTerm() }}
+        {{ $exam->getYear() }} "{{ $exam->getName() }}"</h3>
+    <h4>Enter the minimum exam grade for each letter assignment. Blank grades will not be used.</h4>
+    <br/>
 
-        <h3><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> Assign Grades: {{ $exam->getTerm() }}
-            {{ $exam->getYear() }} "{{ $exam->getName() }}"</h3>
-        <h4>Enter the minimum exam grade for each letter assignment. Blank grades will not be used.</h4>
-        <br/>
+    <div class="row">
+        <!-- Left column holds grade assignment regions -->
+        <div class="col-lg-4">
+            <h4 style="text-align: center;">Max Grade: {{ $examMaxScore or '--' }}</h4>
 
-        <div class="row">
-            <!-- Left column holds grade assignment regions -->
-            <div class="col-lg-4">
-                <h4 style="text-align: center;">Max Grade: {{ $examMaxScore or '--' }}</h4>
-                <form class="form-horizontal" method="post" role="form" name="frmGradeCutoffs"
-                      action="{{ url('grade/exam/'.$exam->getId().'/assign') }}">
-                    <input type="hidden" id="token" name="_token" value="{{ csrf_token() }}">
-                    <!-- Grade Assignment fields. These will form into 2 columns of up to 7 items each -->
-                    <div class="row">
-                        <div class="col-lg-6">
-                            @foreach($gradeTypes as $key => $gradeType)
-                                @if( $key < 7)
-                                    @include('grade.grade_assignment_row')
-                                @endif
-                            @endforeach
-                        </div>
-                        <div class="col-lg-6">
-                            @foreach($gradeTypes as $key => $gradeType)
-                                @if( $key >= 7)
-                                    @include('grade.grade_assignment_row')
-                                @endif
-                            @endforeach
-                        </div>
+            <form class="form-horizontal" method="post" role="form" name="frmGradeCutoffs"
+                  action="{{ url('grade/exam/'.$exam->getId().'/assign') }}">
+                <input type="hidden" id="token" name="_token" value="{{ csrf_token() }}">
+                <!-- Grade Assignment fields. These will form into 2 columns of up to 7 items each -->
+                <div class="row">
+                    <div class="col-lg-6">
+                        @foreach($gradeTypes as $key => $gradeType)
+                            @if( $key < 7)
+                                @include('grade.grade_assignment_row')
+                            @endif
+                        @endforeach
                     </div>
-                    <div style="text-align: center;">
-                        <a type="submit" onclick="document.frmGradeCutoffs.submit();" class="btn btn-success">
-                            <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span> Save Assignments
-                        </a>
+                    <div class="col-lg-6">
+                        @foreach($gradeTypes as $key => $gradeType)
+                            @if( $key >= 7)
+                                @include('grade.grade_assignment_row')
+                            @endif
+                        @endforeach
                     </div>
-                </form>
-            </div>
-            <div class="col-lg-8">
-                <div id="gradeFreqChart" style="width: 400px; height: 200px;"></div>
-                <div id="scoreChart" style="width: 400px; height: 200px;"></div>
-            </div>
+                </div>
+                <div style="text-align: center;">
+                    <a type="submit" onclick="document.frmGradeCutoffs.submit();" class="btn btn-success">
+                        <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span> Save Assignments
+                    </a>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-8">
+            <div id="gradeFreqChart" style="width: 400px; height: 200px;"></div>
+            <div id="scoreChart" style="width: 400px; height: 200px;"></div>
         </div>
     </div>
+
 @endsection
 
 
@@ -79,12 +76,12 @@
         });
 
         // when scores are changed, update grade assignments and draw charts
-        $('input').change( function(){
-            if ( $(this).val() > examMaxScore ) {
+        $('input').change(function () {
+            if ($(this).val() > examMaxScore) {
                 $(this).val(examMaxScore);
             }
 
-            if (  $(this).val() < 0 ) {
+            if ($(this).val() < 0) {
                 $(this).val(0);
             }
             updateGradeFrequency();
@@ -101,14 +98,14 @@
 
             // calculate frequency that each letter grade appears.
             // this array is reversed, with gradeFrequency[0] = F, so the table shows grades in the expected ASC order
-            gradeFrequency =[];
+            gradeFrequency = [];
             examScores.forEach(function (score, i) {
-                for(var j = 0; j < gradeCutoffs.length; j++ ) {
+                for (var j = 0; j < gradeCutoffs.length; j++) {
                     if (score >= gradeCutoffs[j]) {
                         if (gradeFrequency[j])
                             gradeFrequency[j]++;
                         else
-                            gradeFrequency[j]= 1;
+                            gradeFrequency[j] = 1;
                         break;
                     }
                 }
@@ -117,9 +114,9 @@
             freqChartData = [];
             gradeFrequency.forEach(function (freq, i) {
                 var barColor = getColorForGrade(gradeCutoffs[i]);
-                freqChartData.push([ gradeTypes[i], freq, barColor ]);
+                freqChartData.push([gradeTypes[i], freq, barColor]);
             });
-            freqChartData.push([ 'Grade', 'Frequency', {role: 'style' }]);
+            freqChartData.push(['Grade', 'Frequency', {role: 'style'}]);
             // now reverse the chart data so that "F" is the first column and A+ the furthest right
             freqChartData.reverse();
 
@@ -128,12 +125,12 @@
         // rebuild scoreChartData with new color values based on current grade cutoffs
         function updateScoreChartData() {
             scoreChartData = [];
-            scoreChartData.push(['Student', 'Score', {role: 'style'}, { role: 'annotation' }]);
+            scoreChartData.push(['Student', 'Score', {role: 'style'}, {role: 'annotation'}]);
 
             examScores.forEach(function (score, i) {
                 var barColor = getColorForGrade(score);
                 var gradeLetter = getLetterForGrade(score);
-                scoreChartData.push([(i + 1).toString(), score, '#' + barColor, gradeLetter ]);
+                scoreChartData.push([(i + 1).toString(), score, '#' + barColor, gradeLetter]);
             });
         }
 
@@ -193,13 +190,15 @@
             var data = google.visualization.arrayToDataTable(freqChartData);
 
             var options = {
-                chart: { title: 'Grade Distribution' },
-                vAxis: { title: 'Count', format: '#' },
-                hAxis: { title: 'Grade' },
+                chart: {title: 'Grade Distribution'},
+                vAxis: {title: 'Count', format: '#'},
+                hAxis: {title: 'Grade'},
                 chartArea: {'width': '80%', 'height': '70%'},
-                legend: { position: 'none' },
-                animation: { duration: 600,
-                            startup: "true" }
+                legend: {position: 'none'},
+                animation: {
+                    duration: 600,
+                    startup: "true"
+                }
             };
 
             var chart = new google.visualization.ColumnChart(document.getElementById('gradeFreqChart'));
@@ -211,13 +210,15 @@
             var data = google.visualization.arrayToDataTable(scoreChartData);
 
             var options = {
-                chart: { title: 'Student Grades' },
-                vAxis: { title: 'Score' },
-                hAxis: { title: 'Student #' },
+                chart: {title: 'Student Grades'},
+                vAxis: {title: 'Score'},
+                hAxis: {title: 'Student #'},
                 chartArea: {'width': '80%', 'height': '70%'},
-                legend: { position: 'none' },
-                animation: { duration: 600,
-                    startup: "true" }
+                legend: {position: 'none'},
+                animation: {
+                    duration: 600,
+                    startup: "true"
+                }
             };
 
             var chart = new google.visualization.ColumnChart(document.getElementById('scoreChart'));

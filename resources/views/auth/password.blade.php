@@ -7,21 +7,22 @@
  */ ?>
 
 @extends('layouts.master')
-@section('title')
-    Reset your password
+@section('title', 'Reset Password')
 @endsection
 
 @section('body')
     <div class="row">
-    <form role="form" method="POST" action="{{url('/password/email')}}" accept-charset="UTF-8" class="col-xs-4">
-        {!! csrf_field() !!}
-        <h3 class="text-left"> Create Account</h3>
+        <div class="col-xs-3"></div>
+        <form role="form" method="POST" action="{{url('/password/email')}}" accept-charset="UTF-8" class="col-xs-6">
+            {!! csrf_field() !!}
+            <h3>Reset Password</h3>
 
-        <div class="form-group ">
-            <input class="form-control" type="email" name="email" placeholder="Enter email">
-        </div>
+            <div class="form-group ">
+                <input class="form-control" type="email" name="email" placeholder="Enter email">
+            </div>
 
-        <input class="btn btn-default" value="Send Password Reset Link" type="submit">
-    </form>
+            <input class="btn btn-primary" value="Send Email" type="submit">
+        </form>
+        <div class="col-xs-3"></div>
     </div>
 @endsection

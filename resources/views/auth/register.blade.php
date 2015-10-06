@@ -1,7 +1,9 @@
 @extends('layouts.master')
 
-@section('title')
-    Sign up for the gradeomatic
+@section('pageTitle', 'Sign up | gradeomatic')
+@endsection
+
+@section('description', 'Sign up for gradeomatic')
 @endsection
 
 @section('body')
@@ -12,17 +14,21 @@
             <h3 class="text-left"> Create Account</h3>
 
             <div class="form-group ">
-                <input class="form-control" type="text" name="name" value="{{ old('name') }}"
+                <label for="name">Name</label>
+                <input class="form-control" type="text" name="name" id="name" value="{{ old('name') }}"
                        placeholder="Username">
             </div>
             <div class="form-group ">
-                <input class="form-control" type="email" name="email" value="{{ old('email') }}"
+                <label for="email">Email</label>
+                <input class="form-control" type="email" name="email" id="email" value="{{ old('email') }}"
                        placeholder="Enter email">
             </div>
             <div class="form-group">
+                <label for="pwd">Password</label>
                 <input class="form-control" type="password" name="password" id="pwd" placeholder="Enter password">
             </div>
             <div class="form-group">
+                <label for="pwd_conf">Confirm Password</label>
                 <input class="form-control" type="password" name="password_confirmation" id="pwd_conf"
                        placeholder="Confirm password">
             </div>

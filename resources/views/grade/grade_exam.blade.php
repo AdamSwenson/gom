@@ -8,11 +8,6 @@
 @endsection
 
 @section('body')
-    <style>
-
-
-    </style>
-    <div class="container">
         <div class="row">
             <!-- Left column holds questions and sliders -->
             <div class="col-md-8">
@@ -29,7 +24,8 @@
                             <li <?php if ($qNumber == 1) {
                                 echo "class='active'";
                             } ?> role="presentation">
-                                <a href="#panelQuestion{{ $qNumber }}" title="Grade question {{ $qNumber }}" data-toggle="tab">
+                                <a href="#panelQuestion{{ $qNumber }}" title="Grade question {{ $qNumber }}"
+                                   data-toggle="tab">
                                     Q{{ $qNumber }}</a></li>
                         @endforeach
                     </ul>
@@ -58,6 +54,7 @@
                                                            style="padding-right: 2px; padding-left: 0px;"
                                                            for="questionScore{{ $qNumber }}">
                                                         Score:</label>
+
                                                     <div class="col-md-1" style="padding: 0px;">
                                                         <input class="form-control pull-right" type="number" min="0"
                                                                max="{{ $maxQuestionScores[$qNumber] }}"
@@ -66,7 +63,7 @@
                                                                data-question-assignment-id="{{ $qAssignment->getId() }}"
                                                                id="questionScore{{ $qNumber }}"/>
                                                     </div>
-                                                    <div class="col-md-1 control-label" style="text-align: left;" >
+                                                    <div class="col-md-1 control-label" style="text-align: left;">
                                                         <b>/ {{  $maxQuestionScores[$qNumber] }}</b>
                                                     </div>
                                                 </div>
@@ -126,7 +123,7 @@
                 @include('grade.statistics_table')
             </div>
         </div>
-    </div>
+
 @endsection
 
 
@@ -285,9 +282,9 @@
                 error: function () {
                     showWarningMessage("Error", "Sorry, there was a problem saving this exam!\nPlease try again.");
                 },
-                timeout: function() {
+                timeout: function () {
                     showWarningMessage('No Response From Server', 'There was no response from the server. Either the server is down\n' +
-                    'or you may be experiencing connection issues.');
+                            'or you may be experiencing connection issues.');
                 }
             });
         }
@@ -335,10 +332,10 @@
         // When the pencil icon is selected, toggle visibility of roster names and selected name area
         function toggleNameVisibility() {
             studentNamesVisible = !studentNamesVisible;
-            $('[id^="studentListItem"]').each( function() {
+            $('[id^="studentListItem"]').each(function () {
                 var nameToDisplay = nameHiddenString;
                 if (studentNamesVisible) {
-                   nameToDisplay = $(this).attr('data-lName') + ", " + $(this).attr('data-fName');
+                    nameToDisplay = $(this).attr('data-lName') + ", " + $(this).attr('data-fName');
                 }
                 $(this).find('[id^="studentName"]').text(nameToDisplay);
             });
@@ -377,7 +374,7 @@
             for (var i = 0; i < examGrades.length; i++) {
                 var name = "#studentListItem" + i;
                 var item = $('#studentRoster').find(name);
-                if (activeStudent == i){
+                if (activeStudent == i) {
                     setRosterBackgroundColor(item, activeStudentColor, 'white')
                 } else if (examGrades[i] >= 0) {
                     setRosterBackgroundColor(item, gradedStudentColor, 'white');
@@ -577,14 +574,15 @@
                         url: examId,
                         data: gradeRequest,
                         type: 'DELETE',
-                        success: function () {},
+                        success: function () {
+                        },
                         error: function () {
                             // Error...
                             //var errors = $.parseJSON(data.responseText);
                             //console.log(errors);
                             showWarningMessage("Error", "Sorry, there was a problem saving this exam!\nPlease try again.");
                         },
-                        timeout: function() {
+                        timeout: function () {
                             showWarningMessage('No Response From Server', 'There was no response from the server. Either' +
                                     ' the server is down\n or you may be experiencing connection issues.');
                         }
