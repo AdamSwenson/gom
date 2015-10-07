@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as BaseVerifier;
 use Closure;
+use Illuminate\Session\TokenMismatchException;
 
 class VerifyCsrfToken extends BaseVerifier
 {
@@ -21,10 +22,10 @@ class VerifyCsrfToken extends BaseVerifier
     public function handle($request, Closure $next)
     {
 
-        if($request->method() == 'POST')
+        /*if($request->method() == 'POST')
         {
             return $next($request);
-        }
+        }*/
 
         if ($request->method() == 'GET' || $this->tokensMatch($request))
         {
@@ -32,4 +33,5 @@ class VerifyCsrfToken extends BaseVerifier
         }
         throw new TokenMismatchException;
     }
+
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="html" lang="en-US">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset = utf-8"/>
@@ -18,11 +18,15 @@
 
 <body>
 
-@if( Auth::check() )
+{{-- @if( Auth::check() ) --}}
     @include('navigation.nav_bar_main')
+{{--
 @else
+--}}
     @include('navigation.nav_bar_landing')
+{{--
 @endif
+--}}
 
 @if(env('APP_ENV') == 'production')
     @include('temp.warning_not_to_use_student_data')
@@ -33,8 +37,6 @@
     @yield('body')
     @include('layouts.footer')
 </div>
-
-<input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
 
 <div id="scriptBox">
     <script type="text/javascript">

@@ -3,7 +3,7 @@
 @section('pageTitle', 'Welcome to gradeomatic')
 
 @endsection
-@section('description', 'Grade Exam | gradeomatic')
+@section('description', 'Welcome to gradeomatic')
 
 @section('cssLinks')
 
@@ -39,7 +39,7 @@
             </div>
 
             <div class="item">
-                <img src="{{asset('inc/home/images/exam.jpg', env('APP_ENV') == 'production')}}"
+                <img src="{{asset('inc/home/images/exam.jpg')}}"
                      alt="Teach">
                 <div class="carousel-caption">
                     <h2>Teach Better</h2>
@@ -48,7 +48,7 @@
             </div>
 
             <div class="item">
-                <img src="{{asset('inc/home/images/teacher_and_student.jpeg', env('APP_ENV') == 'production')}}"
+                <img src="{{asset('inc/home/images/teacher_and_student.jpeg')}}"
                      alt="Feedback">
                 <div class="carousel-caption">
                     <h2>More Feedback</h2>
@@ -57,7 +57,7 @@
             </div>
 
             <div class="item">
-                <img src="{{asset('inc/home/images/analytics.png', env('APP_ENV') == 'production')}}" alt="analytics">
+                <img src="{{asset('inc/home/images/analytics.png')}}" alt="analytics">
                 <div class="carousel-caption">
                     <h2>Analytics</h2>
                     <p>Stats let you see your results in-depth.</p>

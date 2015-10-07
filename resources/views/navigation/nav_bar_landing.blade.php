@@ -1,4 +1,3 @@
-<!-- nav bar when user is not logged in -->
 <style>
     li:hover {
         background-color: #393939;
@@ -13,13 +12,13 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url('/') }}" span class="standard" style="color: white;">
-
+            <a class="navbar-brand" href="{{ url('/') }}">
+                <span class="standard" style="color: white;">
                 <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> gradeomatic |
                 <small>
                     grade faster. teach better.
                 </small>
-
+                </span>
             </a>
         </div>
         <div class="collapse navbar-collapse" id="navbar-ex-collapse">

@@ -17,6 +17,7 @@
             </button>
             <a class="navbar-brand" href="{{ url('/exam') }}" style="color:white;">
                     <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> gradeomatic</span>
+                | <small>grade faster. teach better.</small>
             </a>
         </div>
         <div class="collapse navbar-collapse" id="navbar-ex-collapse">
