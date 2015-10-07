@@ -7,7 +7,10 @@
  */ ?>
 
 @extends('layouts.master')
-@section('title', 'Reset Password')
+@section('pageTitle', 'Reset Password | gradeomatic')
+@endsection
+
+@section('description', 'Reset your password')
 @endsection
 
 @section('body')

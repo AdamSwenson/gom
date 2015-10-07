@@ -17,7 +17,6 @@
             margin: auto;
             height: 500px;
         }
-
     </style>
     <div id="myCarousel" class="carousel slide container" data-ride="carousel">
         <!-- Indicators -->

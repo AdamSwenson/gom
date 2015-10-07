@@ -17,6 +17,7 @@
 </head>
 
 <body>
+
 @if( Auth::check() )
     @include('navigation.nav_bar_main')
 @else
@@ -32,7 +33,6 @@
     @yield('body')
     @include('layouts.footer')
 </div>
-
 
 <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
 

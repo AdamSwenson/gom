@@ -1,11 +1,11 @@
 <!-- Generic nav bar template used by all pages once logged in. The active tab is set in JS by the page -->
-{{--
+
 <style>
     li:hover {
         background-color: #393939;
     }
 </style>
---}}
+
 <div class="navbar navbar-inverse navbar-static-top">
     <div class="container">
         <div class="navbar-header">

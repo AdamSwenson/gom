@@ -1,4 +1,9 @@
-<!-- nav bar for welcome / landing page -->
+<!-- nav bar when user is not logged in -->
+<style>
+    li:hover {
+        background-color: #393939;
+    }
+</style>
 <div class="navbar navbar-inverse navbar-static-top">
     <div class="container">
         <div class="navbar-header">
@@ -20,10 +25,10 @@
         <div class="collapse navbar-collapse" id="navbar-ex-collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li id="navSetup" title="Sign up for gradeomatic">
-                    <a href="{{url('auth/register')}}">Sign Up</a>
+                    <a href="{{url('auth/register')}}" style="color:white;">Sign Up</a>
                 </li>
                 <li id="navGrade" title="Log in to gradeomatic">
-                    <a href="{{url('auth/login')}}">Log In</a>
+                    <a href="{{url('auth/login')}}" style="color:white;">Log In</a>
                 </li>
             </ul>
         </div>
