@@ -88,7 +88,8 @@ public function tearDown()
         //check
         $this->assertNotEmpty($result);
         $this->assertInstanceOf('\App\Student', $result, "returns a student object");
-        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'student_identifier' => Crypt::encrypt($studentId)]);
+        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'student_identifier' => $studentId]);
+//        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'student_identifier' => Crypt::encrypt($studentId)]);
      }
 
     /**
@@ -139,7 +140,8 @@ public function tearDown()
         //check
         $this->assertNotEmpty($result);
         $this->assertInstanceOf('\App\Student', $result, "returns a student object");
-        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'email' => Crypt::encrypt($email)]);
+        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'email' => $email]);
+//        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'email' => Crypt::encrypt($email)]);
     }
 
     /**
@@ -179,7 +181,8 @@ public function tearDown()
     public function testLoad_student_by_sid()
     {
         $student = Student::where('student_identifier', '>', 0)->first();
-        $result = $this->object->load_student_by_sid($student->getStudentId());
+        $sid = $student->getStudentId();
+        $result = $this->object->load_student_by_sid($sid);
         $this->assertNotEmpty($result, 'returned object');
         $this->assertInstanceOf('\App\Student', $result);
         $this->assertEquals($student, $result);

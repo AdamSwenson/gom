@@ -182,8 +182,7 @@ class StudentRepository implements IStudentRepository
      */
     public function load_student_by_sid($clean_id)
     {
-        $encryptedId = Crypt::encrypt($clean_id);
-        return Student::where('student_identifier', $encryptedId)->first();
+        return Student::where('student_identifier', $clean_id)->first();
     }
 
 

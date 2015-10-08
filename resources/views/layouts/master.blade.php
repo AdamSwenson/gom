@@ -8,7 +8,7 @@
     <title>@yield('pageTitle')</title>
     <meta name="description" content="@yield('description')">
 
-    <link href='{{secure_asset('inc/images/favicon.ico')}}' rel='icon' type='image/x-icon'/>
+    <link href='{{asset('inc/images/favicon.ico')}}' rel='icon' type='image/x-icon'/>
 
     @yield('otherCss')
 
@@ -30,12 +30,11 @@
     @include('temp.warning_not_to_use_student_data')
 @endif
 <div class="container">
-    {{-- @include('flash::message') --}}
+    @include('flash::message')
     @include('errors.list')
     @yield('body')
     @include('layouts.footer')
 </div>
-
 
 <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
 
@@ -48,7 +47,7 @@
         });
     </script>
     @yield('jsArea')
-    @if(env('APP_ENV' == 'production'))
+    @if(env('APP_ENV') == 'production')
         @include('other.google_analytics_include')
     @endif
     <script type="text/javascript" src="{{ asset('js/commonScripts.js') }}"></script>

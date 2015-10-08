@@ -23,7 +23,6 @@ class TestingServiceProvider extends ServiceProvider
      */
     public function register()
     {
-//        dd($this->app->environment());
 
         if ($this->app->environment() == 'codeceptWorld')
         {

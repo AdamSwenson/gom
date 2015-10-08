@@ -15,7 +15,7 @@ class LandingController extends Controller
 {
     public function showLanding()
     {
-        return view('landing');
+        return view('index');
     }
 
     public function loggedIn(Request $request)
