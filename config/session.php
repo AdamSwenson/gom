@@ -16,8 +16,8 @@ return [
     |
     */
 
-    'driver' => 'file',
-//    'driver' => env('SESSION_DRIVER', 'file'),
+//    'driver' => 'file',
+    'driver' => env('SESSION_DRIVER', 'file'),
 
     /*
     |--------------------------------------------------------------------------
@@ -44,8 +44,8 @@ return [
     | automatically by Laravel and you can use the Session like normal.
     |
     */
-    'encrypt' => false,
-//    'encrypt' => env('SESSION_ENCRYPT', false),
+//    'encrypt' => false,
+    'encrypt' => env('SESSION_ENCRYPT', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -135,8 +135,8 @@ return [
     | available to in your application. A sensible default has been set.
     |
     */
-    'domain' => null,
-  //  'domain' => env('SESSION_COOKIE_DOMAIN', null),
+//    'domain' => null,
+    'domain' => env('SESSION_COOKIE_DOMAIN', null),
 
     /*
     |--------------------------------------------------------------------------
@@ -149,7 +149,7 @@ return [
     |
     */
 
-    'secure' => false,
-//    'secure' => env('SESSION_HTTPS_ONLY', false),
+//    'secure' => false,
+    'secure' => env('SESSION_HTTPS_ONLY', false),
 
 ];

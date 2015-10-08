@@ -8,17 +8,14 @@
     <title>@yield('pageTitle')</title>
     <meta name="description" content="@yield('description')">
 
-    <link href='{{asset('inc/images/favicon.ico')}}' rel='icon' type='image/x-icon'/>
+    <link href='{{ asset('inc/images/favicon.ico') }}' rel='icon' type='image/x-icon'/>
 
     @yield('otherCss')
 
     @include('layouts.js_jquery_loader')
     @include('layouts.js_bootstrap_loader')
     @include('layouts.js_additional_libs')
-
-
 </head>
-
 <body>
 @if( Auth::check() )
     @include('navigation.nav_bar_main')
@@ -36,7 +33,7 @@
     @include('layouts.footer')
 </div>
 
-<input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
+{{--<input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">--}}
 
 <div id="scriptBox">
     <script type="text/javascript">

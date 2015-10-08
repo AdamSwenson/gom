@@ -220,6 +220,7 @@ public function tearDown()
 
     public function testDelete_student_by_sid()
     {
+        //TODO Fix this query
         $student = Student::where('student_identifier', '!=', null)->first();
 
         $this->assertEquals(1, $this->object->delete_student_by_sid($student->student_identifier));

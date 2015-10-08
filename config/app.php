@@ -144,7 +144,7 @@ return [
         App\Providers\AppServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-     //   App\Providers\AuthServiceProvider::class, //TODO remove disablement
+        App\Providers\AuthServiceProvider::class,
 
         /*
          * Laravel tools imported
@@ -166,10 +166,7 @@ return [
         /*
          * Development
          */
-     //   App\Providers\TestingServiceProvider::class, //TODO remove disablement
-
-
-
+        App\Providers\TestingServiceProvider::class,
 
   //      Laracasts\Generators\GeneratorsServiceProvider::class
     ],
