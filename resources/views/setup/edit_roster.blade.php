@@ -4,13 +4,9 @@
 @section('pageTitle', 'Edit Roster | gradeomatic')
 @section('description', 'Upload and modify student roster')
 
-@section('cssLinks')
-
-@endsection
-
-@section('body')
+@section('otherCss')
         <!-- styling to change file button into bootstrap style and hide the file name -->
-<style>
+<style type="text/css">
     .btn-file {
         position: relative;
         overflow: hidden;
@@ -47,10 +43,13 @@
         color: #d43f3a;
     }
 </style>
+@endsection
+
+@section('body')
 <nav>
     <ul class="pager">
         <li class="next">
-            <a onclick="submitAndNavigateTo-('editExam')" style="cursor:pointer;"><span
+            <a onclick="submitAndNavigateTo('editExam')" style="cursor:pointer;"><span
                         class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save & Finish</a>
         </li>
         <li class="previous">
