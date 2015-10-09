@@ -14,6 +14,7 @@
             <p>
                 <b>Q.</b> Where can I get help?<br/>
                 <b>A.</b> Check the <a href="#help">help section</a> for basic information how to use the site.
+                <br />Also, check out our <a href="{{ url('/tutorials') }}">tutorial videos</a>.
             </p>
 
             <p>
