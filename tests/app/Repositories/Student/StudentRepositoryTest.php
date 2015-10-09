@@ -221,7 +221,9 @@ public function tearDown()
     public function testDelete_student_by_sid()
     {
         //TODO Fix this query
-        $student = Student::where('student_identifier', '!=', null)->first();
+        $student = Student::whereNotNull('student_identifier')->first();
+        // Student::where('student_identifier', '!=', null)->first();
+      //  $student = Student::where('student_identifier', '!=', null)->first();
 
         $this->assertEquals(1, $this->object->delete_student_by_sid($student->student_identifier));
         $this->notSeeInDatabase('students', ['user_id' => self::$userid, 'student_identifier' => $student->student_identifier] );

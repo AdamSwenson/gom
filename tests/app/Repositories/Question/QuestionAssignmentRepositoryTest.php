@@ -56,11 +56,18 @@ public function tearDown()
 
     public function testRecord()
     {
-        $qnum = 4;
-        $result = $this->object->record($this->exam->getId(), $this->question->getId(), $qnum);
+        //Prep
+        //Create new question (so don't get error from assigning same question twice)
+        $newQuestion = factory('App\Question')->create();
+        //will assign to something we know isn't already assigned
+        $qnum = 14;
+        $result = $this->object->record($this->exam->getId(), $newQuestion->getId(), $qnum);
       //  $this->assertInstanceOf('App\QuestionAssignment', $result);
         $this->seeInDatabase('question_assignments',
-            ['exam_id' => $this->exam->getId(), 'question_id' => $this->question->getId(), 'question_number' => $qnum]);
+            ['exam_id' => $this->exam->getId(),
+                'question_id' => $newQuestion->getId(),
+                'question_number' => $qnum
+            ]);
     }
 
     public function testRecordUpdatePreexisting()

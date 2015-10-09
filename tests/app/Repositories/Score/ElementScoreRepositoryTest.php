@@ -82,7 +82,20 @@ public function testRecordCommentText()
 
     public function testLoad_for_student_on_exam()
     {
-        $this->markTestIncomplete();
+        //Prep
+        $es = ElementScore::all()->random();
+        $studentId = $es->student_id;
+        $ea = ElementAssignment::find($es->element_assignment_id);
+        $examId = $ea->exam_id;
+
+        //Call
+        $result = $this->object->load_for_student_on_exam($examId, $studentId);
+
+        //Check
+        foreach($result as $r)
+        {
+            $this->assertEquals($studentId, $r->student_id);
+        }
     }
 
 
@@ -103,7 +116,12 @@ public function testRecordCommentText()
 //        $this->assertEquals($elementAssignmentId, $result->element_assignment_id);
 //        $this->assertEquals($studentId, $result->student_id);
 //        $this->assertEquals($score, $result->score);
-        $this->seeInDatabase('element_scores', ['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId, 'score' => $score]);
+        $this->seeInDatabase('element_scores',
+                             [
+                                 'element_assignment_id' => $elementAssignmentId,
+                                 'student_id' => $studentId,
+                                 'score' => $score
+                             ]);
 
 //        $this->markTestIncomplete();
     }

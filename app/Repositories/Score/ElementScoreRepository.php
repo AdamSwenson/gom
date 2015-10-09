@@ -9,6 +9,7 @@
 namespace App\Repositories\Score;
 
 
+use App\ElementAssignment;
 use App\ElementScore;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 
@@ -105,14 +106,25 @@ MYSQL;
 //    }
 
     /**
-     * Loads all question scores for a student on an exam
+     * Loads all element scores for a student on an exam
      * @param $examId
      * @param $studentId
+     * @return Collection
      */
     public function load_for_student_on_exam($examId, $studentId)
     {
-        return ElementScore::where('student_id', $studentId)->where('exam_id', $examId)->get();
-//        return ElementScore::where('student_id', $studentId)->where('exam_id', $examId)->first();
+        $scores = [];
+        $elementAssignments = ElementAssignment::where('exam_id', $examId)->get();
+        foreach($elementAssignments as $ea)
+        {
+            $score = ElementScore::where('student_id', $studentId)->where('element_assignment_id', $ea->element_assignment_id)->first();
+            if( ! empty($score) )
+            {
+                $scores[] = $score;
+            }
+        }
+
+        return collect($score);
     }
 
     /**
