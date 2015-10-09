@@ -28,7 +28,7 @@
 </head>
 <body>
 @include('navigation.nav_bar_landing')
-
+<div class="container">
     <div id="myCarousel" class="carousel slide container" data-ride="carousel">
         <!-- Indicators -->
         <ol class="carousel-indicators">
@@ -42,9 +42,11 @@
         <div class="carousel-inner" role="listbox">
             <div class="item active">
                 <img src="{{asset('inc/home/images/grading_shoulder.jpeg', env('APP_ENV') == 'production')}}"
-                    alt="Grade">
+                     alt="Grade">
+
                 <div class="carousel-caption">
                     <h2>Grade Faster</h2>
+
                     <p>Gradeomatic makes grading fast and easy.</p>
                 </div>
             </div>
@@ -52,8 +54,10 @@
             <div class="item">
                 <img src="{{asset('inc/home/images/exam.jpg', env('APP_ENV') == 'production')}}"
                      alt="Teach">
+
                 <div class="carousel-caption">
                     <h2>Teach Better</h2>
+
                     <p>Knowing where students need improvement helps you focus your teaching.</p>
                 </div>
             </div>
@@ -61,16 +65,20 @@
             <div class="item">
                 <img src="{{asset('inc/home/images/teacher_and_student.jpeg', env('APP_ENV') == 'production')}}"
                      alt="Feedback">
+
                 <div class="carousel-caption">
                     <h2>More Feedback</h2>
+
                     <p>Let your students know how they perform.</p>
                 </div>
             </div>
 
             <div class="item">
                 <img src="{{asset('inc/home/images/analytics.png', env('APP_ENV') == 'production')}}" alt="analytics">
+
                 <div class="carousel-caption">
                     <h2>Analytics</h2>
+
                     <p>Stats let you see your results in-depth.</p>
                 </div>
             </div>
@@ -86,5 +94,6 @@
             <span class="sr-only">Next</span>
         </a>
     </div>
+</div>
 </body>
 </html>
