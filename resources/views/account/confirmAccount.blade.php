@@ -60,7 +60,7 @@
 
                         <div class="row" >
                             <div class="col-xs-8">
-                                <h1> <h1>Account Created Check your email to confirm!</h1>  </h1>
+                                <h1>Account Created Check your email to confirm!</h1>
                             </div>
                         </div>
                     </div>

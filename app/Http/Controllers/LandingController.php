@@ -10,11 +10,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests;
 use Illuminate\Http\Request;
+use Auth;
 
 class LandingController extends Controller
 {
     public function showLanding()
     {
+        if (Auth::check()) {
+            return redirect('exam');
+        }
         return view('landing');
     }
 

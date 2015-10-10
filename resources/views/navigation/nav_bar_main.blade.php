@@ -15,7 +15,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url('/exam') }}" style="color:white;">
+            <a class="navbar-brand" href="{{ url('/') }}" style="color:white;">
                     <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> gradeomatic</span>
                 | <small>grade faster. teach better.</small>
             </a>

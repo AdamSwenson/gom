@@ -1,23 +1,34 @@
-@extends('layouts.master')
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset = utf-8"/>
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}"/>
 
-@section('pageTitle', 'Welcome to gradeomatic')
+    <title>Welcome to the Gradeomatic </title>
+    <meta name="description" content="Welcome to the Gradeomatic">
 
-@endsection
-@section('description', 'Welcome to gradeomatic')
+    <link href='{{asset('inc/images/favicon.ico')}}' rel='icon' type='image/x-icon'/>
 
-@section('cssLinks')
-
-@endsection
-
-@section('body')
-    <style>
+    <style type="text/css">
         .carousel-inner > .item > img,
         .carousel-inner > .item > a > img {
             width: auto;
             margin: auto;
             height: 500px;
         }
+
     </style>
+
+    @include('layouts.js_jquery_loader')
+    @include('layouts.js_bootstrap_loader')
+    @include('layouts.js_additional_libs')
+
+</head>
+<body>
+@include('navigation.nav_bar_landing')
+
     <div id="myCarousel" class="carousel slide container" data-ride="carousel">
         <!-- Indicators -->
         <ol class="carousel-indicators">
@@ -39,7 +50,7 @@
             </div>
 
             <div class="item">
-                <img src="{{asset('inc/home/images/exam.jpg')}}"
+                <img src="{{asset('inc/home/images/exam.jpg', env('APP_ENV') == 'production')}}"
                      alt="Teach">
                 <div class="carousel-caption">
                     <h2>Teach Better</h2>
@@ -48,7 +59,7 @@
             </div>
 
             <div class="item">
-                <img src="{{asset('inc/home/images/teacher_and_student.jpeg')}}"
+                <img src="{{asset('inc/home/images/teacher_and_student.jpeg', env('APP_ENV') == 'production')}}"
                      alt="Feedback">
                 <div class="carousel-caption">
                     <h2>More Feedback</h2>
@@ -57,7 +68,7 @@
             </div>
 
             <div class="item">
-                <img src="{{asset('inc/home/images/analytics.png')}}" alt="analytics">
+                <img src="{{asset('inc/home/images/analytics.png', env('APP_ENV') == 'production')}}" alt="analytics">
                 <div class="carousel-caption">
                     <h2>Analytics</h2>
                     <p>Stats let you see your results in-depth.</p>
@@ -75,10 +86,5 @@
             <span class="sr-only">Next</span>
         </a>
     </div>
-@endsection
-
-
-@section('jsArea')
-
-
-@endsection
+</body>
+</html>
