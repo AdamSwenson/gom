@@ -12,125 +12,136 @@
         .typeahead {
             border: 0px;
         }
+        .activeStudentInput {
+            font-size: 1.25em;
+        }
     </style>
-        <div class="row">
-            <!-- Left column holds questions and sliders -->
-            <div class="col-md-8">
-                <h3 data-exam-id="{{ $exam->getId() }}"><span class="glyphicon glyphicon-list-alt"
-                                                              aria-hidden="true"></span>
-                    {{ $exam->getTerm() }}, {{ $exam->getYear() }} "{{ $exam->getName() }}" </h3>
-                <h4 id="selectPrompt">Select a student to begin grading</h4>
+    <div class="row">
+        <!-- Left column holds questions and sliders -->
+        <div class="col-md-8">
+            <h3 data-exam-id="{{ $exam->getId() }}"><span class="glyphicon glyphicon-list-alt"
+                                                          aria-hidden="true"></span>
+                {{ $exam->getTerm() }}, {{ $exam->getYear() }} "{{ $exam->getName() }}" </h3>
+            <h4 id="selectPrompt">Select a student to begin grading</h4>
 
-                <div id="questionArea" style="display: none">
-                    <!-- Create one Question Tab for each question -->
-                    <ul class="nav nav-pills nav-justified">
-                        @foreach($questionAssignments as $qAssignment)
-                            <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
-                            <li <?php if ($qNumber == 1) {
-                                echo "class='active'";
-                            } ?> role="presentation">
-                                <a href="#panelQuestion{{ $qNumber }}" title="Grade question {{ $qNumber }}"
-                                   data-toggle="tab">
-                                    Q{{ $qNumber }}</a></li>
-                        @endforeach
-                    </ul>
-                    <!-- question panel -->
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="tab-content">
-                                <?php $elementIndex = 0; ?>
-                                @foreach($questionAssignments as $qAssignment)
-                                    <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
-                                    <div id="panelQuestion{{ $qNumber }}" data-question-number="{{ $qNumber }}" class="tab-pane fade
+            <div id="questionArea" style="display: none">
+                <!-- Create one Question Tab for each question -->
+                <ul class="nav nav-pills nav-justified">
+                    @foreach($questionAssignments as $qAssignment)
+                        <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
+                        <li <?php if ($qNumber == 1) {
+                            echo "class='active'";
+                        } ?> role="presentation">
+                            <a href="#panelQuestion{{ $qNumber }}" title="Grade question {{ $qNumber }}"
+                               data-toggle="tab">
+                                Q{{ $qNumber }}</a></li>
+                    @endforeach
+                </ul>
+                <!-- question panel -->
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="tab-content">
+                            <?php $elementIndex = 0; ?>
+                            @foreach($questionAssignments as $qAssignment)
+                                <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
+                                <div id="panelQuestion{{ $qNumber }}" data-question-number="{{ $qNumber }}" class="tab-pane fade
                                             <?php if ($qNumber === 1) {
-                                        echo "in active";
-                                    } ?>">
-                                        {{--<div class="form-horizontal" role="form">--}}
-                                        <div class="row">
-                                            <div class="col-md-9">
-                                                <!-- question Name -->
-                                                <h4 id="questionName">Question #{{ $qNumber }}:
-                                                    "{{ $qAssignment->getQuestionName() }}"</h4>
+                                    echo "in active";
+                                } ?>">
+                                    {{--<div class="form-horizontal" role="form">--}}
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                            <!-- question Name -->
+                                            <h4 id="questionName">Question #{{ $qNumber }}:
+                                                "{{ $qAssignment->getQuestionName() }}"</h4>
+                                        </div>
+                                        <!-- question Score -->
+                                        <form class="form-horizontal" role="form">
+                                            <div class="form-group">
+                                                <label class="col-md-1 control-label"
+                                                       style="padding-right: 2px; padding-left: 0px;"
+                                                       for="questionScore{{ $qNumber }}">
+                                                    Score:</label>
+
+                                                <div class="col-md-1" style="padding: 0px;">
+                                                    <input class="form-control pull-right" type="number" min="0"
+                                                           max="{{ $maxQuestionScores[$qNumber] }}"
+                                                           style="width: 4.5em; padding-right: 2px;"
+                                                           data-number="{{ $qNumber }}"
+                                                           data-question-assignment-id="{{ $qAssignment->getId() }}"
+                                                           id="questionScore{{ $qNumber }}"/>
+                                                </div>
+                                                <div class="col-md-1 control-label" style="text-align: left;">
+                                                    <b>/ {{  $maxQuestionScores[$qNumber] }}</b>
+                                                </div>
                                             </div>
-                                            <!-- question Score -->
-                                            <form class="form-horizontal" role="form">
-                                                <div class="form-group">
-                                                    <label class="col-md-1 control-label"
-                                                           style="padding-right: 2px; padding-left: 0px;"
-                                                           for="questionScore{{ $qNumber }}">
-                                                        Score:</label>
-
-                                                    <div class="col-md-1" style="padding: 0px;">
-                                                        <input class="form-control pull-right" type="number" min="0"
-                                                               max="{{ $maxQuestionScores[$qNumber] }}"
-                                                               style="width: 4.5em; padding-right: 2px;"
-                                                               data-number="{{ $qNumber }}"
-                                                               data-question-assignment-id="{{ $qAssignment->getId() }}"
-                                                               id="questionScore{{ $qNumber }}"/>
-                                                    </div>
-                                                    <div class="col-md-1 control-label" style="text-align: left;">
-                                                        <b>/ {{  $maxQuestionScores[$qNumber] }}</b>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                        <!-- element area holds all sliders and comments for this question -->
-                                        <div class="list-group">
-
-                                            {{-- add element panels --}}
-                                            <?php $elements = $allElements[$qNumber - 1];
-                                            $eNumber = 1;
-                                            while ($eNumber <= count($elements) ) { ?>
-                                            @include('grade.element_panel')
-                                            <?php $elementIndex++; $eNumber++; } ?>
-
-                                            {{-- add some text if no elements for this question --}}
-                                            @if( count($elements) == 0 )
-                                                <div class="list-group-item" style="background-color: #DDDDDD;">
-                                                    <i>No elements for this question</i>
-                                                </div>
-                                            @endif
-                                        </div>
+                                        </form>
                                     </div>
-                                @endforeach
-                            </div>
+                                    <!-- element area holds all sliders and comments for this question -->
+                                    <div class="list-group">
+
+                                        {{-- add element panels --}}
+                                        <?php $elements = $allElements[$qNumber - 1];
+                                        $eNumber = 1;
+                                        while ($eNumber <= count($elements) ) { ?>
+                                        @include('grade.element_panel')
+                                        <?php $elementIndex++; $eNumber++; } ?>
+
+                                        {{-- add some text if no elements for this question --}}
+                                        @if( count($elements) == 0 )
+                                            <div class="list-group-item" style="background-color: #DDDDDD;">
+                                                <i>No elements for this question</i>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Right column holds Roster and Time info -->
-            <div class="col-md-4">
-                <!-- student name and ID -->
-                <div class="row">
-                    <div class="col-md-7">
-                        <h4>
+        <!-- Right column holds Roster and Time info -->
+        <div class="col-md-4">
+            <!-- student name and ID -->
+            <form class="form-horizontal">
+                <div class="form-group activeStudentInput">
+                    <div class="col-md-7" style="padding-right: 0px;">
+
+                            <label for="activeStudentName">
                             <span class="glyphicon glyphicon-pencil" title="Click to hide student names"
                                   style="cursor: pointer;"
                                   onclick="toggleNameVisibility()"> </span>
-                            <div id="nameSearch">
-                                <input class="typeahead" type="text" id="activeStudentName" placeholder="No Student Selected">
-                            </div>
-                            <!-- <span id="activeStudentName">No Student Selected</span> -->
-                        </h4>
+                            </label>
+                            <input class="typeahead" type="text" id="activeStudentName"
+                                   placeholder="No Student Selected"
+                                   style="width: 190px;">
+
+                        <!-- <span id="activeStudentName">No Student Selected</span> -->
+
                     </div>
                     <div class="col-md-5">
-                        <h4>ID <span id="activeStudentIdentifier">--</span></h4>
+                        <label for="activeStudentIdentifier">ID</label>
+                        <input class="typeahead" type="text" id="activeStudentIdentifier"
+                               placeholder="--"
+                               style="width: 90px;">
                     </div>
                 </div>
-                <!-- graded / remaining counters -->
-                <p>Graded: <span id="graded">0</span> Remaining: <span id="remaining">0</span></p>
-                <!-- save & finish button -->
-                <a class="btn btn-success col-md-12" href="{{ url('grade/') }}" id="finishButton"
-                   style="display: none;">
-                    <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish
-                </a>
-                <!-- student table shows the student roster -->
-                @include('grade.student_table')
-                        <!-- statistics area holds time info -->
-                @include('grade.statistics_table')
-            </div>
+            </form>
+            <!-- graded / remaining counters -->
+            <p>Graded: <span id="graded">0</span> Remaining: <span id="remaining">0</span></p>
+            <!-- save & finish button -->
+            <a class="btn btn-success col-md-12" href="{{ url('grade/') }}" id="finishButton"
+               style="display: none;">
+                <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish
+            </a>
+            <!-- student table shows the student roster -->
+            @include('grade.student_table')
+                    <!-- statistics area holds time info -->
+            @include('grade.statistics_table')
         </div>
+    </div>
 
 @endsection
 
@@ -153,15 +164,15 @@
         // studentNames supplies name data for the search box (typeahead)
         var $studentNames = $('[id^="studentName"]');
         var studentNames = [];
-        $studentNames.each( function() {
-            studentNames.push( $(this).text() );
+        $studentNames.each(function () {
+            studentNames.push($(this).text());
         });
 
         // studentIdents does the same for IDs
         var $studentIdents = $('[id^="studentIdentifier"]');
         var studentIdents = [];
-        $studentIdents.each( function() {
-            studentIdents.push( $(this).text() );
+        $studentIdents.each(function () {
+            studentIdents.push($(this).text());
         });
 
         var numStudents = $studentNames.length;
@@ -182,7 +193,7 @@
         updateExamGrades();
 
         // TODO: make this do something
-        var substringMatcher = function(strs) {
+        var substringMatcher = function (strs) {
             return function findMatches(q, cb) {
                 var matches, substrRegex;
                 matches = [];
@@ -192,7 +203,7 @@
 
                 // iterate through the pool of strings and for any string that
                 // contains the substring `q`, add it to the `matches` array
-                $.each(strs, function(i, str) {
+                $.each(strs, function (i, str) {
                     if (substrRegex.test(str)) {
                         matches.push(str);
                     }
@@ -381,7 +392,7 @@
             var id = $student.data('student-identifier');
             //$("#activeStudentName").text(name);
             $("#activeStudentName").val(name);
-            $("#activeStudentIdentifier").text(id);
+            $("#activeStudentIdentifier").val(id);
         }
 
         // When the pencil icon is selected, toggle visibility of roster names and selected name area
@@ -571,8 +582,8 @@
             updateTimer();
 
             /* When an element slider stops movement,
-            update element score and text (if necessary),
-            then save score, text and time
+             update element score and text (if necessary),
+             then save score, text and time
              *  */
             $('input.slider').on('slideStop', function (slideEvt) {
 
