@@ -1,10 +1,10 @@
 <div class="form-group">
-    <div class="col-md-1"></div>
-    <label class="col-md-2" for="gradeGroup{{ $key }}" >{{ $gradeType }}</label>
-    <div class="col-md-6">
+    <!--<div class="col-sm-1"></div>-->
+    <label class="col-xs-2" for="gradeGroup{{ $key }}" >{{ $gradeType }}</label>
+    <div class="col-xs-8">
         <input class="form-control" id="gradeGroup{{ $key }}" name="gradeGroup{{ $key }}"
                type="number" max="{{ $examMaxScore }}"
                min="0" value="{{ $gradeCutoffs[$key] or '' }}">
     </div>
-    <div class="col-md-3"></div>
+    <!--<div class="col-sm-3"></div>-->
 </div>

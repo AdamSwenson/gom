@@ -24,9 +24,9 @@
     <table class="table table-fixed table-hover" id="studentRoster">
         <thead>
         <tr>
-            <th class="col-md-6" id="nameHeader" title="Sort by name" onclick="sortRosterBy('studentName')">Name</th>
-            <th class="col-md-4" id="idHeader" title="Sort by ID" onclick="sortRosterBy('studentIdentifier')">ID</th>
-            <th class="col-md-2" id="gradeHeader" title="Sort by grade" onclick="sortRosterBy('examGrade')">Grade</th>
+            <th class="col-xs-6" id="nameHeader" title="Sort by name" onclick="sortRosterBy('studentName')">Name</th>
+            <th class="col-xs-4" id="idHeader" title="Sort by ID" onclick="sortRosterBy('studentIdentifier')">ID</th>
+            <th class="col-xs-2" id="gradeHeader" title="Sort by grade" onclick="sortRosterBy('examGrade')">Grade</th>
         </tr>
         </thead>
         <tbody id="studentRosterBody">
@@ -37,9 +37,9 @@
                 data-lName="{{ $student->getStudentLName() }}"
                 data-sid="{{ $student->id }}"
                 data-student-identifier="{{ $student->getStudentId() }}">
-                <td class="col-md-6" id="studentName{{ $studentIndex }}">{{ $student->getStudentLName() }}, {{ $student->getStudentFName() }}</td>
-                <td class="col-md-4" id="studentIdentifier{{ $studentIndex }}">{{ !empty($student['student_identifier']) ? $student['student_identifier'] : '--' }}</td>
-                <td class="col-md-2" id="examGrade<?= $studentIndex++; ?>">--</td>
+                <td class="col-xs-6" id="studentName{{ $studentIndex }}">{{ $student->getStudentLName() }}, {{ $student->getStudentFName() }}</td>
+                <td class="col-xs-4" id="studentIdentifier{{ $studentIndex }}">{{ !empty($student['student_identifier']) ? $student['student_identifier'] : '--' }}</td>
+                <td class="col-xs-2" id="examGrade<?= $studentIndex++; ?>">--</td>
             </tr>
         @endforeach
         </tbody>

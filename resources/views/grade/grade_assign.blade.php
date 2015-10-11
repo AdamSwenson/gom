@@ -15,7 +15,7 @@
 
     <div class="row">
         <!-- Left column holds grade assignment regions -->
-        <div class="col-lg-4">
+        <div class="col-sm-5">
             <h4 style="text-align: center;">Max Grade: {{ $examMaxScore or '--' }}</h4>
 
             <form class="form-horizontal" method="post" role="form" name="frmGradeCutoffs"
@@ -23,14 +23,14 @@
                 <input type="hidden" id="token" name="_token" value="{{ csrf_token() }}">
                 <!-- Grade Assignment fields. These will form into 2 columns of up to 7 items each -->
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-sm-6">
                         @foreach($gradeTypes as $key => $gradeType)
                             @if( $key < 7)
                                 @include('grade.grade_assignment_row')
                             @endif
                         @endforeach
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-sm-6">
                         @foreach($gradeTypes as $key => $gradeType)
                             @if( $key >= 7)
                                 @include('grade.grade_assignment_row')
@@ -45,9 +45,9 @@
                 </div>
             </form>
         </div>
-        <div class="col-lg-8">
-            <div id="gradeFreqChart" style="width: 400px; height: 200px;"></div>
-            <div id="scoreChart" style="width: 400px; height: 200px;"></div>
+        <div class="col-sm-7">
+            <div id="gradeFreqChart" style="width: 450px; height: 220px;"></div>
+            <div id="scoreChart" style="width: 450px; height: 220px;"></div>
         </div>
     </div>
 

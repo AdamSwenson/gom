@@ -16,6 +16,19 @@
         .activeStudentInput {
             font-size: 1.25em;
         }
+
+        .input-group.full-width .input-group-btn:last-child > .btn {
+            margin-left: 5px;
+        }
+        .input-group.full-width .input-group-btn:last-child > .btn {
+            border-bottom-left-radius: 4px;
+            border-top-left-radius: 4px;
+        }
+        .input-group.full-width .form-control:first-child {
+            border-bottom-right-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+
     </style>
     <div class="row">
         <!-- Left column holds questions and sliders -->
@@ -51,7 +64,7 @@
                                 } ?>">
                                     {{--<div class="form-horizontal" role="form">--}}
                                     <div class="row">
-                                        <div class="col-md-9">
+                                        <div class="col-sm-9">
                                             <!-- question Name -->
                                             <h4 id="questionName">Question #{{ $qNumber }}:
                                                 "{{ $qAssignment->getQuestionName() }}"</h4>
@@ -59,12 +72,12 @@
                                         <!-- question Score -->
                                         <form class="form-horizontal" role="form">
                                             <div class="form-group">
-                                                <label class="col-md-1 control-label"
+                                                <label class="col-sm-1 control-label"
                                                        style="padding-right: 2px; padding-left: 0px;"
                                                        for="questionScore{{ $qNumber }}">
                                                     Score:</label>
 
-                                                <div class="col-md-1" style="padding: 0px;">
+                                                <div class="col-sm-1" style="padding: 0px;">
                                                     <input class="form-control pull-right" type="number" min="0"
                                                            max="{{ $maxQuestionScores[$qNumber] }}"
                                                            style="width: 4.5em; padding-right: 2px;"
@@ -72,7 +85,7 @@
                                                            data-question-assignment-id="{{ $qAssignment->getId() }}"
                                                            id="questionScore{{ $qNumber }}"/>
                                                 </div>
-                                                <div class="col-md-1 control-label" style="text-align: left;">
+                                                <div class="col-sm-1 control-label" style="text-align: left;">
                                                     <b>/ {{  $maxQuestionScores[$qNumber] }}</b>
                                                 </div>
                                             </div>
@@ -108,19 +121,19 @@
             <!-- student name and ID -->
             <form class="form-horizontal">
                 <div class="form-group activeStudentInput">
-                    <div class="col-md-7" style="padding-right: 0px;">
+                    <div class="col-xs-7" style="padding-right: 0px;">
                         <label for="activeStudentName">
                             <span class="glyphicon glyphicon-pencil" title="Click to hide student names"
                                   style="cursor: pointer;"
                                   onclick="toggleNameVisibility()"> </span>
                         </label>
-                        <input class="typeahead input-form" type="text" id="activeStudentName"
+                        <input class="typeahead full-width" type="text" id="activeStudentName"
                                placeholder="No Student Selected" onchange="handleStudentNameSearch()"
-                               style="width: 190px;">
+                               style="width: 160px;">
                     </div>
-                    <div class="col-md-5" style="padding-right: 0px;">
+                    <div class="col-xs-5" style="padding-right: 0px;">
                         <label for="activeStudentIdentifier">ID</label>
-                        <input class="typeahead input-form" type="text" id="activeStudentIdentifier"
+                        <input class="typeahead full-width" type="text" id="activeStudentIdentifier"
                                placeholder="--" onchange="handleStudentIdentifierSearch()"
                                style="width: 90px;">
                     </div>
@@ -129,7 +142,7 @@
             <!-- graded / remaining counters -->
             <p>Graded: <span id="graded">0</span> Remaining: <span id="remaining">0</span></p>
             <!-- save & finish button -->
-            <a class="btn btn-success col-md-12" href="{{ url('grade/') }}" id="finishButton"
+            <a class="btn btn-success col-sm-12" href="{{ url('grade/') }}" id="finishButton"
                style="display: none;">
                 <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish
             </a>

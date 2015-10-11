@@ -12,16 +12,19 @@
         a {
             cursor: pointer;
         }
+
+        .chart {
+            max-width: 700px;
+            max-height: 500px;
+        }
     </style>
 
     <h3><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Analytics: {{ $exam->getTerm() }}
         {{ $exam->getYear() }} "{{ $exam->getName() }}"</h3>
 
-    <div id="chart_div" style="width: 900px; height: 500px;">
+    <div class="chart" id="chart_div">
     </div>
-    <div style="text-align: 25%;"><a onclick="howToReadBoxPlot();">How to read this chart</a></div>
-
-
+    <p style="width: 800px; text-align: center;"><a onclick="howToReadBoxPlot();">How to read this chart</a></p>
 
 @endsection
 

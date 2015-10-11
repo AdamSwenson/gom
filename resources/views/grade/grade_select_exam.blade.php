@@ -25,11 +25,11 @@
         <table class="table">
             <thead>
             <tr style="cursor: default;">
-                <th class="col-md-1">Term</th>
-                <th class="col-md-6">Name</th>
-                <th class="col-md-1">Questions</th>
-                <th class="col-md-1">Students</th>
-                <th class="col-md-3"></th>
+                <th class="col-sm-1">Term</th>
+                <th class="col-sm-6">Name</th>
+                <th class="col-sm-1">Questions</th>
+                <th class="col-sm-1">Students</th>
+                <th class="col-sm-3"></th>
             </tr>
             </thead>
             <tbody>

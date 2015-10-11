@@ -27,7 +27,7 @@
 @if(env('APP_ENV') == 'production')
     @include('temp.warning_not_to_use_student_data')
 @endif
-<div class="container">
+<div class="container-fluid">
     @include('flash::message')
     @include('errors.list')
     @yield('body')

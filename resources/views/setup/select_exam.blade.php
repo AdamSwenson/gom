@@ -35,11 +35,11 @@
     <table class="table">
         <thead>
         <tr>
-            <th class="col-md-1">Term</th>
-            <th class="col-md-6">Name</th>
-            <th class="col-md-1">Questions</th>
-            <th class="col-md-1">Students</th>
-            <th class="col-md-3"></th>
+            <th class="col-xs-1">Term</th>
+            <th class="col-xs-6">Name</th>
+            <th class="col-xs-1">Questions</th>
+            <th class="col-xs-1">Students</th>
+            <th class="col-xs-3"></th>
         </tr>
         </thead>
         <tbody>
