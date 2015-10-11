@@ -1,0 +1,1 @@
+{"version":3,"sources":["flashMessageHandling.js"],"names":[],"mappings":"AAAA;AACA;AACA;AACA;AACA;AACA","file":"commonScripts.js","sourcesContent":["/**\n * Created by adam on 10/4/15.\n */\n\n//Automatically hide non-important flash message\n$('div.alert').not('alert-important').delay(3000).slideUp(300);"],"sourceRoot":"/source/"}

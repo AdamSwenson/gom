@@ -18,27 +18,34 @@ Route::controllers([
     'password' => 'Auth\PasswordController'
 ]);
 
+
+/* Temporary: Limitations on registration */
+Route::get('registrationRestrictions', 'RestrictedRegistrationController@showRestrictedAccessPage');
+Route::post('registrationRestrictions', 'RestrictedRegistrationController@recordInterestToWaitlist');
+
+
+
+/* --------------------------------------------- Account ---------------------------------------------------------------*/
+Route::get('account', 'LandingController@loggedIn');
+
 /* Home page - now called 'landing' */
 Route::get('/', 'LandingController@showLanding');
 
 /* --------------------------------------------- Help ------------------------------------------------------------------*/
-Route::get('help', function() {
-    return view('other/help');
-});
+Route::get('help', 'InfoController@showGuides');
+Route::get('faq', 'InfoController@showFaq');
+Route::get('tutorials', 'InfoController@showTutorials');
+Route::get('gettingStarted', 'InfoController@showGettingStarted');
+
 /* --------------------------------------------- About -----------------------------------------------------------------*/
 Route::get('about', function() {
     return view('other/about');
 });
+
 /* --------------------------------------------- Contact ---------------------------------------------------------------*/
 Route::get('contact', function() {
     return view('other/contact');
 });
-/* --------------------------------------------- Account ---------------------------------------------------------------*/
-Route::get('account', 'LandingController@loggedIn');
-
-/* Limitations on registration */
-Route::get('registrationRestrictions', 'RestrictedRegistrationController@showRestrictedAccessPage');
-Route::post('registrationRestrictions', 'RestrictedRegistrationController@recordInterestToWaitlist');
 
 
 /* ----------------------------------------------- Exam set up  -------------------------------------------------------- */

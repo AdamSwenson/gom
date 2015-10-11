@@ -68,15 +68,15 @@ interface IStudentRepository
      */
     public function load_student_by_sid($clean_id);
 
-    /**
-     * Handles the database queries for the autocomplete function
-     * on the main grading page
-     * @param \Exam $exam
-     * @param $param
-     * @return mixed
-     * @throws \Exception
-     */
-    public function lookup_autocomplete($examId, $param);
+//    /**
+//     * Handles the database queries for the autocomplete function
+//     * on the main grading page
+//     * @param \Exam $exam
+//     * @param $param
+//     * @return mixed
+//     * @throws \Exception
+//     */
+//    public function lookup_autocomplete($examId, $param);
 
     /**
      * Alters the email associated with the student

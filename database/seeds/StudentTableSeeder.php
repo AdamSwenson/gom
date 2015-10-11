@@ -40,6 +40,7 @@ class StudentTableSeeder extends Seeder
             if(rand(0,1))
             {
                 $student->email = $this->faker->unique()->email();
+//                $student->email = \Illuminate\Support\Facades\Crypt::encrypt($this->faker->unique()->email());
             }
 
             $student->save();

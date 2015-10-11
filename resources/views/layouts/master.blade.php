@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="html" lang="en-US">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -8,15 +8,17 @@
     <title>@yield('pageTitle')</title>
     <meta name="description" content="@yield('description')">
 
-    <link href='{{secure_asset('inc/images/favicon.ico')}}' rel='icon' type='image/x-icon'/>
+    <link href='{{ asset('inc/images/favicon.ico') }}' rel='icon' type='image/x-icon'/>
+
+    @yield('otherCss')
+
     @include('layouts.js_jquery_loader')
     @include('layouts.js_bootstrap_loader')
     @include('layouts.js_additional_libs')
 
+
 </head>
-
 <body>
-
 @if( Auth::check() )
     @include('navigation.nav_bar_main')
 @else
@@ -25,13 +27,15 @@
 @if(env('APP_ENV') == 'production')
     @include('temp.warning_not_to_use_student_data')
 @endif
-
 <div class="container">
-    {{-- @include('flash::message') --}}
+    @include('flash::message')
     @include('errors.list')
     @yield('body')
     @include('layouts.footer')
 </div>
+
+
+<input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
 
 <div id="scriptBox">
     <script type="text/javascript">
@@ -42,6 +46,10 @@
         });
     </script>
     @yield('jsArea')
+    @if(env('APP_ENV') == 'production')
+        @include('other.google_analytics_include')
+    @endif
+    <script type="text/javascript" src="{{ asset('js/commonScripts.js') }}"></script>
 </div>
 </body>
 </html>

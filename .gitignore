@@ -1,6 +1,7 @@
 #/node_modules
 Homestead.yaml
 .env
+.env.testing
 .idea
 .DS_store
 vendor

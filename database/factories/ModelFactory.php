@@ -10,7 +10,7 @@
 | database. Just tell the factory how a default model should look.
 |
 */
-
+use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
 $factory->define(App\User::class, function (Faker\Generator $faker)
@@ -35,6 +35,25 @@ $factory->define(App\Exam::class, function (Faker\Generator $faker)
         'locked' => 0
     ];
 });
+
+
+
+$factory->define(App\Student::class, function (Faker\Generator $faker)
+{
+    Model::unguard();
+    $faker2 = Faker\Factory::create();
+
+    return [
+//        'id' => $faker->unique()->randomNumber(3),
+        'user_id' => 1,
+        'student_identifier' => $faker2->unique()->randomNumber(9),
+        'last_name' => $faker2->lastName,
+        'first_name' => $faker2->firstName,
+        'email' => $faker2->optional()->email
+    ];
+
+});
+
 
 $factory->define(App\Question::class, function (Faker\Generator $faker)
 {
@@ -105,18 +124,6 @@ $factory->defineAs('App\QuestionAssignment', 'mock2', function (Faker\Generator 
     return $questionAssignment;
 });
 
-
-$factory->define(App\Student::class, function (Faker\Generator $faker)
-{
-    return [
-        'id' => $faker->unique()->randomNumber(3),
-        'user_id' => 1,
-        'student_identifier' => $faker->unique()->randomNumber(9),
-        'last_name' => $faker->lastName(),
-        'first_name' => $faker->firstName(),
-        'email' => $faker->email()
-    ];
-});
 
 $factory->define(App\QuestionScore::class, function (Faker\Generator $faker)
 {

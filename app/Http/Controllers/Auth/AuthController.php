@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\NewUserSignedUpEvent;
 use App\Http\Requests\AuthRequest;
 use App\User;
 use App\Http\Requests\Request;
@@ -42,45 +43,6 @@ class AuthController extends Controller
         $this->middleware('guest', ['except' => 'getLogout']);
         $this->middleware('restrictRegistration');
     }
-//
-//    /**
-//     * Create new account
-//     * @param AuthRequest $request
-//     */
-//    public function postRegister(AuthRequest $request)
-//    {
-////        $this->middleware('restrictRegistration');
-//        parent::postRegister($request);
-//
-//    }
-//
-//    /**
-//     * Returns the page where the user can create a new account
-//     */
-//    public function getRegister()
-//    {
-//        return view('auth.register');
-////        return view('account.createAccount');
-//    }
-//
-//
-//    /**
-//     * Returns the log in page
-//     */
-//    public function getLogin()
-//    {
-//        return view($this->loginPath);
-//    }
-
-//    /**
-//     * Process the request to log in
-//     * @param Request $request
-//     */
-//    public function postLogin(AuthRequest $request)
-//    {
-//        $validator = $this->validator($request);
-//
-//    }
 
     /**
      * Get a validator for an incoming registration request.
@@ -105,10 +67,15 @@ class AuthController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
                                 'name' => $data['name'],
                                 'email' => $data['email'],
                                 'password' => bcrypt($data['password']),
                             ]);
+        //Trigger new registration event
+        event( new NewUserSignedUpEvent($user) );
+
+        //return the user so RegistersUsers Trait can continue logging in
+        return $user;
     }
 }

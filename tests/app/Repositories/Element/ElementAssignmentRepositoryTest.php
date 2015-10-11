@@ -38,51 +38,81 @@ class ElementAssignmentRepositoryTest extends \TestCase
 
     public function testRecord()
     {
-        $subtask = $this->faker->randomNumber(3);
-        $result = $this->object->record($this->questionAssignment->exam_id, $this->question->id, $this->element->id, $subtask);
+        //prep
+        //create new element to assign so won't get false failures for multiple assignments of element to same question
+        $element = factory('App\Element')->create();
+        $subtask = 100;
+
+        //call
+        $result = $this->object->record($this->questionAssignment->exam_id, $this->question->id, $element->id, $subtask);
+
+        //check
         $this->assertInstanceOf('\App\Element', $result);
         $this->seeInDatabase('element_assignments',
             [
                 'question_id' => $this->question->id,
-                'element_id' => $this->element->id,
+                'element_id' => $element->id,
                 'subtask' => $subtask
             ]);
     }
 
     public function testLoad_elements()
     {
-        //TODO this needs to be fixed to ensure that there is always the expected value in the db
-        $qAssign = QuestionAssignment::all()->random(1);
+        //prep
+        $ea = ElementAssignment::all()->random();
+        $examId = $ea->exam_id;
+        $questionId = $ea->question_id;
+        $elementId = $ea->element_id;
+        $qAssign = QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->first();
+        $qNum = $qAssign->question_number;
 
-        $result = $this->object->load_elements($qAssign->exam_id,
-            $qAssign->question_number);
-//        $this->assertAttributeNotEmpty('assignments', $this->object, "assignments load");
-      //  $this->assertNotEmpty($result);
+        //call
+        $result = $this->object->load_elements($examId, $qNum);
+
+        //check
+        $this->assertTrue(is_array($result), "should return an array");
+//        $this->assertInstanceOf('Illuminate\Support\Collection', $result, "should return a laravel collection ");
         foreach ($result as $r)
         {
-            $this->assertInstanceOf('\App\Element', $r);
+            $this->assertInstanceOf('\App\Element', $r, "object is instance of element model");
         }
+//
+//
+//        $qAssign = QuestionAssignment::all()->random(1);
+//
+//        $result = $this->object->load_elements($qAssign->exam_id, $qAssign->question_number);
+////        $this->assertAttributeNotEmpty('assignments', $this->object, "assignments load");
+//      //  $this->assertNotEmpty($result);
+
     }
 
-    public function testLoad_elements_by_question_number()
+    public function testLoad_element_assignments_by_question_number()
     {
-        //TODO this needs to be fixed to ensure that there is always the expected value in the db
-        $qAssign = QuestionAssignment::all()->random(1);
+        //prep
+        $ea = ElementAssignment::all()->random();
+        $examId = $ea->exam_id;
+        $questionId = $ea->question_id;
+        $elementId = $ea->element_id;
+        $qAssign = QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->first();
+        $qNum = $qAssign->question_number;
 
-        $result = $this->object->load_element_assignments_by_question_number($qAssign->exam_id,
-            $qAssign->question_number);
-       // $this->assertAttributeNotEmpty('assignments', $this->object, "assignments load");
-       // $this->assertNotEmpty($result);
+        //call
+        $result = $this->object->load_element_assignments_by_question_number($examId, $qNum);
+
+        //check
+//        $this->assertTrue(is_array($result), "should return an array");
+        $this->assertInstanceOf('Illuminate\Support\Collection', $result, "should return a laravel collection ");
         foreach ($result as $r)
         {
-            $this->assertInstanceOf('\App\ElementAssignment', $r);
+            $this->assertInstanceOf('App\ElementAssignment', $r);
         }
+
     }
 
     /**
-     * TODO: Add check to make sure ordered by question_number, subtask
+     * @test
      */
-    public function testLoad_by_exam()
+    public function LoadByExamReturnsItemsWithProperOrdering()
     {
         //prep
         $elAssign = ElementAssignment::all()->random(1);
@@ -121,16 +151,12 @@ class ElementAssignmentRepositoryTest extends \TestCase
             }
         }
 
-        //Todo: Still not well-ordered
-
-
-
     }
 
     /**
-     * TODO: Add check to make sure ordered by question_number, subtask
+     * @test
      */
-    public function testLoad_by_examReturnArray()
+    public function LoadByExamWhereWantToReturnArray()
     {
         $elAssign = ElementAssignment::all()->random(1);
         $eid = $elAssign->exam_id;
@@ -160,49 +186,4 @@ class ElementAssignmentRepositoryTest extends \TestCase
         $this->assertEquals($examId, $result->exam_id);
         $this->assertEquals($elementId, $result->element_id);
     }
-
-//
-//    public function testLoad_elements()
-//    {
-//        $examId = $this->questionAssignment->exam_id;
-//        $questionNumber = $this->questionAssignment->question_number;
-//
-//        $result = $this->object->load_elements($examId, $questionNumber);
-//        if (count($result) > 0)
-//        {
-//            $this->assertInstanceOf('\App\Element', $result[0]);
-//        }
-//
-//    }
-//
-//    public function testLoad_element_assignments_by_question_number()
-//    {
-//        $qnum = $this->assignment->questionAssignment()->question_number;
-//        $examId = $this->assignment->exam()->getId();
-//        $result = $this->object->load_element_assignments_by_question_number($examId, $qnum);
-//        $this->assertNotEmpty($result);
-//        $this->assertInstanceOf('\App\ElementAssignment', $result);
-//
-//    }
-//
-//    public function testLoad_by_exam()
-//    {
-//        $result = $this->object->load_by_exam($this->assignment->exam()->getId());
-//        $this->assertNotEmpty($result);
-//        $this->assertInstanceOf('\App\ElementAssignment', $result);
-//     }
-//
-//    public function testRecord()
-//    {
-//        $subtask = $this->faker->randomNumber(3);
-//        $result = $this->object->record($this->exam->getId(), $this->question->getId(), $this->element->getId(),
-//            $subtask);
-//        $this->assertInstanceOf('\App\ElementAssignment', $result);
-//
-
-//        $this->seeInDatabase('question_assignments',
-//            ['exam_id' => $this->exam->getId(), 'question_id' => $this->question_id]);
-//        $this->seeInDatabase('element_assignments', ['element_id' => $this->element->getId(), 'subtask' => $subtask]);
-//
-//    }
 }

@@ -23,17 +23,31 @@ class InfoController extends Controller
     public function showAbout()
     {}
 
+    public function showGettingStarted()
+    {
+        return view('other.help');
+    }
+
     /**
      * Show the tutorials and guides page
      */
     public function showGuides()
-    {}
+    {
+        return view('other.help');
+    }
+
+    public function showTutorials()
+    {
+        return view('other.video_tutorials');
+    }
 
     /**
      * Show the frequently asked questions page
      */
     public function showFaq()
-    {}
+    {
+        return view('other.help');
+    }
 
     /**
      * Directs to the page which gives info about the company

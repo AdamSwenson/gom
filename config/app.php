@@ -144,6 +144,7 @@ return [
         App\Providers\AppServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\AuthServiceProvider::class,
 
         /*
          * Laravel tools imported
@@ -154,6 +155,7 @@ return [
          * Third party tools
          */
         Barryvdh\DomPDF\ServiceProvider::class,
+        Laracasts\Flash\FlashServiceProvider::class,
 
         /*
          * Custom service providers
@@ -163,9 +165,9 @@ return [
 
         /*
          * Development
-         * TODO: Remove this or put it somewhere nice for production
          */
-        //
+        App\Providers\TestingServiceProvider::class,
+
   //      Laracasts\Generators\GeneratorsServiceProvider::class
     ],
 
@@ -195,6 +197,7 @@ return [
         'Eloquent'  => Illuminate\Database\Eloquent\Model::class,
         'Event'     => Illuminate\Support\Facades\Event::class,
         'File'      => Illuminate\Support\Facades\File::class,
+        'Gate'      => Illuminate\Support\Facades\Gate::class,
         'Hash'      => Illuminate\Support\Facades\Hash::class,
         'Input'     => Illuminate\Support\Facades\Input::class,
         'Inspiring' => Illuminate\Foundation\Inspiring::class,
@@ -218,6 +221,7 @@ return [
         'Form'      => Illuminate\Html\FormFacade::class,
         'HTML'      => Illuminate\Html\HtmlFacade::class,
         'PDF'       => Barryvdh\DomPDF\Facade::class,
+        'Flash'     => Laracasts\Flash\Flash::class,
 
     ],
 

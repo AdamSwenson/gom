@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Exceptions\SilentlyLoggedException;
+use App\Exceptions\SilentlyLoggedException;
 use Illuminate\Foundation\Http\FormRequest;
 
 abstract class Request extends FormRequest

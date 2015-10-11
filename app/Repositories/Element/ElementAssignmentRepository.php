@@ -21,6 +21,13 @@ use App\Element;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Handles db interactions for element assignments.
+ *
+ * TODO: Refactor so that the various methods return similar things rather than the mix of collections, stdClass, and arrays currently returned.
+ *
+ * @package App\Repositories\Element
+ */
 class ElementAssignmentRepository implements IElementAssignmentRepository
 {
 
@@ -53,6 +60,12 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
     }
 
 
+    /**
+     * Returns an array of Element objects
+     * @param $examId
+     * @param $questionNumber
+     * @return array
+     */
     public function load_elements($examId, $questionNumber)
     {
         $this->load_element_assignments_by_question_number($examId, $questionNumber);
@@ -69,7 +82,7 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
      * Returns collection of elementAssignment objects associated with a question on an exam.
      * @param $examId
      * @param $questionNumber
-     * @return mixed
+     * @return \Illuminate\Support\Collection
      */
     public function load_element_assignments_by_question_number($examId, $questionNumber)
     {
@@ -118,7 +131,7 @@ class ElementAssignmentRepository implements IElementAssignmentRepository
      *
      * @param integer $examId
      * @param bool $returnArray
-     * @return array
+     * @return \Illuminate\Support\Collection|array
      */
     public function load_by_exam($examId, $returnArray = false)
     {
