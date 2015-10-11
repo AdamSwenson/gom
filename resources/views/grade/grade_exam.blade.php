@@ -12,6 +12,7 @@
         .typeahead {
             border: 0px;
         }
+
         .activeStudentInput {
             font-size: 1.25em;
         }
@@ -108,23 +109,19 @@
             <form class="form-horizontal">
                 <div class="form-group activeStudentInput">
                     <div class="col-md-7" style="padding-right: 0px;">
-
-                            <label for="activeStudentName">
+                        <label for="activeStudentName">
                             <span class="glyphicon glyphicon-pencil" title="Click to hide student names"
                                   style="cursor: pointer;"
                                   onclick="toggleNameVisibility()"> </span>
-                            </label>
-                            <input class="typeahead" type="text" id="activeStudentName"
-                                   placeholder="No Student Selected"
-                                   style="width: 190px;">
-
-                        <!-- <span id="activeStudentName">No Student Selected</span> -->
-
+                        </label>
+                        <input class="typeahead input-form" type="text" id="activeStudentName"
+                               placeholder="No Student Selected" onchange="handleStudentNameSearch()"
+                               style="width: 190px;">
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-5" style="padding-right: 0px;">
                         <label for="activeStudentIdentifier">ID</label>
-                        <input class="typeahead" type="text" id="activeStudentIdentifier"
-                               placeholder="--"
+                        <input class="typeahead input-form" type="text" id="activeStudentIdentifier"
+                               placeholder="--" onchange="handleStudentIdentifierSearch()"
                                style="width: 90px;">
                     </div>
                 </div>
@@ -150,9 +147,9 @@
 
     <link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet">
     <script type='text/javascript' src="{{ asset('inc/js/bootstrap-slider.js') }}"></script>
-    <script type='text/javascript' src="{{ asset('inc/js/typeahead.jquery.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('inc/js/bootstrap3-typeahead.min.js') }}"></script>
     <script type="text/javascript">
-
+        var myvar = "adding new errors";
         var stockComments = <?= json_encode($stockComments) ?>;
 
         var elementComments = <?= json_encode($studentElementComments) ?>;
@@ -191,37 +188,6 @@
         var gradedStudentColor = '#5cb85c';
 
         updateExamGrades();
-
-        // TODO: make this do something
-        var substringMatcher = function (strs) {
-            return function findMatches(q, cb) {
-                var matches, substrRegex;
-                matches = [];
-
-                // regex used to determine if a string contains the substring `q`
-                substrRegex = new RegExp(q, 'i');
-
-                // iterate through the pool of strings and for any string that
-                // contains the substring `q`, add it to the `matches` array
-                $.each(strs, function (i, str) {
-                    if (substrRegex.test(str)) {
-                        matches.push(str);
-                    }
-                });
-                cb(matches);
-            };
-        };
-
-        // set up typeahead boxes
-        $('#activeStudentName .typeahead').typeahead({
-                    hint: true,
-                    highlight: true,
-                    minLength: 2
-                },
-                {
-                    name: 'activeName',
-                    source: substringMatcher(studentNames)
-                });
 
         /*
          * Set valenceCutoffs for comments --  these represent the maximum value for each valence group.
@@ -574,12 +540,39 @@
             else return date.toISOString().substr(11, 8);
         }
 
+        // grab the name of the student, and perform a click on the appropriate row in the student roster
+        function handleStudentNameSearch() {
+            var nameToFind = $('#activeStudentName').val();
+            var i = studentNames.indexOf(nameToFind);
+            if (i >= 0) {
+                $('#studentListItem'+i).triggerHandler('click');
+            }
+        }
 
+        // do the same with ID search
+        function handleStudentIdentifierSearch() {
+            var idToFind = $('#activeStudentIdentifier').val();
+            var i = studentIdents.indexOf(idToFind);
+            $("#activeStudentIdentifier").blur();
+            if (i >= 0) {
+                $('#studentListItem'+i).triggerHandler('click');
+            }
+        }
+
+        // -------------------------------------- Document Ready -------------------------------------
         $(document).ready(function () {
-
             updateStudentDataArea();
             sortRosterBy('studentName');
             updateTimer();
+
+            // set up typeahead [search] boxes for name and ID
+            $('#activeStudentName').typeahead({
+                        source: studentNames
+            });
+
+            $('#activeStudentIdentifier').typeahead({
+                        source: studentIdents
+            });
 
             /* When an element slider stops movement,
              update element score and text (if necessary),
