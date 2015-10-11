@@ -8,6 +8,11 @@
 @endsection
 
 @section('body')
+    <style>
+        .typeahead {
+            border: 0px;
+        }
+    </style>
         <div class="row">
             <!-- Left column holds questions and sliders -->
             <div class="col-md-8">
@@ -96,14 +101,17 @@
 
             <!-- Right column holds Roster and Time info -->
             <div class="col-md-4">
-                <!-- student name and / or ID -->
+                <!-- student name and ID -->
                 <div class="row">
                     <div class="col-md-7">
                         <h4>
                             <span class="glyphicon glyphicon-pencil" title="Click to hide student names"
                                   style="cursor: pointer;"
                                   onclick="toggleNameVisibility()"> </span>
-                            <span id="activeStudentName">No Student Selected</span>
+                            <div id="nameSearch">
+                                <input class="typeahead" type="text" id="activeStudentName" placeholder="No Student Selected">
+                            </div>
+                            <!-- <span id="activeStudentName">No Student Selected</span> -->
                         </h4>
                     </div>
                     <div class="col-md-5">
@@ -131,6 +139,7 @@
 
     <link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet">
     <script type='text/javascript' src="{{ asset('inc/js/bootstrap-slider.js') }}"></script>
+    <script type='text/javascript' src="{{ asset('inc/js/typeahead.jquery.js') }}"></script>
     <script type="text/javascript">
 
         var stockComments = <?= json_encode($stockComments) ?>;
@@ -141,7 +150,21 @@
         var examGradingTimes = <?= json_encode($examGradingTimes) ?>;
         var examGrades = [];
 
-        var numStudents = {{ count($students) }};
+        // studentNames supplies name data for the search box (typeahead)
+        var $studentNames = $('[id^="studentName"]');
+        var studentNames = [];
+        $studentNames.each( function() {
+            studentNames.push( $(this).text() );
+        });
+
+        // studentIdents does the same for IDs
+        var $studentIdents = $('[id^="studentIdentifier"]');
+        var studentIdents = [];
+        $studentIdents.each( function() {
+            studentIdents.push( $(this).text() );
+        });
+
+        var numStudents = $studentNames.length;
         var numQuestions = {{ count($questionAssignments) }};
 
         var activeStudent = null;
@@ -157,6 +180,37 @@
         var gradedStudentColor = '#5cb85c';
 
         updateExamGrades();
+
+        // TODO: make this do something
+        var substringMatcher = function(strs) {
+            return function findMatches(q, cb) {
+                var matches, substrRegex;
+                matches = [];
+
+                // regex used to determine if a string contains the substring `q`
+                substrRegex = new RegExp(q, 'i');
+
+                // iterate through the pool of strings and for any string that
+                // contains the substring `q`, add it to the `matches` array
+                $.each(strs, function(i, str) {
+                    if (substrRegex.test(str)) {
+                        matches.push(str);
+                    }
+                });
+                cb(matches);
+            };
+        };
+
+        // set up typeahead boxes
+        $('#activeStudentName .typeahead').typeahead({
+                    hint: true,
+                    highlight: true,
+                    minLength: 2
+                },
+                {
+                    name: 'activeName',
+                    source: substringMatcher(studentNames)
+                });
 
         /*
          * Set valenceCutoffs for comments --  these represent the maximum value for each valence group.
@@ -325,7 +379,8 @@
                 name = noActiveStudentString;
             }
             var id = $student.data('student-identifier');
-            $("#activeStudentName").text(name);
+            //$("#activeStudentName").text(name);
+            $("#activeStudentName").val(name);
             $("#activeStudentIdentifier").text(id);
         }
 
@@ -355,7 +410,7 @@
             }
         }
 
-        // set the "grades" column in the student roster
+        // set the "grade" column in the student roster, or "--" if exam is not graded
         function updateRosterGradeDisplay() {
             for (var i = 0; i < examGrades.length; i++) {
                 if (examGrades[i] >= 0) {
@@ -368,8 +423,9 @@
         }
 
         // set background colors in the student roster
-        // "graded" exams are marked green
-        // "ungraded" exams are marked white
+        // graded = green
+        // ungraded = white
+        // active = blue
         function setStudentBackgroundColors() {
             for (var i = 0; i < examGrades.length; i++) {
                 var name = "#studentListItem" + i;
@@ -514,7 +570,10 @@
             sortRosterBy('studentName');
             updateTimer();
 
-            /* When an element slider stops movement, do things */
+            /* When an element slider stops movement,
+            update element score and text (if necessary),
+            then save score, text and time
+             *  */
             $('input.slider').on('slideStop', function (slideEvt) {
 
                 // update the element's score visually and in elementScores[]
@@ -545,7 +604,6 @@
                     updateStandardScores();
                 }
 
-                // update exam scores and student data area
                 updateStudentDataArea();
                 resumeTimerIfPaused();
             });

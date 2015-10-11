@@ -37,10 +37,8 @@
                 data-lName="{{ $student->getStudentLName() }}"
                 data-sid="{{ $student->id }}"
                 data-student-identifier="{{ $student->getStudentId() }}">
-                <td class="col-md-6" id="studentName{{ $studentIndex }}">{{ $student->getStudentLName() }},
-                    {{ $student->getStudentFName() }}</td>
-                <td class="col-md-4" id="studentIdentifier{{ $studentIndex }}">
-                    {{ !empty($student['student_identifier']) ? $student['student_identifier'] : '--' }}</td>
+                <td class="col-md-6" id="studentName{{ $studentIndex }}">{{ $student->getStudentLName() }}, {{ $student->getStudentFName() }}</td>
+                <td class="col-md-4" id="studentIdentifier{{ $studentIndex }}">{{ !empty($student['student_identifier']) ? $student['student_identifier'] : '--' }}</td>
                 <td class="col-md-2" id="examGrade<?= $studentIndex++; ?>">--</td>
             </tr>
         @endforeach

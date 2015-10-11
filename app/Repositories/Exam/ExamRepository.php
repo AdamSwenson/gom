@@ -154,9 +154,10 @@ class ExamRepository implements IExamRepository
      */
     public function load_all_exams()
     {
-        //$exams = Exam::all();
-        return Exam::orderBy('year', 'DESC')->orderBy('name', 'ASC')->get();
-        //return $exams->sortByDesc('year');
+        $exams = Exam::all();
+
+        //return Exam::orderBy('name', 'ASC')->get();
+        return $exams->sortByDesc('year');
     }
 
     /**
