@@ -1,13 +1,13 @@
 <!-- Generic nav bar template used by all pages once logged in. The active tab is set in JS by the page -->
-{{--
+
 <style>
     li:hover {
         background-color: #393939;
     }
 </style>
---}}
+
 <div class="navbar navbar-inverse navbar-static-top">
-    <div class="container">
+    <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-ex-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -15,8 +15,9 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url('/exam') }}" style="color:white;">
+            <a class="navbar-brand" href="{{ url('/') }}" style="color:white;">
                     <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> gradeomatic</span>
+                | <small>grade faster. teach better.</small>
             </a>
         </div>
         <div class="collapse navbar-collapse" id="navbar-ex-collapse">

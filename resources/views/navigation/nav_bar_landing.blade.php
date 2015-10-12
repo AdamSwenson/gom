@@ -1,6 +1,10 @@
-<!-- nav bar for welcome / landing page -->
+<style>
+    li:hover {
+        background-color: #393939;
+    }
+</style>
 <div class="navbar navbar-inverse navbar-static-top">
-    <div class="container">
+    <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-ex-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -8,22 +12,22 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url('/') }}" span class="standard" style="color: white;">
-
+            <a class="navbar-brand" href="{{ url('/') }}">
+                <span class="standard" style="color: white;">
                 <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> gradeomatic |
                 <small>
                     grade faster. teach better.
                 </small>
-
+                </span>
             </a>
         </div>
         <div class="collapse navbar-collapse" id="navbar-ex-collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li id="navSetup" title="Sign up for gradeomatic">
-                    <a href="{{url('auth/register')}}">Sign Up</a>
+                    <a href="{{url('auth/register')}}" style="color:white;">Sign Up</a>
                 </li>
                 <li id="navGrade" title="Log in to gradeomatic">
-                    <a href="{{url('auth/login')}}">Log In</a>
+                    <a href="{{url('auth/login')}}" style="color:white;">Log In</a>
                 </li>
             </ul>
         </div>

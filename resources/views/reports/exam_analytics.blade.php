@@ -8,14 +8,23 @@
 @endsection
 
 @section('body')
+    <style>
+        a {
+            cursor: pointer;
+        }
+
+        .chart {
+            max-width: 700px;
+            max-height: 500px;
+        }
+    </style>
 
     <h3><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Analytics: {{ $exam->getTerm() }}
         {{ $exam->getYear() }} "{{ $exam->getName() }}"</h3>
 
-    <div id="chart_div" style="width: 900px; height: 500px;">
+    <div class="chart" id="chart_div">
     </div>
-
-
+    <p style="width: 800px; text-align: center;"><a onclick="howToReadBoxPlot();">How to read this chart</a></p>
 
 @endsection
 
@@ -108,6 +117,29 @@
                     0: {type: "candlesticks", labelInLegend: 'Q2-Q3'},
                     1: {type: "line", labelInLegend: 'median', pointSize: 10, lineWidth: 0},
                     2: {type: "line", labelInLegend: 'mean', pointSize: 10, lineWidth: 0, color: 'black'}
+                }
+            });
+        }
+
+        function howToReadBoxPlot() {
+            showMessage('<p style="text-align: justify;">How to Read - Box Plot', 'In this graph, each set of question scores is represented by a box with lines. ' +
+                    'The bottom line indicates the lowest quartile (25%) of scores, while the box ' +
+                    'displays the second and third quartiles (25%-75%). The top line shows the range of the top ' +
+                    '25% of scores. Additional dots show the mean and median score for the question.</p>');
+        }
+
+        function showMessage(title, msg) {
+            msg = msg;
+            bootbox.dialog({
+                message: msg,
+                title: title,
+                buttons: {
+                    default: {
+                        label: 'Ok',
+                        className: "btn-sm",
+                        callback: function () {
+                        }
+                    }
                 }
             });
         }

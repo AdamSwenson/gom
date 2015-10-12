@@ -6,8 +6,8 @@
  * Time: 6:41 PM
  */?>
 @extends('layouts.master')
-@section('title')
-    Reset Password
+@section('pageTitle', 'Reset Password | gradeomatic')
+
 @endsection
 
 @section('body')

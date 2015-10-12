@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="text/html; charset = utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name=viewport content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <title>@yield('pageTitle')</title>
@@ -15,6 +15,8 @@
     @include('layouts.js_jquery_loader')
     @include('layouts.js_bootstrap_loader')
     @include('layouts.js_additional_libs')
+
+
 </head>
 <body>
 @if( Auth::check() )
@@ -22,18 +24,18 @@
 @else
     @include('navigation.nav_bar_landing')
 @endif
-
 @if(env('APP_ENV') == 'production')
     @include('temp.warning_not_to_use_student_data')
 @endif
-<div class="container">
+<div class="container-fluid">
     @include('flash::message')
     @include('errors.list')
     @yield('body')
     @include('layouts.footer')
 </div>
 
-{{--<input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">--}}
+
+<input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
 
 <div id="scriptBox">
     <script type="text/javascript">

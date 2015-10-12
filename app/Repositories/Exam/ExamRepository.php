@@ -81,7 +81,7 @@ class ExamRepository implements IExamRepository
      * @return Exam
      * @throws \Exception
      */
-    public function save_new_exam($year, $term, $name, $classId = null)
+    public function save_new_exam($year, $term, $name, $classId=null)
     {
         try
         {

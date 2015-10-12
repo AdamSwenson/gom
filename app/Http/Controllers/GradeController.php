@@ -238,7 +238,6 @@ class GradeController extends Controller
 
         //This will hold the incoming assignments after they have been processed and before they are written to the db
         $assignments = [];
-
         //This will hold the grades which are not being assigned and slated for deletion if they were in the db
         $nonAssigned = [];
 

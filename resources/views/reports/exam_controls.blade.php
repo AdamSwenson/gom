@@ -27,9 +27,9 @@
         <table class="table">
             <thead>
             <tr>
-                <th class="col-md-1">Term</th>
-                <th class="col-md-7">Name</th>
-                <th class="col-md-4"></th>
+                <th class="col-sm-1">Term</th>
+                <th class="col-sm-6">Name</th>
+                <th class="col-sm-5"></th>
             </tr>
             </thead>
             <tbody>
@@ -48,8 +48,6 @@
             </tbody>
         </table>
     </div>
-
-
 
 @endsection
 
