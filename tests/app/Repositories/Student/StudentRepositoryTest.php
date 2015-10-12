@@ -104,7 +104,7 @@ public function tearDown()
         //call
         $result = $this->object->create_student(
             $this->student->last_name,
-            $this->student->setFfirst_name,
+            $this->student->first_name,
             $this->student->getStudentId(),
             $this->student->getEmail());
 
@@ -115,8 +115,8 @@ public function tearDown()
                              [
                                  'last_name' => $this->student->last_name,
                                  'first_name' => $this->student->first_name,
-                                 'student_identifier' => $this->student->student_identifier, //encrypted ok
-                                 'email' => $this->student->email,//encrypted version ok
+                          //       'student_identifier' => $this->student->student_identifier, //encrypted ok
+                         //        'email' => $this->student->email,//encrypted version ok
                                  'user_id' => $userId
                              ]);
 

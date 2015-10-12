@@ -27,6 +27,9 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
         //        $this->user = \UserQuery::create()->filterById(self::$userid)->findOneOrCreate();
         $this->faker = \Faker\Factory::create();
+//
+//        $path = base_path();
+//        require_once $path . '/vendor/autoload.php';
 
         $app = require __DIR__.'/../bootstrap/app.php';
 

@@ -40,6 +40,28 @@ class GradeFactory
     /** @var array Laravel collection of the grades  */
     static protected $searchableGrades = [];
 
+
+    /**
+     * Factory method for grade object
+     *
+     * When grade assignments are saved to the db, they will be stored via
+     * the grade_id in self::$grades. This is a method to get a Grade object back
+     * based on that stored id.
+     * @param $gradeId
+     * @return Grade
+     */
+    static public function loadByGradeId($gradeId)
+    {
+        self::makeSearchable();
+
+        $v =  self::$searchableGrades->where('grade_id', $gradeId)->first();
+
+        //Make and return a new object
+        return new Grade($v['grade_id'], $v['display_value'], $v['calc_value']);
+    }
+
+
+
     /**
      * Factory method for grade object
      * Legitimate values are string representations of letter grades A through F with plus/minus modifiers
@@ -142,7 +164,7 @@ class GradeFactory
     }
 
     /**
-     * Handles the search process
+     * Handles the search process for lookups using display value
      * @param $displayValue
      * @return mixed
      */

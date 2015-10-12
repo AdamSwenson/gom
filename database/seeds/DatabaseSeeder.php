@@ -60,6 +60,7 @@ class DatabaseSeeder extends Seeder
         $this->call(KumiAssociationsSeeder::class);
         $this->call(CommentTableSeeder::class);
         $this->call(GradingTimeSeeder::class);
+        $this->call(GradeAssignmentSeeder::class);
         //$this->call('ItemSeeder');
         //$this->call('ItemAssignmentSeeder');
         Model::reguard();

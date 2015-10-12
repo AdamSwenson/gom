@@ -21,13 +21,15 @@ class GradeAssignmentRepository implements IGradeAssignmentRepository
 {
 
     /**
-     * Retrieves grade assignments for the exam
+     * Retrieves grade assignments for the exam ordered by minimum score
      * @param Exam $exam
      * @return collection of GradeAssignment objects
      */
     public function load_grade_assignments_for_exam(Exam $exam)
     {
-        return GradeAssignment::where('exam_id', $exam)->all();
+        return GradeAssignment::where('exam_id', $exam->getId())
+            ->orderBy('min_score')
+            ->get();
     }
 
     /**

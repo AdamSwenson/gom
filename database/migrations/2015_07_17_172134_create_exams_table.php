@@ -22,7 +22,8 @@ class CreateExamsTable extends Migration
             $table->boolean('released');
             $table->timestamps();
 
-            $table->unique(['user_id', 'term', 'name', 'year']);
+            //TODO still exists on production
+           // $table->unique(['user_id', 'term', 'name', 'year']);
 
             $table->foreign('user_id')
                 ->references('id')

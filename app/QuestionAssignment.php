@@ -15,7 +15,11 @@ namespace App;
  */
 class QuestionAssignment extends BaseModel
 {
-    protected $fillable = [];
+    protected $fillable = [
+        'exam_id',
+        'question_id',
+        'question_number'
+    ];
 
     protected $casts = [
       'questionNumber' => 'integer'

@@ -57,7 +57,6 @@ class GradeAssignment extends BaseModel
     }
 
 
-
     /**
      * Sets the grade property with the grade object and sets the grade_id attribute
      * with the grade object's id.

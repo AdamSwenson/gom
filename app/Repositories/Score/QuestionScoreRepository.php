@@ -17,7 +17,7 @@ class QuestionScoreRepository implements IQuestionScoreRepository
 
     /**
      * Loads all question scores for a student on an exam
-     * Will return array of arrays which have keys:
+     * Will return array of stdClass objects which has properties:
      *      questionId: The id of the question
      *      questionNumber: The order the question appears on the exam
      *      questionName: The name of the question
