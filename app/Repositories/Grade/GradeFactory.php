@@ -14,7 +14,7 @@ use App\Grade;
 class GradeFactory
 {
 
-    /** @var array The standardized grades and various associated values */
+    /** @var array The standardized grades and various associated values in descending order */
     static public $grades = [
         ['grade_id' => 100, 'display_value' => 'A+', 'calc_value' => 98, 'default_cutoff' => 0.97 ],
         ['grade_id' => 101, 'display_value' => 'A', 'calc_value' => 95, 'default_cutoff' => 0.93],
@@ -31,11 +31,14 @@ class GradeFactory
         ['grade_id' => 112, 'display_value' => 'F', 'calc_value' => 55, 'default_cutoff' => 0.50]
     ];
 
-    static public $defaultCutoffs = [];
-    static public $displayValues = [];
-    static public $calcValues = [];
     /** @var array The default cutoffs for each possible grade */
-//    static public $standardCutoffs = [.97, .93, .90, .87, .83, .80, .77, .73, .70, .67, .63, .60, 0];
+    static public $defaultCutoffs = [];
+
+    /** @var array The text to be displayed to the student for each grade */
+    static public $displayValues = [];
+
+    /** @var array The value of each grade to be used in calculations of statistics */
+    static public $calcValues = [];
 
     /** @var array Laravel collection of the grades  */
     static protected $searchableGrades = [];
@@ -59,8 +62,6 @@ class GradeFactory
         //Make and return a new object
         return new Grade($v['grade_id'], $v['display_value'], $v['calc_value']);
     }
-
-
 
     /**
      * Factory method for grade object

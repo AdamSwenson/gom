@@ -79,7 +79,29 @@ class GradeAssignment extends BaseModel
      */
     public function getGrade()
     {
+        return $this->getGradeAttribute();
 
+//        //If grade model object not yet set, set it
+//        if( empty($this->grade) )
+//        {
+//            //If no grade id is set, we can't create a grade object. So just
+//            //return null
+//            if( empty($this->attributes['grade_id']))
+//            {
+//                return null;
+//            }
+//
+//            $this->grade = GradeFactory::loadByGradeId($this->attributes['grade_id']);
+//        }
+//
+//        return $this->grade;
+    }
+
+    /**
+     * Laravel convention-using getter for grade
+     */
+    public function getGradeAttribute()
+    {
         //If grade model object not yet set, set it
         if( empty($this->grade) )
         {
@@ -95,7 +117,6 @@ class GradeAssignment extends BaseModel
 
         return $this->grade;
     }
-
 
     /* -------------------------------- Relationships ---------------------------------- */
 //    /**

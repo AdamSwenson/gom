@@ -9,6 +9,7 @@
 namespace App\Repositories\Feedback;
 
 
+use App\Exam;
 use App\Feedback;
 use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
@@ -48,7 +49,14 @@ class FeedbackBuilder implements IFeedbackBuilder
     /** @var ICommentRepository */
     public $commentRepository;
 
+    /** @var IStudentGradeRepository */
+    protected $studentGradeRepository;
+
+
     #-------- data holders
+    /** @var  Exam */
+    public $exam;
+
     /** @var array Will hold all the question and element assignments for the exam */
     public $assignments = array();
 
@@ -61,6 +69,7 @@ class FeedbackBuilder implements IFeedbackBuilder
     /** @var  Collection Will hold all of the students for whom feedback is assembled */
     public $students;
 
+
     public function __construct()
     {
         $this->questionAssignmentRepository = app()->make('App\Repositories\Question\IQuestionAssignmentRepository');
@@ -70,6 +79,7 @@ class FeedbackBuilder implements IFeedbackBuilder
         $this->commentRepository = app()->make('App\Repositories\Element\ICommentRepository');
         $this->studentRepository = app()->make('App\Repositories\Student\IStudentRepository');
         $this->accessKeyRepository = app()->make('App\Repositories\Feedback\IAccessKeyRepository');
+        $this->studentGradeRepository = app()->make('App\Repositories\Grade\IStudentGradeRepository');
     }
 
 
@@ -87,6 +97,8 @@ class FeedbackBuilder implements IFeedbackBuilder
      */
     public function buildFeedback($examId)
     {
+        $this->exam = Exam::find($examId);
+
         //Create one master array with all the questions and elements
         //it will check whether it has already been run
         $this->loadAssignments($examId);
@@ -125,6 +137,8 @@ class FeedbackBuilder implements IFeedbackBuilder
      */
     public function recompileFeedbackForStudent($examId, Student $student)
     {
+        $this->exam = Exam::find($examId);
+
         //Create one master array with all the questions and elements
         //it will check whether it has already been run
         $this->loadAssignments($examId);
@@ -209,8 +223,9 @@ class FeedbackBuilder implements IFeedbackBuilder
         //Copy the assignments array for the present student
         $studentScores = &$this->assignments;
 
-        //todo Set up grade assignment
-//            $studentScores['grade'] = "F-";
+        //Load the grade for the student
+      //  $grade = $this->studentGradeRepository->getStudentGrade($this->exam, $student);
+       // if( !empty($grade)){ $studentScores['grade'] = $grade; }
 
         //Iterate through the new copy and add scores and comment content
         foreach ($studentScores as &$question)
@@ -257,4 +272,5 @@ class FeedbackBuilder implements IFeedbackBuilder
         $feedback->content = $content;
         return $feedback->save();
     }
+
 }

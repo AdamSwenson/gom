@@ -18,18 +18,20 @@ Route::controllers([
     'password' => 'Auth\PasswordController'
 ]);
 
+/* Home page - now called 'landing' */
+Route::get('/', 'LandingController@showLanding');
+Route::get('index', 'LandingController@showLanding'); //re-added since stuff may redirect here
+Route::get('landing', 'LandingController@showLanding'); //re-added since stuff seems to redirect here
+
 
 /* Temporary: Limitations on registration */
 Route::get('registrationRestrictions', 'RestrictedRegistrationController@showRestrictedAccessPage');
 Route::post('registrationRestrictions', 'RestrictedRegistrationController@recordInterestToWaitlist');
 
 
-
 /* --------------------------------------------- Account ---------------------------------------------------------------*/
 Route::get('account', 'LandingController@loggedIn');
 
-/* Home page - now called 'landing' */
-Route::get('/', 'LandingController@showLanding');
 
 /* --------------------------------------------- Help ------------------------------------------------------------------*/
 Route::get('help', 'InfoController@showGuides');
@@ -38,14 +40,10 @@ Route::get('tutorials', 'InfoController@showTutorials');
 Route::get('gettingStarted', 'InfoController@showGettingStarted');
 
 /* --------------------------------------------- About -----------------------------------------------------------------*/
-Route::get('about', function() {
-    return view('other/about');
-});
+Route::get('about', 'InfoController@showAbout');
 
 /* --------------------------------------------- Contact ---------------------------------------------------------------*/
-Route::get('contact', function() {
-    return view('other/contact');
-});
+Route::get('contact', 'InfoController@showContact');
 
 
 /* ----------------------------------------------- Exam set up  -------------------------------------------------------- */

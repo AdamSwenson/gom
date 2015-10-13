@@ -20,9 +20,14 @@ use App\Student;
  */
 class StudentGradeRepository
 {
+
+    /** @var \App\Repositories\Score\IQuestionScoreRepository */
     protected $questionScoreDao;
+
+    /** @var \App\Repositories\Grade\IGradeAssignmentRepository  */
     protected $assignmentDao;
 
+    /** @var  \App\Exam */
     protected $exam;
 
     public $gradeAssignments;
@@ -112,24 +117,7 @@ class StudentGradeRepository
                 return $g;
             }
         }
-
-//        $numAssignments = count($this->gradeAssignments);
-//        for($i=0; $i<$numAssignments; $i++)
-//        {
-//            //current grade object (to keep things neat)
-//            $g = $this->gradeAssignments[$i];
-//
-//            //we made it to the highest element so we're done
-//            if($i ==  $numAssignments - 1) { return $g; }
-//
-//            //next grade object (to keep things neat)
-//            $n = $this->gradeAssignments[$i + 1];
-//
-//            if( ($totalScore >= $g->getMinScore()) && ($totalScore < $n->getMinScore()) )
-//            {
-//                return $g;
-//            }
-//        }
+        return null;
     }
 
     /**
