@@ -25,7 +25,7 @@ class StudentGradeRepository
 
     protected $exam;
 
-    protected $gradeAssignments;
+    public $gradeAssignments;
 
     /**
      * StudentGradeRepository constructor.
@@ -37,7 +37,9 @@ class StudentGradeRepository
     }
 
     /**
-     * Returns a grade object for the student on the exam
+     * Returns a grade object for the student on the exam.
+     * This should be the main publicly called method.
+     *
      * @param Exam $exam
      * @param Student $student
      * @return \App\Grade
@@ -81,7 +83,7 @@ class StudentGradeRepository
      * @param $totalScore
      * @return \App\Grade
      */
-    protected function determineGrade($totalScore)
+    public function determineGrade($totalScore)
     {
         //Find the correct grade assignment
         $assignment = $this->searchForGrade($totalScore);
@@ -99,26 +101,35 @@ class StudentGradeRepository
      */
     protected function searchForGrade($totalScore)
     {
-        $numAssignments = count($this->gradeAssignments);
-        for($i=0; $i<$numAssignments; $i++)
+
+        for($i=0; $i<count($this->gradeAssignments); $i++)
         {
-            //current object (to keep things neat)
+            //current grade object (to keep things neat)
             $g = $this->gradeAssignments[$i];
 
-            if($i =  $numAssignments - 1)
-            {
-                //we made it to the highest element so we're done
-                return $g;
-            }
-
-            //next object (to keep things neat)
-            $n = $this->gradeAssignments[$i + 1];
-
-            if( ($totalScore >= $g->getMinScore()) && ($totalScore < $n->getMinScore()))
+            if( $totalScore >= $g->getMinScore() )
             {
                 return $g;
             }
         }
+
+//        $numAssignments = count($this->gradeAssignments);
+//        for($i=0; $i<$numAssignments; $i++)
+//        {
+//            //current grade object (to keep things neat)
+//            $g = $this->gradeAssignments[$i];
+//
+//            //we made it to the highest element so we're done
+//            if($i ==  $numAssignments - 1) { return $g; }
+//
+//            //next grade object (to keep things neat)
+//            $n = $this->gradeAssignments[$i + 1];
+//
+//            if( ($totalScore >= $g->getMinScore()) && ($totalScore < $n->getMinScore()) )
+//            {
+//                return $g;
+//            }
+//        }
     }
 
     /**

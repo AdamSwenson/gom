@@ -28,7 +28,7 @@ class GradeFactory
         ['grade_id' => 109, 'display_value' => 'D+', 'calc_value' => 68, 'default_cutoff' => 0.67],
         ['grade_id' => 110, 'display_value' => 'D', 'calc_value' => 65, 'default_cutoff' => 0.63],
         ['grade_id' => 111, 'display_value' => 'D-', 'calc_value' => 62, 'default_cutoff' => 0.60],
-        ['grade_id' => 112, 'display_value' => 'F', 'calc_value' => 55, 'default_cutoff' => 0.0]
+        ['grade_id' => 112, 'display_value' => 'F', 'calc_value' => 55, 'default_cutoff' => 0.50]
     ];
 
     static public $defaultCutoffs = [];
@@ -87,7 +87,7 @@ class GradeFactory
     }
 
     /**
-     * Factory method which returns a grade object based on the standard order of the grades.
+     * Factory method which returns a grade object based on the ordinal position of the grades in descending order.
      * Legitimate values are integers from 0 to 12, where:
      *      0 = A+,
      *      1 = A,
@@ -115,7 +115,8 @@ class GradeFactory
 
     /**
      * Returns an array of the values to be used in calculation for all the standard
-     * grades (i.e., the stuff stored in self::$grades)
+     * grades (i.e., the stuff stored in self::$grades).
+     * These grades are returned from highest to lowest (i.e, A+, A, A-, B+ ...)
      * @returns array
      */
     static public function getCalcValuesOfGrades()
@@ -125,7 +126,8 @@ class GradeFactory
     }
 
     /**
-     * Returns array of floats representing the default cut offs for each grade to be displayed
+     * Returns array of floats representing the default cut offs for each grade to be displayed.
+     * These grades are returned from highest to lowest (i.e, A+, A, A-, B+ ...)
      * @return array
      */
     static public function getDefaultCutoffsOfGrades()
