@@ -24,7 +24,7 @@ class RestrictedRegistrationController extends Controller
 {
     const SUCCESS_MESSAGE = "Thank you! We will notify you when the gradeomatic is available.";
     const REDIRECT_TO_ROUTE = 'registrationRestrictions';
-    const REDIRECT_TO_VIEW = 'account.permittedInstitutions';
+    const REDIRECT_TO_VIEW = 'account.permitted_institutions';
 
     /**
      * Displays the restricted access page with information about

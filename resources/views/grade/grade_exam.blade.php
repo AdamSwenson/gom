@@ -29,6 +29,10 @@
             border-top-right-radius: 4px;
         }
 
+        .slider-horizontal {
+            margin-right: 35px;
+        }
+
     </style>
     <div class="row">
         <!-- Left column holds questions and sliders -->
@@ -194,11 +198,11 @@
         var timer;
         var timerPaused = true;
         var studentNamesVisible = true;
-        var nameHiddenString = "Name Hidden"; // text to show when student names are invisible
-        var noActiveStudentString = "No Student Selected";
+        const nameHiddenString = "Name Hidden"; // text to show when student names are invisible
+        const noActiveStudentString = "No Student Selected";
         var activeStudentTime;
-        var activeStudentColor = '#337ab7';
-        var gradedStudentColor = '#5cb85c';
+        const activeStudentColor = '#337ab7';
+        const gradedStudentColor = '#5cb85c';
 
         updateExamGrades();
 
@@ -207,6 +211,7 @@
          * Magic numbers for now, but will accept data from the server for valenceCutoffs, valenceLabels and valenceLabelPositions
          *
          */
+
         var valenceCutoffs = [0, 3.25, 6.75, 10];
         var valenceLabels = ["Missing", "Poor", "Fair", "Excellent"];
         var valenceLabelPositions = [0, 33, 67, 100];

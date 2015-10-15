@@ -20,7 +20,7 @@ class RestrictToInstitutions
     /** The file holding a list of permitted domains */
     const PERMITTED_DOMAINS_CSV = 'permittedDomains.csv';
     /** The view to send rejected folks to  */
-    const REDIRECT_VIEW = 'account.permittedInstitutions';
+    const REDIRECT_VIEW = 'account.permitted_institutions';
 
     /** @var array Institutions which are okay */
     public static $permittedDomains = [];
