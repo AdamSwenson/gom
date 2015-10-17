@@ -3,9 +3,9 @@
 @section('pageTitle', 'Feedback | gradeomatic')
 @section('description', "Review student feedback")
 
-@section('cssLinks')
-    <link href="{{ asset('inc/jqplot/jquery.jqplot.min.css')}}"/>
-    {!! \HTML::style(asset('/css/output.css')) !!}
+@section('otherCss')
+    {!! HTML::style(asset('/inc/jqplot/jquery.jqplot.min.css')) !!}
+    {!! HTML::style(asset('/css/output.css')) !!}
 @endsection
 
 @section('body')

@@ -11,22 +11,20 @@ $w = '800px';
 @extends('layouts.primalMaster')
 
 @section('pageTitle', 'Comments on your exam')
-@section('cssLinks')
-    {!! \HTML::style(asset('inc/jqplot/jquery.jqplot.min.css')) !!}
+@section('otherCss')
+    {!! \HTML::style(asset('/inc/jqplot/jquery.jqplot.min.css')) !!}
     {!! \HTML::style(asset('/css/output.css')) !!}
 @endsection
 
 @section('body')
     <div id="studentInfo">
         <p>
-            <label for='grade' class="studentInfoLabel">Grade: </label>
-            <input type="text" readonly="readonly" id="grade" class="grade"
-                   value="{{ $data->grade() or ''}}"/>
+            <span class="studentInfoLabel">Grade:</span> <span class="grade">{{  $data->grade() }}</span>
         </p>
         <p>
-            <span class="studentInfoLabel">Entry Code:</span> <span class="pseudoID"> {{ $data['accessKey'] or '' }}</span>
+            <span class="studentInfoLabel">Entry Code:</span> <span class="pseudoID"> {{ $data->getAccessKey() }}</span>
         </p>
-    </div> <!--//close studentInfo-->
+    </div>
 
     <div id="overall">
         <p class="small">Here's how you did on each question in comparison to the class average. <br/>
