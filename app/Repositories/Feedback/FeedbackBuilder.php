@@ -169,6 +169,15 @@ class FeedbackBuilder implements IFeedbackBuilder
         //Load the already existing access key (important since student might have already received it)
         $accessKey = $this->accessKeyRepository->getAccessKeyForStudent($examId, $student->id);
 
+        /* If we got here before the main feedback compilation is called, accessKey may be empty.
+         * So, if that's the case, we need to make one
+         */
+        if( empty($accessKey) )
+        {
+            //Create a unique hash to access the feedback
+            $accessKey = $this->accessKeyRepository->createAccessKey($examId, $student->id);
+        }
+        
         //Retrieve and add the student's grade
         $grade = $this->studentGradeRepository->getStudentGrade($this->exam, $student);
         if (!empty($grade))
