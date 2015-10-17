@@ -18,16 +18,14 @@ $w = '800px';
 
 @section('body')
     <div id="studentInfo">
-        <ul>
-            <li>
-                <label for='grade' class="studentInfoLabel">Grade: </label>
-                <input type="text" readonly="readonly" id="grade" class="grade"
-                       value="{{ $data['grade'] or ''}}"/>
-            </li>
-            <li>
-                <span class="studentInfoLabel">Entry Code:</span> <span class="pseudoID"> {{ $data['accessKey'] or '' }}</span>
-            </li>
-        </ul>
+        <p>
+            <label for='grade' class="studentInfoLabel">Grade: </label>
+            <input type="text" readonly="readonly" id="grade" class="grade"
+                   value="{{ $data->grade() or ''}}"/>
+        </p>
+        <p>
+            <span class="studentInfoLabel">Entry Code:</span> <span class="pseudoID"> {{ $data['accessKey'] or '' }}</span>
+        </p>
     </div> <!--//close studentInfo-->
 
     <div id="overall">

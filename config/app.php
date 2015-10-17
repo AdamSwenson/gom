@@ -156,6 +156,7 @@ return [
          */
         Barryvdh\DomPDF\ServiceProvider::class,
         Laracasts\Flash\FlashServiceProvider::class,
+        BackupManager\Laravel\Laravel5ServiceProvider::class,
 
         /*
          * Custom service providers

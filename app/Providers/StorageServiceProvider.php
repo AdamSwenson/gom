@@ -61,6 +61,9 @@ class StorageServiceProvider extends ServiceProvider
         $this->app->bind('App\Repositories\Score\IQuestionScoreRepository', 'App\Repositories\Score\QuestionScoreRepository');
         $this->app->bind('App\Repositories\Score\IElementScoreRepository', 'App\Repositories\Score\ElementScoreRepository');
 
+        //Stats
+        $this->app->bind('App\Repositories\Score\IScoreStatisticsRepository', 'App\Repositories\Score\ScoreStatisticsRepository');
+
         //Students
         $this->app->bind('App\Repositories\Student\IStudentRepository', 'App\Repositories\Student\StudentRepository');
 

@@ -16,16 +16,44 @@ class Feedback extends Model
 
     protected $primaryKey = 'access_key';
 
+    /**
+     * Returns the string encoded array of comments
+     * @return string
+     */
+    public function content()
+    {
+        return $this->attributes['content'];
+    }
+
+    /**
+     * Getter for the string to be displayed to the student
+     * @return string
+     */
+    public function grade()
+    {
+        return $this->attributes['grade_display'];
+    }
+
+    /**
+     * Getter for the calculated value of the grade
+     * @return float
+     */
+    public function gradeValue()
+    {
+        return $this->attributes['grade_calc'];
+    }
+
+    public function getAccessKey()
+    {
+        return $this->attributes['access_key'];
+    }
 
     public function setAccessKey($accessKey)
     {
         $this->attributes['access_key'] = $accessKey;
     }
 
-//    public function setContent($content)
-//    {
-//        $this->attributes['content'] = $content;
-//    }
+
 
     public function scopeByAccessKey($query, $accessKey)
     {

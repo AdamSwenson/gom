@@ -27,17 +27,12 @@
     <?php $h = '400px'; $w = '800px'; ?>
     <div>
         <div id="studentInfo">
-            <ul>
-                <li>
-                    <label for='grade' class="studentInfoLabel">Grade: </label>
-                    <input type="text" readonly="readonly" id="grade" class="grade"
-                           value="{{ $data['grade'] or ''}}"/>
-                </li>
-                <li>
-                    <span class="studentInfoLabel">Entry Code:</span> <span
-                            class="pseudoID"> {{ $data->access_key }}</span>
-                </li>
-            </ul>
+            <p>
+                <span class="studentInfoLabel">Grade:</span> <span class="grade">{{  $data->grade() }}</span>
+            </p>
+            <p>
+                <span class="studentInfoLabel">Entry Code:</span> <span class="pseudoID"> {{ $data->getAccessKey() }}</span>
+            </p>
         </div>
         <!--//close studentInfo-->
 

@@ -115,3 +115,7 @@ td{
 .commentParagraph{
     padding-bottom: 1em;
 }
+
+li{
+    list-style-type: none;
+}

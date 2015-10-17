@@ -17,6 +17,7 @@ use App\Repositories\Feedback\IPseudoIDMaker;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Score\IElementScoreRepository;
 use App\Repositories\Score\IQuestionScoreRepository;
+use App\Repositories\Score\ScoreStatisticsRepository;
 use App\Repositories\Student\IStudentRepository;
 use App\Student;
 
@@ -28,26 +29,30 @@ use App\Student;
 class FeedbackBuilder implements IFeedbackBuilder
 {
     # ------- repositories
+
     /** @var IAccessKeyRepository */
     protected $accessKeyRepository;
 
-    /** @var IStudentRepository */
-    private $studentRepository;
-
-    /** @var IQuestionAssignmentRepository */
-    public $questionAssignmentRepository;
+    /** @var ICommentRepository */
+    protected $commentRepository;
 
     /** @var IElementAssignmentRepository */
-    public $elementAssignmentRepository;
-
-    /** @var IQuestionScoreRepository */
-    public $questionScoreRepository;
+    protected $elementAssignmentRepository;
 
     /** @var IElementScoreRepository */
-    public $elementScoreRepository;
+    protected $elementScoreRepository;
 
-    /** @var ICommentRepository */
-    public $commentRepository;
+    /** @var IQuestionAssignmentRepository */
+    protected $questionAssignmentRepository;
+
+    /** @var IQuestionScoreRepository */
+    protected $questionScoreRepository;
+
+    /** @var IScoreStatsRepository */
+    protected $scoreStatsRepository;
+
+    /** @var IStudentRepository */
+    protected $studentRepository;
 
     /** @var IStudentGradeRepository */
     protected $studentGradeRepository;
@@ -80,6 +85,7 @@ class FeedbackBuilder implements IFeedbackBuilder
         $this->studentRepository = app()->make('App\Repositories\Student\IStudentRepository');
         $this->accessKeyRepository = app()->make('App\Repositories\Feedback\IAccessKeyRepository');
         $this->studentGradeRepository = app()->make('App\Repositories\Grade\IStudentGradeRepository');
+        $this->scoreStatsRepository = app()->make('App\Repositories\Score\IScoreStatisticsRepository');
     }
 
 
@@ -99,6 +105,8 @@ class FeedbackBuilder implements IFeedbackBuilder
     {
         $this->exam = Exam::find($examId);
 
+        $this->scoreStatsRepository->loadStats($this->exam);
+
         //Create one master array with all the questions and elements
         //it will check whether it has already been run
         $this->loadAssignments($examId);
@@ -117,8 +125,20 @@ class FeedbackBuilder implements IFeedbackBuilder
             //Store the feedback in our array with the unique hash as key
             $this->feedback[$accessKey] = $studentFeedback;
 
-            //Save the feedback and key to the database
-            $this->storeFeedback($accessKey, $studentFeedback);
+            //Retrieve and add the student's grade
+            $grade = $this->studentGradeRepository->getStudentGrade($this->exam, $student);
+            if (!empty($grade))
+            {
+                $gradeDisplay = $grade->getDisplayValue();
+                $gradeCalc = $grade->getCalcValue();
+
+                //Save the feedback and key to the database
+                $this->storeFeedback($accessKey, $studentFeedback, $gradeDisplay, $gradeCalc);
+            }else
+            {
+                //No grade loaded. So just save the feedback and key to the database
+                $this->storeFeedback($accessKey, $studentFeedback);
+            }
         }
 
         return $this->feedback;
@@ -149,8 +169,22 @@ class FeedbackBuilder implements IFeedbackBuilder
         //Load the already existing access key (important since student might have already received it)
         $accessKey = $this->accessKeyRepository->getAccessKeyForStudent($examId, $student->id);
 
-        //Update the db record
-        $this->storeFeedback($accessKey, $studentFeedback);
+        //Retrieve and add the student's grade
+        $grade = $this->studentGradeRepository->getStudentGrade($this->exam, $student);
+        if (!empty($grade))
+        {
+            $gradeDisplay = $grade->getDisplayValue();
+            $gradeCalc = $grade->getCalcValue();
+
+            //Update the db record
+            $this->storeFeedback($accessKey, $studentFeedback, $gradeDisplay, $gradeCalc);
+        }else
+        {
+            //No grade loaded. So just update the feedback and key to the database
+            $this->storeFeedback($accessKey, $studentFeedback);
+        }
+//        //Update the db record
+//        $this->storeFeedback($accessKey, $studentFeedback);
 
         //Store the feedback in our array with the unique hash as key
         $this->feedback[$accessKey] = $studentFeedback;
@@ -223,10 +257,6 @@ class FeedbackBuilder implements IFeedbackBuilder
         //Copy the assignments array for the present student
         $studentScores = &$this->assignments;
 
-        //Load the grade for the student
-      //  $grade = $this->studentGradeRepository->getStudentGrade($this->exam, $student);
-       // if( !empty($grade)){ $studentScores['grade'] = $grade; }
-
         //Iterate through the new copy and add scores and comment content
         foreach ($studentScores as &$question)
         {
@@ -236,7 +266,7 @@ class FeedbackBuilder implements IFeedbackBuilder
             if (!empty($questionScoreObject))
             {
                 $question['score'] = $questionScoreObject->getScore();
-                $question['average'] = 5.0;
+                $question['average'] = $this->scoreStatsRepository->getQuestionAssignmentMean($question['questionAssignmentId']);
             }
             foreach ($question['elements'] as &$element)
             {
@@ -244,7 +274,7 @@ class FeedbackBuilder implements IFeedbackBuilder
                 if (!empty($scoreObject) && !empty($scoreObject->score))
                 {
                     $element['score'] = $scoreObject->getScore();
-                    $element['average'] = 5.0;
+                    $element['average'] = $this->scoreStatsRepository->getElementAssignmentMean($element['elementAssignmentId']);
                     $element['comment'] = $scoreObject->comment_text;
 
                     //old way
@@ -255,21 +285,65 @@ class FeedbackBuilder implements IFeedbackBuilder
             }
         }
 
+//        Load and add the grade for the student
+        //       $this->getStudentGrade($student, $studentScores);
+//        $grade = $this->studentGradeRepository->getStudentGrade($this->exam, $student);
+//        if (!empty($grade))
+//        {
+//            $studentScores['grade'] = $grade->getDisplayValue();
+//            $studentScores['gradeCalc'] = $grade->getCalcValue();
+//        }
+
         return $studentScores;
     }
 
+    protected function getStudentGrade(Student $student, &$studentScores)
+    {
+        $grade = $this->studentGradeRepository->getStudentGrade($this->exam, $student);
+        if (!empty($grade))
+        {
+            $studentScores['grade'] = $grade->getDisplayValue();
+            $studentScores['gradeCalc'] = $grade->getCalcValue();
+        }
+    }
+
+//    protected function getQuestionMean($questionAssignmentId)
+//    {
+//        try
+//        {
+//            return $this->scoreStatsRepository->getStatsForQuestionAssignment($this->exam, $questionAssignmentId, ScoreStatisticsRepository::STAT_MEAN);
+//        } catch (\Exception $e)
+//        {
+//            return null;
+//        }
+//    }
+//
+//    protected function getElementMean($elementAssignmentId)
+//    {
+//        try
+//        {
+//            return $this->scoreStatsRepository->getStatsForElementAssignment($this->exam, $elementAssignmentId, ScoreStatisticsRepository::STAT_MEAN);
+//        } catch (\Exception $e)
+//        {
+//            return null;
+//        }
+//    }
 
     /**
      * Saves or updates the feedback content to the database.
      *
      * @param string $accessKey
      * @param array $content
+     * @param null $gradeDisplay
+     * @param null $gradeCalc
      * @return bool
      */
-    public function storeFeedback($accessKey, $content)
+    public function storeFeedback($accessKey, $content, $gradeDisplay=null, $gradeCalc=null)
     {
         $feedback = Feedback::firstOrNew(['access_key' => $accessKey]);
         $feedback->content = $content;
+        $feedback->grade_display = $gradeDisplay;
+        $feedback->grade_calc = $gradeCalc;
         return $feedback->save();
     }
 
