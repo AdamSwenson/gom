@@ -86,15 +86,20 @@ class StudentGradeRepository
     /**
      * Determines the grade based on the grade assignments already loaded
      * @param $totalScore
-     * @return \App\Grade
+     * @return \App\Grade|null
      */
     public function determineGrade($totalScore)
     {
         //Find the correct grade assignment
         $assignment = $this->searchForGrade($totalScore);
 
-        //Load the corresponding grade
-        return GradeFactory::loadByGradeId($assignment->grade_id);
+        if( !empty($assignment) )
+        {
+            //Load the corresponding grade
+            return GradeFactory::loadByGradeId($assignment->grade_id);
+        }
+        return null;
+
     }
 
 
