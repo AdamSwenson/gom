@@ -62,12 +62,23 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
         $this->elementScoreDao = app()->make('App\Repositories\Score\IElementScoreRepository');
     }
 
+    /**
+     * Loads question and element stats for an exam
+     * @param Exam $exam
+     */
     public function loadStats(Exam $exam)
     {
         $this->loadElementStatsForExam($exam);
         $this->loadQuestionStatsForExam($exam);
     }
 
+    /**
+     * Retrieves the mean for a given question assignment.
+     * That is, the mean for a question on an exam.
+     *
+     * @param $questionAssignmentId
+     * @return null|float
+     */
     public function getQuestionAssignmentMean($questionAssignmentId)
     {
         if( array_key_exists($questionAssignmentId, $this->questionAssignmentMeans) )
@@ -79,6 +90,12 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
         }
     }
 
+    /**
+     * Retrieves the mean for a given element assignment.
+     * That is, the mean for an element on one exam.
+     * @param $elementAssignmentId
+     * @return null|float
+     */
     public function getElementAssignmentMean($elementAssignmentId)
     {
         if( array_key_exists($elementAssignmentId, $this->elementAssignmentMeans) )

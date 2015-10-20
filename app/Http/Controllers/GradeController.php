@@ -605,5 +605,15 @@ class GradeController extends Controller
         return $stats;
     }
 
+    /**
+     * This will check whether
+     * @param Exam $exam
+     * @param Student $student
+     */
+    public function updateNumberGraded(Exam $exam, Student $student)
+    {
+
+    }
+
 
 }
