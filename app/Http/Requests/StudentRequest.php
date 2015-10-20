@@ -70,6 +70,7 @@ class StudentRequest extends Request
 
                 //firstName field
                 $this->rulesArray['firstName' . $i] = 'max:' . self::FIRST_NAME_MAX_LENGTH;
+                $this->messagesArray['firstName' . $i . '.min'] = "The first name for student #$i must be at least :min characters long ";
                 $this->messagesArray['firstName' . $i . '.max'] = "The first name for student #$i must be less than :max characters long ";
 
                 //studentIdentifier field
