@@ -10,8 +10,34 @@
 | database. Just tell the factory how a default model should look.
 |
 */
+use App\Exam;
+use App\Question;
+use Faker\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+
+
+/*
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * Note, almost none of this will never fucking work because BaseModel
+ * somehow interferes with larvel's mass fucking assignment.
+ *
+ * I hate you laravel. So fucking much.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * */
 
 $factory->define(App\User::class, function (Faker\Generator $faker)
 {
@@ -26,11 +52,11 @@ $factory->define(App\User::class, function (Faker\Generator $faker)
 
 $factory->define(App\Exam::class, function (Faker\Generator $faker)
 {
-
     return [
-        'term' => $faker->text,
-        'name' => $faker->text,
-        'year' => $faker->year,
+        'user_id' => 1,
+        'term' => Factory::create()->text,
+        'name' => Factory::create()->text,
+        'year' => Factory::create()->year,
         'released' => 0,
         'locked' => 0
     ];
@@ -40,8 +66,7 @@ $factory->define(App\Exam::class, function (Faker\Generator $faker)
 
 $factory->define(App\Student::class, function (Faker\Generator $faker)
 {
-    Model::unguard();
-    $faker2 = Faker\Factory::create();
+    $faker2 = Factory::create();
 
     return [
 //        'id' => $faker->unique()->randomNumber(3),
@@ -97,32 +122,26 @@ $factory->define(App\Comment::class, function (Faker\Generator $faker)
 
 });
 
-$factory->defineAs(App\QuestionAssignment::class, 'mock1', function (Faker\Generator $faker)
+$factory->define(App\QuestionAssignment::class, function (Faker\Generator $faker)
 {
     return [
-        'question_id' => 1,
-        'question_assignment_id' => 1,
-        'question_name' => 'questionName1',
+        'question_id' => factory(Question::class)->create()->id,
+        'exam_id' => 1,
+        'user_id' => 1,
         'question_number' => 1
     ];
-//    $questionAssignment1 = \Mockery::mock('App\QuestionAssignment');
-//    $questionAssignment1->shouldReceive('getQuestionAssignmentId')->andReturn(1);
-//    $questionAssignment1->shouldReceive('getQuestionId')->andReturn(1);
-//    $questionAssignment1->shouldReceive('getQuestionName')->andReturn('questionName1');
-//    $questionAssignment1->shouldReceive('getQuestionNumber')->andReturn('1');
-//    return $questionAssignment1;
 });
-
-$factory->defineAs('App\QuestionAssignment', 'mock2', function (Faker\Generator $faker)
-{
-    $questionAssignment = \Mockery::mock('App\QuestionAssignment');
-    $questionAssignment->shouldReceive('getQuestionAssignmentId')->andReturn(2);
-    $questionAssignment->shouldReceive('getQuestionId')->andReturn(2);
-    $questionAssignment->shouldReceive('getQuestionName')->andReturn('questionName2');
-    $questionAssignment->shouldReceive('getQuestionNumber')->andReturn('2');
-
-    return $questionAssignment;
-});
+//
+//$factory->defineAs('App\QuestionAssignment', 'mock2', function (Faker\Generator $faker)
+//{
+//    $questionAssignment = \Mockery::mock('App\QuestionAssignment');
+//    $questionAssignment->shouldReceive('getQuestionAssignmentId')->andReturn(2);
+//    $questionAssignment->shouldReceive('getQuestionId')->andReturn(2);
+//    $questionAssignment->shouldReceive('getQuestionName')->andReturn('questionName2');
+//    $questionAssignment->shouldReceive('getQuestionNumber')->andReturn('2');
+//
+//    return $questionAssignment;
+//});
 
 
 $factory->define(App\QuestionScore::class, function (Faker\Generator $faker)

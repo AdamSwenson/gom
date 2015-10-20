@@ -21,7 +21,34 @@ class InfoController extends Controller
      * Show the page that gives an overview of the gradeomatic
      */
     public function showAbout()
+    {
+        return view('other/about');
+    }
+
+
+    /**
+     * Directs to the page which gives info about the company
+     */
+    public function showAboutCompany()
     {}
+
+    /**
+     * Show contact information page
+     * @return \Illuminate\View\View
+     */
+    public function showContact()
+    {
+        return view('other/contact');
+    }
+
+    /**
+     * Show the frequently asked questions page
+     */
+    public function showFaq()
+    {
+        return view('other.help');
+    }
+
 
     public function showGettingStarted()
     {
@@ -41,17 +68,5 @@ class InfoController extends Controller
         return view('other.video_tutorials');
     }
 
-    /**
-     * Show the frequently asked questions page
-     */
-    public function showFaq()
-    {
-        return view('other.help');
-    }
 
-    /**
-     * Directs to the page which gives info about the company
-     */
-    public function showAboutCompany()
-    {}
 }

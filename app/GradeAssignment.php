@@ -2,17 +2,19 @@
 
 namespace App;
 
+use App\Repositories\Grade\GradeFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * This is a representation of the criterion for assigning a single
- * grade on an exam
+ * grade on an exam based on total score
  *
  * It has the attributes:
  *  exam_id: integer
  *  user_id: integer
  *  min_score: float The cut off for applying the grade
- *  grade: App\Grade The representation of the grade
+ *  grade: App\Grade Model representing the grade
+ *  grade_id: integer Id of grade (this value is stored in the db
  * @package App
  */
 class GradeAssignment extends BaseModel
@@ -57,7 +59,6 @@ class GradeAssignment extends BaseModel
     }
 
 
-
     /**
      * Sets the grade property with the grade object and sets the grade_id attribute
      * with the grade object's id.
@@ -78,9 +79,44 @@ class GradeAssignment extends BaseModel
      */
     public function getGrade()
     {
-        return $this->grade;
+        return $this->getGradeAttribute();
+
+//        //If grade model object not yet set, set it
+//        if( empty($this->grade) )
+//        {
+//            //If no grade id is set, we can't create a grade object. So just
+//            //return null
+//            if( empty($this->attributes['grade_id']))
+//            {
+//                return null;
+//            }
+//
+//            $this->grade = GradeFactory::loadByGradeId($this->attributes['grade_id']);
+//        }
+//
+//        return $this->grade;
     }
 
+    /**
+     * Laravel convention-using getter for grade
+     */
+    public function getGradeAttribute()
+    {
+        //If grade model object not yet set, set it
+        if( empty($this->grade) )
+        {
+            //If no grade id is set, we can't create a grade object. So just
+            //return null
+            if( empty($this->attributes['grade_id']))
+            {
+                return null;
+            }
+
+            $this->grade = GradeFactory::loadByGradeId($this->attributes['grade_id']);
+        }
+
+        return $this->grade;
+    }
 
     /* -------------------------------- Relationships ---------------------------------- */
 //    /**

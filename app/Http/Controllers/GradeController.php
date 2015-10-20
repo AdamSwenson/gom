@@ -19,6 +19,7 @@ use App\Repositories\Score\IQuestionScoreRepository;
 use App\Repositories\Student\IStudentRepository;
 use App\Repositories\Time\IGradingTimeRepository;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
@@ -241,42 +242,44 @@ class GradeController extends Controller
         //This will hold the grades which are not being assigned and slated for deletion if they were in the db
         $nonAssigned = [];
 
-        //Pull out each value to assign, make a grade object and push into $assignments
-        for ($i = 0; $i <= 12; $i++)
-        {
-            if (!empty($request->input(self::GRADE_ASSIGNMENT_FIELD_BASE . '' . $i)))
-            {
-                $grade = GradeFactory::loadByOrder($i);
-                $minScore = $request->input(self::GRADE_ASSIGNMENT_FIELD_BASE . $i);
-                //push into array
-                $assignments[] = ['minScore' => $minScore, 'grade' => $grade];
-            } else
-            {
-                //If a letter grade was not assigned, make note so any preexisting value can be removed
-                $nonAssigned[] = $i;
+        try {
+            //Pull out each value to assign, make a grade object and push into $assignments
+            for ($i = 0; $i <= 12; $i++) {
+                //Check that the field has a value. If just try checking the value, may
+                //run into trouble with empty(0) for F grade.
+                if ($request->has(self::GRADE_ASSIGNMENT_FIELD_BASE . $i)) {
+                    $grade = GradeFactory::loadByOrder($i);
+                    $minScore = $request->input(self::GRADE_ASSIGNMENT_FIELD_BASE . $i);
+                    //push into array to be recorded
+                    $assignments[] = ['minScore' => $minScore, 'grade' => $grade];
+                } else {
+                    //If a letter grade was not assigned, make note so any preexisting value can be removed
+                    $nonAssigned[] = $i;
+                }
             }
-        }
 
-        //Request validator already checked for consistency, so let's write to the db
-        foreach ($assignments as $assign)
-        {
-            $this->gradeAssignmentDao->record_grade_assignment($exam, $assign['grade'], $assign['minScore']);
-        }
-
-        //Delete any pre-existing grades which were not assigned on this request
-        if (!empty($nonAssigned))
-        {
-            foreach ($nonAssigned as $naOrder)
-            {
-                $grade = GradeFactory::loadByOrder($naOrder);
-                $this->gradeAssignmentDao->delete_grade_assignment($exam, $grade);
+            //Request validator already checked for consistency, so let's write to the db
+            foreach ($assignments as $assign) {
+                $this->gradeAssignmentDao->record_grade_assignment($exam, $assign['grade'], $assign['minScore']);
             }
+
+            //Delete any pre-existing grades which were not assigned on this request
+            if (!empty($nonAssigned)) {
+                foreach ($nonAssigned as $naOrder) {
+                    $grade = GradeFactory::loadByOrder($naOrder);
+                    $this->gradeAssignmentDao->delete_grade_assignment($exam, $grade);
+                }
+            }
+
+            flash()->success('Grade assignments have been recorded');
+
+        }catch(\Exception $e)
+        {
+            Log::error('Problem recording grade assignments ' . $e->getMessage() );
+
+            flash()->error('There was a problem recording the grade assignments. Please try again. If the problem persists, please let us know');
         }
 
-        flash()->success('Grade assignments have been recorded');
-        // TODO: Add error handling
-        // TODO: Add flash message about success? Otherwise it may be weird to just be kicked back to what seems to be an earlier page.
-        // do stuff TODO: add logic to record the cutoffs to the DB (?)
         return redirect()->action('GradeController@index');
     }
 

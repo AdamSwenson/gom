@@ -14,7 +14,7 @@ use App\Grade;
 class GradeFactory
 {
 
-    /** @var array The standardized grades and various associated values */
+    /** @var array The standardized grades and various associated values in descending order */
     static public $grades = [
         ['grade_id' => 100, 'display_value' => 'A+', 'calc_value' => 98, 'default_cutoff' => 0.97 ],
         ['grade_id' => 101, 'display_value' => 'A', 'calc_value' => 95, 'default_cutoff' => 0.93],
@@ -28,17 +28,40 @@ class GradeFactory
         ['grade_id' => 109, 'display_value' => 'D+', 'calc_value' => 68, 'default_cutoff' => 0.67],
         ['grade_id' => 110, 'display_value' => 'D', 'calc_value' => 65, 'default_cutoff' => 0.63],
         ['grade_id' => 111, 'display_value' => 'D-', 'calc_value' => 62, 'default_cutoff' => 0.60],
-        ['grade_id' => 112, 'display_value' => 'F', 'calc_value' => 55, 'default_cutoff' => 0.0]
+        ['grade_id' => 112, 'display_value' => 'F', 'calc_value' => 55, 'default_cutoff' => 0.50]
     ];
 
-    static public $defaultCutoffs = [];
-    static public $displayValues = [];
-    static public $calcValues = [];
     /** @var array The default cutoffs for each possible grade */
-//    static public $standardCutoffs = [.97, .93, .90, .87, .83, .80, .77, .73, .70, .67, .63, .60, 0];
+    static public $defaultCutoffs = [];
+
+    /** @var array The text to be displayed to the student for each grade */
+    static public $displayValues = [];
+
+    /** @var array The value of each grade to be used in calculations of statistics */
+    static public $calcValues = [];
 
     /** @var array Laravel collection of the grades  */
     static protected $searchableGrades = [];
+
+
+    /**
+     * Factory method for grade object
+     *
+     * When grade assignments are saved to the db, they will be stored via
+     * the grade_id in self::$grades. This is a method to get a Grade object back
+     * based on that stored id.
+     * @param $gradeId
+     * @return Grade
+     */
+    static public function loadByGradeId($gradeId)
+    {
+        self::makeSearchable();
+
+        $v =  self::$searchableGrades->where('grade_id', $gradeId)->first();
+
+        //Make and return a new object
+        return new Grade($v['grade_id'], $v['display_value'], $v['calc_value']);
+    }
 
     /**
      * Factory method for grade object
@@ -65,7 +88,7 @@ class GradeFactory
     }
 
     /**
-     * Factory method which returns a grade object based on the standard order of the grades.
+     * Factory method which returns a grade object based on the ordinal position of the grades in descending order.
      * Legitimate values are integers from 0 to 12, where:
      *      0 = A+,
      *      1 = A,
@@ -93,7 +116,8 @@ class GradeFactory
 
     /**
      * Returns an array of the values to be used in calculation for all the standard
-     * grades (i.e., the stuff stored in self::$grades)
+     * grades (i.e., the stuff stored in self::$grades).
+     * These grades are returned from highest to lowest (i.e, A+, A, A-, B+ ...)
      * @returns array
      */
     static public function getCalcValuesOfGrades()
@@ -103,7 +127,8 @@ class GradeFactory
     }
 
     /**
-     * Returns array of floats representing the default cut offs for each grade to be displayed
+     * Returns array of floats representing the default cut offs for each grade to be displayed.
+     * These grades are returned from highest to lowest (i.e, A+, A, A-, B+ ...)
      * @return array
      */
     static public function getDefaultCutoffsOfGrades()
@@ -142,7 +167,7 @@ class GradeFactory
     }
 
     /**
-     * Handles the search process
+     * Handles the search process for lookups using display value
      * @param $displayValue
      * @return mixed
      */

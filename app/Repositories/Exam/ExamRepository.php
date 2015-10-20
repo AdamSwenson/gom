@@ -7,10 +7,13 @@
  */
 
 namespace App\Repositories\Exam;
+
 use App\HTTP\Controllers\helpers\cleaning\CleanerFactory;
 use App\Repositories\Exam\IExamRepository;
 
 use App\Exam;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 
 class ExamRepository implements IExamRepository
@@ -48,21 +51,23 @@ class ExamRepository implements IExamRepository
      */
     public function delete_exam($examOrExamId)
     {
-        try{
+        try
+        {
             //Case where an exam object has been passed in
-            if($examOrExamId instanceof Exam)
+            if ($examOrExamId instanceof Exam)
             {
                 return $examOrExamId->delete();
-            }
-            else{
+            } else
+            {
                 //If it wasn't an exam object, assume it is an integer and clean accordingly
                 $clean_id = $this->cleaner->sanitize($examOrExamId, CleanerFactory::INTEGER);
+
                 return Exam::destroy([$clean_id]);
             }
 
-        }catch(\Exception $e)
+        } catch (\Exception $e)
         {
-             throw $e;
+            throw $e;
         }
     }
 
@@ -93,6 +98,7 @@ class ExamRepository implements IExamRepository
             $exam->setTerm($clean_term);
             $exam->setName($clean_name);
             $exam->save();
+
             return $exam;
         } catch (\Exception $e)
         {
@@ -101,48 +107,46 @@ class ExamRepository implements IExamRepository
     }
 
     /**
-     *
-     * TODO: This should be done with transaction
+     * This constructs a new exam, copies all the fields from the old exam, then
+     * returns the cloned version.
      *
      * @param integer $examToCloneId The id of the exam whose assignments to copy
      * @return Exam $newExam
      */
     public function clone_exam($examToCloneId)
     {
-
-        $questionAssignDao = app()->make('App\Repositories\Question\IQuestionAssignmentRepository');
-        $elementAssignDao = app()->make('App\Repositories\Element\IElementAssignmentRepository');
-
-        // I've modified this so as to make it easier to use.
-        // It will construct a new exam, copy all the fields from the old exam, then return the cloned version. 9/9 -BB
-
-        $oldExam = $this->load_exam($examToCloneId);
-        $newName = 'Clone of "'.$oldExam->getName().'"';
-        $newExam = $this->save_new_exam($oldExam->getYear(), $oldExam->getTerm(), $newName );
-        $newExamId = $newExam->getId();
-
-        $questionsToClone = $questionAssignDao->load_all_for_exam($examToCloneId);
-        $elementsToClone = $elementAssignDao->load_by_exam($examToCloneId);
-
-        foreach($questionsToClone as $questionAssignment)
+        return DB::transaction(function () use ($examToCloneId)
         {
-            $questionAssignDao->record($newExamId, $questionAssignment->question_id, $questionAssignment->question_number);
-        }
+            $questionAssignDao = app()->make('App\Repositories\Question\IQuestionAssignmentRepository');
+            $elementAssignDao = app()->make('App\Repositories\Element\IElementAssignmentRepository');
 
-        foreach($elementsToClone as $elementAssignment)
-        {
-            $elementAssignDao->record($newExamId, $elementAssignment->question_id, $elementAssignment->element_id, $elementAssignment->subtask);
-        }
+            $oldExam = $this->load_exam($examToCloneId);
+            $newName = 'Clone of "' . $oldExam->getName() . '"';
+            $newExam = $this->save_new_exam($oldExam->getYear(), $oldExam->getTerm(), $newName);
+            $newExamId = $newExam->getId();
 
-        return $newExam;
+            $questionsToClone = $questionAssignDao->load_all_for_exam($examToCloneId);
+            $elementsToClone = $elementAssignDao->load_by_exam($examToCloneId);
 
+            foreach ($questionsToClone as $questionAssignment)
+            {
+                $questionAssignDao->record($newExamId, $questionAssignment->question_id, $questionAssignment->question_number);
+            }
+
+            foreach ($elementsToClone as $elementAssignment)
+            {
+                $elementAssignDao->record($newExamId, $elementAssignment->question_id, $elementAssignment->element_id, $elementAssignment->subtask);
+            }
+
+            return $newExam;
+        });
     }
 
     /**
      * Load exam by id
      *
      * @param $examId
-     * @return mixed
+     * @return Exam
      */
     public function load_exam($examId)
     {
@@ -150,13 +154,13 @@ class ExamRepository implements IExamRepository
     }
 
     /**
-     * Returns all exams
+     * Returns all exams, sorted by year in descending order
+     * @return \Illuminate\Support\Collection
      */
     public function load_all_exams()
     {
         $exams = Exam::all();
 
-        //return Exam::orderBy('name', 'ASC')->get();
         return $exams->sortByDesc('year');
     }
 
@@ -172,6 +176,7 @@ class ExamRepository implements IExamRepository
 
     /**
      * Returns all unlocked exams
+     * @return Exam
      */
     public function load_unlocked_exams()
     {
@@ -181,13 +186,14 @@ class ExamRepository implements IExamRepository
     /**
      * Marks the exam locked
      * @param $examId
-     * @return bool
+     * @return Exam
      */
     public function lock_exam($examId)
     {
         $exam = $this->load_exam($examId);
         $exam->setLocked(1);
         $exam->update();
+
         return $exam;
     }
 
@@ -201,6 +207,7 @@ class ExamRepository implements IExamRepository
         $exam = $this->load_exam($examId);
         $exam->setLocked(0);
         $exam->update();
+
         return $exam;
     }
 
@@ -214,6 +221,7 @@ class ExamRepository implements IExamRepository
         $exam = $this->load_exam($examId);
         $exam->setReleased(1);
         $exam->update();
+
         return $exam;
     }
 
@@ -227,6 +235,7 @@ class ExamRepository implements IExamRepository
         $exam = $this->load_exam($examId);
         $exam->setReleased(0);
         $exam->update();
+
         return $exam;
     }
 
@@ -241,6 +250,7 @@ class ExamRepository implements IExamRepository
     public function update_exam($examId, $year, $term, $name)
     {
         $exam = $this->load_exam($examId);
+
         return $this->update_exam_object($exam, $year, $term, $name);
     }
 
@@ -258,6 +268,7 @@ class ExamRepository implements IExamRepository
         $exam->setTerm($term);
         $exam->setName($name);
         $exam->save();
+
         return $exam;
     }
 

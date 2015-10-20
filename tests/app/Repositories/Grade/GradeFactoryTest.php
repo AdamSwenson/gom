@@ -37,6 +37,33 @@ class GradeFactoryTest extends \TestCase
         }
     }
 
+
+    public function factory_returns_correct_object_when_loaded_by_order()
+    {
+        for($i=0; $i<count(GradeFactory::$grades); $i++)
+        {
+            $result = GradeFactory::loadByOrder($i);
+
+            $this->assertInstanceOf('App\Grade', $result, "returns a grade object");
+            $this->assertEquals(GradeFactory::$grades[$i]['grade_id'], $result->id, "returns correct id");
+            $this->assertEquals(GradeFactory::$grades[$i]['display_value'], $result->display_value, "returns correct display value");
+            $this->assertEquals(GradeFactory::$grades[$i]['calc_value'], $result->calc_value, "returns correct calc value");
+        }
+    }
+
+    public function factory_returns_correct_object_when_loaded_by_id()
+    {
+        foreach(GradeFactory::$grades as $grade)
+        {
+            $result = GradeFactory::loadByGradeId($grade['grade_id']);
+
+            $this->assertInstanceOf('App\Grade', $result, "returns a grade object");
+            $this->assertEquals($grade['grade_id'], $result->id, "returns correct id");
+            $this->assertEquals($grade['display_value'], $result->display_value, "returns correct display value");
+            $this->assertEquals($grade['calc_value'], $result->calc_value, "returns correct calc value");
+        }
+    }
+
     /**
      * @test
      * @expectedException \Exception

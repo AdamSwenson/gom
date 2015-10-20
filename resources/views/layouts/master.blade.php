@@ -15,9 +15,8 @@
     @include('layouts.js_jquery_loader')
     @include('layouts.js_bootstrap_loader')
     @include('layouts.js_additional_libs')
-
-
 </head>
+
 <body>
 @if( Auth::check() )
     @include('navigation.nav_bar_main')

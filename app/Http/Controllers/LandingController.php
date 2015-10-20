@@ -19,7 +19,7 @@ class LandingController extends Controller
         if (Auth::check()) {
             return redirect('exam');
         }
-        return view('landing');
+        return view('index');
     }
 
     public function loggedIn(Request $request)

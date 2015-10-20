@@ -61,23 +61,23 @@ hr {
 ul {
   list-style-type: none; }
 
-table {
-  border: solid 1px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 2%;
-  width: 60%;
-  page-break-inside: avoid;
-  border-collapse: collapse;
-  /*position:absolute;*/ }
+/*table {*/
+  /*border: solid 1px;*/
+  /*margin-left: auto;*/
+  /*margin-right: auto;*/
+  /*margin-top: 2%;*/
+  /*width: 60%;*/
+  /*page-break-inside: avoid;*/
+  /*border-collapse: collapse;*/
+  /*/!*position:absolute;*!/ }*/
 
-td {
-  padding-left: 4em;
-  border: solid 1px;
-  border-collapse: collapse;
-  font-weight: 900;
-  font-size: 18px;
-  font-family: "Palatino Linotype", Palatino, serif; }
+/*td {*/
+  /*padding-left: 4em;*/
+  /*border: solid 1px;*/
+  /*border-collapse: collapse;*/
+  /*font-weight: 900;*/
+  /*font-size: 18px;*/
+  /*font-family: "Palatino Linotype", Palatino, serif; }*/
 
 .subheading {
   display: none; }

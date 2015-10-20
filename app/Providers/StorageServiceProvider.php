@@ -48,6 +48,7 @@ class StorageServiceProvider extends ServiceProvider
 
         //Grade and grade assignments
         $this->app->bind('App\Repositories\Grade\IGradeAssignmentRepository', 'App\Repositories\Grade\GradeAssignmentRepository');
+        $this->app->bind('App\Repositories\Grade\IStudentGradeRepository', 'App\Repositories\Grade\StudentGradeRepository');
 
         //Kumi (classes)
         $this->app->bind('App\Repositories\Student\IKumiRepository', 'App\Repositories\Student\KumiRepository');
@@ -59,6 +60,9 @@ class StorageServiceProvider extends ServiceProvider
         //Scores
         $this->app->bind('App\Repositories\Score\IQuestionScoreRepository', 'App\Repositories\Score\QuestionScoreRepository');
         $this->app->bind('App\Repositories\Score\IElementScoreRepository', 'App\Repositories\Score\ElementScoreRepository');
+
+        //Stats
+        $this->app->bind('App\Repositories\Score\IScoreStatisticsRepository', 'App\Repositories\Score\ScoreStatisticsRepository');
 
         //Students
         $this->app->bind('App\Repositories\Student\IStudentRepository', 'App\Repositories\Student\StudentRepository');
