@@ -91,4 +91,30 @@ class GradeAssignmentTest extends \TestCase
         }
     }
 
+
+    /**
+     * Dealing with bug in recording grades with min score of zero
+     * @test
+     */
+    public function setGradeWithMinScoreOfZero()
+    {
+        //Create new assignment
+        $g = new GradeAssignment();
+
+        $t = GradeFactory::loadByDisplayValue('F');
+
+        //Set the grade
+        $g->setGrade($t);
+        $g->setMinScore(0);
+        $g->exam_id = 1;
+        //Save it
+        $g->save();
+
+        $this->seeInDatabase('', ['exam_id' => 0, 'grade_id' => 112, 'min_score' => 0]);
+
+    }
+
+
+
+
 }
