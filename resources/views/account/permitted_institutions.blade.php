@@ -55,13 +55,13 @@
                                 data-toggle="dropdown"> Your institution <span
                                     class="glyphicon glyphicon-menu-down"></span>
                         </button>
-                        <ul class="dropdown-menu" id="institutionList" role="menu" style="cursor:pointer;">
-                            <li>University / college</li>
-                            <li>Junior college</li>
-                            <li>Technical school</li>
-                            <li>High school</li>
-                            <li>Middle school</li>
-                            <li>Other</li>
+                        <ul class="dropdown-menu list-group" id="institutionList" role="menu" style="cursor:pointer;">
+                            <li class="list-group-item">University / college</li>
+                            <li class="list-group-item">Junior college</li>
+                            <li class="list-group-item">Technical school</li>
+                            <li class="list-group-item">High school</li>
+                            <li class="list-group-item">Middle school</li>
+                            <li class="list-group-item">Other</li>
                         </ul>
                     </div>
                 </div>

@@ -1,8 +1,3 @@
-<style>
-    li:hover {
-        background-color: #393939;
-    }
-</style>
 <div class="navbar navbar-inverse navbar-static-top">
     <div class="container-fluid">
         <div class="navbar-header">
