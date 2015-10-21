@@ -1,11 +1,4 @@
 <!-- Generic nav bar template used by all pages once logged in. The active tab is set in JS by the page -->
-
-<style>
-    li:hover {
-        background-color: #393939;
-    }
-</style>
-
 <div class="navbar navbar-inverse navbar-static-top">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -34,10 +27,12 @@
                 <li id="navHelp" title="Help">
                     <a href="{{url('help')}}" style="color:white;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>
                 </li>
+                {{--
                 <li id="navAccount">
                     <a href="{{url('account')}}" title="Account & Settings " style="color:white;">
                         <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></a>
                 </li>
+                --}}
                 <li id="navLogout">
                     <a href="{{url('auth/logout')}}" title="Log Out" style="color:white;">Log out</a>
                 </li>
