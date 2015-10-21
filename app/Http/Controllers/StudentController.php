@@ -278,6 +278,57 @@ class StudentController extends Controller
     }
 }
 
+/**
+ * Validates an incoming student record. If it is valid,
+ * saves to database.
+ * If not valid, adds to errors array and also adds it to the
+ * students to be returned to the user with the error notice.
+ */
+protected function validateStudent()
+{
+    //Perhaps also return a special view with the problem students highlighted
+
+}
+
+/**
+ * Requests have variable field names (they are a string plus the subtask number). We don't know
+ * how many elements there will be for a question. Thus this runs though the request and builds rules with the
+ * appropriate field names.
+ */
+protected function makeValidationRules()
+{
+    $limit = $this->chooseLimit(self::MAX_STUDENTS, SilentlyLoggedException::REQUEST_MAX_EXCEEDED_STUDENT);
+    for ($i = 1; $i <= $limit; $i++)
+    {
+        if ($this->has('lastName' . $i))
+        {
+            //lastName field
+            $this->rulesArray['lastName' . $i] = 'min:' . self::LAST_NAME_MIN_LENGTH . '|max:' . self::LAST_NAME_MAX_LENGTH;
+            $this->messagesArray['lastName' . $i . '.min'] = "The last name for student #$i must be at least :min characters long ";
+            $this->messagesArray['lastName' . $i . '.max'] = "The last name for student #$i must be less than :max characters long ";
+
+            //firstName field
+            $this->rulesArray['firstName' . $i] = 'max:' . self::FIRST_NAME_MAX_LENGTH;
+            $this->messagesArray['firstName' . $i . '.min'] = "The first name for student #$i must be at least :min characters long ";
+            $this->messagesArray['firstName' . $i . '.max'] = "The first name for student #$i must be less than :max characters long ";
+
+            //studentIdentifier field
+            $this->rulesArray['studentIdentifier' . $i] = 'max:' . self::STUDENT_IDENTIFIER_MAX_LENGTH;
+            $this->messagesArray['studentIdentifier' . $i . '.max'] = "The student id must be less than :max characters long";
+
+            //email field
+            $this->rulesArray['email' . $i] = 'email';
+            $this->messagesArray['email' . $i . '.email'] = "The email address for student #$i was invalid";
+        } else
+        {
+            break;
+        }
+    }
+}
+}
+
+
+
 //    public function processStudentFile()
 //    {
 
