@@ -26,10 +26,10 @@
             <thead>
             <tr style="cursor: default;">
                 <th class="col-lg-1">Term</th>
-                <th class="col-lg-6">Name</th>
+                <th class="col-lg-6" style="min-width: 200px;">Name</th>
                 <th class="col-lg-1">Questions</th>
                 <th class="col-lg-1">Students</th>
-                <th class="col-lg-3"></th>
+                <th class="col-lg-3" style="width: 200px; min-width: 200px;"></th>
             </tr>
             </thead>
             <tbody>

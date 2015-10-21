@@ -36,7 +36,7 @@
     </style>
     <div class="row">
         <!-- Left column holds questions and sliders -->
-        <div class="col-md-8" style="width-max: 900px;">
+        <div class="col-md-8" style="width-max: 700px;">
             <h3 data-exam-id="{{ $exam->getId() }}"><span class="glyphicon glyphicon-list-alt"
                                                           aria-hidden="true"></span>
                 {{ $exam->getTerm() }}, {{ $exam->getYear() }} "{{ $exam->getName() }}" </h3>
@@ -121,7 +121,7 @@
         </div>
 
         <!-- Right column holds Roster and Time info -->
-        <div class="col-md-4" style="max-width: 450px; min-width: 340px;">
+        <div class="col-md-4" style="max-width: 550px; min-width: 340px;">
             <!-- student name and ID -->
             <form class="form-horizontal">
                 <div class="form-group activeStudentInput">
