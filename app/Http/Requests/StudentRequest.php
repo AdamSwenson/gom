@@ -38,8 +38,9 @@ class StudentRequest extends Request
      */
     public function rules()
     {
-        $this->makeValidationRules();
-        return $this->rulesArray;
+        return [];
+  //      $this->makeValidationRules();
+   //     return $this->rulesArray;
     }
 
     /**
@@ -48,7 +49,8 @@ class StudentRequest extends Request
      */
     public function messages()
     {
-        return $this->messagesArray;
+        return [];
+    //    return $this->messagesArray;
     }
 
     /**

@@ -26,7 +26,11 @@ class TextCleaner implements ICleaner {
      * @param type $to_clean
      * @return boolean
      */
-    public function sanitize($to_clean) {
+    public function sanitize($to_clean, $trimTo=null) {
+        if( !empty( $trimTo) )
+        {
+            $to_clean = mb_substr($to_clean, 0, $trimTo);
+        }
         return $to_clean;
         
 //        if ($this->validate($to_clean)) {
@@ -40,9 +44,11 @@ class TextCleaner implements ICleaner {
     /**
      * Returns false if invalid or longer than max length
      * @param type $to_validate
-     * @return boolean
+     * @param null $minLength
+     * @param null $maxLength
+     * @return bool
      */
-    public function validate($to_validate) {
+    public function validate($to_validate, $minLength=null, $maxLength=null) {
         return TRUE;
 //        if (mb_strlen($to_validate) <= self::MAX_LENGTH) {
 //            return filter_var($to_validate, FILTER_VALIDATE_EMAIL);

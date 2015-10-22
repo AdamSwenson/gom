@@ -116,4 +116,14 @@ class StudentControllerTest extends \TestCase
         $response = $this->action('DELETE', 'StudentController@destroy', $this->student);
         $this->assertNotNull($response);
     }
+
+
+    /**
+     * @test
+     */
+    public function validateStudents()
+    {
+
+
+    }
 }

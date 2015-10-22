@@ -21,19 +21,19 @@ class CleanerFactory implements ICleanerFactory {
     const TEXT = 'text';
     const EMAIL = 'email';
 
-    public function validate($to_validate, $type) {
+    public function validate($to_validate, $type, $minLength=null, $maxLength=null) {
         $cleaner = $this->make($type);
         if ($cleaner) {
-            return $cleaner->validate($to_validate);
+            return $cleaner->validate($to_validate, $minLength, $maxLength);
         } else {
             return FALSE;
         }
     }
 
-    public function sanitize($to_clean, $type) {
+    public function sanitize($to_clean, $type, $trimTo=null) {
         $cleaner = $this->make($type);
         if ($cleaner) {
-            return $cleaner->sanitize($to_clean);
+            return $cleaner->sanitize($to_clean, $trimTo);
         } else {
             return FALSE;
         }

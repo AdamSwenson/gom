@@ -33,14 +33,14 @@ class ExamController extends Controller
     /**@var IExamRepository */
     protected $examDao;
 
-    public function __construct(IExamRepository $examDao, IQuestionAssignmentRepository $questionAssignmentRepository,
-            IStudentRepository $studentRepository)
+    public function __construct(IExamRepository $examDao,
+                                IQuestionAssignmentRepository $questionAssignmentRepository,
+                                IStudentRepository $studentRepository)
     {
         $this->middleware('auth');
         $this->examDao = $examDao;
         $this->questionAssignmentDao = $questionAssignmentRepository;
         $this->studentDao = $studentRepository;
-
     }
 
     /**

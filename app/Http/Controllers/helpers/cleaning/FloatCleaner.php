@@ -18,8 +18,13 @@ class FloatCleaner implements ICleaner
     const MAX_LENGTH = 100;
     
     protected $max_length;
-    
-    public function sanitize($to_clean) {
+
+    /**
+     * @param type $to_clean
+     * @param null $trimTo
+     * @return bool|mixed
+     */
+    public function sanitize($to_clean, $trimTo=null) {
          if (is_numeric($to_clean)) {
             if (is_string($to_clean)) {
                 $to_clean = (float) $to_clean;
@@ -33,7 +38,7 @@ class FloatCleaner implements ICleaner
         
     
 
-    public function validate($to_validate) 
+    public function validate($to_validate, $minLength=null, $maxLength=null)
     {
         return \filter_var($to_validate, \FILTER_VALIDATE_FLOAT);
     }

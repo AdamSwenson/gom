@@ -19,11 +19,14 @@ class EmailCleaner implements ICleaner {
     protected $max_length;
 
     /**
-     * Cleans email address 
+     * Cleans email address
      * @param type $to_clean
-     * @return boolean
+     * @param null $trimTo
+     * @return bool
+     * @internal param null $toTrim
      */
-    public function sanitize($to_clean) {
+    public function sanitize($to_clean, $trimTo=null)
+    {
         if ($this->validate($to_clean)) {
             $email = \filter_var($to_clean, \FILTER_SANITIZE_EMAIL); //now has valid for email characters 
             return \trim($email);
@@ -37,7 +40,7 @@ class EmailCleaner implements ICleaner {
      * @param type $to_validate
      * @return boolean
      */
-    public function validate($to_validate) {
+    public function validate($to_validate,  $minLength=null, $maxLength=null) {
         if (mb_strlen($to_validate) <= self::MAX_LENGTH) {
             return filter_var($to_validate, FILTER_VALIDATE_EMAIL);
         } else {

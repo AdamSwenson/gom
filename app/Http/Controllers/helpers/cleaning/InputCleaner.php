@@ -9,7 +9,7 @@ namespace App\HTTP\Controllers\helpers\cleaning;
 
 /**
  * Description of InputCleaner
- *
+ * @deprecated
  * @author adam
  */
 class InputCleaner

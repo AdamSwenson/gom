@@ -42,99 +42,105 @@
         font-size: 1.2em;
         color: #d43f3a;
     }
+
+    .invalidRecord{
+        background: red;
+        border: medium;
+        border-color: red;
+    }
 </style>
 @endsection
 
 @section('body')
-<nav>
-    <ul class="pager">
-        <li class="next">
-            <a onclick="submitAndNavigateTo('editExam')" style="cursor:pointer;"><span
-                        class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save & Finish</a>
-        </li>
-        <li class="previous">
-            <a onclick="submitAndNavigateTo('{{ $prevAction }}')" style="cursor:pointer;"><span
-                        class="glyphicon glyphicon-chevron-left"
-                        aria-hidden="true"></span> {{ $prevActionLabel }}</a>
-        </li>
-    </ul>
-</nav>
+    <nav>
+        <ul class="pager">
+            <li class="next">
+                <a onclick="submitAndNavigateTo('editExam')" style="cursor:pointer;"><span
+                            class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save & Finish</a>
+            </li>
+            <li class="previous">
+                <a onclick="submitAndNavigateTo('{{ $prevAction }}')" style="cursor:pointer;"><span
+                            class="glyphicon glyphicon-chevron-left"
+                            aria-hidden="true"></span> {{ $prevActionLabel }}</a>
+            </li>
+        </ul>
+    </nav>
 
-<h2>Import Roster</h2>
+    <h2>Import Roster</h2>
 
-<p>Roster files can be any CSV file having each student's information on a single row in the following
-    format: Last Name, First Name, Student ID (optional), Email (optional)</p>
+    <p>Roster files can be any CSV file having each student's information on a single row in the following
+        format: Last Name, First Name, Student ID (optional), Email (optional)</p>
 
-<!-- file import button -->
-<span class="btn btn-primary btn-file">
+    <!-- file import button -->
+    <span class="btn btn-primary btn-file">
                 <input type="file" id="fileInput" name="file" accept=".csv, text/plain"/>
                 <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
                 Import Roster
             </span>
-<!-- import help -->
-<a onclick="showImportHelp()" class="btn btn-info">
-    <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
-    Import Help
-</a>
+    <!-- import help -->
+    <a onclick="showImportHelp()" class="btn btn-info">
+        <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+        Import Help
+    </a>
 
-<h2>Edit Roster</h2>
+    <h2>Edit Roster</h2>
 
-<form id="rosterData" method="post" role="form"
-      action="{{ url('exam/'.$exam->getId().'/student/updateAll') }}">
-    {!! csrf_field() !!}
-    <table class="table">
-        <thead>
-        <!-- table headers -->
-        <tr>
-            <th class="col-md-3" style="cursor: pointer;" onclick="sortRosterBy('lastName')">Last
-                Name
-            </th>
-            <th class="col-md-3" style="cursor: pointer;" onclick="sortRosterBy('firstName')">First
-                Name
-            </th>
-            <th class="col-md-2" style="cursor: pointer;"
-                onclick="sortRosterBy('studentIdentifier')">Student ID
-            </th>
-            <th class="col-md-3" style="cursor: pointer;" onclick="sortRosterBy('email')">Email</th>
-            <th class="col-md-1"></th>
-        </tr>
-        </thead>
-        <!-- Student roster -->
-        <tbody id="studentRosterBody">
-        @if(isset($students) && (count($students) > 0))
-            <?php $row = 1; ?>
-            @foreach($students as $s)
-                @include('setup.roster_form')
-                <?php $row++ ?>
-            @endforeach
-        @endif
-        </tbody>
-    </table>
-    <input type="hidden" name="navigateTo" value="selectExam"/>
-</form>
+    <form id="rosterData" method="post" role="form"
+          action="{{ url('exam/'.$exam->getId().'/student/updateAll') }}">
+        {!! csrf_field() !!}
+        <table class="table">
+            <thead>
+            <!-- table headers -->
+            <tr>
+                <th class="col-md-3" style="cursor: pointer;" onclick="sortRosterBy('lastName')">Last
+                    Name
+                </th>
+                <th class="col-md-3" style="cursor: pointer;" onclick="sortRosterBy('firstName')">First
+                    Name
+                </th>
+                <th class="col-md-2" style="cursor: pointer;"
+                    onclick="sortRosterBy('studentIdentifier')">Student ID
+                </th>
+                <th class="col-md-3" style="cursor: pointer;" onclick="sortRosterBy('email')">Email</th>
+                <th class="col-md-1"></th>
+            </tr>
+            </thead>
+            <!-- Student roster -->
+            <tbody id="studentRosterBody">
+            @if(isset($students) && (count($students) > 0))
+                <?php $row = 1; ?>
+                @foreach($students as $s)
+                    @include('setup.roster_form')
+                    <?php $row++ ?>
+                @endforeach
+            @endif
+            </tbody>
+        </table>
+        <input type="hidden" name="navigateTo" value="selectExam"/>
+    </form>
 
-<!-- add student button -->
-<a class="btn btn-primary" onclick="addStudent()" id="addStudent"><span
-            class="glyphicon glyphicon-plus"
-            aria-hidden="true"></span>
-    Add Student
-</a>
-<!-- delete roster button -->
-<a class="btn btn-danger" onclick="deleteRoster()" id="deleteRoster"><span
-            class="glyphicon glyphicon-minus"
-            aria-hidden="true"></span>
-    Delete Roster
-</a>
+    <!-- add student button -->
+    <a class="btn btn-primary" onclick="addStudent()" id="addStudent"><span
+                class="glyphicon glyphicon-plus"
+                aria-hidden="true"></span>
+        Add Student
+    </a>
+    <!-- delete roster button -->
+    <a class="btn btn-danger" onclick="deleteRoster()" id="deleteRoster"><span
+                class="glyphicon glyphicon-minus"
+                aria-hidden="true"></span>
+        Delete Roster
+    </a>
 
-<div style="display: none">
-    <table>
-        <tbody>
-        <?php $s = null; $row = 0; ?>
-                <!-- this hidden field is duplicated and appended to the roster table when adding a new student -->
-        @include('setup.roster_form')
-        </tbody>
-    </table>
-</div>
+    <div style="display: none">
+        <table>
+            <tbody>
+            <?php $s = null; $row = 0; ?>
+                    <!-- this hidden field is duplicated and appended to the roster table when adding a new student -->
+            @include('setup.roster_form')
+            </tbody>
+        </table>
+    </div>
 
 @endsection
 
