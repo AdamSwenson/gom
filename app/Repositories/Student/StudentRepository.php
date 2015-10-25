@@ -100,7 +100,7 @@ class StudentRepository implements IStudentRepository
                         {
                             //Add a failed key which the browser will use to attach a failure class
                             $row['failed'] = 'invalidRecord';
-//                            break;
+                            break;
                         }
                     }
                 } else
@@ -230,11 +230,6 @@ class StudentRepository implements IStudentRepository
                 {
                     $student->delete();
                 }
-
-//                if ( !array_key_exists($student->getId(), $this->currentStudents))
-//                {
-//                    $student->delete();
-//                }
             }
         }
     }

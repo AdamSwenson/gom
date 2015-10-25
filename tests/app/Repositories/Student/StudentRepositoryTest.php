@@ -97,8 +97,8 @@ public function tearDown()
                     "id" => $student->getId(),
                     "last_name" => $student->last_name,
                     "first_name" => $student->first_name,
-                    "student_identifier" => $identifier,
-                    "email" => $student->getEmail()
+                 //   "student_identifier" => $identifier,
+                 //   "email" => $student->getEmail()
                 ];
             }
         }
@@ -120,10 +120,10 @@ public function tearDown()
 
             $this->expectedDbEntries[] = [
                 'id' => $student->getId(),
-                'student_identifier' => $studentIdentifier,
+                //'student_identifier' => $studentIdentifier,
                 'last_name' => $lastName,
                 'first_name' => $firstName,
-                'email' => $email
+              //  'email' => $email
             ];
 
         }
@@ -347,17 +347,42 @@ public function tearDown()
 
     /**
      * @test
-     * TODO: Add test to ensure that does not delete any pre-existing students which might have been altered to make invalid, lest we destroy their exam scores
      */
     public function deleteStudentsNotOnRoster()
-    {}
+    {
+        $indexToRemove = 1;
+
+        # prep
+        $request = $this->buildTestDataAndRequest(0, 10, 0);
+        $recordToRemove = $this->expectedDbEntries[$indexToRemove];
+        unset($this->expectedDbEntries[$indexToRemove]);
+        unset($request['id' . $indexToRemove]);
+        unset($request['last_name' . $indexToRemove]);
+        unset($request['first_name' . $indexToRemove]);
+        unset($request['student_identifier' . $indexToRemove]);
+        unset($request['email' . $indexToRemove]);
+
+        # call
+        $result = $this->object->update_all($this->exam, $request);
+
+        # check
+        $this->assertNotEmpty($result);
+        $this->notSeeInDatabase('students', $recordToRemove);
+
+        foreach($this->expectedDbEntries as $data)
+        {
+            $this->seeInDatabase('students', $data, "non deleted student still in db");
+        }
+    }
+
 
 
     /**
      * @test
      */
-    public function existingStudentMadeInvalid()
+    public function existingStudentMadeInvalidNotDeleted()
     {
+
 
 
         //check
@@ -380,7 +405,7 @@ public function tearDown()
     /**
      * @test
      */
-    public function updateDatabase()
+    public function updateStudentsInDatabaseHappyPath()
     {
         $numberStudents = 10;
         #Prep
@@ -397,11 +422,6 @@ public function tearDown()
 
         //Build a request
         $request = $this->buildTestDataAndRequest($numberStudents);
-
-//        foreach($this->testData as $k => $v)
-//        {
-//            $request[$k] = $v;
-//        }
 
         #Call
         $this->object->updateStudentsInDatabase($request, $kumi);
@@ -424,7 +444,7 @@ public function tearDown()
         $request = $this->buildTestDataAndRequest();
 
         #Call
-        $response = $this->object->updateAll($this->exam, $request);
+        $response = $this->object->update_all($this->exam, $request);
 
         #Check
         $this->assertNotNull($response);
@@ -443,7 +463,7 @@ public function tearDown()
         $request = $this->buildTestDataAndRequest(0, $numberOriginal=10);
 
         #Call
-        $response = $this->object->updateAll($this->exam, $request);
+        $response = $this->object->update_all($this->exam, $request);
 
         #Check
         $this->assertNotNull($response);
@@ -462,7 +482,7 @@ public function tearDown()
         $request = $this->buildTestDataAndRequest(0, 0, $numberAltered=10);
 
         #Call
-        $response = $this->object->updateAll($this->exam, $request);
+        $response = $this->object->update_all($this->exam, $request);
 
         #Check
         $this->assertNotNull($response);
@@ -481,7 +501,7 @@ public function tearDown()
         $request = $this->buildTestDataAndRequest(10, 10, 10);
 
         #Call
-        $response = $this->object->updateAll($this->exam, $request);
+        $response = $this->object->update_all($this->exam, $request);
 
         #Check
         $this->assertNotNull($response);

@@ -34,56 +34,26 @@ use Illuminate\Support\MessageBag;
 class StudentController extends Controller
 {
 
-    const LAST_NAME_MIN_LENGTH = 2;
-
-    const LAST_NAME_MAX_LENGTH = 255;
-
-    const FIRST_NAME_MIN_LENGTH = 2;
-
-    const FIRST_NAME_MAX_LENGTH = 255;
-
-    const STUDENT_IDENTIFIER_MAX_LENGTH = 225;
-
-    /** Absolute max number of students that can be added in a request (to help prevent attacks with large numbers) */
-    const MAX_STUDENTS = 1000;
-
-    /** @var array When a request to alter students comes in, this holds records which pass validation */
-    protected $validRecords = [];
-
-    /** @var array When a request to alter students comes in, this holds records which fail validation */
-    protected $invalidRecords = [];
-
-    /** @var array Error messages to return to the user */
-    protected $errorMessages;
-
     /** @var IStudentRepository */
     protected $dao;
+
     /** @var IKumiRepository */
     protected $kumiRepository;
 
-    /** @var  IStudentValidator */
-    public $studentValidator;
-
-    /** @var array Holds the students that are present in the current request */
-    protected $currentStudents = [];
-
     /** @var  Exam The exam passed in the request */
     public $exam;
-    protected $allStudents;
 
-    /** @var ICleanerFactory */
-    private $cleaner;
+    /** @var \App\Repositories\Question\IQuestionRepository */
+    protected $questionDao;
 
+    /** @var \App\Repositories\Question\IQuestionAssignmentRepository */
+    protected $questionAssignmentDao;
+    
 
     public function __construct()
-//IStudentRepository $studentRepository,
-//                                IKumiRepository $kumiRepository,
-//                                IQuestionAssignmentRepository $questionAssignmentRepository,
-//                                IQuestionRepository $questionRepository)
     {
         $this->middleware('auth');
         //can't do constructor injection in testing non-route stuff
-//        app()->make('App\Repositories\Student\IStudentRepository');
         $this->dao = app()->make('App\Repositories\Student\IStudentRepository');
         $this->kumiRepository = app()->make('App\Repositories\Student\IKumiRepository');
         $this->questionAssignmentDao = app()->make('App\Repositories\Question\IQuestionAssignmentRepository');
@@ -212,45 +182,8 @@ class StudentController extends Controller
         $this->exam = $exam;
         $examId = $this->exam->getId();
 
+        //Do the recording, deleting, et cetera
         $allStudents = $this->dao->update_all($exam, $request);
-
-//        //If we already have a kumi for the exam, load it. Otherwise make one.
-//        $kumi = $this->kumiRepository->load($this->exam->getName(), $this->exam->getYear());
-//        if (!$kumi)
-//        {
-//            $kumi = $this->kumiRepository->create($this->exam->getName(), $this->exam->getYear(), $this->exam);
-//        }
-//
-//        /*
-//         * Figure out which records are valid, pushing their row numbers into $this->studentValidator->validRecords
-//         * and $this->studentValidator->invalidRecords respectively
-//         */
-//        $this->studentValidator = app()->make('App\Http\Controllers\helpers\validation\IStudentRecordValidator');
-//        $this->studentValidator->validateStudents($request);
-//
-//        /* Update the database */
-//        $this->updateStudentsInDatabase($request, $kumi);
-//
-//        /*
-//         * The user is going to be pissed if they have to retype the invalid
-//         * records. Not to mention the difficulty of figuring out what the problem was
-//         * if they can't see the original.
-//         * So, we'll return back the invalid records but add a class so that the
-//         * client can add styling to make it easier for the user to identify them.
-//        */
-//        if ( !empty($this->studentValidator->invalidRecords) )
-//        {
-//            foreach ($this->studentValidator->invalidRecords as $i)
-//            {
-//                $this->allStudents[] = [
-//                    'failed' => 'invalidRecord',
-//                    'last_name' => $request->input('lastName' . $i),
-//                    'first_name' => $request->input('firstName' . $i),
-//                    'email' => $request->input('email' . $i),
-//                    'student_identifier' => $request->input('studentIdentifier' . $i),
-//                    'id' => $request->input('id' . $i)
-//                ];
-//            }
 
         /* Handle redirection depending on whether records were invalid */
         if ( !empty($this->dao->studentValidator->invalidRecords) )
@@ -312,98 +245,6 @@ class StudentController extends Controller
         }
     }
 
-    /**
-     * This handles all the database operations for updating students.
-     * It creates or updates all valid records from $request (the validator needs to have
-     * been called previously) and deletes records from the database that were not
-     * in the incoming request (which includes both valid and invalid records).
-     *
-     * This will write the data for all students with every pass, modifying the time updated field,
-     * regardless of whether the data has changed.
-     *
-     * It also updates the $this->currentStudents array in preparation for deleting
-     *
-     * @param $request
-     * @param $kumi
-     */
-    public function updateStudentsInDatabase(Request $request, $kumi)
-    {
-
-        //Write valid student records to the database and store them in $this->currentStudents
-        foreach ($this->studentValidator->validRecords as $i)
-        {
-            $lName = $request->input('lastName' . $i);
-            $fName = $request->input('firstName' . $i);
-            $email = $request->input('email' . $i);
-            $identifier = $request->input('studentIdentifier' . $i);
-            $id = $request->input('id' . $i);
-            $student = null;
-            if ($id == 0)
-            {
-                // create new student
-                $student = $this->dao->create_student($lName, $fName, $identifier, $email);
-                $id = $student->getId();
-                $student->kumis()->attach($kumi); // add the student to the kumi
-            } else
-            {
-                // why do we need to call save for some classes and not others?
-                $student = $this->dao->load_student_by_id($id);
-                $student->setStudentFName($fName);
-                $student->setStudentLName($lName);
-                $student->setStudentId($identifier);
-                $student->setEmail($email);
-                $student->save();
-            }
-            $this->currentStudents[$id] = $student;
-        }
-
-        // TODO: Add test to ensure that does not delete any pre-existing students which might have been altered to make invalid, lest we destroy their exam scores
-
-        /*
-         * Next, we need to delete any students from the database whom the user
-         * deleted.
-         * But we need to be careful. If there were invalid records in the request,
-         * the user might not have intended to delete the student. For example, they
-         * may have gone back to add an email address after grading a student's exam
-         * and mistyped the email address. If we we're just to delete everything not in
-         * the validStudents array, all the work of grading the student would be lost.
-         *
-         * So, first, we will try loading students with invalid records. Note that we don't
-         * care if the id can't be found in the db. Nor do we care if they were a new record
-         * (since they wouldn't be in the db and the row will be passed back to the user later).
-         */
-        if (!empty($this->studentValidator->invalidRecords))
-        {
-            foreach ($this->studentValidator->invalidRecords as $id)
-            {
-                if ($id !== 0)
-                {
-                    try
-                    {
-                        $student = $this->dao->load_student_by_id($id);
-                        $this->currentStudents[$id] = $student;
-                    } catch (\Exception $e)
-                    {
-                    }
-                }
-            }
-        }
-
-        /* Now we can go through and delete any students
-         * who are not on the roster
-         */
-        $this->allStudents = $this->dao->load_students_by_exam($this->exam->getId());
-        if (count($this->allStudents) > 0)
-        {
-            foreach ($this->allStudents as $student)
-            {
-                if (!array_key_exists($student->getId(), $this->currentStudents))
-                {
-                    $this->dao->delete_student_by_object($student);
-                }
-            }
-        }
-    }
 
     /**
      * Remove the specified resource from storage.
@@ -418,7 +259,6 @@ class StudentController extends Controller
 
         $result = $this->dao->delete_student_by_object($student);
 
-        //TODO Add view
     }
 
 
