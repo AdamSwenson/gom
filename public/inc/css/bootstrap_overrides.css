@@ -21,3 +21,7 @@
 .pager > li > a {
     background-color: #E0E0E0;
 }
+
+.pager{
+    margin-top: 0;
+}

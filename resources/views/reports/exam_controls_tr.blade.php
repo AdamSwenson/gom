@@ -4,11 +4,11 @@
         {{ $exam->term or '' }}
         {{ $exam->year or '' }}
     </td>
-    <td style="vertical-align:middle">
+    <td style="vertical-align:middle; min-width: 200px;">
         {{ $exam->name or 'Name Not Found'}}
     </td>
     <!-- control buttons -- do not show if no exams -->
-    <td style="text-align:right">
+    <td style="text-align:right; min-width: 340px;">
         <a class="btn btn-primary" id="{{'exam'.$examId }}" style="width:140px;"
            title="Release Exam" data-released="{{ $examId }}"
            onclick="confirmRelease({{ $examId }})">

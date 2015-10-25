@@ -35,11 +35,11 @@
     <table class="table">
         <thead>
         <tr>
-            <th class="col-xs-1">Term</th>
-            <th class="col-xs-6">Name</th>
-            <th class="col-xs-1">Questions</th>
-            <th class="col-xs-1">Students</th>
-            <th class="col-xs-3"></th>
+            <th class="col-lg-1">Term</th>
+            <th class="col-lg-6" style="min-width: 200px;">Name</th>
+            <th class="col-lg-1">Questions</th>
+            <th class="col-lg-1">Students</th>
+            <th class="col-lg-3" style="width: 260px; min-width: 260px;"></th>
         </tr>
         </thead>
         <tbody>
@@ -53,7 +53,7 @@
                     <td style="vertical-align: middle">{{ $numberOfQuestions[$exam->getId()] or '0' }}</td>
                     <td style="vertical-align: middle">{{ $numberOfStudents[$exam->getId()] or '0' }}</td>
                     <!-- edit / clone / delete buttons -->
-                    <td style="text-align:right">
+                    <td style="text-align:right;">
                         <a class="btn btn-info" href="{{ url('exam/'.$exam->getId().'/edit') }}"
                            title="Edit Exam">
                             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>

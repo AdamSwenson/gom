@@ -3,13 +3,13 @@
      data-element-id="{{ $elements[$eNumber-1]->getId() }}">
     <h5>Element #{{ $eNumber }}: "{{ $elements[$eNumber-1]->getElementName() }}"</h5>
     <div class="row">
-                <span class="col-md-5" style="padding-right: 0px;">
+                <span class="col-lg-5" style="padding-right: 0px;">
                     <!-- score slider -->
                     <label for="sliderQ{{ $qNumber }}E{{ $eNumber }}"></label>
                     <input class="slider" id="sliderQ{{ $qNumber }}E{{ $eNumber }}" type="text"/>
                 </span>
                     <!-- comment area -->
-                <span class="col-md-7" style="background-color: #DDDDDD; padding-left: 0;">
+                <span class="col-lg-7" style="background-color: #DDDDDD; padding-left: 0;">
                     <textarea class="form-control" rows="4" name="commentQ{{ $qNumber }}E{{ $eNumber }}" placeholder=
                     "No score for this element"></textarea>
                 </span>

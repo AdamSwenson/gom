@@ -161,6 +161,10 @@ class GradeController extends Controller
             $examScores[] = $examScore;
         }
 
+        if( empty($students) || empty($examScores) ){
+            return ('Either students or exam scores are empty');
+        }
+
         return View::make('grade.grade_assign', [
             'exam' => $exam,
             'examScores' => $examScores,

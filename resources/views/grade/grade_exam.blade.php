@@ -36,7 +36,7 @@
     </style>
     <div class="row">
         <!-- Left column holds questions and sliders -->
-        <div class="col-md-8">
+        <div class="col-md-8" style="width-max: 700px;">
             <h3 data-exam-id="{{ $exam->getId() }}"><span class="glyphicon glyphicon-list-alt"
                                                           aria-hidden="true"></span>
                 {{ $exam->getTerm() }}, {{ $exam->getYear() }} "{{ $exam->getName() }}" </h3>
@@ -68,7 +68,7 @@
                                 } ?>">
                                     {{--<div class="form-horizontal" role="form">--}}
                                     <div class="row">
-                                        <div class="col-sm-9">
+                                        <div class="col-xs-9">
                                             <!-- question Name -->
                                             <h4 id="questionName">Question #{{ $qNumber }}:
                                                 "{{ $qAssignment->getQuestionName() }}"</h4>
@@ -76,12 +76,12 @@
                                         <!-- question Score -->
                                         <form class="form-horizontal" role="form">
                                             <div class="form-group">
-                                                <label class="col-sm-1 control-label"
+                                                <label class="col-xs-1 control-label"
                                                        style="padding-right: 2px; padding-left: 0px;"
                                                        for="questionScore{{ $qNumber }}">
                                                     Score:</label>
 
-                                                <div class="col-sm-1" style="padding: 0px;">
+                                                <div class="col-xs-1" style="padding: 0px;">
                                                     <input class="form-control pull-right" type="number" min="0"
                                                            max="{{ $maxQuestionScores[$qNumber] }}"
                                                            style="width: 4.5em; padding-right: 2px;"
@@ -89,7 +89,7 @@
                                                            data-question-assignment-id="{{ $qAssignment->getId() }}"
                                                            id="questionScore{{ $qNumber }}"/>
                                                 </div>
-                                                <div class="col-sm-1 control-label" style="text-align: left;">
+                                                <div class="col-xs-1 control-label" style="text-align: left;">
                                                     <b>/ {{  $maxQuestionScores[$qNumber] }}</b>
                                                 </div>
                                             </div>
@@ -121,7 +121,7 @@
         </div>
 
         <!-- Right column holds Roster and Time info -->
-        <div class="col-md-4">
+        <div class="col-md-4" style="max-width: 550px; min-width: 340px;">
             <!-- student name and ID -->
             <form class="form-horizontal">
                 <div class="form-group activeStudentInput">
@@ -146,7 +146,7 @@
             <!-- graded / remaining counters -->
             <p>Graded: <span id="graded">0</span> Remaining: <span id="remaining">0</span></p>
             <!-- save & finish button -->
-            <a class="btn btn-success col-sm-12" href="{{ url('grade/') }}" id="finishButton"
+            <a class="btn btn-success col-lg-12" href="{{ url('grade/') }}" id="finishButton"
                style="display: none;">
                 <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish
             </a>
