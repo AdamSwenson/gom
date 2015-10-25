@@ -10,7 +10,9 @@ namespace App\Repositories\Student;
 
 
 use App\Exam;
+use App\Http\Requests\StudentRequest;
 use App\Student;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 
 class StudentRepository implements IStudentRepository
@@ -19,10 +21,224 @@ class StudentRepository implements IStudentRepository
     /** @var  $cleaner ICleanerFactory */
     public $cleaner;
 
+    /** @var  Exam The exam passed in the request */
+    public $exam;
+
+    /** @var \App\Http\Controllers\helpers\validation\IStudentRecordValidator */
+    public $studentValidator;
+
+    /** @var \App\Repositories\Student\IKumiRepository */
+    public $kumiRepository;
+
+    /** @var array Holds the ids of students that are present in the current request */
+    protected $idsOnRosterIncludingInvalid = [];
+
+    protected $currentStudents = []; //keeping for now, probably won't be used
+
+    /** @var  array Holds all students associated with the exam */
+    protected $allStudents;
+
     public function __construct()
     {
-     //   $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\CleanerFactory');
+        $this->studentValidator = app()->make('App\Http\Controllers\helpers\validation\IStudentRecordValidator');
+        $this->kumiRepository = app()->make('App\Repositories\Student\IKumiRepository');
+        //   $this->cleaner = app()->make('App\HTTP\Controllers\helpers\cleaning\CleanerFactory');
     }
+
+
+    /**
+     * Add or update student records.
+     * This is the main method called by the roster editor
+     *
+     * @param Exam $exam
+     * @param Request $request
+     * @return array Student objects from the db for this exam
+     */
+    public function update_all(Exam $exam, Request $request)
+    {
+        $this->exam = $exam;
+
+        /*
+         * Figure out which records are valid, pushing their row numbers into $this->studentValidator->validRecords
+         * and $this->studentValidator->invalidRecords respectively
+         */
+        $this->studentValidator->validateStudents($request);
+
+        /* Load or retrieve Kumi for the exam */
+        $kumi = $this->kumiRepository->loadOrCreateKumiForExam($this->exam);
+
+        /* Update the database */
+        $this->updateStudentsInDatabase($request, $kumi);
+
+        /* Now, we're going to delete previously associated students whom the user deleted in this request */
+        $this->deleteStudentsNotOnRoster($request);
+
+        /* Finally, we're going to need to do some work to return the expected list
+         * First, we load all students who are now in the db
+         */
+        $this->allStudents = $this->load_students_by_exam($this->exam->getId());
+
+        /*
+         * The user is going to be pissed if they have to retype the invalid
+         * records. Not to mention the difficulty of figuring out what the problem was
+         * if they can't see the original.
+         * So, we'll return back the invalid records but add a class so that the
+         * client can add styling to make it easier for the user to identify them.
+        */
+        if (!empty($this->studentValidator->invalidRecords))
+        {
+            foreach ($this->studentValidator->invalidRecords as $i)
+            {
+                //We need to decide whether it was a preexisting record or a new
+                //record which was invalid lest we push two records back
+                if ($request->input('id' . $i) != 0)
+                {
+                    //existing record
+                    foreach ($this->allStudents as $row)
+                    {
+                        if ($row['id'] == $request->input('id' . $i))
+                        {
+                            //Add a failed key which the browser will use to attach a failure class
+                            $row['failed'] = 'invalidRecord';
+//                            break;
+                        }
+                    }
+                } else
+                {
+                    $this->allStudents[] = [
+                        'failed' => 'invalidRecord',
+                        'last_name' => $request->input('lastName' . $i),
+                        'first_name' => $request->input('firstName' . $i),
+                        'email' => $request->input('email' . $i),
+                        'student_identifier' => $request->input('studentIdentifier' . $i),
+                        'id' => $request->input('id' . $i)
+                    ];
+                }
+            }
+        }
+
+        return $this->allStudents;
+    }
+
+    /**
+     * This handles all the database operations for updating students.
+     * It creates or updates all valid records from $request (the validator needs to have
+     * been called previously) and deletes records from the database that were not
+     * in the incoming request (which includes both valid and invalid records).
+     *
+     * This will write the data for all students with every pass, modifying the time updated field,
+     * regardless of whether the data has changed.
+     *
+     * It also updates the $this->currentStudents array in preparation for deleting
+     *
+     * @param $request
+     * @param $kumi
+     */
+    public function updateStudentsInDatabase(Request $request, $kumi)
+    {
+        //Write valid student records to the database and store them in $this->currentStudents
+        foreach ($this->studentValidator->validRecords as $rowNumber)
+        {
+            $lName = $request->input('lastName' . $rowNumber);
+            $fName = $request->input('firstName' . $rowNumber);
+            $email = $request->input('email' . $rowNumber);
+            $identifier = $request->input('studentIdentifier' . $rowNumber);
+            $id = $request->input('id' . $rowNumber);
+            $student = null;
+
+            if ($id == 0) //new students have id==0
+            {
+                // create new student
+                $student = $this->create_student($lName, $fName, $identifier, $email);
+                $id = $student->getId();
+                $student->kumis()->attach($kumi); // add the student to the kumi
+            } else
+            {
+                //otherwise update an existing record
+                $student = $this->load_student_by_id($id);
+                $student->setStudentFName($fName);
+                $student->setStudentLName($lName);
+                $student->setStudentId($identifier);
+                $student->setEmail($email);
+                $student->save();
+            }
+
+            //Add to list of students on the current exam
+            $this->idsOnRosterIncludingInvalid[] = $student->getId();
+            $this->currentStudents[$id] = $student;
+        }
+    }
+
+
+    /**
+     * Because we don't want to destroy preexisting records if they were made invalid
+     * in the request, we add them to $this->idsOnRosterIncludingInvalid
+     * @param $request
+     */
+    public function addInvalidIdsToList(Request $request)
+    {
+        if (!empty($this->studentValidator->invalidRecords))
+        {
+
+            foreach ($this->studentValidator->invalidRecords as $rowId)
+            {
+                $recordId = $request->input('id' . $rowId);
+                if ($recordId !== 0) //Incoming records with id == 0 are new
+                {
+                    $this->idsOnRosterIncludingInvalid[] = $recordId;
+                }
+            }
+        }
+    }
+
+    /**
+     * This will load any previously existing student who ended up in invalid
+     * records into $this->currentStudents and then delete any students in $this->allStudents
+     * who is not in $this->currentStudents
+     *
+     * It's broader purpose is to handle deleting the students who were not on the roster that was submitted.
+     * That is, we need to delete any students from the database whom the user
+     * deleted.
+     *
+     * But we need to be careful. If there were invalid records in the request,
+     * the user might not have intended to delete the student. For example, they
+     * may have gone back to add an email address after grading a student's exam
+     * and mistyped the email address. If we we're just to delete everything not in
+     * the validStudents array, all the work of grading the student would be lost.
+     *
+     *
+     * @param Request $request
+     */
+    public function deleteStudentsNotOnRoster(Request $request)
+    {
+        /*
+         * First, we will try loading students with invalid records. Note that we don't
+         * care if the id can't be found in the db. Nor do we care if they were a new record
+         * (since they wouldn't be in the db and the row will be passed back to the user later).
+         */
+        $this->addInvalidIdsToList($request);
+
+        /* Now we can go through and delete any previously associated students
+         * who are not on the roster
+         */
+        $studentsInDb = $this->load_students_by_exam($this->exam->getId());
+        if (count($studentsInDb) > 0 && count($this->idsOnRosterIncludingInvalid) > 0)
+        {
+            foreach ($studentsInDb as $student)
+            {
+                if (!in_array($student->getId(), $this->idsOnRosterIncludingInvalid))
+                {
+                    $student->delete();
+                }
+
+//                if ( !array_key_exists($student->getId(), $this->currentStudents))
+//                {
+//                    $student->delete();
+//                }
+            }
+        }
+    }
+
 
     /**
      * Since several functions can be passed either an exam object or
@@ -35,22 +251,30 @@ class StudentRepository implements IStudentRepository
      */
     protected function determineType($exam_or_examId)
     {
-        if($exam_or_examId instanceof Exam)
+        if ($exam_or_examId instanceof Exam)
         {
             return $exam_or_examId;
-        }else
+        } else
         {
-            $examId = (int) $exam_or_examId;
-            if(is_integer($examId))
+            $examId = (int)$exam_or_examId;
+            if (is_integer($examId))
             {
                 return Exam::findOrFail($examId);
-            }
-            else{
+            } else
+            {
                 throw new \Exception('invalid type passed in');
             }
         }
     }
 
+    /**
+     * Updates an existing record
+     * @param Student $preExisting
+     * @param $lastName
+     * @param $firstName
+     * @param $email
+     * @return Student
+     */
     protected function update(Student $preExisting, $lastName, $firstName, $email)
     {
         $cleanLastName = $lastName;
@@ -94,8 +318,9 @@ class StudentRepository implements IStudentRepository
         $preExisting = $this->load_student_by_sid($cleanStudentId);
         if (!empty($preExisting))
         {
-            $student = $this->update($preExisting, $cleanLastName, $cleanFirstName, $cleanEmail=null);
-       }else{
+            $student = $this->update($preExisting, $cleanLastName, $cleanFirstName, $cleanEmail = null);
+        } else
+        {
             $student = new Student();
             $student->setStudentId($cleanStudentId);//needs to be used so id will be encrypted
             $student->setStudentLName($cleanLastName);
@@ -105,7 +330,8 @@ class StudentRepository implements IStudentRepository
                 $student->setEmail($cleanEmail); //needs to be used so email will be encrypted
             }
             $student->save();
-    }
+        }
+
         return $student;
     }
 
@@ -127,7 +353,7 @@ class StudentRepository implements IStudentRepository
         $students = [];
 
         $exam = $this->determineType($exam_or_examId);
-        if($exam)
+        if ($exam)
         {
             $classes = $exam->classes;
             foreach ($classes as $c)
@@ -142,6 +368,7 @@ class StudentRepository implements IStudentRepository
         //Make into an array and sort in descending order
         $students = collect($students);
         $students = $students->sortBy('last_name');
+
         return $students;
     }
 
@@ -255,6 +482,7 @@ class StudentRepository implements IStudentRepository
     public function delete_student_by_sid($sid)
     {
         $student = $this->load_student_by_sid($sid);
+
         return $student->delete();
     }
 

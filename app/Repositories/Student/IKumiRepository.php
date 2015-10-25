@@ -7,6 +7,7 @@
  */
 namespace App\Repositories\Student;
 
+use App\Exam;
 use App\Kumi;
 
 
@@ -38,4 +39,14 @@ interface IKumiRepository
      * @return Kumi
      */
     public function create($name, $year, $exam=null);
+
+    /**
+     * Until we get multiple class functionality working, this
+     * will either retrieve the default Kumi already created for
+     * the exam or make a new one, save it, and return it.
+     *
+     * @param Exam $exam
+     * @return Kumi
+     */
+    public function loadOrCreateKumiForExam(Exam $exam);
 }

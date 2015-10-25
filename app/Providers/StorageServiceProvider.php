@@ -85,6 +85,8 @@ class StorageServiceProvider extends ServiceProvider
 
         $this->app->bind('App\Http\Controllers\helpers\assignments\IAssignmentHelper', 'App\Http\Controllers\helpers\assignments\AssignmentHelper');
 
+        $this->app->bind('App\Http\Controllers\helpers\validation\IStudentRecordValidator', 'App\Http\Controllers\helpers\validation\StudentRecordValidator');
+
         /* -------------------------------------------------- Generators ----------------------------------------------- */
         $this->app->bind('QuestionsForExamGenerator', 'App\Repositories\Question\QuestionsForExamGenerator');
         $this->app->bind('StudentsForExamGenerator', '\App\Repositories\Student\StudentsForExamGenerator');

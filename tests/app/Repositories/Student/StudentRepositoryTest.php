@@ -10,6 +10,8 @@ namespace App\Repositories\Student;
 
 
 use App\Exam;
+use App\Http\Controllers\helpers\validation\StudentRecordValidator;
+use App\Http\Requests\StudentRequest;
 use App\Kumi;
 use App\Student;
 use Illuminate\Support\Facades\Auth;
@@ -31,6 +33,112 @@ public function tearDown()
 {
     \Mockery::close();
 }
+
+
+
+
+    /**
+     * Builds test data and a StudentRequest object.
+     * Also creates a new exam and sets it to $this->exam
+     *
+     * @param int $numberNew Number of brand new students to have in request
+     * @param int $numberOriginal Number of existing unaltered students to have in request
+     * @param int $numberAltered Number of existing students with fields altered to have in request
+     * @return StudentRequest
+     */
+    public function buildTestDataAndRequest($numberNew=10, $numberOriginal=0, $numberAltered=0)
+    {
+        //Create new exam so have blank slate of students
+        $this->exam = new \App\Exam();
+        $this->exam->setYear($this->faker->year);
+        $this->exam->setTerm('Fall');
+        $this->exam->setName($this->faker->word);
+        $this->exam->save();
+
+        for($i=1; $i<=$numberNew; $i++)
+        {
+            $studentIdentifier = $this->faker->numberBetween(1111111, 9999999);
+            $firstName = $this->faker->firstName;
+            $lastName = $this->faker->lastName;
+            $email = $this->faker->email;
+
+            $this->testData[] = [
+                "id$i" => 0,
+                "studentIdentifier$i" => $studentIdentifier,
+                "lastName$i" => $lastName,
+                "firstName$i" => $firstName,
+                "email$i" => $email];
+
+            $this->expectedDbEntries[] = [
+                'student_identifier' => $studentIdentifier,
+                'last_name' => $lastName,
+                'first_name' => $firstName,
+                'email' => $email
+            ];
+        }
+
+        if( $numberOriginal > 0 )
+        {
+            for($i=1; $i<= $numberOriginal; $i++)
+            {
+                $student = Student::all()->random();
+
+                $identifier = $student->getStudentId() ? $student->getStudentId() : '';
+
+                $this->testData[] = [
+                    "id$i" => $student->getId(),
+                    "studentIdentifier$i" => $identifier,
+                    "lastName$i" => $student->last_name,
+                    "firstName$i" => $student->first_name,
+                    "email$i" => $student->getEmail()
+                ];
+
+                $this->expectedDbEntries[] = [
+                    "id" => $student->getId(),
+                    "last_name" => $student->last_name,
+                    "first_name" => $student->first_name,
+                    "student_identifier" => $identifier,
+                    "email" => $student->getEmail()
+                ];
+            }
+        }
+
+        if( $numberAltered > 0 )
+        {
+            $student = Student::all()->random();
+            $studentIdentifier = $this->faker->numberBetween(1111111, 9999999);
+            $firstName = $this->faker->firstName;
+            $lastName = $this->faker->lastName;
+            $email = $this->faker->email;
+
+            $this->testData[] = [
+                "id$i" => $student->getId(),
+                "studentIdentifier$i" => $studentIdentifier,
+                "lastName$i" => $lastName,
+                "firstName$i" => $firstName,
+                "email$i" => $email];
+
+            $this->expectedDbEntries[] = [
+                'id' => $student->getId(),
+                'student_identifier' => $studentIdentifier,
+                'last_name' => $lastName,
+                'first_name' => $firstName,
+                'email' => $email
+            ];
+
+        }
+
+        //Build the request
+        $request = new StudentRequest();
+        foreach($this->testData as $d)
+        {
+            foreach ($d as $k => $v)
+            {
+                $request[$k] = $v;
+            }
+        }
+        return $request;
+    }
     /**
      * @covers \App\Repositories\Student\StudentRepository::load_students_by_exam
      */
@@ -67,10 +175,6 @@ public function tearDown()
         $this->assertEquals($studentId, $check->getStudentId());
     }
 
-    /*    Todo Implement important test cases
-
-        public function testCreate_studentPreexistingStudent(){}
-    */
 
     /**
      * @test
@@ -162,12 +266,6 @@ public function tearDown()
         $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName]);
     }
 
-    /*
-     * Todo Enable once error handling set up
-    public function testCreate_studentExceptionBadLastName(){}
-    public function testCreate_studentExceptionBadFirstName(){}
-    public function testCreate_studentExceptionBadStudentId(){}
-    */
 
     public function testLoad_student_by_id()
     {
@@ -203,11 +301,6 @@ public function tearDown()
         $this->assertEquals($new, $check->getEmail(), "email updated");
     }
 
-    /*
-     * Todo: Add when error handling enabled
-    public function testUpdate_emailExceptionBadEmail(){}
-    */
-
 
     public function testDelete_student_by_id()
     {
@@ -230,7 +323,6 @@ public function tearDown()
     }
 
 
-
     /**
      * Returns all students associated with the user
      */
@@ -249,5 +341,156 @@ public function tearDown()
     {
         //    $kumiId);
     }
+
+
+/* ---------------------------------------------------------- Update All tests--------------------------*/
+
+    /**
+     * @test
+     * TODO: Add test to ensure that does not delete any pre-existing students which might have been altered to make invalid, lest we destroy their exam scores
+     */
+    public function deleteStudentsNotOnRoster()
+    {}
+
+
+    /**
+     * @test
+     */
+    public function existingStudentMadeInvalid()
+    {
+
+
+        //check
+        //assert: the record of the student was not deleted
+        //assert: the record was not updated with the invalid info
+        //assert: the returned allStudents array had a 'failed' field for the bad record
+    }
+
+    /**
+     *
+     */
+    public function newStudentWasInvalid()
+    {
+
+
+        //assert: not written to database
+        //assert : returned allStudents array has the bad record with a 'failed' field
+    }
+
+    /**
+     * @test
+     */
+    public function updateDatabase()
+    {
+        $numberStudents = 10;
+        #Prep
+        $kumi = Kumi::all()->random();
+        $exam = $kumi->exams()->first();
+        $this->object->exam = $exam;
+        //push row numbers into validRecords array
+        $validator = new StudentRecordValidator();
+        for($i=1; $i<=$numberStudents; $i++)
+        {
+            $validator->validRecords[] = $i;
+        }
+        $this->object->studentValidator = $validator;
+
+        //Build a request
+        $request = $this->buildTestDataAndRequest($numberStudents);
+
+//        foreach($this->testData as $k => $v)
+//        {
+//            $request[$k] = $v;
+//        }
+
+        #Call
+        $this->object->updateStudentsInDatabase($request, $kumi);
+
+        #Check
+        foreach($this->expectedDbEntries as $data)
+        {
+            $this->seeInDatabase('students', $data);
+        }
+
+    }
+
+
+    /**
+     * @test
+     */
+    public function updateAllOnlyNewHappyPath()
+    {
+        #prep
+        $request = $this->buildTestDataAndRequest();
+
+        #Call
+        $response = $this->object->updateAll($this->exam, $request);
+
+        #Check
+        $this->assertNotNull($response);
+        foreach($this->expectedDbEntries as $data)
+        {
+            $this->seeInDatabase('students', $data);
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function updateAllOnlyUnalteredHappyPath()
+    {
+        #prep
+        $request = $this->buildTestDataAndRequest(0, $numberOriginal=10);
+
+        #Call
+        $response = $this->object->updateAll($this->exam, $request);
+
+        #Check
+        $this->assertNotNull($response);
+        foreach($this->expectedDbEntries as $data)
+        {
+            $this->seeInDatabase('students', $data);
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function updateAllOnlyAlteredHappyPath()
+    {
+        #prep
+        $request = $this->buildTestDataAndRequest(0, 0, $numberAltered=10);
+
+        #Call
+        $response = $this->object->updateAll($this->exam, $request);
+
+        #Check
+        $this->assertNotNull($response);
+        foreach($this->expectedDbEntries as $data)
+        {
+            $this->seeInDatabase('students', $data);
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function updateAllMixedHappyPath()
+    {
+        #prep
+        $request = $this->buildTestDataAndRequest(10, 10, 10);
+
+        #Call
+        $response = $this->object->updateAll($this->exam, $request);
+
+        #Check
+        $this->assertNotNull($response);
+        foreach($this->expectedDbEntries as $data)
+        {
+            $this->seeInDatabase('students', $data);
+        }
+    }
+
+
 
 }

@@ -8,6 +8,7 @@
 
 namespace App\Repositories\Student;
 
+use App\Exam;
 use App\Kumi;
 
 /**
@@ -24,18 +25,6 @@ class KumiRepository implements IKumiRepository
     public function load($name, $year)
     {
         return Kumi::where('nickname', $name)->where('year', $year)->first();
-
-//        $uid = Auth::user()->id;
-//        $nickname= $exam->name;
-//        $year = $exam->year;
-//
-//        $kumi = Kumi::firstOrCreate(
-//            [
-//                'user_id' => $uid,
-//                'nickname' => $nickname,
-//                'year' => $year
-//            ]);
-//        var_dump($kumi);
 
     }
 
@@ -62,7 +51,25 @@ class KumiRepository implements IKumiRepository
             }
             return $kumi;
         }
+    }
 
+    /**
+     * Until we get multiple class functionality working, this
+     * will either retrieve the default Kumi already created for
+     * the exam or make a new one, save it, and return it.
+     *
+     * @param Exam $exam
+     * @return Kumi
+     */
+    public function loadOrCreateKumiForExam(Exam $exam)
+    {
+        //If we already have a kumi for the exam, load it. Otherwise make one.
+        $kumi = $this->load($exam->getName(), $exam->getYear());
+        if (!$kumi)
+        {
+            $kumi = $this->create($exam->getName(), $exam->getYear(), $exam);
+        }
+        return $kumi;
     }
 
 }
