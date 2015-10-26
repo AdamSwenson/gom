@@ -24,7 +24,7 @@
     @include('navigation.nav_bar_landing')
 @endif
 @if(env('APP_ENV') == 'production')
-    @include('temp.warning_not_to_use_student_data')
+    {{--@include('temp.warning_not_to_use_student_data')--}}
 @endif
 <div class="container-fluid">
     @include('flash::message')
