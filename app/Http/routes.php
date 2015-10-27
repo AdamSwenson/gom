@@ -11,6 +11,10 @@
 |
 */
 
+Route::get('test', function()
+{
+   return view('feedback.n_feedback');
+});
 
 /* Authentication and registration */
 Route::controllers([

@@ -16,8 +16,12 @@ class Feedback extends Model
 
     protected $primaryKey = 'access_key';
 
+    protected $questionNumbers = [];
+
     /**
-     * Returns the string encoded array of comments
+     * Returns the string encoded array of comments.
+     * NB., if you just do $this->content instead, the result
+     * will be an array
      * @return string
      */
     public function content()
@@ -54,6 +58,22 @@ class Feedback extends Model
     }
 
 
+public function getQuestionNumbers()
+{
+  $this->populateQuestionNumbers();
+    return $this->questionNumbers;
+}
+
+    protected function populateQuestionNumbers()
+    {
+        if( empty($this->questionNumbers) )
+        {
+            foreach (json_decode($this->attributes['content']) as $c)
+            {
+                $this->questionNumbers[] = $c->questionNumber;
+            }
+        }
+    }
 
     public function scopeByAccessKey($query, $accessKey)
     {
