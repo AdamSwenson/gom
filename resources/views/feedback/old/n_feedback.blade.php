@@ -23,13 +23,13 @@ $data = \App\Feedback::all()->random();
 <body style="font-family: Arial;border: 0 none;">
 <div class="container-fluid">
 
-    @include('feedback.n_student_info')
+    @include('feedback.student_info')
 
-    @include('feedback.n_overall_chart')
+    @include('feedback.overall_chart')
 
     <div id="questionResultsHere">
         @foreach($data->content as $question)
-            @include('feedback.n_question')
+            @include('feedback.question')
         @endforeach
     </div>
 

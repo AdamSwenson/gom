@@ -1,79 +1,95 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: adam
- * Date: 7/27/15
- * Time: 9:09 PM
- */
-$h = '400px';
-$w = '800px';
+//Some things which return this view may just send a single data array,
+//this wraps it in an outer array so that we can use it just like in the
+//case where we want to see multiple feedback pages
+if(!isset($dataAll))
+{
+    $dataAll = [$data];
+}
+
+$r = [];
+//Make sure everything has the format the js is expecting
+foreach ($dataAll as $data)
+{
+    $r[$data->getAccessKey()] = $data->content;
+}
+$encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
 ?>
-@extends('layouts.primalMaster')
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}"/>
+    <title>Feedback for your exam</title>
+    <meta name="description" content="Feedback for your exam">
 
-@section('pageTitle', 'Comments on your exam')
-@section('otherCss')
-    {!! \HTML::style(asset('/inc/jqplot/jquery.jqplot.min.css')) !!}
-    {!! \HTML::style(asset('/css/output.css')) !!}
-@endsection
+    <link href='{{ asset('inc/images/favicon.ico') }}' rel='icon' type='image/x-icon'/>
 
-@section('body')
-    <div id="studentInfo">
-        <p>
-            <span class="studentInfoLabel">Grade:</span> <span class="grade">{{  $data->grade() }}</span>
-        </p>
-        <p>
-            <span class="studentInfoLabel">Entry Code:</span> <span class="pseudoID"> {{ $data->getAccessKey() }}</span>
-        </p>
-    </div>
+    <style type="text/css">
+        /*div.studentInfo{*/
+            /*margin-top: 2%;*/
+        /*}*/
 
-    <div id="overall">
-        <p class="small">Here's how you did on each question in comparison to the class average. <br/>
-            The blue bar is you (on an arbitrary scale); the gold bar is the average
-        </p>
+        div.pageEnd {
+            page-break-after: always;
+            page-break-inside: avoid;
+        }
 
-        <div id="allQuestionsChart" style="height:{{$h}};width:{{$w}}; "></div>
-    </div> <!--overall-->
+        div.questionFeedbackArea {
+            page-break-after: auto;
+            page-break-inside: avoid;
+        }
+    </style>
+    @include('layouts.js_jquery_loader')
+    @include('layouts.js_bootstrap_loader')
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
-    <div id="questionResultsHere">
-        @foreach($data as $question)
-            @include('feedback.question')
-        @endforeach
-    </div>
-    <div id="elementCharts"></div>
-@endsection
+</head>
+<body>
+@if(isset($showNav) && $showNav == true)
+    @if( Auth::check() )
+        @include('navigation.nav_bar_main')
+    @else
+        @include('navigation.nav_bar_landing')
+    @endif
+@endif
 
-@section('jsArea')
+
+
+<div class="container-fluid">
+    @foreach($dataAll as $data)
+        @include('feedback.student_info')
+
+        @include('feedback.overall_chart')
+
+        <div id="questionResultsHere">
+            @foreach($data->content as $question)
+                @include('feedback.question')
+            @endforeach
+        </div>
+
+        <div class="pageEnd"></div>
+    @endforeach
+</div>
+
+
+<div class="jsArea">
+    <script type="text/javascript" src="{{ asset('js/feedback.js') }}"></script>
+
     <script type="text/javascript">
-        var data = {!! ($data ? json_encode($data, JSON_FORCE_OBJECT) : '') !!};
+        var studentData = {!! $encodedStudentData !!};
+
+        google.load('visualization', '1', {'packages': ['corechart']});
+        google.setOnLoadCallback(drawAllStudentCharts);
     </script>
+</div>
 
-    <script language="javascript" type="text/javascript" src="{{ asset('inc/js/jqplot/jquery.jqplot.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.json2.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.barRenderer.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.pointLabels.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.canvasTextRenderer.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js') }}"></script>
 
-    <script type="text/javascript" src="{{ asset('inc/js/outputScripts.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('inc/js/chartScripts.js') }}"></script>
+</body>
+</html>
 
-    <script type="text/javascript">
-        $(document).ready(function () {
-            var questionHolder = new QuestionHolder();
-            questionHolder.loadScores(data);
-            questionHolder.loadAverages(data);
-            questionHolder.setAnsweredQuestions();
-            var elementHolder = new ElementHolder();
-            var elScores = consolidateElementScores(data);
-            elementHolder.loadScores(data);
-            //elementHolder.loadAverages(data);
-            //divMaker(questionHolder);
-            //Make charts
-            makeOverallChart(questionHolder);
-            makeElementCharts(elementHolder, questionHolder);
 
-        });
-    </script>
-@endsection
+
+

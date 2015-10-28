@@ -47,7 +47,7 @@
 
         <div id="questionResultsHere">
             @foreach($data['content'] as $question)
-                @include('feedback.question')
+                @include('feedback.old.question')
             @endforeach
         </div>
         <div id="elementCharts"></div>

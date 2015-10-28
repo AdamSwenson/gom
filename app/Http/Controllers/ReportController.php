@@ -313,7 +313,8 @@ class ReportController extends Controller
         $data->name = $student->getFullName();
         $data->student_id = $student->getStudentIdentifierAttribute();
 
-        return view('feedback.n_feedback_multiple_students')->with(['exam' => $exam, 'student' => $student, 'data' => $data]);
+        $showNav = true;
+        return view('feedback.feedback')->with(['exam' => $exam, 'student' => $student, 'data' => $data, 'showNav' => $showNav]);
 //        return view('reports.student_feedback')->with(['exam' => $exam, 'student' => $student, 'data' => $data]);
     }
 
@@ -344,6 +345,6 @@ class ReportController extends Controller
             //Add to data array
             $dataAll[] = $data;
         }
-        return view('feedback.n_feedback_multiple_students')->with(['exam' => $exam, 'student' => $student, 'dataAll' => $dataAll]);
+        return view('feedback.feedback')->with(['exam' => $exam, 'student' => $student, 'dataAll' => $dataAll]);
     }
 }
