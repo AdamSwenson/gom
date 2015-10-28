@@ -308,6 +308,42 @@ class ReportController extends Controller
 
         $accessKey = $this->accessKeyDao->getAccessKeyForStudent($exam->getId(), $student->getId());
         $data = $this->accessKeyDao->retrieveFeedback($accessKey);
-        return view('reports.student_feedback')->with(['exam' => $exam, 'student' => $student, 'data' => $data]);
+
+        //Push student info into the feedback object
+        $data->name = $student->getFullName();
+        $data->student_id = $student->getStudentIdentifierAttribute();
+
+        return view('feedback.n_feedback_multiple_students')->with(['exam' => $exam, 'student' => $student, 'data' => $data]);
+//        return view('reports.student_feedback')->with(['exam' => $exam, 'student' => $student, 'data' => $data]);
+    }
+
+    /**
+     * Displays all feedback for all students on an exam.
+     * This is mainly for someone who wants to print out the feedback and provide it to
+     * the students.
+     * @param Exam $exam
+     * @return $this
+     */
+    public function showFeedbackForAllStudentsOnExam(Exam $exam)
+    {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
+        $dataAll = [];
+        $students = $this->studentRepository->load_students_by_exam($exam);
+        foreach($students as $student)
+        {
+            $accessKey = $this->accessKeyDao->getAccessKeyForStudent($exam->getId(), $student->getId());
+
+            $data = $this->accessKeyDao->retrieveFeedback($accessKey);
+
+            //Push student info into the feedback object
+            $data->name = $student->getFullName();
+            $data->student_id = $student->getStudentIdentifierAttribute();
+
+            //Add to data array
+            $dataAll[] = $data;
+        }
+        return view('feedback.n_feedback_multiple_students')->with(['exam' => $exam, 'student' => $student, 'dataAll' => $dataAll]);
     }
 }

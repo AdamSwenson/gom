@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Feedback extends Model
 {
+    const NO_GRADE = 'Not Assigned';
+
     protected $fillable = ['access_key', 'content'];
 
     protected $casts = [
@@ -30,12 +32,15 @@ class Feedback extends Model
     }
 
     /**
-     * Getter for the string to be displayed to the student
+     * Getter for the string to be displayed to the student.
+     * Returns 'Not Assigned' if no grade assigned
      * @return string
      */
     public function grade()
     {
-        return $this->attributes['grade_display'];
+        $r = $this->attributes['grade_display'] ? $this->attributes['grade_display'] : self::NO_GRADE;
+
+        return $r;
     }
 
     /**

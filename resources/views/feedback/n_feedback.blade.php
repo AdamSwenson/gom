@@ -4,15 +4,24 @@ $data = \App\Feedback::all()->random();
 
 <html>
 <head>
+    <style type="text/css">
+
+        div.pageEnd {
+            page-break-after: always;
+            page-break-inside: avoid;
+        }
+        div.questionFeedbackArea{
+            page-break-after: auto;
+            page-break-inside: avoid;
+        }
+    </style>
     @include('layouts.js_jquery_loader')
     @include('layouts.js_bootstrap_loader')
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script type="text/javascript">
 
-    </script>
 </head>
 <body style="font-family: Arial;border: 0 none;">
-<div class="container">
+<div class="container-fluid">
 
     @include('feedback.n_student_info')
 
@@ -23,11 +32,8 @@ $data = \App\Feedback::all()->random();
             @include('feedback.n_question')
         @endforeach
     </div>
-    {{--@foreach($data->getQuestionNumbers() as $questionNumber)--}}
-        {{--<div class="elementChartDiv" id="s{{$data->getAccessKey()}}_q{{$questionNumber}}"></div>--}}
-    {{--@endforeach--}}
 
-
+    <div class="pageEnd"></div>
 </div>
 
     <div class="jsArea">
@@ -83,8 +89,8 @@ $data = \App\Feedback::all()->random();
                 data.addColumn('number', 'Your Score');
                 data.addColumn('number', 'Class Average');
 
-                $.each(studentData, function ($k, $v) {
-                    window.console.log(this);
+                $.each(studentData, function ($k, $v)
+                {
                     //Build up question name for label
                     //Since question name is optional, only add it if it is present
                     var questionName = 'Q' + $v['questionNumber'] + ' ';

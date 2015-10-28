@@ -30,6 +30,8 @@ elixir(function(mix) {
         'common/flashMessageHandling.js'
     ], 'public/js/commonScripts.js');
 
+    mix.scripts(['feedback/feedbackCharts.js'], 'public/js/feedback.js');
+
     //mix.scripts([
     //    'jquery-1.11.3.js',
     //
@@ -40,5 +42,5 @@ elixir(function(mix) {
 
     //mix.sass('app.scss');
 
-    mix.sass(['feedback/chartStyling.scss', 'feedback/textStyling.scss'], 'public/css/output.css');
+   // mix.sass(['feedback/chartStyling.scss', 'feedback/textStyling.scss'], 'public/css/output.css');
 });

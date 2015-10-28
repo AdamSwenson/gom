@@ -1,18 +1,21 @@
 <div id="studentInfo">
     <div class="row">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-9">
-            <p>
-                <span class="studentInfoLabel">Grade:</span> <span class="grade">{{  $data->grade() ? $data->grade() : 'Not Assigned'}}</span>
-            </p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-9">
-            <p>
-                <span class="studentInfoLabel">Entry Code:</span> <span class="pseudoID"> {{ $data->getAccessKey() ? $data->getAccessKey() : 'Not Assigned'}}</span>
-            </p>
-        </div>
+        <dl class="dl-horizontal">
+            @if($data->name)
+                <dt>Name</dt>
+                <dd>{{ $data->name }}</dd>
+            @endif
+
+            @if($data->student_id)
+                <dt>ID</dt>
+                <dd>{{ $data->student_id }}</dd>
+            @endif
+
+            <dt>Grade</dt>
+            <dd>{{ $data->grade() }}</dd>
+
+            <dt>Access Code</dt>
+            <dd>{{ $data->getAccessKey() }}</dd>
+        </dl>
     </div>
 </div>

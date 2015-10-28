@@ -13,7 +13,8 @@
 
 Route::get('test', function()
 {
-   return view('feedback.n_feedback');
+    return view('feedback.n_feedback_multiple_students');
+//   return view('feedback.n_feedback');
 });
 
 /* Authentication and registration */

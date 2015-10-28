@@ -1,4 +1,4 @@
-@if(!empty($question['score']))
+@if(!empty($question['score'] && !empty($question['elements'])))
     <div id='q{{ $question['questionNumber'] }}' class="questionFeedbackArea">
         <div class="row">
             <div class="col-sm-12">
