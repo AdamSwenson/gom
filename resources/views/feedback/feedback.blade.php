@@ -16,13 +16,13 @@ foreach ($dataAll as $data)
 $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name=viewport content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
-    <title>Feedback for your exam</title>
+    <title>Your feedback</title>
     <meta name="description" content="Feedback for your exam">
 
     <link href='{{ asset('inc/images/favicon.ico') }}' rel='icon' type='image/x-icon'/>
