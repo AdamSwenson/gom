@@ -9,35 +9,6 @@
 @endsection
 
 @section('body')
-
-    <script type="text/javascript" src="{{asset('js/grading-package.js') }}"></script>
-
-    {{--<style>--}}
-        {{--.typeahead {--}}
-            {{--border: 0px;--}}
-        {{--}--}}
-
-        {{--.activeStudentInput {--}}
-            {{--font-size: 1.25em;--}}
-        {{--}--}}
-
-        {{--.input-group.full-width .input-group-btn:last-child > .btn {--}}
-            {{--margin-left: 5px;--}}
-        {{--}--}}
-        {{--.input-group.full-width .input-group-btn:last-child > .btn {--}}
-            {{--border-bottom-left-radius: 4px;--}}
-            {{--border-top-left-radius: 4px;--}}
-        {{--}--}}
-        {{--.input-group.full-width .form-control:first-child {--}}
-            {{--border-bottom-right-radius: 4px;--}}
-            {{--border-top-right-radius: 4px;--}}
-        {{--}--}}
-
-        {{--.slider-horizontal {--}}
-            {{--margin-right: 35px;--}}
-        {{--}--}}
-
-    {{--</style>--}}
     <div class="row">
         <!-- Left column holds questions and sliders -->
         <div class="col-md-8" style="width-max: 700px;">
@@ -172,6 +143,7 @@
     {{--<link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet">--}}
     <script type='text/javascript' src="{{ asset('inc/js/bootstrap-slider.js') }}"></script>
     <script type='text/javascript' src="{{ asset('inc/js/bootstrap3-typeahead.min.js') }}"></script>
+    <script type="text/javascript" src="{{asset('js/grading-package.js') }}"></script>
 
     <script type="text/javascript">
         var myvar = "adding new errors";
@@ -732,18 +704,9 @@
                     }
                 });
 
-
             });
-
-            return false;
-        });
-    </script>
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-            window.console.log('j');
             bindLetterGradeHandler();
-            window.console.log('jj');
+            return false;
         });
     </script>
 @endsection
