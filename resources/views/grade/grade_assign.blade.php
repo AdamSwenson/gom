@@ -16,7 +16,7 @@
     <div class="row">
         <!-- Left column holds grade assignment regions -->
         <div class="col-sm-5" style="text-align: center; max-width: 450px; min-width: 350px;">
-            <h4 style="text-align: center;">Max Grade: {{ $examMaxScore or '--' }}</h4>
+            <h4 style="text-align: center;">Maximum possible score: {{ $examMaxScore or '--' }}</h4>
 
             <form class="form-horizontal" method="post" role="form" name="frmGradeCutoffs"
                   action="{{ url('grade/exam/'.$exam->getId().'/assign') }}">

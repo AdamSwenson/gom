@@ -2,7 +2,7 @@
     <div id='q{{ $question['questionNumber'] }}' class="questionFeedbackArea">
         <div class="row">
             <div class="col-sm-12">
-                <h1 class='mainHeading'>Q{{ $question['questionNumber'] }}: {{ $question['questionName'] }}</h1>
+                <h2 class='mainHeading'>Q{{ $question['questionNumber'] }}: {{ $question['questionName'] }}</h2>
             </div>
         </div>
         <div class="row">
