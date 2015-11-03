@@ -5,6 +5,7 @@ module.exports = {
   bind: function () {
     var self = this
     var el = this.el
+    var isRange = el.type === 'range'
 
     // check params
     // - lazy: update model on "change" instead of "input"
@@ -22,78 +23,55 @@ module.exports = {
     // Chinese, but instead triggers them for spelling
     // suggestions... (see Discussion/#162)
     var composing = false
-    if (!_.isAndroid) {
-      this.onComposeStart = function () {
+    if (!_.isAndroid && !isRange) {
+      this.on('compositionstart', function () {
         composing = true
-      }
-      this.onComposeEnd = function () {
+      })
+      this.on('compositionend', function () {
         composing = false
         // in IE11 the "compositionend" event fires AFTER
         // the "input" event, so the input handler is blocked
         // at the end... have to call it here.
-        self.listener()
-      }
-      _.on(el, 'compositionstart', this.onComposeStart)
-      _.on(el, 'compositionend', this.onComposeEnd)
+        //
+        // #1327: in lazy mode this is unecessary.
+        if (!lazy) {
+          self.listener()
+        }
+      })
     }
 
-    function syncToModel () {
-      var val = number
+    // prevent messing with the input when user is typing,
+    // and force update on blur.
+    this.focused = false
+    if (!isRange) {
+      this.on('focus', function () {
+        self.focused = true
+      })
+      this.on('blur', function () {
+        self.focused = false
+        self.listener()
+      })
+    }
+
+    // Now attach the main listener
+    this.listener = function () {
+      if (composing) return
+      var val = number || isRange
         ? _.toNumber(el.value)
         : el.value
       self.set(val)
-    }
-
-    // if the directive has filters, we need to
-    // record cursor position and restore it after updating
-    // the input with the filtered value.
-    // also force update for type="range" inputs to enable
-    // "lock in range" (see #506)
-    if (this.hasRead || el.type === 'range') {
-      this.listener = function () {
-        if (composing) return
-        var charsOffset
-        // some HTML5 input types throw error here
-        try {
-          // record how many chars from the end of input
-          // the cursor was at
-          charsOffset = el.value.length - el.selectionStart
-        } catch (e) {}
-        // Fix IE10/11 infinite update cycle
-        // https://github.com/yyx990803/vue/issues/592
-        /* istanbul ignore if */
-        if (charsOffset < 0) {
-          return
+      // force update on next tick to avoid lock & same value
+      // also only update when user is not typing
+      _.nextTick(function () {
+        if (self._bound && !self.focused) {
+          self.update(self._watcher.value)
         }
-        syncToModel()
-        _.nextTick(function () {
-          // force a value update, because in
-          // certain cases the write filters output the
-          // same result for different input values, and
-          // the Observer set events won't be triggered.
-          var newVal = self._watcher.value
-          self.update(newVal)
-          if (charsOffset != null) {
-            var cursorPos =
-              _.toString(newVal).length - charsOffset
-            el.setSelectionRange(cursorPos, cursorPos)
-          }
-        })
-      }
-    } else {
-      this.listener = function () {
-        if (composing) return
-        syncToModel()
-      }
+      })
     }
-
     if (debounce) {
       this.listener = _.debounce(this.listener, debounce)
     }
 
-    // Now attach the main listener
-
-    this.event = lazy ? 'change' : 'input'
     // Support jQuery events, since jQuery.trigger() doesn't
     // trigger native events in some cases and some plugins
     // rely on $.trigger()
@@ -106,23 +84,27 @@ module.exports = {
     // jQuery variable in tests.
     this.hasjQuery = typeof jQuery === 'function'
     if (this.hasjQuery) {
-      jQuery(el).on(this.event, this.listener)
+      jQuery(el).on('change', this.listener)
+      if (!lazy) {
+        jQuery(el).on('input', this.listener)
+      }
     } else {
-      _.on(el, this.event, this.listener)
+      this.on('change', this.listener)
+      if (!lazy) {
+        this.on('input', this.listener)
+      }
     }
 
     // IE9 doesn't fire input event on backspace/del/cut
     if (!lazy && _.isIE9) {
-      this.onCut = function () {
+      this.on('cut', function () {
         _.nextTick(self.listener)
-      }
-      this.onDel = function (e) {
+      })
+      this.on('keyup', function (e) {
         if (e.keyCode === 46 || e.keyCode === 8) {
           self.listener()
         }
-      }
-      _.on(el, 'cut', this.onCut)
-      _.on(el, 'keyup', this.onDel)
+      })
     }
 
     // set initial value if present
@@ -143,17 +125,8 @@ module.exports = {
   unbind: function () {
     var el = this.el
     if (this.hasjQuery) {
-      jQuery(el).off(this.event, this.listener)
-    } else {
-      _.off(el, this.event, this.listener)
-    }
-    if (this.onComposeStart) {
-      _.off(el, 'compositionstart', this.onComposeStart)
-      _.off(el, 'compositionend', this.onComposeEnd)
-    }
-    if (this.onCut) {
-      _.off(el, 'cut', this.onCut)
-      _.off(el, 'keyup', this.onDel)
+      jQuery(el).off('change', this.listener)
+      jQuery(el).off('input', this.listener)
     }
   }
 }

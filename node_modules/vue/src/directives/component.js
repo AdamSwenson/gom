@@ -124,14 +124,18 @@ module.exports = {
           options = {
             created: function () {
               this.$once(waitFor, function () {
+                self.waitingFor = null
                 self.transition(this, cb)
               })
             }
           }
         }
+        var cached = this.getCached()
         var newComponent = this.build(options)
-        if (!waitFor) {
+        if (!waitFor || cached) {
           this.transition(newComponent, cb)
+        } else {
+          this.waitingFor = newComponent
         }
       }, this))
     }
@@ -174,11 +178,9 @@ module.exports = {
    */
 
   build: function (extraOptions) {
-    if (this.keepAlive) {
-      var cached = this.cache[this.Component.cid]
-      if (cached) {
-        return cached
-      }
+    var cached = this.getCached()
+    if (cached) {
+      return cached
     }
     if (this.Component) {
       // default options
@@ -206,6 +208,16 @@ module.exports = {
   },
 
   /**
+   * Try to get a cached instance of the current component.
+   *
+   * @return {Vue|undefined}
+   */
+
+  getCached: function () {
+    return this.keepAlive && this.cache[this.Component.cid]
+  },
+
+  /**
    * Teardown the current child, but defers cleanup so
    * that we can separate the destroy and removal steps.
    *
@@ -213,6 +225,10 @@ module.exports = {
    */
 
   unbuild: function (defer) {
+    if (this.waitingFor) {
+      this.waitingFor.$destroy()
+      this.waitingFor = null
+    }
     var child = this.childVM
     if (!child || this.keepAlive) {
       return
@@ -264,7 +280,6 @@ module.exports = {
   transition: function (target, cb) {
     var self = this
     var current = this.childVM
-    this.unsetCurrent()
     this.setCurrent(target)
     switch (self.transMode) {
       case 'in-out':
@@ -288,6 +303,7 @@ module.exports = {
    */
 
   setCurrent: function (child) {
+    this.unsetCurrent()
     this.childVM = child
     var refID = child._refID || this.refID
     if (refID) {

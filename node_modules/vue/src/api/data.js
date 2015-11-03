@@ -62,7 +62,7 @@ exports.$delete = function (key) {
  * Watch an expression, trigger callback when its
  * value changes.
  *
- * @param {String} exp
+ * @param {String|Function} expOrFn
  * @param {Function} cb
  * @param {Object} [options]
  *                 - {Boolean} deep
@@ -71,17 +71,20 @@ exports.$delete = function (key) {
  * @return {Function} - unwatchFn
  */
 
-exports.$watch = function (exp, cb, options) {
+exports.$watch = function (expOrFn, cb, options) {
   var vm = this
-  var wrappedCb = function (val, oldVal) {
-    cb.call(vm, val, oldVal)
+  var parsed
+  if (typeof expOrFn === 'string') {
+    parsed = dirParser.parse(expOrFn)[0]
+    expOrFn = parsed.expression
   }
-  var watcher = new Watcher(vm, exp, wrappedCb, {
+  var watcher = new Watcher(vm, expOrFn, cb, {
     deep: options && options.deep,
-    user: !options || options.user !== false
+    user: !options || options.user !== false,
+    filters: parsed && parsed.filters
   })
   if (options && options.immediate) {
-    wrappedCb(watcher.value)
+    cb.call(vm, watcher.value)
   }
   return function unwatchFn () {
     watcher.teardown()
@@ -123,13 +126,15 @@ exports.$interpolate = function (text) {
   var tokens = textParser.parse(text)
   var vm = this
   if (tokens) {
-    return tokens.length === 1
-      ? vm.$eval(tokens[0].value)
-      : tokens.map(function (token) {
-          return token.tag
-            ? vm.$eval(token.value)
-            : token.value
-        }).join('')
+    if (tokens.length === 1) {
+      return vm.$eval(tokens[0].value) + ''
+    } else {
+      return tokens.map(function (token) {
+        return token.tag
+          ? vm.$eval(token.value)
+          : token.value
+      }).join('')
+    }
   } else {
     return text
   }

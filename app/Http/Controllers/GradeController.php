@@ -436,6 +436,12 @@ class GradeController extends Controller
             }
         }
 
+        $studentGrades = [];
+        foreach($students as $s)
+        {
+            $studentGrades[] = 'Letter grade';
+        }
+
         return View::make('grade.grade_exam')->with([
                                                         'exam' => $exam,
                                                         'students' => $students,
@@ -446,7 +452,8 @@ class GradeController extends Controller
                                                         'examGradingTimes' => $examGradingTimes,
                                                         'studentElementScores' => $studentElementScores,
                                                         'studentElementComments' => $studentElementComments,
-                                                        'studentQuestionScores' => $studentQuestionScores
+                                                        'studentQuestionScores' => $studentQuestionScores,
+                                                        'studentGrades' => $studentGrades
                                                     ]);
     }
 

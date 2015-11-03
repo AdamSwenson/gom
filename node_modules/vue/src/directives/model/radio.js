@@ -6,27 +6,28 @@ module.exports = {
     var self = this
     var el = this.el
     var number = this._checkParam('number') != null
-    function getValue () {
-      return number
-        ? _.toNumber(el.value)
-        : el.value
+    var expression = this._checkParam('exp')
+
+    this.getValue = function () {
+      var val = el.value
+      if (number) {
+        val = _.toNumber(val)
+      } else if (expression !== null) {
+        val = self.vm.$eval(expression)
+      }
+      return val
     }
-    this.listener = function () {
-      self.set(getValue())
-    }
-    _.on(el, 'change', this.listener)
+
+    this.on('change', function () {
+      self.set(self.getValue())
+    })
+
     if (el.checked) {
-      this._initValue = getValue()
+      this._initValue = this.getValue()
     }
   },
 
   update: function (value) {
-    /* eslint-disable eqeqeq */
-    this.el.checked = value == this.el.value
-    /* eslint-enable eqeqeq */
-  },
-
-  unbind: function () {
-    _.off(this.el, 'change', this.listener)
+    this.el.checked = _.looseEqual(value, this.getValue())
   }
 }

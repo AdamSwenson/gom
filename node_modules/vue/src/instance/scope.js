@@ -36,7 +36,7 @@ exports._initProps = function () {
   }
   // make sure to convert string selectors into element now
   el = options.el = _.query(el)
-  this._propsUnlinkFn = el && props
+  this._propsUnlinkFn = el && el.nodeType === 1 && props
     ? compiler.compileAndLinkProps(
         this, el, props
       )
@@ -199,7 +199,9 @@ exports._initComputed = function () {
         def.set = noop
       } else {
         def.get = userDef.get
-          ? makeComputedGetter(userDef.get, this)
+          ? userDef.cache !== false
+            ? makeComputedGetter(userDef.get, this)
+            : _.bind(userDef.get, this)
           : noop
         def.set = userDef.set
           ? _.bind(userDef.set, this)
@@ -264,8 +266,6 @@ exports._initMeta = function () {
 exports._defineMeta = function (key, value) {
   var dep = new Dep()
   Object.defineProperty(this, key, {
-    enumerable: true,
-    configurable: true,
     get: function metaGetter () {
       if (Dep.target) {
         dep.depend()

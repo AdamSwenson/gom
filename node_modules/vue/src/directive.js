@@ -3,6 +3,7 @@ var config = require('./config')
 var Watcher = require('./watcher')
 var textParser = require('./parsers/text')
 var expParser = require('./parsers/expression')
+function noop () {}
 
 /**
  * A directive links a DOM element with a piece of data,
@@ -37,11 +38,10 @@ function Directive (name, el, vm, descriptor, def, host) {
   this._host = host
   this._locked = false
   this._bound = false
+  this._listeners = null
   // init
   this._bind(def)
 }
-
-var p = Directive.prototype
 
 /**
  * Initialize the directive, mixin definition properties,
@@ -51,7 +51,7 @@ var p = Directive.prototype
  * @param {Object} def
  */
 
-p._bind = function (def) {
+Directive.prototype._bind = function (def) {
   if (
     (this.name !== 'cloak' || this.vm._isCompiled) &&
     this.el && this.el.removeAttribute
@@ -74,13 +74,15 @@ p._bind = function (def) {
       !this._checkStatement()) {
     // wrapped updater for context
     var dir = this
-    var update = this._update = this.update
-      ? function (val, oldVal) {
-          if (!dir._locked) {
-            dir.update(val, oldVal)
-          }
+    if (this.update) {
+      this._update = function (val, oldVal) {
+        if (!dir._locked) {
+          dir.update(val, oldVal)
         }
-      : function () {} // noop if no update is provided
+      }
+    } else {
+      this._update = noop
+    }
     // pre-process hook called before the value is piped
     // through the filters. used in v-repeat.
     var preProcess = this._preProcess
@@ -89,7 +91,7 @@ p._bind = function (def) {
     var watcher = this._watcher = new Watcher(
       this.vm,
       this._watcherExp,
-      update, // callback
+      this._update, // callback
       {
         filters: this.filters,
         twoWay: this.twoWay,
@@ -112,7 +114,7 @@ p._bind = function (def) {
  * e.g. v-component="{{currentView}}"
  */
 
-p._checkDynamicLiteral = function () {
+Directive.prototype._checkDynamicLiteral = function () {
   var expression = this.expression
   if (expression && this.isLiteral) {
     var tokens = textParser.parse(expression)
@@ -136,7 +138,7 @@ p._checkDynamicLiteral = function () {
  * @return {Boolean}
  */
 
-p._checkStatement = function () {
+Directive.prototype._checkStatement = function () {
   var expression = this.expression
   if (
     expression && this.acceptStatement &&
@@ -162,30 +164,13 @@ p._checkStatement = function () {
  * @return {String}
  */
 
-p._checkParam = function (name) {
+Directive.prototype._checkParam = function (name) {
   var param = this.el.getAttribute(name)
   if (param !== null) {
     this.el.removeAttribute(name)
     param = this.vm.$interpolate(param)
   }
   return param
-}
-
-/**
- * Teardown the watcher and call unbind.
- */
-
-p._teardown = function () {
-  if (this._bound) {
-    this._bound = false
-    if (this.unbind) {
-      this.unbind()
-    }
-    if (this._watcher) {
-      this._watcher.teardown()
-    }
-    this.vm = this.el = this._watcher = null
-  }
 }
 
 /**
@@ -197,11 +182,17 @@ p._teardown = function () {
  * @public
  */
 
-p.set = function (value) {
+Directive.prototype.set = function (value) {
+  /* istanbul ignore else */
   if (this.twoWay) {
     this._withLock(function () {
       this._watcher.set(value)
     })
+  } else if (process.env.NODE_ENV !== 'production') {
+    _.warn(
+      'Directive.set() can only be used inside twoWay' +
+      'directives.'
+    )
   }
 }
 
@@ -212,13 +203,52 @@ p.set = function (value) {
  * @param {Function} fn
  */
 
-p._withLock = function (fn) {
+Directive.prototype._withLock = function (fn) {
   var self = this
   self._locked = true
   fn.call(self)
   _.nextTick(function () {
     self._locked = false
   })
+}
+
+/**
+ * Convenience method that attaches a DOM event listener
+ * to the directive element and autometically tears it down
+ * during unbind.
+ *
+ * @param {String} event
+ * @param {Function} handler
+ */
+
+Directive.prototype.on = function (event, handler) {
+  _.on(this.el, event, handler)
+  ;(this._listeners || (this._listeners = []))
+    .push([event, handler])
+}
+
+/**
+ * Teardown the watcher and call unbind.
+ */
+
+Directive.prototype._teardown = function () {
+  if (this._bound) {
+    this._bound = false
+    if (this.unbind) {
+      this.unbind()
+    }
+    if (this._watcher) {
+      this._watcher.teardown()
+    }
+    var listeners = this._listeners
+    if (listeners) {
+      for (var i = 0; i < listeners.length; i++) {
+        _.off(this.el, listeners[i][0], listeners[i][1])
+      }
+    }
+    this.vm = this.el =
+    this._watcher = this._listeners = null
+  }
 }
 
 module.exports = Directive

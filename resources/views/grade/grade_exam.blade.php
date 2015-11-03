@@ -3,37 +3,41 @@
 
 @section('pageTitle', 'Grade Exam | gradeomatic')
 @section('description', 'Grade an exam')
-@section('cssLinks')
-
+@section('otherCss')
+    <link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet" type="text/css" >
+    <link href="{{ asset('css/grading-styles.css') }}"  rel="stylesheet" type="text/css" >
 @endsection
 
 @section('body')
-    <style>
-        .typeahead {
-            border: 0px;
-        }
 
-        .activeStudentInput {
-            font-size: 1.25em;
-        }
+    <script type="text/javascript" src="{{asset('js/grading-package.js') }}"></script>
 
-        .input-group.full-width .input-group-btn:last-child > .btn {
-            margin-left: 5px;
-        }
-        .input-group.full-width .input-group-btn:last-child > .btn {
-            border-bottom-left-radius: 4px;
-            border-top-left-radius: 4px;
-        }
-        .input-group.full-width .form-control:first-child {
-            border-bottom-right-radius: 4px;
-            border-top-right-radius: 4px;
-        }
+    {{--<style>--}}
+        {{--.typeahead {--}}
+            {{--border: 0px;--}}
+        {{--}--}}
 
-        .slider-horizontal {
-            margin-right: 35px;
-        }
+        {{--.activeStudentInput {--}}
+            {{--font-size: 1.25em;--}}
+        {{--}--}}
 
-    </style>
+        {{--.input-group.full-width .input-group-btn:last-child > .btn {--}}
+            {{--margin-left: 5px;--}}
+        {{--}--}}
+        {{--.input-group.full-width .input-group-btn:last-child > .btn {--}}
+            {{--border-bottom-left-radius: 4px;--}}
+            {{--border-top-left-radius: 4px;--}}
+        {{--}--}}
+        {{--.input-group.full-width .form-control:first-child {--}}
+            {{--border-bottom-right-radius: 4px;--}}
+            {{--border-top-right-radius: 4px;--}}
+        {{--}--}}
+
+        {{--.slider-horizontal {--}}
+            {{--margin-right: 35px;--}}
+        {{--}--}}
+
+    {{--</style>--}}
     <div class="row">
         <!-- Left column holds questions and sliders -->
         <div class="col-md-8" style="width-max: 700px;">
@@ -68,12 +72,15 @@
                                 } ?>">
                                     {{--<div class="form-horizontal" role="form">--}}
                                     <div class="row">
-                                        <div class="col-xs-9">
+                                        <div class="col-xs-7">
                                             <!-- question Name -->
                                             <h4 id="questionName">Question #{{ $qNumber }}:
                                                 "{{ $qAssignment->getQuestionName() }}"</h4>
                                         </div>
                                         <!-- question Score -->
+                                        <div class="col-xs-2">
+                                            @include('grade.letter_grade_button')
+                                        </div>
                                         <form class="form-horizontal" role="form">
                                             <div class="form-group">
                                                 <label class="col-xs-1 control-label"
@@ -162,9 +169,10 @@
 
 @section('jsArea')
 
-    <link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet">
+    {{--<link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet">--}}
     <script type='text/javascript' src="{{ asset('inc/js/bootstrap-slider.js') }}"></script>
     <script type='text/javascript' src="{{ asset('inc/js/bootstrap3-typeahead.min.js') }}"></script>
+
     <script type="text/javascript">
         var myvar = "adding new errors";
         var stockComments = <?= json_encode($stockComments) ?>;
@@ -173,7 +181,7 @@
         var elementScores = <?= json_encode($studentElementScores) ?>;
         var questionScores = <?= json_encode($studentQuestionScores) ?>;
         var examGradingTimes = <?= json_encode($examGradingTimes) ?>;
-        var examGrades = [];
+        var examGrades = <?= json_encode($studentGrades) ?>;
 
         // studentNames supplies name data for the search box (typeahead)
         var $studentNames = $('[id^="studentName"]');
@@ -631,7 +639,7 @@
             });
 
             // Handle question score inputs. When focus is lost, store values, update grades and save timers.
-            $('[id^="questionScore"]').change(function () {
+            $('[id^="questionScore"]').bind('change',function(){
                 var qNumber = $(this).attr('data-number');
                 var score = parseFloat($(this).val());
                 var maxScore = parseFloat($(this).attr('max'));
@@ -723,10 +731,19 @@
                         $(this).val(thisComment);
                     }
                 });
+
+
             });
 
             return false;
         });
+    </script>
 
+    <script type="text/javascript">
+        $(document).ready(function () {
+            window.console.log('j');
+            bindLetterGradeHandler();
+            window.console.log('jj');
+        });
     </script>
 @endsection

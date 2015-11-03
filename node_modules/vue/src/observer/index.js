@@ -52,7 +52,7 @@ Observer.create = function (value, vm) {
   ) {
     ob = value.__ob__
   } else if (
-    _.isObject(value) &&
+    (_.isArray(value) || _.isPlainObject(value)) &&
     !Object.isFrozen(value) &&
     !value._isVue
   ) {
@@ -66,8 +66,6 @@ Observer.create = function (value, vm) {
 
 // Instance methods
 
-var p = Observer.prototype
-
 /**
  * Walk through each property and convert them into
  * getter/setters. This method should only be called when
@@ -77,16 +75,11 @@ var p = Observer.prototype
  * @param {Object} obj
  */
 
-p.walk = function (obj) {
+Observer.prototype.walk = function (obj) {
   var keys = Object.keys(obj)
   var i = keys.length
-  var key, prefix
   while (i--) {
-    key = keys[i]
-    prefix = key.charCodeAt(0)
-    if (prefix !== 0x24 && prefix !== 0x5F) { // skip $ or _
-      this.convert(key, obj[key])
-    }
+    this.convert(keys[i], obj[keys[i]])
   }
 }
 
@@ -98,7 +91,7 @@ p.walk = function (obj) {
  * @return {Dep|undefined}
  */
 
-p.observe = function (val) {
+Observer.prototype.observe = function (val) {
   return Observer.create(val)
 }
 
@@ -108,10 +101,45 @@ p.observe = function (val) {
  * @param {Array} items
  */
 
-p.observeArray = function (items) {
+Observer.prototype.observeArray = function (items) {
   var i = items.length
   while (i--) {
-    this.observe(items[i])
+    var ob = this.observe(items[i])
+    if (ob) {
+      (ob.parents || (ob.parents = [])).push(this)
+    }
+  }
+}
+
+/**
+ * Remove self from the parent list of removed objects.
+ *
+ * @param {Array} items
+ */
+
+Observer.prototype.unobserveArray = function (items) {
+  var i = items.length
+  while (i--) {
+    var ob = items[i] && items[i].__ob__
+    if (ob) {
+      ob.parents.$remove(this)
+    }
+  }
+}
+
+/**
+ * Notify self dependency, and also parent Array dependency
+ * if any.
+ */
+
+Observer.prototype.notify = function () {
+  this.dep.notify()
+  var parents = this.parents
+  if (parents) {
+    var i = parents.length
+    while (i--) {
+      parents[i].notify()
+    }
   }
 }
 
@@ -123,7 +151,7 @@ p.observeArray = function (items) {
  * @param {*} val
  */
 
-p.convert = function (key, val) {
+Observer.prototype.convert = function (key, val) {
   var ob = this
   var childOb = ob.observe(val)
   var dep = new Dep()
@@ -135,12 +163,6 @@ p.convert = function (key, val) {
         dep.depend()
         if (childOb) {
           childOb.dep.depend()
-        }
-        if (_.isArray(val)) {
-          for (var e, i = 0, l = val.length; i < l; i++) {
-            e = val[i]
-            e && e.__ob__ && e.__ob__.dep.depend()
-          }
         }
       }
       return val
@@ -163,7 +185,7 @@ p.convert = function (key, val) {
  * @param {Vue} vm
  */
 
-p.addVm = function (vm) {
+Observer.prototype.addVm = function (vm) {
   (this.vms || (this.vms = [])).push(vm)
 }
 
@@ -174,7 +196,7 @@ p.addVm = function (vm) {
  * @param {Vue} vm
  */
 
-p.removeVm = function (vm) {
+Observer.prototype.removeVm = function (vm) {
   this.vms.$remove(vm)
 }
 

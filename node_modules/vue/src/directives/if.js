@@ -27,8 +27,7 @@ module.exports = {
         this.linker = compiler.compile(
           this.template,
           this.vm.$options,
-          true, // partial
-          this._host // important
+          true // partial
         )
         cache.put(cacheId, this.linker)
       }
@@ -59,7 +58,7 @@ module.exports = {
 
   link: function (frag, linker) {
     var vm = this.vm
-    this.unlink = linker(vm, frag)
+    this.unlink = linker(vm, frag, this._host /* important */)
     transition.blockAppend(frag, this.end, vm)
     // call attached for all the child components created
     // during the compilation
@@ -83,7 +82,7 @@ module.exports = {
   },
 
   getContainedComponents: function () {
-    var vm = this.vm
+    var vm = this._host || this.vm
     var start = this.start.nextSibling
     var end = this.end
 
