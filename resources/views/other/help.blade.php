@@ -3,7 +3,7 @@
 @section('pageTitle', 'Help | gradeomatic')
 
 @section('cssLinks')
-
+<link rel="stylesheet" href="{{ asset('css/help-styles.css') }}" />
 @endsection
 
 @section('body')

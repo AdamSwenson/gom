@@ -64,3 +64,9 @@
     <p class="answer">You have two options. One is to have only one element for the question. The stock comment you provide can then cover the whole question.</p>
     <p class="answer">Ok. We lied. There aren't really two options. The second option is to rethink what you need. If you find yourself asking this question, you probably haven't fully appreciated the power of the elements. A common thought is something like, "Well, my students need to do x, y, and z, in order to explain the concept the question is asking them about. But then I also want to give them feedback on how well they tied x, y, and z together." The answer is to add a fourth element with the description "Ties together x, y, and z." This may rightly seem strange: You now have four elements. But one is a different type of task from the other three. The first three involve (for example) demonstrating understanding of part of a concept. The new fourth element is the more meta-level task of integrating the explanations.</p>
 </div>
+
+<div class="infoItem">
+    <p class="lead"><b>Q.</b> How secure is student data? </p>
+    <p class="answer">The gradeomatic has been designed with security in mind at every step. Student information is  stored in an encrypted database.  </p>
+    <p class="answer">That said, student privacy is important, both legally and morally. So, let's clarify a few things.   </p>
+</div>

@@ -21,6 +21,9 @@ elixir(function(mix) {
             'grading/mainGrading.scss'
         ], 'public/css/grading-styles.css');
 
+    mix.sass([
+        'help/pictureStyling.scss'
+    ], 'public/css/help-styles.css');
 
 
 /* ---------------------------------------------- scripts ----------------------------------------------------*/
