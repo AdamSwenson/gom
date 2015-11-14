@@ -37,17 +37,32 @@ class QuestionScoreRepository implements IQuestionScoreRepository
             qa.question_number AS questionNumber,
             q.questionName,
             qa.id AS questionAssignmentId,
-            (SELECT qs.score AS questionScore
-                FROM question_scores qs
-                WHERE qs.student_id = :studentId
-                    AND qs.question_assignment_id = questionAssignmentId
-            ) AS questionScore
+            qs.score AS questionScore
         FROM questions q
         INNER JOIN question_assignments qa ON q.id = qa.question_id
+        INNER JOIN question_scores qs ON qa.id = qs.question_assignment_id
         WHERE qa.exam_id = :examId
             AND q.user_id = :userId
+            AND qs.student_id = :studentId
         ORDER BY qa.question_number ASC;
 MYSQL;
+        
+//        $query = <<<MYSQL
+//        SELECT q.id AS questionId,
+//            qa.question_number AS questionNumber,
+//            q.questionName,
+//            qa.id AS questionAssignmentId,
+//            (SELECT qs.score AS questionScore
+//                FROM question_scores qs
+//                WHERE qs.student_id = :studentId
+//                    AND qs.question_assignment_id = questionAssignmentId
+//            ) AS questionScore
+//        FROM questions q
+//        INNER JOIN question_assignments qa ON q.id = qa.question_id
+//        WHERE qa.exam_id = :examId
+//            AND q.user_id = :userId
+//        ORDER BY qa.question_number ASC;
+//MYSQL;
 
     //    $query = "CALL get_question_scores_for_student(:userId, :examId, :studentId)";
         $values = [
