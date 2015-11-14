@@ -1,17 +1,29 @@
 div.figure {
   //float: right;
   //width: 30%;
-  border: thin silver solid;
+  border: thin black solid;
   margin: 0.5em;
   padding: 0.5em;
 }
-.pictureCaption {
+p.pictureCaption {
   text-align: center;
   font-style: italic;
   font-size: smaller;
   text-indent: 0;
 }
 
-div.figure .picture image{
-height:200px;
+div.figure .picture{
+  border: thin silver solid;
+}
+
+ul {
+  padding:0 0 0 0;
+  margin:0 0 0 0;
+}
+ul li {
+  list-style:none;
+  margin-bottom:25px;
+}
+ul li img {
+  cursor: pointer;
 }
