@@ -46,7 +46,7 @@ class QuestionScoreRepository implements IQuestionScoreRepository
             AND qs.student_id = :studentId
         ORDER BY qa.question_number ASC;
 MYSQL;
-        
+
 //        $query = <<<MYSQL
 //        SELECT q.id AS questionId,
 //            qa.question_number AS questionNumber,
