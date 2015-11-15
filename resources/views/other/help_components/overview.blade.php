@@ -138,11 +138,23 @@
     <div class="infoItem">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Exporting scores and grades</h3>
+                <h3 class="panel-title">Analytics</h3>
             </div>
             <div class="panel-body">
                 @include('other.help_components.report_analytics')
             </div>
         </div>
     </div>
+
+    <div class="infoItem">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Individual student controls</h3>
+            </div>
+            <div class="panel-body">
+                @include('other.help_components.report_student_controls')
+            </div>
+        </div>
+    </div>
+
 </div>
