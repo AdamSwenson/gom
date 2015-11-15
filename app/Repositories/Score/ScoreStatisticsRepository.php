@@ -188,13 +188,24 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
         $this->exam = $exam;
         $this->questionStats = [];
 
+        $query = <<<MYSQL
+        SELECT DISTINCT qa.question_id AS questionId,
+        qa.id AS questionAssignmentId,
+        AVG(qs.score) AS mean
+        FROM question_assignments qa LEFT JOIN question_scores qs ON qa.id = qs.question_assignment_id
+        WHERE qa.exam_id = :examId
+        GROUP BY qa.id
+MYSQL;
 
+        /*
+         * Updated for newer mysql
         $query = <<<MYSQL
         SELECT DISTINCT qa.question_id AS questionId, qa.id AS questionAssignmentId, AVG(qs.score) AS mean
         FROM question_assignments qa LEFT JOIN question_scores qs ON qa.id = qs.question_assignment_id
         WHERE qa.exam_id = :examId
         GROUP BY question_assignment_id;
 MYSQL;
+        */
         $values = ['examId' => $exam->getId()];
         $results = DB::select($query, $values);
 
@@ -252,8 +263,20 @@ MYSQL;
             ea.id AS elementAssignmentId,
             AVG(es.score) AS mean
         FROM element_assignments ea LEFT JOIN element_scores es ON ea.id = es.element_assignment_id
+        WHERE ea.exam_id = :examId
+        GROUP BY ea.id
+MYSQL;
+
+/*
+ * Replacing to deal with mysql 5.7 problem
+        $query = <<<MYSQL
+        SELECT DISTINCT ea.element_id AS elementId,
+            ea.id AS elementAssignmentId,
+            AVG(es.score) AS mean
+        FROM element_assignments ea LEFT JOIN element_scores es ON ea.id = es.element_assignment_id
         WHERE ea.exam_id = :examId GROUP BY element_assignment_id;
 MYSQL;
+*/
         $values = ['examId' => $exam->getId()];
         $results = DB::select($query, $values);
 

@@ -27,7 +27,11 @@ class ElementScoreRepository implements IElementScoreRepository
      */
     public function load($elementAssignmentId, $studentId)
     {
-        $this->score_object = ElementScore::firstOrNew(['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId]);
+        $this->score_object = ElementScore::firstOrNew([
+                                                           'element_assignment_id' => $elementAssignmentId,
+                                                           'student_id' => $studentId
+                                                       ]);
+
         return $this->score_object;
 
 //        ElementScore::where('element_assignment_id', $elementAssignmentId)->where('student_id', $studentId)->
@@ -54,29 +58,60 @@ class ElementScoreRepository implements IElementScoreRepository
     public function load_all_for_student_by_question_id($examId, $questionId, $studentId)
     {
         $query = <<<MYSQL
-SELECT e.id AS elementId,
-    e.elementName AS elementName,
-    exq.subtask AS subtask,
-    exq.id AS elementAssignmentId,
-    (SELECT qa.question_number FROM question_assignments qa
-        WHERE qa.exam_id = :examId
-            AND qa.question_id = :questionId
-    ) AS questionNumber,
-    (SELECT score AS elementScore
-        FROM element_scores
-        WHERE element_assignment_id = elementAssignmentId
-        AND student_id = :studentId
-    ) AS elementScore
-    FROM elements e
+        SELECT e.id AS elementId,
+        e.elementName AS elementName,
+        exq.subtask AS subtask,
+        exq.id AS elementAssignmentId,
+        qa.question_number AS questionNumber,
+        es.score AS elementScore
+        FROM elements e
         INNER JOIN element_assignments exq ON e.id = exq.element_id
+        INNER JOIN element_scores es ON exq.id = es.element_assignment_id
+        INNER JOIN question_assignments qa ON qa.question_id = exq.question_id
         WHERE
             e.user_id = :userId
-            AND exq.exam_id = :examId2
+            AND qa.question_id = :questionId
+            AND exq.exam_id = :examId
             AND exq.question_id = :questionId2
-        ORDER BY exq.subtask ASC;
+            AND es.student_id = :studentId
+        ORDER BY exq.subtask ASC
 MYSQL;
+
+        $values = [
+            'userId' => \Auth::user()->id,
+            'examId' => $examId,
+            'questionId' => $questionId,
+            'questionId2' => $questionId,
+            'studentId' => $studentId
+        ];
+
+        /*
+         * Replaced because mysql 5.7.9 doesn't like aliases in where clauses
+    //        $query = <<<MYSQL
+    //SELECT e.id AS elementId,
+    //    e.elementName AS elementName,
+    //    exq.subtask AS subtask,
+    //    exq.id AS elementAssignmentId,
+    //    (SELECT qa.question_number FROM question_assignments qa
+    //        WHERE qa.exam_id = :examId
+    //            AND qa.question_id = :questionId
+    //    ) AS questionNumber,
+    //    (SELECT score AS elementScore
+    //        FROM element_scores
+    //        WHERE element_assignment_id = elementAssignmentId
+    //        AND student_id = :studentId
+    //    ) AS elementScore
+    //    FROM elements e
+    //        INNER JOIN element_assignments exq ON e.id = exq.element_id
+    //        WHERE
+    //            e.user_id = :userId
+    //            AND exq.exam_id = :examId2
+    //            AND exq.question_id = :questionId2
+    //        ORDER BY exq.subtask ASC;
+    //MYSQL;
+
         $uid = \Auth::user()->id;
-       // $query = "CALL get_element_scores_for_student_by_question_id(:userId, :examId, :questionId, :studentId, @elementId, @elementName, @questionNumber, @subtask, @elementAssignmentId, @elementScore)";
+        // $query = "CALL get_element_scores_for_student_by_question_id(:userId, :examId, :questionId, :studentId, @elementId, @elementName, @questionNumber, @subtask, @elementAssignmentId, @elementScore)";
         $values = [
             'userId' => $uid,
             'examId' => $examId,
@@ -85,6 +120,8 @@ MYSQL;
             'questionId2' => $questionId,
             'studentId' => $studentId
         ];
+*/
+
         return \DB::select($query, $values);
         //TODO Error handling
     }
@@ -115,10 +152,10 @@ MYSQL;
     {
         $scores = [];
         $elementAssignments = ElementAssignment::where('exam_id', $examId)->get();
-        foreach($elementAssignments as $ea)
+        foreach ($elementAssignments as $ea)
         {
             $score = ElementScore::where('student_id', $studentId)->where('element_assignment_id', $ea->element_assignment_id)->first();
-            if( ! empty($score) )
+            if (!empty($score))
             {
                 $scores[] = $score;
             }
@@ -141,6 +178,7 @@ MYSQL;
         $this->score_object->element_assignment_id = $elementAssignmentId;
         $this->score_object->student_id = $studentId;
         $this->score_object->recordCommentText($commentText);
+
         return $this->score_object;
     }
 
@@ -196,6 +234,7 @@ MYSQL;
     public function deleteScore($elementAssignmentId, $studentId)
     {
         $score = ElementScore::where('element_assignment_id', $elementAssignmentId)->where('student_id', $studentId)->firstOrFail();
+
         return $score->delete();
     }
 
