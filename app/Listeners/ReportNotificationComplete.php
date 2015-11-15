@@ -26,7 +26,7 @@ class ReportNotificationComplete
      */
     public function handle(StudentNotificationCompleteEvent $event)
     {
-        return view('feedback.progress_send_complete');
+        //return view('feedback.progress_send_complete');
 
         //
     }

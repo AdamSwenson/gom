@@ -26,7 +26,7 @@ class ReportCompilationComplete
     public function handle(FeedbackCompilationCompleteEvent $event)
     {
 
-        return view('feedback.progress_sending');
+     //   return view('feedback.progress_sending');
 
     }
 }
