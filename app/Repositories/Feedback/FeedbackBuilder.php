@@ -105,6 +105,7 @@ class FeedbackBuilder implements IFeedbackBuilder
     {
         $this->exam = Exam::find($examId);
 
+        //Load statistical information
         $this->scoreStatsRepository->loadStats($this->exam);
 
         //Create one master array with all the questions and elements
@@ -134,7 +135,7 @@ class FeedbackBuilder implements IFeedbackBuilder
 
                 //Save the feedback and key to the database
                 $this->storeFeedback($accessKey, $studentFeedback, $gradeDisplay, $gradeCalc);
-            }else
+            } else
             {
                 //No grade loaded. So just save the feedback and key to the database
                 $this->storeFeedback($accessKey, $studentFeedback);
@@ -142,6 +143,49 @@ class FeedbackBuilder implements IFeedbackBuilder
         }
 
         return $this->feedback;
+    }
+
+    /**
+     * Does the work of compiling the feedback for a single student.
+     * This does not create the access key or save the feedback to the database.
+     *
+     * @param Student $student
+     * @return array
+     */
+    protected function compileFeedbackForStudent(Student $student)
+    {
+        //Copy the assignments array for the present student
+        $studentScores = &$this->assignments;
+
+        //Iterate through the new copy and add scores and comment content
+        foreach ($studentScores as &$question)
+        {
+            //Load question scores for the student
+            $questionScoreObject = $this->questionScoreRepository->load($question['questionAssignmentId'], $student->id);
+
+            if (!empty($questionScoreObject))
+            {
+                $question['score'] = $questionScoreObject->getScore();
+                $question['average'] = $this->scoreStatsRepository->getQuestionAssignmentMean($question['questionAssignmentId']);
+            }
+            foreach ($question['elements'] as &$element)
+            {
+                $scoreObject = $this->elementScoreRepository->load($element['elementAssignmentId'], $student->id);
+                if (!empty($scoreObject) && !empty($scoreObject->score))
+                {
+                    $element['score'] = $scoreObject->getScore();
+                    $element['average'] = $this->scoreStatsRepository->getElementAssignmentMean($element['elementAssignmentId']);
+                    $element['comment'] = $scoreObject->comment_text;
+
+                    //old way
+//                        $commentObj = $this->commentRepository->getCommentForScore($element['elementId'],
+//                            $element['score']);
+//                        $element['comment'] = $commentObj->getBody();
+                }
+            }
+        }
+
+        return $studentScores;
     }
 
 
@@ -163,6 +207,9 @@ class FeedbackBuilder implements IFeedbackBuilder
         //it will check whether it has already been run
         $this->loadAssignments($examId);
 
+        //Load statistical information
+        $this->scoreStatsRepository->loadStats($this->exam);
+
         //Compile the feedback
         $studentFeedback = $this->compileFeedbackForStudent($student);
 
@@ -172,12 +219,12 @@ class FeedbackBuilder implements IFeedbackBuilder
         /* If we got here before the main feedback compilation is called, accessKey may be empty.
          * So, if that's the case, we need to make one
          */
-        if( empty($accessKey) )
+        if (empty($accessKey))
         {
             //Create a unique hash to access the feedback
             $accessKey = $this->accessKeyRepository->createAccessKey($examId, $student->id);
         }
-        
+
         //Retrieve and add the student's grade
         $grade = $this->studentGradeRepository->getStudentGrade($this->exam, $student);
         if (!empty($grade))
@@ -187,13 +234,11 @@ class FeedbackBuilder implements IFeedbackBuilder
 
             //Update the db record
             $this->storeFeedback($accessKey, $studentFeedback, $gradeDisplay, $gradeCalc);
-        }else
+        } else
         {
             //No grade loaded. So just update the feedback and key to the database
             $this->storeFeedback($accessKey, $studentFeedback);
         }
-//        //Update the db record
-//        $this->storeFeedback($accessKey, $studentFeedback);
 
         //Store the feedback in our array with the unique hash as key
         $this->feedback[$accessKey] = $studentFeedback;
@@ -254,58 +299,6 @@ class FeedbackBuilder implements IFeedbackBuilder
     }
 
 
-    /**
-     * Does the work of compiling the feedback for a single student.
-     * This does not create the access key or save the feedback to the database.
-     *
-     * @param Student $student
-     * @return array
-     */
-    protected function compileFeedbackForStudent(Student $student)
-    {
-        //Copy the assignments array for the present student
-        $studentScores = &$this->assignments;
-
-        //Iterate through the new copy and add scores and comment content
-        foreach ($studentScores as &$question)
-        {
-            //Load question scores for the student
-            $questionScoreObject = $this->questionScoreRepository->load($question['questionAssignmentId'], $student->id);
-
-            if (!empty($questionScoreObject))
-            {
-                $question['score'] = $questionScoreObject->getScore();
-                $question['average'] = $this->scoreStatsRepository->getQuestionAssignmentMean($question['questionAssignmentId']);
-            }
-            foreach ($question['elements'] as &$element)
-            {
-                $scoreObject = $this->elementScoreRepository->load($element['elementAssignmentId'], $student->id);
-                if (!empty($scoreObject) && !empty($scoreObject->score))
-                {
-                    $element['score'] = $scoreObject->getScore();
-                    $element['average'] = $this->scoreStatsRepository->getElementAssignmentMean($element['elementAssignmentId']);
-                    $element['comment'] = $scoreObject->comment_text;
-
-                    //old way
-//                        $commentObj = $this->commentRepository->getCommentForScore($element['elementId'],
-//                            $element['score']);
-//                        $element['comment'] = $commentObj->getBody();
-                }
-            }
-        }
-
-//        Load and add the grade for the student
-        //       $this->getStudentGrade($student, $studentScores);
-//        $grade = $this->studentGradeRepository->getStudentGrade($this->exam, $student);
-//        if (!empty($grade))
-//        {
-//            $studentScores['grade'] = $grade->getDisplayValue();
-//            $studentScores['gradeCalc'] = $grade->getCalcValue();
-//        }
-
-        return $studentScores;
-    }
-
     protected function getStudentGrade(Student $student, &$studentScores)
     {
         $grade = $this->studentGradeRepository->getStudentGrade($this->exam, $student);
@@ -316,28 +309,6 @@ class FeedbackBuilder implements IFeedbackBuilder
         }
     }
 
-//    protected function getQuestionMean($questionAssignmentId)
-//    {
-//        try
-//        {
-//            return $this->scoreStatsRepository->getStatsForQuestionAssignment($this->exam, $questionAssignmentId, ScoreStatisticsRepository::STAT_MEAN);
-//        } catch (\Exception $e)
-//        {
-//            return null;
-//        }
-//    }
-//
-//    protected function getElementMean($elementAssignmentId)
-//    {
-//        try
-//        {
-//            return $this->scoreStatsRepository->getStatsForElementAssignment($this->exam, $elementAssignmentId, ScoreStatisticsRepository::STAT_MEAN);
-//        } catch (\Exception $e)
-//        {
-//            return null;
-//        }
-//    }
-
     /**
      * Saves or updates the feedback content to the database.
      *
@@ -347,12 +318,13 @@ class FeedbackBuilder implements IFeedbackBuilder
      * @param null $gradeCalc
      * @return bool
      */
-    public function storeFeedback($accessKey, $content, $gradeDisplay=null, $gradeCalc=null)
+    public function storeFeedback($accessKey, $content, $gradeDisplay = null, $gradeCalc = null)
     {
         $feedback = Feedback::firstOrNew(['access_key' => $accessKey]);
         $feedback->content = $content;
         $feedback->grade_display = $gradeDisplay;
         $feedback->grade_calc = $gradeCalc;
+
         return $feedback->save();
     }
 

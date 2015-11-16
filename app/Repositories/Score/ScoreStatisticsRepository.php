@@ -70,6 +70,7 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
     {
         $this->loadElementStatsForExam($exam);
         $this->loadQuestionStatsForExam($exam);
+
     }
 
     /**
@@ -81,11 +82,13 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
      */
     public function getQuestionAssignmentMean($questionAssignmentId)
     {
-        if( array_key_exists($questionAssignmentId, $this->questionAssignmentMeans) )
+        $questionAssignmentId = (string)$questionAssignmentId;
+
+        if (array_key_exists($questionAssignmentId, $this->questionAssignmentMeans))
         {
             return $this->questionAssignmentMeans[$questionAssignmentId];
-        }
-        else{
+        } else
+        {
             return null;
         }
     }
@@ -98,11 +101,11 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
      */
     public function getElementAssignmentMean($elementAssignmentId)
     {
-        if( array_key_exists($elementAssignmentId, $this->elementAssignmentMeans) )
+        if (array_key_exists($elementAssignmentId, $this->elementAssignmentMeans))
         {
             return $this->elementAssignmentMeans[$elementAssignmentId];
-        }
-        else{
+        } else
+        {
             return null;
         }
     }
@@ -115,22 +118,28 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
      * @return float|\Illuminate\Support\Collection|null
      * @internal param $question_assignment_id
      */
-    public function getStatsForQuestionAssignment(Exam $exam, $questionAssignmentId, $returnValueOf=null)
+    public function getStatsForQuestionAssignment(Exam $exam, $questionAssignmentId, $returnValueOf = null)
     {
         //If the question stats storage is empty, load the data
-        if( empty($this->questionStats) ){ $this->loadQuestionStatsForExam($exam); }
+        if (empty($this->questionStats))
+        {
+            $this->loadQuestionStatsForExam($exam);
+        }
 
         $result = $this->questionStats->where('question_assignment_id', $questionAssignmentId);
 
-        if( empty($result )) return null;
-
-        if( ! empty($returnValueOf) )
+        if (empty($result))
         {
-            switch($returnValueOf)
+            return null;
+        }
+
+        if (!empty($returnValueOf))
+        {
+            switch ($returnValueOf)
             {
                 case self::STAT_MEAN:
                     return $result[0]['mean'];
-                break;
+                    break;
 
                 default:
                     return null;
@@ -142,7 +151,6 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
     }
 
 
-
     /**
      * Returns an array of statistical information or the specified value
      * @param Exam $exam
@@ -151,18 +159,24 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
      * @return float|\Illuminate\Support\Collection|null
      * @internal param $element_assignment_id
      */
-    public function getStatsForElementAssignment(Exam $exam, $elementAssignmentId, $returnValueOf=null)
+    public function getStatsForElementAssignment(Exam $exam, $elementAssignmentId, $returnValueOf = null)
     {
         //If the question stats storage is empty, load the data
-        if( empty($this->elementStats) ){ $this->loadElementStatsForExam($exam); }
+        if (empty($this->elementStats))
+        {
+            $this->loadElementStatsForExam($exam);
+        }
 
         $result = $this->elementStats->where('elementAssignmentId', $elementAssignmentId);
 
-        if( empty($result )) return null;
-
-        if( ! empty($returnValueOf) )
+        if (empty($result))
         {
-            switch($returnValueOf)
+            return null;
+        }
+
+        if (!empty($returnValueOf))
+        {
+            switch ($returnValueOf)
             {
                 case self::STAT_MEAN:
                     return $result[0]['mean'];
@@ -209,10 +223,11 @@ MYSQL;
         $values = ['examId' => $exam->getId()];
         $results = DB::select($query, $values);
 
-        foreach($results as $r)
+        foreach ($results as $r)
         {
             $this->questionAssignmentMeans[$r->questionAssignmentId] = $r->mean;
         }
+
 
 //
 //        //Load question assignments
@@ -240,7 +255,7 @@ MYSQL;
 //        }
 
         //Make the stored array into a laravel collection
-      //  $this->questionStats = collect($this->questionStats);
+        //  $this->questionStats = collect($this->questionStats);
 
 ////       DB::statement('CALL question_score_averages_for_exam(:examId, @questionNumber, @questionName, @average)', ['examId' => $exam->getId()]);
 //        DB::statement('CALL question_score_averages_for_exam(:examId, questionNumber, questionName, average)', ['examId' => $exam->getId()]);
@@ -267,20 +282,20 @@ MYSQL;
         GROUP BY ea.id
 MYSQL;
 
-/*
- * Replacing to deal with mysql 5.7 problem
-        $query = <<<MYSQL
-        SELECT DISTINCT ea.element_id AS elementId,
-            ea.id AS elementAssignmentId,
-            AVG(es.score) AS mean
-        FROM element_assignments ea LEFT JOIN element_scores es ON ea.id = es.element_assignment_id
-        WHERE ea.exam_id = :examId GROUP BY element_assignment_id;
-MYSQL;
-*/
+        /*
+         * Replacing to deal with mysql 5.7 problem
+                $query = <<<MYSQL
+                SELECT DISTINCT ea.element_id AS elementId,
+                    ea.id AS elementAssignmentId,
+                    AVG(es.score) AS mean
+                FROM element_assignments ea LEFT JOIN element_scores es ON ea.id = es.element_assignment_id
+                WHERE ea.exam_id = :examId GROUP BY element_assignment_id;
+        MYSQL;
+        */
         $values = ['examId' => $exam->getId()];
         $results = DB::select($query, $values);
 
-        foreach($results as $r)
+        foreach ($results as $r)
         {
             $this->elementAssignmentMeans[$r->elementAssignmentId] = $r->mean;
         }

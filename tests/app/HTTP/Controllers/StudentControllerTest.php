@@ -258,7 +258,7 @@ class StudentControllerTest extends \TestCase
 //        }
 
         #Call
-        $this->object->updateStudentsInDatabase($request, $kumi);
+        $this->object->updateAll($request, $kumi);
 
         #Check
         foreach($this->expectedDbEntries as $data)
@@ -303,6 +303,13 @@ class StudentControllerTest extends \TestCase
         $this->assertNotNull($response);
         foreach($this->expectedDbEntries as $data)
         {
+            $s = Student::where('last_name', $data['last_name'])
+                ->where('first_name', $data['first_name'])
+                ->first();
+
+            $this->assertNotEmpty($s);
+            $this->assertEquals($data['last_name'], $s->last_name);
+            $this->assertEquals($data['first_name'], $s->first_name);
             $this->seeInDatabase('students', $data);
         }
     }

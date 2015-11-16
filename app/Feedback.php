@@ -63,15 +63,26 @@ class Feedback extends Model
     }
 
 
-public function getQuestionNumbers()
-{
-  $this->populateQuestionNumbers();
-    return $this->questionNumbers;
-}
+    /**
+     * Returns the question numbers for which feedback has been
+     * stored.
+     * @return array
+     */
+    public function getQuestionNumbers()
+    {
+        $this->populateQuestionNumbers();
 
+        return $this->questionNumbers;
+    }
+
+    /**
+     * Decodes json stored question numbers and populates the
+     * self::questionNumbers array.
+     * Should run only once per object
+     */
     protected function populateQuestionNumbers()
     {
-        if( empty($this->questionNumbers) )
+        if (empty($this->questionNumbers))
         {
             foreach (json_decode($this->attributes['content']) as $c)
             {

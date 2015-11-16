@@ -182,9 +182,9 @@ public function tearDown()
     public function create_student_with_no_email()
     {
         //prep
-        $lastName = $this->faker->lastName();
-        $firstName = $this->faker->firstName();
-        $studentId = $this->faker->randomNumber(9);
+        $lastName = $this->faker->unique()->lastName();
+        $firstName = $this->faker->unique()->firstName();
+        $studentId = $this->faker->unique()->randomNumber(9);
 
         //call
         $result = $this->object->create_student($lastName, $firstName, $studentId);
@@ -244,7 +244,16 @@ public function tearDown()
         //check
         $this->assertNotEmpty($result);
         $this->assertInstanceOf('\App\Student', $result, "returns a student object");
-        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'email' => $email]);
+        $s = Student::where('last_name', $lastName)
+            ->where('first_name', $firstName)
+            ->where('email', $email)
+            ->first();
+
+        $this->assertNotEmpty($s, 'something returned from search');
+        $this->assertInstanceOf('\App\Student', $result, "returns a student object");
+        $this->assertEquals($s->id, $result->id);
+        $this->assertEquals($s, $result);
+ //       $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'email' => $email]);
 //        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'email' => Crypt::encrypt($email)]);
     }
 
