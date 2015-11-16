@@ -22,7 +22,8 @@ elixir(function(mix) {
         ], 'public/css/grading-styles.css');
 
     mix.sass([
-        'help/pictureStyling.scss'
+        'help/pictureStyling.scss',
+        'help/sideNav.scss',
     ], 'public/css/help-styles.css');
 
 

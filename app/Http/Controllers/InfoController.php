@@ -41,27 +41,30 @@ class InfoController extends Controller
         return view('other/contact');
     }
 
-    /**
-     * Show the frequently asked questions page
-     */
-    public function showFaq()
-    {
-        return view('other.help');
-    }
-
 
     public function showGettingStarted()
     {
         return view('other.help');
     }
 
+
+    /* ----------------------------------- Instructional views */
     /**
-     * Show the tutorials and guides page
+     * Show the frequently asked questions page
      */
-    public function showGuides()
+    public function showFaq()
     {
-        return view('other.help');
+        return view('help.faq');
     }
+
+    /**
+     * Show the guides page
+     */
+    public function showInstructions()
+    {
+        return view('help.instructions');
+    }
+
 
     public function showTutorials()
     {

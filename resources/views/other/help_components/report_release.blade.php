@@ -36,7 +36,7 @@
         'caption' => 'Successful release'])
     </div>
 </div>
-</div>
+
 
 
 <h6 id="lockExams">Lock exam</h6>
