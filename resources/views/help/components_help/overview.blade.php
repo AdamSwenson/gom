@@ -57,7 +57,7 @@
                 <h3 class="panel-title">Questions</h3>
             </div>
             <div class="panel-body">
-                @include('other.help_components.setup_question')
+                @include('help.components_help.setup_question')
             </div>
         </div>
     </div>
@@ -68,7 +68,7 @@
                 <h3 class="panel-title">Elements</h3>
             </div>
             <div class="panel-body">
-                @include('other.help_components.setup_element')
+                @include('help.components_help.setup_element')
             </div>
         </div>
     </div>
@@ -80,7 +80,7 @@
                 <h3 class="panel-title">Student Rosters</h3>
             </div>
             <div class="panel-body">
-                @include('other.help_components.setup_rosters')
+                @include('help.components_help.setup_rosters')
             </div>
         </div>
     </div>
@@ -94,7 +94,7 @@
                 <h3 class="panel-title">Grading</h3>
             </div>
             <div class="panel-body">
-                @include('other.help_components.grade_grading')
+                @include('help.components_help.grade_grading')
             </div>
         </div>
     </div>
@@ -105,7 +105,7 @@
                 <h3 class="panel-title">Assigning Grades</h3>
             </div>
             <div class="panel-body">
-                @include('other.help_components.grade_gradeassign')
+                @include('help.components_help.grade_gradeassign')
             </div>
         </div>
     </div>
@@ -119,7 +119,7 @@
                 <h3 class="panel-title">Releasing and hiding student feedback</h3>
             </div>
             <div class="panel-body">
-                @include('other.help_components.report_release')
+                @include('help.components_help.report_release')
             </div>
         </div>
     </div>
@@ -130,7 +130,7 @@
                 <h3 class="panel-title">Exporting scores and grades</h3>
             </div>
             <div class="panel-body">
-                @include('other.help_components.report_export')
+                @include('help.components_help.report_export')
             </div>
         </div>
     </div>
@@ -141,7 +141,7 @@
                 <h3 class="panel-title">Analytics</h3>
             </div>
             <div class="panel-body">
-                @include('other.help_components.report_analytics')
+                @include('help.components_help.report_analytics')
             </div>
         </div>
     </div>
@@ -152,7 +152,7 @@
                 <h3 class="panel-title">Individual student controls</h3>
             </div>
             <div class="panel-body">
-                @include('other.help_components.report_student_controls')
+                @include('help.components_help.report_student_controls')
             </div>
         </div>
     </div>

@@ -44,7 +44,7 @@ class InfoController extends Controller
 
     public function showGettingStarted()
     {
-        return view('other.help');
+        abort(404);
     }
 
 
@@ -68,7 +68,7 @@ class InfoController extends Controller
 
     public function showTutorials()
     {
-        return view('other.video_tutorials');
+        return view('help.video_tutorials');
     }
 
 

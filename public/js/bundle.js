@@ -31,7 +31,7 @@ Grade.prototype.updateMinScore = function (newMinScore) {
 
 Vue.component('grade-slider', {
     //template: document.querySelector('#slider-template'),
-    template: require('./components/gradeAssignmentSliderTemplate.html'),
+    template: require('./components_help/gradeAssignmentSliderTemplate.html'),
 
     props: ['gradeName', 'gradeLabel', 'gradeOrder'],
 
@@ -99,7 +99,7 @@ new Vue({
     }
 
 });
-//components: {}
+//components_help: {}
 
 },{"./components/gradeAssignmentSliderTemplate.html":69,"./filters/reverse":70,"vue":67}],2:[function(require,module,exports){
 // shim for using process in browser
@@ -1534,7 +1534,7 @@ exports.compileRoot = function (el, options) {
   // only need to compile other attributes for
   // non-fragment instances
   if (el.nodeType !== 11) {
-    // for components, container and replacer need to be
+    // for components_help, container and replacer need to be
     // compiled separately and linked in different scopes.
     if (options._asComponent) {
       // 2. container attributes
@@ -2743,7 +2743,7 @@ module.exports = {
   },
 
   /**
-   * Switch dynamic components. May resolve the component
+   * Switch dynamic components_help. May resolve the component
    * asynchronously, and perform transition based on
    * specified transition mode. Accepts a few additional
    * arguments specifically for vue-router.
@@ -2902,7 +2902,7 @@ module.exports = {
   },
 
   /**
-   * Actually swap the components, depending on the
+   * Actually swap the components_help, depending on the
    * transition mode. Defaults to simultaneous.
    *
    * @param {Vue} target
@@ -3097,7 +3097,7 @@ module.exports = {
     var vm = this.vm
     this.unlink = linker(vm, frag)
     transition.blockAppend(frag, this.end, vm)
-    // call attached for all the child components created
+    // call attached for all the child components_help created
     // during the compilation
     if (_.inDoc(vm.$el)) {
       var children = this.getContainedComponents()
@@ -4012,7 +4012,7 @@ module.exports = {
     /**
    * Resolve a dynamic component to use for an instance.
    * The tricky part here is that there could be dynamic
-   * components depending on instance data.
+   * components_help depending on instance data.
    *
    * @param {Object} data
    * @param {Object} meta
@@ -4338,7 +4338,7 @@ module.exports = {
         } else {
           process.env.NODE_ENV !== 'production' && _.warn(
             'Duplicate objects are not supported in v-repeat ' +
-            'when using components or transitions.'
+            'when using components_help or transitions.'
           )
         }
       } else {
@@ -5392,7 +5392,7 @@ exports._cleanup = function () {
   // instances. preserve reference to _data so that proxy
   // accessors still work. The only potential side effect
   // here is that mutating the instance after it's destroyed
-  // may affect the state of other components that are still
+  // may affect the state of other components_help that are still
   // observing the same object, but that seems to be a
   // reasonable responsibility for the user rather than
   // always throwing an error on them.

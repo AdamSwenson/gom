@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-lg-3"></div>
     <div class="col-lg-6">
-        @include('other.help_components.picture_container',
+        @include('help.partials.picture_container',
      ['imageFile' => 'report_release/report_select_page_annotated.jpg',
      'altText' =>"The selection page for reports with text indicating that the Release Exams button releases exams, the lock button hides feedback from students, the analytics button displays analytics for the exam, the export button downloads scores and grades to a spreadsheet, and the view feedback button allows you to see the feedback that an individual student will receive.",
      'caption' => 'What the buttons do'])
@@ -9,6 +9,7 @@
     <div class="col-lg-3"></div>
 </div>
 
+<section id="reportRelease" class="group">
 <h4 id="releaseExams" class="text-center">Releasing exams</h4>
 
 <div class="row">
@@ -19,7 +20,7 @@
         </p>
     </div>
     <div class="col-lg-6">
-        @include('other.help_components.picture_container',
+        @include('help.partials.picture_container',
         ['imageFile' => 'report_release/report_release_warning.jpg',
         'altText' =>"Warning message that all students will be emailed which requires confirmation to complete the release.",
         'caption' => 'Confirm release'])
@@ -30,14 +31,16 @@
 <div class="row">
     <div class="col-lg-6"></div>
     <div class="col-lg-6">
-        @include('other.help_components.picture_container',
+        @include('help.partials.picture_container',
         ['imageFile' => 'report_release/report_release_success.jpg',
         'altText' =>"Warning message that all students will be emailed which requires confirmation to complete the release.",
         'caption' => 'Successful release'])
     </div>
 </div>
 
+</section>
 
+<section id="reportLock" class="group">
 
 <h6 id="lockExams">Lock exam</h6>
 <div class="row">
@@ -55,7 +58,7 @@
             clicked to remove student access to feedback </p>
     </div>
     <div class="col-lg-6">
-        @include('other.help_components.picture_container',
+        @include('help.partials.picture_container',
         ['imageFile' => 'report_release/report_released_green_lock_active.jpg',
         'altText' =>"The release button has changed colors to green. The lock button is now blue to indicate that it may be clicked. ",
         'caption' => 'Lock exam'])
@@ -66,10 +69,10 @@
 <div class="row">
     <div class="col-lg-6"></div>
     <div class="col-lg-6">
-        @include('other.help_components.picture_container',
+        @include('help.partials.picture_container',
         ['imageFile' => 'report_release/report_confirm_lock.jpg',
         'altText' =>"Warning message confirming that you want to remove access to feedback from students.",
         'caption' => 'Lock exam confirmation'])
     </div>
 </div>
-
+</section>

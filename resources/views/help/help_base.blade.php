@@ -8,21 +8,19 @@
 
 @section('body')
     <div class="row">
-        <div class="col-md-9" role="main">
+        <div class="col-md-10" role="main">
             @yield('mainText')
         </div>
 
-        <div class="col-md-3" role="complementary" >
+        <div class="col-md-2" role="complementary">
             <nav class="hidden-print hidden-xs hidden-sm affix">
-                <ul class="nav nav-stacked fixed docs-sidebar" id="sidebar">
-                    <li>
-                        <ul class="nav nav-stacked">
-                            <li><a href="{{ url('info/faq') }}#faq">FAQ</a></li>
-                            <li><a href="{{ url('info/instructions') }}">Instructions</a></li>
-                            <li><a href="{{ url('info/tutorials') }}">Video tutorials</a></li>
-                        </ul>
-                    </li>
+                <ul class="nav nav-stacked fixed commonLinks">
+                    <li><a href="{{ url('info/faq') }}#faq">FAQ</a></li>
+                    <li><a href="{{ url('info/instructions') }}">Instructions</a></li>
+                    <li><a href="{{ url('info/tutorials') }}">Video tutorials</a></li>
+                </ul>
 
+                <ul class="nav nav-stacked fixed docs-sidebar" id="sidebar">
 
                     @yield('sideNav')
 
@@ -38,6 +36,26 @@
         // set 'Account' tab as active
         $('[id^="nav"]').attr('class', '');
         $('#navHelp').attr('class', 'active');
+
+        //set active set of links as scroll
+        $('body').scrollspy({
+            target: '.docs-sidebar',
+            offset: 40
+        });
+
+            $(document).ready(function () {
+            $('img').on('click', function () {
+                var src = $(this).attr('src');
+                var img = '<img src="' + src + '" class="img-responsive"/>';
+                $('#myModal').modal();
+                $('#myModal').on('shown.bs.modal', function () {
+                    $('#myModal .modal-body').html(img);
+                });
+                $('#myModal').on('hidden.bs.modal', function () {
+                    $('#myModal .modal-body').html('');
+                });
+            });
+        })
     </script>
 
 @endsection

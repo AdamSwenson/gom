@@ -1,35 +1,7 @@
 @extends('help.help_base')
 
 @section('sideNav')
-    <li class="">
-        <ul class="nav nav-stacked">
-            <li class="">
-                <a href="#setup">Setup</a>
-                <ul class="nav nav-stacked">
-                    <li><a href="#questionSetup">Questions</a></li>
-                    <li><a href="#elementSetup">Elements</a></li>
-                    <li><a href="#rosterSetup">Rosters</a></li>
-                </ul>
-            </li>
-
-            <li class="">
-                <a href="#grade">Grade</a>
-                <ul class="nav nav-stacked">
-                    <li class=""><a href="#grading">Grading</a></li>
-                    <li class=""><a href="#gradeAssign">Grade distribution</a></li>
-                </ul>
-            </li>
-            <li class="">
-                <a href="#report">Report</a>
-                <ul class="nav nav-stacked">
-                    <li class=""><a href="#releaseFeedback">Release feedback</a></li>
-                    <li class=""><a href="#analytics">Analytics </a></li>
-                    <li class=""><a href="#exportGrades">Export </a></li>
-                    <li class=""><a href="#studentControls">Student controls</a></li>
-                </ul>
-            </li>
-        </ul>
-    </li>
+    @include('help.navs.instructions_navbar')
 @endsection
 
 @section('mainText')
@@ -122,7 +94,7 @@
                         </section>
                     </div>
                     <div class="panel-body">
-                        @include('other.help_components.setup_question')
+                        @include('help.components_help.setup_question')
                     </div>
                 </div>
             </div>
@@ -135,7 +107,7 @@
                         </section>
                     </div>
                     <div class="panel-body">
-                        @include('other.help_components.setup_element')
+                        @include('help.components_help.setup_element')
                     </div>
                 </div>
             </div>
@@ -149,7 +121,7 @@
                         </section>
                     </div>
                     <div class="panel-body">
-                        @include('other.help_components.setup_rosters')
+                        @include('help.components_help.setup_rosters')
                     </div>
                 </div>
             </div>
@@ -168,7 +140,7 @@
                         </section>
                     </div>
                     <div class="panel-body">
-                        @include('other.help_components.grade_grading')
+                        @include('help.components_help.grade_grading')
                     </div>
                 </div>
             </div>
@@ -181,7 +153,7 @@
                         </section>
                     </div>
                     <div class="panel-body">
-                        @include('other.help_components.grade_gradeassign')
+                        @include('help.components_help.grade_gradeassign')
                     </div>
                 </div>
             </div>
@@ -201,7 +173,7 @@
                         </section>
                     </div>
                     <div class="panel-body">
-                        @include('other.help_components.report_release')
+                        @include('help.components_help.report_release')
                     </div>
                 </div>
             </div>
@@ -214,7 +186,7 @@
                         </section>
                     </div>
                     <div class="panel-body">
-                        @include('other.help_components.report_export')
+                        @include('help.components_help.report_export')
                     </div>
                 </div>
             </div>
@@ -227,7 +199,7 @@
                         </section>
                     </div>
                     <div class="panel-body">
-                        @include('other.help_components.report_analytics')
+                        @include('help.components_help.report_analytics')
                     </div>
                 </div>
             </div>
@@ -240,7 +212,7 @@
                         </section>
                     </div>
                     <div class="panel-body">
-                        @include('other.help_components.report_student_controls')
+                        @include('help.components_help.report_student_controls')
                     </div>
                 </div>
             </div>

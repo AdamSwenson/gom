@@ -26,7 +26,7 @@
      */
 
 
-// $.ui might exist from components with no dependencies, e.g., $.ui.position
+// $.ui might exist from components_help with no dependencies, e.g., $.ui.position
     $.ui = $.ui || {};
 
     $.extend($.ui, {
@@ -5705,7 +5705,7 @@
             return (numMonths == null ? [1, 1] : (typeof numMonths === "number" ? [1, numMonths] : numMonths));
         },
 
-        /* Determine the current maximum date - ensure no time components are set. */
+        /* Determine the current maximum date - ensure no time components_help are set. */
         _getMinMaxDate: function (inst, minMax) {
             return this._determineDate(inst, this._get(inst, minMax + "Date"), null);
         },

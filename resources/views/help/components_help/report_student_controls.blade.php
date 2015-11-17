@@ -6,13 +6,14 @@
         </p>
     </div>
     <div class="col-lg-6">
-        @include('other.help_components.picture_container',
+        @include('help.partials.picture_container',
      ['imageFile' => 'student_controls/report_student_controls.jpg',
      'altText' =>"The student controls page with buttons for emailing individual students and for reviewing their feedback",
      'caption' => 'Student controls'])
     </div>
 </div>
 
+<section id="studentControlEmail" class="group">
 <h4 id="individualEmail" class="text-center">Individual email</h4>
 
 <div class="row">
@@ -29,16 +30,19 @@
 
     </div>
     <div class="col-lg-6">
-        @include('other.help_components.picture_container',
+        @include('help.partials.picture_container',
         ['imageFile' => 'student_controls/report_individual_email_confirm.jpg',
         'altText' =>"Confirmation message asking if you want to send the selected student an email with feedback link.",
         'caption' => 'Individual email confirmation'])
     </div>
 </div>
+</section>
 
+<section id="studentControlReview" class="group">
 <h4 id="individualReview" class="text-center">Review individual feedback</h4>
 
 <div class="row">
     <div class="col-lg-6"></div>
     <div class="col-lg-6"></div>
 </div>
+    </section>

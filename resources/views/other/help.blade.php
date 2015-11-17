@@ -11,7 +11,7 @@
     <h3><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Gradeomatic FAQ</h3>
 
     <div class="well">
-        @include('other.help_components.faq')
+        @include('help.components_faq.faq')
     </div>
 </div>
 
@@ -19,7 +19,7 @@
     <h3><span class="glyphicon glyphicon-apple" id="help" aria-hidden="true"></span> Gradeomatic Help</h3>
 
     <div class="well">
-        @include('other.help_components.overview')
+        @include('help.components_help.overview')
     </div>
 </div>
 @endsection

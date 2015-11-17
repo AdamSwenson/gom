@@ -3913,7 +3913,7 @@
         }
     };
     
-    // extract the r, g, b, a color components out of a css color spec.
+    // extract the r, g, b, a color components_help out of a css color spec.
     $.jqplot.getColorComponents = function(s) {
         // check to see if a color keyword.
         s = $.jqplot.colorKeywordMap[s] || s;

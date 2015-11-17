@@ -1,3 +1,4 @@
+<section id="analyticsOverview" class="group">
 <div class="row">
     <div class="col-lg-6">
         <p class="answer">
@@ -23,9 +24,10 @@
     </div>
     <div class="col-lg-6"></div>
 </div>
-
+</section>
 
 <h6>Currently available tools</h6>
+<section id="analyticsBoxPlots" class="group">
 <div class="row">
     <div class="col-lg-6">
         <p class="answer">Total score box plots: The first chart is a box plot detailing student score variation for
@@ -36,9 +38,10 @@
         </p>
     </div>
     <div class="col-lg-6">
-        @include('other.help_components.picture_container',
+        @include('help.partials.picture_container',
     ['imageFile' => 'analytics/report_analytics_chart.jpg',
     'altText' =>"Two boxplots of student scores on questions.",
     'caption' => 'Question boxplots'])
     </div>
 </div>
+</section>

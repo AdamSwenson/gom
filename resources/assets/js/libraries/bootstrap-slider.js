@@ -483,7 +483,7 @@
 				createAndAppendTooltipSubElements(sliderTooltipMax);
 
 
-				/* Append components to sliderElem */
+				/* Append components_help to sliderElem */
 				this.sliderElem.appendChild(sliderTrack);
 				this.sliderElem.appendChild(sliderTooltip);
 				this.sliderElem.appendChild(sliderTooltipMin);
