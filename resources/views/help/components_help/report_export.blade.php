@@ -1,3 +1,3 @@
-<section id="exportWhere" class="group">
+<section id="{{\App\ViewTools\HelpLinks::$exportHow['id']}}" class="group">
 
 </section>

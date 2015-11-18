@@ -1,31 +1,51 @@
 <li class="">
-    <a href="#setup">Setup</a>
+    <a href="#{{\App\ViewTools\HelpLinks::$instructSectionSetup['id']}}">Setup</a>
     <ul class="nav nav-stacked">
         <li>
-            <a href="#questionSetup">Questions</a>
+            <a href="{{\App\ViewTools\HelpLinks::$instructSectionExamSetup['id'] }}">Exams</a>
             <ul class="nav nav-stacked">
-                <li><a href="#questionCreateEdit">Create new questions</a></li>
-                <li><a href="#questionCreateEdit">Edit existing questions</a></li>
-                <li><a href="#questionMaxPoints">Set point value</a></li>
-                <li><a href="#questionReorder">Reorder questions</a></li>
-                <li><a href="#questionSave">Save questions</a></li>
-                <li><a href="#questionDelete">Delete questions</a></li>
-                <li><a href="#questionAltUses">Alternative uses of questions</a></li>
-                <li><a href="#questionFeedbackOnly">Giving feedback only</a></li>
+                @include('help.partials.simple_links', ['links' => [
+                \App\ViewTools\HelpLinks::$examWhat,
+                \App\ViewTools\HelpLinks::$examCreate,
+                \App\ViewTools\HelpLinks::$examClone
+                ]])
             </ul>
         </li>
+
+
         <li>
-            <a href="#elementSetup">Elements</a>
+            <a href="#{{\App\ViewTools\HelpLinks::$instructSectionQuestionSetup['id']}}">Questions</a>
             <ul class="nav nav-stacked">
-                <li><a href="#elementWhat">What elements are</a></li>
-                <li><a href="#elementCreateEdit">Create new elements</a></li>
-                <li><a href="#elementCreateEdit">Edit existing elements</a></li>
-                <li><a href="#elementAdd">Add additional elements</a></li>
-                <li><a href="#elementSave">Save elements</a></li>
+                @include('help.partials.simple_links', ['links' => [
+                \App\ViewTools\HelpLinks::$questionWhat,
+                \App\ViewTools\HelpLinks::$questionCreate,
+                \App\ViewTools\HelpLinks::$questionEdit,
+                \App\ViewTools\HelpLinks::$questionMaxPoints,
+                \App\ViewTools\HelpLinks::$questionReorder,
+                \App\ViewTools\HelpLinks::$questionSave,
+                \App\ViewTools\HelpLinks::$questionDelete,
+                \App\ViewTools\HelpLinks::$questionAltUses,
+                \App\ViewTools\HelpLinks::$questionFeedbackOnly
+                ]])
             </ul>
         </li>
+
         <li>
-            <a href="#rosterSetup">Rosters</a>
+            <a href="#{{\App\ViewTools\HelpLinks::$instructSectionElementSetup['id']}}">Elements</a>
+            <ul class="nav nav-stacked">
+                @include('help.partials.simple_links', ['links' => [
+                \App\ViewTools\HelpLinks::$elementWhat,
+                \App\ViewTools\HelpLinks::$elementCreate,
+                \App\ViewTools\HelpLinks::$elementEdit,
+                \App\ViewTools\HelpLinks::$elementCustomize,
+                \App\ViewTools\HelpLinks::$elementAdd,
+                \App\ViewTools\HelpLinks::$elementSave
+                ]])
+            </ul>
+        </li>
+
+        <li>
+            <a href="#{{\App\ViewTools\HelpLinks::$instructSectionRosterSetup['id']}}">Rosters</a>
             <ul class="nav nav-stacked">
                 @include('help.partials.simple_links', ['links' => [
                 ['id' => 'rosterIntro', 'text' => 'Introduction'],
@@ -42,31 +62,31 @@
 </li>
 
 <li class="">
-    <a href="#grade">Grade</a>
+    <a href="#{{\App\ViewTools\HelpLinks::$instructSectionGrade['id']}}">Grade</a>
     <ul class="nav nav-stacked">
         <li class="">
-            <a href="#grading">Grading</a>
+            <a href="#{{\App\ViewTools\HelpLinks::$instructSectionGradeGrading['id']}}">Grading</a>
             <ul class="nav nav-stacked">
                 @include('help.partials.simple_links', ['links' => [
-                ['id' => 'gradeExamSelect', 'text' => 'Choose exam to grade'],
-                ['id' => 'gradeSelectStudent', 'text' => 'Choose student to grade'],
-                ['id' => 'gradeDashboard', 'text' => 'Timers and grading statistics'],
-                ['id' => 'gradeStart', 'text' => 'Start grading'],
-                ['id' => 'gradeSelectQuestion', 'text' => 'Select question to grade'],
-                ['id' => 'gradeScoreElement', 'text' => 'Enter element scores'],
-                ['id' => 'gradeScoreElement', 'text' => 'Personalize feedback'],
-                ['id' => 'gradeScoreQuestion', 'text' => 'Enter question scores'],
-                ['id' => 'gradeSave', 'text' => 'Saving scores']
+                \App\ViewTools\HelpLinks::$gradeExamSelect,
+                \App\ViewTools\HelpLinks::$gradeStudentSelect,
+                \App\ViewTools\HelpLinks::$gradeDashboard,
+                \App\ViewTools\HelpLinks::$gradeStart,
+                \App\ViewTools\HelpLinks::$gradeSelectQuestion,
+                \App\ViewTools\HelpLinks::$gradeScoreQuestion,
+                \App\ViewTools\HelpLinks::$gradeScoreElement,
+                \App\ViewTools\HelpLinks::$gradeCustomizeFeedback,
+                \App\ViewTools\HelpLinks::$gradeSave
                 ]])
             </ul>
         </li>
         <li class="">
-            <a href="#gradeAssign">Grade distribution</a>
+            <a href="#{{\App\ViewTools\HelpLinks::$instructSectionGradeAssign['id']}}">Grade distribution</a>
             <ul class="nav nav-stacked">
                 @include('help.partials.simple_links', ['links' => [
-                ['id' => 'assignSetCutoffs', 'text' => 'Set cutoffs for letter grades'],
-               ['id' => 'assignSave', 'text' => 'Save grade assignments'],
-                ['id' => 'assignVisualize', 'text' => 'Visualizing distributions']
+                \App\ViewTools\HelpLinks::$assignSetCutoffs,
+                \App\ViewTools\HelpLinks::$assignSave,
+                \App\ViewTools\HelpLinks::$assignVisualize
                 ]])
             </ul>
         </li>
@@ -74,43 +94,43 @@
 </li>
 
 <li class="">
-    <a href="#report">Report</a>
+    <a href="#{{\App\ViewTools\HelpLinks::$instructSectionReport['id']}}">Report</a>
     <ul class="nav nav-stacked">
         <li class="">
-            <a href="#releaseFeedback">Release feedback</a>
+            <a href="#{{\App\ViewTools\HelpLinks::$instructSectionReportFeedbackRelease['id']}}">Release feedback</a>
             <ul class="nav nav-stacked">
                 @include('help.partials.simple_links', ['links' => [
-                ['id' => 'reportRelease', 'text' => 'Send feedback to students'],
-                ['id' => 'reportLock', 'text' => 'Hide feedback from students']
+                \App\ViewTools\HelpLinks::$reportRelease,
+                \App\ViewTools\HelpLinks::$reportLock
                 ]])
             </ul>
         </li>
 
         <li class="">
-            <a href="#analytics">Analytics</a>
+            <a href="#{{\App\ViewTools\HelpLinks::$instructSectionReportAnalytics['id']}}">Analytics</a>
             <ul class="nav nav-stacked">
                 @include('help.partials.simple_links', ['links' => [
-                ['id' => 'analyticsOverview', 'text' => 'Overview'],
-                ['id' => 'analyticsBoxPlots', 'text' => 'Score box plots']
+                \App\ViewTools\HelpLinks::$analyticsOverview,
+                \App\ViewTools\HelpLinks::$analyticsBoxPlots
                 ]])
             </ul>
         </li>
 
         <li class="">
-            <a href="#exportGrades">Export</a>
+            <a href="#{{\App\ViewTools\HelpLinks::$instructSectionReportExport['id']}}">Export</a>
             <ul class="nav nav-stacked">
                 @include('help.partials.simple_links', ['links' => [
-                ['id' => 'exportWhere', 'text' => 'How to export scores'],
-                //['id' => 'reportLock', 'text' => 'Hide feedback from students']
+                \App\ViewTools\HelpLinks::$exportHow
                 ]])
             </ul>
         </li>
 
-        <li class=""><a href="#studentControls">Student controls</a>
+        <li class=""><a href="#{{\App\ViewTools\HelpLinks::$instructSectionReportStudentControls['id']}}">Student
+                controls</a>
             <ul class="nav nav-stacked">
                 @include('help.partials.simple_links', ['links' => [
-                ['id' => 'studentControlEmail', 'text' => 'Send feedback to individual student'],
-                ['id' => 'studentControlReview', 'text' => 'Review feedback for a student']
+                \App\ViewTools\HelpLinks::$studentControlEmail,
+                \App\ViewTools\HelpLinks::$studentControlReview
                 ]])
             </ul>
         </li>

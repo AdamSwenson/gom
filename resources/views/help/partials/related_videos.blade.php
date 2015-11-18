@@ -1,7 +1,7 @@
-<div class="relatedLinks">
-    <h5>Related links</h5>
+<div class="relatedVideos">
+    <h6>Video tutorials</h6>
     <ul class="nav nav-stacked">
-        @foreach($relatedLinks as $link)
+        @foreach($links as $link)
             <li><a href="#{{ $link['id']  }}">{{ $link['text'] }}</a></li>
         @endforeach
     </ul>

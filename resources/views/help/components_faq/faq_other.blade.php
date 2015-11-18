@@ -1,4 +1,4 @@
-<section id="faqSecureData" class="group">
+<section id="{{\App\ViewTools\HelpLinks::$faqOtherSecurity['id']}}" class="group">
     <div class="infoItem">
         <p class="lead"><b>Q.</b> How secure is student data? </p>
 
@@ -11,7 +11,8 @@
 </section>
 
 <h4>Miscellaneous</h4>
-<section id="faqCreator" class="group">
+
+<section id="{{\App\ViewTools\HelpLinks::$faqOtherCreator['id']}}" class="group">
     <div class="infoItem">
         <p class="lead"><b>Q.</b> What is the gradeomatic? Who created it?</p>
 
@@ -24,7 +25,8 @@
     </div>
 </section>
 
-<section id="faqSupportGom" class="group">
+
+<section id="{{\App\ViewTools\HelpLinks::$faqOtherSupport['id']}}" class="group">
     <div class="infoItem">
         <p class="lead"><b>Q.</b> I love the gradeomatic! What can I do make it even better? </p>
 

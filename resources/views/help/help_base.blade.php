@@ -14,7 +14,7 @@
 
         <div class="col-md-2" role="complementary">
             <nav class="hidden-print hidden-xs hidden-sm affix">
-                <ul class="nav nav-stacked fixed commonLinks">
+                <ul class="commonLinks">
                     <li><a href="{{ url('info/faq') }}#faq">FAQ</a></li>
                     <li><a href="{{ url('info/instructions') }}">Instructions</a></li>
                     <li><a href="{{ url('info/tutorials') }}">Video tutorials</a></li>
@@ -28,6 +28,8 @@
             </nav>
         </div>
     </div>
+
+    @include('help.partials.picture_modal')
 @endsection
 
 

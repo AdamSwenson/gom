@@ -5,65 +5,100 @@
  * Date: 10/3/15
  * Time: 1:39 PM
  */ ?>
-@extends('layouts.master')
+@extends('help.help_base')
 
 @section('title')
     Video tutorials
 @endsection
 
 @section('description')
-Video tutorials
-@endsection
-
-@section('otherCss')
-<style type="text/css">
-    #container{ margin-left: 5%;
-    padding-left: 4%;}
-</style>
+    Video tutorials
 @endsection
 
 
-@section('body')
-    <div class="row">
-        <div class="col-md-4">
-            <h4>These are very rough. We'll make nicer ones later</h4>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-6">
+@section('sideNav')
+    @include('help.navs.video_navbar')
+@endsection
 
-            <h2>Setting up the exam</h2>
 
-            <div class="embed-responsive embed-responsive-16by9">
-                <iframe class="embed-responsive-item"
-                        src="//www.screencast.com/users/gradeomatic/folders/Camtasia/media/1fea769f-0420-4902-8cdc-20249285642b/embed"></iframe>
+@section('mainText')
+
+    <h3>Please excuse the quality for now. These are very rough. We'll make nicer ones later</h3>
+
+    <section id="{{\App\ViewTools\HelpLinks::$videoAllSetup['id']}}" class="group">
+        <div class="panel panel-default">
+
+            <div class="panel-heading">
+                <h2>Setting up the questions, elements, and other exam components</h2>
             </div>
 
+            <div class="panel-body">
+                <section id="{{\App\ViewTools\HelpLinks::$videoExamSetup['id']}}">
+                    <h4>Setting up the exam</h4>
+
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe class="embed-responsive-item"
+                                src="//www.screencast.com/users/gradeomatic/folders/Camtasia/media/1fea769f-0420-4902-8cdc-20249285642b/embed"></iframe>
+                    </div>
+                </section>
+
+                <section id="{{\App\ViewTools\HelpLinks::$videoRosterUpload['id']}}">
+                    <h4>Uploading roster</h4>
+
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe class="embed-responsive-item"
+                                src="//www.screencast.com/users/gradeomatic/folders/Camtasia/media/698ec7a7-4005-4800-9b00-4a423d2d2310/embed"></iframe>
+                    </div>
+                </section>
+            </div>
         </div>
-    </div>
+    </section>
 
-    <div class="row">
-        <div class="col-sm-6">
 
-            <h2>Uploading roster</h2>
+    <section id="{{\App\ViewTools\HelpLinks::$videoAllGrade['id']}}" class="group">
+        <div class="panel panel-default">
 
-            <div class="embed-responsive embed-responsive-16by9">
-                <iframe class="embed-responsive-item"
-                        src="//www.screencast.com/users/gradeomatic/folders/Camtasia/media/698ec7a7-4005-4800-9b00-4a423d2d2310/embed"></iframe>
+            <div class="panel-heading">
+                <h2>Grade</h2>
             </div>
 
+            <div class="panel-body">
+                <section id="{{\App\ViewTools\HelpLinks::$videoGrading['id']}}}}">
+                    <h4>Grading the exam</h4>
+
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe class="embed-responsive-item"
+                                src="//www.screencast.com/users/gradeomatic/folders/Camtasia/media/1d7af15f-f9ec-4b2f-9054-8ad9cb27583c/embed"></iframe>
+                    </div>
+                </section>
+            </div>
         </div>
-    </div>
+    </section>
 
-    <div class="row">
-        <div class="col-sm-6">
-            <h2>Grading the exam</h2>
 
-            <div class="embed-responsive embed-responsive-16by9">
-                <iframe class="embed-responsive-item"
-                        src="//www.screencast.com/users/gradeomatic/folders/Camtasia/media/1d7af15f-f9ec-4b2f-9054-8ad9cb27583c/embed"></iframe>
+    <section id="{{\App\ViewTools\HelpLinks::$videoAllReport['id']}}" class="group">
+        <div class="panel panel-default">
+
+            <div class="panel-heading">
+                <h2>Report</h2>
+            </div>
+            <div class="panel-body">
+                <p>No videos yet</p>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="{{\App\ViewTools\HelpLinks::$videoAllOther['id']}}" class="group">
+        <div class="panel panel-default">
+
+            <div class="panel-heading">
+                <h2>Other</h2>
             </div>
 
+            <div class="panel-body">
+                <p>No videos yet</p>
+            </div>
         </div>
-    </div>
+    </section>
 @endsection

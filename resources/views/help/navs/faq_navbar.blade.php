@@ -1,5 +1,5 @@
 <li class="">
-    <a href="#setup">Setup</a>
+    <a href="#{{\App\ViewTools\HelpLinks::$faqSectionSetup['id']}}">Setup</a>
     <ul class="nav nav-stacked">
         @include('help.partials.simple_links', ['links' => [
          ['id' => 'faqCsvWhat', 'text' => '.csv files? What?'],
@@ -9,7 +9,7 @@
 </li>
 
 <li class="">
-    <a href="#setupFaq">Grade</a>
+    <a href="#{{\App\ViewTools\HelpLinks::$faqSectionGrade['id']}}">Grade</a>
     <ul class="nav nav-stacked">
         @include('help.partials.simple_links', ['links' =>
         [
@@ -19,7 +19,7 @@
 </li>
 
 <li class="">
-    <a href="#setupFaq">Report</a>
+    <a href="#{{\App\ViewTools\HelpLinks::$faqSectionReport['id']}}">Report</a>
     <ul class="nav nav-stacked">
         {{--@include('help.partials.simple_links', ['links' => [--}}
         {{--]])--}}
@@ -27,7 +27,7 @@
 </li>
 
 <li class="">
-    <a href="#setupFaq">Other</a>
+    <a href="#{{\App\ViewTools\HelpLinks::$faqSectionOther['id']}}">Other</a>
     <ul class="nav nav-stacked">
         @include('help.partials.simple_links', ['links' => [
             ['id' => 'faqSecureData', 'text' => 'Student data security'],

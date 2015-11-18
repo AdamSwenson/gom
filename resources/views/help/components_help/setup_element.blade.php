@@ -14,7 +14,7 @@
     <div class="col-lg-3"></div>
 </div>
 
-<section id="elementWhat" class="group">
+<section id="{{\App\ViewTools\HelpLinks::$elementWhat['id']}}" class="group">
     <h4 class="text-center">What elements are and what they do</h4>
 
     <div class="row">
@@ -27,7 +27,16 @@
                 <li>Elements let you compare student performance across different exams</li>
             </ol>
         </div>
-        <div class="col-lg-6"></div>
+        <div class="col-lg-6">
+            @include('help.partials.field_table', ['fields' => [
+            ['name' => 'Element name', 'required' => true],
+            ['name' => 'Element response', 'required' => false],
+            ['name' => 'Element response: Missing', 'required' => false],
+            ['name' => 'Element response: Poor', 'required' => false],
+            ['name' => 'Element response: Fair', 'required' => false],
+            ['name' => 'Element response: Excellent', 'required' => false],
+            ]])
+        </div>
     </div>
 
 
@@ -71,7 +80,7 @@
 
 </section>
 
-<section id="elementCreateEdit" class="group">
+<section id="{{\App\ViewTools\HelpLinks::$elementCreate['id']}}" class="group">
     <h4 class="text-center">Creating elements and comments</h4>
 
     <div class="row">
@@ -116,220 +125,220 @@
             </div>
         </div>
     </div>
-
-    <section id="elementCustomize" class="group">
-        <div class="row">
-            <div class="col-lg-6">
-                <p class="answer">Iff you just wanted to give every student the same feedback regardless of how they do,
-                    you can
-                    stop here.</p>
-
-                <p class="answer">However, pressing the "Customize Response" button allows you to further customize the
-                    text to
-                    reflect performance.</p>
-            </div>
-            <div class="col-lg-6">
-                <div class="figure">
-                    <p class="picture">
-                        <img src="{{ asset('images/element_edit_customize_circled.jpg') }}"
-                             class="img-responsive"
-                             alt="The customize response button has been circled">
-                    </p>
-
-                    <p class="pictureCaption">Customize Response </p>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="row">
-            <div class="col-lg-6">
-                <p class="answer">
-                    Here you modify that basic comment to tailor it based on the student's performance. By default,
-                    gradeomatic
-                    allows for four responses varieties: "missing", "poor", "fair" and "excellent". These responses will
-                    be what
-                    the student sees once you have graded the exam.
-                </p>
-
-                <p class="answer">Let's use the following as the stock feedback for this element.</p>
-
-                <h6>Stock reply</h6>
-
-                <blockquote><p>In order to say why Descartes has adopted the skeptical method of the Meditations, you
-                        need to
-                        tell the reader what Descartes is hoping to achieve. Namely, he is trying to discover what kinds
-                        of
-                        beliefs can be the completely certain foundations upon which the rest of our knowledge can be
-                        built.
-                        That is, the idea is to find some beliefs which he can't be wrong about. Then he can work
-                        backwards to
-                        explaining why and when, for example, scientific beliefs count as certain knowledge.
-                    </p>
-                </blockquote>
-
-                <p class="answer">The text and pictures below are examples of how we might alter the stock feedback for
-                    different levels of performance.</p>
-            </div>
-            <div class="col-lg-6">
-                <div class="figure">
-                    <p class="picture">
-                        <img src="{{ asset('images/element_edit_response_modal_orig.jpg') }}"
-                             class="img-responsive"
-                             alt="The the custom response text in the pop up is just the stock feedback entered">
-                    </p>
-
-                    <p class="pictureCaption">Stock text initially populates the custom boxes</p>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="row">
-
-            <div class="col-lg-6">
-                <h6>Missing</h6>
-                <blockquote>
-                    <p>
-                        In order to say why Descartes has adopted the skeptical method of the Meditations, you need to
-                        tell the
-                        reader what Descartes is hoping to achieve.
-                        <ins> However, you didn't do this. This leaves it up to your reader to figure out that
-                            Descartes
-                        </ins>
-                        is trying to discover what kinds of beliefs can be the completely certain foundations upon which
-                        the
-                        rest of our knowledge can be built. That is, the idea is to find some beliefs which he can't be
-                        wrongabout. Then he can work backwards to explaining why and when, for example, scientific
-                        beliefs count
-                        as certain knowledge.
-                        <ins>As you can see, this is pretty complicated. So you can't just assume that the reader will
-                            figure it
-                            out.
-                        </ins>
-                    </p>
-                </blockquote>
-            </div>
-            <div class="col-lg-6">
-                <div class="figure">
-                    <p class="picture">
-                        <img src="{{ asset('images/element_edit_response_modal_missing.jpg') }}"
-                             class="img-responsive"
-                             alt="Altering the stock text through the modal window for missing">
-                    </p>
-
-                    <p class="pictureCaption">Alter the feedback text for students who forgot the element</p>
-                </div>
-            </div>
-
-        </div>
-
-
-        <div class="row">
-            <div class="col-lg-6">
-                <h6>Poor</h6>
-                <blockquote>
-                    <p>In order to say why Descartes has adopted the skeptical method of the Meditations, you need to
-                        tell the
-                        reader what Descartes is hoping to achieve.
-                        <ins>You tried to do this. But it was not clear from your answer that his goal is to</ins>
-                        discover what kinds of beliefs can be the completely certain foundations upon which the rest of
-                        our
-                        knowledge can be built. That is, the idea is to find some beliefs which he can't be wrong about.
-                        Then he
-                        can work backwards to explaining why and when, for example, scientific beliefs count as certain
-                        knowledge.
-                    </p>
-                </blockquote>
-            </div>
-
-            <div class="col-lg-6">
-                <div class="figure">
-                    <p class="picture">
-                        <img src="{{ asset('images/element_edit_response_modal_poor.jpg') }}"
-                             class="img-responsive"
-                             alt="Altering the stock text through the modal window for poor">
-                    </p>
-
-                    <p class="pictureCaption">Alter the feedback text for students who did poorly</p>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="row">
-            <div class="col-lg-6">
-
-                <h6>Fair</h6>
-                <blockquote>
-                    <p>
-                        <ins>You correctly recognized that</ins>
-                        in order to say why Descartes has adopted the skeptical method of the Meditations,
-                        <ins>the reader needed to be told</ins>
-                        what Descartes is hoping to achieve.
-                        <ins>You did a pretty good job here. But it wasn't as clear as it could have been that he</ins>
-                        is trying to discover what kinds of beliefs can be the completely certain foundations upon which
-                        the
-                        rest of our knowledge can be built. That is, the idea is to find some beliefs which he can't be
-                        wrong
-                        about. Then he can work backwards to explaining why and when, for example, scientific beliefs
-                        count as
-                        certain knowledge.
-                    </p>
-                </blockquote>
-            </div>
-
-            <div class="col-lg-6">
-                <div class="figure">
-                    <p class="picture">
-                        <img src="{{ asset('images/element_edit_response_modal_fair.jpg') }}"
-                             class="img-responsive"
-                             alt="Altering the stock text through the modal window for fair">
-                    </p>
-
-                    <p class="pictureCaption">Alter the feedback text for students who did fairly </p>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="row">
-
-            <div class="col-lg-6">
-                <h6>Excellent</h6>
-                <blockquote>
-                    <p>
-                        <ins>You did a good job recognizing that</ins>
-                        in order to say why Descartes has adopted the skeptical method of the Meditations, the reader
-                        needed to
-                        be told what Descartes is hoping to achieve.
-                        <ins>It was completely clear from your answer that he</ins>
-                        is trying to discover what kinds of beliefs can be the completely certain foundations upon which
-                        the
-                        rest of our knowledge can be built.
-                        <ins>From your explanation I think a reader would have been able to see that the idea</ins>
-                        is to find some beliefs which Descartes can't be wrong about.Then he can work backwards to
-                        explaining
-                        why and when, for example, scientific beliefs count as certain knowledge.
-                    </p>
-                </blockquote>
-            </div>
-            <div class="col-lg-6">
-                <div class="figure">
-                    <p class="picture">
-                        <img src="{{ asset('images/element_edit_response_modal_excellent.jpg') }}"
-                             class="img-responsive"
-                             alt="Altering the feedback text through the modal window for excellent">
-                    </p>
-
-                    <p class="pictureCaption">Alter the feedback text for students who did well </p>
-                </div>
-            </div>
-        </div>
-    </section>
 </section>
 
-<section id="elementAdd" class="group">
+
+<section id="{{ \App\ViewTools\HelpLinks::$elementCustomize['id'] }}" class="group">
+    <div class="row">
+        <div class="col-lg-6">
+            <p class="answer">If you just wanted to give every student the same feedback regardless of how they do,
+                you can
+                stop here.</p>
+
+            <p class="answer">However, pressing the "Customize Response" button allows you to further customize the
+                text to
+                reflect performance.</p>
+        </div>
+        <div class="col-lg-6">
+            <div class="figure">
+                <p class="picture">
+                    <img src="{{ asset('images/element_edit_customize_circled.jpg') }}"
+                         class="img-responsive"
+                         alt="The customize response button has been circled">
+                </p>
+
+                <p class="pictureCaption">Customize Response </p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-lg-6">
+            <p class="answer">
+                Here you modify that basic comment to tailor it based on the student's performance. By default,
+                gradeomatic
+                allows for four responses varieties: "missing", "poor", "fair" and "excellent". These responses will
+                be what
+                the student sees once you have graded the exam.
+            </p>
+
+            <p class="answer">Let's use the following as the stock feedback for this element.</p>
+
+            <h6>Stock reply</h6>
+
+            <blockquote><p>In order to say why Descartes has adopted the skeptical method of the Meditations, you
+                    need to
+                    tell the reader what Descartes is hoping to achieve. Namely, he is trying to discover what kinds
+                    of
+                    beliefs can be the completely certain foundations upon which the rest of our knowledge can be
+                    built.
+                    That is, the idea is to find some beliefs which he can't be wrong about. Then he can work
+                    backwards to
+                    explaining why and when, for example, scientific beliefs count as certain knowledge.
+                </p>
+            </blockquote>
+
+            <p class="answer">The text and pictures below are examples of how we might alter the stock feedback for
+                different levels of performance.</p>
+        </div>
+        <div class="col-lg-6">
+            <div class="figure">
+                <p class="picture">
+                    <img src="{{ asset('images/element_edit_response_modal_orig.jpg') }}"
+                         class="img-responsive"
+                         alt="The the custom response text in the pop up is just the stock feedback entered">
+                </p>
+
+                <p class="pictureCaption">Stock text initially populates the custom boxes</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+
+        <div class="col-lg-6">
+            <h6>Missing</h6>
+            <blockquote>
+                <p>
+                    In order to say why Descartes has adopted the skeptical method of the Meditations, you need to
+                    tell the
+                    reader what Descartes is hoping to achieve.
+                    <ins> However, you didn't do this. This leaves it up to your reader to figure out that
+                        Descartes
+                    </ins>
+                    is trying to discover what kinds of beliefs can be the completely certain foundations upon which
+                    the
+                    rest of our knowledge can be built. That is, the idea is to find some beliefs which he can't be
+                    wrongabout. Then he can work backwards to explaining why and when, for example, scientific
+                    beliefs count
+                    as certain knowledge.
+                    <ins>As you can see, this is pretty complicated. So you can't just assume that the reader will
+                        figure it
+                        out.
+                    </ins>
+                </p>
+            </blockquote>
+        </div>
+        <div class="col-lg-6">
+            <div class="figure">
+                <p class="picture">
+                    <img src="{{ asset('images/element_edit_response_modal_missing.jpg') }}"
+                         class="img-responsive"
+                         alt="Altering the stock text through the modal window for missing">
+                </p>
+
+                <p class="pictureCaption">Alter the feedback text for students who forgot the element</p>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="row">
+        <div class="col-lg-6">
+            <h6>Poor</h6>
+            <blockquote>
+                <p>In order to say why Descartes has adopted the skeptical method of the Meditations, you need to
+                    tell the
+                    reader what Descartes is hoping to achieve.
+                    <ins>You tried to do this. But it was not clear from your answer that his goal is to</ins>
+                    discover what kinds of beliefs can be the completely certain foundations upon which the rest of
+                    our
+                    knowledge can be built. That is, the idea is to find some beliefs which he can't be wrong about.
+                    Then he
+                    can work backwards to explaining why and when, for example, scientific beliefs count as certain
+                    knowledge.
+                </p>
+            </blockquote>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="figure">
+                <p class="picture">
+                    <img src="{{ asset('images/element_edit_response_modal_poor.jpg') }}"
+                         class="img-responsive"
+                         alt="Altering the stock text through the modal window for poor">
+                </p>
+
+                <p class="pictureCaption">Alter the feedback text for students who did poorly</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-lg-6">
+
+            <h6>Fair</h6>
+            <blockquote>
+                <p>
+                    <ins>You correctly recognized that</ins>
+                    in order to say why Descartes has adopted the skeptical method of the Meditations,
+                    <ins>the reader needed to be told</ins>
+                    what Descartes is hoping to achieve.
+                    <ins>You did a pretty good job here. But it wasn't as clear as it could have been that he</ins>
+                    is trying to discover what kinds of beliefs can be the completely certain foundations upon which
+                    the
+                    rest of our knowledge can be built. That is, the idea is to find some beliefs which he can't be
+                    wrong
+                    about. Then he can work backwards to explaining why and when, for example, scientific beliefs
+                    count as
+                    certain knowledge.
+                </p>
+            </blockquote>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="figure">
+                <p class="picture">
+                    <img src="{{ asset('images/element_edit_response_modal_fair.jpg') }}"
+                         class="img-responsive"
+                         alt="Altering the stock text through the modal window for fair">
+                </p>
+
+                <p class="pictureCaption">Alter the feedback text for students who did fairly </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <h6>Excellent</h6>
+            <blockquote>
+                <p>
+                    <ins>You did a good job recognizing that</ins>
+                    in order to say why Descartes has adopted the skeptical method of the Meditations, the reader
+                    needed to
+                    be told what Descartes is hoping to achieve.
+                    <ins>It was completely clear from your answer that he</ins>
+                    is trying to discover what kinds of beliefs can be the completely certain foundations upon which
+                    the
+                    rest of our knowledge can be built.
+                    <ins>From your explanation I think a reader would have been able to see that the idea</ins>
+                    is to find some beliefs which Descartes can't be wrong about.Then he can work backwards to
+                    explaining
+                    why and when, for example, scientific beliefs count as certain knowledge.
+                </p>
+            </blockquote>
+        </div>
+        <div class="col-lg-6">
+            <div class="figure">
+                <p class="picture">
+                    <img src="{{ asset('images/element_edit_response_modal_excellent.jpg') }}"
+                         class="img-responsive"
+                         alt="Altering the feedback text through the modal window for excellent">
+                </p>
+
+                <p class="pictureCaption">Alter the feedback text for students who did well </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section id="{{\App\ViewTools\HelpLinks::$elementAdd['id'] }}" class="group">
     <h4 class="text-center">Adding elements</h4>
 
     <div class="row">
@@ -382,7 +391,7 @@
 </section>
 
 
-<section id="elementSave" class="group">
+<section id="{{ \App\ViewTools\HelpLinks::$elementSave['id'] }}" class="group">
     <h4 class="text-center">Saving elements</h4>
 
     <div class="row">
@@ -404,12 +413,3 @@
         </div>
     </div>
 </section>
-
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->

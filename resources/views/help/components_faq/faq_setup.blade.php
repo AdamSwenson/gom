@@ -1,4 +1,4 @@
-<section id="faqCsvWhat" class="group">
+<section id="{{\App\ViewTools\HelpLinks::$faqRosterCsvWhat['id']}}" class="group">
     <div class="infoItem">
         <p class="lead"><b>Q.</b> What's a .csv file? How do I make one?</p>
 
@@ -19,7 +19,8 @@
     </div>
 </section>
 
-<section id="faqRosterBad" class="group">
+
+<section id="{{\App\ViewTools\HelpLinks::$faqRosterErrors['id']}}" class="group">
     <div class="infoItem">
         <p class="lead"><b>Q.</b> Why didn't my roster file import correctly?</p>
 

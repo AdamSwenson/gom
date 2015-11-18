@@ -6,6 +6,7 @@
 .commonLinks li{
   margin: 0 0 0 0;
   padding: 0 0 0 0;
+  list-style-type: none;
 }
 
 /* sidebar */
@@ -70,10 +71,10 @@
 }
 
 //media queries
-
-//collapse the navbar if the screen is below a certain size
-@media screen and (max-width: 500px){
-  .docs-sidebar {
-    display:none
-  }
-}
+//
+////collapse the navbar if the screen is below a certain size
+//@media screen and (max-width: 500px){
+//  .docs-sidebar {
+//    display:none
+//  }
+//}

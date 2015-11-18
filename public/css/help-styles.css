@@ -29,7 +29,8 @@ div.figure ul li img {
 
 .commonLinks li {
   margin: 0 0 0 0;
-  padding: 0 0 0 0; }
+  padding: 0 0 0 0;
+  list-style-type: none; }
 
 /* sidebar */
 .docs-sidebar {
@@ -85,9 +86,5 @@ div.figure ul li img {
 /* show active nested list */
 .docs-sidebar .nav > .active > ul.nav {
   display: block; }
-
-@media screen and (max-width: 500px) {
-  .docs-sidebar {
-    display: none; } }
 
 /*# sourceMappingURL=help-styles.css.map */

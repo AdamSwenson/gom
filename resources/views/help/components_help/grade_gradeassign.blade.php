@@ -11,7 +11,8 @@
     </div>
 </div>
 
-<section id="assignSetCutoffs" class="group">
+
+<section id="{{\App\ViewTools\HelpLinks::$assignSetCutoffs['id']}}" class="group">
     <h4 class="text-center">Score adjustment area</h4>
 
     <div class="row">
@@ -45,7 +46,8 @@
     </div>
 </section>
 
-<section id="assignSave" class="group">
+
+<section id="{{\App\ViewTools\HelpLinks::$assignSave['id']}}" class="group">
     <h6 id="saveGradeAssignments">Save assignments</h6>
 
     <div class="row">
@@ -61,7 +63,8 @@
     </div>
 </section>
 
-<section id="assignVisualize" class="group">
+
+<section id="{{\App\ViewTools\HelpLinks::$assignVisualize['id']}}" class="group">
     <h4 id="gradeAssignmentCharts" class="text-center">Visualizations</h4>
 
     <div class="row">

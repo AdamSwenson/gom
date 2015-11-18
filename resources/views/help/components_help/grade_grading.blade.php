@@ -1,4 +1,4 @@
-<section id="gradeExamSelect" class="group">
+<section id="{{\App\ViewTools\HelpLinks::$gradeExamSelect['id'] }}" class="group">
     <h4 class="text-center">Choose the exam to grade</h4>
 
     <div class="row">
@@ -46,7 +46,8 @@
 
 <h4 class="text-center">Grading page tools</h4>
 
-<section id="gradeSelectStudent" class="group">
+
+<section id="{{\App\ViewTools\HelpLinks::$gradeStudentSelect['id']}}" class="group">
     <h6>Student selection area</h6>
 
     <div class="row">
@@ -93,8 +94,7 @@
     </div>
 
     <div class="row">
-        <div class="col-lg-6">
-        </div>
+        <div class="col-lg-6"></div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
             ['imageFile' => 'grade/grade_autocomplete_name.jpg',
@@ -104,7 +104,8 @@
     </div>
 </section>
 
-<section id="gradeDashboard" class="group">
+
+<section id="{{\App\ViewTools\HelpLinks::$gradeDashboard['id']}}" class="group">
     <h6>Dashboard</h6>
 
     <div class="row">
@@ -134,7 +135,8 @@
     </div>
 </section>
 
-<section id="gradeStart" class="group">
+
+<section id="{{\App\ViewTools\HelpLinks::$gradeStart['id']}}" class="group">
     <h4 class="text-center">Start grading</h4>
 
     <div class="row">
@@ -153,7 +155,8 @@
     </div>
 </section>
 
-<section id="gradeScoreElement" class="group">
+
+<section id="{{\App\ViewTools\HelpLinks::$gradeScoreElement['id']}}" class="group">
 
     <h6>Enter element scores and customize feedback</h6>
 
@@ -185,7 +188,7 @@
     </div>
 </section>
 
-<section id="gradeSelectQuestion" class="group">
+<section id="{{\App\ViewTools\HelpLinks::$gradeSelectQuestion['id']}}" class="group">
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">To continue to the next question, click the appropriate tab at the top of the input area.
@@ -210,7 +213,7 @@
 </section>
 
 
-<section id="gradeScoreQuestion" class="group">
+<section id="{{\App\ViewTools\HelpLinks::$gradeScoreQuestion['id']}}" class="group">
     <h6>Enter question score</h6>
 
     <div class="row">
@@ -260,7 +263,7 @@
 
 
 <h4 class="text-center">Miscellaneous</h4>
-<section id="gradeSave" class="group">
+<section id="{{\App\ViewTools\HelpLinks::$gradeSave['id']}}" class="group">
     <h6>Saving scores</h6>
 
     <div class="row">

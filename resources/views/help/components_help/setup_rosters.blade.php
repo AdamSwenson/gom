@@ -1,5 +1,5 @@
-<section id="rosterIntro" class="group">
-    <h4 class="text-center">Associating students with an exam</h4>
+<section id="{{\App\ViewTools\HelpLinks::$rosterWhat['id']}}" class="group">
+    <h4 class="text-center">Rosters: Associating students with an exam</h4>
 
     <div class="row">
         <div class="col-lg-6">
@@ -41,7 +41,8 @@
     </div>
 </section>
 
-<section id="rosterPrep" class="group">
+
+<section id="{{\App\ViewTools\HelpLinks::$rosterPrep['id']}}" class="group">
     <h4 class="text-center">Preparing the roster for importing</h4>
 
     <div class="row">
@@ -157,7 +158,7 @@
 </section>
 
 
-<section id="rosterImport" class="group">
+<section id="{{\App\ViewTools\HelpLinks::$rosterImport['id']}}" class="group">
     <h4 class="text-center">Importing students from file</h4>
 
     <div class="row">
@@ -203,7 +204,8 @@
     </div>
 </section>
 
-<section id="rosterManual" class="group">
+
+<section id="{{\App\ViewTools\HelpLinks::$rosterManual['id']}}" class="group">
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">If you need to edit or correct student information, you can edit on this page.</p>
@@ -244,7 +246,7 @@
 </section>
 
 
-<section id="rosterDelete" class="group">
+<section id="{{\App\ViewTools\HelpLinks::$rosterDelete['id']}}" class="group">
     <h4 class="text-center">Deleting students</h4>
 
     <div class="row">
@@ -294,7 +296,8 @@
     </div>
 </section>
 
-<section id="rosterSave" class="group">
+
+<section id="{{\App\ViewTools\HelpLinks::$rosterSave['id']}}" class="group">
     <h4 class="text-center">Saving changes</h4>
 
     <div class="row">

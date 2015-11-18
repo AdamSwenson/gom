@@ -13,36 +13,39 @@
     </div>
 </div>
 
-<section id="studentControlEmail" class="group">
-<h4 id="individualEmail" class="text-center">Individual email</h4>
 
-<div class="row">
-    <div class="col-lg-6">
-        <p class="answer">Clicking the Email button will send a new email to the selected student.</p>
+<section id="{{\App\ViewTools\HelpLinks::$studentControlEmail['id']}}" class="group">
+    <h4 id="individualEmail" class="text-center">Individual email</h4>
 
-        <p class="answer">This is often useful for students who lose the initial email.
-        </p>
+    <div class="row">
+        <div class="col-lg-6">
+            <p class="answer">Clicking the Email button will send a new email to the selected student.</p>
 
-        <p class="answer">
-            This can also be helpful if you discover an error and want to update a student's scores and feedback after
-            the exam has been released.
-        </p>
+            <p class="answer">This is often useful for students who lose the initial email.
+            </p>
 
+            <p class="answer">
+                This can also be helpful if you discover an error and want to update a student's scores and feedback
+                after
+                the exam has been released.
+            </p>
+
+        </div>
+        <div class="col-lg-6">
+            @include('help.partials.picture_container',
+            ['imageFile' => 'student_controls/report_individual_email_confirm.jpg',
+            'altText' =>"Confirmation message asking if you want to send the selected student an email with feedback link.",
+            'caption' => 'Individual email confirmation'])
+        </div>
     </div>
-    <div class="col-lg-6">
-        @include('help.partials.picture_container',
-        ['imageFile' => 'student_controls/report_individual_email_confirm.jpg',
-        'altText' =>"Confirmation message asking if you want to send the selected student an email with feedback link.",
-        'caption' => 'Individual email confirmation'])
-    </div>
-</div>
 </section>
 
-<section id="studentControlReview" class="group">
-<h4 id="individualReview" class="text-center">Review individual feedback</h4>
 
-<div class="row">
-    <div class="col-lg-6"></div>
-    <div class="col-lg-6"></div>
-</div>
-    </section>
+<section id="{{\App\ViewTools\HelpLinks::$studentControlReview['id']}}" class="group">
+    <h4 id="individualReview" class="text-center">Review individual feedback</h4>
+
+    <div class="row">
+        <div class="col-lg-6"></div>
+        <div class="col-lg-6"></div>
+    </div>
+</section>

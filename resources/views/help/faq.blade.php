@@ -10,57 +10,63 @@
     <div class="infoItem">
         <p class="lead"><b>Q.</b> Where can I get help?</p>
 
-        <p>Check the <a href="#help">help section</a> for basic information on how to use the site.</p>
+        <p>Check the <a href="{{url('info/instructions')}}">instructions page</a> for basic information on how to use the site.</p>
 
-        <p>Our growing library of <a href="{{ url('/tutorials') }}">tutorial videos</a> may also help.</p>
+        <p>Our growing library of <a href="{{ url('info/tutorials') }}">tutorial videos</a> may also help.</p>
+
+        <p>You may also contact us at {{ env('CONTACT_EMAIL') }}. We will make every effort to reply as quickly as we can. But please be aware that, right now, we have no employees. So it is unlikely that we will reply right away. </p>
     </div>
 
+    <section id="{{\App\ViewTools\HelpLinks::$faqSectionSetup['id']}}" class="group">
+        <div class="panel panel-default">
 
-    <div class="panel panel-default">
-        <section id="setupFaq" class="group">
             <div class="panel-heading">
                 <h3>Setting up the questions, elements, and other exam components</h3>
             </div>
-        </section>
-        <div class="panel-body">
-            @include('help.components_faq.faq_setup')
+
+            <div class="panel-body">
+                @include('help.components_faq.faq_setup')
+            </div>
         </div>
-    </div>
+    </section>
 
 
-    <div class="panel panel-default">
-        <section id="gradeFaq" class="group">
+    <section id="{{\App\ViewTools\HelpLinks::$faqSectionGrade['id']}}" class="group">
+        <div class="panel panel-default">
+
             <div class="panel-heading">
                 <h3>Grade</h3>
             </div>
-        </section>
-        <div class="panel-body">
-            @include('help.components_faq.faq_grade')
+
+            <div class="panel-body">
+                @include('help.components_faq.faq_grade')
+            </div>
         </div>
-    </div>
+    </section>
 
 
-    <div class="panel panel-default">
-        <section id="reportFaq" class="group">
+    <section id="{{\App\ViewTools\HelpLinks::$faqSectionReport['id']}}" class="group">
+        <div class="panel panel-default">
+
             <div class="panel-heading">
                 <h3>Report</h3>
             </div>
-        </section>
-        <div class="panel-body">
-            @include('help.components_faq.faq_report')
+            <div class="panel-body">
+                @include('help.components_faq.faq_report')
+            </div>
         </div>
-    </div>
+    </section>
 
 
-    <div class="panel panel-default">
-        <section id="otherFaq" class="group">
+    <section id="{{\App\ViewTools\HelpLinks::$faqSectionOther['id']}}" class="group">
+        <div class="panel panel-default">
+
             <div class="panel-heading">
                 <h3>Other</h3>
             </div>
-        </section>
-        <div class="panel-body">
-            @include('help.components_faq.faq_other')
+            <div class="panel-body">
+                @include('help.components_faq.faq_other')
+            </div>
         </div>
-    </div>
-
+    </section>
 @endsection

@@ -15,28 +15,38 @@
     <div class="col-lg-3"></div>
 </div>
 
-<h4 class="text-center">What they are</h4>
+<section id="{{\App\ViewTools\HelpLinks::$questionWhat['id']}}" class="group">
+    <h4 class="text-center">What questions are</h4>
 
-<div class="row">
-    <div class="col-lg-6">
-        <p class="answer">We called these items 'questions' because that's what they'll be for many uses of the
-            gradeomatic.</p>
+    <div class="row">
+        <div class="col-lg-6">
+            <p class="answer">We called these items 'questions' because that's what they'll be for many uses of the
+                gradeomatic.</p>
 
-        <p class="answer">However, the system is designed to be extremely flexible. 'Questions' are really just
-            whatever items a student's grade depends upon.</p>
+            <p class="answer">However, the system is designed to be extremely flexible. 'Questions' are really just
+                whatever items a student's grade depends upon.</p>
 
-        <p class="answer">For example, if you were using the gradeomatic to grade long form essays, you could
-            have 'questions' like <em>Organization</em> or <em>Grammar</em> and set the point values
-            accordingly. </p>
-        @include('help.partials.related_links', ['relatedLinks' =>
-        [
-            ['id' => 'questionAltUses', 'text' => 'Alternative uses of questions'],
-            ['id' => 'questionFeedbackOnly', 'text' => 'Giving feedback only']
-        ]])
+            <p class="answer">For example, if you were using the gradeomatic to grade long form essays, you could
+                have 'questions' like <em>Organization</em> or <em>Grammar</em> and set the point values
+                accordingly. </p>
+            @include('help.partials.related_links', ['relatedLinks' =>
+            [
+                ['id' => 'questionAltUses', 'text' => 'Alternative uses of questions'],
+                ['id' => 'questionFeedbackOnly', 'text' => 'Giving feedback only']
+            ]])
+        </div>
+        <div class="col-lg-6">
+            @include('help.partials.field_table', ['fields' => [
+            ['name' => 'Question name', 'required' => true],
+            ['name' => 'Question text', 'required' => false],
+            ['name' => 'Max score', 'required' => true]
+            ]])
+        </div>
     </div>
-</div>
+</section>
 
-<section id="questionCreateEdit" class="group">
+
+<section id="{{\App\ViewTools\HelpLinks::$questionCreate['id']}}" class="group">
     <h4 class="text-center">Creating and editing questions</h4>
 
     <div class="row">
@@ -63,14 +73,15 @@
     </div>
 </section>
 
-<section id="questionMaxPoints" class="group">
+<section id="{{\App\ViewTools\HelpLinks::$questionMaxPoints['id']}}" class="group">
     <h4 class="text-center">Maximum points possible</h4>
 
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">Assign the maximum points possible for each question.</p>
 
-            <p class="answer">If you do not intend to assign grades with the gradeomatic, set the max score to 0.</p>
+            <p class="answer">If you do not intend to assign grades with the gradeomatic, set the max score to
+                0.</p>
 
             <p class="answer">If you want to give each question a letter grade and then have the overall exam grade
                 reflect all questions equally,
@@ -135,12 +146,13 @@
 </section>
 
 
-<section id="questionReorder" class="group">
+<section id="{{\App\ViewTools\HelpLinks::$questionReorder['id']}}" class="group">
     <h4 class="text-center">Reordering questions</h4>
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Changing the order of questions is easy. Click on the 'Move' button for the question whose
+            <p class="answer">Changing the order of questions is easy. Click on the 'Move' button for the question
+                whose
                 position you want to change.</p>
 
             <p class="answer">While holding the button down, drag the question to its new position.</p>
@@ -178,7 +190,7 @@
 </section>
 
 
-<section id="questionSave" class="group">
+<section id="{{\App\ViewTools\HelpLinks::$questionSave['id']}}" class="group">
     <h4 class="text-center">Saving question edits</h4>
 
     <div class="row">
@@ -200,7 +212,7 @@
     </div>
 </section>
 
-<section id="questionDelete" class="group">
+<section id="{{\App\ViewTools\HelpLinks::$questionDelete['id']}}" class="group">
     <h4 class="text-center">Removing questions</h4>
 
     <div class="row">
@@ -222,7 +234,8 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">When you click the button, a dialog will pop up asking you to confirm the deletion.</p>
+            <p class="answer">When you click the button, a dialog will pop up asking you to confirm the
+                deletion.</p>
 
             <p class="answer">Once you confirm by clicking 'Delete' in the pop up, the question will disappear from
                 the screen. However, the question is not deleted from the database until you click 'Add/Edit
@@ -252,11 +265,14 @@
     </div>
 </section>
 
-<section id="questionAltUses" class="group">
+
+<section id="{{\App\ViewTools\HelpLinks::$questionAltUses['id']}}" class="group">
+
     <h4 class="text-center">Miscellaneous: alternative uses of questions</h4>
 
     <div class="row">
         <div class="col-lg-6">
+
             <p class="answer">We mentioned earlier that while an exam must have at least one question, there is
                 no
                 need for the
@@ -284,9 +300,8 @@
 </section>
 
 
-<section id="questionFeedbackOnly" class="group">
+<section id="{{\App\ViewTools\HelpLinks::$questionFeedbackOnly['id']}}" class="group">
     <h4 class="text-center">Miscellaneous: Feedback only </h4>
-
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">Finally, while each question must have a maximum score, the maximum score can be
