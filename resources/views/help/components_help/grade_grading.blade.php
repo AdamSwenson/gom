@@ -6,15 +6,14 @@
             <p class="answer">When you are done setting up the exam and ready to grade, click 'Grade' in the navigation
                 bar
                 at the top of the page.</p>
-
-            <div class="col-lg-6">
-                @include('help.partials.picture_container',
-                ['imageFile' => 'grade/grade_select_page_grade_circled.jpg',
-                'altText' =>'The grade select page with the Grade button circled',
-                'caption' => 'Click Grade'])
-            </div>
-
         </div>
+        <div class="col-lg-6">
+            @include('help.partials.picture_container',
+            ['imageFile' => 'grade/grade_select_page_grade_circled.jpg',
+            'altText' =>'The grade select page with the Grade button circled',
+            'caption' => 'Click Grade'])
+        </div>
+
     </div>
 
     <div class="row">
@@ -44,11 +43,11 @@
     </div>
 </section>
 
-<h4 class="text-center">Grading page tools</h4>
+
 
 
 <section id="{{\App\ViewTools\HelpLinks::$gradeStudentSelect['id']}}" class="group">
-    <h6>Student selection area</h6>
+    <h4 class="text-center">Student selection area</h4>
 
     <div class="row">
         <div class="col-lg-6">
@@ -106,7 +105,7 @@
 
 
 <section id="{{\App\ViewTools\HelpLinks::$gradeDashboard['id']}}" class="group">
-    <h6>Dashboard</h6>
+    <h4 class="text-center">Dashboard</h4>
 
     <div class="row">
         <div class="col-lg-6">
@@ -157,8 +156,7 @@
 
 
 <section id="{{\App\ViewTools\HelpLinks::$gradeScoreElement['id']}}" class="group">
-
-    <h6>Enter element scores and customize feedback</h6>
+    <h4 class="text-center">Enter element scores and customize feedback</h4>
 
     <div class="row">
         <div class="col-lg-6">
@@ -214,7 +212,7 @@
 
 
 <section id="{{\App\ViewTools\HelpLinks::$gradeScoreQuestion['id']}}" class="group">
-    <h6>Enter question score</h6>
+    <h4 class="text-center">Enter question score</h4>
 
     <div class="row">
         <div class="col-lg-6">
@@ -260,11 +258,9 @@
 </section>
 
 
-
-
 <h4 class="text-center">Miscellaneous</h4>
 <section id="{{\App\ViewTools\HelpLinks::$gradeSave['id']}}" class="group">
-    <h6>Saving scores</h6>
+    <h4 class="text-center">Saving scores</h4>
 
     <div class="row">
         <div class="col-lg-6">
@@ -278,7 +274,7 @@
                 sends all the data for the current exam to the server.
             </p>
 
-            <p class="answer">You may thus see a message informing you that there was a problem. Simply repeat your last
+            <p class="answer">Since the data gets sent to the server behind the scenes, you may occasionally see a message informing you that there was a problem. This is usually the result of a transient interruption in your internet connection. Simply repeat your last
                 action and it should save properly.
             </p>
         </div>

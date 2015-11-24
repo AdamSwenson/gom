@@ -1,29 +1,34 @@
-div.figure {
+.figure {
   border: thin black solid;
   margin: 0.5em;
   padding: 0.5em; }
 
-p.pictureCaption {
+.pictureCaption {
   text-align: center;
   font-style: italic;
   font-size: smaller;
   text-indent: 0; }
 
-div.figure .picture {
+.clickNote {
+  font-style: italic;
+  font-size: smaller;
+  text-indent: 0; }
+
+figure.figure .picture {
   border: thin silver solid; }
 
-div.figure ul {
+figure.figure ul {
   padding: 0 0 0 0;
   margin: 0 0 0 0; }
 
-div.figure ul li {
+figure.figure ul li {
   list-style: none;
   margin-bottom: 25px; }
 
-div.figure ul li img {
+figure.figure ul li img {
   cursor: pointer; }
 
-.commonLinks ul {
+.commonLinks {
   margin: 0 0 0 0;
   padding: 0 0 0 0; }
 

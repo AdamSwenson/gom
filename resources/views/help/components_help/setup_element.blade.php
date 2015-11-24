@@ -1,25 +1,15 @@
-<div class="row">
-    <div class="col-lg-3"></div>
-    <div class="col-lg-6">
-        <div class="figure">
-            <p class="picture">
-                <img src="{{ asset('images/element_edit_screen.jpg') }}"
-                     class="img-responsive"
-                     alt="The element editing screen">
-            </p>
+@include('help.partials.section_top_picture', [
+'imageFile' => 'element/element_edit_screen.jpg',
+'altText' => "The element editing screen",
+'caption' => "Create and edit elements"])
 
-            <p class="pictureCaption">The element editing screen</p>
-        </div>
-    </div>
-    <div class="col-lg-3"></div>
-</div>
 
 <section id="{{\App\ViewTools\HelpLinks::$elementWhat['id']}}" class="group">
     <h4 class="text-center">What elements are and what they do</h4>
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer"><i>Elements</i> can be a bit tricky to explain since they have multiple roles and are very
+            <p class="answer"><i>Elements</i> have multiple roles and are very
                 flexible. On their most basic use, elements have three jobs:</p>
             <ol>
                 <li>Elements comprise questions</li>
@@ -35,7 +25,8 @@
             ['name' => 'Element response: Poor', 'required' => false],
             ['name' => 'Element response: Fair', 'required' => false],
             ['name' => 'Element response: Excellent', 'required' => false],
-            ]])
+            ],
+              'caption' => 'Element'])
         </div>
     </div>
 
@@ -61,7 +52,7 @@
 
             <p class="answer">For those unaccustomed to rubrics, consider this, likely
                 familiar, scenario:</p>
-            <blockquote>
+            <blockquote class="example">
                 <p><em>Scene: A good student comes to your office, distraught after doing poorly on one question on the
                         exam.</em></p>
 
@@ -71,9 +62,9 @@
                     You did a good job on x. But you totally forgot to bring up y. And there were several mistakes
                     in your explanation of z.</p>
             </blockquote>
-            <div class="answer">Whatever you fill in for x, y, and z in that conversation are the elements of the
+            <p class="answer">Whatever you fill in for x, y, and z in that conversation are the elements of the
                 question
-            </div>
+            </p>
         </div>
         <div class="col-lg-6"></div>
     </div>
@@ -85,21 +76,26 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">On the "create & edit elements" page, you create and edit elements.</p>
+            <p class="answer">To create an element, provide a short name for the element which which will be meaningful
+                to you
+                when you see it during grading and when displayed in charts.
+            </p>
+            <blockquote>
+                <h6>Example</h6>
 
-            <p class="answer">To do this, you provide a short name for the element which which will be meaningful to you
-                when you see it during grading and when displayed in charts.</p>
+                <p class="example">An explanation of methodology isn't going to make much sense without knowing what
+                    it's for. So the first task is to explain Descartes' goal. </p>
+
+                <p class="example"><em>ElementName</em>:
+                    <mark>Explain Descartes goal</mark>
+                </p>
+            </blockquote>
         </div>
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/element_edit_name_filled_in.jpg') }}"
-                         class="img-responsive"
-                         alt="The element name field has been filled in with text">
-                </p>
-
-                <p class="pictureCaption">Name the element</p>
-            </div>
+            @include('help.partials.picture_container',
+         ['imageFile' => 'element/element_edit_name_filled_in.jpg',
+         'altText' =>"The element name field has been filled in with text",
+         'caption' => 'Name the element'])
         </div>
     </div>
 
@@ -110,19 +106,30 @@
                 the
                 element.</p>
 
-            <p class="answer">In "element response", enter the basic description of what the student should do to fully
+            <p class="answer">In <em>Element Response</em>, enter a basic description of what the student should do to
+                fully
                 answer the element.</p>
+            <blockquote class="example">
+                <h6>Example</h6>
+
+                <p><em>Element Response</em>:
+                    <mark>In order to say why Descartes has adopted the skeptical method of the Meditations, you need to
+                        tell the reader what Descartes is hoping to achieve. Namely, he is trying to discover what kinds
+                        of beliefs can be the completely certain foundations upon which the rest of our knowledge can be
+                        built. That is, the idea is to find some beliefs which he can't be wrong about. Then he can work
+                        backwards to explaining why and when, for example, scientific beliefs count as certain
+                        knowledge.
+                    </mark>
+                </p>
+            </blockquote>
         </div>
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/element_edit_stock_text.jpg') }}"
-                         class="img-responsive"
-                         alt="The stock text field has been filled in">
-                </p>
 
-                <p class="pictureCaption">Add stock feedback</p>
-            </div>
+            @include('help.partials.picture_container',
+         ['imageFile' => 'element/element_edit_stock_text.jpg',
+         'altText' =>"The stock text field has been filled in",
+         'caption' => "Add stock feedback"])
+
         </div>
     </div>
 </section>
@@ -131,8 +138,8 @@
 <section id="{{ \App\ViewTools\HelpLinks::$elementCustomize['id'] }}" class="group">
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">If you just wanted to give every student the same feedback regardless of how they do,
-                you can
+            <p class="answer">If you want to give every student the same feedback regardless of how they do,
+                you may
                 stop here.</p>
 
             <p class="answer">However, pressing the "Customize Response" button allows you to further customize the
@@ -140,15 +147,11 @@
                 reflect performance.</p>
         </div>
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/element_edit_customize_circled.jpg') }}"
-                         class="img-responsive"
-                         alt="The customize response button has been circled">
-                </p>
+            @include('help.partials.picture_container',
+['imageFile' => 'element/element_edit_customize_circled.jpg',
+'altText' =>"The customize response button has been circled",
+'caption' => "Customize Response"])
 
-                <p class="pictureCaption">Customize Response </p>
-            </div>
         </div>
     </div>
 
@@ -165,9 +168,10 @@
 
             <p class="answer">Let's use the following as the stock feedback for this element.</p>
 
-            <h6>Stock reply</h6>
+            <blockquote>
+                <h6>Example: Stock response</h6>
 
-            <blockquote><p>In order to say why Descartes has adopted the skeptical method of the Meditations, you
+                <p>In order to say why Descartes has adopted the skeptical method of the Meditations, you
                     need to
                     tell the reader what Descartes is hoping to achieve. Namely, he is trying to discover what kinds
                     of
@@ -183,15 +187,11 @@
                 different levels of performance.</p>
         </div>
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/element_edit_response_modal_orig.jpg') }}"
-                         class="img-responsive"
-                         alt="The the custom response text in the pop up is just the stock feedback entered">
-                </p>
+            @include('help.partials.picture_container',
+['imageFile' => 'element/element_edit_response_modal_orig.jpg',
+'altText' =>"The the custom response text in the pop up fields is initially just the stock feedback entered",
+'caption' => "Stock text initially populates the custom boxes"])
 
-                <p class="pictureCaption">Stock text initially populates the custom boxes</p>
-            </div>
         </div>
     </div>
 
@@ -199,8 +199,10 @@
     <div class="row">
 
         <div class="col-lg-6">
-            <h6>Missing</h6>
+
             <blockquote>
+                <h6>Example: Missing</h6>
+
                 <p>
                     In order to say why Descartes has adopted the skeptical method of the Meditations, you need to
                     tell the
@@ -222,15 +224,10 @@
             </blockquote>
         </div>
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/element_edit_response_modal_missing.jpg') }}"
-                         class="img-responsive"
-                         alt="Altering the stock text through the modal window for missing">
-                </p>
-
-                <p class="pictureCaption">Alter the feedback text for students who forgot the element</p>
-            </div>
+            @include('help.partials.picture_container',
+['imageFile' => 'element/element_edit_response_modal_missing.jpg',
+'altText' =>"Altering the stock text through the modal window for missing",
+'caption' => "Alter the feedback text for students who forgot the element"])
         </div>
 
     </div>
@@ -238,8 +235,10 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <h6>Poor</h6>
+
             <blockquote>
+                <h6>Example: Poor</h6>
+
                 <p>In order to say why Descartes has adopted the skeptical method of the Meditations, you need to
                     tell the
                     reader what Descartes is hoping to achieve.
@@ -255,15 +254,11 @@
         </div>
 
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/element_edit_response_modal_poor.jpg') }}"
-                         class="img-responsive"
-                         alt="Altering the stock text through the modal window for poor">
-                </p>
+            @include('help.partials.picture_container',
+['imageFile' => 'element/element_edit_response_modal_poor.jpg',
+'altText' =>"Altering the stock text through the modal window for poor",
+'caption' => "Alter the feedback text for students who did a poor job"])
 
-                <p class="pictureCaption">Alter the feedback text for students who did poorly</p>
-            </div>
         </div>
     </div>
 
@@ -271,8 +266,9 @@
     <div class="row">
         <div class="col-lg-6">
 
-            <h6>Fair</h6>
             <blockquote>
+                <h6>Example: Fair</h6>
+
                 <p>
                     <ins>You correctly recognized that</ins>
                     in order to say why Descartes has adopted the skeptical method of the Meditations,
@@ -291,22 +287,19 @@
         </div>
 
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/element_edit_response_modal_fair.jpg') }}"
-                         class="img-responsive"
-                         alt="Altering the stock text through the modal window for fair">
-                </p>
+            @include('help.partials.picture_container',
+['imageFile' => 'element/element_edit_response_modal_fair.jpg',
+'altText' =>"Altering the stock text through the modal window for fair",
+'caption' => "Alter the feedback text for students who did a fair job"])
 
-                <p class="pictureCaption">Alter the feedback text for students who did fairly </p>
-            </div>
         </div>
     </div>
 
     <div class="row">
         <div class="col-lg-6">
-            <h6>Excellent</h6>
+
             <blockquote>
+                <h6>Example: Excellent</h6>
                 <p>
                     <ins>You did a good job recognizing that</ins>
                     in order to say why Descartes has adopted the skeptical method of the Meditations, the reader
@@ -324,15 +317,11 @@
             </blockquote>
         </div>
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/element_edit_response_modal_excellent.jpg') }}"
-                         class="img-responsive"
-                         alt="Altering the feedback text through the modal window for excellent">
-                </p>
+            @include('help.partials.picture_container',
+['imageFile' => 'element/element_edit_response_modal_excellent.jpg',
+'altText' =>"Altering the feedback text through the modal window for excellent",
+'caption' => "Alter the feedback text for students who did an excellent job"])
 
-                <p class="pictureCaption">Alter the feedback text for students who did well </p>
-            </div>
         </div>
     </div>
 </section>
@@ -345,8 +334,9 @@
         <div class="col-lg-6">
             <p class="answer">To add additional elements, click "Add Element"</p>
 
-            <h6>Stock response</h6>
             <blockquote>
+                <h6>Example: Stock response</h6>
+
                 <p>You need to explain the role doubt plays in Descartes method. He is using a principle like "If I can
                     find
                     grounds for doubting that a kind of belief is true, then no beliefs of that sort count as
@@ -361,15 +351,12 @@
             </blockquote>
         </div>
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/element_edit_new_second_element.jpg') }}"
-                         class="img-responsive"
-                         alt="Adding a second element">
-                </p>
+            @include('help.partials.picture_container',
+['imageFile' => 'element/element_edit_new_second_element.jpg',
+'altText' =>"Adding a second element",
+'caption' => "Add a second element"])
 
-                <p class="pictureCaption">Add a second element </p>
-            </div>
+
         </div>
 
     </div>
@@ -377,15 +364,11 @@
     <div class="row">
         <div class="col-lg-6"></div>
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/element_edit_second_element_filled_in.jpg') }}"
-                         class="img-responsive"
-                         alt="Text added for second element">
-                </p>
+            @include('help.partials.picture_container',
+['imageFile' => 'element/element_edit_second_element_filled_in.jpg',
+'altText' =>"Text added for second element",
+'caption' => "Add second element content"])
 
-                <p class="pictureCaption">Add second element content</p>
-            </div>
         </div>
     </div>
 </section>
@@ -399,17 +382,13 @@
             <p class="answer">None of your edits are saved until you click 'Next question' </p>
         </div>
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/element_edit_next_question_circled.jpg') }}"
-                         class="img-responsive"
-                         alt="Next question button circled">
-                </p>
 
-                <p class="pictureCaption">Click the 'Next question'
+            @include('help.partials.picture_container',
+['imageFile' => 'element/element_edit_next_question_circled.jpg',
+'altText' =>"Next question button circled",
+'caption' => "Click the 'Next question'
                     button to save edits and move on to the next
-                    question </p>
-            </div>
+                    question "])
         </div>
     </div>
 </section>

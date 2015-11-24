@@ -24,22 +24,30 @@
                     better exam questions and improve your teaching.
                 </li>
             </ol>
+            <p class="answer">We will be grateful for suggestions about other useful tools and visualizations</p>
         </div>
         <div class="col-lg-6"></div>
     </div>
 </section>
 
-<h6>Currently available tools</h6>
+
 <section id="{{\App\ViewTools\HelpLinks::$analyticsBoxPlots['id']}}" class="group">
+    <h4 class="text-center">Currently available tools</h4>
+
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Total score box plots: The first chart is a box plot detailing student score variation for
+            <p class="answer">Total score box plots: The first chart is a <a href="https://en.wikipedia.org/wiki/Box_plot">box plot</a> detailing student score variation for
                 each
-                question. The lines show the lowest and highest grades, the bottom of the box the lowest quartile, the
+                question.</p>
+
+            <p class="answer">The vertical lines (the 'whiskers') show the lowest and highest grades. The edge of bottom
+                of the box is the lowest quartile. The edge of the
                 top
                 of
-                the box the third quartile, and the circles display the mean and median.
-            </p>
+                the box the third quartile.</p>
+
+            <p class="answer">The circles mark the mean and median.</p>
+
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',

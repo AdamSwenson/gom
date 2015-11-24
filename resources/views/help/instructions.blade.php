@@ -11,7 +11,7 @@
         <div class="infoItem">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Overview</h3>
+                    <h3 class="panel-title">The grading process</h3>
                 </div>
                 <div class="panel-body">
                     @include('help.components_help.overview')

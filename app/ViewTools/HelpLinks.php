@@ -53,6 +53,9 @@ class HelpLinks
     static public $videoAllOther = ['id' => 'otherVideos', 'text' => 'Videos: Other'];
 
 
+//General: setup
+    static public $faqHowSave = ['id' => 'howSave', 'text' => 'Where is the save button'];
+
 //Exam
     static public $examWhat = ['id' => 'examWhat', 'text' => 'What exams are'];
     static public $examCreate = ['id' => 'examCreate', 'text' => 'Create a new exam'];
@@ -75,6 +78,8 @@ class HelpLinks
     static public $questionDelete = ['id' => "questionDelete", 'text' => 'Delete questions'];
     static public $questionAltUses = ['id' => 'questionAltUses', 'text' => 'Alternative uses of questions'];
     static public $questionFeedbackOnly = ['id' => "questionFeedbackOnly", 'text' => 'Giving feedback only'];
+
+
 
 
 //Elements

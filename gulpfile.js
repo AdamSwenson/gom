@@ -24,6 +24,7 @@ elixir(function(mix) {
     mix.sass([
         'help/pictureStyling.scss',
         'help/sideNav.scss',
+        'help/bodyText.scss'
     ], 'public/css/help-styles.css');
 
 

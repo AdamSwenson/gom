@@ -1,5 +1,6 @@
 <section id="{{\App\ViewTools\HelpLinks::$examWhat['id']}}" class="group">
     <h4 class="text-center">What exams are</h4>
+
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">An <i>exam</i> is the basic unit of organization. Please don't be misled by our choice to
@@ -24,7 +25,8 @@
               ['name' => 'Exam name', 'required' => true],
               ['name' => 'Term', 'required' => true],
               ['name' => 'Year', 'required' => true]
-              ]])
+              ],
+              'caption' => 'Exam'])
         </div>
     </div>
 </section>
@@ -32,23 +34,28 @@
 
 <section id="{{\App\ViewTools\HelpLinks::$examCreate['id']}}" class="group">
     <h4 class="text-center">Create exam</h4>
-    <div class="row">
-        <div class="col-lg-6"></div>
-        <div class="col-lg-6">
-            @include('help.partials.picture_container',
-                        ['imageFile' => 'exam/exam_setup.jpg',
-                        'altText' =>"The Create Exam page",
-                        'caption' => 'The Create Exam page'])
-
-        </div>
-    </div>
+    @include('help.partials.section_top_picture',
+    ['imageFile' => 'exam/exam_setup.jpg',
+    'altText' =>"The Create Exam page",
+    'caption' => 'The Create Exam page'])
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">To create an exam, enter a descriptive name in the exam name box. </p>
+            <p class="answer">Enter a short descriptive name in the exam name box. </p>
 
-            <p class="answer">This name will be used to select the exam in several different places. It will also be
+            <p class="answer">This name will be used when you select the exam in several different places. It will also
+                be
                 displayed as part of the feedback your students see.</p>
+            <blockquote>
+                <h6>Example</h6>
+
+                <p>For our examples, we'll use a midterm for philosophy 101 about Descartes' famous skeptical argument
+                    from the beginning of the <i>Meditations</i>.</p>
+
+                <p>Thus let's call it
+                    <mark>Phil101 midterm Descartes cogito</mark>
+                </p>
+            </blockquote>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -62,7 +69,7 @@
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">
-                Use the dropdown menu to select the term in which you are giving the exam. The field is required.
+                Use the dropdown menu to select the term in which you are giving the exam. The term field is required.
             </p>
         </div>
         <div class="col-lg-6">
@@ -75,8 +82,12 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Use the dropdown menu to select the year in which you are giving the exam. The field is
+            <p class="answer">Use the dropdown menu to select the year in which you are giving the exam. The year field
+                is
                 required.</p>
+
+            <p class="answer">Once the name is filled in, and the term and year are selected, click 'Add/Edit Questions'
+                to save the exam, and move on to the next step.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -89,12 +100,12 @@
 
 <section id="{{ \App\ViewTools\HelpLinks::$examClone['id'] }}" class="group">
     <h4 class="text-center">Create a new exam from an existing exam</h4>
+
     <div class="row">
         <div class="col-lg-6">
-
-
             <p class="answer">
-                If you give the same or similar exams in multiple semesters, you can save almost all the setup time by
+                If you give the same or similar exams in multiple semesters, you can save virtually all of the setup
+                time by
                 cloning a past exam.
             </p>
 
@@ -114,8 +125,8 @@
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">
-                The newly created exam will be 'Clone of ' followed by the original exam's name. You may then use the
-                editing page to rename and update the term and year just like any other exam.
+                The newly created exam will be named 'Clone of ' followed by the original exam's name. Click 'Edit' to use the exam edit
+                page to rename and update the term and year.
             </p>
         </div>
         <div class="col-lg-6">

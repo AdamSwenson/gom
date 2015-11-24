@@ -1,8 +1,8 @@
 <div class="row">
+
     <div class="col-lg-6">
         <p class="answer">
-            The students button takes you to a page with individual student controls for emailing a student (useful to
-            notify only one student that their grade has changed) and to review the feedback that the student can see.
+            The students button takes you to a page with individual student controls. On this page, you may review an individual student's feedback or send them a new email with the link to their feedback.
         </p>
     </div>
     <div class="col-lg-6">
@@ -19,15 +19,12 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Clicking the Email button will send a new email to the selected student.</p>
-
-            <p class="answer">This is often useful for students who lose the initial email.
-            </p>
+            <p class="answer">Clicking the Email button will send a new notification email with a link to their feedback to the selected student. This most often used when a student loses the initial email. The feedback link will be the same link they were sent in the original email. </p>
 
             <p class="answer">
-                This can also be helpful if you discover an error and want to update a student's scores and feedback
+                This can also be helpful if you discover a grading error and want to update a few students' scores and feedback
                 after
-                the exam has been released.
+                the exam has been released. They will be sent the same link as in the original email (whereas, if you had <a href="#{{\App\ViewTools\HelpLinks::$reportLock['id']}}">hidden</a> and then re-released the whole exam, every student would need to receive a new link).
             </p>
 
         </div>
@@ -45,7 +42,18 @@
     <h4 id="individualReview" class="text-center">Review individual feedback</h4>
 
     <div class="row">
-        <div class="col-lg-6"></div>
-        <div class="col-lg-6"></div>
+        <div class="col-lg-6">
+            <p class="answer">By clicking the Review button, you can preview the feedback that the student will receive. </p>
+            <p class="answer">This is often helpful in office hours when a student wants to talk about their exam, but does not have a printed copy of their feedback.</p>
+        </div>
+        <div class="col-lg-6">
+            <div class="col-lg-6">
+                @include('help.partials.picture_container',
+                ['imageFile' => 'feedback/partial_example_of_feedback.jpg',
+                'altText' =>"Partial example of some sample feedback given to students",
+                'caption' => "Part of a student's feedback"])
+                <p class="answer"><a href="{{asset('images/feedback/feedback_sample.pdf')}}">Sample feedback for student (.pdf)</a></p>
+            </div>
+        </div>
     </div>
 </section>

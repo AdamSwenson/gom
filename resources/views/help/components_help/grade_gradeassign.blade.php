@@ -17,7 +17,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">The gradeomatic has calculated the maximum possible score on the exam from the maximum
+            <p class="answer">The gradeomatic calculates the maximum possible score on the exam from the maximum
                 scores of each question. It then provides suggestions for the minimum total score necessary for each
                 letter grade. </p>
 
@@ -34,8 +34,8 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">If you don't want to use a letter, simply empty the box and it will not be a possible
-                grade for students.</p>
+            <p class="answer">If you don't want to use a letter, empty the corresponding box and it will not be a possible
+                grade.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -48,7 +48,7 @@
 
 
 <section id="{{\App\ViewTools\HelpLinks::$assignSave['id']}}" class="group">
-    <h6 id="saveGradeAssignments">Save assignments</h6>
+    <h4 class="text-center">Save assignments</h4>
 
     <div class="row">
         <div class="col-lg-6">
@@ -65,11 +65,11 @@
 
 
 <section id="{{\App\ViewTools\HelpLinks::$assignVisualize['id']}}" class="group">
-    <h4 id="gradeAssignmentCharts" class="text-center">Visualizations</h4>
+    <h4 class="text-center">Visualizations</h4>
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">The upper chart on the right-hand side of the page shows a histogram of the number of
+            <p class="answer">The upper chart on the right-hand side of the page is a histogram of the number of
                 students currently receiving each grade.</p>
         </div>
         <div class="col-lg-6">
@@ -83,12 +83,11 @@
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">When assigning grades, it is often helpful to look for natural gaps in student scores. The
-                bar chart on the lower right-hand side of the page shows the total exam score each student along with
+                bar chart on the lower right-hand side of the page shows the total exam score for each student along with
                 the grade that they would receive under the present distribution.</p>
 
-            <p class="answer">This chart preserves anonymity by giving each student a number. The number on the x axis
-                identifies students ordered by total score from low to high. This number is unrelated to their student
-                id number or the order in which they were graded.</p>
+            <p class="answer"> To help you impartially assign grades, each number on the x axis
+                identifies a student ordered by total score from low to high.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',

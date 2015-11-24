@@ -36,3 +36,22 @@
         </ul>
     </div>
 </section>
+
+<section id="{{\App\ViewTools\HelpLinks::$faqHowSave['id']}}" class="group">
+    <div class="infoItem">
+        <p class="lead"><b>Q.</b> How do I save things? I don't see a 'Save' button!</p>
+
+        <p class="answer">In all of the setup tasks, clicking the navigation buttons at the top left and right of the
+            screen saves your entries and displays the next (or previous) page for editing. </p>
+
+        <p class="answer">These buttons will have different names depending on which page you are on. For example, when
+            you are creating questions, the left navigation button will say 'Edit Exam'; the right will say 'Add/Edit
+            Elements'. When you are editing elements, the left navigation button will say 'Edit Questions'; the right
+            will say 'Next Question' (if you are working on the final question's elements, it will say 'Import
+            Students'). </p>
+
+        <p class="answer text-danger">Your entries and edits are not saved until you click one of these buttons. Our
+            security procedures will log you out after a period of inactivity. Thus if you are going to walk away from
+            your computer, please make sure you save your changes first. </p>
+    </div>
+</section>

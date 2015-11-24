@@ -3,7 +3,9 @@
     <ul class="nav nav-stacked">
         @include('help.partials.simple_links', ['links' => [
          ['id' => 'faqCsvWhat', 'text' => '.csv files? What?'],
-         ['id' => 'faqRosterBad', 'text' => 'Roster import errors']
+         ['id' => 'faqRosterBad', 'text' => 'Roster import errors'],
+         ['id' => 'faqHowSave', 'text' => 'How do I save my edits?'],
+         ['id' => 'faqHowSave', 'text' => 'Where is the save button?'],
         ]])
     </ul>
 </li>

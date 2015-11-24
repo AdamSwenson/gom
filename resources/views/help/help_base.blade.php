@@ -46,8 +46,8 @@
         });
 
             $(document).ready(function () {
-            $('img').on('click', function () {
-                var src = $(this).attr('src');
+            $('figure').on('click', function () {
+                var src = $("img", this).attr('src');
                 var img = '<img src="' + src + '" class="img-responsive"/>';
                 $('#myModal').modal();
                 $('#myModal').on('shown.bs.modal', function () {

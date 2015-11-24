@@ -1,19 +1,7 @@
-<div class="row">
-    <div class="col-lg-3"></div>
-    <div class="col-lg-6">
-        <div class="figure">
-            <p class="picture">
-                <img
-                        src="{{ asset('images/question_edit_wide.png') }}"
-                        class="img-responsive"
-                        alt="Question editing window"/>
-            </p>
-
-            <p class="pictureCaption">The page for creating and editing a question"</p>
-        </div>
-    </div>
-    <div class="col-lg-3"></div>
-</div>
+@include('help.partials.section_top_picture', [
+'imageFile' => 'question/question_edit_wide.jpg',
+'altText' => "Question editing window",
+'caption' => "Create and edit questions"])
 
 <section id="{{\App\ViewTools\HelpLinks::$questionWhat['id']}}" class="group">
     <h4 class="text-center">What questions are</h4>
@@ -40,7 +28,8 @@
             ['name' => 'Question name', 'required' => true],
             ['name' => 'Question text', 'required' => false],
             ['name' => 'Max score', 'required' => true]
-            ]])
+            ],
+              'caption' => 'Question'])
         </div>
     </div>
 </section>
@@ -54,21 +43,27 @@
             <p class="answer">In setting up the exam, you create a <i>question</i> by giving it a brief
                 name (to use as a reminder while grading) and, optionally, the full question text.</p>
 
-            <p class="answer">The question presented to the student 'Explain the skeptical method
-                Descartes uses in the Meditations' has been entered into <em>Question Text</em>. The
-                question has been named 'Explain skeptical method'</p>
+            <blockquote>
+                <h6>Example</h6>
+
+                <p>Students were asked to answer the question:</p>
+                <blockquote>Explain the skeptical method Descartes uses in the Meditations</blockquote>
+                <p>Thus:</p>
+                <p><em>Question Name</em>:
+                    <mark>Explain skeptical method</mark>
+                </p>
+                <p><em>Question Text</em>:
+                    <mark>Explain the skeptical method Descartes uses in the Meditations</mark>.
+                </p>
+
+            </blockquote>
         </div>
 
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/question_edit_text_entered.png') }}"
-                         class="img-responsive"
-                         alt="Example of text entered into the question name and text boxes"/>
-                </p>
-
-                <p class="pictureCaption">Enter question name and (optionally) its text</p>
-            </div>
+            @include('help.partials.picture_container',
+                     ['imageFile' => 'question/question_edit_text_entered.jpg',
+                     'altText' =>"Example of text entered into the question name and text boxes",
+                     'caption' => 'Enter question name and (optionally) its text'])
         </div>
     </div>
 </section>
@@ -92,15 +87,11 @@
         </div>
 
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/question_edit_score_highlighted.jpg') }}"
-                         class="img-responsive"
-                         alt="Question edit page with max score field highlighted"/>
-                </p>
+            @include('help.partials.picture_container',
+         ['imageFile' => 'question/question_edit_score_highlighted.jpg',
+         'altText' =>"Question edit page with max score field highlighted",
+         'caption' => 'Enter max possible points'])
 
-                <p class="pictureCaption">Enter max possible points</p>
-            </div>
         </div>
     </div>
 
@@ -116,15 +107,10 @@
             </p>
         </div>
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/question_edit_3_questions_same_value.png')}}"
-                         class="img-responsive"
-                         alt="Three questions, each with 100 points as the maximum score"/>
-                </p>
-
-                <p class="pictureCaption">Three questions, each worth the same amount</p>
-            </div>
+            @include('help.partials.picture_container',
+['imageFile' => 'question/question_edit_3_questions_same_value.jpg',
+'altText' =>"Three questions, each with 100 points as the maximum score",
+'caption' => 'Three questions, each worth the same amount'])
         </div>
     </div>
 
@@ -132,15 +118,10 @@
         <div class="col-lg-6"></div>
 
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/question_edit_3_questions_diff_values.png')}}"
-                         class="img-responsive"
-                         alt="Three questions, questions 1 and 2 worth 100 points each, and question 3 worth 200 points"/>
-                </p>
-
-                <p class="pictureCaption">Three questions with different point values</p>
-            </div>
+            @include('help.partials.picture_container',
+['imageFile' => 'question/question_edit_3_questions_diff_values.jpg',
+'altText' =>"Three questions, questions 1 and 2 worth 100 points each, and question 3 worth 200 points",
+'caption' => 'Three questions with different point values'])
         </div>
     </div>
 </section>
@@ -151,22 +132,17 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Changing the order of questions is easy. Click on the 'Move' button for the question
+            <p class="answer">To change the order of questions click on the 'Move' button for the question
                 whose
                 position you want to change.</p>
 
             <p class="answer">While holding the button down, drag the question to its new position.</p>
         </div>
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/question_edit_reordering.png')}}"
-                         class="img-responsive"
-                         alt="Question 2 being dragged to become Question 1"/>
-                </p>
-
-                <p class="pictureCaption">Dragging Question 2 to become Question 1</p>
-            </div>
+            @include('help.partials.picture_container',
+['imageFile' => 'question/question_edit_reordering.jpg',
+'altText' =>"Question 2 being dragged to become Question 1",
+'caption' => 'Dragging Question 2 to become Question 1'])
         </div>
     </div>
 
@@ -176,15 +152,11 @@
                 accordingly.</p>
         </div>
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/question_edit_post_reorder.png')}}"
-                         class="img-responsive"
-                         alt="Question 2 has now become Question 1"/>
-                </p>
+            @include('help.partials.picture_container',
+['imageFile' => 'question/question_edit_post_reorder.jpg',
+'altText' =>"Question 2 has now become Question 1",
+'caption' => 'The Question-formerly-known-as-2 is now Question 1'])
 
-                <p class="pictureCaption">The Question-formerly-known-as-2 is now Question 1</p>
-            </div>
         </div>
     </div>
 </section>
@@ -195,19 +167,15 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">No changes to the questions are saved to the database until you click 'Add/Edit
+            <p class="answer">No changes to the questions are saved until you click 'Add/Edit
                 elements'.</p>
         </div>
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/question_edit_save.png')}}"
-                         class="img-responsive"
-                         alt="Circle around the Add Edit Elements button"/>
-                </p>
+            @include('help.partials.picture_container',
+['imageFile' => 'question/question_edit_save.jpg',
+'altText' =>"Circle around the Add Edit Elements button",
+'caption' => "Click the 'Add/Edit Elements' button to save"])
 
-                <p class="pictureCaption">Click the 'Add/Edit Elements' button to save</p>
-            </div>
         </div>
     </div>
 </section>
@@ -220,15 +188,11 @@
             <p class="answer">To remove a question, click its 'Delete' button.</p>
         </div>
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/question_edit_delete.png')}}"
-                         class="img-responsive"
-                         alt="Circle around question 2's delete button"/>
-                </p>
+            @include('help.partials.picture_container',
+['imageFile' => 'question/question_edit_delete.jpg',
+'altText' =>"Circle around question 2's delete button",
+'caption' => 'Click the Delete button to remove a question'])
 
-                <p class="pictureCaption">Click the Delete button to remove a question</p>
-            </div>
         </div>
     </div>
 
@@ -252,15 +216,11 @@
             <p class="answer text-danger"><strong>There is no way to undo the deletion</strong></p>
         </div>
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/question_edit_delete_confirm.png')}}"
-                         class="img-responsive"
-                         alt="Confirmation dialog for deleting question 2"/>
-                </p>
+            @include('help.partials.picture_container',
+['imageFile' => 'question/question_edit_delete_confirm.jpg',
+'altText' =>"Confirmation dialog for deleting question 2",
+'caption' => 'Confirmation dialog for deleting question 2'])
 
-                <p class="pictureCaption">Confirmation dialog for deleting question 2</p>
-            </div>
         </div>
     </div>
 </section>
@@ -278,7 +238,7 @@
                 need for the
                 questions to be 'questions' in the traditional sense.</p>
 
-            <p class="answer">Suppose you have an exam with four
+            <p class="answer">For example, suppose you have an exam with four
                 questions
                 each worth 20%
                 and want the student's grammar on all questions to count for 20%. Simply add an extra question
@@ -286,15 +246,11 @@
                 set the number of points that portion is worth.</p>
         </div>
         <div class="col-lg-6">
-            <div class="figure">
-                <p class="picture">
-                    <img src="{{ asset('images/question_edit_misc_grammar.png')}}"
-                         class="img-responsive"
-                         alt="Fourth question named grammar added "/>
-                </p>
+            @include('help.partials.picture_container',
+['imageFile' => 'question/question_edit_misc_grammar.jpg',
+'altText' =>"Fourth question named grammar added",
+'caption' => "Adding a question called 'Grammar' worth 20%"])
 
-                <p class="pictureCaption">Adding a question called 'Grammar' worth 20%</p>
-            </div>
         </div>
     </div>
 </section>
@@ -302,6 +258,7 @@
 
 <section id="{{\App\ViewTools\HelpLinks::$questionFeedbackOnly['id']}}" class="group">
     <h4 class="text-center">Miscellaneous: Feedback only </h4>
+
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">Finally, while each question must have a maximum score, the maximum score can be
