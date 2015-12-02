@@ -18,6 +18,9 @@
         </div>
         <div class="collapse navbar-collapse" id="navbar-ex-collapse">
             <ul class="nav navbar-nav navbar-right">
+                <li id="navHelp" title="About">
+                    <a href="{{url('help')}}" style="color:white;">What Is This?</a>
+                </li>
                 <li id="navSetup" title="Sign up for gradeomatic">
                     <a href="{{url('auth/register')}}" style="color:white;">Sign Up</a>
                 </li>
