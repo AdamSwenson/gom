@@ -14,17 +14,17 @@
             <ol>
                 <li>Elements comprise questions</li>
                 <li>Elements form the basis of feedback</li>
-                <li>Elements let you compare student performance across different exams</li>
+                <li>Elements let you compare student performance across superficially very different exams</li>
             </ol>
         </div>
         <div class="col-lg-6">
             @include('help.partials.field_table', ['fields' => [
-            ['name' => 'Element name', 'required' => true],
-            ['name' => 'Element response', 'required' => false],
-            ['name' => 'Element response: Missing', 'required' => false],
-            ['name' => 'Element response: Poor', 'required' => false],
-            ['name' => 'Element response: Fair', 'required' => false],
-            ['name' => 'Element response: Excellent', 'required' => false],
+            ['name' => 'Element name', 'required' => true, 'visible' => true],
+            ['name' => 'Element response', 'required' => false, 'visible' => true],
+            ['name' => 'Element response: Missing', 'required' => false, 'visible' => true],
+            ['name' => 'Element response: Poor', 'required' => false, 'visible' => true],
+            ['name' => 'Element response: Fair', 'required' => false, 'visible' => true],
+            ['name' => 'Element response: Excellent', 'required' => false, 'visible' => true],
             ],
               'caption' => 'Element'])
         </div>
@@ -33,10 +33,9 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Elements comprise questions. On more complex questions, where you are asking the student
-                to do
-                multiple things or where explaining a concept requires several different components, each task or
-                component
+            <p class="answer">Elements comprise questions. On more complex questions, where you are (explicitly or
+                implicitly) asking the student to do multiple things or where explaining a concept requires several
+                different components, each task or component
                 should be represented by an element. </p>
 
             <p class="answer">Multi-part questions or short essays spanning several paragraphs might have several
@@ -62,9 +61,15 @@
                     You did a good job on x. But you totally forgot to bring up y. And there were several mistakes
                     in your explanation of z.</p>
             </blockquote>
-            <p class="answer">Whatever you fill in for x, y, and z in that conversation are the elements of the
+            <p class="answer">Whatever you filled in for x, y, and z in that conversation are probably the elements of the
                 question
             </p>
+            {{--TODO: Add links to rubrics resources --}}
+            {{--@include('help.partials.related_links', ['relatedLinks' =>--}}
+            {{--[--}}
+                {{--['id' => 'questionAltUses', 'text' => 'National Institute for for Learning Outcomes Assessment'],--}}
+                {{--['id' => 'questionFeedbackOnly', 'text' => 'Giving feedback only']--}}
+            {{--]])--}}
         </div>
         <div class="col-lg-6"></div>
     </div>
@@ -142,7 +147,7 @@
                 you may
                 stop here.</p>
 
-            <p class="answer">However, pressing the "Customize Response" button allows you to further customize the
+            <p class="answer">Pressing the "Customize Response" button allows you to further customize the
                 text to
                 reflect performance.</p>
         </div>
@@ -183,8 +188,8 @@
                 </p>
             </blockquote>
 
-            <p class="answer">The text and pictures below are examples of how we might alter the stock feedback for
-                different levels of performance.</p>
+            <p class="answer">This can be a bit tricky. So here's a detailed example of how we might alter the stock feedback for
+                different levels of performance. In each variation, the new or altered text is underlined.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -213,7 +218,7 @@
                     is trying to discover what kinds of beliefs can be the completely certain foundations upon which
                     the
                     rest of our knowledge can be built. That is, the idea is to find some beliefs which he can't be
-                    wrongabout. Then he can work backwards to explaining why and when, for example, scientific
+                    wrong about. Then he can work backwards to explaining why and when, for example, scientific
                     beliefs count
                     as certain knowledge.
                     <ins>As you can see, this is pretty complicated. So you can't just assume that the reader will
@@ -300,6 +305,7 @@
 
             <blockquote>
                 <h6>Example: Excellent</h6>
+
                 <p>
                     <ins>You did a good job recognizing that</ins>
                     in order to say why Descartes has adopted the skeptical method of the Meditations, the reader

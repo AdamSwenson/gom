@@ -9,7 +9,7 @@
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
-            ['imageFile' => 'grade/grade_select_page_grade_circled.jpg',
+            ['imageFile' => 'grade/grade_select_page_grade_nav_circled.jpg',
             'altText' =>'The grade select page with the Grade button circled',
             'caption' => 'Click Grade'])
         </div>
@@ -44,8 +44,6 @@
 </section>
 
 
-
-
 <section id="{{\App\ViewTools\HelpLinks::$gradeStudentSelect['id']}}" class="group">
     <h4 class="text-center">Student selection area</h4>
 
@@ -64,11 +62,8 @@
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">If you prefer to grade exams without knowing the students' names, click the pencil
-                icon. </p>
-
-            <p class="answer">The student names will be replaced by 'Name Hidden'</p>
-
-            <p class="answer">It will help to click 'ID' to sort the students by student id.</p>
+                icon. The student names will be replaced by 'Name Hidden'. It may help to click 'ID' to sort the list of
+                students by student id.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -116,15 +111,26 @@
                 graded.
                 This will throw off the average time and reduce the accuracy of the estimated remaining time.</p>
 
-            <p class="answer">The current exam time is how long the present exam has taken.</p>
+            <p class="answer">The fields displayed in the dashboard are</p>
 
-            <p class="answer">The total time is the time grading all students so far.</p>
+            <dl class="dl-horizontal">
+                <dt>Time This Exam</dt>
+                <dd>How long you have spent grading the current exam.</dd>
 
-            <p class="answer">The average time is the average amount of time spent grading an exam.</p>
+                <dt>Average Time</dt>
+                <dd>The average amount of time spent grading for the exams you have graded so far.</dd>
 
-            <p class="answer">The remaining time is the estimated amount of time until you are done grading. It is
-                calculated by multiplying the average exam time with the number of ungraded students</p>
+                <dt>Total Time</dt>
+                <dd>The amount of time spent grading all exams so far.</dd>
+
+                <dt>Time Remaining</dt>
+                <dd>The estimated amount of time until you are done grading. It is calculated by multiplying the average
+                    exam time with the number of ungraded students (with a few basic corrections for outliers).
+                </dd>
+            </dl>
+
         </div>
+
         <div class="col-lg-6">
             @include('help.partials.picture_container',
             ['imageFile' => 'grade/grade_statistics_area_annotated.jpg',
@@ -140,8 +146,8 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">When you click on a student's row, the gradeomatic retrieves the student's record and
-                highlights their row in blue to show that it is the exam currently being graded. This will reveal the
+            <p class="answer">When you click on a student's row, the gradeomatic loads the student's record and
+                highlights their row in blue to show that it is currently being graded. This will reveal the
                 questions for the exam and a slider for each element.</p>
 
         </div>
@@ -162,19 +168,15 @@
         <div class="col-lg-6">
             <p class="answer">
                 After reading the student's response, move the slider to a value that corresponds to the student's
-                performance. This won't affect the question grade, but it will affect the written feedback.</p>
+                performance (values in between the circles are fine). This will record a numeric value that you can use for assessment. The slider value won't affect the question grade, but it will affect the feedback given to the student.</p>
 
             <p class="answer">If you wish to tailor the student's feedback individually, modify the text box next to
                 that
                 element. The text you enter will be shown to that student alone.</p>
 
             <p class="answer">
-                You will notice that the text in the box to the right of the slider updates to contain the text you had
-                entered for that level of competence. If you did not customize the text for each degree of performance
-                when
-                you created the element, the text will not change as you move the slider. However, the score indicated
-                by
-                the slider will still be recorded so you can use it in assessing how students did overall.
+                As you move a slider, you will notice that the text in the box to the right of the slider will update to contain the text you entered for that level of competence. If you did not customize the text for each degree of performance
+                when you created the element, the text will not change as you move the slider. However, even if you have no feedback set, the score indicated by the slider will still be recorded so you can use it in improving your course.
             </p>
         </div>
         <div class="col-lg-6">
@@ -193,13 +195,9 @@
             </p>
 
             <p class="answer">If the student didn't need to answer a question, simply leave the
-                score area blank and they won't be graded.</p>
+                score area blank.</p>
 
-            <p class="answer">Once a grade is entered for at least one question, the student's exam is considered graded
-                for
-                timing and release purposes. This allows you to construct exams where students may choose among one or
-                more
-                questions to answer.</p>
+            <p class="answer">One small quirk that you may notice is that once a grade is entered for at least one question, the student's exam is considered graded for timing and release purposes. For example, the values used in calculating the time remaining will update. This was necessary to accommodate exams which give students multiple options of which questions to answer.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -217,7 +215,7 @@
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">
-                There are two ways to enter a score for the question.</p>
+                There are two ways to enter a score for a question.</p>
 
             <p class="answer">You may type a score in the Score box. Make sure it is a number and less than the maximum
                 score.</p>
@@ -258,7 +256,6 @@
 </section>
 
 
-<h4 class="text-center">Miscellaneous</h4>
 <section id="{{\App\ViewTools\HelpLinks::$gradeSave['id']}}" class="group">
     <h4 class="text-center">Saving scores</h4>
 
@@ -270,11 +267,13 @@
             <p class="answer">
                 Unlike the setup pages where no changes were saved until you moved to the next step, during grading,
                 every
-                time you move a slider, click a button, or type in a box and then click somewhere else, the gradeomatic
+                time you move a slider, click a button, or type in a box and then click somewhere else on the page, the gradeomatic
                 sends all the data for the current exam to the server.
             </p>
 
-            <p class="answer">Since the data gets sent to the server behind the scenes, you may occasionally see a message informing you that there was a problem. This is usually the result of a transient interruption in your internet connection. Simply repeat your last
+            <p class="answer">Since the data gets sent to the server behind the scenes, you may occasionally see a
+                message informing you that there was a problem. This is usually the result of a transient interruption
+                in your internet connection. Simply repeat your last
                 action and it should save properly.
             </p>
         </div>

@@ -19,12 +19,12 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Clicking the Email button will send a new notification email with a link to their feedback to the selected student. This most often used when a student loses the initial email. The feedback link will be the same link they were sent in the original email. </p>
+            <p class="answer">Clicking the Email button will send a new notification email with a link to their feedback to the selected student. This is often used when a student loses the initial email. The feedback link will be the same link they were sent in the original email. </p>
 
             <p class="answer">
                 This can also be helpful if you discover a grading error and want to update a few students' scores and feedback
                 after
-                the exam has been released. They will be sent the same link as in the original email (whereas, if you had <a href="#{{\App\ViewTools\HelpLinks::$reportLock['id']}}">hidden</a> and then re-released the whole exam, every student would need to receive a new link).
+                the exam has been released. They will be sent the same link as in the original email (whereas, if you had <a href="#{{\App\ViewTools\HelpLinks::$reportLock['id']}}">locked</a> and then re-released the whole exam, every student would need to receive a new link).
             </p>
 
         </div>

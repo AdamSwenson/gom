@@ -18,7 +18,7 @@
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">The gradeomatic calculates the maximum possible score on the exam from the maximum
-                scores of each question. It then provides suggestions for the minimum total score necessary for each
+                scores of each question. It then provides suggestions for the minimum total score for each
                 letter grade. </p>
 
             <p class="answer">To adjust the grade distribution, alter the values in the boxes. The accompanying charts
@@ -69,6 +69,8 @@
 
     <div class="row">
         <div class="col-lg-6">
+            <p class="answers">The Assign Grades page includes two charts. </p>
+
             <p class="answer">The upper chart on the right-hand side of the page is a histogram of the number of
                 students currently receiving each grade.</p>
         </div>
@@ -82,12 +84,12 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">When assigning grades, it is often helpful to look for natural gaps in student scores. The
+            <p class="answer">When assigning grades, it is often helpful to look for natural gaps between student scores. The
                 bar chart on the lower right-hand side of the page shows the total exam score for each student along with
                 the grade that they would receive under the present distribution.</p>
 
             <p class="answer"> To help you impartially assign grades, each number on the x axis
-                identifies a student ordered by total score from low to high.</p>
+                identifies a student ordered by total score from low to high. The number has no relation to the student's name, id, order graded, or any other identifying information</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',

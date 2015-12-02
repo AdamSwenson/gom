@@ -5,6 +5,7 @@
         <tr>
             <th>Field</th>
             <th>Required</th>
+            <th>Visible to student</th>
         </tr>
         </thead>
         <tbody>
@@ -12,6 +13,7 @@
             <tr>
                 <td>{{ $field['name'] }}</td>
                 <td>{{ $field['required'] ? 'Required' : 'Optional' }}</td>
+                <td>{{ $field['visible'] ? 'Yes' : 'No' }}</td>
             </tr>
         @endforeach
         </tbody>

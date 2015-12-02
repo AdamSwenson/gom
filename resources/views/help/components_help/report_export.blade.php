@@ -2,7 +2,7 @@
     <div class="row">
 
         <div class="col-lg-6">
-            <p>Through the grading process you've assigned grades to each student and created a bunch of important data for improving your teaching. To export the data so that you can use it in a spreadsheet, press the Export button </p>
+            <p>Through the grading process you've assigned grades to each student and collected a bunch of important data for improving your teaching. Press the Export button to export the data so that you can use it in a spreadsheet</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',

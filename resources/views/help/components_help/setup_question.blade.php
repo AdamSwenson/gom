@@ -8,15 +8,14 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">We called these items 'questions' because that's what they'll be for many uses of the
-                gradeomatic.</p>
-
-            <p class="answer">However, the system is designed to be extremely flexible. 'Questions' are really just
-                whatever items a student's grade depends upon.</p>
+            <p class="answer">Every exam has at least one question. Again, the system is designed to be extremely
+                flexible. 'Questions' are really just whatever items a student's grade depends upon.</p>
 
             <p class="answer">For example, if you were using the gradeomatic to grade long form essays, you could
-                have 'questions' like <em>Organization</em> or <em>Grammar</em> and set the point values
-                accordingly. </p>
+                have 'questions' like <em>Organization</em> or <em>Grammar</em> in addition to the prompt and set the
+                point values
+                accordingly. See <a href="#{{ \App\ViewTools\HelpLinks::$questionAltUses['id'] }}">alternative uses of
+                    questions</a> for an example.</p>
             @include('help.partials.related_links', ['relatedLinks' =>
             [
                 ['id' => 'questionAltUses', 'text' => 'Alternative uses of questions'],
@@ -25,9 +24,9 @@
         </div>
         <div class="col-lg-6">
             @include('help.partials.field_table', ['fields' => [
-            ['name' => 'Question name', 'required' => true],
-            ['name' => 'Question text', 'required' => false],
-            ['name' => 'Max score', 'required' => true]
+            ['name' => 'Question name', 'required' => true, 'visible' => true],
+            ['name' => 'Question text', 'required' => false, 'visible' => false],
+            ['name' => 'Max score', 'required' => true, 'visible' => true]
             ],
               'caption' => 'Question'])
         </div>
@@ -49,11 +48,13 @@
                 <p>Students were asked to answer the question:</p>
                 <blockquote>Explain the skeptical method Descartes uses in the Meditations</blockquote>
                 <p>Thus:</p>
+
                 <p><em>Question Name</em>:
                     <mark>Explain skeptical method</mark>
                 </p>
                 <p><em>Question Text</em>:
-                    <mark>Explain the skeptical method Descartes uses in the Meditations</mark>.
+                    <mark>Explain the skeptical method Descartes uses in the Meditations</mark>
+                    .
                 </p>
 
             </blockquote>
@@ -75,8 +76,8 @@
         <div class="col-lg-6">
             <p class="answer">Assign the maximum points possible for each question.</p>
 
-            <p class="answer">If you do not intend to assign grades with the gradeomatic, set the max score to
-                0.</p>
+            <p class="answer">If you do not intend to assign grades with the gradeomatic and do not want to track
+                student performance on questions for your behind the scenes assessment, set the max score to 0.</p>
 
             <p class="answer">If you want to give each question a letter grade and then have the overall exam grade
                 reflect all questions equally,
@@ -84,6 +85,11 @@
                 grade into a fixed percentage of the total possible points.</p>
 
             <p class="answer">If all questions count equally, we recommend assigning each question 100 points.</p>
+
+            @include('help.partials.related_links', ['relatedLinks' =>
+           [
+               ['id' => 'questionFeedbackOnly', 'text' => 'Giving feedback only']
+           ]])
         </div>
 
         <div class="col-lg-6">
@@ -103,7 +109,7 @@
 
             <p class="answer">For example, if Question 1 and Question 2 are each worth
                 25% of the grade, and Question 3 is worth 50%, you could set the maximum scores for Question 1
-                and Question 2 to 100, and the maximum score for Question 3 to 200 points.
+                and Question 2 to 100, and the maximum score for Question 3 to 200 points (alternatively: Q1 = 25 points, Q2 = 25 points, and Q3 = 50 points).
             </p>
         </div>
         <div class="col-lg-6">
@@ -132,9 +138,8 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">To change the order of questions click on the 'Move' button for the question
-                whose
-                position you want to change.</p>
+            <p class="answer">To change the order of questions click and hold the 'Move' button for the question
+                whose position you want to change.</p>
 
             <p class="answer">While holding the button down, drag the question to its new position.</p>
         </div>
@@ -206,14 +211,12 @@
                 Elements'</p>
 
             <p class="answer">Please be very careful with deleting questions. If a question is deleted, all student
-                scores
-                for that
-                question are removed from the database. Any elements associated with the question are also deleted,
+                scores for that question are permanently removed. Any elements associated with the question are also deleted,
                 along
                 with any
                 student scores for those elements.</p>
 
-            <p class="answer text-danger"><strong>There is no way to undo the deletion</strong></p>
+            <p class="answer text-danger"><strong>There is no way to undo the deletion or to recover the lost data</strong></p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -234,9 +237,7 @@
         <div class="col-lg-6">
 
             <p class="answer">We mentioned earlier that while an exam must have at least one question, there is
-                no
-                need for the
-                questions to be 'questions' in the traditional sense.</p>
+                no need for the questions to be 'questions' in the traditional sense.</p>
 
             <p class="answer">For example, suppose you have an exam with four
                 questions
@@ -261,7 +262,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Finally, while each question must have a maximum score, the maximum score can be
+            <p class="answer">While each question must have a maximum score, the maximum score can be
                 0.
                 This might be
                 helpful if you want to use the gradeomatic to create feedback for students but don't want to

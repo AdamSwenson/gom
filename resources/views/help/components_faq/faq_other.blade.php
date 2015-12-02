@@ -1,16 +1,14 @@
 <section id="{{\App\ViewTools\HelpLinks::$faqOtherSecurity['id']}}" class="group">
-    <div class="infoItem">
-        <p class="lead"><b>Q.</b> How secure is student data? </p>
+    {{--<div class="infoItem">--}}
+        {{--<p class="lead"><b>Q.</b> How secure is student data? </p>--}}
 
-        <p class="answer">The gradeomatic has been designed with security in mind at every step. Student information is
-            stored in an encrypted database. </p>
+        {{--<p class="answer">The gradeomatic has been designed with security in mind at every step. Student information is--}}
+            {{--stored in an encrypted database. </p>--}}
 
-        <p class="answer">That said, student privacy is important, both legally and morally. So, let's clarify a few
-            things. </p>
-    </div>
+        {{--<p class="answer">That said, student privacy is important, both legally and morally. So, let's clarify a few--}}
+            {{--things. </p>--}}
+    {{--</div>--}}
 </section>
-
-<h4>Miscellaneous</h4>
 
 <section id="{{\App\ViewTools\HelpLinks::$faqOtherCreator['id']}}" class="group">
     <div class="infoItem">

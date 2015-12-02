@@ -17,6 +17,9 @@
                 want
                 to have a link for accessing feedback emailed directly to the students.
             </p>
+
+            <p class="answer">We strongly recommend only including the fields that you will need. If you won't be using student id numbers, do not include them the uploaded file. If you won't be emailing students their feedback, do not include student email addresses</p>
+
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -47,7 +50,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">CSV stands for "Comma Separated Value". It is a very simple text format for storing data.
+            <p class="answer">CSV stands for "Comma Separated Values". It is a very simple text format for storing data.
                 It
                 is basically what would be left over
                 if you removed all the formulas, all the formatting, and all the other things which make an Excel
@@ -82,25 +85,23 @@
                 <li>Email address (optional)</li>
             </ul>
 
-            <p class="answer">Remove any headers so that the first row contains the first student</p>
+            <p class="answer">The import process will be easiest if the first row of the sheet has exactly the following column names:</p>
+            <ul>
+                <li>last name</li>
+                <li>first name</li>
+                <li>student id</li>
+                <li>email</li>
+            </ul>
+
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
             ['imageFile' => 'roster_edit/roster_edit_excel_heading_rows_circled.jpg',
             'altText' =>'Open excel file with column headers circled',
-            'caption' => 'Remove any headers'])
+            'caption' => 'Make sure the column names are correct and in the correct order'])
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-lg-6"></div>
-        <div class="col-lg-6">
-            @include('help.partials.picture_container',
-            ['imageFile' => 'roster_edit/roster_edit_excel_header_row_removed.jpg',
-            'altText' =>'Open excel file with headers removed',
-            'caption' => 'Ready to be saved'])
-        </div>
-    </div>
 
     <h4 class="text-center">Saving as .csv</h4>
 
@@ -144,7 +145,7 @@
             <p class="answer">A message may pop up,
                 to warn you that saving as a .csv file will lose all the file's formatting. If this is a problem, make
                 sure
-                you've saved the file as a normal spreadsheet (.xls or .xlsx) before proceeding.</p>
+                you've saved the file as a normal spreadsheet (e.g., .xls or .xlsx) before proceeding.</p>
 
             <p class="answer">Once you're ready, click Confirm.</p>
         </div>
@@ -208,7 +209,7 @@
 <section id="{{\App\ViewTools\HelpLinks::$rosterManual['id']}}" class="group">
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">If you need to edit or correct student information, you can edit on this page.</p>
+            <p class="answer">If you need to edit or correct student information, click on the item to be edited and type your changes.</p>
 
             <p class="answer">If you need to add a student by hand, click 'Add Student'</p>
         </div>
@@ -264,13 +265,13 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">A warning message will display asking you to confirm that you really want to delete the
+            <p class="answer">A warning message will ask you to confirm that you really want to delete the
                 student.</p>
 
             <p class="answer text-danger">Deleting a student will destroy all of their scores, feedback and grades.</p>
 
-            <p class="answer text-danger">For security, there is no way to restore the student data once they are
-                deleted.</p>
+            <p class="answer text-danger"><strong>There is no way to restore the student's data once they are
+                deleted.</strong></p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -302,9 +303,8 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Pressing "Save & Exit" will save any changes to the roster. Note that any changes you make
-                will
-                only be saved by pressing "Save & Exit"</p>
+            <p class="answer">Press "Save & Finish" to save any changes to the roster. Note that any changes you make
+                will not be saved until you press "Save & Finish"</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',

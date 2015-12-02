@@ -16,7 +16,8 @@ Route::get('info/tutorials', 'InfoController@showTutorials');
 
 Route::get('test', function()
 {
-    return view('help.instructions');
+    return view('other.newhome');
+//    return view('help.instructions');
     //return view('feedback.n_feedback_multiple_students');
 //   return view('feedback.n_feedback');
 });
@@ -43,7 +44,7 @@ Route::get('account', 'LandingController@loggedIn');
 
 
 /* --------------------------------------------- Help ------------------------------------------------------------------*/
-Route::get('help', 'InfoController@showGuides');
+Route::get('help', 'InfoController@showInstructions');
 Route::get('faq', 'InfoController@showFaq');
 Route::get('tutorials', 'InfoController@showTutorials');
 Route::get('gettingStarted', 'InfoController@showGettingStarted');

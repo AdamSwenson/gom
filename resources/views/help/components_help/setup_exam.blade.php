@@ -3,18 +3,15 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">An <i>exam</i> is the basic unit of organization. Please don't be misled by our choice to
-                call this an 'exam'. It could be a quiz, an assignment, a paper, or virtually any other activity for
-                which you want to assess a group of students on the same criteria at approximately the same time.
+            <p class="answer">An <i>exam</i> is the basic unit of organization. We called this an 'exam' but it could be a quiz, an assignment, a paper, or virtually any other activity for which you want to assess multiple students on the same criteria at approximately the same time.
             </p>
 
-            <p class="answer">An exam is identified by its name, and the year and term in which it is given. An exam is
-                associated with a <a href="#{{\App\ViewTools\HelpLinks::$instructSectionRosterSetup['id']}}">roster</a>
-                of students.</p>
+            <p class="answer">An exam is identified by its name, and the year and term in which it is given. You associate a <a href="#{{\App\ViewTools\HelpLinks::$instructSectionRosterSetup['id']}}">roster</a> of students with each exam.
+            </p>
 
             <p class="answer">Every exam contains at least one <a
                         href="#{{\App\ViewTools\HelpLinks::$instructSectionQuestionSetup['id']}}">question</a>.
-                Questions usually contain several tasks which a student must complete in order to receive full credit
+                Questions usually (implicitly or explicitly) contain several tasks which a student must complete in order to receive full credit
                 for the question. These tasks are <a
                         href="#{{\App\ViewTools\HelpLinks::$instructSectionElementSetup['id']}}">elements</a>.
             </p>
@@ -22,9 +19,9 @@
         </div>
         <div class="col-lg-6">
             @include('help.partials.field_table', ['fields' => [
-              ['name' => 'Exam name', 'required' => true],
-              ['name' => 'Term', 'required' => true],
-              ['name' => 'Year', 'required' => true]
+              ['name' => 'Exam name', 'required' => true, 'visible' => true],
+              ['name' => 'Term', 'required' => true, 'visible' => true],
+              ['name' => 'Year', 'required' => true, 'visible' => true]
               ],
               'caption' => 'Exam'])
         </div>
@@ -52,7 +49,7 @@
                 <p>For our examples, we'll use a midterm for philosophy 101 about Descartes' famous skeptical argument
                     from the beginning of the <i>Meditations</i>.</p>
 
-                <p>Thus let's call it
+                <p>Thus let's name the exam:
                     <mark>Phil101 midterm Descartes cogito</mark>
                 </p>
             </blockquote>
@@ -110,7 +107,7 @@
             </p>
 
             <p class="answer">
-                The clone process duplicates all the questions, elements, and feedback from the parent exam. It does not
+                The cloning process duplicates all the questions, elements, and feedback from the parent exam. It does not
                 duplicate the parent exam's roster, student scores, or any individualized feedback.
             </p>
         </div>

@@ -15,9 +15,7 @@
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">
-                "Release Exam" will officially release the exam, emailing all students you have graded and who have
-                valid
-                email addresses a link where they can view their grade and compiled feedback.
+                Clicking "Release Exam" officially releases the exam. This involves emailing unique links to all students who have been graded and who have valid email addresses. This link will all them to view their grade and feedback.
             </p>
         </div>
         <div class="col-lg-6">
@@ -45,13 +43,12 @@
     <h4 class="text-center">Lock exam</h4>
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer"> The lock is the reverse, cutting off all access to all students for that exam. Once an
-                exam
-                is locked, it must be re-released, which will email students with new links to their results.</p>
+            <p class="answer"> The lock is the reverse. Clicking Lock cuts off all access to all students for that exam. Once an
+                exam is locked, it must be released again. If a locked exam is re-released, students will receive a new email with a new link.</p>
 
-            <p class="answer">After being locked, any links that have been sent to students will not work. This can be
-                confusing, so it is best to use the commands for resending links to individual students if the need
-                arises.</p>
+            <p class="answer">Once an exam has been locked, any links that have been sent to students will not work. This can be
+                confusing, so it is best to use the commands for <a href="#{{\App\ViewTools\HelpLinks::$studentControlEmail['id']}}">resending</a> links to individual students if the need
+                arises (e.g., if a student loses their email).</p>
 
             <p class="answer">Once the exam is released, the release button changes color to green. This indicates that
                 students have access to their feedback. The lock button changes to blue. This indicates that it may be
