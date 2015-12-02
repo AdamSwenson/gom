@@ -86,5 +86,12 @@
             <span class="sr-only">Next</span>
         </a>
     </div>
+<div class="row">
+    <div class="col-xs-12">
+        <p class="text-center"><strong><a href="{{url('help')}}">Find out more</a></strong></p>
+    </div>
+</div>
+
+</li></p>
 </body>
 </html>
