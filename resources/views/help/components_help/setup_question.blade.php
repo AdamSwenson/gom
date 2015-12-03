@@ -16,21 +16,32 @@
                 point values
                 accordingly. See <a href="#{{ \App\ViewTools\HelpLinks::$questionAltUses['id'] }}">alternative uses of
                     questions</a> for an example.</p>
+        </div>
+        <div class="col-lg-6">
+            <p class="answer">The following table summarizes the fields that comprise a question. If a field is <em>Required</em>,
+                you must enter a value in order to create the question. If a field is <em>Optional</em>, you may choose
+                to leave it blank. The <em>Visible to Students</em> column indicates whether the content of the field
+                will be shown to your students.</p>
+            @include('help.partials.field_table', ['fields' => [
+            ['name' => 'Question name', 'required' => true, 'visible' => true],
+            ['name' => 'Question text', 'required' => false, 'visible' => false],
+            ['name' => 'Max score', 'required' => true, 'visible' => true]
+            ],
+              'caption' => 'Components of a question'])
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
             @include('help.partials.related_links', ['relatedLinks' =>
             [
                 ['id' => 'questionAltUses', 'text' => 'Alternative uses of questions'],
                 ['id' => 'questionFeedbackOnly', 'text' => 'Giving feedback only']
             ]])
         </div>
-        <div class="col-lg-6">
-            @include('help.partials.field_table', ['fields' => [
-            ['name' => 'Question name', 'required' => true, 'visible' => true],
-            ['name' => 'Question text', 'required' => false, 'visible' => false],
-            ['name' => 'Max score', 'required' => true, 'visible' => true]
-            ],
-              'caption' => 'Question'])
-        </div>
+        <div class="col-lg-6"></div>
     </div>
+
 </section>
 
 
@@ -40,7 +51,7 @@
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">In setting up the exam, you create a <i>question</i> by giving it a brief
-                name (to use as a reminder while grading) and, optionally, the full question text.</p>
+                <code>Question Name</code> (to use as a reminder while grading) and, optionally, the full <code>Question Text</code> that was presented to the student.</p>
 
             <blockquote>
                 <h6>Example</h6>
@@ -53,9 +64,7 @@
                     <mark>Explain skeptical method</mark>
                 </p>
                 <p><em>Question Text</em>:
-                    <mark>Explain the skeptical method Descartes uses in the Meditations</mark>
-                    .
-                </p>
+                    <mark>Explain the skeptical method Descartes uses in the Meditations</mark>.</p>
 
             </blockquote>
         </div>
@@ -74,22 +83,11 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Assign the maximum points possible for each question.</p>
+            <p class="answer">Enter the maximum number of points a student can achieve on a question in the box marked <code>Max Score</code>.</p>
 
-            <p class="answer">If you do not intend to assign grades with the gradeomatic and do not want to track
-                student performance on questions for your behind the scenes assessment, set the max score to 0.</p>
+            <p class="answer">If you will not assign grades with the gradeomatic (and don't need question data for assessment), set the max score to 0.</p>
 
-            <p class="answer">If you want to give each question a letter grade and then have the overall exam grade
-                reflect all questions equally,
-                simply assign each question the same number of points. The gradeomatic will translate the letter
-                grade into a fixed percentage of the total possible points.</p>
-
-            <p class="answer">If all questions count equally, we recommend assigning each question 100 points.</p>
-
-            @include('help.partials.related_links', ['relatedLinks' =>
-           [
-               ['id' => 'questionFeedbackOnly', 'text' => 'Giving feedback only']
-           ]])
+            <p class="answer">If you want all questions to count equally toward the overall exam grade, assign each question the same number of points. If all questions count equally, we recommend assigning each question 100 points.</p>
         </div>
 
         <div class="col-lg-6">
@@ -101,7 +99,6 @@
         </div>
     </div>
 
-
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">If you want some questions to count more toward the final grade than others,
@@ -109,7 +106,8 @@
 
             <p class="answer">For example, if Question 1 and Question 2 are each worth
                 25% of the grade, and Question 3 is worth 50%, you could set the maximum scores for Question 1
-                and Question 2 to 100, and the maximum score for Question 3 to 200 points (alternatively: Q1 = 25 points, Q2 = 25 points, and Q3 = 50 points).
+                and Question 2 to 100, and the maximum score for Question 3 to 200 points (alternatively: Q1 = 25
+                points, Q2 = 25 points, and Q3 = 50 points).
             </p>
         </div>
         <div class="col-lg-6">
@@ -130,6 +128,16 @@
 'caption' => 'Three questions with different point values'])
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            @include('help.partials.related_links', ['relatedLinks' =>
+          [
+              ['id' => 'questionFeedbackOnly', 'text' => 'Giving feedback only']
+          ]])
+        </div>
+        <div class="col-lg-6"></div>
+    </div>
 </section>
 
 
@@ -138,8 +146,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">To change the order of questions click and hold the 'Move' button for the question
-                whose position you want to change.</p>
+            <p class="answer">To change the order of questions click and hold the <span class="btn btn-info btn-sm"><span class="glyphicon glyphicon-move" aria-hidden="true"></span>Move</span> button for the question whose position you want to change.</p>
 
             <p class="answer">While holding the button down, drag the question to its new position.</p>
         </div>
@@ -172,8 +179,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">No changes to the questions are saved until you click 'Add/Edit
-                elements'.</p>
+            <p class="answer">No changes to the questions are saved until you click <code>Add/Edit elements</code>.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -190,7 +196,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">To remove a question, click its 'Delete' button.</p>
+            <p class="answer">To remove a question, click its <span class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span>Delete</span> button.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -203,18 +209,13 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">When you click the button, a dialog will pop up asking you to confirm the
-                deletion.</p>
+            <p class="answer">When you click the button, a confirmation dialog will pop up.</p>
 
-            <p class="answer">Once you confirm by clicking 'Delete' in the pop up, the question will disappear from
-                the screen. However, the question is not deleted from the database until you click 'Add/Edit
-                Elements'</p>
+            <p class="answer">Once you confirm by clicking <code>Delete</code> in the pop up, the question will disappear from
+                the screen. However, the question will not actually be deleted from the database until you click <code>Add/Edit
+                Elements</code></p>
 
-            <p class="answer">Please be very careful with deleting questions. If a question is deleted, all student
-                scores for that question are permanently removed. Any elements associated with the question are also deleted,
-                along
-                with any
-                student scores for those elements.</p>
+            <p class="answer">Please be very careful with deleting questions. If a question is deleted, all student scores for that question are permanently removed. Any elements associated with the question are also deleted, along with any student scores for those elements.</p>
 
             <p class="answer text-danger"><strong>There is no way to undo the deletion or to recover the lost data</strong></p>
         </div>

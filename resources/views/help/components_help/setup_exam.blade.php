@@ -1,4 +1,9 @@
 <section id="{{\App\ViewTools\HelpLinks::$examWhat['id']}}" class="group">
+    @include('help.partials.section_top_picture',
+['imageFile' => 'exam/exam_setup.jpg',
+'altText' =>"The Create Exam page",
+'caption' => 'The Create Exam page'])
+
     <h4 class="text-center">What exams are</h4>
 
     <div class="row">
@@ -16,14 +21,17 @@
                         href="#{{\App\ViewTools\HelpLinks::$instructSectionElementSetup['id']}}">elements</a>.
             </p>
 
+
         </div>
+
         <div class="col-lg-6">
+            <p class="answer">The following table summarizes the fields which comprise an exam. If a field is <em>Required</em>, you must enter a value in order to create the exam. If a field is <em>Optional</em>, you may choose to leave it blank. The <em>Visible to Students</em> column indicates whether the content of the field will be shown to your students.</p>
             @include('help.partials.field_table', ['fields' => [
               ['name' => 'Exam name', 'required' => true, 'visible' => true],
               ['name' => 'Term', 'required' => true, 'visible' => true],
               ['name' => 'Year', 'required' => true, 'visible' => true]
               ],
-              'caption' => 'Exam'])
+              'caption' => 'Components of an exam'])
         </div>
     </div>
 </section>
@@ -31,18 +39,10 @@
 
 <section id="{{\App\ViewTools\HelpLinks::$examCreate['id']}}" class="group">
     <h4 class="text-center">Create exam</h4>
-    @include('help.partials.section_top_picture',
-    ['imageFile' => 'exam/exam_setup.jpg',
-    'altText' =>"The Create Exam page",
-    'caption' => 'The Create Exam page'])
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Enter a short descriptive name in the exam name box. </p>
-
-            <p class="answer">This name will be used when you select the exam in several different places. It will also
-                be
-                displayed as part of the feedback your students see.</p>
+            <p class="answer">Enter a short descriptive name in the <code>Exam Name</code> box. This will be the name you see in various lists of your exams. It will also be displayed as part of the feedback your students see.</p>
             <blockquote>
                 <h6>Example</h6>
 
@@ -65,9 +65,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">
-                Use the dropdown menu to select the term in which you are giving the exam. The term field is required.
-            </p>
+            <p class="answer">Use the dropdown menu to select the term in which you are giving the exam. The term is required.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -79,12 +77,10 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Use the dropdown menu to select the year in which you are giving the exam. The year field
-                is
-                required.</p>
+            <p class="answer">Use the dropdown menu to select the year in which you are giving the exam. The year is required.</p>
 
-            <p class="answer">Once the name is filled in, and the term and year are selected, click 'Add/Edit Questions'
-                to save the exam, and move on to the next step.</p>
+            <p class="answer">Once the name is filled in and the term and year are selected, click <code>Add/Edit Questions</code>
+                to save the exam and move on to the next step.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -100,16 +96,9 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">
-                If you give the same or similar exams in multiple semesters, you can save virtually all of the setup
-                time by
-                cloning a past exam.
-            </p>
+            <p class="answer">If you give the same or similar exams in multiple semesters, you can save virtually all of the setup time by cloning a past exam.</p>
 
-            <p class="answer">
-                The cloning process duplicates all the questions, elements, and feedback from the parent exam. It does not
-                duplicate the parent exam's roster, student scores, or any individualized feedback.
-            </p>
+            <p class="answer">The cloning process duplicates all the questions, elements, and feedback from the parent exam. It does not duplicate the parent exam's roster, student scores, or any individualized feedback.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -121,10 +110,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">
-                The newly created exam will be named 'Clone of ' followed by the original exam's name. Click 'Edit' to use the exam edit
-                page to rename and update the term and year.
-            </p>
+            <p class="answer">The newly created exam will be named 'Clone of ' followed by the original exam's name. Click <code>Edit</code> to use the exam edit page to rename and update the term and year.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',

@@ -17,7 +17,13 @@
                 <li>Elements let you compare student performance across superficially very different exams</li>
             </ol>
         </div>
+
         <div class="col-lg-6">
+            <p class="answer">The following table summarizes the fields that comprise an element. If a field is <em>Required</em>,
+                you must enter a value in order to create the element. If a field is <em>Optional</em>, you may choose
+                to leave it blank. The <em>Visible to Students</em> column indicates whether the content of the field
+                will be shown to your students.</p>
+
             @include('help.partials.field_table', ['fields' => [
             ['name' => 'Element name', 'required' => true, 'visible' => true],
             ['name' => 'Element response', 'required' => false, 'visible' => true],
@@ -26,7 +32,7 @@
             ['name' => 'Element response: Fair', 'required' => false, 'visible' => true],
             ['name' => 'Element response: Excellent', 'required' => false, 'visible' => true],
             ],
-              'caption' => 'Element'])
+              'caption' => 'Components of an element'])
         </div>
     </div>
 
@@ -111,7 +117,7 @@
                 the
                 element.</p>
 
-            <p class="answer">In <em>Element Response</em>, enter a basic description of what the student should do to
+            <p class="answer">In <code>Element Response</code>, enter a basic description of what the student should do to
                 fully
                 answer the element.</p>
             <blockquote class="example">
@@ -147,9 +153,7 @@
                 you may
                 stop here.</p>
 
-            <p class="answer">Pressing the "Customize Response" button allows you to further customize the
-                text to
-                reflect performance.</p>
+            <p class="answer">Pressing the <span class="btn btn-info btn-sm"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Customize Responses</span> button allows you to further customize the text to reflect performance.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -338,22 +342,12 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">To add additional elements, click "Add Element"</p>
+            <p class="answer">To add additional elements, click <span class="btn btn-primary"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Element</span></p>
 
             <blockquote>
                 <h6>Example: Stock response</h6>
 
-                <p>You need to explain the role doubt plays in Descartes method. He is using a principle like "If I can
-                    find
-                    grounds for doubting that a kind of belief is true, then no beliefs of that sort count as
-                    knowledge".
-                    So, for example, if we're talking about beliefs based on seeing things in the distance, I might
-                    believe
-                    that I see a plane. But then someone points out that birds are often confused with faraway planes.
-                    Now I
-                    can't say that I know that object in the distance is a plane until I can be sure that it is not a
-                    bird.
-                </p>
+                <p>You need to explain the role doubt plays in Descartes method. He is using a principle like "If I can find grounds for doubting that a kind of belief is true, then no beliefs of that sort count as knowledge". So, for example, if we're talking about beliefs based on seeing things in the distance, I might believe that I see a plane. But then someone points out that birds are often confused with faraway planes. Now I can't say that I know that object in the distance is a plane until I can be sure that it is not a bird.</p>
             </blockquote>
         </div>
         <div class="col-lg-6">
@@ -385,7 +379,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">None of your edits are saved until you click 'Next question' </p>
+            <p class="answer">None of your edits are saved until you click <code>Next question</code> </p>
         </div>
         <div class="col-lg-6">
 

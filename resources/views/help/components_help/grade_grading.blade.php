@@ -3,9 +3,8 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">When you are done setting up the exam and ready to grade, click 'Grade' in the navigation
-                bar
-                at the top of the page.</p>
+            <p class="answer">When you are done setting up the exam and ready to grade, click <code>Grade</code> in the
+                navigation bar at the top of the page.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -32,7 +31,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Click Grade to start grading the exam</p>
+            <p class="answer">Click <span class="btn btn-primary" title="Grade exam"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Grade</span> to start grading the exam</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -62,7 +61,7 @@
     <div class="row">
         <div class="col-lg-6">
             <p class="answer">If you prefer to grade exams without knowing the students' names, click the pencil
-                icon. The student names will be replaced by 'Name Hidden'. It may help to click 'ID' to sort the list of
+                icon. The student names will be replaced by 'Name Hidden'. It may help to click <code>ID</code> to sort the list of
                 students by student id.</p>
         </div>
         <div class="col-lg-6">
@@ -75,9 +74,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">You may also search for a student by clicking on the name or id display boxes at the top
-                and
-                start typing. An autocomplete box will appear and allow you to select the appropriate student</p>
+            <p class="answer">You may also search for a student by clicking on the <code>Name</code> or <code>ID</code> display boxes at the top and start typing. An autocomplete box will appear and allow you to select the appropriate student</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -106,10 +103,8 @@
         <div class="col-lg-6">
             <p class="answer">The dashboard displays statistics to keep you motivated and grading quickly.</p>
 
-            <p class="answer">The button marked 'Pause' or 'Start' manually starts and stops the timer. When you take a
-                break, it's a good idea to click pause. Otherwise the timer will keep running for the last exam you
-                graded.
-                This will throw off the average time and reduce the accuracy of the estimated remaining time.</p>
+            <p class="answer">The button marked <code>Pause</code> or <code>Start</code> manually starts and stops the timer. When you take a
+                break, it's a good idea to click pause. Otherwise the timer will keep running for the last exam you graded. This will throw off the average time and reduce the accuracy of the estimated remaining time.</p>
 
             <p class="answer">The fields displayed in the dashboard are</p>
 
@@ -168,15 +163,21 @@
         <div class="col-lg-6">
             <p class="answer">
                 After reading the student's response, move the slider to a value that corresponds to the student's
-                performance (values in between the circles are fine). This will record a numeric value that you can use for assessment. The slider value won't affect the question grade, but it will affect the feedback given to the student.</p>
+                performance (values in between the circles are fine). This will record a numeric value that you can use
+                for assessment. The slider value won't affect the question grade, but it will affect the feedback given
+                to the student.</p>
 
             <p class="answer">If you wish to tailor the student's feedback individually, modify the text box next to
                 that
                 element. The text you enter will be shown to that student alone.</p>
 
             <p class="answer">
-                As you move a slider, you will notice that the text in the box to the right of the slider will update to contain the text you entered for that level of competence. If you did not customize the text for each degree of performance
-                when you created the element, the text will not change as you move the slider. However, even if you have no feedback set, the score indicated by the slider will still be recorded so you can use it in improving your course.
+                As you move a slider, you will notice that the text in the box to the right of the slider will update to
+                contain the text you entered for that level of competence. If you did not customize the text for each
+                degree of performance
+                when you created the element, the text will not change as you move the slider. However, even if you have
+                no feedback set, the score indicated by the slider will still be recorded so you can use it in improving
+                your course.
             </p>
         </div>
         <div class="col-lg-6">
@@ -197,7 +198,10 @@
             <p class="answer">If the student didn't need to answer a question, simply leave the
                 score area blank.</p>
 
-            <p class="answer">One small quirk that you may notice is that once a grade is entered for at least one question, the student's exam is considered graded for timing and release purposes. For example, the values used in calculating the time remaining will update. This was necessary to accommodate exams which give students multiple options of which questions to answer.</p>
+            <p class="answer">You may notice that once a grade is entered for at least one
+                question, the student's exam is considered graded for timing and release purposes. For example, the
+                values used in calculating the time remaining will update. This was necessary to accommodate exams which
+                give students multiple options of which questions to answer.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -217,7 +221,7 @@
             <p class="answer">
                 There are two ways to enter a score for a question.</p>
 
-            <p class="answer">You may type a score in the Score box. Make sure it is a number and less than the maximum
+            <p class="answer">You may type a score in the <code>Score</code> box. Make sure it is a number and less than the maximum
                 score.</p>
         </div>
         <div class="col-lg-6">
@@ -267,7 +271,8 @@
             <p class="answer">
                 Unlike the setup pages where no changes were saved until you moved to the next step, during grading,
                 every
-                time you move a slider, click a button, or type in a box and then click somewhere else on the page, the gradeomatic
+                time you move a slider, click a button, or type in a box and then click somewhere else on the page, the
+                gradeomatic
                 sends all the data for the current exam to the server.
             </p>
 

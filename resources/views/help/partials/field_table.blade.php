@@ -5,7 +5,7 @@
         <tr>
             <th>Field</th>
             <th>Required</th>
-            <th>Visible to student</th>
+            <th>Visible to students</th>
         </tr>
         </thead>
         <tbody>

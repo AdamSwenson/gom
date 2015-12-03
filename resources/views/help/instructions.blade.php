@@ -5,6 +5,7 @@
 @endsection
 
 @section('mainText')
+    @include('help.components_help.intro_note')
     <section id="{{\App\ViewTools\HelpLinks::$instructSectionOverview['id']}}" class="group">
         <h2>Overview</h2>
 

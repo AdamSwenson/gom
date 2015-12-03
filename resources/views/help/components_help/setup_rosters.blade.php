@@ -1,3 +1,4 @@
+
 <section id="{{\App\ViewTools\HelpLinks::$rosterWhat['id']}}" class="group">
     <h4 class="text-center">Rosters: Associating students with an exam</h4>
 
@@ -31,7 +32,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">To import students, click 'Edit Student Roster' on the exam setup page. You will also be
+            <p class="answer">To import students, click <code>Edit Student Roster</code> on the exam setup page. You will also be
                 automatically taken to the import students page after you save elements for the last question.
             </p>
         </div>
@@ -164,7 +165,7 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Once your csv file is prepared, click Import Students</p>
+            <p class="answer">Once your csv file is prepared, click <span class="btn btn-primary btn-file"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Import Roster</span></p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -194,7 +195,7 @@
                 location</p>
 
             <p class="answer">You can sort the list by clicking on the column title you want to sort by. For example, to
-                sort by first name, click the 'First Name' at the top of the table.</p>
+                sort by first name, click the <code>First Name</code> at the top of the table.</p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -211,7 +212,7 @@
         <div class="col-lg-6">
             <p class="answer">If you need to edit or correct student information, click on the item to be edited and type your changes.</p>
 
-            <p class="answer">If you need to add a student by hand, click 'Add Student'</p>
+            <p class="answer">If you need to add a student by hand, click <span class="btn btn-primary"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Student </span></p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',
@@ -303,8 +304,8 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Press "Save & Finish" to save any changes to the roster. Note that any changes you make
-                will not be saved until you press "Save & Finish"</p>
+            <p class="answer">Press <code>Save & Finish</code> to save any changes to the roster. Note that any changes you make
+                will not be saved until you press <code>Save & Finish</code></p>
         </div>
         <div class="col-lg-6">
             @include('help.partials.picture_container',

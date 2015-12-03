@@ -10,6 +10,14 @@
     {{--</div>--}}
 </section>
 
+<section id="{{\App\ViewTools\HelpLinks::$faqOtherPermanentDeletion['id']}}" class="group">
+    {{--<div class="infoItem">--}}
+        {{--<p class="lead"><strong>Q.</strong> Why is deleting student data permanent?</p>--}}
+
+        {{--<p>There are a number of legal and technical reasons for this. Basically, the laws governing student data privacy.... </p>--}}
+    {{--</div>--}}
+</section>
+
 <section id="{{\App\ViewTools\HelpLinks::$faqOtherCreator['id']}}" class="group">
     <div class="infoItem">
         <p class="lead"><b>Q.</b> What is the gradeomatic? Who created it?</p>

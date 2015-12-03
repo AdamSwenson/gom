@@ -151,6 +151,7 @@ class HelpLinks
 
 //Other
     static public $faqOtherSecurity = ['id' => 'faqSecureData', 'text' => 'Student data security'];
+    static public $faqOtherPermanentDeletion = ['id' => 'faqPermanentDeletion', 'text' => 'Why is there no way to recover deleted data?'];
     static public $faqOtherCreator = ['id' => 'faqCreator', 'text' => 'Who created this?'];
     static public $faqOtherSupport = ['id' => 'faqSupportGom', 'text' => 'How can I contribute?'];
 
