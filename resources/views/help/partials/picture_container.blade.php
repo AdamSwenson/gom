@@ -3,7 +3,7 @@ $imageFile = asset('images/' . $imageFile)
 ?>
 <figure class="figure">
 
-    <p class="text-right clickNote">Click to enlarge</p>
+    {{--<p class="text-right clickNote">Click to enlarge</p>--}}
 
     <p class="picture">
         <img src="{{ $imageFile }}"
