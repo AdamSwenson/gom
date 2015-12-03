@@ -1,3 +1,32 @@
+<section id="{{ \App\ViewTools\HelpLinks::$faqSetupGradeOnly['id'] }}" class="group">
+    <div class="infoItem">
+        <p class="lead"><b>Q.</b> I'm grading a final exam. Do I have to give feedback?</p>
+
+        <p class="answer">No. You can use the gradeomatic just to record grades without giving feedback. This may still save you a lot of time. Each small administrative task adds up quickly when you have large classes. Indeed, the gradeomatic was born during budget cuts and exploding class sizes when the creator realized that spending an extra 30 seconds on each of 120 exams drained an hour from his life.</p>
+
+        <p class="answer"><b>Q.</b> Great. So how do I do that?</p>
+
+        <ol>
+            <li><a href="#{{\App\ViewTools\HelpLinks::$examCreate['id']}}">Create</a> the exam.</li>
+            <li><a href="#{{\App\ViewTools\HelpLinks::$questionCreate['id']}}">Create</a> the questions. </li>
+            <li>After creating the questions, you will be sent to the create elements page. If you want to use elements for assessment, only fill in the <code>Element Name</code> field. If you do not want to use elements, you may find yourself trapped by an error message when you try to save a blank element by clicking <code>Edit Questions</code> or </code><code>Next Question</code>. Instead, click <code>Setup</code> in the navigation bar at the top. This will take you back to the list of exams.</li>
+            <li>We still need to add students. So, on the list of exams, click <code>Edit</code>. This will take you back to the page where you created the exam.</li>
+            <li>From the exam creation/editing page, click <code>Edit Student Roster</code></li>
+            <li>Follow the instructions for <a href="#{{\App\ViewTools\HelpLinks::$rosterPrep['id']}}">preparing</a> and <a href="#{{\App\ViewTools\HelpLinks::$rosterImport['id']}}">uploading</a> your roster. You won't be emailing students, so don't upload them.</li>
+            <li>Click <code>Grade</code> in the navigation bar. </li>
+            <li>Follow the instructions for <a href="#{{\App\ViewTools\HelpLinks::$gradeExamSelect['id']}}">grading</a> your students' exams</li>
+            <li>(Optional) <a href="{{\App\ViewTools\HelpLinks::$assignSetCutoffs['id']}}">Adjust</a> the grade distributions.</li>
+            <li><a href="#{{\App\ViewTools\HelpLinks::$exportHow['id']}}">Export</a> the grades to your gradebook. </li>
+            <li>Enjoy a refreshing post-grading beverage.</li>
+        </ol>
+
+        <p class="answer"><b>Q.</b> Oy vey. That was complicated. Did it have to be so hard?</p>
+        <p class="answer">Yeah, sorry about that. Everyone grades in different ways. So the system has to be really flexible. But if we made every part completely customizable, no one would be able to figure out how to use the thing. This is one place where the trade-offs are really noticeable and the compromise is the result of several head-shaped dents in my desk. Creative suggestions are very welcome....</p>
+
+    </div>
+</section>
+
+
 <section id="{{\App\ViewTools\HelpLinks::$faqRosterCsvWhat['id']}}" class="group">
     <div class="infoItem">
         <p class="lead"><b>Q.</b> What's a .csv file? How do I make one?</p>
@@ -16,8 +45,10 @@
             to warn you that saving as a .csv file will lose all the file's formatting. If this is a problem, make sure
             you've saved the file as a normal
             spreadsheet (.xls or .xlsx) before proceeding. Once you're ready, click Confirm.</p>
+        <p class="answer">See <a href="#{{\App\ViewTools\HelpLinks::$rosterPrep['id']}}">{{\App\ViewTools\HelpLinks::$rosterPrep['text']}}</a> for more detailed instructions.</p>
     </div>
 </section>
+
 
 
 <section id="{{\App\ViewTools\HelpLinks::$faqRosterErrors['id']}}" class="group">

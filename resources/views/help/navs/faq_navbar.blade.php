@@ -2,6 +2,7 @@
     <a href="#{{\App\ViewTools\HelpLinks::$faqSectionSetup['id']}}">Setup</a>
     <ul class="nav nav-stacked">
         @include('help.partials.simple_links', ['links' => [
+           ['id' =>  \App\ViewTools\HelpLinks::$faqSetupGradeOnly['id'], 'text' => \App\ViewTools\HelpLinks::$faqSetupGradeOnly['text'] ],
          ['id' => 'faqCsvWhat', 'text' => '.csv files? What?'],
          ['id' => 'faqRosterBad', 'text' => 'Roster import errors'],
          ['id' => 'faqHowSave', 'text' => 'How do I save my edits?'],
