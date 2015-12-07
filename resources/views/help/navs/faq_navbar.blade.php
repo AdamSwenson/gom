@@ -33,7 +33,7 @@
     <a href="#{{\App\ViewTools\HelpLinks::$faqSectionOther['id']}}">Other</a>
     <ul class="nav nav-stacked">
         @include('help.partials.simple_links', ['links' => [
-            ['id' => 'faqSecureData', 'text' => 'Student data security'],
+          //  ['id' => 'faqSecureData', 'text' => 'Student data security'],
             ['id' => 'faqCreator', 'text' => 'Who created this?'],
             ['id' => 'faqSupportGom', 'text' => 'How can I contribute?']
       ]])

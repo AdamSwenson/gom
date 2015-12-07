@@ -5,18 +5,26 @@
 @endsection
 
 @section('mainText')
-    <h3><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Gradeomatic FAQ</h3>
+    <h2><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Gradeomatic FAQ</h2>
 
-    <div class="infoItem">
-        <p class="lead"><b>Q.</b> Where can I get help?</p>
+    <section class="group">
+        <div class="panel panel-default">
 
-        <p>Check the <a href="{{url('info/instructions')}}">instructions page</a> for basic information on how to use the site.</p>
 
-        <p>Our growing library of <a href="{{ url('info/tutorials') }}">tutorial videos</a> may also help.</p>
+            <div class="infoItem">
+                <p class="lead"><b>Q.</b> Where can I get help?</p>
 
-        <p>You may also contact us at {{ env('CONTACT_EMAIL') }}. We will make every effort to reply as quickly as we can. But please be aware that, right now, we have no employees. So it is unlikely that we will reply right away. </p>
-    </div>
+                <p>Check the <a href="{{url('info/instructions')}}">instructions page</a> for basic information on how
+                    to use the site.</p>
 
+                <p>Our growing library of <a href="{{ url('info/tutorials') }}">tutorial videos</a> may also help.</p>
+
+                <p>You may also contact us at {{ env('CONTACT_EMAIL') }}. We will make every effort to reply as quickly
+                    as we can. But please be aware that, right now, we have no employees. So it is unlikely that we will be able to
+                    reply right away. </p>
+            </div>
+        </div>
+    </section>
     <section id="{{\App\ViewTools\HelpLinks::$faqSectionSetup['id']}}" class="group">
         <div class="panel panel-default">
 
