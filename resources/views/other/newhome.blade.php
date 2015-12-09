@@ -311,7 +311,7 @@ function drawChart(elementNumber, title, score, average)
                     } else {
                         i = 0;
                     }
-                }, 2000);
+                }, 5000);
 //            }
 
 //            google.setOnLoadCallback(start);
