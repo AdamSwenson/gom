@@ -15,17 +15,20 @@
             'Explain the dreaming doubt'
     ];
     ?>
-    <div class="row">
-        <div class="col-md-5">
-            <h1 class="text-center">Do this</h1>
-        </div>
-        <div class="col-md-6">
-            <h1 class="text-center">Give your students this</h1>
-        </div>
-    </div>
+    {{--<div class="row">--}}
+        {{--<div class="col-md-5">--}}
+            {{--<h1 class="text-center">Do this</h1>--}}
+        {{--</div>--}}
+        {{--<div class="col-md-6">--}}
+            {{--<h1 class="text-center">Give your students this</h1>--}}
+        {{--</div>--}}
+    {{--</div>--}}
 
     <div class="row">
         <div class="col-md-5">
+            <div class="row">
+                     <h1 class="text-center">Do this</h1>
+
             <div class="row">
                 <div class="col-md-12">
                     <!-- question panel -->
@@ -136,6 +139,7 @@
 
         {{--Comments side--}}
         <div class="col-md-7">
+            <h1 class="text-center">Give your students this</h1>
             <div class="row">
                 <div class="col-md-12">
                     <p class="text-left"><strong>Student name:</strong> <mark>Smith, Jane</mark></p>
