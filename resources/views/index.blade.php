@@ -8,7 +8,7 @@
 
     <?php
     $qNumber = 1;
-    $questionName = "Descartes Cogito argument";
+    $questionName = "Descartes' Cogito argument";
     $elements = [
             "Explain Descartes' goal",
             'Explain role of doubt',
