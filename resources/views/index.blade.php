@@ -15,19 +15,9 @@
             'Explain the dreaming doubt'
     ];
     ?>
-    {{--<div class="row">--}}
-        {{--<div class="col-md-5">--}}
-            {{--<h1 class="text-center">Do this</h1>--}}
-        {{--</div>--}}
-        {{--<div class="col-md-6">--}}
-            {{--<h1 class="text-center">Give your students this</h1>--}}
-        {{--</div>--}}
-    {{--</div>--}}
-
     <div class="row">
         <div class="col-md-5">
-            <div class="row">
-                     <h1 class="text-center">Do this</h1>
+            <h1 class="text-center">Do this</h1>
 
             <div class="row">
                 <div class="col-md-12">
@@ -73,14 +63,14 @@
                                                     <input class="slider" id="slider1" type="text"/>
                                                 </span>
                                                 {{--<div class="row">--}}
-                                                    <!-- comment area -->
-                                        {{--<span class="col-md-12" style="background-color: #DDDDDD; padding-left: 0;">--}}
-                                            {{--<textarea class="form-control"--}}
-                                                      {{--rows="4"--}}
-                                                      {{--id="comment1"--}}
-                                                      {{--placeholder="No score for this element">--}}
-                                            {{--</textarea>--}}
-                                        {{--</span>--}}
+                                                        <!-- comment area -->
+                                                {{--<span class="col-md-12" style="background-color: #DDDDDD; padding-left: 0;">--}}
+                                                {{--<textarea class="form-control"--}}
+                                                {{--rows="4"--}}
+                                                {{--id="comment1"--}}
+                                                {{--placeholder="No score for this element">--}}
+                                                {{--</textarea>--}}
+                                                {{--</span>--}}
                                                 {{--</div>--}}
 
                                             </div>
@@ -96,12 +86,12 @@
                                                 </span>
                                                 <!-- comment area -->
                                                 {{--<span class="col-lg-7"--}}
-                                                      {{--style="background-color: #DDDDDD; padding-left: 0;">--}}
-                                                    {{--<textarea class="form-control"--}}
-                                                              {{--rows="4"--}}
-                                                              {{--id="comment2"--}}
-                                                              {{--placeholder="No score for this element">--}}
-                                                    {{--</textarea>--}}
+                                                {{--style="background-color: #DDDDDD; padding-left: 0;">--}}
+                                                {{--<textarea class="form-control"--}}
+                                                {{--rows="4"--}}
+                                                {{--id="comment2"--}}
+                                                {{--placeholder="No score for this element">--}}
+                                                {{--</textarea>--}}
                                                 {{--</span>--}}
                                             </div>
                                         </div>
@@ -116,12 +106,12 @@
                                                     <input class="slider" id="slider3" type="text"/>
                                                 </span>
                                                 {{--<span class="col-lg-7"--}}
-                                                      {{--style="background-color: #DDDDDD; padding-left: 0;">--}}
-                                                    {{--<textarea class="form-control"--}}
-                                                              {{--rows="4"--}}
-                                                              {{--id="comment3"--}}
-                                                              {{--placeholder="No score for this element">--}}
-                                                    {{--</textarea>--}}
+                                                {{--style="background-color: #DDDDDD; padding-left: 0;">--}}
+                                                {{--<textarea class="form-control"--}}
+                                                {{--rows="4"--}}
+                                                {{--id="comment3"--}}
+                                                {{--placeholder="No score for this element">--}}
+                                                {{--</textarea>--}}
                                                 {{--</span>--}}
                                             </div>
                                         </div>
@@ -142,9 +132,13 @@
             <h1 class="text-center">Give your students this</h1>
             <div class="row">
                 <div class="col-md-12">
-                    <p class="text-left"><strong>Student name:</strong> <mark>Smith, Jane</mark></p>
+                    <p class="text-left"><strong>Student name:</strong>
+                        <mark>Smith, Jane</mark>
+                    </p>
 
-                    <p class="text-left"><strong>Grade:</strong> <mark><span id="gradeSpot"></span></mark></p>
+                    <p class="text-left"><strong>Grade:</strong>
+                        <mark><span id="gradeSpot"></span></mark>
+                    </p>
                 </div>
             </div>
 
@@ -246,13 +240,12 @@
 
 
             function imposeContent(num, textArray, valence) {
-              //  $('#comment' + num).empty().append(textArray[valence][1]);
+                //  $('#comment' + num).empty().append(textArray[valence][1]);
                 $('#commentPara' + num).empty().append(textArray[valence][1]);
                 $('#slider' + num).slider('setValue', textArray[valence][0]);
             }
 
-            function setGrade(index)
-            {
+            function setGrade(index) {
                 var scores = [
                     [55, 'F'],
                     [78, 'C+'],
@@ -265,58 +258,57 @@
                 $('#gradeSpot').empty().append(scores[index][1]);
             }
 
-function drawChart(elementNumber, title, score, average)
-{
-    var options = {
-        title: "How you did versus class average ",
-        width: 300,
-        height: 200,
-        bar: {groupWidth: "65%"},
-        legend: {position: "top"},
-        vAxis: {
-            viewWindowMode:'explicit',
-            viewWindow: {
-                max:10,
-                min:0
+            function drawChart(elementNumber, title, score, average) {
+                var options = {
+                    title: "How you did versus class average ",
+                    width: 300,
+                    height: 200,
+                    bar: {groupWidth: "65%"},
+                    legend: {position: "top"},
+                    vAxis: {
+                        viewWindowMode: 'explicit',
+                        viewWindow: {
+                            max: 10,
+                            min: 0
+                        }
+                    }
+                };
+
+                //Prepare the data
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'question');
+                data.addColumn('number', 'Your Score');
+                data.addColumn('number', 'Class Average');
+
+                data.addRow([title, score, average]);
+                var chartTarget = 'chart' + elementNumber;
+                var chart = new google.visualization.ColumnChart(document.getElementById(chartTarget));
+                chart.draw(data, options);
+
             }
-        }
-    };
-
-    //Prepare the data
-    var data = new google.visualization.DataTable();
-    data.addColumn('string', 'question');
-    data.addColumn('number', 'Your Score');
-    data.addColumn('number', 'Class Average');
-
-    data.addRow([title, score, average]);
-    var chartTarget = 'chart' + elementNumber;
-    var chart = new google.visualization.ColumnChart(document.getElementById(chartTarget));
-    chart.draw(data, options);
-
-}
 
             const SPEED = 3000;
 
             var i = 0;
 //            var start = function() {
-                var timer = setInterval(function () {
-                    imposeContent(1, e1, i);
-                    drawChart(1, elements[0], e1[i][0], 4.5);
+            var timer = setInterval(function () {
+                imposeContent(1, e1, i);
+                drawChart(1, elements[0], e1[i][0], 4.5);
 
-                    imposeContent(2, e2, i);
-                    drawChart(2, elements[1], e2[i][0], 6.5);
+                imposeContent(2, e2, i);
+                drawChart(2, elements[1], e2[i][0], 6.5);
 
-                    imposeContent(3, e3, i);
-                    drawChart(3, elements[2], e3[i][0], 2.5);
+                imposeContent(3, e3, i);
+                drawChart(3, elements[2], e3[i][0], 2.5);
 
-                    setGrade(i);
+                setGrade(i);
 
-                    if (i < 3) {
-                        i += 1;
-                    } else {
-                        i = 0;
-                    }
-                }, SPEED);
+                if (i < 3) {
+                    i += 1;
+                } else {
+                    i = 0;
+                }
+            }, SPEED);
 //            }
 
 //            google.setOnLoadCallback(start);
