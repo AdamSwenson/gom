@@ -92,4 +92,7 @@ figure.figure ul li img {
 .docs-sidebar .nav > .active > ul.nav {
   display: block; }
 
+.example {
+  font-size: smaller; }
+
 /*# sourceMappingURL=help-styles.css.map */
