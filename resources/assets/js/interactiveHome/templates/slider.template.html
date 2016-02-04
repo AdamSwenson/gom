@@ -1,0 +1,15 @@
+<div class="list-group">
+    <div class="list-group-item" style="background-color: #DDDDDD;">
+        <h5>Element #{{ elementNumber}}: "{{ elementName }}"</h5>
+{{ sliderValue }}
+        <div class="row">
+                        <span class="col-md-12" style="padding-right: 0px;">
+                        <input
+                                v-model="sliderValue"
+                                type="text"
+                                v-slider="sliderValue"
+                        />
+                </span>
+        </div>
+    </div>
+</div>
