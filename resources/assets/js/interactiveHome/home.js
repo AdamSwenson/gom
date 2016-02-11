@@ -5,13 +5,16 @@
 
 var $ = require('jquery');
 window.$ = $;
-//require('jquery-ui');
-require('bootstrap');
-//require('bootstrap-slider')
 
-var Slider = require("bootstrap-slider");
+//require('jquery-ui');
+
+require('bootstrap');
+
+//var Slider = require("bootstrap-slider");
+var Slider = require("../libraries/bootstrap-slider.js");
 
 var Vue = require('vue');
+
 Vue.config.debug = true;
 
 
@@ -19,21 +22,18 @@ new Vue({
     el: '#app',
 
     components: {
-        'slider': require('./components/slider.js')
+        slider: require('./components/slider.js'),
+        instructions: require('./components/popovers.js')
     },
 
     data: {
-        questionScore: 0,
+        stored : {
+            questionScore: 0
+        },
 
         qNumber: 1,
 
         questionName: "Descartes' Cogito argument",
-
-        slider1: '',
-
-        slider2: '',
-
-        slider3: 0,
 
         grade: '',
 
@@ -101,16 +101,20 @@ new Vue({
     },
 
     computed: {
-        //questionScore: function(){
-        //    this.slider1 + this.slider2
-        //}
+        questionScore: {
+            get: function(){
+                return this.stored.questionScore;
+            },
+
+            set: function(val){
+                this.stored.questionScore = val;
+                this.updateGrade();
+            }
+        }
     },
 
     events: {
-        slideStop: function () {
-            window.console.log(this);
-        }
-    },
+          },
 
     methods: {
         chooseValence: function (val) {
@@ -128,64 +132,71 @@ new Vue({
             }
         },
 
-        updateComment: function (elementNumber, valence) {
+        updateComment: function (elementNumber, valence, score) {
 
             switch (elementNumber) {
                 case 1:
                     this.commentPara1 = this.comments.e1[valence];
+                    this.drawChart(elementNumber, this.elements[0], score, 4.5);
                     break;
                 case 2:
                     this.commentPara2 = this.comments.e2[valence];
+                    this.drawChart(elementNumber, this.elements[1], score, 6.5);
                     break;
                 case 3:
                     this.commentPara3 = this.comments.e3[valence];
+                    this.drawChart(elementNumber, this.elements[2], score, 2.5);
                     break;
-                default:
-                    var comment = '';
             }
-
         },
 
-        updateSlider1: function () {
-            window.console.log('updateSlider1', this.slider1);
-            var index = this.chooseValence(this.slider1);
-            this.commentPara1 = this.e1[index];
-        },
-
-        updateSlider2: function () {
-            window.console.log('updateSlider2', this.slider2);
-            var index = this.chooseValence(this.slider2);
-            this.commentPara2 = this.e2[index];
-        },
-
-        updateSlider3: function () {
-            window.console.log('updateSlider3', this.slider3);
-            var index = this.chooseValence(this.slider3);
-            this.commentPara3 = this.e3[index];
-        },
+        //
+        //updateSlider1: function () {
+        //    window.console.log('updateSlider1', this.slider1);
+        //    var index = this.chooseValence(this.slider1);
+        //    this.commentPara1 = this.e1[index];
+        //},
+        //
+        //updateSlider2: function () {
+        //    window.console.log('updateSlider2', this.slider2);
+        //    var index = this.chooseValence(this.slider2);
+        //    this.commentPara2 = this.e2[index];
+        //},
+        //
+        //updateSlider3: function () {
+        //    window.console.log('updateSlider3', this.slider3);
+        //    var index = this.chooseValence(this.slider3);
+        //    this.commentPara3 = this.e3[index];
+        //},
 
         updateGrade: function () {
             window.console.log('updateGrade', this.questionScore);
             var me = this;
             var scores = [
                 [55, 'F'],
+                [62, 'D-'],
+                [65, 'D'],
+                [68, 'D+'],
+                [72, 'C-'],
+                [75, 'C'],
                 [78, 'C+'],
                 [82, 'B-'],
+                [85, 'B'],
+                [88, 'B+'],
                 [92, 'A-'],
                 [95, 'A']
             ];
             var limit = scores.length;
             for (var i = 0; i < limit; i++) {
-                if (this.questionScore <= scores[0]) {
-                    this.grade = scores[1];
+                if (this.questionScore <= scores[i][0]) {
+                    this.grade = scores[i][1];
                     i = limit;
                 }
-
             }
-            ;
         },
 
         drawChart: function (elementNumber, title, score, average) {
+            var score = Number(score);
             //Prepare the data
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'question');
@@ -202,42 +213,27 @@ new Vue({
             window.console.log(this);
         }
 
-        //imposeContent: function (num, textArray, valence) {
-        //    //  $('#comment' + num).empty().append(textArray[valence][1]);
-        //    $('#commentPara' + num).empty().append(textArray[valence][1]);
-        //    $('#slider' + num).slider('setValue', textArray[valence][0]);
-        //},
-        //
-        //setGrade: function (index) {
-        //    var scores = [
-        //        [55, 'F'],
-        //        [78, 'C+'],
-        //        [82, 'B-'],
-        //        [92, 'A-'],
-        //        [95, 'A']
-        //    ];
-        //
-        //    $('#questionScore').empty().val(scores[index][0]);
-        //    $('#gradeSpot').empty().append(scores[index][1]);
-        //}
-
     },
 
+    directives:{
+        spinner: {
+            bind: function () {
+                //$(this.el).spinner({
+                //    step: 1,
+                //    min: 0
+                //});
+            }
+        }
+    },
+
+    //
     ready: function () {
         var me = this;
-        window.console.log('ready1');
-        /* initialize Sliders with valenceCutoffs */
-        var mySlider3 = new Slider("#slider3", {
-            tooltip: 'show',
-            value: 0,
-            step: this.sliderStep,
-            ticks: this.valenceCutoffs,
-            ticks_labels: this.valenceLabels,
-            ticks_position: this.valenceLabels
-        }).on("slideStop", function () {
-            me.updateSlider3();
-            window.console.log('slideStop3', me.slider3, $(this).val());
+        jQuery(function () {
+            jQuery('.instructionTooltip').tooltip('show');
+            //$('[data-toggle="tooltip"]').tooltip()
         });
 
+        window.console.log('ready');
     }
 });

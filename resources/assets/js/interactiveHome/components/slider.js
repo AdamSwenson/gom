@@ -2,6 +2,8 @@
  * Created by adam on 2/3/16.
  */
 
+var $ = require('jquery');
+window.$ = $;
 
 var Slider = require("bootstrap-slider");
 
@@ -17,25 +19,27 @@ module.exports = {
 
     data: function () {
         return {
-            sv: 0,
-            sliderValue: 0,
-            valenceCutoffs: [0, 3.25, 6.75, 10],
-            valenceLabels: ["Missing", "Poor", "Fair", "Excellent"],
-            valenceLabelPositions: [0, 33, 67, 100],
-            sliderStep: .25,
+            storage: {
+                sliderValue: 0
+            },
+            //sliderValue: 0,
+            //valenceCutoffs: [0, 3.25, 6.75, 10],
+            //valenceLabels: ["Missing", "Poor", "Fair", "Excellent"],
+            //valenceLabelPositions: [0, 33, 67, 100],
+            //sliderStep: .25,
         }
     },
 
 
     computed: {
         sliderValue: {
-            set: function(val){
-                this.sv = val;
+            set: function (val) {
+                this.storage.sliderValue = val;
                 this.updateSlider(val);
             },
 
-            get: function(){
-                return this.sv;
+            get: function () {
+                return this.storage.sliderValue;
             }
         }
     },
@@ -43,23 +47,24 @@ module.exports = {
     methods: {
         updateSlider: function (val) {
             var index = this.$parent.chooseValence(val);
-            this.$parent.updateComment(this.elementNumber, index);
+            this.$parent.updateComment(this.elementNumber, index, val);
             window.console.log('updateSlider');
-  //          window.console.log(this.elementNumber, this.sliderValue);
+            //          window.console.log(this.elementNumber, this.sliderValue);
         }
     },
 
     events: {
-      'slideStop': function(v){
-          window.console.log('slide stopped', v);
-      }
+        'slideStop': function (v) {
+            window.console.log('slide stopped', v);
+        }
     },
 
     directives: {
         slider: {
             twoWay: true,
             bind: function () {
-var me = this;
+                window.console.log('bound');
+                var me = this;
                 $(this.el).slider({
                     tooltip: 'show',
                     value: 0,
@@ -76,15 +81,15 @@ var me = this;
 ////                    this.$parent.updateSlider();
 //                });
 
-                $(this.el).change(function() {
+                $(this.el).change(function () {
                     var value = $(this).val();
                     me.set(value);
                 });
-            },
-
-            update: function(){
-                //this.updateSlider();
             }
+            //update: function(){
+            //    window.console.log('j');
+            //}
+
         }
     }
 };
