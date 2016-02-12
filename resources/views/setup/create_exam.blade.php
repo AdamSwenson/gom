@@ -25,20 +25,20 @@
                 </li>
             </ul>
             <h2>Create Exam</h2>
-            @include('setup.exam_form')
+            @include('setup.partials.exam_form')
         </form>
     </div>
-
-
-
-
 @endsection
 
 
 @section('jsArea')
-    <script language="javascript" type="text/javascript" src="{{ asset('inc/js/examForm.js') }}"></script>
     <script type="text/javascript">
+        //The tab to be set as active
+        var activeTab = 'navSetup';
     </script>
+    <script language="javascript" type="text/javascript" src="{{ asset('js/exam-setup-package.js') }}"></script>
+    {{--<script language="javascript" type="text/javascript" src="{{ asset('inc/js/examForm.js') }}"></script>--}}
+
 @endsection
 
 

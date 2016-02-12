@@ -30,20 +30,20 @@
                 </ul>
             </nav>
             <h2>Edit Exam</h2>
-            @include('setup.exam_form')
+            @include('setup.partials.exam_form')
             <input type="hidden" id="nextAction" name="nextAction" value="editQuestions"/>
         </form>
     </div>
-
-
-
 @endsection
 
 
 @section('jsArea')
-    <script language="javascript" type="text/javascript" src="{{ asset('inc/js/examForm.js') }}"></script>
     <script type="text/javascript">
+    var activeTab = 'navSetup';
     </script>
+    <script language="javascript" type="text/javascript" src="{{ asset('js/exam-setup-package.js') }}"></script>
+    {{--<script language="javascript" type="text/javascript" src="{{ asset('inc/js/examForm.js') }}"></script>--}}
+
 @endsection
 
 

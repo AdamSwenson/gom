@@ -31,7 +31,7 @@
             Customize Responses
         </a>
         <!-- 'comment form' displays the modal triggered by 'customize response' button -->
-        @include('setup.comment_form')
+        @include('setup.partials.comment_form')
         <!-- delete button -->
         <a class="btn btn-danger btn-sm js-remove" >
             <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
