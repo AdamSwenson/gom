@@ -64,7 +64,6 @@ class ExamControllerTest extends \TestCase
         $mock = $this->createMock('App\Repositories\Exam\IExamRepository');
         $mock->shouldReceive('load_all_exams')
             ->andReturn(Exam::all());
-
         $response = $this->action('GET', 'ExamController@index');
         $this->assertNotNull($response);
     }

@@ -16,7 +16,7 @@ Route::get('info/tutorials', 'InfoController@showTutorials');
 
 Route::get('test', function()
 {
-    return view('other.newhome');
+    return view('newindex');
 //    return view('help.instructions');
     //return view('feedback.n_feedback_multiple_students');
 //   return view('feedback.n_feedback');

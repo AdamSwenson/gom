@@ -1,0 +1,16 @@
+<!--<div class="list-group">-->
+<div class="list-group-item " style="background-color: #DDDDDD;">
+    <h5>Element #{{ elementNumber}}: "{{ elementName }}"</h5>
+    <div class="row">
+        <div class="col-md-12 InputSlider__slider_body" style="padding-right: 0px;">
+            <label for="slider{{ elementNumber }}"></label>
+            <input
+                    id="slider{{ elementNumber }}"
+                    type="text"
+                    v-model="sliderValue"
+                    v-slider="sliderValue"
+            />
+        </div>
+    </div>
+</div>
+<!--</div>-->

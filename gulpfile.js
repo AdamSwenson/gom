@@ -14,6 +14,7 @@ var elixir = require('laravel-elixir');
         <!-- Other scripts -->
 elixir(function(mix) {
 
+    //mix.browserSync();
 /* ---------------------------------------------- styles ----------------------------------------------------*/
     //Styles used on grading page
     mix.sass(
@@ -29,16 +30,16 @@ elixir(function(mix) {
 
 
 /* ---------------------------------------------- scripts ----------------------------------------------------*/
-    //Compile all the scripts used by the homepage into public/js/home-package.js
-    mix.scripts([
-        'homepage/jquery-1.8.3.min.js',
-        'homepage/museutils.js',
-        'homepage/webpro.js',
-        'homepage/musewpslideshow.js',
-        'homepage/jquery.museoverlay.js',
-        'homepage/touchswipe.js',
-        'homepage/jquery.watch.js'
-    ], 'public/js/home-package.js');
+    ////Compile all the scripts used by the homepage into public/js/home-package.js
+    //mix.scripts([
+    //    'homepage/jquery-1.8.3.min.js',
+    //    'homepage/museutils.js',
+    //    'homepage/webpro.js',
+    //    'homepage/musewpslideshow.js',
+    //    'homepage/jquery.museoverlay.js',
+    //    'homepage/touchswipe.js',
+    //    'homepage/jquery.watch.js'
+    //], 'public/js/home-package.js');
 
     //Helper scripts which should be included on every page into public/js/commonScripts.js
     mix.scripts(
@@ -58,6 +59,30 @@ elixir(function(mix) {
             'grading/letterGradeButton.js'
         ], 'public/js/grading-package.js');
 
+//new homepage
+//    mix.sass(
+//        [
+//
+//            'grading/mainGrading.scss',
+//        ], 'public/css/home-styles.css');
+
+
+    mix.styles(['libraries/bootstrap.min.css',
+        'libraries/bootstrap-theme.min.css',
+        'libraries/bootstrap-slider.css',
+        'libraries/jquery-ui-1.11.4.css',
+        'pages/homepage.css'
+    ],'public/css/home-styles.css')
+
+    mix.browserify([
+        //'https://code.jquery.com/jquery-2.2.0.js',
+        //'https://code.jquery.com/ui/1.11.3/jquery-ui.js',
+        //'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js',
+        'interactiveHome/home.js'],
+        'public/js/home-package.js');
+
+
+//        .browsersync('public/js/home-package.js');
 
     //mix.scripts([
     //    'jquery-1.11.3.js',
