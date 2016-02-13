@@ -1,10 +1,6 @@
 @extends('layouts.master')
-
 @section('pageTitle', 'Sign Up | gradeomatic')
-@endsection
-
 @section('description', 'Sign up for gradeomatic')
-@endsection
 
 @section('body')
     <div class="row">

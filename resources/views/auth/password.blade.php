@@ -8,10 +8,7 @@
 
 @extends('layouts.master')
 @section('pageTitle', 'Reset Password | gradeomatic')
-@endsection
-
 @section('description', 'Reset your password')
-@endsection
 
 @section('body')
     <div class="row">

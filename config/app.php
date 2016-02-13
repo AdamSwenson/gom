@@ -168,9 +168,8 @@ return [
          * Development
          */
         App\Providers\TestingServiceProvider::class,
-        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+        App\Providers\DevServiceProvider::class,
 
-  //      Laracasts\Generators\GeneratorsServiceProvider::class
     ],
 
     /*
