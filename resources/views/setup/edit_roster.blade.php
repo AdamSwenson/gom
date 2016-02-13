@@ -6,49 +6,50 @@
 
 @section('otherCss')
         <!-- styling to change file button into bootstrap style and hide the file name -->
-<style type="text/css">
-    .btn-file {
-        position: relative;
-        overflow: hidden;
-    }
+<link rel="stylesheet" href="{{ asset('css/edit-roster-package.css') }}">
+{{--<style type="text/css">--}}
+    {{--.btn-file {--}}
+        {{--position: relative;--}}
+        {{--overflow: hidden;--}}
+    {{--}--}}
 
-    .btn-file input[type=file] {
-        position: absolute;
-        top: 0;
-        right: 0;
-        min-width: 100%;
-        min-height: 100%;
-        font-size: 100px;
-        text-align: right;
-        filter: alpha(opacity=0);
-        opacity: 0;
-        outline: none;
-        background: white;
-        cursor: inherit;
-        display: block;
-    }
+    {{--.btn-file input[type=file] {--}}
+        {{--position: absolute;--}}
+        {{--top: 0;--}}
+        {{--right: 0;--}}
+        {{--min-width: 100%;--}}
+        {{--min-height: 100%;--}}
+        {{--font-size: 100px;--}}
+        {{--text-align: right;--}}
+        {{--filter: alpha(opacity=0);--}}
+        {{--opacity: 0;--}}
+        {{--outline: none;--}}
+        {{--background: white;--}}
+        {{--cursor: inherit;--}}
+        {{--display: block;--}}
+    {{--}--}}
 
-    .form-control:hover {
-        background-color: #E3E3E3;
-    }
+    {{--.form-control:hover {--}}
+        {{--background-color: #E3E3E3;--}}
+    {{--}--}}
 
-    .glyphicon-remove {
-        font-size: 1.2em;
-        color: #d9534f;
-    }
+    {{--.glyphicon-remove {--}}
+        {{--font-size: 1.2em;--}}
+        {{--color: #d9534f;--}}
+    {{--}--}}
 
-    .glyphicon-remove:hover {
-        cursor: pointer;
-        font-size: 1.2em;
-        color: #d43f3a;
-    }
+    {{--.glyphicon-remove:hover {--}}
+        {{--cursor: pointer;--}}
+        {{--font-size: 1.2em;--}}
+        {{--color: #d43f3a;--}}
+    {{--}--}}
 
-    .invalidRecord{
-        background: red;
-        border: medium;
-        border-color: red;
-    }
-</style>
+    {{--.invalidRecord{--}}
+        {{--background: red;--}}
+        {{--border: medium;--}}
+        {{--border-color: red;--}}
+    {{--}--}}
+{{--</style>--}}
 @endsection
 
 @section('body')

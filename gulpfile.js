@@ -28,15 +28,31 @@ elixir( function ( mix ) {
         'help/bodyText.scss'
     ], 'public/css/help-styles.css' );
 
-
-    /* ---------------------------------------------- scripts ----------------------------------------------------*/
-
     mix.styles( [ 'libraries/bootstrap.min.css',
         'libraries/bootstrap-theme.min.css',
         'libraries/bootstrap-slider.css',
         'libraries/jquery-ui-1.11.4.css',
         'pages/homepage.css'
-    ], 'public/css/home-styles.css' )
+    ], 'public/css/home-styles.css' );
+
+
+
+
+    //setup pages
+    mix.sass([
+        'common/common.sass'
+    ], 'public/css/common-package.css');
+
+
+
+    //setup pages
+    mix.sass([
+        'common/common.sass',
+        'setup/editRoster.scss'
+    ], 'public/css/edit-roster-package.css');
+
+    /* ---------------------------------------------- scripts ----------------------------------------------------*/
+
 
     mix.browserify( [
             //'https://code.jquery.com/jquery-2.2.0.js',
