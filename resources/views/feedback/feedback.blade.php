@@ -2,19 +2,20 @@
 //Some things which return this view may just send a single data array,
 //this wraps it in an outer array so that we can use it just like in the
 //case where we want to see multiple feedback pages
-if(!isset($dataAll))
+if ( ! isset($dataAll) )
 {
     $dataAll = [$data];
 }
 
 $r = [];
 //Make sure everything has the format the js is expecting
-foreach ($dataAll as $data)
+foreach ( $dataAll as $data )
 {
-    $r[$data->getAccessKey()] = $data->content;
+    $r[ $data->getAccessKey() ] = $data->content;
 }
 $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,7 +30,7 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
 
     <style type="text/css">
         /*div.studentInfo{*/
-            /*margin-top: 2%;*/
+        /*margin-top: 2%;*/
         /*}*/
 
         div.pageEnd {
@@ -42,10 +43,8 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
             page-break-inside: avoid;
         }
     </style>
-    {{--@include('layouts.js_jquery_loader')--}}
-    {{--@include('layouts.js_bootstrap_loader')--}}
+    @include('layouts.css_bootstrap')
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-
 </head>
 <body>
 @if(isset($showNav) && $showNav == true)
@@ -55,8 +54,6 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
         @include('navigation.nav_bar_landing')
     @endif
 @endif
-
-
 
 <div class="container-fluid">
     @foreach($dataAll as $data)
@@ -77,13 +74,14 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
 
 <div class="jsArea">
     <script type="text/javascript">
-        var studentData = {!! $encodedStudentData !!};
+        var studentData = '{!! $encodedStudentData !!}';
+        var activeTab = '';
     </script>
     <script type="text/javascript" src="{{ asset('js/feedback-package.js') }}"></script>
 </div>
 
-
 </body>
+
 </html>
 
 

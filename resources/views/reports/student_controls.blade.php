@@ -24,15 +24,18 @@
         <tbody>
         @foreach($students as $student)
             <tr>
-                <td style="vertical-align:middle" id="studentName">{{ $student->last_name }}
+                <td style="vertical-align:middle"
+                    id="studentName">{{ $student->last_name }}
                     , {{ $student->first_name }}</td>
                 <td style="vertical-align:middle"
                     id="studentEmail{{ $student->getId()}}">{{ $student->getEmail() }}</td>
                 <td style="vertical-align:middle">{{ $student->getStudentId()}}</td>
                 <td style="text-align: right;">
-                    <a class="btn btn-default" style="width:120px;" id="{{ 'studentId'.$student->getId() }}"
+                    <a class="btn btn-default confirmStudentEmail"
+                       style="width:120px;"
+                       id="{{ 'studentId'.$student->getId() }}"
                        title="Email Student" data-graded="{{ $student->hasBeenGraded($exam->getId()) }}"
-                       onclick="confirmEmail({{ $student->getId() }})"
+                       data-studentid="{{ $student->getId() }}"
                        data-emailed="{{ $student->feedBackEmailSent($exam->getId()) }}">
                         <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Email
                     </a>
@@ -52,82 +55,82 @@
 @section('jsArea')
     <script type="text/javascript">
         var activeTab = 'navReport';
-        </script>
+    </script>
 
     <script type="text/javascript" src="{{ asset('js/student-controls-package.js') }}"></script>
 
-        {{--// set 'Reports' tab as active--}}
-        {{--$('[id^="nav"]').attr('class', '');--}}
-        {{--$('#navReport').attr('class', 'active');--}}
+    {{--// set 'Reports' tab as active--}}
+    {{--$('[id^="nav"]').attr('class', '');--}}
+    {{--$('#navReport').attr('class', 'active');--}}
 
-        {{--//set the display for all emailed students--}}
-        {{--$('[id^="studentId"]').each(function () {--}}
-            {{--if (!$(this).attr('data-graded')) {--}}
-                {{--$(this).addClass('disabled');--}}
-                {{--$(this).text('Not Graded');--}}
-            {{--} else if ($(this).attr('data-emailed') == '1') {--}}
-                {{--setAsEmailed($(this));--}}
-            {{--}--}}
-        {{--});--}}
+    {{--//set the display for all emailed students--}}
+    {{--$('[id^="studentId"]').each(function () {--}}
+    {{--if (!$(this).attr('data-graded')) {--}}
+    {{--$(this).addClass('disabled');--}}
+    {{--$(this).text('Not Graded');--}}
+    {{--} else if ($(this).attr('data-emailed') == '1') {--}}
+    {{--setAsEmailed($(this));--}}
+    {{--}--}}
+    {{--});--}}
 
-        {{--// Disable 'review' button if feedback is not available--}}
-        {{--$('#btnReview').each(function () {--}}
-            {{--if (!$(this).data('feedback-available')) {--}}
-                {{--$(this).addClass('disabled');--}}
-            {{--}--}}
-        {{--});--}}
+    {{--// Disable 'review' button if feedback is not available--}}
+    {{--$('#btnReview').each(function () {--}}
+    {{--if (!$(this).data('feedback-available')) {--}}
+    {{--$(this).addClass('disabled');--}}
+    {{--}--}}
+    {{--});--}}
 
-        {{--function confirmEmail(studentId) {--}}
+    {{--function confirmEmail(studentId) {--}}
 
-            {{--// Display error if email is blank--}}
-            {{--var email = $('[id^="studentEmail' + studentId + '"]').text();--}}
-            {{--if (email.length == 0) {--}}
-                {{--bootbox.alert('No email for this student');--}}
-                {{--return false;--}}
-            {{--}--}}
-            {{--var released = $('#studentId' + studentId).attr('data-emailed');--}}
-            {{--var confirmMsg = "This will email the student with a link containing their grade and feedback.";--}}
-            {{--if (released === '1') {--}}
-                {{--confirmMsg = "This will re-send the notification email, informing the student that their exam has been graded.";--}}
-            {{--}--}}
-            {{--// confirm and email student--}}
-            {{--bootbox.confirm(confirmMsg, function (result) {--}}
-                {{--if (result) {--}}
-                    {{--var examId = $('#examTitle').attr('data-exam-id');--}}
-                    {{--var $student = $('#studentId' + studentId);--}}
-                    {{--$student.addClass('disabled');--}}
-                    {{--var path = "/report/" + examId + "/students/" + studentId;--}}
-                    {{--$.ajax({--}}
-                        {{--url: path,--}}
-                        {{--type: 'POST',--}}
-                        {{--success: function () {--}}
-                            {{--setAsEmailed($student);--}}
-                            {{--alertEmailSent($student.closest('tr'));--}}
-                        {{--},--}}
-                        {{--error: function () {--}}
-                            {{--alert("Sorry, there was a problem emailing this student!");--}}
-                        {{--},--}}
-                        {{--complete: function () {--}}
-                            {{--$student.removeClass('disabled');--}}
-                        {{--}--}}
-                    {{--});--}}
-                {{--}--}}
-            {{--});--}}
-        {{--}--}}
+    {{--// Display error if email is blank--}}
+    {{--var email = $('[id^="studentEmail' + studentId + '"]').text();--}}
+    {{--if (email.length == 0) {--}}
+    {{--bootbox.alert('No email for this student');--}}
+    {{--return false;--}}
+    {{--}--}}
+    {{--var released = $('#studentId' + studentId).attr('data-emailed');--}}
+    {{--var confirmMsg = "This will email the student with a link containing their grade and feedback.";--}}
+    {{--if (released === '1') {--}}
+    {{--confirmMsg = "This will re-send the notification email, informing the student that their exam has been graded.";--}}
+    {{--}--}}
+    {{--// confirm and email student--}}
+    {{--bootbox.confirm(confirmMsg, function (result) {--}}
+    {{--if (result) {--}}
+    {{--var examId = $('#examTitle').attr('data-exam-id');--}}
+    {{--var $student = $('#studentId' + studentId);--}}
+    {{--$student.addClass('disabled');--}}
+    {{--var path = "/report/" + examId + "/students/" + studentId;--}}
+    {{--$.ajax({--}}
+    {{--url: path,--}}
+    {{--type: 'POST',--}}
+    {{--success: function () {--}}
+    {{--setAsEmailed($student);--}}
+    {{--alertEmailSent($student.closest('tr'));--}}
+    {{--},--}}
+    {{--error: function () {--}}
+    {{--alert("Sorry, there was a problem emailing this student!");--}}
+    {{--},--}}
+    {{--complete: function () {--}}
+    {{--$student.removeClass('disabled');--}}
+    {{--}--}}
+    {{--});--}}
+    {{--}--}}
+    {{--});--}}
+    {{--}--}}
 
-        {{--function alertEmailSent($tr) {--}}
-            {{--var email = $tr.find('#studentEmail').text();--}}
-            {{--bootbox.alert("An email has been sent to " + email + ".", function () {--}}
-            {{--});--}}
-        {{--}--}}
+    {{--function alertEmailSent($tr) {--}}
+    {{--var email = $tr.find('#studentEmail').text();--}}
+    {{--bootbox.alert("An email has been sent to " + email + ".", function () {--}}
+    {{--});--}}
+    {{--}--}}
 
-        {{--// changes the visuals and status for a released exam--}}
-        {{--function setAsEmailed($student) {--}}
-            {{--$student.attr('data-emailed', '1');--}}
-            {{--$student.attr('class', 'btn btn-success');--}}
-            {{--$student.html("<span class='glyphicon glyphicon-envelope' aria-hidden='true'></span>" +--}}
-                    {{--" Email Sent");--}}
-        {{--}--}}
+    {{--// changes the visuals and status for a released exam--}}
+    {{--function setAsEmailed($student) {--}}
+    {{--$student.attr('data-emailed', '1');--}}
+    {{--$student.attr('class', 'btn btn-success');--}}
+    {{--$student.html("<span class='glyphicon glyphicon-envelope' aria-hidden='true'></span>" +--}}
+    {{--" Email Sent");--}}
+    {{--}--}}
     {{--</script>--}}
 @endsection
 

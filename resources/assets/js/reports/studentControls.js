@@ -5,7 +5,15 @@ window.jQuery = jQuery;
 
 require( 'bootstrap' );
 
+var bootbox = require('bootbox');
+
 var common = require( '../common.js' );
+
+
+$('.confirmStudentEmail' ).on('click', function(){
+    var studentId = $(this ).data('studentid');
+    confirmEmail(studentId);
+});
 
 //set the display for all emailed students
 $('[id^="studentId"]').each(function () {
