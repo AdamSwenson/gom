@@ -27,10 +27,14 @@
 
 @section('jsArea')
     <script type="text/javascript">
-        // set 'Account' tab as active
-        $('[id^="nav"]').attr('class', '');
-        $('#navHelp').attr('class', 'active');
+        var activeTab = 'navHelp';
     </script>
+
+    <script type="text/javascript" src="{{asset('js/common-package.js')}}"></script>
+        {{--// set 'Account' tab as active--}}
+        {{--$('[id^="nav"]').attr('class', '');--}}
+        {{--$('#navHelp').attr('class', 'active');--}}
+    {{--</script>--}}
 
 @endsection
 

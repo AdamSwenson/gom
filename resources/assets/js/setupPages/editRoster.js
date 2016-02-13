@@ -5,12 +5,12 @@ window.jQuery = jQuery;
 
 require( 'bootstrap' );
 
-var common = require( './common.js' );
+var common = require( '../common.js' );
 
 require('bootbox');
 
-var rosterImport = require('./setupPages/rosterFileImport.js')();
-var rosterTable = require('./setupPages/rosterTable.js')();
+var rosterImport = require('./rosterFileImport.js')();
+var rosterTable = require('./rosterTable.js')();
 
 
 /*

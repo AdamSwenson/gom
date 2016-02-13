@@ -11,9 +11,9 @@ require('bootstrap');
 
 require('bootbox');
 
-var Sortable = require('./utilities/Sortable.js')();
+var Sortable = require('../utilities/Sortable.js')();
 
-var common = require( './common.js' );
+var common = require( '../common.js' );
 
 // validate and submit form. Currently, questions are valid with 0 elements.
     function submitForm( target ) {

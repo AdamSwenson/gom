@@ -21,10 +21,11 @@
 @endsection
 
 @section('jsArea')
-    <script type="javascript/text">
-        $(document).ready(function(){
-            $('#submitButton').button();
-        });
-    </script>
+
+    <script type="javascript/text" src="{{ asset('public/js/feedback-login-package.js') }}"></script>
+        {{--$(document).ready(function(){--}}
+            {{--$('#submitButton').button();--}}
+        {{--});--}}
+    {{--</script>--}}
 @endsection
 

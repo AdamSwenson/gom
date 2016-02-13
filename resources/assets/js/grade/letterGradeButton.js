@@ -92,4 +92,3 @@ module.exports = function() {
         }, 10 );
     }
 }
-//# sourceMappingURL=grading-package.js.map

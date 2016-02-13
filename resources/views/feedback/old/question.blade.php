@@ -18,7 +18,7 @@ $w='800px';
 
     <div id='q{{ $question['questionNumber'] }}Comments' class="commentsArea">
         @foreach($question['elements'] as $element)
-            @include('feedback.comment')
+            @include('feedback.partials.comment')
         @endforeach
     </div>
     <div class="chartContainer">

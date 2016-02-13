@@ -6,9 +6,9 @@ window.jQuery = jQuery;
 require( 'bootstrap' );
 require('bootbox');
 
-var Sortable = require('./utilities/Sortable.js')();
+var Sortable = require('../utilities/Sortable.js')();
 
-var common = require( './common.js' );
+var common = require( '../common.js' );
 
 
 // Basic form validation and prompts.

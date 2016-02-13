@@ -42,8 +42,8 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
             page-break-inside: avoid;
         }
     </style>
-    @include('layouts.js_jquery_loader')
-    @include('layouts.js_bootstrap_loader')
+    {{--@include('layouts.js_jquery_loader')--}}
+    {{--@include('layouts.js_bootstrap_loader')--}}
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
 </head>
@@ -60,13 +60,13 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
 
 <div class="container-fluid">
     @foreach($dataAll as $data)
-        @include('feedback.student_info')
+        @include('feedback.partials.student_info')
 
-        @include('feedback.overall_chart')
+        @include('feedback.partials.overall_chart')
 
         <div id="questionResultsHere">
             @foreach($data->content as $question)
-                @include('feedback.question')
+                @include('feedback.partials.question')
             @endforeach
         </div>
 
@@ -76,14 +76,10 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
 
 
 <div class="jsArea">
-    <script type="text/javascript" src="{{ asset('js/feedback-package.js') }}"></script>
-
     <script type="text/javascript">
         var studentData = {!! $encodedStudentData !!};
-
-        google.load('visualization', '1', {'packages': ['corechart']});
-        google.setOnLoadCallback(drawAllStudentCharts);
     </script>
+    <script type="text/javascript" src="{{ asset('js/feedback-package.js') }}"></script>
 </div>
 
 

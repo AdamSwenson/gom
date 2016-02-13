@@ -9,7 +9,7 @@
             <div class="col-sm-1"></div>
             <div id='q{{ $question['questionNumber'] }}Comments' class="col-sm-5 commentsArea">
                 @foreach($question['elements'] as $element)
-                    @include('feedback.comment')
+                    @include('feedback.partials.comment')
                 @endforeach
             </div>
             <div class="col-sm-6 questionChartContainer">

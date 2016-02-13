@@ -6,7 +6,7 @@ window.jQuery = jQuery;
 require( 'bootstrap' );
 require('bootbox');
 
-var common = require( './common.js' );
+var common = require( '../common.js' );
 
 function showConfirmation(examId) {
     bootbox.dialog({

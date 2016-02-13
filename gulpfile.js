@@ -30,42 +30,6 @@ elixir( function ( mix ) {
 
 
     /* ---------------------------------------------- scripts ----------------------------------------------------*/
-    ////Compile all the scripts used by the homepage into public/js/home-package.js
-    //mix.scripts([
-    //    'homepage/jquery-1.8.3.min.js',
-    //    'homepage/museutils.js',
-    //    'homepage/webpro.js',
-    //    'homepage/musewpslideshow.js',
-    //    'homepage/jquery.museoverlay.js',
-    //    'homepage/touchswipe.js',
-    //    'homepage/jquery.watch.js'
-    //], 'public/js/home-package.js');
-
-    //Helper scripts which should be included on every page into public/js/commonScripts.js
-    mix.scripts(
-        [
-            'common/flashMessageHandling.js'
-        ], 'public/js/commonScripts.js' );
-
-    //scripts used on the feedback page
-    mix.scripts(
-        [
-            'feedback/feedbackCharts.js'
-        ], 'public/js/feedback-package.js' );
-
-    //scripts used on exam grading page
-    mix.scripts(
-        [
-            'grading/letterGradeButton.js'
-        ], 'public/js/grading-package.js' );
-
-//new homepage
-//    mix.sass(
-//        [
-//
-//            'grading/mainGrading.scss',
-//        ], 'public/css/home-styles.css');
-
 
     mix.styles( [ 'libraries/bootstrap.min.css',
         'libraries/bootstrap-theme.min.css',
@@ -81,15 +45,67 @@ elixir( function ( mix ) {
             'interactiveHome/home.js' ],
         'public/js/home-package.js' );
 
+    //Normally this stuff will be integrated with another package. This is just for pages
+    //which have no other js.
+    mix.browserify( 'common.js', 'public/js/common-package.js' );
+
     //Setup pages
-    mix.browserify( 'examForm.js', 'public/js/exam-setup-package.js' );
+    mix.browserify( 'setupPages/examForm.js', 'public/js/exam-setup-package.js' );
+    mix.browserify( 'setupPages/editElement.js', 'public/js/element-edit-package.js' );
+    mix.browserify( 'setupPages/editQuestion.js', 'public/js/question-edit-package.js' );
+    mix.browserify( 'setupPages/editRoster.js', 'public/js/roster-edit-package.js' );
+    mix.browserify( 'setupPages/selectExam.js', 'public/js/exam-select-package.js' );
 
-    mix.browserify( 'editElement.js', 'public/js/element-edit-package.js' );
-    mix.browserify( 'editQuestion.js', 'public/js/question-edit-package.js' );
+    //Report pages
+    mix.browserify( 'reports/examAnalytics.js', 'public/js/exam-analytics-package.js' );
+    mix.browserify( 'reports/examControls.js', 'public/js/exam-controls-package.js' );
+    mix.browserify( 'reports/studentControls.js', 'public/js/student-controls-package.js' );
+    mix.browserify( 'reports/examSelect.js', 'public/js/exam-select-package.js' );
 
-    mix.broswerify('editRoster.js', 'public/js/roster-edit-package.js');
+    //Grading pages
+    mix.browserify( 'grade/gradeAssign.js', 'public/js/grade-assign-package.js' );
+    mix.browserify( 'grade/gradeExam.js', 'public/js/grade-exam-package.js' );
 
-    mix.broswerify('selectExam.js', 'public/js/exam-select-package.js');
+    //Feedback pages
+    mix.browserify( 'feedback/feedbackLogin.js', 'public/js/feedback-login-package.js' );
+    mix.browserify( 'feedback/feedbackCharts.js', 'public/js/feedback-package.js' );
+
+    ////Compile all the scripts used by the homepage into public/js/home-package.js
+    //mix.scripts([
+    //    'homepage/jquery-1.8.3.min.js',
+    //    'homepage/museutils.js',
+    //    'homepage/webpro.js',
+    //    'homepage/musewpslideshow.js',
+    //    'homepage/jquery.museoverlay.js',
+    //    'homepage/touchswipe.js',
+    //    'homepage/jquery.watch.js'
+    //], 'public/js/home-package.js');
+
+    //Helper scripts which should be included on every page into public/js/commonScripts.js
+    //mix.scripts(
+    //    [
+    //        'common/flashMessageHandling.js'
+    //    ], 'public/js/commonScripts.js' );
+
+    //scripts used on the feedback page
+    //mix.scripts(
+    //    [
+    //        'feedback/feedbackCharts.js'
+    //    ], 'public/js/feedback-package.js' );
+
+    //scripts used on exam grading page
+    //mix.scripts(
+    //    [
+    //        'grading/letterGradeButton.js'
+    //    ], 'public/js/grading-package.js' );
+
+//new homepage
+//    mix.sass(
+//        [
+//
+//            'grading/mainGrading.scss',
+//        ], 'public/css/home-styles.css');
+
 
 //        .browsersync('public/js/home-package.js');
 
