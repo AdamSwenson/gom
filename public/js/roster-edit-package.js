@@ -10,10 +10,17 @@ require('bootstrap');
 
 var common = require('../common.js');
 
-require('bootbox');
-
+var bootbox = require('bootbox');
 var rosterImport = require('./rosterFileImport.js')();
 var rosterTable = require('./rosterTable.js')();
+
+$("#backNavButton").on('click', function () {
+    submitAndNavigateTo(backNavTarget);
+});
+
+$("#forwardNavButton").on('click', function () {
+    submitAndNavigateTo(forwardNavTarget);
+});
 
 /*
  THINGS TODO:
@@ -54,14 +61,14 @@ function submitAndNavigateTo(target) {
     }
 }
 
-$(document).ready(function () {
-    // 'upload file' listener
-    $('#fileInput').change(function () {
-        startRead();
-        $(this).val(null);
-    });
-    return false;
+//$(document).ready(function () {
+// 'upload file' listener
+$('#fileInput').change(function () {
+    startRead();
+    $(this).val(null);
 });
+//return false;
+//});
 
 },{"../common.js":17,"./rosterFileImport.js":18,"./rosterTable.js":19,"bootbox":2,"bootstrap":3,"jquery":16}],2:[function(require,module,exports){
 /**
@@ -13264,10 +13271,11 @@ return jQuery;
 
 var $ = require('jquery');
 
+var aj = require('./utilities/ajaxCsrfPrep.js')();
 var navBar = require('./utilities/navbar.js')();
 var flash = require('./utilities/flashMessageHandling.js')();
 
-},{"./utilities/flashMessageHandling.js":20,"./utilities/navbar.js":21,"jquery":16}],18:[function(require,module,exports){
+},{"./utilities/ajaxCsrfPrep.js":20,"./utilities/flashMessageHandling.js":21,"./utilities/navbar.js":22,"jquery":16}],18:[function(require,module,exports){
 /**
  * Created by Brian on 9/12/2015.
  *
@@ -13605,6 +13613,25 @@ module.exports = function () {
 };
 
 },{"bootstrap":3,"jquery":16}],20:[function(require,module,exports){
+'use strict';
+
+var $ = require('jquery');
+window.$ = $;
+var jQuery = $;
+window.jQuery = jQuery;
+
+/**
+ * Sets the csrf token for ajax requests
+ */
+module.exports = function () {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+};
+
+},{"jquery":16}],21:[function(require,module,exports){
 /**
  * Created by adam on 10/4/15.
  */
@@ -13621,7 +13648,7 @@ module.exports = function () {
   $('div.alert').not('alert-important').delay(3000).slideUp(300);
 };
 
-},{"jquery":16}],21:[function(require,module,exports){
+},{"jquery":16}],22:[function(require,module,exports){
 /**
  * Created by adam on 2/12/16.
  */

@@ -1,5 +1,8 @@
 <!-- template used by 'grade_exam' to host -->
-<div class="list-group-item" style="background-color: #DDDDDD;" id="element{{ $elementIndex }}" data-element-index="{{ $elementIndex }}"
+<div class="list-group-item"
+     style="background-color: #DDDDDD;"
+     id="element{{ $elementIndex }}"
+     data-element-index="{{ $elementIndex }}"
      data-element-id="{{ $elements[$eNumber-1]->getId() }}">
     <h5>Element #{{ $eNumber }}: "{{ $elements[$eNumber-1]->getElementName() }}"</h5>
     <div class="row">

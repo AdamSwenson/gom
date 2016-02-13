@@ -11,10 +11,11 @@
     <link href='{{ asset('inc/images/favicon.ico') }}' rel='icon' type='image/x-icon'/>
 
     @yield('otherCss')
+    @include('layouts.css_bootstrap')
 
-    @include('layouts.js_jquery_loader')
-    @include('layouts.js_bootstrap_loader')
-    @include('layouts.js_additional_libs')
+    {{--@include('layouts.js_jquery_loader')--}}
+    {{--@include('layouts.js_bootstrap_loader')--}}
+    {{--@include('layouts.js_additional_libs')--}}
 </head>
 
 <body>
@@ -37,18 +38,20 @@
 <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
 
 <div id="scriptBox">
-    <script type="text/javascript">
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-    </script>
+    {{--<script type="text/javascript">--}}
+      {{--if(typeof $ != 'undefined'){--}}
+        {{--$.ajaxSetup({--}}
+            {{--headers: {--}}
+                {{--'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')--}}
+            {{--}--}}
+        {{--});--}}
+      {{--}--}}
+    {{--</script>--}}
     @yield('jsArea')
     @if(env('APP_ENV') == 'production')
         @include('other.google_analytics_include')
     @endif
-    <script type="text/javascript" src="{{ asset('js/commonScripts.js') }}"></script>
+    {{--<script type="text/javascript" src="{{ asset('js/commonScripts.js') }}"></script>--}}
 </div>
 </body>
 </html>

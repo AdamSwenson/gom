@@ -4,12 +4,20 @@ var jQuery = $;
 window.jQuery = jQuery;
 
 require( 'bootstrap' );
-require('bootbox');
-
-var Sortable = require('../utilities/Sortable.js')();
-
+var bootbox = require('bootbox');
+var Sortable = require('../utilities/Sortable.js');
 var common = require( '../common.js' );
 
+//var navs = require('./navControls.js')();
+
+
+$("#backNavButton" ).on('click', function(){
+    submitForm(backNavTarget);
+});
+
+$("#forwardNavButton" ).on('click', function(){
+    submitForm(forwardNavTarget);
+});
 
 // Basic form validation and prompts.
 // Exams must have 1 question and they must all have names.

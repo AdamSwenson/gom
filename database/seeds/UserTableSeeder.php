@@ -18,10 +18,18 @@ class UserTableSeeder extends Seeder
 
         App\User::create(
             [
-                'id' => 1,
-                'name' => 'scratchUser1',
+                'id' => 2,
+                'name' => 'scratchUser2',
                 'password' => bcrypt('!goMETAdors!'),
                 'email' => 'test@gradeomatic.net'
+            ]
+        );
+        App\User::create(
+            [
+                'id' => 1,
+                'name' => 'scratchUser1',
+                'password' => bcrypt('testtest'),
+                'email' => 'test2@gradeomatic.net'
             ]
         );
 

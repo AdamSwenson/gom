@@ -10,14 +10,16 @@
     <nav>
         <ul class="pager">
             <li class="previous">
-                <a onclick="submitForm('{{ $prevAction  }}')" id="prev-question" data-questionId="{{ $prevAction }}"
+                <a id="prev-question"
+                   data-questionId="{{ $prevAction }}"
                    style="cursor:pointer;"> <span class="glyphicon glyphicon-chevron-left"
                                                   aria-hidden="true"></span>
                     <?php if ($prevAction == 'editQuestions') echo('Edit Questions'); else echo('Previous Question'); ?>
                 </a>
             </li>
             <li class="next">
-                <a onclick="submitForm('{{ $nextAction  }}')" id="next-question" data-questionId="{{ $nextAction }}"
+                <a id="next-question"
+                   data-questionId="{{ $nextAction }}"
                    style="cursor:pointer;">
                     <?php if ($nextAction == 'editStudents') echo('Edit Roster'); else echo('Next Question'); ?>
                     <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
@@ -69,6 +71,8 @@
 {{--    <script src="{{ asset("inc/js/Sortable.js") }}"></script>--}}
 <script type="text/javascript">
     var activeTab = 'navSetup';
+    var forwardNavTarget = '{{ $nextAction }}';
+    var backNavTarget = '{{ $prevAction }}';
 </script>
 
     <script type="text/javascript" src="{{ asset('js/element-edit-package.js') }}"></script>

@@ -12291,10 +12291,30 @@ return jQuery;
 
 var $ = require('jquery');
 
+var aj = require('./utilities/ajaxCsrfPrep.js')();
 var navBar = require('./utilities/navbar.js')();
 var flash = require('./utilities/flashMessageHandling.js')();
 
-},{"./utilities/flashMessageHandling.js":17,"./utilities/navbar.js":18,"jquery":15}],17:[function(require,module,exports){
+},{"./utilities/ajaxCsrfPrep.js":17,"./utilities/flashMessageHandling.js":18,"./utilities/navbar.js":19,"jquery":15}],17:[function(require,module,exports){
+'use strict';
+
+var $ = require('jquery');
+window.$ = $;
+var jQuery = $;
+window.jQuery = jQuery;
+
+/**
+ * Sets the csrf token for ajax requests
+ */
+module.exports = function () {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+};
+
+},{"jquery":15}],18:[function(require,module,exports){
 /**
  * Created by adam on 10/4/15.
  */
@@ -12311,7 +12331,7 @@ module.exports = function () {
   $('div.alert').not('alert-important').delay(3000).slideUp(300);
 };
 
-},{"jquery":15}],18:[function(require,module,exports){
+},{"jquery":15}],19:[function(require,module,exports){
 /**
  * Created by adam on 2/12/16.
  */

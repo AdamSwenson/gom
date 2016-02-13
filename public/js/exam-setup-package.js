@@ -13,7 +13,15 @@ window.jQuery = jQuery;
 
 require('bootstrap');
 
-require('bootbox');
+var bootbox = require('bootbox');
+
+$("#backNavButton").on('click', function () {
+    submitForm(backNavTarget);
+});
+
+$("#forwardNavButton").on('click', function () {
+    submitForm(forwardNavTarget);
+});
 
 function submitForm(target) {
     $('#nextAction').val(target);
@@ -31,8 +39,9 @@ function formFieldsValid() {
 }
 
 //$(document).ready(function() {
-
+window.console.log('ready');
 $('#termList li').on('click', function () {
+    window.console.log('clicked');
     var $term = $(this).text();
     $('#hiddenTerm').val($term);
 

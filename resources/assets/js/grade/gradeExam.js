@@ -5,8 +5,12 @@ window.jQuery = jQuery;
 require( 'bootstrap' );
 
 var common = require( '../common.js' );
+var bootbox = require('bootbox');
 //TODO figure out which typeahead to use
+//var typeahead = require('../libraries/bootstrap3-typeahead.min.js');
+var typeahead = require('../libraries/typeahead.bundle.js');
 var Slider = require( "bootstrap-slider" );
+
 //var mySlider = new Slider();
 var letterGradeButton = require( './letterGradeButton.js' )();
 
@@ -42,6 +46,20 @@ const gradedStudentColor = '#5cb85c';
 
 updateExamGrades();
 
+
+//Controls
+$("#nameVisibilityControl" ).on('click', function(){
+    toggleNameVisibility();
+});
+
+$("#activeStudentName" ).on('change', function(){
+    handleStudentNameSearch();
+});
+
+$("#activeStudentIdentifier" ).on('change', function(){
+    handleStudentIdentifierSearch();
+});
+
 /*
  * Set valenceCutoffs for comments --  these represent the maximum value for each valence group.
  * Magic numbers for now, but will accept data from the server for valenceCutoffs, valenceLabels and valenceLabelPositions
@@ -63,9 +81,6 @@ var $sliders = $( 'input.slider' ).slider( {
     ticks_position: valenceLabels
 } );
 
-// set 'Grade' tab as active
-$( '[id^="nav"]' ).attr( 'class', '' );
-$( '#navGrade' ).attr( 'class', 'active' );
 
 /*
  * GENERAL FUNCTIONS
@@ -561,6 +576,6 @@ $( "[id^='studentListItem']" ).click( function () {
     } );
 
 } );
-bindLetterGradeHandler();
+//bindLetterGradeHandler();
 //    return false;
 //} );

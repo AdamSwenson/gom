@@ -4,6 +4,6 @@
 
 var $ = require( 'jquery' );
 
-
+var aj = require('./utilities/ajaxCsrfPrep.js')();
 var navBar = require( './utilities/navbar.js' )();
 var flash = require( './utilities/flashMessageHandling.js' )();

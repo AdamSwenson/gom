@@ -7,10 +7,18 @@ require( 'bootstrap' );
 
 var common = require( '../common.js' );
 
-require('bootbox');
-
+var bootbox = require('bootbox');
 var rosterImport = require('./rosterFileImport.js')();
 var rosterTable = require('./rosterTable.js')();
+
+
+$("#backNavButton" ).on('click', function(){
+    submitAndNavigateTo(backNavTarget);
+});
+
+$("#forwardNavButton" ).on('click', function(){
+    submitAndNavigateTo(forwardNavTarget);
+});
 
 
 /*
@@ -59,11 +67,11 @@ function submitAndNavigateTo(target) {
     }
 }
 
-$(document).ready(function () {
+//$(document).ready(function () {
     // 'upload file' listener
     $('#fileInput').change(function () {
         startRead();
         $(this).val(null);
     });
-    return false;
-});
+    //return false;
+//});

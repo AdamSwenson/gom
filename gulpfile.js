@@ -65,6 +65,7 @@ elixir( function ( mix ) {
     //Grading pages
     mix.browserify( 'grade/gradeAssign.js', 'public/js/grade-assign-package.js' );
     mix.browserify( 'grade/gradeExam.js', 'public/js/grade-exam-package.js' );
+    mix.browserify( 'grade/examSelect.js', 'public/js/grade-exam-select-package.js' );
 
     //Feedback pages
     mix.browserify( 'feedback/feedbackLogin.js', 'public/js/feedback-login-package.js' );

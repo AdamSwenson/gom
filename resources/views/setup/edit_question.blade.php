@@ -11,15 +11,24 @@
     <nav>
         <ul class="pager">
             <li class="previous">
-                <a onclick="submitForm('editExam')" style="cursor:pointer;"> <span
+                <a id="backNavButton" style="cursor:pointer;"> <span
                             class="glyphicon glyphicon-chevron-left"
                             aria-hidden="true"></span>
                     Edit Exam</a>
+                {{--<a id="backNavButton" onclick="submitForm('editExam')" style="cursor:pointer;"> <span--}}
+                            {{--class="glyphicon glyphicon-chevron-left"--}}
+                            {{--aria-hidden="true"></span>--}}
+                    {{--Edit Exam</a>--}}
             </li>
             <li class="next">
-                <a onclick="submitForm('editElements')" style="cursor:pointer;">Add / Edit Elements <span
+                <a id="forwardNavButton"
+                   style="cursor:pointer;">Add / Edit Elements <span
                             class="glyphicon glyphicon-chevron-right"
                             aria-hidden="true"></span></a>
+
+                {{--<a onclick="submitForm('editElements')" style="cursor:pointer;">Add / Edit Elements <span--}}
+                            {{--class="glyphicon glyphicon-chevron-right"--}}
+                            {{--aria-hidden="true"></span></a>--}}
             </li>
         </ul>
     </nav>
@@ -66,6 +75,8 @@
     <script type="text/javascript">
         //The tab to be set as active
         var activeTab = 'navSetup';
+        var forwardNavTarget = 'editElements';
+        var backNavTarget = 'editExam';
     </script>
     <script language="javascript" type="text/javascript" src="{{ asset('js/question-edit-package.js') }}"></script>
 

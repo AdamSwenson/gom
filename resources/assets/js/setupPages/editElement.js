@@ -9,11 +9,18 @@ window.jQuery = jQuery;
 
 require('bootstrap');
 
-require('bootbox');
-
-var Sortable = require('../utilities/Sortable.js')();
-
+var Sortable = require('../utilities/Sortable.js');
 var common = require( '../common.js' );
+
+
+$("#prev-question" ).on('click', function(){
+    submitForm(backNavTarget);
+});
+
+$("#next-question" ).on('click', function(){
+    submitForm(forwardNavTarget);
+});
+
 
 // validate and submit form. Currently, questions are valid with 0 elements.
     function submitForm( target ) {

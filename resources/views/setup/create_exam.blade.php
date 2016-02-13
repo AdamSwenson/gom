@@ -19,9 +19,14 @@
                     </a>
                 </li>
                 <li class="next">
-                    <a onclick="submitForm('editQuestions')" id="saveExam" style="cursor:pointer;">
+                    <a id="forwardNavButton" style="cursor:pointer;">
                         Add / Edit Questions <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
                     </a>
+
+
+                    {{--<a onclick="submitForm('editQuestions')" id="saveExam" style="cursor:pointer;">--}}
+                        {{--Add / Edit Questions <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>--}}
+                    {{--</a>--}}
                 </li>
             </ul>
             <h2>Create Exam</h2>
@@ -35,6 +40,8 @@
     <script type="text/javascript">
         //The tab to be set as active
         var activeTab = 'navSetup';
+        var forwardNavTarget = 'editQuestions';
+        var backNavTarget = '';
     </script>
     <script language="javascript" type="text/javascript" src="{{ asset('js/exam-setup-package.js') }}"></script>
     {{--<script language="javascript" type="text/javascript" src="{{ asset('inc/js/examForm.js') }}"></script>--}}

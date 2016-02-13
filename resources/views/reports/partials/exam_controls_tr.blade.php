@@ -9,17 +9,24 @@
     </td>
     <!-- control buttons -- do not show if no exams -->
     <td style="text-align:right; min-width: 340px;">
-        <a class="btn btn-primary" id="{{'exam'.$examId }}" style="width:140px;"
-           title="Release Exam" data-released="{{ $examId }}"
-           onclick="confirmRelease({{ $examId }})">
+        <a class="btn btn-primary confirmRelease"
+           id="{{'exam'.$examId }}"
+           style="width:140px;"
+           title="Release Exam"
+           data-released="{{ $examId }}"
+           data-examid="{{ $examId }}"
+        >
             <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
             Release Exam
         </a>
-        <a class="btn btn-default disabled" id="lock" title="Remove Access"
-           onclick="removeAccess({{ $examId }})">
+        <a class="btn btn-default disabled examLock"
+           id="lock"
+           title="Remove Access"
+           data-examid="{{ $examId }}">
             <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
         </a>
-        <a class="btn btn-info" title="Exam Analytics"
+        <a class="btn btn-info"
+           title="Exam Analytics"
            href="{{url('report/' . $exam->id. '/analytics')}}"><span
                     class="glyphicon glyphicon-stats"
                     aria-hidden="true"></span> </a>

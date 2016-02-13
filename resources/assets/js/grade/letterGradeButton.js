@@ -6,12 +6,12 @@ module.exports = function() {
     /**
      * Initializes the letter grade button stuff
      */
-    function bindLetterGradeHandler() {
-        window.console.log( 'bind letter grade called' );
+    //function bindLetterGradeHandler() {
+    //    window.console.log( 'bind letter grade called' );
         $( ".letterGradeButton" ).bind( 'click', function () {
             handleLetterGradeClick( this );
         } );
-    }
+    //}
 
     /**
      * Updates score by clicking on letter grade.

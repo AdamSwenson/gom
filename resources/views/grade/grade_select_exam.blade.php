@@ -44,11 +44,17 @@
                         <td style="vertical-align:middle;"
                             id="numStudents">{{ $numStudents[ $examId ] or '0' }}</td>
                         <td style="text-align: right">
-                            <a data-href="{{ url('grade/exam/'.$examId) }}" class="btn btn-primary"
-                               title="Grade exam">
+                            <a
+                                    data-href="{{ url('grade/exam/'.$examId) }}"
+                                    class="btn btn-primary"
+                                    title="Grade exam"
+                            >
                                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Grade</a>
-                            <a data-href="{{ url('grade/exam/'.$examId.'/assign') }}" class="btn btn-primary"
-                               title="Assign letter grades">
+                            <a
+                                    data-href="{{ url('grade/exam/'.$examId.'/assign') }}"
+                                    class="btn btn-primary"
+                                    title="Assign letter grades"
+                            >
                                 <span class="glyphicon glyphicon-signal" aria-hidden="true"></span> Assign</a>
                         </td>
                     </tr>
@@ -73,39 +79,7 @@
         // for setting 'Grade' tab as active
         var activeTab = 'navGrade';
 </script>
-    <script type="text/javascript" src="{{ asset('js/exam-select-package.js') }}"></script>
-{{--//        // set 'Grade' tab as active--}}
-{{--//        $('[id^="nav"]').attr('class', '');--}}
-{{--//        $('#navGrade').attr('class', 'active');--}}
-
-{{--//        $('a[data-href]').on("click", function () {--}}
-{{--//--}}
-{{--//            var parent = $(this).closest('tr');--}}
-{{--//            console.log(parent.find('#numStudents').text());--}}
-{{--//            if (parent.find('#numStudents').text() == '0') {--}}
-{{--//                showError("No Students", "An exam must have at least one student in order to be graded.")--}}
-{{--//            } else if (parent.find('#numQuestions').text() == '0') {--}}
-{{--//                showError("No Questions", "An exam must have at least one question in order to be graded.")--}}
-{{--//            } else {--}}
-{{--//                document.location = $(this).data('href');--}}
-{{--//            }--}}
-{{--//        });--}}
-{{--//--}}
-{{--//        function showError(msgTitle, message) {--}}
-{{--//            bootbox.dialog({--}}
-{{--//                message: message,--}}
-{{--//                title: msgTitle,--}}
-{{--//                buttons: {--}}
-{{--//                    default: {--}}
-{{--//                        label: 'Ok',--}}
-{{--//                        className: "btn-sm",--}}
-{{--//                        callback: function () {--}}
-{{--//                        }--}}
-{{--//                    }--}}
-{{--//                }--}}
-{{--//            });--}}
-{{--//        }--}}
-    {{--</script>--}}
+    <script type="text/javascript" src="{{ asset('js/grade-exam-select-package.js') }}"></script>
 
 @endsection
 

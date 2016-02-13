@@ -17,14 +17,14 @@
             <nav>
                 <ul class="pager">
                     <li class="previous">
-                        <a onclick="submitForm('selectExam')"
+                        <a id="backNavButton"
                            style="cursor:pointer;"> <span
                                     class="glyphicon glyphicon-chevron-left"
                                     aria-hidden="true"></span>
                             Setup</a>
                     </li>
                     <li class="next">
-                        <a onclick="submitForm('editQuestions')" style="cursor:pointer;">Add / Edit Questions
+                        <a id="forwardNavButton" style="cursor:pointer;">Add / Edit Questions
                             <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
                     </li>
                 </ul>
@@ -40,6 +40,8 @@
 @section('jsArea')
     <script type="text/javascript">
     var activeTab = 'navSetup';
+    var forwardNavTarget = 'editQuestions';
+    var backNavTarget = 'selectExam';
     </script>
     <script language="javascript" type="text/javascript" src="{{ asset('js/exam-setup-package.js') }}"></script>
     {{--<script language="javascript" type="text/javascript" src="{{ asset('inc/js/examForm.js') }}"></script>--}}

@@ -4,8 +4,19 @@ var jQuery = $;
 window.jQuery = jQuery;
 
 require( 'bootstrap' );
+var bootbox = require('bootbox');
 
 var common = require( '../common.js' );
+
+$(".examLock" ).on('click', function(){
+var examId = $(this ).data('examid');
+    removeAccess(examId);
+});
+
+$(".confirmRelease" ).on('click', function(){
+    var examId = $(this ).data('examid');
+    confirmRelease(examId);
+});
 
 
 //set controls for all released exams

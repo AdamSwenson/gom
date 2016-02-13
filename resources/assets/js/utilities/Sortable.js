@@ -6,9 +6,9 @@
  * @author	RubaXa   <trash@rubaxa.org>
  * @license MIT
  */
-
-module.exports = function() {
-    (function ( factory ) {
+//
+//module.exports = function() {
+   (function ( factory ) {
         "use strict";
 
         if ( typeof define === "function" && define.amd ) {
@@ -1243,4 +1243,4 @@ module.exports = function() {
         Sortable.version = '1.3.0-rc1';
         return Sortable;
     } );
-}
+//}

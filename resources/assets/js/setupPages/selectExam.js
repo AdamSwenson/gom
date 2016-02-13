@@ -4,8 +4,8 @@ var jQuery = $;
 window.jQuery = jQuery;
 
 require( 'bootstrap' );
-require('bootbox');
 
+var bootbox = require('bootbox');
 var common = require( '../common.js' );
 
 function showConfirmation(examId) {

@@ -55,11 +55,11 @@
     <nav>
         <ul class="pager">
             <li class="next">
-                <a onclick="submitAndNavigateTo('editExam')" style="cursor:pointer;"><span
+                <a id="backNavButton" style="cursor:pointer;"><span
                             class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save & Finish</a>
             </li>
             <li class="previous">
-                <a onclick="submitAndNavigateTo('{{ $prevAction }}')" style="cursor:pointer;"><span
+                <a id="forwardNavButton" style="cursor:pointer;"><span
                             class="glyphicon glyphicon-chevron-left"
                             aria-hidden="true"></span> {{ $prevActionLabel }}</a>
             </li>
@@ -150,71 +150,12 @@
     <script type="text/javascript">
         //The tab to be set as active
         var activeTab = 'navSetup';
+
+        var forwardNavTarget = 'editExam';
+        var backNavTarget = '{{ $prevAction }}';
     </script>
     <script language="javascript" type="text/javascript" src="{{ asset('js/roster-edit-package.js') }}"></script>
 
-
-    {{--<script language="javascript" type="text/javascript" src="{{ asset('inc/js/examForm.js') }}"></script>--}}
-
-    {{--<script language="javascript" type="text/javascript" src="{{ asset('inc/js/rosterTable.js') }}"></script>--}}
-    {{--<script language="javascript" type="text/javascript" src="{{ asset('inc/js/rosterFileImport.js') }}"></script>--}}
-    {{--<script type="text/javascript">--}}
-
-        {{--/*--}}
-         {{--THINGS TODO:--}}
-         {{--- column swapping--}}
-         {{--- XLS / XLSX support--}}
-         {{--*/--}}
-
-        {{--function showImportHelp() {--}}
-            {{--bootbox.dialog({--}}
-                {{--message: "Student roster files should be formatted as a .CSV file type.<br/>" +--}}
-                {{--"Each row holds one student's data, with the following information:<br/>" +--}}
-                {{--"Last name, first name, ID (optional), email (optional)<br/>" +--}}
-                {{--"Using these 4 fields as the first row of the file, though not required,<br/>" +--}}
-                {{--"will make it more likely that the data can be imported correctly.",--}}
-                {{--title: "Import Help",--}}
-                {{--buttons: {--}}
-                    {{--success: {--}}
-                        {{--label: "Ok",--}}
-                        {{--className: "btn-primary",--}}
-                        {{--callback: function () {--}}
-                        {{--}--}}
-                    {{--}--}}
-                {{--}--}}
-            {{--});--}}
-        {{--}--}}
-
-        {{--function submitAndNavigateTo(target) {--}}
-            {{--var $table = $('#studentRosterBody');--}}
-            {{--var valid = true;--}}
-
-            {{--// check that first and last names have values--}}
-            {{--$table.find('[id$="Name"]').each(function () {--}}
-                {{--if ($(this).val() == '') {--}}
-                    {{--valid = false;--}}
-                {{--}--}}
-            {{--});--}}
-
-            {{--if (valid) {--}}
-                {{--$('[name="navigateTo"]').val(target);--}}
-                {{--$('#rosterData').submit();--}}
-            {{--} else {--}}
-                {{--bootbox.alert("Name missing! Make sure all students have a first and last name before proceeding.",--}}
-                        {{--function () {--}}
-                        {{--});--}}
-            {{--}--}}
-        {{--}--}}
-
-        {{--$(document).ready(function () {--}}
-            {{--// 'upload file' listener--}}
-            {{--$('#fileInput').change(function () {--}}
-                {{--startRead();--}}
-                {{--$(this).val(null);--}}
-            {{--});--}}
-            {{--return false;--}}
-        {{--});--}}
-    {{--</script>--}}
 @endsection
 
 
