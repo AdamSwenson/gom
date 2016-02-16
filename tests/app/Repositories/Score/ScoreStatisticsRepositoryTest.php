@@ -43,8 +43,36 @@ class ScoreStatisticsRepositoryTest extends \TestCase
         //check
         $this->assertAttributeNotEmpty('questionAssignmentMeans', $this->object, 'question assignment means loaded');
         $this->assertAttributeNotEmpty('elementAssignmentMeans', $this->object, 'element assignment means loaded');
+        $this->assertAttributeNotEmpty('questionAssignmentStats', $this->object, 'question assignment stats loaded');
+        $this->assertAttributeNotEmpty('elementAssignmentStats', $this->object, 'element assignment stats loaded');
 
-        //Check values of element scores
+        //Check that stats collections contain objects with correct properties, et cetera
+        $this->assertInstanceOf(Collection::class, $this->object->questionAssignmentStats, "Question assignment stats made into collection");
+        $this->assertInstanceOf(Collection::class, $this->object->elementAssignmentStats, "Element assignment stats made into collection");
+
+        foreach($this->object->questionAssignmentStats as $qaId => $s){
+            $this->assertObjectHasAttribute('questionId', $s, "Has property for questionId");
+            $this->assertObjectHasAttribute('questionAssignmentId', $s, "Has property for questionAssignmentId");
+            $this->assertObjectHasAttribute('questionName', $s, "Has property for question name");
+            $this->assertObjectHasAttribute('mean', $s, "Has property for mean");
+            $this->assertObjectHasAttribute('standardDeviation', $s, "Has property for standardDeviation");
+            $this->assertObjectHasAttribute('maxScore', $s, "Has property for maxScore");
+            $this->assertObjectHasAttribute('minScore', $s, "Has property for minScore");
+            $this->assertObjectHasAttribute('numberAnswers', $s, "Has property for numberAnswers");
+        }
+
+        foreach($this->object->elementAssignmentStats as $qaId => $s){
+            $this->assertObjectHasAttribute('questionId', $s, "Has property for questionId");
+            $this->assertObjectHasAttribute('questionAssignmentId', $s, "Has property for questionAssignmentId");
+            $this->assertObjectHasAttribute('questionName', $s, "Has property for question name");
+            $this->assertObjectHasAttribute('mean', $s, "Has property for mean");
+            $this->assertObjectHasAttribute('standardDeviation', $s, "Has property for standardDeviation");
+            $this->assertObjectHasAttribute('maxScore', $s, "Has property for maxScore");
+            $this->assertObjectHasAttribute('minScore', $s, "Has property for minScore");
+            $this->assertObjectHasAttribute('numberAnswers', $s, "Has property for numberAnswers");
+        }
+
+        //Check values for element scores
         foreach ( ElementAssignment::where('exam_id', $this->exam) as $ea )
         {
             $scores = [];
@@ -54,10 +82,11 @@ class ScoreStatisticsRepositoryTest extends \TestCase
             }
             $expectedMean = array_sum($scores) / count($scores);
 
-            $this->assertEquals($expectedMean, $this->object->elementAssignmentMeans[ $ea->id ], 'expected mean found', 0.001);
+            $this->assertEquals($expectedMean, $this->object->elementAssignmentMeans[ $ea->id ], 'expected mean found for means array', 0.001);
+            $this->assertEquals($expectedMean, $this->object->elementAssignmentStats[ $ea->id ]['mean'], 'expected mean found for stats array', 0.001);
         }
 
-        //Check values of element scores
+        //Check values for question scores
         foreach ( QuestionAssignment::where('exam_id', $this->exam) as $ea )
         {
             $scores = [];
@@ -67,7 +96,8 @@ class ScoreStatisticsRepositoryTest extends \TestCase
             }
             $expectedMean = array_sum($scores) / count($scores);
 
-            $this->assertEquals($expectedMean, $this->object->questionAssignmentMeans[ $ea->id ], 'expected mean found', 0.001);
+            $this->assertEquals($expectedMean, $this->object->questionAssignmentMeans[ $ea->id ], 'expected mean found for means', 0.001);
+            $this->assertEquals($expectedMean, $this->object->questionAssignmentStats[ $ea->id ]['mean'], 'expected mean found for stats array', 0.001);
         }
 
     }

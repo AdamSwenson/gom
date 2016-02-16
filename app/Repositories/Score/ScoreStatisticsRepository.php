@@ -28,35 +28,65 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
 
     /** One of the types of statistical values that can be requested */
     const STAT_MEDIAN = 'median';
-
+    //-------------- Data holders ---------------------------------------------
+    /** @var array Means of question assignments (assignmentId as key) */
     public $questionAssignmentMeans = [];
+
+    /** @var array Means of element assignments (assignmentId as key) */
     public $elementAssignmentMeans = [];
 
+    /** @var array|Collection Holds arrays of element score stats objects for the exam. This has
+     * elementAssignmentIds as keys. The value for each elementAssignmentId is a stdClass object.
+     * This object has the attributes:
+     *      elementId
+     *      elementAssignmentId,
+     *      elementName,
+     *      mean,
+     *      standardDeviation,
+     *      maxScore,
+     *      minScore,
+     *      numberAnswers
+     */
+    public $elementAssignmentStats = [];
+
+    /** @var array|Collection Holds arrays of element score stats for the exam. NOT USED */
+    public $elementStats = [];
+
+    /** @var array|Collection Holds arrays of question score stats for the exam. */
+    public $questionStats = [];
+
+    /** @var array|Collection Holds arrays of question score stats for the exam. This has
+     * questionAssignmentIds as keys. The value for each questionAssignmentId is a stdClass object.
+     * This object has the attributes:
+     *      questionId
+     *      questionAssignmentId,
+     *      questionName,
+     *      mean,
+     *      standardDeviation,
+     *      maxScore,
+     *      minScore,
+     *      numberAnswers
+     */
+    public $questionAssignmentStats = [];
 
     /** @var  Exam */
     protected $exam;
 
-    /** @var \App\Repositories\Question\IQuestionAssignmentRepository */
-    protected $questionAssignmentDao;
-
+    //-------------- Repositories ---------------------------------------------
     /** @var  \App\Repositories\Element\IElementScoreRepository */
     protected $elementScoreDao;
 
     /** @var  \App\Repositories\Element\IElementAssignmentRepository */
     protected $elementAssignmentDao;
 
-    /** @var array|Collection Holds arrays of element score stats for the exam. */
-    public $elementStats = [];
-
     /** @var \App\Repositories\Time\GradingTimeRepository|\App\Repositories\Time\IGradingTimeRepository */
     protected $gradingTimeDao;
 
+    /** @var \App\Repositories\Question\IQuestionAssignmentRepository */
+    protected $questionAssignmentDao;
+
     /** @var  \App\Repositories\Element\IQuestionScoreRepository */
     protected $questionScoreDao;
-
-    /** @var array|Collection Holds arrays of question score stats for the exam. */
-    public $questionStats = [];
-
 
     public function __construct()
     {
@@ -87,11 +117,11 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
      */
     public function getQuestionAssignmentMean($questionAssignmentId)
     {
-        $questionAssignmentId = (string) $questionAssignmentId;
+        $questionAssignmentId = (string)$questionAssignmentId;
 
-        if ( array_key_exists($questionAssignmentId, $this->questionAssignmentMeans) )
+        if (array_key_exists($questionAssignmentId, $this->questionAssignmentMeans))
         {
-            return $this->questionAssignmentMeans[ $questionAssignmentId ];
+            return $this->questionAssignmentMeans[$questionAssignmentId];
         } else
         {
             return null;
@@ -106,9 +136,9 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
      */
     public function getElementAssignmentMean($elementAssignmentId)
     {
-        if ( array_key_exists($elementAssignmentId, $this->elementAssignmentMeans) )
+        if (array_key_exists($elementAssignmentId, $this->elementAssignmentMeans))
         {
-            return $this->elementAssignmentMeans[ $elementAssignmentId ];
+            return $this->elementAssignmentMeans[$elementAssignmentId];
         } else
         {
             return null;
@@ -126,21 +156,21 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
     public function getStatsForQuestionAssignment(Exam $exam, $questionAssignmentId, $returnValueOf = null)
     {
         //If the question stats storage is empty, load the data
-        if ( empty($this->questionStats) )
+        if (empty($this->questionStats))
         {
             $this->loadQuestionStatsForExam($exam);
         }
 
         $result = $this->questionStats->where('question_assignment_id', $questionAssignmentId);
 
-        if ( empty($result) )
+        if (empty($result))
         {
             return null;
         }
 
-        if ( ! empty($returnValueOf) )
+        if (!empty($returnValueOf))
         {
-            switch ( $returnValueOf )
+            switch ($returnValueOf)
             {
                 case self::STAT_MEAN:
                     return $result[0]['mean'];
@@ -167,21 +197,21 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
     public function getStatsForElementAssignment(Exam $exam, $elementAssignmentId, $returnValueOf = null)
     {
         //If the question stats storage is empty, load the data
-        if ( empty($this->elementStats) )
+        if (empty($this->elementStats))
         {
             $this->loadElementStatsForExam($exam);
         }
 
         $result = $this->elementStats->where('elementAssignmentId', $elementAssignmentId);
 
-        if ( empty($result) )
+        if (empty($result))
         {
             return null;
         }
 
-        if ( ! empty($returnValueOf) )
+        if (!empty($returnValueOf))
         {
-            switch ( $returnValueOf )
+            switch ($returnValueOf)
             {
                 case self::STAT_MEAN:
                     return $result[0]['mean'];
@@ -209,14 +239,36 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
 
         $query = <<<MYSQL
         SELECT DISTINCT qa.question_id AS questionId,
+            qa.id AS questionAssignmentId,
+            q.questionName AS questionName,
+            AVG(qs.score) AS mean,
+            STD(qs.score) AS standardDeviation,
+            MAX(qs.score) AS maxScore,
+            MIN(qs.score) AS minScore,
+            COUNT(qs.score) AS numberAnswers
+        FROM question_assignments qa LEFT JOIN question_scores qs ON qa.id = qs.question_assignment_id
+        INNER JOIN questions q ON qa.question_id = q.id
+        WHERE qa.exam_id = :examId
+        GROUP BY qa.id
+MYSQL;
+
+        $values = ['examId' => $exam->getId()];
+        $results = DB::select($query, $values);
+
+        foreach ($results as $r)
+        {
+            $this->questionAssignmentStats[$r->questionAssignmentId] = $r;
+            $this->questionAssignmentMeans[$r->questionAssignmentId] = $r->mean;
+        }
+        $this->questionAssignmentStats = collect($this->questionAssignmentStats);
+
+        /*
+         *         SELECT DISTINCT qa.question_id AS questionId,
         qa.id AS questionAssignmentId,
         AVG(qs.score) AS mean
         FROM question_assignments qa LEFT JOIN question_scores qs ON qa.id = qs.question_assignment_id
         WHERE qa.exam_id = :examId
         GROUP BY qa.id
-MYSQL;
-
-        /*
          * Updated for newer mysql
         $query = <<<MYSQL
         SELECT DISTINCT qa.question_id AS questionId, qa.id AS questionAssignmentId, AVG(qs.score) AS mean
@@ -225,15 +277,6 @@ MYSQL;
         GROUP BY question_assignment_id;
 MYSQL;
         */
-        $values = ['examId' => $exam->getId()];
-        $results = DB::select($query, $values);
-
-        foreach ( $results as $r )
-        {
-            $this->questionAssignmentMeans[ $r->questionAssignmentId ] = $r->mean;
-        }
-
-
 //
 //        //Load question assignments
 //        $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
@@ -281,13 +324,36 @@ MYSQL;
         $query = <<<MYSQL
         SELECT DISTINCT ea.element_id AS elementId,
             ea.id AS elementAssignmentId,
-            AVG(es.score) AS mean
+            e.elementName AS elementName,
+            AVG(es.score) AS mean,
+            STD(es.score) AS standardDeviation,
+            MAX(es.score) AS maxScore,
+            MIN(es.score) AS minScore
         FROM element_assignments ea LEFT JOIN element_scores es ON ea.id = es.element_assignment_id
+        INNER JOIN elements e ON ea.`element_id` = e.id
         WHERE ea.exam_id = :examId
         GROUP BY ea.id
 MYSQL;
 
+        $values = ['examId' => $exam->getId()];
+        $results = DB::select($query, $values);
+
+        foreach ($results as $r)
+        {
+            $this->elementAssignmentStats[$r->elementAssignmentId] = $r;
+            $this->elementAssignmentMeans[$r->elementAssignmentId] = $r->mean;
+        }
+        $this->elementAssignmentStats = collect($this->elementAssignmentStats);
+
+
         /*
+         *         SELECT DISTINCT ea.element_id AS elementId,
+            ea.id AS elementAssignmentId,
+            AVG(es.score) AS mean
+        FROM element_assignments ea LEFT JOIN element_scores es ON ea.id = es.element_assignment_id
+        WHERE ea.exam_id = :examId
+        GROUP BY ea.id
+
          * Replacing to deal with mysql 5.7 problem
                 $query = <<<MYSQL
                 SELECT DISTINCT ea.element_id AS elementId,
@@ -297,14 +363,6 @@ MYSQL;
                 WHERE ea.exam_id = :examId GROUP BY element_assignment_id;
         MYSQL;
         */
-        $values = ['examId' => $exam->getId()];
-        $results = DB::select($query, $values);
-
-        foreach ( $results as $r )
-        {
-            $this->elementAssignmentMeans[ $r->elementAssignmentId ] = $r->mean;
-        }
-
 //
 //        //Reset these values
 //        $this->exam = $exam;
@@ -348,13 +406,13 @@ MYSQL;
         //TODO Add student Id so user can identify anomalies
         $results = [];
         $times = $this->gradingTimeDao->getTimesForExamByGradedOrder($exam->id);
-        foreach ( $times as $t )
+        foreach ($times as $t)
         {
             $totalScore = $this->questionScoreDao->load_total_for_student_on_exam($exam->id, $t->student_id);
             $results[] = [
-                "dateTime"   => $t->updated_at->toDateTimeString(),
+                "dateTime" => $t->updated_at->toDateTimeString(),
                 "totalScore" => $totalScore,
-                "seconds"    => $t->seconds,
+                "seconds" => $t->seconds,
                 "studentIdentifier" => $t->student->getStudentId(),
                 "studentName" => $t->student->getFullName()
             ];

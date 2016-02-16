@@ -267,7 +267,7 @@ class ReportController extends Controller
      */
     public function showQualityControl(Exam $exam)
     {
-        $this->featureInDevelopment();
+//        $this->featureInDevelopment();
 
         //Check that user owns the exam
         $this->authorize('access-object', $exam);
