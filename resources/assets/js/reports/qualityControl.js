@@ -13,8 +13,8 @@ google.setOnLoadCallback( drawCharts );
 
 function drawCharts() {
     charts.drawScoresByOrder();
-    charts.drawTimeHistogram();
     charts.drawTimeScoreScatter();
+    charts.drawTimeHistogram();
     //drawTimesByOrder();
     //drawScoreAndTimeByOrder();
 }

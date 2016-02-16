@@ -123,6 +123,9 @@ module.exports = {
 
     },
 
+    /**
+     * Makes column chart of total scores in the order in which the exams were graded
+     */
     drawScoresByOrder: function () {
         var me = this;
         var data = new google.visualization.DataTable();
@@ -150,6 +153,9 @@ module.exports = {
         google.visualization.events.addListener( chart, 'select', clickHandler );
     },
 
+    /**
+     * Draws a column chart of grading times in the order in which they were graded.
+     */
     drawTimesByOrder: function () {
         var me = this;
         var data = new google.visualization.DataTable();
@@ -181,6 +187,7 @@ module.exports = {
     /**
      * Adds the clicked on student to the list of students whose exams should
      * be revisited.
+     * TODO Make bar change color when clicked.
      * @param chart
      */
     chartClickHandler: function ( chart ) {
@@ -203,7 +210,7 @@ module.exports = {
      * @param studentIdentifier
      */
     addStudentToList: function ( studentName, studentIdentifier ) {
-        var listItem = "<li class='list-group-item'>" + studentName + " (id: " + studentIdentifier + ") <span class='toRemove text-right glyphicon glyphicon-remove'></span></li>";
+        var listItem = "<li class='list-group-item'>" + studentName + " (id: " + studentIdentifier + ") [Link to comments] [Link to grading] <span class='text-right'><span class='toRemove glyphicon glyphicon-remove'></span></span></li>";
         $( "#revisitList" ).append( listItem );
         $( ".toRemove" ).on( 'click', function () {
             $( this ).parent().remove();

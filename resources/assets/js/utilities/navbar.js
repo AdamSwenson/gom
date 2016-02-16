@@ -18,8 +18,10 @@ module.exports = function () {
      * @param activeTab id of tab to make active
      */
     function setActiveNavTab( activeTab ) {
-        $( '[id^="nav"]' ).attr( 'class', '' );
-        $( '#' + activeTab ).attr( 'class', 'active' );
+        if(activeTab){
+            $( '[id^="nav"]' ).attr( 'class', '' );
+            $( '#' + activeTab ).attr( 'class', 'active' );
+        }
     }
 
     setActiveNavTab(activeTab);

@@ -2,7 +2,7 @@
 
 @section('otherCss')
     <link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('grade') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/grade-package.css') }}" rel="stylesheet" type="text/css">
 @endsection
 @section('body')
 
@@ -179,8 +179,13 @@
 @endsection
 
 @section('jsArea')
+    <script type="text/javascript">
+        var activeTab = '';
+    </script>
+    <script type='text/javascript' src="{{ asset('js/common-package.js') }}"></script>
+
     <script type='text/javascript' src="{{ asset('inc/js/bootstrap-slider.js') }}"></script>
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    @include('layouts.js.js_google_charts_include')
     <script type="text/javascript">
         google.load('visualization', '1', {'packages': ['corechart']});
     </script>
