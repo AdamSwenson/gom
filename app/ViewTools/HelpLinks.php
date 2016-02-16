@@ -29,7 +29,7 @@ class HelpLinks
     static public $instructSectionQuestionSetup = ['id' => 'questionSetup'];
 
     static public $instructSectionGrade = ['id' => 'grade'];
-    static public $instructSectionGradeGrading = ['id' => 'grading'];
+    static public $instructSectionGradeGrading = ['id' => 'grade'];
     static public $instructSectionGradeAssign = ['id' => 'gradeAssign'];
 
     static public $instructSectionReport = ['id' => 'setup'];
@@ -109,8 +109,8 @@ class HelpLinks
 //Grading page
     static public $gradeExamSelect = ['id' => 'gradeExamSelect', 'text' => 'Choose exam to grade'];
     static public $gradeStudentSelect = ['id' => 'gradeSelectStudent', 'text' => 'Choose student to grade'];
-    static public $gradeDashboard = ['id' => 'gradeDashboard', 'text' => 'Timers and grading statistics'];
-    static public $gradeStart = ['id' => 'gradeStart', 'text' => 'Start grading'];
+    static public $gradeDashboard = ['id' => 'gradeDashboard', 'text' => 'Timers and grade statistics'];
+    static public $gradeStart = ['id' => 'gradeStart', 'text' => 'Start grade'];
     static public $gradeSelectQuestion = ['id' => 'gradeSelectQuestion', 'text' => 'Select question to grade'];
     static public $gradeScoreElement = ['id' => 'gradeScoreElement', 'text' => 'Enter element scores'];
     static public $gradeCustomizeFeedback = ['id' => 'gradeScoreElement', 'text' => 'Personalize feedback'];

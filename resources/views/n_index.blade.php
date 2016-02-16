@@ -21,9 +21,9 @@
 
     </style>
 
-    @include('layouts.js_jquery_loader')
-    @include('layouts.js_bootstrap_loader')
-    @include('layouts.js_additional_libs')
+    @include('layouts.js.js_jquery_loader')
+    @include('layouts.js.js_bootstrap_loader')
+    @include('layouts.js.js_additional_libs')
 
 </head>
 <body>

@@ -16,11 +16,6 @@ elixir( function ( mix ) {
 
     //mix.browserSync();
     /* ---------------------------------------------- styles ----------------------------------------------------*/
-    //Styles used on grading page
-    mix.sass(
-        [
-            'grading/mainGrading.scss'
-        ], 'public/css/grading-styles.css' );
 
     mix.sass( [
         'help/pictureStyling.scss',
@@ -38,11 +33,25 @@ elixir( function ( mix ) {
 
 
 
-    //setup pages
     mix.sass([
         'common/common.sass'
     ], 'public/css/common-package.css');
 
+
+    //Styles used on grade page
+    mix.sass(
+        [
+            'grade/mainGrading.scss'
+        ], 'public/css/grade-package.css' );
+
+
+    //reports pages
+    mix.sass([
+        'reports/examControls.scss'
+    ], 'public/css/exam-controls-package.css');
+    mix.sass([
+        'reports/examAnalytics.scss'
+    ], 'public/css/exam-analytics-package.css');
 
 
     //setup pages
@@ -51,8 +60,15 @@ elixir( function ( mix ) {
         'setup/editRoster.scss'
     ], 'public/css/edit-roster-package.css');
 
+    mix.sass([
+        'common/common.sass',
+        'setup/selectExam.scss'
+    ], 'public/css/select-exam-package.css');
+
     /* ---------------------------------------------- scripts ----------------------------------------------------*/
 
+    //Include in development
+    mix.browserify(['utilities/vueDebug.js'], 'public/js/debug.js');
 
     mix.browserify( [
             //'https://code.jquery.com/jquery-2.2.0.js',
@@ -77,6 +93,7 @@ elixir( function ( mix ) {
     mix.browserify( 'reports/examControls.js', 'public/js/exam-controls-package.js' );
     mix.browserify( 'reports/studentControls.js', 'public/js/student-controls-package.js' );
     mix.browserify( 'reports/examSelect.js', 'public/js/exam-select-package.js' );
+    mix.browserify('reports/qualityControl.js', 'public/js/quality-control-package.js');
 
     //Grading pages
     mix.browserify( 'grade/gradeAssign.js', 'public/js/grade-assign-package.js' );
@@ -110,17 +127,17 @@ elixir( function ( mix ) {
     //        'feedback/feedbackCharts.js'
     //    ], 'public/js/feedback-package.js' );
 
-    //scripts used on exam grading page
+    //scripts used on exam grade page
     //mix.scripts(
     //    [
-    //        'grading/letterGradeButton.js'
-    //    ], 'public/js/grading-package.js' );
+    //        'grade/letterGradeButton.js'
+    //    ], 'public/js/grade-package.js' );
 
 //new homepage
 //    mix.sass(
 //        [
 //
-//            'grading/mainGrading.scss',
+//            'grade/mainGrading.scss',
 //        ], 'public/css/home-styles.css');
 
 

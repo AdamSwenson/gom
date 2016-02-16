@@ -53,7 +53,7 @@
         <div class="col-lg-6">
             @include('help.partials.picture_container',
             ['imageFile' => 'grade/grade_student_area_annotated.jpg',
-            'altText' =>"The student selection area of the grading page with notes explaining that clicking the pencil icon hides student names, that clicking name or id sorts the list of students by name or id, and that clicking on a student's row selects them for grading.",
+            'altText' =>"grade",
             'caption' => 'Select student to grade'])
         </div>
     </div>
@@ -129,7 +129,7 @@
         <div class="col-lg-6">
             @include('help.partials.picture_container',
             ['imageFile' => 'grade/grade_statistics_area_annotated.jpg',
-            'altText' =>"The statistics area of the grading page with notes explaining that the button manually starts and stops the timer, that the current exam time is how long the present exam has taken, total time is the time grading all exams, average time is the average amount of time spent grading an exam, and remaining time is the estimated amount of time until you are done grading.",
+            'altText' =>"grade",
             'caption' => 'Dashboard statistics'])
         </div>
     </div>

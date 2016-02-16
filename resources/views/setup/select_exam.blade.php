@@ -7,21 +7,10 @@
 @section('description', 'Create, edit, clone or delete an exam')
 
 @section('cssLinks')
-
+<link rel="stylesheet" href="{{ asset('css/select-exam-package.css') }}">
 @endsection
 
 @section('body')
-
-    <style>
-        a {
-            cursor: pointer;
-        }
-
-        .table th {
-            border: none;
-        }
-    </style>
-
     <nav>
         <ul class="pager">
             <li class="next">
@@ -92,58 +81,6 @@
         var activeTab = 'navSetup';
     </script>
     <script language="javascript" type="text/javascript" src="{{ asset('js/exam-select-package.js') }}"></script>
-
-
-    {{--<script type="text/javascript">--}}
-
-        {{--// set 'Setup' tab as active--}}
-        {{--$('[id^="nav"]').attr('class', '');--}}
-        {{--$('#navSetup').attr('class', 'active');--}}
-
-        {{--function showConfirmation(examId) {--}}
-            {{--bootbox.dialog({--}}
-                {{--message: '<span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span> ' +--}}
-                {{--"Warning: This will delete all associated students, scores, questions and elements. " +--}}
-                {{--"<br/>Do you wish to proceed?",--}}
-                {{--title: "Delete Exam",--}}
-                {{--buttons: {--}}
-                    {{--success: {--}}
-                        {{--label: 'Cancel',--}}
-                        {{--className: "btn-sm",--}}
-                        {{--callback: function () {--}}
-                        {{--}--}}
-                    {{--},--}}
-                    {{--danger: {--}}
-                        {{--label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',--}}
-                        {{--className: "btn-danger btn-sm",--}}
-                        {{--callback: function () {--}}
-                            {{--// do deletion for examId--}}
-                            {{--deleteExam(examId);--}}
-                        {{--}--}}
-                    {{--}--}}
-                {{--}--}}
-            {{--});--}}
-        {{--}--}}
-
-        {{--function deleteExam(examId) {--}}
-
-            {{--$.ajax({--}}
-                {{--url: 'exam/' + examId,--}}
-                {{--type: "post",--}}
-                {{--data: {_method: "DELETE"},--}}
-                {{--success: function (data) {--}}
-                    {{--window.location.replace(data.url_redirect);--}}
-                {{--},--}}
-                {{--error: function () {--}}
-                    {{--bootbox.alert("Whoops! The exam failed to delete. Please try again.");--}}
-                {{--}--}}
-            {{--});--}}
-        {{--}--}}
-        {{--$(document).ready(function () {--}}
-            {{--return false;--}}
-        {{--});--}}
-    {{--</script>--}}
-
 @endsection
 
 

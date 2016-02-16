@@ -5,7 +5,7 @@
 @section('description', 'Edit an exam')
 
 @section('cssLinks')
-
+    <link rel="stylesheet" href="{{ asset('css/common-package.css') }}">
 @endsection
 
 @section('body')

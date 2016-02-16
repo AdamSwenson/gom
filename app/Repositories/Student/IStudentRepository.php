@@ -70,7 +70,7 @@ interface IStudentRepository
 
 //    /**
 //     * Handles the database queries for the autocomplete function
-//     * on the main grading page
+//     * on the main grade page
 //     * @param \Exam $exam
 //     * @param $param
 //     * @return mixed

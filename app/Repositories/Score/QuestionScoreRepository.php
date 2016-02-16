@@ -64,13 +64,33 @@ MYSQL;
 //        ORDER BY qa.question_number ASC;
 //MYSQL;
 
-    //    $query = "CALL get_question_scores_for_student(:userId, :examId, :studentId)";
+        //    $query = "CALL get_question_scores_for_student(:userId, :examId, :studentId)";
         $values = [
-            'userId' => \Auth::user()->id,
-            'examId' => $examId,
+            'userId'    => \Auth::user()->id,
+            'examId'    => $examId,
             'studentId' => $studentId,
         ];
+
         return \DB::select($query, $values);
+    }
+
+    /**
+     * Returns the total of all question scores for the student on the exam.
+     * Will return 0 if there are no scores recorded for the student.
+     * @param $examId
+     * @param $studentId
+     * @return int|float
+     */
+    public function load_total_for_student_on_exam($examId, $studentId)
+    {
+        $total = 0;
+        $studentScores = $this->load_for_student_on_exam($examId, $studentId);
+        foreach ( $studentScores as $score )
+        {
+            $total += $score->questionScore;
+        }
+
+        return $total;
     }
 
     /**
@@ -90,9 +110,10 @@ MYSQL;
         AND qa.question_number = :questionNumber
 MYSQL;
         $values = [
-            'examId' => $examId,
-            'questionNumber' => $questionNumber
+            'examId'         => $examId,
+            'questionNumber' => $questionNumber,
         ];
+
         return \DB::select($query, $values);
     }
 
@@ -113,9 +134,10 @@ MYSQL;
         AND qa.question_id = :questionId
 MYSQL;
         $values = [
-            'examId' => $examId,
-            'questionNumber' => $questionId
+            'examId'         => $examId,
+            'questionNumber' => $questionId,
         ];
+
         return \DB::select($query, $values);
     }
 
@@ -127,6 +149,7 @@ MYSQL;
     public function load($questionAssignmentId, $studentId)
     {
         $this->score_object = QuestionScore::where('student_id', $studentId)->where('question_assignment_id', $questionAssignmentId)->first();
+
         return $this->score_object;
     }
 
@@ -164,6 +187,7 @@ MYSQL;
         $questionScore->question_assignment_id = $questionAssignmentId;
         $questionScore->student_id = $studentId;
         $questionScore->recordScore($score);
+
         return $questionScore;
 
         /*
@@ -194,6 +218,7 @@ MYSQL;
     public function deleteScore($questionAssignmentId, $studentId)
     {
         $score = QuestionScore::where('question_assignment_id', $questionAssignmentId)->where('student_id', $studentId)->firstOrFail();
+
         return $score->delete();
     }
 

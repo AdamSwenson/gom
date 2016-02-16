@@ -1,0 +1,1 @@
+{"version":3,"sources":["examAnalytics.scss"],"names":[],"mappings":"AAEA;EACE,iBAAgB,EACjB;;AAED;EACE,kBAAiB;EACjB,mBAAkB,EACnB","file":"exam-analytics-package.css","sourcesContent":["//Styles for exam_analytics.blade\n\na {\n  cursor: pointer;\n}\n\n.chart {\n  max-width: 700px;\n  max-height: 500px;\n}"],"sourceRoot":"/source/"}

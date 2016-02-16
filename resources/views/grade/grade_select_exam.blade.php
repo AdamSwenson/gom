@@ -2,7 +2,7 @@
 @extends('layouts.master')
 
 @section('pageTitle', 'Grade Exam | gradeomatic')
-@section('description', 'Select an exam for grading')
+@section('description', 'grade')
 @section('cssLinks')
 
 @endsection

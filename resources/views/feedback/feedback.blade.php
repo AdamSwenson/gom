@@ -43,7 +43,7 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
             page-break-inside: avoid;
         }
     </style>
-    @include('layouts.css_bootstrap')
+    @include('layouts.css.css_bootstrap')
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 </head>
 <body>

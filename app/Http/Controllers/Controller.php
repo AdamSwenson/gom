@@ -54,6 +54,19 @@ abstract class Controller extends BaseController
         }
     }
 
+    /**
+     * Call this inside a method that is still being developed.
+     * Returns an abort message if the environment is production.
+     * Should never really be necessary to use this if git is managed
+     * properly. But just in case....
+     */
+    public function featureInDevelopment()
+    {
+        if(env('APP_ENV') == 'production'){
+            abort(403);
+        }
+    }
+
 //    protected function checkAuthorizationAndSmiteEvilDoers($objectOrArrayOfObjectsWhichIsOwned)
 //    {
 //        //Normalize

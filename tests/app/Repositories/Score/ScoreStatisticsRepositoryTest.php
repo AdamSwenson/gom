@@ -11,8 +11,11 @@ namespace App\Repositories\Score;
 use App\ElementAssignment;
 use App\ElementScore;
 use App\Exam;
+use App\GradingTime;
 use App\QuestionAssignment;
 use App\QuestionScore;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class ScoreStatisticsRepositoryTest extends \TestCase
 {
@@ -42,29 +45,29 @@ class ScoreStatisticsRepositoryTest extends \TestCase
         $this->assertAttributeNotEmpty('elementAssignmentMeans', $this->object, 'element assignment means loaded');
 
         //Check values of element scores
-        foreach(ElementAssignment::where('exam_id', $this->exam) as $ea)
+        foreach ( ElementAssignment::where('exam_id', $this->exam) as $ea )
         {
             $scores = [];
-            foreach(ElementScore::where('element_assignment_id', $ea->id)->get() as $es)
+            foreach ( ElementScore::where('element_assignment_id', $ea->id)->get() as $es )
             {
                 $scores[] = $es->score;
             }
             $expectedMean = array_sum($scores) / count($scores);
 
-            $this->assertEquals($expectedMean, $this->object->elementAssignmentMeans[$ea->id], 'expected mean found', 0.001);
+            $this->assertEquals($expectedMean, $this->object->elementAssignmentMeans[ $ea->id ], 'expected mean found', 0.001);
         }
 
         //Check values of element scores
-        foreach(QuestionAssignment::where('exam_id', $this->exam) as $ea)
+        foreach ( QuestionAssignment::where('exam_id', $this->exam) as $ea )
         {
             $scores = [];
-            foreach(QuestionScore::where('question_assignment_id', $ea->id)->get() as $es)
+            foreach ( QuestionScore::where('question_assignment_id', $ea->id)->get() as $es )
             {
                 $scores[] = $es->score;
             }
             $expectedMean = array_sum($scores) / count($scores);
 
-            $this->assertEquals($expectedMean, $this->object->questionAssignmentMeans[$ea->id], 'expected mean found', 0.001);
+            $this->assertEquals($expectedMean, $this->object->questionAssignmentMeans[ $ea->id ], 'expected mean found', 0.001);
         }
 
     }
@@ -111,6 +114,32 @@ class ScoreStatisticsRepositoryTest extends \TestCase
         //null case
         $result = $this->object->getElementAssignmentMean(200);
         $this->assertEquals(null, $result, 'null returned when assignment id not a key');
+    }
+
+
+    /** @test */
+    public function getScoresAndTimesByGradedOrder()
+    {
+        //call
+        $result = $this->object->getScoresAndTimesByGradedOrder($this->exam);
+
+        //check
+        $this->assertInstanceOf(Collection::class, $result, "Received a collection");
+        $this->assertNotEmpty($result, "Result contains values");
+
+        $prior = null;
+        foreach($result as $r)
+        {
+            $this->assertArrayHasKey('dateTime', $r, "Returned array has dateTime key");
+            $this->assertArrayHasKey('totalScore', $r, "Returned array has totalScore key");
+            $this->assertArrayHasKey('seconds', $r, "Returned array has seconds key");
+
+            $currentTime = Carbon::parse($r['dateTime']);
+            if(! is_null($prior)){
+                $this->assertTrue($currentTime->gte($prior), "This exam was graded after the exam in the previous element of the result");
+            }
+            $prior = $currentTime;
+        }
     }
 
 //

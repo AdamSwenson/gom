@@ -1,0 +1,1 @@
+{"version":3,"sources":["examControls.scss"],"names":[],"mappings":"AACA;EACE,iBAAgB,EACjB;;AAED;EACE,cAAa,EACd;;AAED;EACE,cAAa,EACd","file":"exam-controls-package.css","sourcesContent":["//Styles for exam_controls.blade\na {\n  cursor: pointer;\n}\n\n.table th {\n  border: none;\n}\n\n.panel {\n  border: none;\n}"],"sourceRoot":"/source/"}

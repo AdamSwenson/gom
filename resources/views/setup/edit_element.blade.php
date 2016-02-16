@@ -4,6 +4,7 @@
 @section('pageTitle', 'Edit Elements | gradeomatic')
 @section('description', 'Add or edit elements')
 @section('cssLinks')
+    <link rel="stylesheet" href="{{ asset('css/common-package.css') }}">
 @endsection
 
 @section('body')

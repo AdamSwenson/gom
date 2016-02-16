@@ -202,9 +202,9 @@ class StudentRepository implements IStudentRepository
      *
      * But we need to be careful. If there were invalid records in the request,
      * the user might not have intended to delete the student. For example, they
-     * may have gone back to add an email address after grading a student's exam
+     * may have gone back to add an email address after grade a student's exam
      * and mistyped the email address. If we we're just to delete everything not in
-     * the validStudents array, all the work of grading the student would be lost.
+     * the validStudents array, all the work of grade the student would be lost.
      *
      *
      * @param Request $request
@@ -410,7 +410,7 @@ class StudentRepository implements IStudentRepository
 
 //    /**
 //     * Handles the database queries for the autocomplete function
-//     * on the main grading page
+//     * on the main grade page
 //     * @param \Exam $exam
 //     * @param $param
 //     * @return mixed

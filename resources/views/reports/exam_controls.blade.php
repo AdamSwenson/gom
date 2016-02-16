@@ -2,23 +2,12 @@
 @extends('layouts.master')
 @section('pageTitle', 'Reports | gradeomatic')
 @section('description', 'Select an exam action')
+
 @section('cssLinks')
+    <link rel="stylesheet" href="{{ asset('css/exam-controls-package.css') }}"/>
 @endsection
 
 @section('body')
-    <style>
-        a {
-            cursor: pointer;
-        }
-
-        .table th {
-            border: none;
-        }
-
-        .panel {
-            border: none;
-        }
-    </style>
 
     <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Reports & Release</h3>
     <h4>Release grades to students or view data about an exam</h4>

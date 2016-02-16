@@ -14,13 +14,14 @@ Route::get('info/instructions', 'InfoController@showInstructions');
 Route::get('info/faq', 'InfoController@showFaq');
 Route::get('info/tutorials', 'InfoController@showTutorials');
 
-Route::get('test', function()
-{
-    return view('newindex');
-//    return view('help.instructions');
-    //return view('feedback.n_feedback_multiple_students');
-//   return view('feedback.n_feedback');
-});
+Route::get('test/{exam}', 'ReportController@showQualityControl');
+//{
+//
+////    return view('newindex');
+////    return view('help.instructions');
+//    //return view('feedback.n_feedback_multiple_students');
+////   return view('feedback.n_feedback');
+//});
 
 /* Authentication and registration */
 Route::controllers([
@@ -82,8 +83,8 @@ Route::resource('exam.student', 'StudentController');
 //TODO Rework to be more coherent and restful
 // TODO: we don't need some of these currently as they aren't called (i.e. /time)
 Route::get('grade', 'GradeController@index'); // present list of exams to grade.
-Route::get('grade/exam/{exam}', 'GradeController@grade');  // begin grading the specified exam
-Route::get('grade/exam/{exam}/student/{student}', 'GradeController@grade');  // begin grading the specified exam
+Route::get('grade/exam/{exam}', 'GradeController@grade');  // begin grade the specified exam
+Route::get('grade/exam/{exam}/student/{student}', 'GradeController@grade');  // begin grade the specified exam
 Route::get('grade/exam/{exam}/assign', 'GradeController@assign'); // launch grade assigner
 Route::post('grade/exam/{exam}/assign', 'GradeController@recordAssignments'); // record grade assignments
 Route::post('grade/exam/{exam}', 'GradeController@recordScore'); // record a question or element score

@@ -4,8 +4,8 @@
 @section('pageTitle', 'Grade Exam | gradeomatic')
 @section('description', 'Grade an exam')
 @section('otherCss')
-    <link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet" type="text/css" >
-    <link href="{{ asset('css/grading-styles.css') }}"  rel="stylesheet" type="text/css" >
+    {{--<link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet" type="text/css" >--}}
+    <link href="{{ asset('css/grade-package.css') }}"  rel="stylesheet" type="text/css" >
 @endsection
 
 @section('body')
@@ -134,7 +134,7 @@
                 <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish
             </a>
             <!-- student table shows the student roster -->
-            @include('grade.student_table')
+            @include('grade.partials.student_table')
                     <!-- statistics area holds time info -->
             @include('grade.partials.statistics_table')
         </div>
@@ -144,11 +144,6 @@
 
 
 @section('jsArea')
-
-    {{--<link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet">--}}
-    {{--<script type='text/javascript' src="{{ asset('inc/js/bootstrap-slider.js') }}"></script>--}}
-    {{--<script type='text/javascript' src="{{ asset('inc/js/bootstrap3-typeahead.min.js') }}"></script>--}}
-    {{--<script type="text/javascript" src="{{asset('js/grading-package.js') }}"></script>--}}
 
     <script type="text/javascript">
         var myvar = "adding new errors";

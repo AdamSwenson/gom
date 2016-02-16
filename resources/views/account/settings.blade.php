@@ -40,16 +40,18 @@
 @section('jsArea')
 
     <script type="text/javascript">
-        // set 'Account' tab as active
-        $('[id^="nav"]').attr('class', '');
-        $('#navAccount').attr('class', 'active');
+        var activeTab = 'navAccount';
+        {{--// set 'Account' tab as active--}}
+        {{--$('[id^="nav"]').attr('class', '');--}}
+        {{--$('#navAccount').attr('class', 'active');--}}
 
-        $(document).ready(function () {
-            /**
-             * Do any styling or activities required by the page
-             * @returns {undefined}
-             */
+        {{--$(document).ready(function () {--}}
+            {{--/**--}}
+             {{--* Do any styling or activities required by the page--}}
+             {{--* @returns {undefined}--}}
+             {{--*/--}}
 
-        });
+        {{--});--}}
     </script>
+    <script type="text/javascript" src="{{ asset('js/common-package.js') }}"></script>
 @endsection

@@ -11,7 +11,7 @@
     <link href='{{ asset('inc/images/favicon.ico') }}' rel='icon' type='image/x-icon'/>
 
     @yield('otherCss')
-    @include('layouts.css_bootstrap')
+    @include('layouts.css.css_bootstrap')
 
     {{--@include('layouts.js_jquery_loader')--}}
     {{--@include('layouts.js_bootstrap_loader')--}}
@@ -38,6 +38,22 @@
 <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
 
 <div id="scriptBox">
+    @if(env('APP_DEBUG') == true)
+        <script type="text/javascript" src="{{ asset('js/debug.js') }}"></script>
+    @endif
+
+    <script type="text/javascript">
+        var routeRoot = '{{ url() }}';
+        window.console.log( routeRoot );
+        if ( typeof jQuery != 'undefined' ) {
+            $.ajaxSetup( {
+                headers: {
+                    'X-CSRF-TOKEN': $( 'meta[name="csrf-token"]' ).attr( 'content' )
+                }
+            } );
+        }
+
+    </script>
     {{--<script type="text/javascript">--}}
       {{--if(typeof $ != 'undefined'){--}}
         {{--$.ajaxSetup({--}}

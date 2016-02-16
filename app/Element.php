@@ -84,7 +84,7 @@ class Element extends BaseModel
     }
 
     /**
-     * Sets the text to be displayed while grading
+     * Sets the text to be displayed while grade
      * @param string $displayText
      */
     public function setDisplayText($displayText)
@@ -111,7 +111,7 @@ class Element extends BaseModel
     }
 
     /**
-     * Gets the text to be displayed while grading
+     * Gets the text to be displayed while grade
      * @return string
      */
     public function getDisplayText()

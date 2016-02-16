@@ -39,9 +39,6 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
     /** @var \App\Repositories\Question\IQuestionAssignmentRepository */
     protected $questionAssignmentDao;
 
-    /** @var  \App\Repositories\Element\IQuestionScoreRepository */
-    protected $questionScoreDao;
-
     /** @var  \App\Repositories\Element\IElementScoreRepository */
     protected $elementScoreDao;
 
@@ -51,8 +48,15 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
     /** @var array|Collection Holds arrays of element score stats for the exam. */
     public $elementStats = [];
 
+    /** @var \App\Repositories\Time\GradingTimeRepository|\App\Repositories\Time\IGradingTimeRepository */
+    protected $gradingTimeDao;
+
+    /** @var  \App\Repositories\Element\IQuestionScoreRepository */
+    protected $questionScoreDao;
+
     /** @var array|Collection Holds arrays of question score stats for the exam. */
     public $questionStats = [];
+
 
     public function __construct()
     {
@@ -60,6 +64,7 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
         $this->elementAssignmentDao = app()->make('App\Repositories\Element\IElementAssignmentRepository');
         $this->questionScoreDao = app()->make('App\Repositories\Score\IQuestionScoreRepository');
         $this->elementScoreDao = app()->make('App\Repositories\Score\IElementScoreRepository');
+        $this->gradingTimeDao = app()->make('App\Repositories\Time\IGradingTimeRepository');
     }
 
     /**
@@ -82,11 +87,11 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
      */
     public function getQuestionAssignmentMean($questionAssignmentId)
     {
-        $questionAssignmentId = (string)$questionAssignmentId;
+        $questionAssignmentId = (string) $questionAssignmentId;
 
-        if (array_key_exists($questionAssignmentId, $this->questionAssignmentMeans))
+        if ( array_key_exists($questionAssignmentId, $this->questionAssignmentMeans) )
         {
-            return $this->questionAssignmentMeans[$questionAssignmentId];
+            return $this->questionAssignmentMeans[ $questionAssignmentId ];
         } else
         {
             return null;
@@ -101,9 +106,9 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
      */
     public function getElementAssignmentMean($elementAssignmentId)
     {
-        if (array_key_exists($elementAssignmentId, $this->elementAssignmentMeans))
+        if ( array_key_exists($elementAssignmentId, $this->elementAssignmentMeans) )
         {
-            return $this->elementAssignmentMeans[$elementAssignmentId];
+            return $this->elementAssignmentMeans[ $elementAssignmentId ];
         } else
         {
             return null;
@@ -121,21 +126,21 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
     public function getStatsForQuestionAssignment(Exam $exam, $questionAssignmentId, $returnValueOf = null)
     {
         //If the question stats storage is empty, load the data
-        if (empty($this->questionStats))
+        if ( empty($this->questionStats) )
         {
             $this->loadQuestionStatsForExam($exam);
         }
 
         $result = $this->questionStats->where('question_assignment_id', $questionAssignmentId);
 
-        if (empty($result))
+        if ( empty($result) )
         {
             return null;
         }
 
-        if (!empty($returnValueOf))
+        if ( ! empty($returnValueOf) )
         {
-            switch ($returnValueOf)
+            switch ( $returnValueOf )
             {
                 case self::STAT_MEAN:
                     return $result[0]['mean'];
@@ -162,21 +167,21 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
     public function getStatsForElementAssignment(Exam $exam, $elementAssignmentId, $returnValueOf = null)
     {
         //If the question stats storage is empty, load the data
-        if (empty($this->elementStats))
+        if ( empty($this->elementStats) )
         {
             $this->loadElementStatsForExam($exam);
         }
 
         $result = $this->elementStats->where('elementAssignmentId', $elementAssignmentId);
 
-        if (empty($result))
+        if ( empty($result) )
         {
             return null;
         }
 
-        if (!empty($returnValueOf))
+        if ( ! empty($returnValueOf) )
         {
-            switch ($returnValueOf)
+            switch ( $returnValueOf )
             {
                 case self::STAT_MEAN:
                     return $result[0]['mean'];
@@ -223,9 +228,9 @@ MYSQL;
         $values = ['examId' => $exam->getId()];
         $results = DB::select($query, $values);
 
-        foreach ($results as $r)
+        foreach ( $results as $r )
         {
-            $this->questionAssignmentMeans[$r->questionAssignmentId] = $r->mean;
+            $this->questionAssignmentMeans[ $r->questionAssignmentId ] = $r->mean;
         }
 
 
@@ -295,9 +300,9 @@ MYSQL;
         $values = ['examId' => $exam->getId()];
         $results = DB::select($query, $values);
 
-        foreach ($results as $r)
+        foreach ( $results as $r )
         {
-            $this->elementAssignmentMeans[$r->elementAssignmentId] = $r->mean;
+            $this->elementAssignmentMeans[ $r->elementAssignmentId ] = $r->mean;
         }
 
 //
@@ -331,5 +336,30 @@ MYSQL;
 
         //Make the stored array into a laravel collection
 //        $this->elementStats = collect($this->elementStats);
+    }
+
+
+    /**
+     * @param Exam $exam
+     * @return \Illuminate\Support\Collection
+     */
+    public function getScoresAndTimesByGradedOrder(Exam $exam)
+    {
+        //TODO Add student Id so user can identify anomalies
+        $results = [];
+        $times = $this->gradingTimeDao->getTimesForExamByGradedOrder($exam->id);
+        foreach ( $times as $t )
+        {
+            $totalScore = $this->questionScoreDao->load_total_for_student_on_exam($exam->id, $t->student_id);
+            $results[] = [
+                "dateTime"   => $t->updated_at->toDateTimeString(),
+                "totalScore" => $totalScore,
+                "seconds"    => $t->seconds,
+                "studentIdentifier" => $t->student->getStudentId(),
+                "studentName" => $t->student->getFullName()
+            ];
+        }
+
+        return collect($results);
     }
 }

@@ -11,7 +11,7 @@ namespace App\Repositories\Time;
 /**
  * Class GradingStatsRepository
  *
- * Handles statistics on grading time
+ * Handles statistics on grade time
  *
  * @package Repositories\Time
  */
@@ -19,12 +19,12 @@ class GradingStatsRepository implements IGradingStatsRepository
 {
 
     /**
-     * Calculates statistics for grading time.
+     * Calculates statistics for grade time.
      *
      * Returns an array with the following keys:
      *      averageExamTime: (float) The average time in seconds spent on each exam
-     *      gradeTimeElapsed: (float) The time in seconds spent so far grading the current set of exams
-     *      gradeTimeRemaining: (float) The estimate time in seconds it will take to finish grading
+     *      gradeTimeElapsed: (float) The time in seconds spent so far grade the current set of exams
+     *      gradeTimeRemaining: (float) The estimate time in seconds it will take to finish grade
      *      remainingExams: (int) The number of exams which have not yet been graded
      *      totalExams: (int) The total number of exams to grade
      *

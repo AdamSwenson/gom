@@ -20,6 +20,15 @@ interface IQuestionScoreRepository
     public function load_for_student_on_exam($examId, $studentId);
 
     /**
+     * Returns the total of all question scores for the student on the exam.
+     * Will return 0 if there are no scores recorded for the student.
+     * @param $examId
+     * @param $studentId
+     * @return int|float
+     */
+    public function load_total_for_student_on_exam($examId, $studentId);
+
+    /**
      * Loads all scores for a given question on an exam.
      * This returns an array of stdClass objects, each of which has a score property.
      * So to access the score of the first item you would do $result[0]->score

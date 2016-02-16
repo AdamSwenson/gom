@@ -25,9 +25,9 @@
 </div>
 
 <div id="scriptBox">
-    @include('layouts.js_jquery_loader')
-    @include('layouts.js_bootstrap_loader')
-    @include('layouts.js_scriptloader')
+    @include('layouts.js.js_jquery_loader')
+    @include('layouts.js.js_bootstrap_loader')
+    @include('layouts.js.js_scriptloader')
 
     <script type="text/javascript" src="<?php echo asset("inc/js/bootbox.min.js");?>"></script>
     <!-- bootbox for easy modals -->

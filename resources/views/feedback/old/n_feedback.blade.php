@@ -15,8 +15,8 @@ $data = \App\Feedback::all()->random();
             page-break-inside: avoid;
         }
     </style>
-    @include('layouts.js_jquery_loader')
-    @include('layouts.js_bootstrap_loader')
+    @include('layouts.js.js_jquery_loader')
+    @include('layouts.js.js_bootstrap_loader')
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
 </head>

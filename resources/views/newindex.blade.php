@@ -11,13 +11,13 @@
     <link href='{{ asset('inc/images/favicon.ico') }}' rel='icon' type='image/x-icon'/>
     {{--<link href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" type="text/css">--}}
     {{--<link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet" type="text/css">--}}
-    {{--<link href="{{ asset('css/grading-styles.css') }}" rel="stylesheet" type="text/css">--}}
+    {{--<link href="{{ asset('css/grade-styles.css') }}" rel="stylesheet" type="text/css">--}}
 
     <link href="{{ asset('css/home-styles.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('css/grading-styles.css') }}" rel="stylesheet" type="text/css">
-    @include('layouts.js_jquery_loader')
-    @include('layouts.js_bootstrap_loader')
+    <link href="{{ asset('grade') }}" rel="stylesheet" type="text/css">
+    @include('layouts.js.js_jquery_loader')
+    @include('layouts.js.js_bootstrap_loader')
 </head>
 
 <body>

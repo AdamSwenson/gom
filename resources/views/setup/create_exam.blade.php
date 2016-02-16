@@ -3,6 +3,7 @@
 @section('pageTitle', 'Create Exam | gradeomatic')
 @section('description', 'create an exam')
 @section('cssLinks')
+    <link rel="stylesheet" href="{{ asset('css/common-package.css') }}">
 @endsection
 
 @section('body')

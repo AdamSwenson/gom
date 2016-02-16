@@ -237,7 +237,7 @@ class ReportController extends Controller
 
     function standardDeviation($array)
     {
-        // square root of sum of squares devided by N-1
+        // square root of sum of squares divided by N-1
         return sqrt(array_sum(array_map(function ($x, $mean) {
                 return pow($x - $mean, 2);
             }, $array, array_fill(0, count($array),
@@ -251,7 +251,7 @@ class ReportController extends Controller
     }
 
     /**
-     *
+     * Shows the page listing all exams for selecting report functions
      * @return \Illuminate\View\View
      */
     public function showExams()
@@ -263,12 +263,26 @@ class ReportController extends Controller
     /**
      * Returns the page with quality control tools for the given exam
      * @param Exam $exam
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function showQualityControl(Exam $exam)
     {
-        abort(403);
+        $this->featureInDevelopment();
+
         //Check that user owns the exam
-//        $this->authorize('access-object', $exam);
+        $this->authorize('access-object', $exam);
+
+        $scoreStatsDao = app()->make('App\Repositories\Score\IScoreStatisticsRepository');
+        $gradingTimeStatsDao = app()->make('App\Repositories\Time\IGradingStatsRepository');
+
+        $gradingTimeStats = $gradingTimeStatsDao->get_grading_time_stats($exam->id);
+
+        $scoresAndTimes = $scoreStatsDao->getScoresAndTimesByGradedOrder($exam);
+
+        return view('reports.quality_control', [
+            'scoresAndTimes' => $scoresAndTimes,
+      //      'averageTime' => $gradingTimeStats['averageExamTime']
+        ]);
     }
 
     /**

@@ -2,7 +2,7 @@
 
 @section('otherCss')
     <link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('css/grading-styles.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('grade') }}" rel="stylesheet" type="text/css">
 @endsection
 @section('body')
 

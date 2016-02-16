@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\View;
 /**
  * Class GradeController
  *
- * This handles all operations involved in displaying the grading input page and
+ * This handles all operations involved in displaying the grade input page and
  * recording the actual grades as they are assigned.
  *
  * @package App\Http\Controllers
@@ -306,7 +306,7 @@ class GradeController extends Controller
 //    }
 
     /**
-     *  Presents a list of exams for grading and assignment of scores
+     *  Presents a list of exams for grade and assignment of scores
      */
     public function index()
     {
@@ -334,7 +334,7 @@ class GradeController extends Controller
     }
 
     /**
-     * Presents the exam for grading
+     * Presents the exam for grade
      * @param Exam $exam
      * @return View
      */
@@ -411,7 +411,7 @@ class GradeController extends Controller
             }
             $studentQuestionScores[] = $questionScores;
 
-            // load grading times for each student
+            // load grade times for each student
             if (isset ($this->gradingTimeDao->load($exam->getId(), $student->getId())->seconds))
             {
                 $examGradingTimes[] = $this->gradingTimeDao->load($exam->getId(), $student->getId())->seconds;
@@ -458,7 +458,7 @@ class GradeController extends Controller
     }
 
     /**
-     * Records scores, comments and grading time
+     * Records scores, comments and grade time
      * @param Exam $exam
      * @param GradingRequest $request
      * @return Response json
@@ -472,7 +472,7 @@ class GradeController extends Controller
             //Don't even get started if there's no student id
             if (!$request->has('student_id'))
             {
-                throw new \Exception('No student id set in grading request');
+                throw new \Exception('No student id set in grade request');
             }
 
             $studentId = $request->input('student_id');
@@ -533,7 +533,7 @@ class GradeController extends Controller
     }
 
     /**
-     * Record or add to the time spent grading a particular student's exam
+     * Record or add to the time spent grade a particular student's exam
      * @param Exam $exam
      * @param GradingRequest $request
      * @return mixed
@@ -578,7 +578,7 @@ class GradeController extends Controller
     }
 
     /**
-     * Load the time spent grading a particular student exam
+     * Load the time spent grade a particular student exam
      *
      * @param Exam $exam
      * @param GradingRequest $request
@@ -599,7 +599,7 @@ class GradeController extends Controller
     }
 
     /**
-     * Loads array of statistics for grading time.
+     * Loads array of statistics for grade time.
      * See IGradingStatsRepository for description of array.
      *
      * @param Exam $exam
