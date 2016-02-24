@@ -29,6 +29,17 @@ interface IQuestionScoreRepository
     public function load_total_for_student_on_exam($examId, $studentId);
 
     /**
+     * Returns an array with either questionNumber, questionId, or
+     * questionAssignmentId as the keys (with just the scores for that
+     * question as the values of each key).
+     * Defaults to returning with questionNumber as key
+     * @param $examId
+     * @param null $keyType What to use as keys (use constants)
+     * @return array
+     */
+    public function load_all_for_exam($examId, $keyType = null);
+
+    /**
      * Loads all scores for a given question on an exam.
      * This returns an array of stdClass objects, each of which has a score property.
      * So to access the score of the first item you would do $result[0]->score

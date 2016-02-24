@@ -14,6 +14,7 @@ use App\Jobs\Feedback\BuildFeedbackAllStudents;
 use App\Jobs\Feedback\BuildFeedbackOneStudent;
 use App\Jobs\Feedback\NotifyAllStudents;
 use App\Jobs\Feedback\NotifySingleStudent;
+use App\Repositories\Score\IScoreStatisticsRepository;
 use App\Student;
 use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
@@ -59,6 +60,10 @@ class ReportController extends Controller
     protected $studentRepository;
     /** @var IExamRepository */
     protected $examDao;
+    /**
+     * @var IScoreStatisticsRepository
+     */
+    private $scoreStatisticsRepository;
 
     /**
      * @param IAccessKeyRepository $accessKeyRepository
@@ -71,6 +76,8 @@ class ReportController extends Controller
      * @param IElementScoreRepository $elementScoreRepository
      * @param ICommentRepository $commentRepository
      * @param IStudentRepository $studentRepository
+     * @param IScoreStatisticsRepository $scoreStatisticsRepository
+     * @internal param IScoreStatisticsRepository $IScoreStatisticsRepository
      */
     public function __construct(
         IAccessKeyRepository $accessKeyRepository,
@@ -82,7 +89,8 @@ class ReportController extends Controller
         IQuestionScoreRepository $questionScoreRepository,
         IElementScoreRepository $elementScoreRepository,
         ICommentRepository $commentRepository,
-        IStudentRepository $studentRepository
+        IStudentRepository $studentRepository,
+        IScoreStatisticsRepository $scoreStatisticsRepository
     )
     {
         $this->middleware('auth');
@@ -95,12 +103,7 @@ class ReportController extends Controller
         $this->elementScoreRepository = $elementScoreRepository;
         $this->commentRepository = $commentRepository;
         $this->studentRepository = $studentRepository;
-    }
-
-
-    public function showGradeAssign()
-    {
-        return "Grade assignment page here";
+        $this->scoreStatisticsRepository = $scoreStatisticsRepository;
     }
 
 
@@ -152,7 +155,8 @@ class ReportController extends Controller
         $this->authorize('access-object', $student);
 
         // added cutoff in case of empty email address
-        if ($student->getEmail()) {
+        if ($student->getEmail())
+        {
             $job = (new NotifySingleStudent($exam, $student))->onQueue('emails');
             $this->dispatch($job);
         }
@@ -170,7 +174,8 @@ class ReportController extends Controller
         $this->authorize('access-object', $exam);
 
         $this->createFeedback($exam);
-        if (!$exam->getReleased()) {
+        if (!$exam->getReleased())
+        {
             $exam->setReleased(true);
             $exam->save();
         }
@@ -191,8 +196,10 @@ class ReportController extends Controller
         $exam->setReleased(false);
         $exam->save();
         $keys = $this->accessKeyDao->getAccessKeysForExam($exam->getId());
-        if (!empty($keys)) {
-            foreach ($keys as $key) {
+        if (!empty($keys))
+        {
+            foreach ($keys as $key)
+            {
                 $this->accessKeyDao->removeAccessKey($key->getKey());
             }
         }
@@ -213,8 +220,10 @@ class ReportController extends Controller
         $questionScores = [];
         $numberOfQuestions = count($this->questionAssignmentRepository->load_all_for_exam($exam->getId()));
 
-        if ($numberOfQuestions > 0) {
-            for ($i = 1; $i <= $numberOfQuestions; $i++) {
+        if ($numberOfQuestions > 0)
+        {
+            for ($i = 1; $i <= $numberOfQuestions; $i++)
+            {
 
                 /*
                  * Was getting error because this method on questionScoreRepository
@@ -223,22 +232,35 @@ class ReportController extends Controller
                  */
                 $oneSetOfScores = [];
                 $arrayOfStdObjects = $this->questionScoreRepository->load_all_for_question_number($exam->getId(), $i);
-                foreach ($arrayOfStdObjects as $obj) {
+                foreach ($arrayOfStdObjects as $obj)
+                {
                     array_push($oneSetOfScores, $obj->score);
                 }
                 //back to what was originally here
                 $questionScores[] = $oneSetOfScores;
             }
         }
-        return view('reports.exam_analytics')->with(['exam' => $exam,
+
+        $this->scoreStatisticsRepository->loadStats($exam);
+        $questionScoresByQNumber = $this->questionScoreRepository->load_all_for_exam($exam->id);
+        $elementScoresByQENumber = $this->elementScoreRepository->load_all_for_exam($exam->id);
+
+        return view('reports.exam_analytics')->with([
+            'exam' => $exam,
             'students' => $students,
-            'questionScores' => $questionScores]);
+            'questionScores' => json_encode($questionScores),
+            'questionScoresByQNumber' => json_encode($questionScoresByQNumber),
+            'questionStats' => $this->scoreStatisticsRepository->questionAssignmentStats->toJson(),
+            'elementStats' => $this->scoreStatisticsRepository->elementAssignmentStats->toJson(),
+            'elementScoresByQENumber' => json_encode($elementScoresByQENumber)
+        ]);
     }
 
     function standardDeviation($array)
     {
         // square root of sum of squares divided by N-1
-        return sqrt(array_sum(array_map(function ($x, $mean) {
+        return sqrt(array_sum(array_map(function ($x, $mean)
+            {
                 return pow($x - $mean, 2);
             }, $array, array_fill(0, count($array),
                 (array_sum($array) / count($array))))) / (count($array) - 1));
@@ -281,7 +303,7 @@ class ReportController extends Controller
 
         return view('reports.quality_control', [
             'scoresAndTimes' => $scoresAndTimes,
-      //      'averageTime' => $gradingTimeStats['averageExamTime']
+            //      'averageTime' => $gradingTimeStats['averageExamTime']
         ]);
     }
 
@@ -299,10 +321,12 @@ class ReportController extends Controller
         $examId = $exam->getId();
         $students = $this->studentRepository->load_students_by_exam($exam->getId());
 
-        if (!$exam->getReleased()) {
+        if (!$exam->getReleased())
+        {
             $this->feedbackBuilder->buildFeedback($examId);
         }
-        foreach ($students as $student) {
+        foreach ($students as $student)
+        {
             $this->feedbackBuilder->recompileFeedbackForStudent($examId, $student);
         }
         return view('reports.student_controls')->with(['exam' => $exam, 'students' => $students]);
@@ -346,7 +370,7 @@ class ReportController extends Controller
 
         $dataAll = [];
         $students = $this->studentRepository->load_students_by_exam($exam);
-        foreach($students as $student)
+        foreach ($students as $student)
         {
             $accessKey = $this->accessKeyDao->getAccessKeyForStudent($exam->getId(), $student->getId());
 

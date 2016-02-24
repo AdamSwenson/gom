@@ -9,11 +9,16 @@
 namespace App\Repositories\Score;
 
 
+use App\Question;
+use App\QuestionAssignment;
 use App\QuestionScore;
 
 class QuestionScoreRepository implements IQuestionScoreRepository
 {
     protected $score_object;
+    const KEY_QUESTION_NUMBER = 100;
+    const KEY_QUESTION_ID = 101;
+    const KEY_ASSIGNMENT_ID = 102;
 
     /**
      * Loads all question scores for a student on an exam
@@ -47,27 +52,9 @@ class QuestionScoreRepository implements IQuestionScoreRepository
         ORDER BY qa.question_number ASC;
 MYSQL;
 
-//        $query = <<<MYSQL
-//        SELECT q.id AS questionId,
-//            qa.question_number AS questionNumber,
-//            q.questionName,
-//            qa.id AS questionAssignmentId,
-//            (SELECT qs.score AS questionScore
-//                FROM question_scores qs
-//                WHERE qs.student_id = :studentId
-//                    AND qs.question_assignment_id = questionAssignmentId
-//            ) AS questionScore
-//        FROM questions q
-//        INNER JOIN question_assignments qa ON q.id = qa.question_id
-//        WHERE qa.exam_id = :examId
-//            AND q.user_id = :userId
-//        ORDER BY qa.question_number ASC;
-//MYSQL;
-
-        //    $query = "CALL get_question_scores_for_student(:userId, :examId, :studentId)";
         $values = [
-            'userId'    => \Auth::user()->id,
-            'examId'    => $examId,
+            'userId' => \Auth::user()->id,
+            'examId' => $examId,
             'studentId' => $studentId,
         ];
 
@@ -85,7 +72,7 @@ MYSQL;
     {
         $total = 0;
         $studentScores = $this->load_for_student_on_exam($examId, $studentId);
-        foreach ( $studentScores as $score )
+        foreach ($studentScores as $score)
         {
             $total += $score->questionScore;
         }
@@ -110,7 +97,7 @@ MYSQL;
         AND qa.question_number = :questionNumber
 MYSQL;
         $values = [
-            'examId'         => $examId,
+            'examId' => $examId,
             'questionNumber' => $questionNumber,
         ];
 
@@ -134,11 +121,57 @@ MYSQL;
         AND qa.question_id = :questionId
 MYSQL;
         $values = [
-            'examId'         => $examId,
+            'examId' => $examId,
             'questionNumber' => $questionId,
         ];
 
         return \DB::select($query, $values);
+    }
+
+    /**
+     * Returns an array with either questionNumber, questionId, or
+     * questionAssignmentId as the keys (with just the scores for that
+     * question as the values of each key).
+     * Defaults to returning with questionNumber as key
+     * @param $examId
+     * @param null $keyType What to use as keys (use constants)
+     * @return array
+     */
+    public function load_all_for_exam($examId, $keyType = null)
+    {
+        $data = [];
+        $assignments = QuestionAssignment::where('exam_id', $examId)->get();
+
+        //Set default
+        if (is_null($keyType))
+        {
+            $keyType = self::KEY_QUESTION_NUMBER;
+        }
+        //iterate through each question assignment and get scores
+        foreach ($assignments as $assignment)
+        {
+            switch ($keyType)
+            {
+                case self::KEY_QUESTION_NUMBER:
+                    $key = $assignment->question_number;
+                    break;
+                case self::KEY_QUESTION_ID:
+                    $key = $assignment->question_id;
+                    break;
+                case self::KEY_ASSIGNMENT_ID:
+                    $key = $assignment->id;
+                    break;
+            }
+            $scores = QuestionScore::where('question_assignment_id', $assignment->id)->get();
+            $out = [];
+
+            foreach ($scores as $score)
+            {
+                $out[] = $score->score;
+            }
+            $data[$key] = $out;
+        }
+        return $data;
     }
 
     /**

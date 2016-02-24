@@ -11,6 +11,7 @@ namespace App\Repositories\Score;
 
 use App\ElementAssignment;
 use App\ElementScore;
+use App\QuestionAssignment;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 
 class ElementScoreRepository implements IElementScoreRepository
@@ -18,6 +19,9 @@ class ElementScoreRepository implements IElementScoreRepository
     /** @var  ElementScore */
     public $score_object;
 
+    const KEY_QUESTION_NUMBER = 100;
+    const KEY_QUESTION_ID = 101;
+    const KEY_ASSIGNMENT_ID = 102;
 
     /**
      * Load score for a student by the id of the element assignment
@@ -85,45 +89,65 @@ MYSQL;
             'studentId' => $studentId
         ];
 
-        /*
-         * Replaced because mysql 5.7.9 doesn't like aliases in where clauses
-    //        $query = <<<MYSQL
-    //SELECT e.id AS elementId,
-    //    e.elementName AS elementName,
-    //    exq.subtask AS subtask,
-    //    exq.id AS elementAssignmentId,
-    //    (SELECT qa.question_number FROM question_assignments qa
-    //        WHERE qa.exam_id = :examId
-    //            AND qa.question_id = :questionId
-    //    ) AS questionNumber,
-    //    (SELECT score AS elementScore
-    //        FROM element_scores
-    //        WHERE element_assignment_id = elementAssignmentId
-    //        AND student_id = :studentId
-    //    ) AS elementScore
-    //    FROM elements e
-    //        INNER JOIN element_assignments exq ON e.id = exq.element_id
-    //        WHERE
-    //            e.user_id = :userId
-    //            AND exq.exam_id = :examId2
-    //            AND exq.question_id = :questionId2
-    //        ORDER BY exq.subtask ASC;
-    //MYSQL;
-
-        $uid = \Auth::user()->id;
-        // $query = "CALL get_element_scores_for_student_by_question_id(:userId, :examId, :questionId, :studentId, @elementId, @elementName, @questionNumber, @subtask, @elementAssignmentId, @elementScore)";
-        $values = [
-            'userId' => $uid,
-            'examId' => $examId,
-            'examId2' => $examId,
-            'questionId' => $questionId,
-            'questionId2' => $questionId,
-            'studentId' => $studentId
-        ];
-*/
-
         return \DB::select($query, $values);
         //TODO Error handling
+    }
+
+
+
+    /**
+     * Returns an array with either questionNumber, questionId, or
+     * questionAssignmentId as the keys (with just the scores for that
+     * question as the values of each key).
+     * Defaults to returning with questionNumber as key
+     * @param $examId
+     * @param null $keyType What to use as keys (use constants)
+     * @return array
+     */
+    public function load_all_for_exam($examId, $keyType = null)
+    {
+        $data = [];
+        $assignments = QuestionAssignment::where('exam_id', $examId)->get();
+
+        //Set default
+//        if (is_null($keyType))
+//        {
+//            $keyType = self::KEY_QUESTION_NUMBER;
+//        }
+        //iterate through each question assignment and get scores
+        foreach ($assignments as $assignment)
+        {
+//            switch ($keyType)
+//            {
+//                case self::KEY_QUESTION_NUMBER:
+//                    $key = $assignment->question_number;
+//                    break;
+//                case self::KEY_QUESTION_ID:
+//                    $key = $assignment->question_id;
+//                    break;
+//                case self::KEY_ASSIGNMENT_ID:
+//                    $key = $assignment->id;
+//                    break;
+//                //TODO add cases like element id and QuestionElementString (Q1E3)
+//            }
+            $elementAssignments = ElementAssignment::where('question_id', $assignment->question_id)->get();
+
+            foreach($elementAssignments as $elementAssignment){
+                $scores = ElementScore::where('element_assignment_id', $elementAssignment->id)->get();
+
+                $out = [];
+
+                foreach ($scores as $score)
+                {
+                    $out[] = $score->score;
+                }
+                $key = 'Q' . $assignment->question_number . 'E' . $elementAssignment->subtask;
+                $data[$key] = $out;
+            }
+
+        }
+
+        return $data;
     }
 
 

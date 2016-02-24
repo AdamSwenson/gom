@@ -9,20 +9,26 @@
 namespace App\Repositories\Score;
 
 
+use App\Exam;
 use App\QuestionAssignment;
 use App\QuestionScore;
 
 class QuestionScoreRepositoryTest extends \TestCase
 {
-
+    static public $examId = 1;
     protected $object;
     protected $questionScore;
+    protected $exam;
+    protected $assignments;
 
     public function setUp()
     {
         parent::setUp();
+
         $this->object = new QuestionScoreRepository;
         $this->questionScore = QuestionScore::all()->random();
+        $this->exam = Exam::find(self::$examId);
+        $this->assignments = QuestionAssignment::where('exam_id', self::$examId)->get();
     }
 
     public function testLoad_for_student_on_exam()
@@ -33,7 +39,7 @@ class QuestionScoreRepositoryTest extends \TestCase
         $examId = $qa->exam_id;
         $questionAssignments = QuestionAssignment::where('exam_id', $examId)->get();
         $questionAssignmentIds = [];
-        foreach ( $questionAssignments as $q )
+        foreach ($questionAssignments as $q)
         {
             $questionAssignmentIds[] = $q->id;
         }
@@ -42,7 +48,7 @@ class QuestionScoreRepositoryTest extends \TestCase
         $result = $this->object->load_for_student_on_exam($examId, $studentId);
 
         //check
-        foreach ( $result as $r )
+        foreach ($result as $r)
         {
             $this->assertInstanceOf('stdClass', $r, 'returns std class object');
             //   $this->assertEquals($studentId, $r->student_id, 'has correct student id');
@@ -61,7 +67,7 @@ class QuestionScoreRepositoryTest extends \TestCase
         $examId = $qa->exam_id;
         $questionAssignments = QuestionAssignment::where('exam_id', $examId)->get();
         $expectedTotal = 0;
-        foreach ( $questionAssignments as $q )
+        foreach ($questionAssignments as $q)
         {
             $expectedTotal += QuestionScore::where('question_assignment_id', $q->id)->where('student_id', $studentId)->first()->score;
         }
@@ -85,13 +91,31 @@ class QuestionScoreRepositoryTest extends \TestCase
         $result = $this->object->load_all_for_question_number($examId, $qnum);
 
         //check
-        foreach ( $result as $r )
+        foreach ($result as $r)
         {
             $this->assertInstanceOf('stdClass', $r, 'returns stdClass object');
 //            $this->assertEquals($qa->question_assignment_id, $r->question_assignment_id, 'has correct question assignment id');
         }
     }
 
+    /** @test */
+    public function load_all_for_exam_with_default_key()
+    {
+        //call
+        $result = $this->object->load_all_for_exam($this->exam->id);
+        //check
+        $this->assertTrue(is_array($result), "Returned an array");
+        $this->assertNotEmpty($result, "Result is not empty");
+        foreach ($this->assignments as $assignment)
+        {
+            $this->assertArrayHasKey($assignment->question_number, $result, "Result array has question number key");
+            $scores = QuestionScore::where('question_assignment_id', $assignment->id)->get();
+            foreach ($scores as $score)
+            {
+                $this->assertContains($score->score, $result[$assignment->question_number], "Score in results array");
+            }
+        }
+    }
 
     public function testLoad()
     {
@@ -122,7 +146,7 @@ class QuestionScoreRepositoryTest extends \TestCase
         $es->delete();
         $this->notSeeInDatabase('question_scores', [
             'question_assignment_id' => $questionAssignmentId,
-            'student_id'             => $studentId,
+            'student_id' => $studentId,
         ]);
 
         $result = $this->object->update($questionAssignmentId, $studentId, $score);
@@ -134,8 +158,8 @@ class QuestionScoreRepositoryTest extends \TestCase
         $this->assertEquals($score, $result->score);
         $this->seeInDatabase('question_scores', [
             'question_assignment_id' => $questionAssignmentId,
-            'student_id'             => $studentId,
-            'score'                  => $score,
+            'student_id' => $studentId,
+            'score' => $score,
         ]);
     }
 
@@ -155,8 +179,8 @@ class QuestionScoreRepositoryTest extends \TestCase
         $this->assertEquals($score, $result->score);
         $this->seeInDatabase('question_scores', [
             'question_assignment_id' => $questionAssignmentId,
-            'student_id'             => $studentId,
-            'score'                  => $score,
+            'student_id' => $studentId,
+            'score' => $score,
         ]);
     }
 
@@ -175,7 +199,7 @@ class QuestionScoreRepositoryTest extends \TestCase
         $this->assertTrue($result, "returns as expected");
         $this->notSeeInDatabase('question_scores', [
             'question_assignment_id' => $questionAssignmentId,
-            'student_id'             => $studentId,
+            'student_id' => $studentId,
         ]);
     }
 }

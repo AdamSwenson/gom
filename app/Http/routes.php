@@ -14,7 +14,7 @@ Route::get('info/instructions', 'InfoController@showInstructions');
 Route::get('info/faq', 'InfoController@showFaq');
 Route::get('info/tutorials', 'InfoController@showTutorials');
 
-Route::get('test/{exam}', 'ReportController@showQualityControl');
+//Route::get('test/{exam}', 'ReportController@showQualityControl');
 //{
 //
 ////    return view('newindex');

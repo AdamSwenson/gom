@@ -60,6 +60,7 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
      * This object has the attributes:
      *      questionId
      *      questionAssignmentId,
+     *      questionNumber
      *      questionName,
      *      mean,
      *      standardDeviation,
@@ -105,7 +106,6 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
     {
         $this->loadElementStatsForExam($exam);
         $this->loadQuestionStatsForExam($exam);
-
     }
 
     /**
@@ -233,13 +233,10 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
      */
     protected function loadQuestionStatsForExam(Exam $exam)
     {
-        //Clear these values
-        $this->exam = $exam;
-        $this->questionStats = [];
-
         $query = <<<MYSQL
         SELECT DISTINCT qa.question_id AS questionId,
             qa.id AS questionAssignmentId,
+            qa.question_number AS questionNumber,
             q.questionName AS questionName,
             AVG(qs.score) AS mean,
             STD(qs.score) AS standardDeviation,
@@ -257,59 +254,15 @@ MYSQL;
 
         foreach ($results as $r)
         {
+            //calculate the median and add to the results
+            $medianResult = $this->getQuestionAssignmentMedian($r->questionAssignmentId);
+            $r->median = $medianResult[0]->score;
+
             $this->questionAssignmentStats[$r->questionAssignmentId] = $r;
             $this->questionAssignmentMeans[$r->questionAssignmentId] = $r->mean;
         }
-        $this->questionAssignmentStats = collect($this->questionAssignmentStats);
-
-        /*
-         *         SELECT DISTINCT qa.question_id AS questionId,
-        qa.id AS questionAssignmentId,
-        AVG(qs.score) AS mean
-        FROM question_assignments qa LEFT JOIN question_scores qs ON qa.id = qs.question_assignment_id
-        WHERE qa.exam_id = :examId
-        GROUP BY qa.id
-         * Updated for newer mysql
-        $query = <<<MYSQL
-        SELECT DISTINCT qa.question_id AS questionId, qa.id AS questionAssignmentId, AVG(qs.score) AS mean
-        FROM question_assignments qa LEFT JOIN question_scores qs ON qa.id = qs.question_assignment_id
-        WHERE qa.exam_id = :examId
-        GROUP BY question_assignment_id;
-MYSQL;
-        */
-//
-//        //Load question assignments
-//        $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
-//
-//        //Load stats for each question assignment
-//        foreach($questionAssignments as $qa)
-//        {
-//            $result = DB::select('SELECT AVG(score) AS mean FROM question_scores WHERE question_assignment_id = :assignId', ['assignId' => $qa->id]);
-//            if ( !empty($result) )
-//            {
-//                $this->questionStats[] = [
-//                    'questionAssignmentId' => $qa->getId(),
-//                    'questionId' => $qa->getQuestion()->getId(),
-//                    'mean' => $result[0]->mean
-//                ];
-//            }
-//            else{
-//                $this->questionStats[] = [
-//                    'questionAssignmentId' => $qa->getId(),
-//                    'questionId' => $qa->getQuestion()->getId(),
-//                    'mean' => null
-//                ];
-//            }
-//        }
-
         //Make the stored array into a laravel collection
-        //  $this->questionStats = collect($this->questionStats);
-
-////       DB::statement('CALL question_score_averages_for_exam(:examId, @questionNumber, @questionName, @average)', ['examId' => $exam->getId()]);
-//        DB::statement('CALL question_score_averages_for_exam(:examId, questionNumber, questionName, average)', ['examId' => $exam->getId()]);
-//        $result = DB::select('SELECT questionNumber, questionName, average');
-////        $result = DB::select('SELECT @questionNumber AS questionNumber, @questionName AS questionName, @average AS average');
-//        return $result;
+        $this->questionAssignmentStats = collect($this->questionAssignmentStats);
     }
 
 
@@ -320,17 +273,20 @@ MYSQL;
      */
     protected function loadElementStatsForExam(Exam $exam)
     {
-
         $query = <<<MYSQL
-        SELECT DISTINCT ea.element_id AS elementId,
+         SELECT DISTINCT ea.element_id AS elementId,
             ea.id AS elementAssignmentId,
+            ea.subtask AS subtask,
+            qa.question_number AS questionNumber,
             e.elementName AS elementName,
             AVG(es.score) AS mean,
             STD(es.score) AS standardDeviation,
             MAX(es.score) AS maxScore,
-            MIN(es.score) AS minScore
+            MIN(es.score) AS minScore,
+            COUNT(es.score) AS numberAnswers
         FROM element_assignments ea LEFT JOIN element_scores es ON ea.id = es.element_assignment_id
         INNER JOIN elements e ON ea.`element_id` = e.id
+        INNER JOIN question_assignments qa ON qa.question_id = ea.question_id
         WHERE ea.exam_id = :examId
         GROUP BY ea.id
 MYSQL;
@@ -340,62 +296,95 @@ MYSQL;
 
         foreach ($results as $r)
         {
+            $medianResult = $this->getElementAssignmentMedian($r->elementAssignmentId);
+            $r->median = $medianResult[0]->score;
+
             $this->elementAssignmentStats[$r->elementAssignmentId] = $r;
             $this->elementAssignmentMeans[$r->elementAssignmentId] = $r->mean;
         }
-        $this->elementAssignmentStats = collect($this->elementAssignmentStats);
-
-
-        /*
-         *         SELECT DISTINCT ea.element_id AS elementId,
-            ea.id AS elementAssignmentId,
-            AVG(es.score) AS mean
-        FROM element_assignments ea LEFT JOIN element_scores es ON ea.id = es.element_assignment_id
-        WHERE ea.exam_id = :examId
-        GROUP BY ea.id
-
-         * Replacing to deal with mysql 5.7 problem
-                $query = <<<MYSQL
-                SELECT DISTINCT ea.element_id AS elementId,
-                    ea.id AS elementAssignmentId,
-                    AVG(es.score) AS mean
-                FROM element_assignments ea LEFT JOIN element_scores es ON ea.id = es.element_assignment_id
-                WHERE ea.exam_id = :examId GROUP BY element_assignment_id;
-        MYSQL;
-        */
-//
-//        //Reset these values
-//        $this->exam = $exam;
-//        $this->elementStats = [];
-//
-//        //Load the element assignments
-//        $elementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
-//
-//        //Populate the elementStats with stats
-//        foreach($elementAssignments as $ea)
-//        {
-//            $result = DB::select('SELECT AVG(score) AS mean FROM element_scores WHERE element_assignment_id = :assignId', ['assignId' => $ea->id]);
-//            if ( !empty($result) )
-//            {
-//                $this->elementStats[] = [
-//                    'elementAssignmentId' => $ea->getId(),
-//                    'elementId' => $ea->getElementId(),
-//                    'mean' => $result[0]->mean
-//                ];
-//            }
-//            else{
-//                $this->elementStats[] = [
-//                    'elementAssignmentId' => $ea->getId(),
-//                    'elementId' => $ea->getElementId(),
-//                    'mean' => null
-//                ];
-//            }
-//        }
-
         //Make the stored array into a laravel collection
-//        $this->elementStats = collect($this->elementStats);
+        $this->elementAssignmentStats = collect($this->elementAssignmentStats);
     }
 
+
+    /**
+     * Find the median for the element assignment
+     * TODO Write tests
+     * @param $elementAssignmentId
+     * @return float
+     */
+    public function getElementAssignmentMedian($elementAssignmentId)
+    {
+//        $query = <<<MYSQL
+//        SELECT x.score FROM element_scores x, element_scores y
+//        WHERE x.element_assignment_id = :elementAssignmentId1 AND y.element_assignment_id = :elementAssignmentId2
+//        GROUP BY x.score
+//        HAVING SUM(SIGN(1-SIGN(y.score-x.score)))/COUNT(*) > .5
+//        LIMIT 1;
+//MYSQL;
+
+        //from http://stackoverflow.com/questions/1291152/simple-way-to-calculate-median-with-mysql
+        $query = <<<MYSQL
+        SELECT AVG(t1.score) AS score FROM (
+        SELECT @rownum:=@rownum+1 AS `row_number`, d.score
+        FROM element_scores d,  (SELECT @rownum:=0) r
+        WHERE element_assignment_id = :elementAssignmentId1
+        ORDER BY d.score
+        ) AS t1,
+        (
+            SELECT count(*) AS total_rows
+            FROM element_scores d
+            WHERE element_assignment_id = :elementAssignmentId2
+        ) AS t2
+        WHERE 1
+        AND t1.row_number IN ( floor((total_rows+1)/2), floor((total_rows+2)/2) )
+MYSQL;
+
+        $values = ['elementAssignmentId1' => $elementAssignmentId, 'elementAssignmentId2' => $elementAssignmentId ];
+        $result = DB::select($query, $values);
+
+        return $result;
+    }
+
+    /**
+     * Find the median for the question assignment
+     * TODO Write tests
+     * @param $questionAssignmentId
+     * @return float
+     */
+    public function getQuestionAssignmentMedian($questionAssignmentId)
+    {
+//        $query = <<<MYSQL
+//        SELECT x.score FROM question_scores x, question_scores y
+//        WHERE x.question_assignment_id = :questionAssignmentId1 AND y.question_assignment_id = :questionAssignmentId2
+//        GROUP BY x.score
+//        HAVING SUM(SIGN(1-SIGN(y.score-x.score)))/COUNT(*) > .5
+//        LIMIT 1;
+//MYSQL;
+
+        //from http://stackoverflow.com/questions/1291152/simple-way-to-calculate-median-with-mysql
+        $query = <<<MYSQL
+        SELECT AVG(t1.score) AS score FROM (
+        SELECT @rownum:=@rownum+1 AS `row_number`, d.score
+        FROM question_scores d,  (SELECT @rownum:=0) r
+        WHERE question_assignment_id = :questionAssignmentId1
+        ORDER BY d.score
+        ) AS t1,
+        (
+            SELECT count(*) AS total_rows
+            FROM question_scores d
+            WHERE question_assignment_id = :questionAssignmentId2
+        ) AS t2
+        WHERE 1
+        AND t1.row_number IN ( floor((total_rows+1)/2), floor((total_rows+2)/2) )
+MYSQL;
+
+
+        $values = ['questionAssignmentId1' => $questionAssignmentId, 'questionAssignmentId2' => $questionAssignmentId ];
+        $result = DB::select($query, $values);
+
+        return $result;
+    }
 
     /**
      * @param Exam $exam

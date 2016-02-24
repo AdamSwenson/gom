@@ -12382,17 +12382,19 @@ require('bootstrap');
 
 module.exports = function () {
 
-  /**
-   * Sets one of the nav tabs as active. Uses variable which should be set
-   * ahead of time on each page
-   * @param activeTab id of tab to make active
-   */
-  function setActiveNavTab(activeTab) {
-    $('[id^="nav"]').attr('class', '');
-    $('#' + activeTab).attr('class', 'active');
-  }
+    /**
+     * Sets one of the nav tabs as active. Uses variable which should be set
+     * ahead of time on each page
+     * @param activeTab id of tab to make active
+     */
+    function setActiveNavTab(activeTab) {
+        if (activeTab) {
+            $('[id^="nav"]').attr('class', '');
+            $('#' + activeTab).attr('class', 'active');
+        }
+    }
 
-  setActiveNavTab(activeTab);
+    setActiveNavTab(activeTab);
 };
 
 },{"bootstrap":2,"jquery":15}]},{},[1]);

@@ -53,6 +53,7 @@ class ScoreStatisticsRepositoryTest extends \TestCase
         foreach($this->object->questionAssignmentStats as $qaId => $s){
             $this->assertObjectHasAttribute('questionId', $s, "Has property for questionId");
             $this->assertObjectHasAttribute('questionAssignmentId', $s, "Has property for questionAssignmentId");
+            $this->assertObjectHasAttribute('questionNumber', $s, "Has property for questionNumber");
             $this->assertObjectHasAttribute('questionName', $s, "Has property for question name");
             $this->assertObjectHasAttribute('mean', $s, "Has property for mean");
             $this->assertObjectHasAttribute('standardDeviation', $s, "Has property for standardDeviation");
@@ -62,9 +63,11 @@ class ScoreStatisticsRepositoryTest extends \TestCase
         }
 
         foreach($this->object->elementAssignmentStats as $qaId => $s){
-            $this->assertObjectHasAttribute('questionId', $s, "Has property for questionId");
-            $this->assertObjectHasAttribute('questionAssignmentId', $s, "Has property for questionAssignmentId");
-            $this->assertObjectHasAttribute('questionName', $s, "Has property for question name");
+            $this->assertObjectHasAttribute('elementId', $s, "Has property for elementId");
+            $this->assertObjectHasAttribute('elementAssignmentId', $s, "Has property for elementAssignmentId");
+            $this->assertObjectHasAttribute('elementName', $s, "Has property for element name");
+            $this->assertObjectHasAttribute('questionNumber', $s, "Has property for questionNumber");
+            $this->assertObjectHasAttribute('subtask', $s, "Has property for subtask");
             $this->assertObjectHasAttribute('mean', $s, "Has property for mean");
             $this->assertObjectHasAttribute('standardDeviation', $s, "Has property for standardDeviation");
             $this->assertObjectHasAttribute('maxScore', $s, "Has property for maxScore");

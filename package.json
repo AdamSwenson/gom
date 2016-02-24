@@ -26,6 +26,7 @@
     "jquery": "^2.2.0",
     "jquery-ui": "^1.10.5",
     "laravel-elixir": "^2.0.0",
-    "vue": "^0.12.10"
+    "vue": "^1.0.0",
+    "vue-charts": "0.0.5"
   }
 }

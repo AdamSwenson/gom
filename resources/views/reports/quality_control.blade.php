@@ -8,7 +8,9 @@
 
 @extends('layouts.master')
 @section('pageTitle', 'Quality control tools')
+@section('cssLinks')
 
+@endsection
 @section('body')
     <h1>Quality Control <br/>
         <small>Catch grading errors before your students do</small>
