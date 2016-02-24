@@ -124,12 +124,27 @@ $factory->define(App\Comment::class, function (Faker\Generator $faker)
 
 $factory->define(App\QuestionAssignment::class, function (Faker\Generator $faker)
 {
+
     return [
         'question_id' => factory(Question::class)->create()->id,
         'exam_id' => 1,
         'user_id' => 1,
         'question_number' => 1
-    ];
+        ];
+//            $exam = Exam::all()->random();
+//    $question = Question::all()->random();
+//    $questionAssignment = new QuestionAssignment();
+//    $questionAssignment->exam_id = $exam->id;
+//    $questionAssignment->question_id = $question->id;
+//    $questionAssignment->question_number = 10;
+//    return [
+////        'question_id' => Question::all()->random()->id,
+//        'question_id' => factory(Question::class)->create()->id,
+////        'exam_id' => factory(Exam::class)->create()->id,
+//        'exam_id' => 1,
+//        'user_id' => 1,
+//        'question_number' => $faker->randomNumber(1)
+//    ];
 });
 //
 //$factory->defineAs('App\QuestionAssignment', 'mock2', function (Faker\Generator $faker)

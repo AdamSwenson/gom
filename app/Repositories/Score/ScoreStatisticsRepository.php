@@ -256,7 +256,7 @@ MYSQL;
         {
             //calculate the median and add to the results
             $medianResult = $this->getQuestionAssignmentMedian($r->questionAssignmentId);
-            $r->median = $medianResult[0]->score;
+            $r->median = $medianResult;
 
             $this->questionAssignmentStats[$r->questionAssignmentId] = $r;
             $this->questionAssignmentMeans[$r->questionAssignmentId] = $r->mean;
@@ -297,7 +297,7 @@ MYSQL;
         foreach ($results as $r)
         {
             $medianResult = $this->getElementAssignmentMedian($r->elementAssignmentId);
-            $r->median = $medianResult[0]->score;
+            $r->median = $medianResult;
 
             $this->elementAssignmentStats[$r->elementAssignmentId] = $r;
             $this->elementAssignmentMeans[$r->elementAssignmentId] = $r->mean;
@@ -309,20 +309,12 @@ MYSQL;
 
     /**
      * Find the median for the element assignment
-     * TODO Write tests
+     *
      * @param $elementAssignmentId
      * @return float
      */
     public function getElementAssignmentMedian($elementAssignmentId)
     {
-//        $query = <<<MYSQL
-//        SELECT x.score FROM element_scores x, element_scores y
-//        WHERE x.element_assignment_id = :elementAssignmentId1 AND y.element_assignment_id = :elementAssignmentId2
-//        GROUP BY x.score
-//        HAVING SUM(SIGN(1-SIGN(y.score-x.score)))/COUNT(*) > .5
-//        LIMIT 1;
-//MYSQL;
-
         //from http://stackoverflow.com/questions/1291152/simple-way-to-calculate-median-with-mysql
         $query = <<<MYSQL
         SELECT AVG(t1.score) AS score FROM (
@@ -343,25 +335,17 @@ MYSQL;
         $values = ['elementAssignmentId1' => $elementAssignmentId, 'elementAssignmentId2' => $elementAssignmentId ];
         $result = DB::select($query, $values);
 
-        return $result;
+        return $result[0]->score;
     }
 
     /**
      * Find the median for the question assignment
-     * TODO Write tests
+     *
      * @param $questionAssignmentId
      * @return float
      */
     public function getQuestionAssignmentMedian($questionAssignmentId)
     {
-//        $query = <<<MYSQL
-//        SELECT x.score FROM question_scores x, question_scores y
-//        WHERE x.question_assignment_id = :questionAssignmentId1 AND y.question_assignment_id = :questionAssignmentId2
-//        GROUP BY x.score
-//        HAVING SUM(SIGN(1-SIGN(y.score-x.score)))/COUNT(*) > .5
-//        LIMIT 1;
-//MYSQL;
-
         //from http://stackoverflow.com/questions/1291152/simple-way-to-calculate-median-with-mysql
         $query = <<<MYSQL
         SELECT AVG(t1.score) AS score FROM (
@@ -383,7 +367,7 @@ MYSQL;
         $values = ['questionAssignmentId1' => $questionAssignmentId, 'questionAssignmentId2' => $questionAssignmentId ];
         $result = DB::select($query, $values);
 
-        return $result;
+        return $result[0]->score;
     }
 
     /**

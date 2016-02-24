@@ -8,12 +8,15 @@
 
 namespace App\Repositories\Score;
 
+use App\Element;
 use App\ElementAssignment;
 use App\ElementScore;
 use App\Exam;
 use App\GradingTime;
+use App\Question;
 use App\QuestionAssignment;
 use App\QuestionScore;
+use App\Student;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -175,7 +178,132 @@ class ScoreStatisticsRepositoryTest extends \TestCase
         }
     }
 
-//
+    /** @test */
+    public function getQuestionAssignmentMedianEvenNumberOfScores()
+    {
+        //prep
+        $scores = [1, 2, 3, 4, 5, 6];
+        $expectedMedian = 3.5;
+
+        //make a question assignment to use
+        $exam = factory(Exam::class)->create();
+        $question = Question::all()->random();
+        $questionAssignment = new QuestionAssignment();
+        $questionAssignment->exam_id = $exam->id;
+        $questionAssignment->question_id = $question->id;
+        $questionAssignment->question_number = 10;
+        $questionAssignment->save();
+
+        //make scores
+        foreach($scores as $s){
+            $q = new QuestionScore();
+            $q->question_assignment_id = $questionAssignment->id;
+            $q->student_id = factory(Student::class)->create()->id; //Student::all()->random()->id;
+
+            $q->score = $s;
+            $q->save();
+        }
+
+        //call
+        $result = $this->object->getQuestionAssignmentMedian($questionAssignment->id);
+
+        //check
+        $this->assertEquals($expectedMedian, $result, "Expected median received");
+    }
+
+    /** @test */
+    public function getQuestionAssignmentMedianOddNumberOfScores()
+    {
+        //prep
+        $scores = [0, 1, 2, 3, 4, 5, 6];
+        $expectedMedian = 3;
+
+        //make a question assignment to use
+        $exam = factory(Exam::class)->create();
+        $question = Question::all()->random();
+        $questionAssignment = new QuestionAssignment();
+        $questionAssignment->exam_id = $exam->id;
+        $questionAssignment->question_id = $question->id;
+        $questionAssignment->question_number = 10;
+        $questionAssignment->save();
+
+        //make scores
+        foreach($scores as $s){
+            $q = new QuestionScore();
+            $q->question_assignment_id = $questionAssignment->id;
+            $q->student_id = factory(Student::class)->create()->id; //Student::all()->random()->id;
+            $q->score = $s;
+            $q->save();
+        }
+
+        //call
+        $result = $this->object->getQuestionAssignmentMedian($questionAssignment->id);
+
+        //check
+        $this->assertEquals($expectedMedian, $result, "Expected median received");
+    }
+
+    /** @test */
+    public function getElementAssignmentMedianEvenNumberOfScores()
+    {
+        $scores = [1, 2, 3, 4, 5, 6];
+        $expectedMedian = 3.5;
+
+        //make an element assignment to use
+        $exam = factory(Exam::class)->create();
+        $elementAssignment = new ElementAssignment();
+        $elementAssignment->exam_id = $exam->id;
+        $elementAssignment->element_id = Element::all()->random()->id;
+        $elementAssignment->question_id = Question::all()->random()->id;
+        $elementAssignment->subtask = 10;
+        $elementAssignment->save();
+
+        //make scores
+        foreach($scores as $s){
+            $q = new ElementScore();
+            $q->element_assignment_id = $elementAssignment->id;
+            $q->student_id = factory(Student::class)->create()->id; //Student::all()->random()->id;
+            $q->score = $s;
+            $q->save();
+        }
+
+        //call
+        $result = $this->object->getElementAssignmentMedian($elementAssignment->id);
+
+        //check
+        $this->assertEquals($expectedMedian, $result, "Expected median received");
+    }
+
+    /** @test */
+    public function getElementAssignmentMedianOddNumberOfScores()
+    {
+        $scores = [0, 1, 2, 3, 4, 5, 6];
+        $expectedMedian = 3;
+
+        //make an element assignment to use
+        $exam = factory(Exam::class)->create();
+        $elementAssignment = new ElementAssignment();
+        $elementAssignment->exam_id = $exam->id;
+        $elementAssignment->element_id = Element::all()->random()->id;
+        $elementAssignment->question_id = Question::all()->random()->id;
+        $elementAssignment->subtask = 10;
+        $elementAssignment->save();
+
+        //make scores
+        foreach($scores as $s){
+            $q = new ElementScore();
+            $q->element_assignment_id = $elementAssignment->id;
+            $q->student_id = factory(Student::class)->create()->id; //Student::all()->random()->id;
+            $q->score = $s;
+            $q->save();
+        }
+
+        //call
+        $result = $this->object->getElementAssignmentMedian($elementAssignment->id);
+
+        //check
+        $this->assertEquals($expectedMedian, $result, "Expected median received");
+    }
 //    /**
 //     * @test
 //     */
