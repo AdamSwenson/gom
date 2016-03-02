@@ -304,6 +304,46 @@ class ScoreStatisticsRepositoryTest extends \TestCase
         //check
         $this->assertEquals($expectedMedian, $result, "Expected median received");
     }
+
+    /** @test */
+    public function getElementAssignmentQuartiles(){
+        $scores = [];
+        for($i=1; $i<=100; $i++){
+            $scores[] = $i;
+        }
+        $expected25 = 26;
+        $expected75 = 76;
+
+        //make an element assignment to use
+        $exam = factory(Exam::class)->create();
+        $elementAssignment = new ElementAssignment();
+        $elementAssignment->exam_id = $exam->id;
+        $elementAssignment->element_id = Element::all()->random()->id;
+        $elementAssignment->question_id = Question::all()->random()->id;
+        $elementAssignment->subtask = 10;
+        $elementAssignment->save();
+
+        //make scores
+        foreach($scores as $s){
+            $q = new ElementScore();
+            $q->element_assignment_id = $elementAssignment->id;
+            $q->student_id = factory(Student::class)->create()->id; //Student::all()->random()->id;
+            $q->score = $s;
+            $q->save();
+        }
+
+        //call
+        $result = $this->object->getElementAssignmentQuartiles($elementAssignment->id);
+
+        //check
+        $this->assertTrue(is_array($result), "returns an array");
+        $this->assertArrayHasKey('quartile1', $result, "Result has 25th percentile key");
+        $this->assertArrayHasKey('quartile3', $result, "Result has 75th percentile key");
+        $this->assertEquals($expected25, $result['quartile1'], "Expected 25th received");
+        $this->assertEquals($expected75, $result['quartile3'], "Expected 75th received");
+    }
+
+
 //    /**
 //     * @test
 //     */

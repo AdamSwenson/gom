@@ -131,6 +131,10 @@ Route::get('backup/{exam}', function($exam){
     }
 });
 
+Route::get('test1', function(){
+   return view('development.newesthome');
+});
+
 
 
 

@@ -108,6 +108,32 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
         $this->loadQuestionStatsForExam($exam);
     }
 
+
+    /**
+     * @param Exam $exam
+     * @return \Illuminate\Support\Collection
+     */
+    public function getScoresAndTimesByGradedOrder(Exam $exam)
+    {
+        //TODO Add student Id so user can identify anomalies
+        $results = [];
+        $times = $this->gradingTimeDao->getTimesForExamByGradedOrder($exam->id);
+        foreach ($times as $t)
+        {
+            $totalScore = $this->questionScoreDao->load_total_for_student_on_exam($exam->id, $t->student_id);
+            $results[] = [
+                "dateTime" => $t->updated_at->toDateTimeString(),
+                "totalScore" => $totalScore,
+                "seconds" => $t->seconds,
+                "studentIdentifier" => $t->student->getStudentId(),
+                "studentName" => $t->student->getFullName()
+            ];
+        }
+
+        return collect($results);
+    }
+
+
     /**
      * Retrieves the mean for a given question assignment.
      * That is, the mean for a question on an exam.
@@ -299,13 +325,16 @@ MYSQL;
             $medianResult = $this->getElementAssignmentMedian($r->elementAssignmentId);
             $r->median = $medianResult;
 
+            $quartiles = $this->getElementAssignmentQuartiles($r->elementAssignmentId);
+            $r->percentile25 = $quartiles['quartile1'];
+            $r->percentile75 = $quartiles['quartile3'];
+
             $this->elementAssignmentStats[$r->elementAssignmentId] = $r;
             $this->elementAssignmentMeans[$r->elementAssignmentId] = $r->mean;
         }
         //Make the stored array into a laravel collection
         $this->elementAssignmentStats = collect($this->elementAssignmentStats);
     }
-
 
     /**
      * Find the median for the element assignment
@@ -370,27 +399,55 @@ MYSQL;
         return $result[0]->score;
     }
 
-    /**
-     * @param Exam $exam
-     * @return \Illuminate\Support\Collection
-     */
-    public function getScoresAndTimesByGradedOrder(Exam $exam)
-    {
-        //TODO Add student Id so user can identify anomalies
-        $results = [];
-        $times = $this->gradingTimeDao->getTimesForExamByGradedOrder($exam->id);
-        foreach ($times as $t)
-        {
-            $totalScore = $this->questionScoreDao->load_total_for_student_on_exam($exam->id, $t->student_id);
-            $results[] = [
-                "dateTime" => $t->updated_at->toDateTimeString(),
-                "totalScore" => $totalScore,
-                "seconds" => $t->seconds,
-                "studentIdentifier" => $t->student->getStudentId(),
-                "studentName" => $t->student->getFullName()
-            ];
-        }
 
-        return collect($results);
+    /**
+     * Calculates the 25th and 75th percentiles for element scores
+     * @param $elementAssignmentId
+     * @return array Keys quartile1 and quartile3
+     */
+    public function getElementAssignmentQuartiles($elementAssignmentId){
+
+        //probably first need to do
+//        SET @@group_concat_max_len := @@max_allowed_packet;
+        //from http://rpbouman.blogspot.com/2008/07/calculating-nth-percentile-in-mysql.html
+        $query = <<<MYSQL
+        SELECT
+        CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(
+            GROUP_CONCAT(score ORDER BY score SEPARATOR ','),
+                ',', 25/100 * COUNT(*) + 1), ',', -1) AS DECIMAL) AS `quartile1`,
+        CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(
+            GROUP_CONCAT(score ORDER BY score SEPARATOR ','),
+            ',', 75/100 * COUNT(*) + 1), ',', -1) AS DECIMAL) AS `quartile3`
+        FROM element_scores
+        WHERE element_assignment_id = :elementAssignmentId
+MYSQL;
+//        SELECT
+//            CAST(SUBSTRING_INDEX(
+//            SUBSTRING_INDEX(
+//                GROUP_CONCAT(                 -- 1) make a sorted list of values
+//                    f.score
+//                    ORDER BY f.score
+//                    SEPARATOR ','
+//                )
+//            ,   ','                           -- 2) cut at the comma
+//            ,   25/100 * COUNT(*) + 1         --    at the position beyond the 25% portion
+//            )
+//        ,   ','                               -- 3) cut at the comma
+//        ,   -1                                --    right after the desired list entry
+//        ) AS `percentile25`
+//        FROM element_scores AS f
+//        WHERE f.element_assignment_id = :elementAssignmentId;
+//MYSQL;
+
+        $values = ['elementAssignmentId' => $elementAssignmentId];
+        $result = DB::select($query, $values);
+
+        return [
+            'quartile1' => $result[0]->quartile1,
+            'quartile3' => $result[0]->quartile3
+        ];
     }
+
+
+
 }
