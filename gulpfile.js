@@ -104,6 +104,9 @@ elixir( function ( mix ) {
     mix.browserify( 'feedback/feedbackLogin.js', 'public/js/feedback-login-package.js' );
     mix.browserify( 'feedback/feedbackCharts.js', 'public/js/feedback-package.js' );
 
+
+    mix.browserify( 'help/help.js', 'public/js/help-package.js' );
+
     ////Compile all the scripts used by the homepage into public/js/home-package.js
     //mix.scripts([
     //    'homepage/jquery-1.8.3.min.js',

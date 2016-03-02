@@ -35,31 +35,7 @@
 
 @section('jsArea')
     <script type="text/javascript">
-        // set 'Account' tab as active
-        $('[id^="nav"]').attr('class', '');
-        $('#navHelp').attr('class', 'active');
-
-        //set active set of links as scroll
-        $('body').scrollspy({
-            target: '.docs-sidebar',
-            offset: 40
-        });
-
-            $(document).ready(function () {
-            $('figure').on('click', function () {
-                var src = $("img", this).attr('src');
-                var img = '<img src="' + src + '" class="img-responsive"/>';
-                $('#myModal').modal();
-                $('#myModal').on('shown.bs.modal', function () {
-                    $('#myModal .modal-body').html(img);
-                });
-                $('#myModal').on('hidden.bs.modal', function () {
-                    $('#myModal .modal-body').html('');
-                });
-            });
-        })
+        var activeTab = '';
     </script>
-
+    <script type="text/javascript" src="{{ asset('js/help-package.js') }}"></script>
 @endsection
-
-
