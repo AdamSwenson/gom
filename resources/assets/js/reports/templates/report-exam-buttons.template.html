@@ -1,0 +1,53 @@
+<a class="btn btn-primary confirmRelease"
+   id="exam{{ examId }}"
+   style="width:140px;"
+   title="Release Exam"
+   data-released="{{ released }}"
+   data-examid="{{ examId }}"
+>
+    <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+    Release Exam
+</a>
+
+<label>
+<input type="checkbox"
+       v-toggle
+/>
+    Release
+</label>
+
+<a class="btn btn-default disabled examLock"
+   id="lock"
+   title="Remove Access"
+   data-examid="{{ examId }}"
+>
+    <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
+</a>
+
+<a class="btn btn-info"
+   title="Exam Analytics"
+   href="{{ analyticsTarget }}"
+><span
+        class="glyphicon glyphicon-stats"
+        aria-hidden="true"
+></span>
+</a>
+
+<a class="btn btn-default"
+   href="{{ qualityControlsTarget }}"
+   title="Quality Control"
+>
+    <span class="glyphicon glyphicon-apple" aria-hidden="true"></span>
+</a>
+
+<a class="btn btn-default"
+   href="{{ backupTarget }}"
+   title="Export Scores to Csv"
+>
+    <span class="glyphicon glyphicon glyphicon-save" aria-hidden="true"></span>
+</a>
+<a class="btn btn-info"
+   title="Student Controls"
+   href="{{ studentControlsTarget }}"
+>
+    <span class="glyphicon glyphicon-user" aria-hidden="true"></span> </a>

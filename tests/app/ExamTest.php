@@ -9,6 +9,7 @@
 namespace App;
 
 
+
 class ExamTest extends \TestCase
 {
 
@@ -20,6 +21,8 @@ class ExamTest extends \TestCase
         parent::setUp();
         $this->object = new Exam;
         $this->exam = Exam::all()->random();
+
+        \Auth::loginUsingId(self::$userid);
     }
 
 
@@ -192,5 +195,23 @@ class ExamTest extends \TestCase
     public function testGetReleased()
     {
         $this->assertTrue(is_integer($this->exam->getReleased()));
+    }
+
+    /** @test */
+    public function isReleasedForReleased(){
+        //prep
+        $exam = factory(Exam::class)->make(['released' => 1]);
+        $exam->released = 1;
+        //check
+        $this->assertTrue($exam->released, "attribute is correctly set");
+        $this->assertTrue($exam->isReleased(), "Exam released is true");
+    }
+
+    /** @test */
+    public function isReleasedForNotReleased(){
+        //prep
+        $exam = factory(Exam::class)->make(['released' => 0]);
+        //check
+        $this->assertFalse($exam->isReleased(), "Exam released is false");
     }
 }

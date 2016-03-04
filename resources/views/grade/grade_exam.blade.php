@@ -148,7 +148,7 @@
     <script type="text/javascript">
         var myvar = "adding new errors";
         var stockComments = <?= json_encode($stockComments) ?>;
-
+{{--        JSON.parse('{!!--}}
         var elementComments = <?= json_encode($studentElementComments) ?>;
         var elementScores = <?= json_encode($studentElementScores) ?>;
         var questionScores = <?= json_encode($studentQuestionScores) ?>;

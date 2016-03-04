@@ -10,6 +10,8 @@
 | and give it the controller to call when that URI is requested.
 |
 */
+use App\Exam;
+
 Route::get('info/instructions', 'InfoController@showInstructions');
 Route::get('info/faq', 'InfoController@showFaq');
 Route::get('info/tutorials', 'InfoController@showTutorials');
@@ -132,7 +134,9 @@ Route::get('backup/{exam}', function($exam){
 });
 
 Route::get('test1', function(){
-   return view('development.newesthome');
+   $exams = Exam::all();
+    //$exams = Exam::where('id', '>', 0)->get();
+   return view('development.exambuttons', ['exams' => $exams]);
 });
 
 

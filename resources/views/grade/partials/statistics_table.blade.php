@@ -5,7 +5,12 @@
         Statistics
     </span>
     <span class="col-xs-5">
-        <a class="btn btn-warning" id="btnTimer" title="Toggle timer" href="javascript:toggleTimer()">
+        <a
+                class="btn btn-warning"
+                id="btnTimer"
+                title="Toggle timer"
+                {{--href="javascript:toggleTimer()">--}}
+        >
             <span id="btnTimerIcon" class="glyphicon glyphicon-pause" aria-hidden="true"></span>
             <span id="btnTimerLabel">Paused</span>
         </a>

@@ -97,7 +97,7 @@ elixir( function ( mix ) {
 
     //Grading pages
     mix.browserify( 'grade/gradeAssign.js', 'public/js/grade-assign-package.js' );
-    mix.browserify( 'grade/gradeExam.js', 'public/js/grade-exam-package.js' );
+    mix.browserify( ['grade/gradeExam.js'], 'public/js/grade-exam-package.js' );
     mix.browserify( 'grade/examSelect.js', 'public/js/grade-exam-select-package.js' );
 
     //Feedback pages
@@ -106,6 +106,8 @@ elixir( function ( mix ) {
 
 
     mix.browserify( 'help/help.js', 'public/js/help-package.js' );
+
+    mix.browserify( 'reports/examButtons.js', 'public/js/dev-exam-buttons.js' );
 
     ////Compile all the scripts used by the homepage into public/js/home-package.js
     //mix.scripts([

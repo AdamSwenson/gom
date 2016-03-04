@@ -244,6 +244,17 @@ class Exam extends BaseModel
     }
 
     /**
+     * Returns true if the exam has been released; false otherwise
+     * @return bool
+     */
+    public function isReleased(){
+        if(! empty($this->attributes['released']) && $this->attributes['released'] == true){
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Get the [user_id] column value.
      *
      * @return int
