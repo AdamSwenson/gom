@@ -1,8 +1,9 @@
 <html>
 
 <head>
-    @include('layouts.css.css_bootstrap')
-    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
+    {{--@include('layouts.css.css_bootstrap')--}}
+    <link href="{{asset('css/exam-button-package.css')}}" rel="stylesheet">
+    {{--<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">--}}
 
     {{--<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>--}}
 </head>

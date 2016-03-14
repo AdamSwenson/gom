@@ -64,7 +64,7 @@ function submitAndNavigateTo(target) {
 //$(document).ready(function () {
 // 'upload file' listener
 $('#fileInput').change(function () {
-    startRead();
+    rosterImport.startRead();
     $(this).val(null);
 });
 //return false;

@@ -46,7 +46,7 @@ var letterGradeButton = require( './letterGradeButton.js' )();
     const gradedStudentColor = '#5cb85c';
 
     updateExamGrades();
-    
+
 //Controls
     $( "#nameVisibilityControl" ).on( 'click', function () {
         toggleNameVisibility();

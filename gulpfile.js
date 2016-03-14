@@ -30,7 +30,13 @@ elixir( function ( mix ) {
         'pages/homepage.css'
     ], 'public/css/home-styles.css' );
 
+//mix.sass('../../../node_modules/bootstrap/dist/css/bootstrap.css', 'public/css/bootstrap.css');
+//
+//    mix.sass('../../../node_modules/bootstrap-sass/dist/css/bootstrap.css', 'public/css/bootstrap.css');
 
+    mix.sass([
+        'reports/examButtons.sass'
+    ], 'public/css/exam-button-package.css');
 
 
     mix.sass([

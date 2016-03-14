@@ -14,19 +14,22 @@ require('bootstrap');
 
 module.exports = function() {
 
-// basic setup for # of columns and column ordering. These will change based on the imported roster file
+    // basic setup for # of columns and column ordering. These will change based on the imported roster file
     var numColumns = 4;
     var lastNameCol = - 1;
     var firstNameCol = - 1;
     var idCol = - 1;
     var emailCol = - 1;
 
-// [separatorChar] defines the character that will be used to divide lines into fields
-// default: comma
+    // [separatorChar] defines the character that will be used to divide lines into fields
+    // default: comma
     var separatorChar = ',';
 
-// Map values found for firstNameCol, lastNameCol, idCol, and emailCol to display in the form.
-// If a value type isn't discovered (-1) it won't be displayed.
+    /**
+     * Map values found for firstNameCol, lastNameCol, idCol, and emailCol to display in the form.
+     // If a value type isn't discovered (-1) it won't be displayed.
+     * @param row
+     */
     function addRow( row ) {
         var defaultChar = '';
 
@@ -49,7 +52,10 @@ module.exports = function() {
         addStudentToTable( lName, fName, id, email );
     }
 
-// check that the browser isn't ancient
+    /**
+     * check that the browser isn't ancient
+     * @returns {boolean}
+     */
     function browserSupportFileUpload() {
         var isCompatible = false;
         if ( window.File && window.FileReader && window.FileList && window.Blob ) {
@@ -59,7 +65,6 @@ module.exports = function() {
     }
 
     function startRead() {
-
         // reset columns. prevents bugs if two files with different orderings are imported.
         lastNameCol = - 1;
         firstNameCol = - 1;
@@ -68,7 +73,7 @@ module.exports = function() {
 
         console.log( 'reading file' );
         if ( ! browserSupportFileUpload() ) {
-            alert( 'The File APIs are not fully supported in this browser!' );
+            alert( 'The file upload function is not fully supported in this browser!' );
             return;
         }
 
@@ -121,7 +126,11 @@ module.exports = function() {
         };
     }
 
-// determines if the first row contains column headers that describe the column's content
+    /**
+     * determines if the first row contains column headers that describe the column's content
+     * @param firstLine
+     * @returns {boolean}
+     */
     function firstRowContainsTitles( firstLine ) {
         var result = false;
         for ( var i = 0; i < firstLine.length; i ++ ) {
@@ -135,7 +144,10 @@ module.exports = function() {
         return result;
     }
 
-// examine column titles to pick likely ordering
+    /**
+     * examine column titles to pick likely ordering
+     * @param titles
+     */
     function guessColumnDataByTitles( titles ) {
         numColumns = titles.length;
 
@@ -154,7 +166,9 @@ module.exports = function() {
         }
     }
 
-// examine table data to pick out column ordering
+    /**
+     * Examine table data to pick out column ordering
+     */
     function guessColumnDataByContent( students ) {
         var startCol = 0;
         var startRow = 0;

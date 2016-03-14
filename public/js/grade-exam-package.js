@@ -50,11 +50,6 @@ var letterGradeButton = require('./letterGradeButton.js')();
 
     updateExamGrades();
 
-    $("#btnTimer").on('click', function () {
-        window.console.log('timer button clicked');
-        toggleTimer();
-    });
-
     //Controls
     $("#nameVisibilityControl").on('click', function () {
         toggleNameVisibility();
@@ -66,6 +61,10 @@ var letterGradeButton = require('./letterGradeButton.js')();
 
     $("#activeStudentIdentifier").on('change', function () {
         handleStudentIdentifierSearch();
+    });
+
+    $("#btnTimer").on('click', function () {
+        toggleTimer();
     });
 
     /*

@@ -10,7 +10,8 @@ window.$ = $;
 
 //var bootstrapToggle = require( "../../../../../node_modules/bootstrap-toggle/js/bootstrap-toggle.js" );
 
-//var bootstrapToggle = require( "https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js" );
+var bootstrapToggle = require( "./../../../../../node_modules/bootstrap-toggle/js/bootstrap-toggle.js" );
+
 module.exports = {
 
     template: require( '../templates/report-exam-buttons.template.html' ),
