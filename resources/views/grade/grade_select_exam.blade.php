@@ -3,20 +3,20 @@
 
 @section('pageTitle', 'Grade Exam | gradeomatic')
 @section('description', 'grade')
-@section('cssLinks')
-
+@section('otherCss')
+    <link href="{{ asset('css/exam-table-package.css') }}"  rel="stylesheet" type="text/css" >
 @endsection
 
 @section('body')
-    <style>
-        .table th {
-            border: none;
-        }
+    {{--<style>--}}
+        {{--.table th {--}}
+            {{--border: none;--}}
+        {{--}--}}
 
-        .panel {
-            border: none;
-        }
-    </style>
+        {{--.panel {--}}
+            {{--border: none;--}}
+        {{--}--}}
+    {{--</style>--}}
 
     <h3><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Grade Exam</h3>
     <h4>Select an exam to grade</h4>
@@ -26,10 +26,14 @@
             <thead>
             <tr style="cursor: default;">
                 <th class="col-lg-1">Term</th>
-                <th class="col-lg-6" style="min-width: 200px;">Name</th>
+                <th class="col-lg-6 nameCellHeader"
+                    {{--style="min-width: 200px;"--}}
+                >Name</th>
                 <th class="col-lg-1">Questions</th>
                 <th class="col-lg-1">Students</th>
-                <th class="col-lg-3" style="width: 200px; min-width: 200px;"></th>
+                <th class="col-lg-3 buttonCellHeader"
+                    {{--style="width: 200px; min-width: 200px;"--}}
+                ></th>
             </tr>
             </thead>
             <tbody>
@@ -37,13 +41,23 @@
                 @foreach($exams as $exam)
                     <?php $examId = $exam->id or '0' ?>
                     <tr>
-                        <td style="vertical-align:middle; width:10%;">{{ $exam->year or '' }} {{ $exam->term or '' }}</td>
-                        <td style="vertical-align:middle;">{{ $exam->name or 'No Name Found' }}</td>
-                        <td style="vertical-align:middle;"
-                            id="numQuestions">{{ $numQuestions[ $examId ] or '0' }}</td>
-                        <td style="vertical-align:middle;"
-                            id="numStudents">{{ $numStudents[ $examId ] or '0' }}</td>
-                        <td style="text-align: right">
+                        <td class="examDetailsCell"
+                            {{--style="vertical-align:middle; width:10%;"--}}
+                        >{{ $exam->year or '' }} {{ $exam->term or '' }}</td>
+                        <td class="examNameCell"
+                            {{--style="vertical-align:middle;"--}}
+                        >{{ $exam->name or 'No Name Found' }}</td>
+                        <td class="examDetailsCell"
+                            {{--style="vertical-align:middle;"--}}
+                            id="numQuestions"
+                        >{{ $numQuestions[ $examId ] or '0' }}</td>
+                        <td class="examNameCell"
+                                {{--style="vertical-align:middle;"--}}
+                            id="numStudents"
+                        >{{ $numStudents[ $examId ] or '0' }}</td>
+                        <td class="examButtonsCell"
+                            {{--style="text-align: right"--}}
+                        >
                             <a
                                     data-href="{{ url('grade/exam/'.$examId) }}"
                                     class="btn btn-primary"
@@ -61,8 +75,12 @@
                 @endforeach
             @else
                 <tr>
-                    <td style="vertical-align:middle; width: 10%;"></td>
-                    <td style="vertical-align:middle"><i>No Exams Found</i></td>
+                    <td class="examDetailsCell"
+                        {{--style="vertical-align:middle; width: 10%;"--}}
+                    ></td>
+                    <td class="examNameCell"
+                        {{--style="vertical-align:middle"--}}
+                    ><i>No Exams Found</i></td>
                     <td></td>
                     <td></td>
                 </tr>

@@ -183,7 +183,9 @@ class ExamTest extends \TestCase
 
     public function testGetName()
     {
-        $this->assertNotEmpty($this->exam->getName());
+        $result = $this->exam->getName();
+        $this->assertTrue(is_string($result));
+        $this->assertTrue(count($result) >= 1);
     }
 
 

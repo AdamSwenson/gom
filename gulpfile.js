@@ -49,6 +49,10 @@ elixir( function ( mix ) {
         [
             'grade/mainGrading.scss'
         ], 'public/css/grade-package.css' );
+    mix.sass([
+        'common/common.sass',
+        'grade/examSelectTable.scss'
+    ], 'public/css/exam-table-package.css');
 
 
     //reports pages
@@ -70,6 +74,12 @@ elixir( function ( mix ) {
         'common/common.sass',
         'setup/selectExam.scss'
     ], 'public/css/select-exam-package.css');
+
+    mix.sass([
+        'common/common.sass',
+        'grade/examSelectTable.scss'
+    ], 'public/css/exam-table-package.css');
+
 
     /* ---------------------------------------------- scripts ----------------------------------------------------*/
 

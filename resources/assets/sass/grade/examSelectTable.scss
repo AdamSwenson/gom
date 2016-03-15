@@ -1,0 +1,33 @@
+
+.table th {
+  border: none;
+}
+
+.panel {
+  border: none;
+}
+
+.examNameCell{
+  vertical-align:middle;
+}
+
+.examDetailsCell{
+  vertical-align:middle; width:10%;
+}
+
+.examButtonsCell{
+  text-align: right
+}
+
+.cursorRow{
+cursor: default;
+}
+
+.buttonCellHeader{
+  width: 200px;
+  min-width: 200px;
+}
+
+.nameCellHeader{
+  min-width: 200px;
+}
