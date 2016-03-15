@@ -11,7 +11,7 @@ window.$ = $;
 require('bootstrap');
 
 //var Slider = require("bootstrap-slider");
-var Slider = require("../libraries/bootstrap-slider.js");
+var Slider = require("../libraries/bootstrap-slider-modified.js");
 
 var Vue = require('vue');
 

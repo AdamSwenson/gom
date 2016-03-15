@@ -10,7 +10,8 @@ var bootbox = require( 'bootbox' );
 //var typeahead = require('../libraries/bootstrap3-typeahead.min.js');
 var typeahead = require( '../libraries/typeahead.bundle.js' );
 
-var Slider = require( "bootstrap-slider" );
+//var Slider = require( "bootstrap-slider" );
+var Slider = require( "../libraries/bootstrap-slider-modified.js" );
 
 //var mySlider = new Slider();
 var letterGradeButton = require( './letterGradeButton.js' )();

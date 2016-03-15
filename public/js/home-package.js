@@ -13,7 +13,7 @@ window.$ = $;
 require('bootstrap');
 
 //var Slider = require("bootstrap-slider");
-var Slider = require("../libraries/bootstrap-slider.js");
+var Slider = require("../libraries/bootstrap-slider-modified.js");
 
 var Vue = require('vue');
 
@@ -196,7 +196,7 @@ new Vue({
     }
 });
 
-},{"../libraries/bootstrap-slider.js":23,"./components/popovers.js":19,"./components/slider.js":20,"bootstrap":3,"jquery":16,"vue":18}],2:[function(require,module,exports){
+},{"../libraries/bootstrap-slider-modified.js":23,"./components/popovers.js":19,"./components/slider.js":20,"bootstrap":3,"jquery":16,"vue":18}],2:[function(require,module,exports){
 /*! =======================================================
                       VERSION  6.1.4              
 ========================================================= */

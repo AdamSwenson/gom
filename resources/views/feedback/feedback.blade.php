@@ -28,6 +28,7 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
 
     <link href='{{ asset('inc/images/favicon.ico') }}' rel='icon' type='image/x-icon'/>
 
+    @include('layouts.css.css_bootstrap')
     <style type="text/css">
         /*div.studentInfo{*/
         /*margin-top: 2%;*/
@@ -43,7 +44,7 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
             page-break-inside: avoid;
         }
     </style>
-    @include('layouts.css.css_bootstrap')
+
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 </head>
 <body>
