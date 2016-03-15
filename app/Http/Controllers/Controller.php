@@ -28,31 +28,55 @@ abstract class Controller extends BaseController
     /**
      * Sends standard ajax request failure response with optional message string.
      * @param null|string $message
-     * @return mixed
+     * @param null|array $otherItems Array of items to include in the response
+     * @return \Illuminate\Http\JsonResponse|boolean
      */
-    public function sendAjaxFailure($message=null)
+    public function sendAjaxFailure($message = null, $otherItems = null)
     {
         $sendMessage = $message ? $message : 'failure';
+        $response = ['status' => 500, 'message' => $sendMessage];
 
-        if (Request::ajax())
+        if ( ! is_null($otherItems) && is_array($otherItems) )
         {
-            return Response::json(['status' => 500, 'message' => $sendMessage]);
+            foreach ( $otherItems as $k => $v )
+            {
+                $response[ $k ] = $v;
+            }
         }
+
+        if ( Request::ajax() )
+        {
+            return Response::json($response);
+        }
+        return false;
     }
 
     /**
      * Sends standard ajax request success response with optional message string
      * @param null|string $message
-     * @return mixed
+     * @param null|array $otherItems Array of items to include in the response
+     * @return \Illuminate\Http\JsonResponse|boolean
      */
-    public function sendAjaxSuccess($message=null)
+    public function sendAjaxSuccess($message = null, $otherItems = null)
     {
+
         $sendMessage = $message ? $message : 'success';
-        if (Request::ajax())
+        $response = ['status' => 200, 'message' => $sendMessage];
+
+        if ( ! is_null($otherItems) && is_array($otherItems) )
         {
-            return Response::json(['status' => 200, 'message' => $sendMessage]);
+            foreach ( $otherItems as $k => $v )
+            {
+                $response[ $k ] = $v;
+            }
         }
+        if ( Request::ajax() )
+        {
+            return Response::json($response);
+        }
+        return false;
     }
+
 
     /**
      * Call this inside a method that is still being developed.
@@ -60,9 +84,11 @@ abstract class Controller extends BaseController
      * Should never really be necessary to use this if git is managed
      * properly. But just in case....
      */
-    public function featureInDevelopment()
+    public
+    function featureInDevelopment()
     {
-        if(env('APP_ENV') == 'production'){
+        if ( env('APP_ENV') == 'production' )
+        {
             abort(403);
         }
     }
