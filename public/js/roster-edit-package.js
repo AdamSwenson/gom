@@ -11,13 +11,44 @@ require('bootstrap');
 var common = require('../common.js');
 
 var bootbox = require('bootbox');
-var rosterImport = require('./rosterFileImport.js')();
-var rosterTable = require('./rosterTable.js')();
+var rosterImport = require('./rosterFileImport.js');
+//require('./rosterFileImport.js')();
+var rosterTable = require('./rosterTable.js');
 
+$(".deleteStudentButton").on('click', function () {
+    var rowId = $(this).data('rowid');
+    if (rowId) {
+        rosterTable.deleteStudent(rowId);
+    }
+});
+
+$("#sortByFirstName").on('click', function () {
+    rosterTable.sortRosterBy('firstName');
+});
+$("#sortByLastName").on('click', function () {
+    rosterTable.sortRosterBy('lastName');
+});
+
+$("#sortByStudentIdentifier").on('click', function () {
+    rosterTable.sortRosterBy('studentIdentifier');
+});
+$("#sortByEmail").on('click', function () {
+    rosterTable.sortRosterBy('email');
+});
+
+$("#addStudent").on('click', function () {
+    rosterTable.addStudent();
+});
+$("#deleteRoster").on('click', function () {
+    rosterTable.deleteRoster();
+});
+
+$("#importHelpButton").on('click', function () {
+    showImportHelp();
+});
 $("#backNavButton").on('click', function () {
     submitAndNavigateTo(backNavTarget);
 });
-
 $("#forwardNavButton").on('click', function () {
     submitAndNavigateTo(forwardNavTarget);
 });
@@ -68,7 +99,6 @@ $('#fileInput').change(function () {
     $(this).val(null);
 });
 //return false;
-//});
 
 },{"../common.js":17,"./rosterFileImport.js":18,"./rosterTable.js":19,"bootbox":2,"bootstrap":3,"jquery":16}],2:[function(require,module,exports){
 /**
@@ -3431,7 +3461,7 @@ require('../../js/affix.js')
 
 },{}],16:[function(require,module,exports){
 /*!
- * jQuery JavaScript Library v2.2.0
+ * jQuery JavaScript Library v2.2.1
  * http://jquery.com/
  *
  * Includes Sizzle.js
@@ -3441,7 +3471,7 @@ require('../../js/affix.js')
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2016-01-08T20:02Z
+ * Date: 2016-02-22T19:11Z
  */
 
 (function( global, factory ) {
@@ -3497,7 +3527,7 @@ var support = {};
 
 
 var
-	version = "2.2.0",
+	version = "2.2.1",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -7911,7 +7941,7 @@ function on( elem, types, selector, data, fn, one ) {
 	if ( fn === false ) {
 		fn = returnFalse;
 	} else if ( !fn ) {
-		return this;
+		return elem;
 	}
 
 	if ( one === 1 ) {
@@ -8560,14 +8590,14 @@ var
 	rscriptTypeMasked = /^true\/(.*)/,
 	rcleanScript = /^\s*<!(?:\[CDATA\[|--)|(?:\]\]|--)>\s*$/g;
 
+// Manipulating tables requires a tbody
 function manipulationTarget( elem, content ) {
-	if ( jQuery.nodeName( elem, "table" ) &&
-		jQuery.nodeName( content.nodeType !== 11 ? content : content.firstChild, "tr" ) ) {
+	return jQuery.nodeName( elem, "table" ) &&
+		jQuery.nodeName( content.nodeType !== 11 ? content : content.firstChild, "tr" ) ?
 
-		return elem.getElementsByTagName( "tbody" )[ 0 ] || elem;
-	}
-
-	return elem;
+		elem.getElementsByTagName( "tbody" )[ 0 ] ||
+			elem.appendChild( elem.ownerDocument.createElement( "tbody" ) ) :
+		elem;
 }
 
 // Replace/restore the type attribute of script elements for safe DOM manipulation
@@ -9074,7 +9104,7 @@ var getStyles = function( elem ) {
 		// FF meanwhile throws on frame elements through "defaultView.getComputedStyle"
 		var view = elem.ownerDocument.defaultView;
 
-		if ( !view.opener ) {
+		if ( !view || !view.opener ) {
 			view = window;
 		}
 
@@ -9223,15 +9253,18 @@ function curCSS( elem, name, computed ) {
 		style = elem.style;
 
 	computed = computed || getStyles( elem );
+	ret = computed ? computed.getPropertyValue( name ) || computed[ name ] : undefined;
+
+	// Support: Opera 12.1x only
+	// Fall back to style even without computed
+	// computed is undefined for elems on document fragments
+	if ( ( ret === "" || ret === undefined ) && !jQuery.contains( elem.ownerDocument, elem ) ) {
+		ret = jQuery.style( elem, name );
+	}
 
 	// Support: IE9
 	// getPropertyValue is only needed for .css('filter') (#12537)
 	if ( computed ) {
-		ret = computed.getPropertyValue( name ) || computed[ name ];
-
-		if ( ret === "" && !jQuery.contains( elem.ownerDocument, elem ) ) {
-			ret = jQuery.style( elem, name );
-		}
 
 		// A tribute to the "awesome hack by Dean Edwards"
 		// Android Browser returns percentage for some values,
@@ -11281,7 +11314,7 @@ jQuery.extend( jQuery.event, {
 				// But now, this "simulate" function is used only for events
 				// for which stopPropagation() is noop, so there is no need for that anymore.
 				//
-				// For the compat branch though, guard for "click" and "submit"
+				// For the 1.x branch though, guard for "click" and "submit"
 				// events is still used, but was moved to jQuery.event.stopPropagation function
 				// because `originalEvent` should point to the original event for the constancy
 				// with other events and for more focused logic
@@ -13051,11 +13084,8 @@ jQuery.fn.extend( {
 			}
 
 			// Add offsetParent borders
-			// Subtract offsetParent scroll positions
-			parentOffset.top += jQuery.css( offsetParent[ 0 ], "borderTopWidth", true ) -
-				offsetParent.scrollTop();
-			parentOffset.left += jQuery.css( offsetParent[ 0 ], "borderLeftWidth", true ) -
-				offsetParent.scrollLeft();
+			parentOffset.top += jQuery.css( offsetParent[ 0 ], "borderTopWidth", true );
+			parentOffset.left += jQuery.css( offsetParent[ 0 ], "borderLeftWidth", true );
 		}
 
 		// Subtract parent offsets and element margins
@@ -13292,59 +13322,68 @@ window.jQuery = jQuery;
 
 require('bootstrap');
 
-module.exports = function () {
+module.exports = {
+
+    test: function test() {
+        window.console.log('test good');
+    },
 
     // basic setup for # of columns and column ordering. These will change based on the imported roster file
-    var numColumns = 4;
-    var lastNameCol = -1;
-    var firstNameCol = -1;
-    var idCol = -1;
-    var emailCol = -1;
+    numColumns: 4,
+    lastNameCol: -1,
+    firstNameCol: -1,
+    idCol: -1,
+    emailCol: -1,
 
     // [separatorChar] defines the character that will be used to divide lines into fields
     // default: comma
-    var separatorChar = ',';
+    separatorChar: ',',
 
-    // Map values found for firstNameCol, lastNameCol, idCol, and emailCol to display in the form.
-    // If a value type isn't discovered (-1) it won't be displayed.
-    function addRow(row) {
+    /**
+     * Map values found for firstNameCol, lastNameCol, idCol, and emailCol to display in the form.
+     // If a value type isn't discovered (-1) it won't be displayed.
+     * @param row
+     */
+    addRow: function addRow(row) {
         var defaultChar = '';
 
         var fName = defaultChar;
-        if (firstNameCol >= 0) fName = row[firstNameCol];
+        if (this.firstNameCol >= 0) fName = row[firstNameCol];
 
         var lName = defaultChar;
-        if (lastNameCol >= 0) lName = row[lastNameCol];
+        if (this.lastNameCol >= 0) lName = row[lastNameCol];
 
         var id = defaultChar;
-        if (idCol >= 0) id = row[idCol];
+        if (this.idCol >= 0) id = row[idCol];
 
         var email = defaultChar;
-        if (emailCol >= 0) email = row[emailCol];
+        if (this.emailCol >= 0) email = row[emailCol];
 
         addStudentToTable(lName, fName, id, email);
-    }
+    },
 
-    // check that the browser isn't ancient
-    function browserSupportFileUpload() {
+    /**
+     * check that the browser isn't ancient
+     * @returns {boolean}
+     */
+    browserSupportFileUpload: function browserSupportFileUpload() {
         var isCompatible = false;
         if (window.File && window.FileReader && window.FileList && window.Blob) {
             isCompatible = true;
         }
         return isCompatible;
-    }
+    },
 
-    function startRead() {
-
+    startRead: function startRead() {
         // reset columns. prevents bugs if two files with different orderings are imported.
-        lastNameCol = -1;
-        firstNameCol = -1;
-        emailCol = -1;
-        idCol = -1;
+        var lastNameCol = -1;
+        var firstNameCol = -1;
+        var emailCol = -1;
+        var idCol = -1;
 
         console.log('reading file');
-        if (!browserSupportFileUpload()) {
-            alert('The File APIs are not fully supported in this browser!');
+        if (!this.browserSupportFileUpload()) {
+            alert('The file upload function is not fully supported in this browser!');
             return;
         }
 
@@ -13355,12 +13394,12 @@ module.exports = function () {
 
         reader.onload = function (event) {
             // convert line endings
-            rows = event.target.result.toString().replace(/[\r\n]+/g, "\n").split("\n");
+            var rows = event.target.result.toString().replace(/[\r\n]+/g, "\n").split("\n");
             var students = [];
 
             // break each row into its elements
             for (var i = 0; i < rows.length; i++) {
-                students[i] = rows[i].toString().split(separatorChar);
+                students[i] = rows[i].toString().split(this.separatorChar);
             }
 
             // remove any resulting lines with 1 or fewer elements
@@ -13377,7 +13416,7 @@ module.exports = function () {
             var firstLine = students[0];
             var startRow = 0;
             if (firstRowContainsTitles(firstLine)) {
-                guessColumnDataByTitles(firstLine);
+                this.guessColumnDataByTitles(firstLine);
                 // remove the header line as we don't need it any longer
                 rows.splice(0, 1);
                 students.splice(0, 1);
@@ -13395,10 +13434,14 @@ module.exports = function () {
         reader.onerror = function () {
             alert('Unable to read ' + file.fileName);
         };
-    }
+    },
 
-    // determines if the first row contains column headers that describe the column's content
-    function firstRowContainsTitles(firstLine) {
+    /**
+     * determines if the first row contains column headers that describe the column's content
+     * @param firstLine
+     * @returns {boolean}
+     */
+    firstRowContainsTitles: function firstRowContainsTitles(firstLine) {
         var result = false;
         for (var i = 0; i < firstLine.length; i++) {
             if (firstLine[i].search(/mail/i) >= 0 || firstLine[i].search(/name/i) >= 0) {
@@ -13409,10 +13452,13 @@ module.exports = function () {
             }
         }
         return result;
-    }
+    },
 
-    // examine column titles to pick likely ordering
-    function guessColumnDataByTitles(titles) {
+    /**
+     * examine column titles to pick likely ordering
+     * @param titles
+     */
+    guessColumnDataByTitles: function guessColumnDataByTitles(titles) {
         numColumns = titles.length;
 
         for (var i = 0; i < numColumns; i++) {
@@ -13428,10 +13474,12 @@ module.exports = function () {
                 //console.log('column not found: "' + titles[i] + '"');
             }
         }
-    }
+    },
 
-    // examine table data to pick out column ordering
-    function guessColumnDataByContent(students) {
+    /**
+     * Examine table data to pick out column ordering
+     */
+    guessColumnDataByContent: function guessColumnDataByContent(students) {
         var startCol = 0;
         var startRow = 0;
 
@@ -13480,6 +13528,7 @@ module.exports = function () {
             }
         }
     }
+
 };
 
 },{"bootstrap":3,"jquery":16}],19:[function(require,module,exports){
@@ -13496,32 +13545,57 @@ var jQuery = $;
 window.jQuery = jQuery;
 
 require('bootstrap');
+var bootbox = require('bootbox');
+module.exports = {
 
-module.exports = function () {
+    file: null,
+    rows: null,
 
-    var file;
-    var rows;
-
-    // clone and populate a new row in the roster table. The file importer calls this to place items in the form.
-    function addStudentToTable(lName, fName, id, email) {
+    /**
+     * set all attributes to the proper row values
+     */
+    updateRowValues: function updateRowValues() {
+        var $rows = $('#studentRosterBody').find('.dataRow');
+        $rows.each(function (index) {
+            index += 1;
+            $(this).attr('id', 'dataRow' + index);
+            $(this).find('#lastName').attr('name', 'lastName' + index);
+            $(this).find('#firstName').attr('name', 'firstName' + index);
+            $(this).find('#email').attr('name', 'email' + index);
+            $(this).find('#studentIdentifier').attr('name', 'studentIdentifier' + index);
+            $(this).find('#deleteButton').attr('onclick', 'deleteStudent(' + index + ')');
+            $(this).find('[name^="id"]').attr('name', 'id' + index);
+        });
+    },
+    /**
+     * clone and populate a new row in the roster table. The file importer calls this to place items in the form.
+      * @param lName
+     * @param fName
+     * @param id
+     * @param email
+     * @returns {*|jQuery}
+     */
+    addStudentToTable: function addStudentToTable(lName, fName, id, email) {
         var $newRow = $('#dataRow0').clone();
         $newRow.find('#lastName').attr('value', lName);
         $newRow.find('#firstName').attr('value', fName);
         $newRow.find('#studentIdentifier').attr('value', id);
         $newRow.find('#email').attr('value', email);
         $newRow.appendTo($('#studentRosterBody'));
-        updateRowValues();
+        this.updateRowValues();
 
         return $newRow;
-    }
+    },
 
-    // called by 'Add Student' button
-    function addStudent() {
-        var $newRow = addStudentToTable('', '', '', '');
+    /**
+     * called by 'Add Student' button
+     */
+    addStudent: function addStudent() {
+        var $newRow = this.addStudentToTable('', '', '', '');
         $newRow.find('#lastName').focus();
-    }
+    },
 
-    function deleteStudent(row) {
+    deleteStudent: function deleteStudent(row) {
         // skip confirmation if row is empty
         var $student = $('#dataRow' + row);
         if (!$student.find('#lastName').val() && !$student.find('#firstName').val() && !$student.find('#email').val() && !$student.find('#studentIdentifier').val()) {
@@ -13548,10 +13622,12 @@ module.exports = function () {
                 }
             }
         });
-    }
+    },
 
-    // confirm, then delete all students.
-    function deleteRoster() {
+    /**
+     * confirm, then delete all students.
+     */
+    deleteRoster: function deleteRoster() {
         var $roster = $('#studentRosterBody').find('tr');
         if ($roster.length == 0) return;
 
@@ -13575,12 +13651,12 @@ module.exports = function () {
                 }
             }
         });
-    }
+    },
 
     // sorts the StudentRoster by the clicked header. Sort order reverses with each press.
-    var sortAsc = true;
+    sortAsc: true,
 
-    function sortRosterBy(value) {
+    sortRosterBy: function sortRosterBy(value) {
         var $roster = $('#studentRosterBody');
         $roster.append($roster.find('.dataRow').sort(function (a, b) {
             var i = $(a).find('[id^="' + value + '"]');
@@ -13596,23 +13672,9 @@ module.exports = function () {
         updateRowValues();
     }
 
-    // set all attributes to the proper row values
-    function updateRowValues() {
-        var $rows = $('#studentRosterBody').find('.dataRow');
-        $rows.each(function (index) {
-            index += 1;
-            $(this).attr('id', 'dataRow' + index);
-            $(this).find('#lastName').attr('name', 'lastName' + index);
-            $(this).find('#firstName').attr('name', 'firstName' + index);
-            $(this).find('#email').attr('name', 'email' + index);
-            $(this).find('#studentIdentifier').attr('name', 'studentIdentifier' + index);
-            $(this).find('#deleteButton').attr('onclick', 'deleteStudent(' + index + ')');
-            $(this).find('[name^="id"]').attr('name', 'id' + index);
-        });
-    }
 };
 
-},{"bootstrap":3,"jquery":16}],20:[function(require,module,exports){
+},{"bootbox":2,"bootstrap":3,"jquery":16}],20:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');

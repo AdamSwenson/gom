@@ -921,6 +921,7 @@
 			},
 
 			relayout: function() {
+				this._resize();
 				this._layout();
 				return this;
 			},
@@ -1600,6 +1601,11 @@
 		if($) {
 			var namespace = $.fn.slider ? 'bootstrapSlider' : 'slider';
 			$.bridget(namespace, Slider);
+
+			// Auto-Register data-provide="slider" Elements
+			$(function() {
+				$("input[data-provide=slider]")[namespace]();
+			});
 		}
 
 	})( $ );

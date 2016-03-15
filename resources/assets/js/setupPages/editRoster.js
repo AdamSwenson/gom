@@ -8,14 +8,46 @@ require( 'bootstrap' );
 var common = require( '../common.js' );
 
 var bootbox = require('bootbox');
-var rosterImport = require('./rosterFileImport.js')();
-var rosterTable = require('./rosterTable.js')();
+var rosterImport = require('./rosterFileImport.js');
+//require('./rosterFileImport.js')();
+var rosterTable = require('./rosterTable.js');
+
+$(".deleteStudentButton" ).on('click', function(){
+   var rowId = $(this ).data('rowid');
+    if(rowId){
+        rosterTable.deleteStudent(rowId);
+    }
+});
+
+$("#sortByFirstName" ).on('click', function(){
+    rosterTable.sortRosterBy('firstName')
+});
+$("#sortByLastName" ).on('click', function(){
+    rosterTable.sortRosterBy('lastName')
+});
+
+$("#sortByStudentIdentifier" ).on('click', function(){
+    rosterTable.sortRosterBy('studentIdentifier')
+});
+$("#sortByEmail" ).on('click', function(){
+    rosterTable.sortRosterBy('email')
+});
 
 
+$("#addStudent" ).on('click', function(){
+    rosterTable.addStudent();
+});
+$("#deleteRoster" ).on('click', function(){
+    rosterTable.deleteRoster();
+});
+
+
+$("#importHelpButton" ).on('click', function(){
+    showImportHelp()
+});
 $("#backNavButton" ).on('click', function(){
     submitAndNavigateTo(backNavTarget);
 });
-
 $("#forwardNavButton" ).on('click', function(){
     submitAndNavigateTo(forwardNavTarget);
 });
@@ -74,4 +106,3 @@ function submitAndNavigateTo(target) {
         $(this).val(null);
     });
     //return false;
-//});

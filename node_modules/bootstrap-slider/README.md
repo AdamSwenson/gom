@@ -54,6 +54,27 @@ var value = mySlider.slider('getValue');
 		.slider('setValue', 7);
 ```
 
+Using bootstrap-slider (via `data-provide`-API)
+======================
+
+Create an input element with the `data-provide="slider"` attribute automatically
+turns it into a slider. Options can be supplied via `data-slider-` attributes.
+
+```html
+<input
+	type="text"
+	name="somename"
+	data-provide="slider"
+	data-slider-ticks="[1, 2, 3]"
+	data-slider-ticks-labels='["short", "medium", "long"]'
+	data-slider-min="1"
+	data-slider-max="3"
+	data-slider-step="1"
+	data-slider-value="3"
+	data-slider-tooltip="hide"
+>
+```
+
 What if there is already a _slider_ plugin bound to the JQuery namespace?
 ======================
 
@@ -220,6 +241,7 @@ Other Platforms & Libraries
 - [knockout.js](https://github.com/cosminstefanxp/bootstrap-slider-knockout-binding) ([@cosminstefanxp](https://github.com/cosminstefanxp), [#81](https://github.com/seiyria/bootstrap-slider/issues/81))
 - [AngularJS](https://github.com/seiyria/angular-bootstrap-slider)
 - [EmberJS](https://github.com/lifegadget/ui-slider) ([@ksnyde](https://github.com/ksnyde))
+- [ReactJS](https://github.com/brownieboy/react.bootstrap.slidertest)
 - [NuGet](https://www.nuget.org/packages/bootstrap-slider/) ([@ChrisMissal](https://github.com/ChrisMissal))
 - [MeteorJS](https://github.com/kidovate/meteor-bootstrap-slider)
 - [Maven](http://mvnrepository.com/artifact/org.webjars.bower/seiyria-bootstrap-slider)

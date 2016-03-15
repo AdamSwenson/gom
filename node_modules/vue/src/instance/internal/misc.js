@@ -6,7 +6,6 @@ import {
 } from '../../util/index'
 
 export default function (Vue) {
-
   /**
    * Apply a list of filter (descriptors) to a value.
    * Using plain for loops here because this will be called in
@@ -76,7 +75,7 @@ export default function (Vue) {
       } else {
         factory.requested = true
         var cbs = factory.pendingCallbacks = [cb]
-        factory(function resolve (res) {
+        factory.call(this, function resolve (res) {
           if (isPlainObject(res)) {
             res = Vue.extend(res)
           }

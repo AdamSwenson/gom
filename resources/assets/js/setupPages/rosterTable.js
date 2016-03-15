@@ -10,32 +10,57 @@ var jQuery = $;
 window.jQuery = jQuery;
 
 require('bootstrap');
+var bootbox = require('bootbox');
+module.exports = {
 
-module.exports = function() {
+    file: null,
+    rows: null,
 
-    var file;
-    var rows;
-
-// clone and populate a new row in the roster table. The file importer calls this to place items in the form.
-    function addStudentToTable( lName, fName, id, email ) {
+    /**
+     * set all attributes to the proper row values
+     */
+    updateRowValues: function() {
+        var $rows = $( '#studentRosterBody' ).find( '.dataRow' );
+        $rows.each( function ( index ) {
+            index += 1;
+            $( this ).attr( 'id', 'dataRow' + index );
+            $( this ).find( '#lastName' ).attr( 'name', 'lastName' + index );
+            $( this ).find( '#firstName' ).attr( 'name', 'firstName' + index );
+            $( this ).find( '#email' ).attr( 'name', 'email' + index );
+            $( this ).find( '#studentIdentifier' ).attr( 'name', 'studentIdentifier' + index );
+            $( this ).find( '#deleteButton' ).attr( 'onclick', 'deleteStudent(' + index + ')' );
+            $( this ).find( '[name^="id"]' ).attr( 'name', 'id' + index );
+        } );
+    },
+    /**
+     * clone and populate a new row in the roster table. The file importer calls this to place items in the form.
+      * @param lName
+     * @param fName
+     * @param id
+     * @param email
+     * @returns {*|jQuery}
+     */
+    addStudentToTable: function( lName, fName, id, email ) {
         var $newRow = $( '#dataRow0' ).clone();
         $newRow.find( '#lastName' ).attr( 'value', lName );
         $newRow.find( '#firstName' ).attr( 'value', fName );
         $newRow.find( '#studentIdentifier' ).attr( 'value', id );
         $newRow.find( '#email' ).attr( 'value', email );
         $newRow.appendTo( $( '#studentRosterBody' ) );
-        updateRowValues();
+        this.updateRowValues();
 
         return $newRow;
-    }
+    },
 
-// called by 'Add Student' button
-    function addStudent() {
-        var $newRow = addStudentToTable( '', '', '', '' );
+    /**
+     * called by 'Add Student' button
+     */
+    addStudent: function() {
+        var $newRow = this.addStudentToTable( '', '', '', '' );
         $newRow.find( '#lastName' ).focus();
-    }
+    },
 
-    function deleteStudent( row ) {
+    deleteStudent: function ( row ) {
         // skip confirmation if row is empty
         var $student = $( '#dataRow' + row );
         if ( ! $student.find( '#lastName' ).val() && ! $student.find( '#firstName' ).val() && ! $student.find( '#email' ).val() && ! $student.find( '#studentIdentifier' ).val() ) {
@@ -64,10 +89,12 @@ module.exports = function() {
                 }
             }
         } );
-    }
+    },
 
-// confirm, then delete all students.
-    function deleteRoster() {
+    /**
+     * confirm, then delete all students.
+     */
+    deleteRoster: function() {
         var $roster = $( '#studentRosterBody' ).find( 'tr' );
         if ( $roster.length == 0 ) return;
 
@@ -92,12 +119,13 @@ module.exports = function() {
                 }
             }
         } );
-    }
+    },
+
 
 // sorts the StudentRoster by the clicked header. Sort order reverses with each press.
-    var sortAsc = true;
+    sortAsc: true,
 
-    function sortRosterBy( value ) {
+    sortRosterBy: function( value ) {
         var $roster = $( '#studentRosterBody' );
         $roster.append(
             $roster.find( '.dataRow' ).sort( function ( a, b ) {
@@ -114,20 +142,7 @@ module.exports = function() {
         );
         sortAsc = ! sortAsc;
         updateRowValues();
-    }
+    },
 
-// set all attributes to the proper row values
-    function updateRowValues() {
-        var $rows = $( '#studentRosterBody' ).find( '.dataRow' );
-        $rows.each( function ( index ) {
-            index += 1;
-            $( this ).attr( 'id', 'dataRow' + index );
-            $( this ).find( '#lastName' ).attr( 'name', 'lastName' + index );
-            $( this ).find( '#firstName' ).attr( 'name', 'firstName' + index );
-            $( this ).find( '#email' ).attr( 'name', 'email' + index );
-            $( this ).find( '#studentIdentifier' ).attr( 'name', 'studentIdentifier' + index );
-            $( this ).find( '#deleteButton' ).attr( 'onclick', 'deleteStudent(' + index + ')' );
-            $( this ).find( '[name^="id"]' ).attr( 'name', 'id' + index );
-        } );
-    }
+
 }

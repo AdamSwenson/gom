@@ -37,7 +37,7 @@
                 Import Roster
             </span>
     <!-- import help -->
-    <a onclick="showImportHelp()" class="btn btn-info">
+    <a id="importHelpButton" class="btn btn-info">
         <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
         Import Help
     </a>
@@ -51,16 +51,27 @@
             <thead>
             <!-- table headers -->
             <tr>
-                <th class="col-md-3" style="cursor: pointer;" onclick="sortRosterBy('lastName')">Last
-                    Name
+                <th id="sortByLastName"
+                    class="col-md-3"
+                    style="cursor: pointer;"
+                    >Last Name
                 </th>
-                <th class="col-md-3" style="cursor: pointer;" onclick="sortRosterBy('firstName')">First
-                    Name
+                <th id="sortByFirstName"
+                    class="col-md-3"
+                    style="cursor: pointer;"
+                    >First Name
                 </th>
-                <th class="col-md-2" style="cursor: pointer;"
-                    onclick="sortRosterBy('studentIdentifier')">Student ID
+                <th id="sortByStudentIdentifier"
+                    class="col-md-2"
+                    style="cursor: pointer;"
+                    >Student ID
                 </th>
-                <th class="col-md-3" style="cursor: pointer;" onclick="sortRosterBy('email')">Email</th>
+                <th id="sortByEmail"
+                    class="col-md-3"
+                    style="cursor: pointer;"
+                    >
+                    Email
+                </th>
                 <th class="col-md-1"></th>
             </tr>
             </thead>
@@ -79,13 +90,15 @@
     </form>
 
     <!-- add student button -->
-    <a class="btn btn-primary" onclick="addStudent()" id="addStudent"><span
+    <a class="btn btn-primary"
+       id="addStudent"><span
                 class="glyphicon glyphicon-plus"
                 aria-hidden="true"></span>
         Add Student
     </a>
     <!-- delete roster button -->
-    <a class="btn btn-danger" onclick="deleteRoster()" id="deleteRoster"><span
+    <a class="btn btn-danger"
+       id="deleteRoster"><span
                 class="glyphicon glyphicon-minus"
                 aria-hidden="true"></span>
         Delete Roster
@@ -109,7 +122,6 @@
     <script type="text/javascript">
         //The tab to be set as active
         var activeTab = 'navSetup';
-
         var forwardNavTarget = 'editExam';
         var backNavTarget = '{{ $prevAction }}';
     </script>

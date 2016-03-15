@@ -1,9 +1,19 @@
-import { replace, getAttr } from '../../util/index'
 import Directive from '../../directive'
-import { compile, compileRoot, transclude } from '../../compiler/index'
+
+import {
+  replace,
+  getAttr,
+  isFragment
+} from '../../util/index'
+
+import {
+  compile,
+  compileRoot,
+  transclude,
+  scanSlots
+} from '../../compiler/index'
 
 export default function (Vue) {
-
   /**
    * Update v-ref for component.
    *
@@ -58,6 +68,10 @@ export default function (Vue) {
     var contextOptions = this._context && this._context.$options
     var rootLinker = compileRoot(el, options, contextOptions)
 
+    // scan for slot distribution before compiling the content
+    // so that it's decoupeld from slot/directive compilation order
+    scanSlots(el, options._content, this)
+
     // compile and link the rest
     var contentLinkFn
     var ctor = this.constructor
@@ -103,7 +117,7 @@ export default function (Vue) {
    */
 
   Vue.prototype._initElement = function (el) {
-    if (el instanceof DocumentFragment) {
+    if (isFragment(el)) {
       this._isFragment = true
       this.$el = this._fragmentStart = el.firstChild
       this._fragmentEnd = el.lastChild

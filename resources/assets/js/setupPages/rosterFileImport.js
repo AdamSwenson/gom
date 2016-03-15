@@ -12,67 +12,71 @@ window.jQuery = jQuery;
 
 require('bootstrap');
 
-module.exports = function() {
+module.exports = {
+
+    test: function(){
+        window.console.log('test good');
+    },
 
     // basic setup for # of columns and column ordering. These will change based on the imported roster file
-    var numColumns = 4;
-    var lastNameCol = - 1;
-    var firstNameCol = - 1;
-    var idCol = - 1;
-    var emailCol = - 1;
+    numColumns: 4,
+    lastNameCol: - 1,
+    firstNameCol: - 1,
+    idCol: - 1,
+    emailCol: - 1,
 
     // [separatorChar] defines the character that will be used to divide lines into fields
     // default: comma
-    var separatorChar = ',';
+    separatorChar: ',',
 
     /**
      * Map values found for firstNameCol, lastNameCol, idCol, and emailCol to display in the form.
      // If a value type isn't discovered (-1) it won't be displayed.
      * @param row
      */
-    function addRow( row ) {
+    addRow: function ( row ) {
         var defaultChar = '';
 
         var fName = defaultChar;
-        if ( firstNameCol >= 0 )
+        if ( this.firstNameCol >= 0 )
             fName = row[ firstNameCol ];
 
         var lName = defaultChar;
-        if ( lastNameCol >= 0 )
+        if ( this.lastNameCol >= 0 )
             lName = row[ lastNameCol ];
 
         var id = defaultChar;
-        if ( idCol >= 0 )
+        if ( this.idCol >= 0 )
             id = row[ idCol ];
 
         var email = defaultChar;
-        if ( emailCol >= 0 )
+        if ( this.emailCol >= 0 )
             email = row[ emailCol ];
 
         addStudentToTable( lName, fName, id, email );
-    }
+    },
 
     /**
      * check that the browser isn't ancient
      * @returns {boolean}
      */
-    function browserSupportFileUpload() {
+    browserSupportFileUpload: function () {
         var isCompatible = false;
         if ( window.File && window.FileReader && window.FileList && window.Blob ) {
             isCompatible = true;
         }
         return isCompatible;
-    }
+    },
 
-    function startRead() {
+    startRead: function () {
         // reset columns. prevents bugs if two files with different orderings are imported.
-        lastNameCol = - 1;
-        firstNameCol = - 1;
-        emailCol = - 1;
-        idCol = - 1;
+        var lastNameCol = - 1;
+        var firstNameCol = - 1;
+        var emailCol = - 1;
+        var idCol = - 1;
 
         console.log( 'reading file' );
-        if ( ! browserSupportFileUpload() ) {
+        if ( ! this.browserSupportFileUpload() ) {
             alert( 'The file upload function is not fully supported in this browser!' );
             return;
         }
@@ -84,12 +88,12 @@ module.exports = function() {
 
         reader.onload = function ( event ) {
             // convert line endings
-            rows = event.target.result.toString().replace( /[\r\n]+/g, "\n" ).split( "\n" );
+            var rows = event.target.result.toString().replace( /[\r\n]+/g, "\n" ).split( "\n" );
             var students = [];
 
             // break each row into its elements
             for ( var i = 0; i < rows.length; i ++ ) {
-                students[ i ] = rows[ i ].toString().split( separatorChar );
+                students[ i ] = rows[ i ].toString().split( this.separatorChar );
             }
 
             // remove any resulting lines with 1 or fewer elements
@@ -106,7 +110,7 @@ module.exports = function() {
             var firstLine = students[ 0 ];
             var startRow = 0;
             if ( firstRowContainsTitles( firstLine ) ) {
-                guessColumnDataByTitles( firstLine );
+                this.guessColumnDataByTitles( firstLine );
                 // remove the header line as we don't need it any longer
                 rows.splice( 0, 1 );
                 students.splice( 0, 1 );
@@ -124,14 +128,14 @@ module.exports = function() {
         reader.onerror = function () {
             alert( 'Unable to read ' + file.fileName );
         };
-    }
+    },
 
     /**
      * determines if the first row contains column headers that describe the column's content
      * @param firstLine
      * @returns {boolean}
      */
-    function firstRowContainsTitles( firstLine ) {
+    firstRowContainsTitles: function ( firstLine ) {
         var result = false;
         for ( var i = 0; i < firstLine.length; i ++ ) {
             if ( firstLine[ i ].search( /mail/i ) >= 0 || firstLine[ i ].search( /name/i ) >= 0 ) {
@@ -142,13 +146,13 @@ module.exports = function() {
             }
         }
         return result;
-    }
+    },
 
     /**
      * examine column titles to pick likely ordering
      * @param titles
      */
-    function guessColumnDataByTitles( titles ) {
+    guessColumnDataByTitles: function ( titles ) {
         numColumns = titles.length;
 
         for ( var i = 0; i < numColumns; i ++ ) {
@@ -164,12 +168,12 @@ module.exports = function() {
                 //console.log('column not found: "' + titles[i] + '"');
             }
         }
-    }
+    },
 
     /**
      * Examine table data to pick out column ordering
      */
-    function guessColumnDataByContent( students ) {
+    guessColumnDataByContent: function ( students ) {
         var startCol = 0;
         var startRow = 0;
 
