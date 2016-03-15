@@ -2,6 +2,12 @@
 
 <project name="gom" description="gradeomatic tasks" default="main">
 
+    <target name="runCodeceptionTests" description="Runs the codeception test suite">
+        <echo message="Running tests" />
+        <exec command="vendor/bin/codecept run functional --steps" />
+    </target>
+
+
     <target name="refreshAndReseed" description="Runs artisan migrate:refresh and then seeds the database using laravel tools">
         <echo message="Updating  autoloader" />
         <exec command="composer dump-autoload" />
@@ -10,9 +16,4 @@
     </target>
 
 
-
-    <target name="deployWithCapistrano">
-        <exec command="git add . ; git commit -a -m'deploying'; git push"/>
-        <exec command="cap production deploy --trace"/>
-    </target>
 </project>

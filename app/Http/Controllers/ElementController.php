@@ -16,13 +16,13 @@ use Illuminate\Support\Facades\Gate;
 
 class ElementController extends Controller
 {
-    /**
-     * @var IElementRepository
-     */
+    /** @var IQuestionAssignmentRepository  */
+    protected $questionAssignmentDAO;
+
+    /** @var IElementRepository */
     private $elementDao;
-    /**
-     * @var IElementAssignmentRepository
-     */
+
+    /** @var IElementAssignmentRepository */
     private $assignmentDao;
 
     /**
@@ -60,17 +60,6 @@ class ElementController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @param ElementRequest $request
-     * @return Response
-     */
-    public function create(ElementRequest $request)
-    {
-        abort(403);
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param ElementRequest $request
@@ -95,31 +84,6 @@ class ElementController extends Controller
             $this->assignmentDao->record($request->input('examId'), $request->input('questionNumber'), $element->getId(), $request->input('subtask'));
         }
         return $element;
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  Element $element
-     * @return Response
-     */
-    public function show(Element $element)
-    {
-        abort(403);
-        //$element = $this->dao->loadElementById($elementId);
-        //return $element;
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Element $element
-     * @param ElementRequest $request
-     * @return Response
-     */
-    public function edit(Element $element, ElementRequest $request)
-    {
-        abort(403);
     }
 
     /** Edit all elements associated with given question
@@ -179,18 +143,6 @@ class ElementController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param Element $element
-     * @param ElementRequest $request
-     * @return Response
-     */
-    public function update(Element $element, ElementRequest $request)
-    {
-        abort(403);
-    }
-
-    /**
      * Update all elements passed in from the web form.
      * Has 3 possible routes: back to EditQuestion, forward to EditRoster or to editElements (new question)
      *
@@ -224,15 +176,4 @@ class ElementController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param Element $element
-     * @return Response
-     * @internal param int $id
-     */
-    public function destroy(Element $element)
-    {
-        abort(403);
-    }
 }

@@ -105,6 +105,7 @@ class GradeController extends Controller
     /**
      *  Launch the grade assignment page
      * @param Exam $exam
+     * @return string
      */
     public function assign(Exam $exam)
     {

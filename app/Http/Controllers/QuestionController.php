@@ -74,16 +74,6 @@ class QuestionController extends Controller
 //        return ('List of all questions for exam #'.$exam);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @param QuestionRequest $request
-     * @return Response
-     */
-    public function create(QuestionRequest $request)
-    {
-        abort(403);
-        // $exam from URL: questions must know which exam to be associated with(?)
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -111,33 +101,6 @@ class QuestionController extends Controller
         return view('', compact('questionAssignment'));
     }
 
-    /**
-     * Display the specified question.
-     *
-     * The model is bound to the route so the id does not
-     * need to be specified as an argument here (though it still
-     * needs to be in the route).
-     *
-     * @param QuestionResponse $question
-     * @return Response
-     */
-    public function show(QuestionResponse $question)
-    {
-        //TODO: Add view here
-        return view('', compact('question'));
-    }
-
-    /**
-     * Show the form for editing the specified question.
-     *
-     * @param Question $question
-     * @return Response
-     */
-    public function edit(Question $question)
-    {
-
-        return view('', compact('question'));
-    }
 
     /**
      * Update the specified question in storage.
@@ -251,7 +214,6 @@ class QuestionController extends Controller
         }
 
         return view('Destroyed Question #' . $result);
-
     }
 
 

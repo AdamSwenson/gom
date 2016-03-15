@@ -92,7 +92,6 @@ class ExamController extends Controller
         //Check that user owns the exam
         $this->authorize('access-object', $exam);
 
-        // TODO: clone the thing here!
         $this->examDao->clone_exam($exam->getId());
 
         return redirect()->action('ExamController@index');
@@ -111,18 +110,6 @@ class ExamController extends Controller
         $exam = $this->examDao->save_new_exam($request->input('examYear'), $request->input('examTerm'), $request->input('name'));
         Session::flash(self::SUCCESS_FLASH_NAME, self::CREATE_SUCCESS);
         return redirect()->route('editAllQuestions', $exam);
-    }
-
-    /**
-     * Display given exam.
-     *
-     * @param Exam $exam
-     * @return Response
-     */
-    public function show(Exam $exam)
-    {
-        abort(403);
-        // Maybe write a view to show an exam without editing?
     }
 
     /**

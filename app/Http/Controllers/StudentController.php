@@ -261,40 +261,6 @@ class StudentController extends Controller
 
     }
 
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Student $student
-     * @param StudentRequest $request
-     * @return Response
-     */
-    public function update(Student $student, StudentRequest $request)
-    {
-        abort(403);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param Student $student
-     * @return Response
-     */
-    public function show(Student $student)
-    {
-        abort(403);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @param StudentRequest $request
-     * @return Response
-     */
-    public function create(StudentRequest $request)
-    {
-        abort(403);
-    }
 }
 
 
