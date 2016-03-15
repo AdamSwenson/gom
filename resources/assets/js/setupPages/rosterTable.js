@@ -11,6 +11,7 @@ window.jQuery = jQuery;
 
 require('bootstrap');
 var bootbox = require('bootbox');
+
 module.exports = {
 
     file: null,

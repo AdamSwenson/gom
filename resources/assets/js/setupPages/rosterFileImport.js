@@ -10,9 +10,12 @@ window.$ = $;
 var jQuery = $;
 window.jQuery = jQuery;
 
+var rosterTable = require('./rosterTable.js');
+
 require('bootstrap');
 
 module.exports = {
+
 
     test: function(){
         window.console.log('test good');
@@ -39,21 +42,21 @@ module.exports = {
 
         var fName = defaultChar;
         if ( this.firstNameCol >= 0 )
-            fName = row[ firstNameCol ];
+            fName = row[ this.firstNameCol ];
 
         var lName = defaultChar;
         if ( this.lastNameCol >= 0 )
-            lName = row[ lastNameCol ];
+            lName = row[ this.lastNameCol ];
 
         var id = defaultChar;
         if ( this.idCol >= 0 )
-            id = row[ idCol ];
+            id = row[ this.idCol ];
 
         var email = defaultChar;
         if ( this.emailCol >= 0 )
-            email = row[ emailCol ];
+            email = row[ this.emailCol ];
 
-        addStudentToTable( lName, fName, id, email );
+        rosterTable.addStudentToTable( lName, fName, id, email );
     },
 
     /**
@@ -69,13 +72,16 @@ module.exports = {
     },
 
     startRead: function () {
+        console.log( 'startRead called: reading file' );
+
         // reset columns. prevents bugs if two files with different orderings are imported.
         var lastNameCol = - 1;
         var firstNameCol = - 1;
         var emailCol = - 1;
         var idCol = - 1;
 
-        console.log( 'reading file' );
+        var me = this;
+
         if ( ! this.browserSupportFileUpload() ) {
             alert( 'The file upload function is not fully supported in this browser!' );
             return;
@@ -93,8 +99,10 @@ module.exports = {
 
             // break each row into its elements
             for ( var i = 0; i < rows.length; i ++ ) {
-                students[ i ] = rows[ i ].toString().split( this.separatorChar );
+                students[ i ] = rows[ i ].toString().split( me.separatorChar );
             }
+
+            window.console.log('initialRead', students);
 
             // remove any resulting lines with 1 or fewer elements
             for ( i = students.length - 1; i >= 0; i -- ) {
@@ -109,19 +117,19 @@ module.exports = {
             // analyze the file and look for column headers
             var firstLine = students[ 0 ];
             var startRow = 0;
-            if ( firstRowContainsTitles( firstLine ) ) {
-                this.guessColumnDataByTitles( firstLine );
+            if ( me.firstRowContainsTitles( firstLine ) ) {
+                me.guessColumnDataByTitles( firstLine );
                 // remove the header line as we don't need it any longer
                 rows.splice( 0, 1 );
                 students.splice( 0, 1 );
             } else {
-                guessColumnDataByContent( students );
+                me.guessColumnDataByContent( students );
             }
 
-            console.log( 'lnameCol:' + lastNameCol + ' fnameCol:' + firstNameCol + ' idCol:' + idCol + ' emailCol:' + emailCol );
+            console.log( 'lnameCol:' + me.lastNameCol + ' fnameCol:' + me.firstNameCol + ' idCol:' + me.idCol + ' emailCol:' + me.emailCol );
 
             for ( i = startRow; i < rows.length; i ++ ) {
-                addRow( students[ i ] );
+                me.addRow( students[ i ] );
             }
         };
 
@@ -137,12 +145,14 @@ module.exports = {
      */
     firstRowContainsTitles: function ( firstLine ) {
         var result = false;
-        for ( var i = 0; i < firstLine.length; i ++ ) {
-            if ( firstLine[ i ].search( /mail/i ) >= 0 || firstLine[ i ].search( /name/i ) >= 0 ) {
-                result = true;
-            }
-            if ( firstLine[ i ].search( /@/ ) >= 0 ) {
-                result = false;
+        if(typeof firstLine != 'undefined') {
+            for ( var i = 0; i < firstLine.length; i ++ ) {
+                if ( firstLine[ i ].search( /mail/i ) >= 0 || firstLine[ i ].search( /name/i ) >= 0 ) {
+                    result = true;
+                }
+                if ( firstLine[ i ].search( /@/ ) >= 0 ) {
+                    result = false;
+                }
             }
         }
         return result;
@@ -153,17 +163,17 @@ module.exports = {
      * @param titles
      */
     guessColumnDataByTitles: function ( titles ) {
-        numColumns = titles.length;
+        var numColumns = titles.length;
 
         for ( var i = 0; i < numColumns; i ++ ) {
             if ( titles[ i ].search( /mail/i ) >= 0 ) {
-                emailCol = i;
+                this.emailCol = i;
             } else if ( titles[ i ].search( /id/ ) >= 0 ) {
-                idCol = i;
+                this.idCol = i;
             } else if ( titles[ i ].search( /first/ ) >= 0 ) {
-                firstNameCol = i;
+                this.firstNameCol = i;
             } else if ( titles[ i ].search( /last/ ) >= 0 ) {
-                lastNameCol = i;
+                this.lastNameCol = i;
             } else {
                 //console.log('column not found: "' + titles[i] + '"');
             }
@@ -174,30 +184,37 @@ module.exports = {
      * Examine table data to pick out column ordering
      */
     guessColumnDataByContent: function ( students ) {
+        window.console.log('guess', students);
         var startCol = 0;
         var startRow = 0;
 
-        numColumns = students[ 0 ].length;
+        var numColumns = students[ 0 ].length;
         var foundColumns = [];
+
+        // commonNames[] is a list of the most common first names for students born between 1990-2000
+        // It is used to scan a column and make a guess at which contains first names
+        var commonNames = [
+            'Michael', 'Christopher', 'Matthew',
+            'Joshua', 'Jacob', 'Nicholas',
+            'Jessica', 'Ashley', 'Emily',
+            'Sarah', 'Samantha', 'Amanda'
+        ];
+
+
         for ( var i = startCol; i < numColumns; i ++ ) {
             if ( students[ 0 ][ i ].search( /@/ ) >= 0 ) {
                 // look for @, that's the email
-                emailCol = i;
+                this.emailCol = i;
                 foundColumns.push( i );
             } else if ( students[ 0 ][ i ].search( /[0-9]{3}/ ) >= 0 ) {
                 // look for 3 digits in a row, that's the studentId
-                idCol = i;
+                this.idCol = i;
                 foundColumns.push( i );
             } else if ( students[ 0 ][ i ] == '' ) {
                 // add any empty columns to the blacklist so they are skipped later
                 foundColumns.push( i );
             }
         }
-
-        // commonNames[] is a list of the most common first names for students born between 1990-2000
-        // It is used to scan a column and make a guess at which contains first names
-        var commonNames = [ 'Michael', 'Christopher', 'Matthew', 'Joshua', 'Jacob', 'Nicholas', 'Jessica', 'Ashley', 'Emily',
-            'Sarah', 'Samantha', 'Amanda' ];
 
         for ( i = startCol; i < numColumns; i ++ ) {
             // skip any columns which have already been flagged as email or student ID
@@ -207,17 +224,17 @@ module.exports = {
             for ( var j = startRow; j < students.length; j ++ ) {
                 // any column with 3 more letters is set as last name. Next column found with letters is first name
                 if ( students[ j ][ i ].search( /.{3,}/ ) > - 1 ) {
-                    if ( lastNameCol == - 1 )
-                        lastNameCol = i;
-                    else if ( lastNameCol != i ) {
-                        firstNameCol = i;
+                    if ( this.lastNameCol == - 1 )
+                        this.lastNameCol = i;
+                    else if ( this.lastNameCol != i ) {
+                        this.firstNameCol = i;
                     }
                 }
                 // look for common names and set firstNameCol if any are found
                 if ( $.inArray( students[ j ][ i ], commonNames ) > - 1 ) {
-                    firstNameCol = i;
-                    if ( lastNameCol == firstNameCol ) {
-                        lastNameCol = - 1;
+                    this.firstNameCol = i;
+                    if ( this.lastNameCol == this.firstNameCol ) {
+                        this.lastNameCol = - 1;
                     }
                     foundColumns.push( i );
                     break;

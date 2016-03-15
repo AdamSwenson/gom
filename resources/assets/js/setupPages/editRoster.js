@@ -8,9 +8,11 @@ require( 'bootstrap' );
 var common = require( '../common.js' );
 
 var bootbox = require('bootbox');
+
+var rosterTable = require('./rosterTable.js');
+
 var rosterImport = require('./rosterFileImport.js');
 //require('./rosterFileImport.js')();
-var rosterTable = require('./rosterTable.js');
 
 $(".deleteStudentButton" ).on('click', function(){
    var rowId = $(this ).data('rowid');
