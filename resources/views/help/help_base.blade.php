@@ -30,6 +30,7 @@
     </div>
 
     @include('help.partials.picture_modal')
+
 @endsection
 
 

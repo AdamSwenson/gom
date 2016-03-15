@@ -60,22 +60,18 @@
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
-//        // set 'Reports' tab as active
-//        $('[id^="nav"]').attr('class', '');
-//        $('#navGrade').attr('class', 'active');
-
-        var strExamScores = <?= json_encode( $examScores ) ?>; // student exam scores as strings
-        var gradeTypes = <?= json_encode( $gradeTypes ) ?>; // holds string values for grades: "A+", "A", etc
+        var strExamScores = JSON.parse('{!! json_encode( $examScores )!!}'); // student exam scores as strings
+        var gradeTypes = JSON.parse('{!! json_encode( $gradeTypes ) !!}'); // holds string values for grades: "A+", "A", etc
         var scoreChartData = []; // array to be passed to google API for the student score dist chart
         var freqChartData = []; // array to be passed for the grade frequency chart
-        var gradeCutoffs = <?= json_encode( $gradeCutoffs )?>; // numerical cutoffs assigned to each grade (indexed A+ = 0, A = 1, ...)
+        var gradeCutoffs = JSON.parse('{!! json_encode( $gradeCutoffs )!!}'); // numerical cutoffs assigned to each grade (indexed A+ = 0, A = 1, ...)
         var gradeFrequency = []; // number of students with a given grade (indexed A+ = 0, A = 1, ...)
-        var examMaxScore = <?= json_encode( $examMaxScore ) ?>;
+        var examMaxScore = JSON.parse('{!! json_encode( $examMaxScore ) !!}');
 
         // for setting 'Grade' tab as active
         var activeTab = 'navGrade';
 </script>
-    <script type="text/javascript" src="js/grade-assign-package.js"></script>
+    <script type="text/javascript" src="{{asset('js/grade-assign-package.js')}}"></script>
         {{--var examScores = strExamScores.map(Number);--}}
         {{--examScores.sort(function (a, b) {--}}
             {{--return a - b--}}

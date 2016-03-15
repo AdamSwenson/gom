@@ -74,7 +74,7 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
 
 <div class="jsArea">
     <script type="text/javascript">
-        var studentData = '{!! $encodedStudentData !!}';
+        var studentData = JSON.parse('{!! $encodedStudentData !!}');
         var activeTab = '';
     </script>
     <script type="text/javascript" src="{{ asset('js/feedback-package.js') }}"></script>

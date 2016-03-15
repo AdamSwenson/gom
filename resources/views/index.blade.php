@@ -1,8 +1,8 @@
 @extends('layouts.master')
 
 @section('otherCss')
-    <link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('css/grade-package.css') }}" rel="stylesheet" type="text/css">
+    {{--<link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet" type="text/css">--}}
+    {{--<link href="{{ asset('css/grade-package.css') }}" rel="stylesheet" type="text/css">--}}
 @endsection
 @section('body')
 <div class="row">
@@ -22,8 +22,4 @@
         var activeTab = '';
     </script>
     <script type='text/javascript' src="{{ asset('js/common-package.js') }}"></script>
-
-    <script type="text/javascript">
-
-    </script>
 @endsection
