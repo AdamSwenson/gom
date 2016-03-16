@@ -16,6 +16,7 @@ elixir( function ( mix ) {
 
     //mix.browserSync();
     /* ---------------------------------------------- styles ----------------------------------------------------*/
+    mix.sass(['libraries/bootswatch-spacelab.scss'], 'public/css/bootstrap-spacelab.css');
 
     mix.sass( [
         'help/pictureStyling.scss',
