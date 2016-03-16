@@ -1,0 +1,30 @@
+<div class="btn-group">
+    <button
+            type="button" c
+            lass="btn btn-default dropdown-toggle"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false">
+        Actions <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+        <li>
+            <a href="{{ analyticsTarget }}">
+                <span class="glyphicon glyphicon-stats"
+                      aria-hidden="true"></span> Analytics
+            </a>
+        </li>
+        <li>
+            <a href="{{ qualityControlsTarget }}">
+                <span class="glyphicon glyphicon-apple" aria-hidden="true"></span> Quality Control Tools</a>
+        </li>
+        <li>
+            <a href="{{ backupTarget }}">
+                <span class="glyphicon glyphicon glyphicon-save" aria-hidden="true"></span> Export Scores to Spreadsheet</a>
+        </li>
+
+        <li><a href="{{ studentControlsTarget }}">
+            <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Student Controls</a>
+        </li>
+    </ul>
+</div>

@@ -8,16 +8,6 @@
 @endsection
 
 @section('body')
-    {{--<style>--}}
-        {{--.table th {--}}
-            {{--border: none;--}}
-        {{--}--}}
-
-        {{--.panel {--}}
-            {{--border: none;--}}
-        {{--}--}}
-    {{--</style>--}}
-
     <h3><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Grade Exam</h3>
     <h4>Select an exam to grade</h4>
 

@@ -16,15 +16,6 @@ Route::get('info/instructions', 'InfoController@showInstructions');
 Route::get('info/faq', 'InfoController@showFaq');
 Route::get('info/tutorials', 'InfoController@showTutorials');
 
-//Route::get('test/{exam}', 'ReportController@showQualityControl');
-//{
-//
-////    return view('newindex');
-////    return view('help.instructions');
-//    //return view('feedback.n_feedback_multiple_students');
-////   return view('feedback.n_feedback');
-//});
-
 /* Authentication and registration */
 Route::controllers([
     'auth' => 'Auth\AuthController',

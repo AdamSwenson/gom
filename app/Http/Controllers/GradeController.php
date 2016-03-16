@@ -67,7 +67,11 @@ class GradeController extends Controller
     protected $gradeAssignmentDao;
 
     protected $dao;
+
     protected $reportController;
+
+    /** @var IStudentRepository  */
+    protected $studentDao;
 
     /**
      * @param IExamRepository $IExamRepository

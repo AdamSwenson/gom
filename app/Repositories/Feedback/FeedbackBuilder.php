@@ -115,7 +115,7 @@ class FeedbackBuilder implements IFeedbackBuilder
         //Get all students who are associated with the exam
         $this->loadStudents($examId);
 
-        foreach ($this->students as $student)
+        foreach ( $this->students as $student )
         {
             //Compile the feedback
             $studentFeedback = $this->compileFeedbackForStudent($student);
@@ -124,11 +124,11 @@ class FeedbackBuilder implements IFeedbackBuilder
             $accessKey = $this->accessKeyRepository->createAccessKey($examId, $student->id);
 
             //Store the feedback in our array with the unique hash as key
-            $this->feedback[$accessKey] = $studentFeedback;
+            $this->feedback[ $accessKey ] = $studentFeedback;
 
             //Retrieve and add the student's grade
             $grade = $this->studentGradeRepository->getStudentGrade($this->exam, $student);
-            if (!empty($grade))
+            if ( ! empty($grade) )
             {
                 $gradeDisplay = $grade->getDisplayValue();
                 $gradeCalc = $grade->getCalcValue();
@@ -158,20 +158,20 @@ class FeedbackBuilder implements IFeedbackBuilder
         $studentScores = &$this->assignments;
 
         //Iterate through the new copy and add scores and comment content
-        foreach ($studentScores as &$question)
+        foreach ( $studentScores as &$question )
         {
             //Load question scores for the student
             $questionScoreObject = $this->questionScoreRepository->load($question['questionAssignmentId'], $student->id);
 
-            if (!empty($questionScoreObject))
+            if ( ! empty($questionScoreObject) )
             {
                 $question['score'] = $questionScoreObject->getScore();
                 $question['average'] = $this->scoreStatsRepository->getQuestionAssignmentMean($question['questionAssignmentId']);
             }
-            foreach ($question['elements'] as &$element)
+            foreach ( $question['elements'] as &$element )
             {
                 $scoreObject = $this->elementScoreRepository->load($element['elementAssignmentId'], $student->id);
-                if (!empty($scoreObject) && !empty($scoreObject->score))
+                if ( ! empty($scoreObject) && ! empty($scoreObject->score) )
                 {
                     $element['score'] = $scoreObject->getScore();
                     $element['average'] = $this->scoreStatsRepository->getElementAssignmentMean($element['elementAssignmentId']);
@@ -219,7 +219,7 @@ class FeedbackBuilder implements IFeedbackBuilder
         /* If we got here before the main feedback compilation is called, accessKey may be empty.
          * So, if that's the case, we need to make one
          */
-        if (empty($accessKey))
+        if ( empty($accessKey) )
         {
             //Create a unique hash to access the feedback
             $accessKey = $this->accessKeyRepository->createAccessKey($examId, $student->id);
@@ -227,7 +227,7 @@ class FeedbackBuilder implements IFeedbackBuilder
 
         //Retrieve and add the student's grade
         $grade = $this->studentGradeRepository->getStudentGrade($this->exam, $student);
-        if (!empty($grade))
+        if ( ! empty($grade) )
         {
             $gradeDisplay = $grade->getDisplayValue();
             $gradeCalc = $grade->getCalcValue();
@@ -241,7 +241,7 @@ class FeedbackBuilder implements IFeedbackBuilder
         }
 
         //Store the feedback in our array with the unique hash as key
-        $this->feedback[$accessKey] = $studentFeedback;
+        $this->feedback[ $accessKey ] = $studentFeedback;
 
         return $this->feedback;
     }
@@ -257,30 +257,30 @@ class FeedbackBuilder implements IFeedbackBuilder
      */
     public function loadAssignments($examId, $forceReRun = false)
     {
-        if (empty($this->assignments) || ($forceReRun === true))
+        if ( empty($this->assignments) || ($forceReRun === true) )
         {
             $this->questionAssignments = $this->questionAssignmentRepository->load_all_for_exam($examId);
-            foreach ($this->questionAssignments as $qa)
+            foreach ( $this->questionAssignments as $qa )
             {
                 $elementAssignments = $this->elementAssignmentRepository->load_element_assignments_by_question_number($examId,
                                                                                                                       $qa->getQuestionNumber());
                 $elements = [];
-                foreach ($elementAssignments as $ea)
+                foreach ( $elementAssignments as $ea )
                 {
-                    $elements[$ea->getSubtask()] = [
-                        'questionNumber' => $ea->getQuestionNumber(),
-                        'subtask' => $ea->getSubtask(),
-                        'elementId' => $ea->getElementId(),
+                    $elements[ $ea->getSubtask() ] = [
+                        'questionNumber'      => $ea->getQuestionNumber(),
+                        'subtask'             => $ea->getSubtask(),
+                        'elementId'           => $ea->getElementId(),
                         'elementAssignmentId' => $ea->getElementAssignmentId(),
-                        'elementName' => $ea->getElementName()
+                        'elementName'         => $ea->getElementName(),
                     ];
                 }
                 $data = [
-                    'questionNumber' => $qa->getQuestionNumber(),
-                    'questionId' => $qa->getQuestionId(),
-                    'questionName' => $qa->getQuestionName(),
+                    'questionNumber'       => $qa->getQuestionNumber(),
+                    'questionId'           => $qa->getQuestionId(),
+                    'questionName'         => $qa->getQuestionName(),
                     'questionAssignmentId' => $qa->getQuestionAssignmentId(),
-                    'elements' => $elements
+                    'elements'             => $elements,
                 ];
 
                 array_push($this->assignments, $data);
@@ -302,7 +302,7 @@ class FeedbackBuilder implements IFeedbackBuilder
     protected function getStudentGrade(Student $student, &$studentScores)
     {
         $grade = $this->studentGradeRepository->getStudentGrade($this->exam, $student);
-        if (!empty($grade))
+        if ( ! empty($grade) )
         {
             $studentScores['grade'] = $grade->getDisplayValue();
             $studentScores['gradeCalc'] = $grade->getCalcValue();

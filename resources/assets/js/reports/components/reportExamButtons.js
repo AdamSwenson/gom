@@ -6,12 +6,6 @@ var jQuery = $;
 window.jQuery = $;
 window.$ = $;
 
-//require( "bootstrap-toggle" );
-
-//var bootstrapToggle = require( "../../../../../node_modules/bootstrap-toggle/js/bootstrap-toggle.js" );
-
-var bootstrapToggle = require( "./../../../../../node_modules/bootstrap-toggle/js/bootstrap-toggle.js" );
-
 module.exports = {
 
     template: require( '../templates/report-exam-buttons.template.html' ),
@@ -19,15 +13,16 @@ module.exports = {
     props: [
         'base-url',
         'exam-id',
-        'released'
     ],
 
     data: function () {
-        return {};
+        return {
+            storage: {
+            },
+        };
     },
 
     computed: {
-        //Returns the route for analytics for the exam
         'analyticsTarget': function () {
             return this.baseUrl + '/report/' + this.examId + '/analytics';
         },
@@ -39,26 +34,13 @@ module.exports = {
             return this.baseUrl + '/report/' + this.examId + '/students';
         },
 
-        'qualityControlsTarget': function(){
+        'qualityControlsTarget': function () {
             return this.baseUrl + '/report/' + this.examId + '/qualitycontrol';
         }
     },
 
     methods: {},
-
-    directives: {
-        'toggle': function () {
-            $( this.el ).bootstrapToggle(
-                {
-                    on: "Release",
-                    off: "Hide"
-                }
-            );
-        }
-
-    },
-
-    ready: function () {
-
-    }
+    events: {},
+    directives: {},
+    ready: function () {}
 };
