@@ -13555,7 +13555,7 @@ var flash = require('./utilities/flashMessageHandling.js')();
             }
         }
 
-        // Setup drag mode
+        // AsyncStorage drag mode
         this.nativeDraggable = options.forceFallback ? false : supportDraggable;
 
         // Bind events

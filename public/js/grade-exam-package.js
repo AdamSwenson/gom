@@ -14404,7 +14404,7 @@ module.exports = function () {
 			}
 
 			/*************************************************
-   						Setup
+   						AsyncStorage
    	**************************************************/
 			this.eventToCallbackMap = {};
 			this.sliderElem.id = this.options.id;

@@ -781,7 +781,7 @@
             try {
                 this.testEnvironment.setup.call(this.testEnvironment, this.assert);
             } catch (e) {
-                this.pushFailure("Setup failed on " + this.testName + ": " + ( e.message || e ), extractStacktrace(e, 0));
+                this.pushFailure("AsyncStorage failed on " + this.testName + ": " + ( e.message || e ), extractStacktrace(e, 0));
             }
         },
         run: function () {

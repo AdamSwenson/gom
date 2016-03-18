@@ -1285,7 +1285,7 @@
             try {
                 this.testEnvironment.setup.call(this.testEnvironment, QUnit.assert);
             } catch (e) {
-                QUnit.pushFailure("Setup failed on " + this.testName + ": " + ( e.message || e ), extractStacktrace(e, 1));
+                QUnit.pushFailure("AsyncStorage failed on " + this.testName + ": " + ( e.message || e ), extractStacktrace(e, 1));
             }
         },
         run: function () {

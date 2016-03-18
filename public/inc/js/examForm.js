@@ -5,7 +5,7 @@
 
 
 
-// set 'Setup' tab as active
+// set 'AsyncStorage' tab as active
 $('[id^="nav"]').attr('class', '');
 $('#navSetup').attr('class', 'active');
 

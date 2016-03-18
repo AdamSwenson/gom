@@ -29,4 +29,9 @@ interface INumberGradedRepository
      * @param Exam $exam
      */
     public function updateNumberGradedByOne(Exam $exam);
+    /**
+     * Removes all count records for the exam from redis
+     * @param Exam $exam
+     */
+    public function deleteExamRecords(Exam $exam);
 }

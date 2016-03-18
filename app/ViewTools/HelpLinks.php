@@ -49,7 +49,7 @@ class HelpLinks
 
     static public $videoAllReport = ['id' => 'reportVideos', 'text' => 'Videos: Reporting'];
 
-    static public $videoAllSetup = ['id' => 'setupVideos', 'text' => 'Videos: Setup'];
+    static public $videoAllSetup = ['id' => 'setupVideos', 'text' => 'Videos: AsyncStorage'];
     static public $videoAllOther = ['id' => 'otherVideos', 'text' => 'Videos: Other'];
 
 

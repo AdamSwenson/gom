@@ -95,6 +95,9 @@ class StorageServiceProvider extends ServiceProvider
         /* -------------------------------------------------- Other ---------------------------------------------------- */
         //yes. dumb. i know.
         $this->app->bind('App\HTTP\Controllers\ReportController', 'App\HTTP\Controllers\ReportController');
+
         $this->app->bind('App\Repositories\Exam\INumberGradedRepository', 'App\Repositories\Exam\NumberGradedRepository');
+        $this->app->bind('App\Repositories\Exam\IStoredExamStatsRepository', 'App\Repositories\Exam\StoredExamStatsRepository');
+
     }
 }

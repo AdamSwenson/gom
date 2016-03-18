@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exam;
 use App\Http\Requests\ExamRequest;
+use App\Jobs\AsyncStorage\UpdateAllStoredExamStats;
 use App\Repositories\Exam\IExamRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Student\IStudentRepository;
@@ -32,10 +33,16 @@ class ExamController extends Controller
 
     /**@var IExamRepository */
     protected $examDao;
+    /** @var IQuestionAssignmentRepository  */
+    protected $questionAssignmentDao;
+    /** @var IStudentRepository  */
+    protected $studentDao;
 
-    public function __construct(IExamRepository $examDao,
-                                IQuestionAssignmentRepository $questionAssignmentRepository,
-                                IStudentRepository $studentRepository)
+    public function __construct(
+        IExamRepository $examDao,
+        IQuestionAssignmentRepository $questionAssignmentRepository,
+        IStudentRepository $studentRepository
+    )
     {
         $this->middleware('auth');
         $this->examDao = $examDao;
@@ -50,20 +57,27 @@ class ExamController extends Controller
      */
     public function index()
     {
+       // $this->dispatch(new UpdateAllStoredExamStats());
+
+        $storedExamStatsDao = app()->make('App\Repositories\Exam\IStoredExamStatsRepository');
+
         $exams = $this->examDao->load_all_exams();
         $numberOfStudents = [];
         $numberOfQuestions = [];
         foreach($exams as $exam) {
             $examId = $exam->getId();
-            $numberStudents = sizeof($this->studentDao->load_students_by_exam($exam->getId()));
-            $numberQuestions = sizeof($this->questionAssignmentDao->load_all_for_exam($exam->getId()));
+            $numberStudents = $storedExamStatsDao->getNumberStudents($exam);
+            $numberQuestions = $storedExamStatsDao->getNumberQuestions($exam);
             $numberOfStudents[$examId] = $numberStudents;
             $numberOfQuestions[$examId] = $numberQuestions;
         }
 
         //dd($numberOfStudents);
-        return View::make('setup.select_exam', ['exams' => $exams, 'numberOfStudents' => $numberOfStudents,
-                        'numberOfQuestions' => $numberOfQuestions ]);
+        return View::make('setup.select_exam', [
+            'exams' => $exams,
+            'numberOfStudents' => $numberOfStudents,
+            'numberOfQuestions' => $numberOfQuestions
+        ]);
     }
 
     /**

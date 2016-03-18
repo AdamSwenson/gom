@@ -80,6 +80,12 @@ class BaseModel extends Model
         });
     }
 
+    public function scopeLoggedIn($query)
+    {
+        return $query->where('user_id', \Auth::user()->id);
+    }
+
+
     /**
      * Get the [id] column value.
      *
