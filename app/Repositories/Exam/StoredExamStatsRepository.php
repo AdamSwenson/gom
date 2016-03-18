@@ -53,21 +53,25 @@ class StoredExamStatsRepository implements IStoredExamStatsRepository
     /**
      * Updates the number of questions associated with the exam by one
      * @param Exam $exam
+     * @return bool
      */
     public function updateNumberQuestionsByOne(Exam $exam)
     {
         $key = $this->buildQuestionsKey($exam);
         Redis::incr($key);
+        return true;
     }
 
     /**
      * Updates the number of students associated by one
      * @param Exam $exam
+     * @return bool
      */
     public function updateNumberStudentsByOne(Exam $exam)
     {
         $key = $this->buildStudentsKey($exam);
         Redis::incr($key);
+        return true;
     }
 
     /**
@@ -113,6 +117,7 @@ class StoredExamStatsRepository implements IStoredExamStatsRepository
     /**
      * Removes all question and student records for the exam from redis
      * @param Exam $exam
+     * @return bool
      */
     public function deleteExamRecords(Exam $exam)
     {
@@ -121,6 +126,8 @@ class StoredExamStatsRepository implements IStoredExamStatsRepository
 
         $studentKey = $this->buildStudentsKey($exam);
         Redis::del($studentKey);
+
+        return true;
     }
 
     /**

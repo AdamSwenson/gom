@@ -34,11 +34,14 @@ class NumberGradedRepository implements INumberGradedRepository
     /**
      * Updates the number of students that have been graded by one
      * @param Exam $exam
+     * @return bool
      */
     public function updateNumberGradedByOne(Exam $exam)
     {
         $key = $this->buildKey($exam);
         Redis::incr($key);
+
+        return true;
     }
 
     /**
@@ -65,11 +68,13 @@ class NumberGradedRepository implements INumberGradedRepository
     /**
      * Removes all count records for the exam from redis
      * @param Exam $exam
+     * @return bool
      */
     public function deleteExamRecords(Exam $exam)
     {
         $key = $this->buildKey($exam);
         Redis::del($key);
+        return true;
     }
 
     /**
