@@ -15,7 +15,13 @@
 
 @section('body')
     <h3><span class="glyphicon glyphicon-globe"></span> About</h3>
-
+    <div class="row">
+        <div class="col-lg-3"></div>
+        <div class="col-lg-6">
+            @include('help.components_help.intro_note')
+        </div>
+        <div class="col-lg-3"></div>
+    </div>
 @endsection
 
 

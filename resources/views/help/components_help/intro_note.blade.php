@@ -1,5 +1,4 @@
-<div class="row">
-    <div class="col-lg-6">
+
         <h4 class="text-center">A note (and a plea) from the gradeomatic's creator</h4>
         <p class="answer">Thank you for your interest in the gradeomatic.</p>
         <p class="answer">I created this tool to help me save time without sacrificing the quality of student feedback. And, I did. I've cut my grading time by 60-70%.</p>
@@ -16,8 +15,3 @@
         <p class="answer">P.S., I confess I have met my match when it comes to writing the instructions. "How hard could it be?", I had asked myself "After all, I explain difficult things in clear and accessible ways for a living." But once I sat down and started writing, I quickly discovered how horribly, horribly wrong I had been.</p>
         <p class="answer">These instructions will probably be most comprehensible if you start by just playing around with the gradeomatic. If you do, please make sure to not use real student email addresses to avoid inadvertently sending your class messages!</p>
         <p class="answer">I will continue to work to make the instructions clear and helpful. In the meantime, I will greatly appreciate your comments and patience, and urge those of you with technical writers in your lives to buy them a drink. They deserve it. </p>
-
-    </div>
-    <div class="col-lg-6"></div>
-
-</div>
