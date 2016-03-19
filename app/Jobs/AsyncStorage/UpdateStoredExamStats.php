@@ -28,7 +28,7 @@ class UpdateStoredExamStats extends Job implements SelfHandling
     /**
      * @var Exam
      */
-    private $exam;
+    public $exam;
 
     /**
      * Create a new job instance.

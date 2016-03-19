@@ -11,8 +11,8 @@ namespace App\Jobs\StudentImport;
 
 class ImportStudentsFromCsvTest extends \TestCase
 {
-    static public $valid_files = array("tests/test_student_upload_valid.csv");
-    static public $invalid_files = array("tests/test_student_upload_invalid.csv");
+    static public $valid_files = array("tests/studentRosters/test_student_upload_valid.csv");
+    static public $invalid_files = array("tests/studentRosters/test_student_upload_invalid.csv");
 
     protected $object;
 

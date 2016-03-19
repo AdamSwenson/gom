@@ -18,20 +18,10 @@ class UpdateStoredNumGraded extends Job implements SelfHandling
 {
     /** @var INumberGradedStatsRepository */
     protected $numberGradedRepository;
-    /**
-     * @var IQuestionAssignmentRepository
-     */
-    private $questionAssignmentRepository;
-    /**
-     * @var IStudentRepository
-     */
-    private $studentRepository;
-    /**
-     * @var Exam
-     */
-    private $exam;
 
-
+    /** @var Exam */
+    protected $exam;
+    
     /**
      * Create a new job instance.
      * @param Exam $exam
@@ -40,9 +30,6 @@ class UpdateStoredNumGraded extends Job implements SelfHandling
     {
         $this->exam = $exam;
         $this->numberGradedRepository = app()->make('App\Repositories\Exam\INumberGradedRepository');
-        $this->questionAssignmentRepository = app()->make('App\Repositories\Question\IQuestionAssignmentRepository');
-        $this->studentRepository = app()->make('App\Repositories\Student\IStudentRepository');
-
     }
 
     /**
@@ -55,18 +42,15 @@ class UpdateStoredNumGraded extends Job implements SelfHandling
         $this->updateGradedStudents();
     }
 
+    /**
+     * Looks up the stored number of graded students and compares
+     * that to the number of students with at least one question score
+     * recorded. If different, updates the stored number to the calculated
+     * number
+     */
     public function updateGradedStudents()
     {
-        $query = <<<MYSQL
-        SELECT count( DISTINCT student_id) AS numberGraded
-        FROM question_scores qs
-        INNER JOIN question_assignments qa ON qs.question_assignment_id = qa.id
-        WHERE qa.exam_id = :examId;
-MYSQL;
-        //get counts
-        $result = DB::select($query, ['examId' => $this->exam->id]);
-        $numberGraded = $result[0]->numberGraded;
-Log::info($numberGraded);
+        $numberGraded = $this->numberGradedRepository->calculateNumberGradedFromMySQL($this->exam);
 
         $storedNumber = $this->numberGradedRepository->getNumberGraded($this->exam);
 
@@ -75,6 +59,5 @@ Log::info($numberGraded);
             //reset the count to 0 and add the correct number
             $this->numberGradedRepository->addGradedStudents($this->exam, $numberGraded, true);
         }
-
     }
 }

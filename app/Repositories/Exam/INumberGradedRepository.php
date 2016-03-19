@@ -18,6 +18,14 @@ use App\Exam;
 interface INumberGradedRepository
 {
     /**
+     * Queries the main database to calculate how many have
+     * been graded
+     * @param Exam $exam
+     * @return int ;
+     */
+    public function calculateNumberGradedFromMySQL(Exam $exam);
+
+    /**
      * Returns the number of students that have been graded for the exam
      * @param Exam $exam
      * @return integer

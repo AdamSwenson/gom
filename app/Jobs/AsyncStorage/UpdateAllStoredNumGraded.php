@@ -16,7 +16,6 @@ class UpdateAllStoredNumGraded extends Job implements SelfHandling
      */
     public function __construct()
     {
-        $this->handle();
     }
 
     /**

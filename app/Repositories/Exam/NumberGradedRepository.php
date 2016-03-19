@@ -9,6 +9,7 @@
 namespace App\Repositories\Exam;
 
 use App\Exam;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 
 /**
@@ -18,6 +19,27 @@ use Illuminate\Support\Facades\Redis;
 class NumberGradedRepository implements INumberGradedRepository
 {
     const KEY_BASE = 'graded_for_exam_';
+
+    /**
+     * Queries the main database to calculate how many have
+     * been graded
+     * @param Exam $exam
+     * @return int ;
+     */
+    public function calculateNumberGradedFromMySQL(Exam $exam)
+    {
+        $query = <<<MYSQL
+        SELECT count( DISTINCT student_id) AS numberGraded
+        FROM question_scores qs
+        INNER JOIN question_assignments qa ON qs.question_assignment_id = qa.id
+        WHERE qa.exam_id = :examId;
+MYSQL;
+        //get counts
+        $result = DB::select($query, ['examId' => $exam->id]);
+        $numberGraded = $result[0]->numberGraded;
+
+        return !empty($numberGraded) ? $numberGraded : 0 ;
+    }
 
     /**
      * Returns the number of students that have been graded for the exam

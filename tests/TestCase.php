@@ -53,6 +53,15 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
     }
 
     /**
+     * Registers the mock object for the current instance
+     * @param $className
+     * @param $mockObject
+     */
+    public function registerMock($className, $mockObject){
+        $this->app->instance($className, $mockObject);
+    }
+
+    /**
      * Clean up the testing environment before the next test.
      *
      * @return void
