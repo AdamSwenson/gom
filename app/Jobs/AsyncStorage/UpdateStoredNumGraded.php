@@ -21,7 +21,7 @@ class UpdateStoredNumGraded extends Job implements SelfHandling
 
     /** @var Exam */
     protected $exam;
-    
+
     /**
      * Create a new job instance.
      * @param Exam $exam
