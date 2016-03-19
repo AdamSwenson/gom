@@ -1312,7 +1312,7 @@
             opt, eventName, isSupported, i,
             div = document.createElement("div");
 
-        // Setup
+        // AsyncStorage
         div.setAttribute("className", "t");
         div.innerHTML = "  <link/><table></table><a href='/a'>a</a><input type='checkbox'/>";
 

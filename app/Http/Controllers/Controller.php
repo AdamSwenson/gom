@@ -34,7 +34,10 @@ abstract class Controller extends BaseController
     public function sendAjaxFailure($message = null, $otherItems = null)
     {
         $sendMessage = $message ? $message : 'failure';
-        $response = ['status' => 500, 'message' => $sendMessage];
+        $response = [
+            'status' => 'fail',
+            'message' => $sendMessage
+        ];
 
         if ( ! is_null($otherItems) && is_array($otherItems) )
         {
@@ -59,9 +62,11 @@ abstract class Controller extends BaseController
      */
     public function sendAjaxSuccess($message = null, $otherItems = null)
     {
-
         $sendMessage = $message ? $message : 'success';
-        $response = ['status' => 200, 'message' => $sendMessage];
+        $response = [
+            'status' => 'success',
+            'message' => $sendMessage
+        ];
 
         if ( ! is_null($otherItems) && is_array($otherItems) )
         {

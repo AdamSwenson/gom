@@ -98,7 +98,7 @@ elixir( function ( mix ) {
     //which have no other js.
     mix.browserify( 'common.js', 'public/js/common-package.js' );
 
-    //Setup pages
+    //AsyncStorage pages
     mix.browserify( 'setupPages/examForm.js', 'public/js/exam-setup-package.js' );
     mix.browserify( 'setupPages/editElement.js', 'public/js/element-edit-package.js' );
     mix.browserify( 'setupPages/editQuestion.js', 'public/js/question-edit-package.js' );

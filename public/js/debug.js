@@ -5588,7 +5588,7 @@ var component = {
   params: ['keep-alive', 'transition-mode', 'inline-template'],
 
   /**
-   * Setup. Two possible usages:
+   * AsyncStorage. Two possible usages:
    *
    * - static:
    *   <comp> or <div v-component="comp">
@@ -6340,7 +6340,7 @@ p$1.getCssTransitionType = function (className) {
 };
 
 /**
- * Setup a CSS transitionend/animationend callback.
+ * AsyncStorage a CSS transitionend/animationend callback.
  *
  * @param {String} event
  * @param {Function} cb
@@ -7586,7 +7586,7 @@ function stateMixin (Vue) {
   });
 
   /**
-   * Setup the scope of an instance, which contains:
+   * AsyncStorage the scope of an instance, which contains:
    * - observed data
    * - computed properties
    * - user methods
@@ -7742,7 +7742,7 @@ function stateMixin (Vue) {
   };
 
   /**
-   * Setup computed properties. They are essentially
+   * AsyncStorage computed properties. They are essentially
    * special getter/setters
    */
 
@@ -7784,7 +7784,7 @@ function stateMixin (Vue) {
   }
 
   /**
-   * Setup instance methods. Methods must be bound to the
+   * AsyncStorage instance methods. Methods must be bound to the
    * instance since they might be passed down as a prop to
    * child components.
    */
@@ -7816,7 +7816,7 @@ var eventRE = /^v-on:|^@/;
 
 function eventsMixin (Vue) {
   /**
-   * Setup the instance's option events & watchers.
+   * AsyncStorage the instance's option events & watchers.
    * If the value is a string, we pull it from the
    * instance's methods by name.
    */
@@ -7906,7 +7906,7 @@ function eventsMixin (Vue) {
   }
 
   /**
-   * Setup recursive attached/detached calls
+   * AsyncStorage recursive attached/detached calls
    */
 
   Vue.prototype._initDOMHooks = function () {
@@ -8101,7 +8101,7 @@ Directive.prototype._bind = function () {
 };
 
 /**
- * Setup all param attributes, e.g. track-by,
+ * AsyncStorage all param attributes, e.g. track-by,
  * transition-mode, etc...
  */
 
@@ -8132,7 +8132,7 @@ Directive.prototype._setupParams = function () {
 };
 
 /**
- * Setup a watcher for a dynamic param.
+ * AsyncStorage a watcher for a dynamic param.
  *
  * @param {String} key
  * @param {String} expression

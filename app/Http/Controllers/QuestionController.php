@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\QuestionRequest;
+use App\Jobs\AsyncStorage\UpdateStoredExamStats;
 use App\Question;
 use App\Exam;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -39,7 +40,10 @@ class QuestionController extends Controller
     /** @var IQuestionAssignmentRepository */
     private $assignmentDao;
 
-    public function __construct(IQuestionRepository $questionDao, IQuestionAssignmentRepository $assignmentDao)
+    public function __construct(
+        IQuestionRepository $questionDao,
+        IQuestionAssignmentRepository $assignmentDao
+    )
     {
         $this->middleware('auth');
         $this->questionDao = $questionDao;
@@ -54,17 +58,20 @@ class QuestionController extends Controller
     public function index(QuestionRequest $request)
     {
         //load all questions for exam
-        if ($request->has('examId')) {
+        if ( $request->has('examId') )
+        {
             $exam = Exam::findOrFail($request->input('examId'));
             //Check that user owns the exam
             $this->authorize('access-object', $exam);
 
             $questions = $this->assignmentDao->load_all_for_exam($request->input('examId'));
         } // load all questions for class
-        elseif ($request->has('classId')) {
+        elseif ( $request->has('classId') )
+        {
             $questions = $this->questionDao->loadQuestionsByClassId($request->input('classId'));
         } // load all questions for session user
-        else {
+        else
+        {
             $questions = $this->questionDao->loadAll();
         }
 
@@ -95,7 +102,7 @@ class QuestionController extends Controller
 
         //associate it with the exam
         $questionAssignment = $this->assignmentDao->record($request->input('examId'), $question->getId(),
-            $request->input('questionNumber'));
+                                                           $request->input('questionNumber'));
 
         //TODO: Add view here
         return view('', compact('questionAssignment'));
@@ -120,13 +127,15 @@ class QuestionController extends Controller
             $request->input('questionText'),
             $request->input('maxScore'));
 
-        if ($returnView) {
+        if ( $returnView )
+        {
             //TODO: Add view here
             return view('', compact('question'));
         }
     }
 
-    /** Update all questions passed in by $request and set order assignments
+    /**
+     * Update all questions passed in by $request and set order assignments
      *  If a question has id=0 a new question will be created
      *
      *  NOTE: Right now, all existing questions in a form have their full contents updated every time
@@ -149,7 +158,8 @@ class QuestionController extends Controller
 
         // If someone deletes all questions and defeat checks, redirect back to exam select...
         $checkIfEmpty = $this->assignmentDao->load_all_for_exam($examId);
-        if (!count($checkIfEmpty)) {
+        if ( ! count($checkIfEmpty) )
+        {
             return redirect()->action('ExamController@index');
         }
         // ...because this line will crash if there is no question #1
@@ -157,11 +167,18 @@ class QuestionController extends Controller
         $firstQId = $firstQuestionAssign->getQuestionId();
         $firstQuestionObject = $this->questionDao->loadQuestionById($firstQId);
 
-        if ($request->input('nextAction') == 'editExam') {
+        //asynchronously update the stored list of question counts etc
+        $this->dispatch(new UpdateStoredExamStats($exam));
+
+        if ( $request->input('nextAction') == 'editExam' )
+        {
             return redirect()->action('ExamController@edit', ['exam' => $exam]);
-        } else {
-            return redirect()->action('ElementController@editAll', array('examId' => $examId,
-                'question' => $firstQuestionObject));
+        } else
+        {
+            return redirect()->action('ElementController@editAll', array(
+                'examId'   => $examId,
+                'question' => $firstQuestionObject,
+            ));
         }
     }
 
@@ -177,7 +194,8 @@ class QuestionController extends Controller
         $assignments = $this->assignmentDao->load_all_for_exam($exam->getId());
         $questions = [];
 
-        foreach ($assignments as $ass) {
+        foreach ( $assignments as $ass )
+        {
             $id = $ass->question_id;
             // load the question with given id by its index: ['0','1', ...]
             $questions[] = $this->questionDao->loadQuestionById($id);
@@ -186,9 +204,10 @@ class QuestionController extends Controller
         $examId = $exam->getId();
 
         return view('setup.edit_question')->with([
-            'questions' => $questions,
-            'examName' => $examName,
-            'examId' => $examId]);
+                                                     'questions' => $questions,
+                                                     'examName'  => $examName,
+                                                     'examId'    => $examId,
+                                                 ]);
     }
 
     /**
@@ -207,9 +226,11 @@ class QuestionController extends Controller
         $questionObj = $this->questionDao->loadQuestionById($question);
         $result = $this->questionDao->deleteQuestionObject($questionObj);
 
-        if (!empty($result)) {
+        if ( ! empty($result) )
+        {
             Session::flash(self::SUCCESS_FLASH_NAME, self::DELETE_SUCCESS);
-        } else {
+        } else
+        {
             Session::flash(self::FAIL_FLASH_NAME, self::DELETE_FAIL);
         }
 

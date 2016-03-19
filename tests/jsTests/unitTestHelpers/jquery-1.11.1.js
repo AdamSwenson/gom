@@ -3568,7 +3568,7 @@
             return;
         }
 
-        // Setup
+        // AsyncStorage
         div = document.createElement("div");
         container = document.createElement("div");
         container.style.cssText = "position:absolute;border:0;width:0;height:0;top:0;left:-9999px";
@@ -4163,7 +4163,7 @@
             div = document.createElement("div"),
             fragment = document.createDocumentFragment();
 
-        // Setup
+        // AsyncStorage
         div.innerHTML = "  <link/><table></table><a href='/a'>a</a><input type='checkbox'/>";
 
         // IE strips leading whitespace when .innerHTML is used
@@ -6079,7 +6079,7 @@
                 return;
             }
 
-            // Setup
+            // AsyncStorage
             div = document.createElement("div");
             container = document.createElement("div");
             container.style.cssText = "position:absolute;border:0;width:0;height:0;top:0;left:-9999px";
@@ -6249,7 +6249,7 @@
         var div, style, a, pixelPositionVal, boxSizingReliableVal,
             reliableHiddenOffsetsVal, reliableMarginRightVal;
 
-        // Setup
+        // AsyncStorage
         div = document.createElement("div");
         div.innerHTML = "  <link/><table></table><a href='/a'>a</a><input type='checkbox'/>";
         a = div.getElementsByTagName("a")[0];
@@ -6320,7 +6320,7 @@
                 return;
             }
 
-            // Setup
+            // AsyncStorage
             div = document.createElement("div");
             container = document.createElement("div");
             container.style.cssText = "position:absolute;border:0;width:0;height:0;top:0;left:-9999px";
@@ -7655,7 +7655,7 @@
         // Minified: var a,b,c,d,e
         var input, div, select, a, opt;
 
-        // Setup
+        // AsyncStorage
         div = document.createElement("div");
         div.setAttribute("className", "t");
         div.innerHTML = "  <link/><table></table><a href='/a'>a</a><input type='checkbox'/>";

@@ -17,10 +17,11 @@
             <tr style="cursor: default;">
                 <th class="col-lg-1">Term</th>
                 <th class="col-lg-6 nameCellHeader"
-                    {{--style="min-width: 200px;"--}}
                 >Name</th>
                 <th class="col-lg-1">Questions</th>
                 <th class="col-lg-1">Students</th>
+                <th class="col-lg-1">Graded</th>
+
                 <th class="col-lg-3 buttonCellHeader"
                     {{--style="width: 200px; min-width: 200px;"--}}
                 ></th>
@@ -37,17 +38,20 @@
                         <td class="examNameCell"
                             {{--style="vertical-align:middle;"--}}
                         >{{ $exam->name or 'No Name Found' }}</td>
+
                         <td class="examDetailsCell"
-                            {{--style="vertical-align:middle;"--}}
                             id="numQuestions"
                         >{{ $numQuestions[ $examId ] or '0' }}</td>
+
                         <td class="examNameCell"
-                                {{--style="vertical-align:middle;"--}}
                             id="numStudents"
                         >{{ $numStudents[ $examId ] or '0' }}</td>
-                        <td class="examButtonsCell"
-                            {{--style="text-align: right"--}}
-                        >
+
+                        <td class="examNameCell"
+                            id="numGraded"
+                        >{{ $numGraded[ $examId ] or '--' }}</td>
+
+                        <td class="examButtonsCell">
                             <a
                                     data-href="{{ url('grade/exam/'.$examId) }}"
                                     class="btn btn-primary"

@@ -8,6 +8,9 @@ use App\Http\Requests\GradeAssignmentRequest;
 use App\Http\Requests\GradingRequest;
 
 use App\Exam;
+use App\Jobs\AsyncStorage\UpdateAllStoredExamStats;
+use App\Jobs\AsyncStorage\UpdateAllStoredNumGraded;
+use App\Jobs\AsyncStorage\UpdateStoredNumGraded;
 use App\Repositories\Exam\IExamRepository;
 use App\Repositories\Grade\GradeFactory;
 use App\Repositories\Grade\IGradeAssignmentRepository;
@@ -70,7 +73,7 @@ class GradeController extends Controller
 
     protected $reportController;
 
-    /** @var IStudentRepository  */
+    /** @var IStudentRepository */
     protected $studentDao;
 
     /**
@@ -122,12 +125,12 @@ class GradeController extends Controller
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($examId);
         $examMaxScore = 0;
 
-        foreach ($questionAssignments as $assignment)
+        foreach ( $questionAssignments as $assignment )
         {
             $questionMax = $assignment->getQuestion()->getMaxScore();
 
             //If max question score not set, use the default max score
-            if (empty($questionMax))
+            if ( empty($questionMax) )
             {
                 $questionMax = self::DEFAULT_MAX_QUESTION_SCORE;
             }
@@ -146,19 +149,19 @@ class GradeController extends Controller
 
         // calculate exam scores
         $examScores = [];
-        foreach ($students as $student)
+        foreach ( $students as $student )
         {
             $questionItems = $this->questionScoreDao->load_for_student_on_exam($examId, $student->getId());
             // Don't include any students who haven't been graded
-            if (!$this->examGraded($questionItems))
+            if ( ! $this->examGraded($questionItems) )
             {
                 continue;
             }
 
             $examScore = 0;
-            foreach ($questionItems as $score)
+            foreach ( $questionItems as $score )
             {
-                if (isset($score->questionScore))
+                if ( isset($score->questionScore) )
                 {
                     $examScore += $score->questionScore;
                 }
@@ -166,16 +169,17 @@ class GradeController extends Controller
             $examScores[] = $examScore;
         }
 
-        if( empty($students) || empty($examScores) ){
+        if ( empty($students) || empty($examScores) )
+        {
             return ('Either students or exam scores are empty');
         }
 
         return View::make('grade.grade_assign', [
-            'exam' => $exam,
-            'examScores' => $examScores,
+            'exam'         => $exam,
+            'examScores'   => $examScores,
             'examMaxScore' => $examMaxScore,
-            'gradeTypes' => $gradeTypes,
-            'gradeCutoffs' => $gradeCutoffs
+            'gradeTypes'   => $gradeTypes,
+            'gradeCutoffs' => $gradeCutoffs,
         ]);
     }
 
@@ -186,9 +190,9 @@ class GradeController extends Controller
     protected function examGraded($questionItems)
     {
         $graded = false;
-        foreach ($questionItems as $questionItem)
+        foreach ( $questionItems as $questionItem )
         {
-            if ($questionItem->questionScore != null)
+            if ( $questionItem->questionScore != null )
             {
                 $graded = true;
                 break;
@@ -215,13 +219,13 @@ class GradeController extends Controller
         $gradeCutoffs = $this->gradeAssignmentDao->load_grade_min_scores_for_exam($exam);
 
         // if gradecutoffs aren't set, calculate them...
-        if (empty($gradeCutoffs))
+        if ( empty($gradeCutoffs) )
         {
             $gradeCutoffs = [];
-            foreach (GradeFactory::getDefaultCutoffsOfGrades() as $val)
+            foreach ( GradeFactory::getDefaultCutoffsOfGrades() as $val )
             {
                 // allow decimals if the exam has a very low maximum grade
-                if ($examMaxScore < 25)
+                if ( $examMaxScore < 25 )
                 {
                     $decRound = 1;
                 } else
@@ -251,30 +255,37 @@ class GradeController extends Controller
         //This will hold the grades which are not being assigned and slated for deletion if they were in the db
         $nonAssigned = [];
 
-        try {
+        try
+        {
             //Pull out each value to assign, make a grade object and push into $assignments
-            for ($i = 0; $i <= 12; $i++) {
+            for ( $i = 0; $i <= 12; $i++ )
+            {
                 //Check that the field has a value. If just try checking the value, may
                 //run into trouble with empty(0) for F grade.
-                if ($request->has(self::GRADE_ASSIGNMENT_FIELD_BASE . $i)) {
+                if ( $request->has(self::GRADE_ASSIGNMENT_FIELD_BASE . $i) )
+                {
                     $grade = GradeFactory::loadByOrder($i);
                     $minScore = $request->input(self::GRADE_ASSIGNMENT_FIELD_BASE . $i);
                     //push into array to be recorded
                     $assignments[] = ['minScore' => $minScore, 'grade' => $grade];
-                } else {
+                } else
+                {
                     //If a letter grade was not assigned, make note so any preexisting value can be removed
                     $nonAssigned[] = $i;
                 }
             }
 
             //Request validator already checked for consistency, so let's write to the db
-            foreach ($assignments as $assign) {
+            foreach ( $assignments as $assign )
+            {
                 $this->gradeAssignmentDao->record_grade_assignment($exam, $assign['grade'], $assign['minScore']);
             }
 
             //Delete any pre-existing grades which were not assigned on this request
-            if (!empty($nonAssigned)) {
-                foreach ($nonAssigned as $naOrder) {
+            if ( ! empty($nonAssigned) )
+            {
+                foreach ( $nonAssigned as $naOrder )
+                {
                     $grade = GradeFactory::loadByOrder($naOrder);
                     $this->gradeAssignmentDao->delete_grade_assignment($exam, $grade);
                 }
@@ -282,9 +293,9 @@ class GradeController extends Controller
 
             flash()->success('Grade assignments have been recorded');
 
-        }catch(\Exception $e)
+        } catch ( \Exception $e )
         {
-            Log::error('Problem recording grade assignments ' . $e->getMessage() );
+            Log::error('Problem recording grade assignments ' . $e->getMessage());
 
             flash()->error('There was a problem recording the grade assignments. Please try again. If the problem persists, please let us know');
         }
@@ -315,26 +326,33 @@ class GradeController extends Controller
      */
     public function index()
     {
+        //$this->dispatch(new UpdateAllStoredNumGraded());
+
+        $storedExamStatsDao = app()->make('App\Repositories\Exam\IStoredExamStatsRepository');
+        $numGradedDao = app()->make('App\Repositories\Exam\INumberGradedRepository');
+
         $exams = $this->examDao->load_all_exams();
         $numStudents = [];
         $numQuestions = [];
         $numGraded = [];
-        foreach ($exams as $exam)
+        foreach ( $exams as $exam )
         {
             $examId = $exam->getId();
-            $numStudents[$examId] = count($this->studentDao->load_students_by_exam($examId));
-            $numQuestions[$examId] = count($this->questionAssignmentDao->load_all_for_exam($examId));
+
+            $numStudents[ $examId ] = $storedExamStatsDao->getNumberStudents($exam);
+            $numQuestions[ $examId ] = $storedExamStatsDao->getNumberQuestions($exam);
+
             // I'd lik_e to have an indicator showing how many exams have been graded for each exam in the list.
             // Calculating and loading all the graded exams is a lot of work ( #students * #questions * #exams)
             // so maybe we should cache that value in the DB / redis.
-            $numGraded[$examId] = '--';
+            $numGraded[ $examId ] = $numGradedDao->getNumberGraded($exam);
         }
 
         return View::make('grade.grade_select_exam', [
-            'exams' => $exams,
-            'numStudents' => $numStudents,
+            'exams'        => $exams,
+            'numStudents'  => $numStudents,
             'numQuestions' => $numQuestions,
-            'numGraded' => $numGraded
+            'numGraded'    => $numGraded,
         ]);
     }
 
@@ -354,31 +372,31 @@ class GradeController extends Controller
         $maxQuestionScores = null;
 
         // return to grade select if 0 students or 0 questions
-        if (sizeof($students) == 0 || sizeof($questionAssignments) == 0)
+        if ( sizeof($students) == 0 || sizeof($questionAssignments) == 0 )
         {
             return redirect()->action('GradeController@index');
         }
 
-        foreach ($questionAssignments as $qAssignment)
+        foreach ( $questionAssignments as $qAssignment )
         {
             $qNumber = $qAssignment->getQuestionNumber();
             $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qNumber);
             // load maxQuestionScores
-            $maxQuestionScores[$qNumber] = $qAssignment->getQuestion()->getMaxScore();
+            $maxQuestionScores[ $qNumber ] = $qAssignment->getQuestion()->getMaxScore();
 
         }
 
         // load all current student scores & comments
         $allElementAssignments = $this->elementAssignmentDao->load_by_exam($exam->getId());
-        foreach ($students as $student)
+        foreach ( $students as $student )
         {
             // load element scores & element comments for each student
             $elementScores = null;
             $elementComments = null;
-            foreach ($allElementAssignments as $eleAssignment)
+            foreach ( $allElementAssignments as $eleAssignment )
             {
                 $aCommentScore = $this->elementScoreDao->load($eleAssignment->getElementAssignmentId(), $student->getId());
-                if (isset($aCommentScore->score))
+                if ( isset($aCommentScore->score) )
                 {
                     $aScore = $aCommentScore->getScore();
                 } else
@@ -388,7 +406,7 @@ class GradeController extends Controller
                 $elementScores[] = $aScore;
 
                 // grab the student-specific comment for this element
-                if (isset($aCommentScore->comment_text))
+                if ( isset($aCommentScore->comment_text) )
                 {
                     $aCommentText = $aCommentScore->comment_text;
                 } else
@@ -402,10 +420,10 @@ class GradeController extends Controller
 
             // load question scores for each student
             $questionScores = null;
-            foreach ($questionAssignments as $questionAssignment)
+            foreach ( $questionAssignments as $questionAssignment )
             {
                 $aScore = $this->questionScoreDao->load($questionAssignment->getId(), $student->getId());
-                if (isset($aScore->score))
+                if ( isset($aScore->score) )
                 {
                     $aScore = $aScore->getScore();
                 } else
@@ -417,7 +435,7 @@ class GradeController extends Controller
             $studentQuestionScores[] = $questionScores;
 
             // load grade times for each student
-            if (isset ($this->gradingTimeDao->load($exam->getId(), $student->getId())->seconds))
+            if ( isset ($this->gradingTimeDao->load($exam->getId(), $student->getId())->seconds) )
             {
                 $examGradingTimes[] = $this->gradingTimeDao->load($exam->getId(), $student->getId())->seconds;
             } else
@@ -428,12 +446,12 @@ class GradeController extends Controller
 
         // load stock comments for each element
         $stockComments = [];
-        foreach ($allElements as $aQuestion)
+        foreach ( $allElements as $aQuestion )
         {
-            foreach ($aQuestion as $element)
+            foreach ( $aQuestion as $element )
             {
                 $defaultComments = null;
-                for ($i = 0; $i < count(Comment::$valences); $i++)
+                for ( $i = 0; $i < count(Comment::$valences); $i++ )
                 {
                     $defaultComments[] = $this->elementDao->loadCommentByElementIdAndValence($element->getId(), $i)->getBody();
                 }
@@ -442,23 +460,23 @@ class GradeController extends Controller
         }
 
         $studentGrades = [];
-        foreach($students as $s)
+        foreach ( $students as $s )
         {
             $studentGrades[] = 'Letter grade';
         }
 
         return View::make('grade.grade_exam')->with([
-                                                        'exam' => $exam,
-                                                        'students' => $students,
-                                                        'questionAssignments' => $questionAssignments,
-                                                        'maxQuestionScores' => $maxQuestionScores,
-                                                        'allElements' => $allElements,
-                                                        'stockComments' => $stockComments,
-                                                        'examGradingTimes' => $examGradingTimes,
-                                                        'studentElementScores' => $studentElementScores,
+                                                        'exam'                   => $exam,
+                                                        'students'               => $students,
+                                                        'questionAssignments'    => $questionAssignments,
+                                                        'maxQuestionScores'      => $maxQuestionScores,
+                                                        'allElements'            => $allElements,
+                                                        'stockComments'          => $stockComments,
+                                                        'examGradingTimes'       => $examGradingTimes,
+                                                        'studentElementScores'   => $studentElementScores,
                                                         'studentElementComments' => $studentElementComments,
-                                                        'studentQuestionScores' => $studentQuestionScores,
-                                                        'studentGrades' => $studentGrades
+                                                        'studentQuestionScores'  => $studentQuestionScores,
+                                                        'studentGrades'          => $studentGrades,
                                                     ]);
     }
 
@@ -475,7 +493,7 @@ class GradeController extends Controller
         try
         {
             //Don't even get started if there's no student id
-            if (!$request->has('student_id'))
+            if ( ! $request->has('student_id') )
             {
                 throw new \Exception('No student id set in grade request');
             }
@@ -485,31 +503,31 @@ class GradeController extends Controller
             $itemId = null;
 
             //If the request is to record a question score, it follows this path
-            if ($request->has('question_assignment_id'))
+            if ( $request->has('question_assignment_id') )
             {
                 $this->dao = app()->make('App\Repositories\Score\IQuestionScoreRepository');
                 $itemId = $request->input('question_assignment_id');
             }
             //If it is to record an element score, it follows this path
-            if ($request->has('element_id'))
+            if ( $request->has('element_id') )
             {
                 $this->dao = app()->make('App\Repositories\Score\IElementScoreRepository');
                 $itemId = $this->elementAssignmentDao->load_element_assignment_by_element($exam->getId(),
                                                                                           $request->input('element_id'))->getId();
 
                 // if a comment has text with it, record that as well.
-                if ($request->exists('comment_text'))
+                if ( $request->exists('comment_text') )
                 {
                     $this->dao->recordCommentText($itemId, $studentId, $request->input('comment_text'));
                 }
             }
 
             // record score fot the question or comment
-            if ($request->exists('score'))
+            if ( $request->exists('score') )
             {
                 // if the score returns as 'NaN' that item's score has been removed, so delete from DB
                 $score = $request->input('score');
-                if ($score == NAN)
+                if ( $score == NAN )
                 {
                     //$this->dao->deleteScore
                 } else
@@ -520,7 +538,7 @@ class GradeController extends Controller
 
             // Check if the exam has been released.
             // A released exam will have its compiled feedback updated  for this student
-            if ($exam->getReleased())
+            if ( $exam->getReleased() )
             {
                 $reportController = app()->make('App\Http\Controllers\ReportController');
                 $reportController->updateFeedbackForStudent($exam, $studentId);
@@ -528,10 +546,13 @@ class GradeController extends Controller
 
             $this->recordTime($exam, $request);
 
+            $this->dispatch(new UpdateStoredNumGraded($exam));
+
             return $this->sendAjaxSuccess();
 
-        } catch (\Exception $e)
+        } catch ( \Exception $e )
         {
+            throw $e;
             return $this->sendAjaxFailure();
 
         }
@@ -548,7 +569,7 @@ class GradeController extends Controller
         //Check that user owns the exam
         $this->authorize('access-object', $exam);
 
-        if ($request->has('student_id') && $request->has('time'))
+        if ( $request->has('student_id') && $request->has('time') )
         {
             $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
             $time = $dao->record($exam->getId(), $request->input('student_id'), $request->input('time'));
@@ -568,14 +589,14 @@ class GradeController extends Controller
         //Check that user owns the exam
         $this->authorize('access-object', $exam);
 
-        if ($request->has('question_assignment_id'))
+        if ( $request->has('question_assignment_id') )
         {
             $this->questionScoreDao->deleteScore($request['question_assignment_id'], $request['student_id']);
         }
 
         // at this point, this isn't used as there is no means to reset an element score to ungraded.
         // Since the grade page doesn't store element assignment info, the element id must be used.
-        if ($request->has('element_id'))
+        if ( $request->has('element_id') )
         {
             $eAssignid = $this->elementAssignmentDao->load_element_assignment_by_element($exam->getId(), $request['element_assignment_id']);
             $this->elementScoreDao->deleteScore($eAssignid, $request['student_id']);
@@ -594,7 +615,7 @@ class GradeController extends Controller
         //Check that user owns the exam
         $this->authorize('access-object', $exam);
 
-        if ($request->has('student_id'))
+        if ( $request->has('student_id') )
         {
             $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
             $time = $dao->load($exam->getId(), $request->input('student_id'));

@@ -277,7 +277,7 @@ test("makeNotecardSelect()", function(){
 module("inputScripts | start and stop listeners");
 
 test("initializeQuestionSelection", function(){
-    //@todo Setup tests for intialize questionselector
+    //@todo AsyncStorage tests for intialize questionselector
     $.mockjaxClear();
    $("#qunit-fixture").append("<input id='testTarget' type='checkbox' class='.qSelect' value='2' name='qSelect' />");
    $("#qunit-fixture").append("<div id='optionalQ' class='optionalQ'><div id='questionScore' class='questionScore'></div></div> ");

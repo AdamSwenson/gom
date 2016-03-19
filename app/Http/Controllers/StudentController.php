@@ -14,6 +14,7 @@ use App\HTTP\Controllers\helpers\cleaning\CleanerFactory;
 use App\HTTP\Controllers\helpers\cleaning\ICleanerFactory;
 use App\Http\Requests\StudentRequest;
 use App\Jobs\ImportStudentsFromCsv;
+use App\Jobs\AsyncStorage\UpdateStoredExamStats;
 use App\Kumi;
 use App\Repositories\Student\IStudentRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
@@ -108,6 +109,9 @@ class StudentController extends Controller
             }
         }
 
+        //asynchronously update the stored list of question counts etc
+        $this->dispatch(new UpdateStoredExamStats($exam));
+
         return view('setup.edit_roster')->with(['exam' => $exam, 'students' => $students]);
     }
 
@@ -184,6 +188,9 @@ class StudentController extends Controller
 
         //Do the recording, deleting, et cetera
         $allStudents = $this->dao->update_all($exam, $request);
+
+        //asynchronously update the stored list of student counts etc
+        $this->dispatch(new UpdateStoredExamStats($exam));
 
         /* Handle redirection depending on whether records were invalid */
         if ( !empty($this->dao->studentValidator->invalidRecords) )

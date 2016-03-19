@@ -46,7 +46,7 @@
     });
 
     QUnit.testStart(function (data) {
-        // Setup default module if no module was specified
+        // AsyncStorage default module if no module was specified
         if (!currentModule) {
             currentModule = {
                 name: data.module || 'default',
