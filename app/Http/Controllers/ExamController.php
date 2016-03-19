@@ -72,7 +72,6 @@ class ExamController extends Controller
             $numberOfQuestions[$examId] = $numberQuestions;
         }
 
-        //dd($numberOfStudents);
         return View::make('setup.select_exam', [
             'exams' => $exams,
             'numberOfStudents' => $numberOfStudents,
