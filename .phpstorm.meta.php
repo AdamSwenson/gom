@@ -3,7 +3,7 @@ namespace PHPSTORM_META {
 
    /**
     * PhpStorm Meta file, to provide autocomplete information for PhpStorm
-    * Generated on 2016-03-15.
+    * Generated on 2016-03-21.
     *
     * @author Barry vd. Heuvel <barryvdh@gmail.com>
     * @see https://github.com/barryvdh/laravel-ide-helper
@@ -70,6 +70,8 @@ namespace PHPSTORM_META {
             'StudentsForExamGenerator' instanceof \App\Repositories\Student\StudentsForExamGenerator,
             'App\HTTP\Controllers\ReportController' instanceof \App\Http\Controllers\ReportController,
             'App\Repositories\Exam\INumberGradedRepository' instanceof \App\Repositories\Exam\NumberGradedRepository,
+            'App\Repositories\Exam\IStoredExamStatsRepository' instanceof \App\Repositories\Exam\StoredExamStatsRepository,
+            'App\Repositories\Utilities\IBackupFlagRepository' instanceof \App\Repositories\Utilities\BackupFlagRepository,
             'debugbar' instanceof \Barryvdh\Debugbar\LaravelDebugbar,
             'command.debugbar.clear' instanceof \Barryvdh\Debugbar\Console\ClearCommand,
             'command.ide-helper.generate' instanceof \Barryvdh\LaravelIdeHelper\Console\GeneratorCommand,
@@ -221,6 +223,8 @@ namespace PHPSTORM_META {
             'StudentsForExamGenerator' instanceof \App\Repositories\Student\StudentsForExamGenerator,
             'App\HTTP\Controllers\ReportController' instanceof \App\Http\Controllers\ReportController,
             'App\Repositories\Exam\INumberGradedRepository' instanceof \App\Repositories\Exam\NumberGradedRepository,
+            'App\Repositories\Exam\IStoredExamStatsRepository' instanceof \App\Repositories\Exam\StoredExamStatsRepository,
+            'App\Repositories\Utilities\IBackupFlagRepository' instanceof \App\Repositories\Utilities\BackupFlagRepository,
             'debugbar' instanceof \Barryvdh\Debugbar\LaravelDebugbar,
             'command.debugbar.clear' instanceof \Barryvdh\Debugbar\Console\ClearCommand,
             'command.ide-helper.generate' instanceof \Barryvdh\LaravelIdeHelper\Console\GeneratorCommand,
@@ -372,6 +376,8 @@ namespace PHPSTORM_META {
             'StudentsForExamGenerator' instanceof \App\Repositories\Student\StudentsForExamGenerator,
             'App\HTTP\Controllers\ReportController' instanceof \App\Http\Controllers\ReportController,
             'App\Repositories\Exam\INumberGradedRepository' instanceof \App\Repositories\Exam\NumberGradedRepository,
+            'App\Repositories\Exam\IStoredExamStatsRepository' instanceof \App\Repositories\Exam\StoredExamStatsRepository,
+            'App\Repositories\Utilities\IBackupFlagRepository' instanceof \App\Repositories\Utilities\BackupFlagRepository,
             'debugbar' instanceof \Barryvdh\Debugbar\LaravelDebugbar,
             'command.debugbar.clear' instanceof \Barryvdh\Debugbar\Console\ClearCommand,
             'command.ide-helper.generate' instanceof \Barryvdh\LaravelIdeHelper\Console\GeneratorCommand,
@@ -523,6 +529,8 @@ namespace PHPSTORM_META {
             'StudentsForExamGenerator' instanceof \App\Repositories\Student\StudentsForExamGenerator,
             'App\HTTP\Controllers\ReportController' instanceof \App\Http\Controllers\ReportController,
             'App\Repositories\Exam\INumberGradedRepository' instanceof \App\Repositories\Exam\NumberGradedRepository,
+            'App\Repositories\Exam\IStoredExamStatsRepository' instanceof \App\Repositories\Exam\StoredExamStatsRepository,
+            'App\Repositories\Utilities\IBackupFlagRepository' instanceof \App\Repositories\Utilities\BackupFlagRepository,
             'debugbar' instanceof \Barryvdh\Debugbar\LaravelDebugbar,
             'command.debugbar.clear' instanceof \Barryvdh\Debugbar\Console\ClearCommand,
             'command.ide-helper.generate' instanceof \Barryvdh\LaravelIdeHelper\Console\GeneratorCommand,

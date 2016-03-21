@@ -41,6 +41,7 @@ class Kernel extends ConsoleKernel
                 //only backup if on production server and if someone has logged in recently
                 if ( env('APP_ENV') == 'production' && $this->flagDao->isFlagged() )
                 {
+                    Log::info('should run');
                     return true;
                 }
             })
