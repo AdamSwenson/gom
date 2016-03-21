@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\Event;
 use App\Events\NewUserSignedUpEvent;
+use App\Events\UserLogInEvent;
 use App\Http\Requests\AuthRequest;
 use App\User;
 use App\Http\Requests\Request;
@@ -43,7 +45,7 @@ class AuthController extends Controller
         $this->middleware('guest', ['except' => 'getLogout']);
         $this->middleware('restrictRegistration');
     }
-
+    
     /**
      * Get a validator for an incoming registration request.
      *

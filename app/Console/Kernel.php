@@ -2,11 +2,14 @@
 
 namespace App\Console;
 
+use App\Repositories\Utilities\IBackupFlagRepository;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
+    public $flagDao;
+
     /**
      * The Artisan commands provided by your application.
      *
@@ -19,12 +22,38 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @param  \Illuminate\Console\Scheduling\Schedule $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('inspire')
-                 ->hourly();
+            ->hourly();
+
+        $this->flagDao = app()->make(IBackupFlagRepository::class);
+        //backup db to drop box
+        $schedule->command($this->createBackupCommandString())
+            ->everyFiveMinutes()
+            ->when(function ()
+            {
+                Log::info('Scheduled command called');
+                //only backup if on production server and if someone has logged in recently
+                if ( env('APP_ENV') == 'production' && $this->flagDao->isFlagged() )
+                {
+                    return true;
+                }
+            })
+            ->after(function ()
+            {
+                //if it was flagged, remove the flag
+                $this->flagDao->removeFlag();
+            });
+    }
+
+    public function createBackupCommandString()
+    {
+        $date = Carbon::now()->toDateString();
+
+        return "db:backup --database=mysql --destination=dropbox --destinationPath=/{$date}-gom-backup --compression=gzip";
     }
 }

@@ -99,5 +99,7 @@ class StorageServiceProvider extends ServiceProvider
         $this->app->bind('App\Repositories\Exam\INumberGradedRepository', 'App\Repositories\Exam\NumberGradedRepository');
         $this->app->bind('App\Repositories\Exam\IStoredExamStatsRepository', 'App\Repositories\Exam\StoredExamStatsRepository');
 
+        $this->app->bind('App\Repositories\Utilities\IBackupFlagRepository', 'App\Repositories\Utilities\BackupFlagRepository');
+
     }
 }

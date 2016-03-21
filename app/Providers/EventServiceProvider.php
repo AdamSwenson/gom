@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Events\UserLoginEvent;
+use App\Listeners\FlagForDatabaseBackupListener;
+use App\Listeners\UserLoginListener;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -37,7 +41,12 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\UnreleaseExamEvent' =>
             [
                 'App\Listeners\RemoveStudentAccessListener'
-            ]
+            ],
+
+        UserLoginEvent::class =>
+            [
+                UserLoginListener::class,
+        ]
     ];
 
     /**
@@ -49,6 +58,12 @@ class EventServiceProvider extends ServiceProvider
     public function boot(DispatcherContract $events)
     {
         parent::boot($events);
+
+        // Fired on successful logins...
+        $events->listen('auth.login', function ($user, $remember) {
+            Event::fire(new UserLoginEvent());
+        });
+
 
         //
     }

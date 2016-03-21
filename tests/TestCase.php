@@ -1,5 +1,9 @@
 <?php
 
+
+use App\Exam;
+use App\User;
+
 class TestCase extends Illuminate\Foundation\Testing\TestCase
 {
 
@@ -10,7 +14,14 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      */
     protected $baseUrl = 'http://localhost';
 
+    /** @var  \Faker\Factory */
     public $faker;
+
+    /** @var  User */
+    public $user;
+
+    /** @var  Exam */
+    public $exam;
 
     public static $userid = 1;
 
@@ -22,7 +33,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
     public function createApplication()
     {
         // Temporarily increase memory limit to 256MB
-        ini_set('memory_limit','300M');
+        ini_set('memory_limit', '300M');
 
         //        $this->user = \UserQuery::create()->filterById(self::$userid)->findOneOrCreate();
         $this->faker = \Faker\Factory::create();
@@ -30,10 +41,9 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 //        $path = base_path();
 //        require_once $path . '/vendor/autoload.php';
 
-        $app = require __DIR__.'/../bootstrap/app.php';
+        $app = require __DIR__ . '/../bootstrap/app.php';
 
         $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
-
 
         \Auth::loginUsingId(self::$userid);
 
@@ -47,8 +57,9 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      */
     public function createMock($class)
     {
-        $mock = Mockery::mock($class);
-        $this->app->instance($class, $mock);
+        $mock = \Mockery::mock($class);
+        $this->registerMock($class, $mock);
+
         return $mock;
     }
 
@@ -57,7 +68,8 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      * @param $className
      * @param $mockObject
      */
-    public function registerMock($className, $mockObject){
+    public function registerMock($className, $mockObject)
+    {
         $this->app->instance($className, $mockObject);
     }
 
@@ -69,7 +81,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
     public function tearDown()
     {
         parent::tearDown();
-    Mockery::close();
+        \Mockery::close();
     }
 
 
