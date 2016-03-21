@@ -33,23 +33,26 @@ class Kernel extends ConsoleKernel
             ->hourly();
 
         $this->flagDao = app()->make(IBackupFlagRepository::class);
+        
         //backup db to drop box
         $schedule->command($this->createBackupCommandString())
             ->everyFiveMinutes()
             ->when(function ()
             {
-                Log::info('Scheduled command called');
+                Log::info('Scheduled backup command called');
                 //only backup if on production server and if someone has logged in recently
                 if ( env('APP_ENV') == 'production' && $this->flagDao->isFlagged() )
                 {
-                    Log::info('should run');
+                    Log::info('Scheduled backup command will run');
                     return true;
                 }
             })
             ->after(function ()
             {
                 //if it was flagged, remove the flag
-                $this->flagDao->removeFlag();
+                if($this->flagDao->removeFlag()){
+                    Log::info('Backup flag removed');                    
+                }
             });
     }
 
