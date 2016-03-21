@@ -18,10 +18,10 @@
         </div>
 
 
-
         <div class="col-xs-1">
             <a href="{{ url('/about') }}">About</a>
         </div>
+
         <div class="col-xs-1"></div>
     </div>
 
