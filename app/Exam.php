@@ -301,43 +301,5 @@ class Exam extends BaseModel
 //        parent::boot();
 //    }
 
-//
-//    /**
-//     * Handles legacy and alias method names.
-//     *
-//     * @param  string $method
-//     * @param  array $parameters
-//     * @return mixed
-//     * @throws \Exception
-//     */
-//    public function __call($method, $parameters)
-//    {
-//        switch($method)
-//        {
-//            case 'getExamtopic':
-//                $this->getExamName();
-//                break;
-//            case 'getExamterm':
-//                $this->getTerm();
-//                break;
-//            case 'getExamyear':
-//                $this->getYear();
-//                break;
-//            case 'getQuestionname':
-//                $this->getQuestionName();
-//                break;
-//            case 'setExamtopic':
-//                $this->setName($parameters);
-//                break;
-//            case 'setExamyear':
-//                $this->setYear($parameters);
-//                break;
-//            case 'setExamterm':
-//                $this->setTerm($parameters);
-//                break;
-//            default:
-//                throw new \Exception('bad method request');
-//        }
-//    }
 }
 

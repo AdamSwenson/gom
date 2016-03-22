@@ -124,6 +124,7 @@
         var activeTab = 'navSetup';
         var forwardNavTarget = 'editExam';
         var backNavTarget = '{{ $prevAction }}';
+        var baseUrl = '{{ url() }}';
     </script>
     <script language="javascript" type="text/javascript" src="{{ asset('js/roster-edit-package.js') }}"></script>
 

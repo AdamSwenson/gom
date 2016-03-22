@@ -55,6 +55,10 @@ $("#forwardNavButton").on('click', function () {
     submitAndNavigateTo(forwardNavTarget);
 });
 
+function rosterHelpUrl() {
+    return baseUrl + '/help#rosterSetup';
+}
+
 /*
  THINGS TODO:
  - column swapping
@@ -63,7 +67,7 @@ $("#forwardNavButton").on('click', function () {
 
 function showImportHelp() {
     bootbox.dialog({
-        message: "Student roster files should be formatted as a .CSV file type.<br/>" + "Each row holds one student's data, with the following information:<br/>" + "Last name, first name, ID (optional), email (optional)<br/>" + "Using these 4 fields as the first row of the file, though not required,<br/>" + "will make it more likely that the data can be imported correctly.",
+        message: "<p>Student roster files should be formatted as a .CSV file type.</p>" + "<p>Each row holds one student's data, with the following information:</p>" + "<ul><li>Last name</li> <li>first name</li> <li>ID (optional)</li> <li>email (optional)</li></ul>" + "<p>Using these 4 fields as the first row of the file, though not required, " + "will make it more likely that the data can be imported correctly.</p>" + "For more detailed instructions, please see <a href='" + rosterHelpUrl() + "'>" + rosterHelpUrl() + "</a>",
         title: "Import Help",
         buttons: {
             success: {
