@@ -35,8 +35,9 @@ class Kernel extends ConsoleKernel
         $this->flagDao = app()->make(IBackupFlagRepository::class);
         
         //backup db to drop box
-        $schedule->command($this->createBackupCommandString())
-            ->everyFiveMinutes()
+        $schedule
+            ->command($this->createBackupCommandString())
+            ->daily()
             ->when(function ()
             {
                 Log::info('Scheduled backup command called');
