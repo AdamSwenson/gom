@@ -8,25 +8,79 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url('/') }}" style="color:white;">
-                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> gradeomatic</span>
-                | <small>grade faster. teach better.</small>
+            <a class="navbar-brand navItem"
+               href="{{ url('/') }}">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> gradeomatic</span>
+                |
+                <small>grade faster. teach better.</small>
             </a>
         </div>
-        <div class="collapse navbar-collapse" id="navbar-ex-collapse">
+        <div class="collapse navbar-collapse"
+             id="navbar-ex-collapse">
+
             <ul class="nav navbar-nav navbar-right">
-                <li id="navSetup" title="Create or edit an exam">
-                    <a href="{{url('exam')}}" style="color:white;">Setup</a>
+                <li id="navSetup"
+                    title="Create or edit an exam">
+                    <a href="{{url('exam')}}"
+                       class="navItem">Setup</a>
                 </li>
-                <li id="navGrade" title="Grade an exam">
-                    <a href="{{url('grade')}}" style="color:white;">Grade</a>
+
+                <li id="navGrade"
+                    title="Grade an exam">
+                    <a href="{{url('grade')}}"
+                       class="navItem">Grade</a>
                 </li>
-                <li id="navReport" title="Reports, Analytics and Student Feedback">
-                    <a href="{{url('report')}}" style="color:white;">Reports</a>
+
+                <li id="navReport"
+                    title="Reports, Analytics and Student Feedback">
+                    <a href="{{url('report')}}"
+                       class="navItem">Reports</a>
                 </li>
-                <li id="navHelp" title="Help">
-                    <a href="{{url('help')}}" style="color:white;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>
+                {{--<li id="navHelp"--}}
+                {{--title="Help" >--}}
+                {{--<a href="{{url('help')}}" style="color:white;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>--}}
+                {{--</li>--}}
+
+                <li id="navHelp"
+                    title="Help"
+                    role="presentation"
+                    class="dropdown"
+                >
+                    <a class="dropdown-toggle navItem"
+                       data-toggle="dropdown"
+                       href="#"
+                       role="button"
+                       aria-haspopup="true"
+                       aria-expanded="false"
+                    >
+                        <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{{ url('help') }}">Help</a>
+                        </li>
+                        <li>
+                            <a href="{{ url('info/faq') }}#faq">FAQ</a>
+                        </li>
+                        <li role="separator" class="divider"></li>
+                        <li>
+                            <a href="{{ url('info/instructions') }}">Instructions</a>
+                        </li>
+                        <li>
+                            <a href="{{ url('info/tutorials') }}">Video tutorials</a>
+                        </li>
+                        <li role="separator" class="divider"></li>
+                        <li>
+                            <a href="{{ url('contact') }}">Contact</a>
+                        </li>
+                        <li>
+                            <a href="{{ url('about') }}">About</a>
+                        </li>
+                    </ul>
                 </li>
+
+
                 {{--
                 <li id="navAccount">
                     <a href="{{url('account')}}" title="Account & Settings " style="color:white;">
@@ -34,7 +88,9 @@
                 </li>
                 --}}
                 <li id="navLogout">
-                    <a href="{{url('auth/logout')}}" title="Log Out" style="color:white;">Log out</a>
+                    <a href="{{url('auth/logout')}}"
+                       title="Log Out"
+                       class="navItem"><span class="glyphicon glyphicon-off"></span></a>
                 </li>
             </ul>
         </div>

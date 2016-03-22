@@ -713,7 +713,7 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
 			}
 
 			/*************************************************
-   						AsyncStorage
+   						Setup
    	**************************************************/
 			this.eventToCallbackMap = {};
 			this.sliderElem.id = this.options.id;
@@ -19553,7 +19553,7 @@ var component = {
   params: ['keep-alive', 'transition-mode', 'inline-template'],
 
   /**
-   * AsyncStorage. Two possible usages:
+   * Setup. Two possible usages:
    *
    * - static:
    *   <comp> or <div v-component="comp">
@@ -20305,7 +20305,7 @@ p$1.getCssTransitionType = function (className) {
 };
 
 /**
- * AsyncStorage a CSS transitionend/animationend callback.
+ * Setup a CSS transitionend/animationend callback.
  *
  * @param {String} event
  * @param {Function} cb
@@ -21551,7 +21551,7 @@ function stateMixin (Vue) {
   });
 
   /**
-   * AsyncStorage the scope of an instance, which contains:
+   * Setup the scope of an instance, which contains:
    * - observed data
    * - computed properties
    * - user methods
@@ -21707,7 +21707,7 @@ function stateMixin (Vue) {
   };
 
   /**
-   * AsyncStorage computed properties. They are essentially
+   * Setup computed properties. They are essentially
    * special getter/setters
    */
 
@@ -21749,7 +21749,7 @@ function stateMixin (Vue) {
   }
 
   /**
-   * AsyncStorage instance methods. Methods must be bound to the
+   * Setup instance methods. Methods must be bound to the
    * instance since they might be passed down as a prop to
    * child components.
    */
@@ -21781,7 +21781,7 @@ var eventRE = /^v-on:|^@/;
 
 function eventsMixin (Vue) {
   /**
-   * AsyncStorage the instance's option events & watchers.
+   * Setup the instance's option events & watchers.
    * If the value is a string, we pull it from the
    * instance's methods by name.
    */
@@ -21871,7 +21871,7 @@ function eventsMixin (Vue) {
   }
 
   /**
-   * AsyncStorage recursive attached/detached calls
+   * Setup recursive attached/detached calls
    */
 
   Vue.prototype._initDOMHooks = function () {
@@ -22066,7 +22066,7 @@ Directive.prototype._bind = function () {
 };
 
 /**
- * AsyncStorage all param attributes, e.g. track-by,
+ * Setup all param attributes, e.g. track-by,
  * transition-mode, etc...
  */
 
@@ -22097,7 +22097,7 @@ Directive.prototype._setupParams = function () {
 };
 
 /**
- * AsyncStorage a watcher for a dynamic param.
+ * Setup a watcher for a dynamic param.
  *
  * @param {String} key
  * @param {String} expression

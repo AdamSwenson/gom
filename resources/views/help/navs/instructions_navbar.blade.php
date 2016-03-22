@@ -1,4 +1,5 @@
 <li class="">
+
     <a href="#{{\App\ViewTools\HelpLinks::$instructSectionSetup['id']}}">Setup</a>
     <ul class="nav nav-stacked">
         <li>

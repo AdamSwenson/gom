@@ -14,10 +14,11 @@
 @endsection
 
 @section('body')
-    <h3><span class="glyphicon glyphicon-globe"></span> About</h3>
+
     <div class="row">
-        <div class="col-lg-3"></div>
-        <div class="col-lg-6">
+        <div class="col-md-3"></div>
+        <div class="col-md-6 text-justify">
+            <h3><span class="glyphicon glyphicon-globe"></span> About</h3>
             @include('help.components_help.intro_note')
         </div>
         <div class="col-lg-3"></div>
@@ -26,6 +27,8 @@
 
 
 @section('jsArea')
-
-
+    <script>
+        var activeTab = 'navHelp';
+    </script>
+    <script src="{{ asset('js/common-package.js') }}"></script>
 @endsection

@@ -12318,6 +12318,9 @@ button.close {
 .pager {
   margin-top: 0; }
 
+.navItem {
+  color: white; }
+
 .table th {
   border: none; }
 

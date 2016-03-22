@@ -5,12 +5,12 @@
 @endsection
 
 @section('mainText')
-    <div class="row">
-        <div class="col-lg-6">
-            @include('help.components_help.intro_note')
-        </div>
-        <div class="col-lg-6"></div>
-    </div>
+    {{--<div class="row">--}}
+        {{--<div class="col-lg-6">--}}
+            {{--@include('help.components_help.intro_note')--}}
+        {{--</div>--}}
+        {{--<div class="col-lg-6"></div>--}}
+    {{--</div>--}}
     <section id="{{\App\ViewTools\HelpLinks::$instructSectionOverview['id']}}" class="group">
         <h2>Overview</h2>
 
