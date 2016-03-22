@@ -279,7 +279,7 @@ class ReportController extends Controller
     public function showExams()
     {
         $exams = $this->examDao->load_all_exams();
-        return view('reports.exam_controls', compact('exams'));
+        return view('reports.exam_controls', ['exams' => $exams]);
     }
 
     /**

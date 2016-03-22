@@ -16,8 +16,6 @@ var Vue = require('vue');
 //dev
 Vue.config.debug = true;
 
-//TODO Once this is ready, change the release request methods to POST
-
 new Vue({
     el: '#app',
 
@@ -48,11 +46,11 @@ new Vue({
 
     methods: {
         releaseRoute: function releaseRoute(examId) {
-            return "/report/" + examId + "/release";
+            return this.baseUrl + "/report/" + examId + "/release";
         },
 
         hideRoute: function hideRoute(examId) {
-            return "/report/" + examId + "/unrelease";
+            return this.baseUrl + "/report/" + examId + "/unrelease";
         },
         /**
          * Make the request to server to release the exam.
@@ -71,8 +69,9 @@ new Vue({
             var path = this.releaseRoute(examId);
             $.ajax({
                 url: path,
-                type: 'GET',
+                type: "POST",
                 success: function success() {
+                    window.console.log('j');
                     me.notifyReleaseSuccess(examId);
                 },
                 error: function error() {
@@ -92,7 +91,7 @@ new Vue({
             var path = this.hideRoute(examId);
             $.ajax({
                 url: path,
-                type: 'GET',
+                type: "POST",
                 success: function success() {
                     me.notifyHideSuccess(examId);
                 },
@@ -134,7 +133,14 @@ new Vue({
 
     directives: {},
 
-    ready: function ready() {}
+    ready: function ready() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        window.console.log('examButtons ready');
+    }
 });
 
 },{"./components/examButtonsDropdown.js":20,"./components/examReleaseToggle.js":21,"./components/reportExamButtons.js":22,"bootstrap":4,"jquery":17,"vue":19}],2:[function(require,module,exports){
@@ -23286,18 +23292,19 @@ module.exports = {
     },
 
     computed: {
-        'analyticsTarget': function analyticsTarget() {
+        analyticsTarget: function analyticsTarget() {
             return this.baseUrl + '/report/' + this.examId + '/analytics';
         },
 
-        'backupTarget': function backupTarget() {
+        backupTarget: function backupTarget() {
             return this.baseUrl + '/backup/' + this.examId;
         },
-        'studentControlsTarget': function studentControlsTarget() {
+
+        studentControlsTarget: function studentControlsTarget() {
             return this.baseUrl + '/report/' + this.examId + '/students';
         },
 
-        'qualityControlsTarget': function qualityControlsTarget() {
+        qualityControlsTarget: function qualityControlsTarget() {
             return this.baseUrl + '/report/' + this.examId + '/qualitycontrol';
         }
     }
@@ -23336,14 +23343,14 @@ module.exports = {
                 checked: null
             },
             onStateText: "<span class='glyphicon glyphicon-lock' aria-hidden='true'></span> Hide exam from students",
-            offStateText: '<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Release exam to students',
+            offStateText: "<span class='glyphicon glyphicon-envelope' aria-hidden='true'></span> Release exam to students",
             buttonSize: "large",
             buttonWidth: 250,
             onStyle: "warning",
             offStyle: "primary",
             confirmMessages: {
                 release: {
-                    initial: "<p>Releasing this exam will e-mail all students \n their grades and personalized feedback.</p> <p>Do you wish to continue?</p>",
+                    initial: "<p>Releasing this exam will e-mail all students their grades and personalized feedback.</p> <p>Do you wish to continue?</p>",
 
                     reRelease: "<p>Re-releasing this exam sends all students an additional message informing them that exam grades or comments may have changed.</p> <p>Do you wish to continue?</p>"
                 },
@@ -23352,8 +23359,8 @@ module.exports = {
                 }
             },
             successMessages: {
-                release: "All students have been e-mailed!",
-                hide: "All student access to the exam has been removed!"
+                release: "<p>All students have been e-mailed!</p>",
+                hide: "<p>All student access to the exam has been removed!</p>"
             },
             errorMessages: {
                 release: "<p>Sorry, there was a problem releasing this exam!</p><p>Please try again.</p>",

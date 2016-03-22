@@ -20,18 +20,19 @@ module.exports = {
     },
 
     computed: {
-        'analyticsTarget': function () {
+        analyticsTarget: function () {
             return this.baseUrl + '/report/' + this.examId + '/analytics';
         },
 
-        'backupTarget': function () {
+        backupTarget: function () {
             return this.baseUrl + '/backup/' + this.examId
         },
-        'studentControlsTarget': function () {
+
+        studentControlsTarget: function () {
             return this.baseUrl + '/report/' + this.examId + '/students';
         },
 
-        'qualityControlsTarget': function () {
+        qualityControlsTarget: function () {
             return this.baseUrl + '/report/' + this.examId + '/qualitycontrol';
         }
     }

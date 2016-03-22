@@ -31,14 +31,14 @@ module.exports = {
                 checked: null
             },
             onStateText: "<span class='glyphicon glyphicon-lock' aria-hidden='true'></span> Hide exam from students",
-            offStateText: '<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Release exam to students',
+            offStateText: "<span class='glyphicon glyphicon-envelope' aria-hidden='true'></span> Release exam to students",
             buttonSize: "large",
             buttonWidth: 250,
             onStyle: "warning",
             offStyle: "primary",
             confirmMessages: {
                 release: {
-                    initial: "<p>Releasing this exam will e-mail all students \n their grades and personalized feedback.</p> <p>Do you wish to continue?</p>",
+                    initial: "<p>Releasing this exam will e-mail all students their grades and personalized feedback.</p> <p>Do you wish to continue?</p>",
 
                     reRelease: "<p>Re-releasing this exam sends all students an additional message informing them that exam grades or comments may have changed.</p> <p>Do you wish to continue?</p>",
                 },
@@ -47,8 +47,8 @@ module.exports = {
                 }
             },
             successMessages: {
-                release: "All students have been e-mailed!",
-                hide: "All student access to the exam has been removed!"
+                release: "<p>All students have been e-mailed!</p>",
+                hide: "<p>All student access to the exam has been removed!</p>"
             },
             errorMessages: {
                 release: "<p>Sorry, there was a problem releasing this exam!</p><p>Please try again.</p>",

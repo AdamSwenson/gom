@@ -7,43 +7,32 @@ var jQuery = $;
 window.jQuery = jQuery;
 
 require('bootstrap');
-
 var bootbox = require('bootbox');
 var common = require('../common.js');
 
-function showConfirmation(examId) {
+$('a[data-href]').on("click", function () {
+
+    var parent = $(this).closest('tr');
+    console.log(parent.find('#numStudents').text());
+    if (parent.find('#numStudents').text() == '0') {
+        showError("No Students", "An exam must have at least one student in order to be graded.");
+    } else if (parent.find('#numQuestions').text() == '0') {
+        showError("No Questions", "An exam must have at least one question in order to be graded.");
+    } else {
+        document.location = $(this).data('href');
+    }
+});
+
+function showError(msgTitle, message) {
     bootbox.dialog({
-        message: '<span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span> ' + "Warning: This will delete all associated students, scores, questions and elements. " + "<br/>Do you wish to proceed?",
-        title: "Delete Exam",
+        message: message,
+        title: msgTitle,
         buttons: {
-            success: {
-                label: 'Cancel',
+            'default': {
+                label: 'Ok',
                 className: "btn-sm",
                 callback: function callback() {}
-            },
-            danger: {
-                label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-                className: "btn-danger btn-sm",
-                callback: function callback() {
-                    // do deletion for examId
-                    deleteExam(examId);
-                }
             }
-        }
-    });
-}
-
-function deleteExam(examId) {
-
-    $.ajax({
-        url: 'exam/' + examId,
-        type: "post",
-        data: { _method: "DELETE" },
-        success: function success(data) {
-            window.location.replace(data.url_redirect);
-        },
-        error: function error() {
-            bootbox.alert("Whoops! The exam failed to delete. Please try again.");
         }
     });
 }
@@ -13307,6 +13296,21 @@ module.exports = function () {
 
     /**
      * Sets one of the nav tabs as active. Uses variable which should be set
+     * ahead of time on each page
+     * @param activeTab id of tab to make active
+     */
+    function setActiveNavTab(activeTab) {
+        if (activeTab) {
+            $('[id^="nav"]').attr('class', '');
+            $('#' + activeTab).attr('class', 'active');
+        }
+    }
+
+    setActiveNavTab(activeTab);
+};
+
+},{"bootstrap":3,"jquery":16}]},{},[1]);
+active. Uses variable which should be set
      * ahead of time on each page
      * @param activeTab id of tab to make active
      */

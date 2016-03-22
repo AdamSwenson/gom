@@ -34,18 +34,13 @@ elixir( function ( mix ) {
 //mix.sass('../../../node_modules/bootstrap/dist/css/bootstrap.css', 'public/css/bootstrap.css');
 //
 //    mix.sass('../../../node_modules/bootstrap-sass/dist/css/bootstrap.css', 'public/css/bootstrap.css');
-
-    mix.sass([
-        'reports/examButtons.sass'
-    ], 'public/css/exam-button-package.css');
-
-
+    
     mix.sass([
         'common/common.sass'
     ], 'public/css/common-package.css');
 
 
-    //Styles used on grade page
+    //Styles used on grade pages
     mix.sass(
         [
             'grade/mainGrading.scss'
@@ -58,7 +53,7 @@ elixir( function ( mix ) {
 
     //reports pages
     mix.sass([
-        'reports/examControls.scss'
+        'reports/examControls.sass'
     ], 'public/css/exam-controls-package.css');
     mix.sass([
         'reports/examAnalytics.scss'
@@ -121,9 +116,10 @@ elixir( function ( mix ) {
     mix.browserify( 'feedback/feedbackLogin.js', 'public/js/feedback-login-package.js' );
     mix.browserify( 'feedback/feedbackCharts.js', 'public/js/feedback-package.js' );
 
-
+    //help
     mix.browserify( 'help/help.js', 'public/js/help-package.js' );
 
+    //testing
     mix.browserify( 'reports/examButtons.js', 'public/js/dev-exam-buttons.js' );
 
 } );

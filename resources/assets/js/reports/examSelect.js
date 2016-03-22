@@ -4,7 +4,7 @@ var jQuery = $;
 window.jQuery = jQuery;
 
 require( 'bootstrap' );
-
+var bootbox = require('bootbox');
 var common = require( '../common.js' );
 
 $( 'a[data-href]' ).on( "click", function () {

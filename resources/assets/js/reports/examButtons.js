@@ -13,8 +13,6 @@ var Vue = require( 'vue' );
 //dev
 Vue.config.debug = true;
 
-//TODO Once this is ready, change the release request methods to POST
-
 new Vue( {
     el: '#app',
 
@@ -35,11 +33,11 @@ new Vue( {
 
     methods: {
         releaseRoute: function ( examId ) {
-            return "/report/" + examId + "/release";
+            return this.baseUrl + "/report/" + examId + "/release";
         },
 
         hideRoute: function ( examId ) {
-            return "/report/" + examId + "/unrelease";
+            return this.baseUrl + "/report/" + examId + "/unrelease";
         },
         /**
          * Make the request to server to release the exam.
@@ -58,8 +56,9 @@ new Vue( {
             var path = this.releaseRoute( examId );
             $.ajax( {
                 url: path,
-                type: 'GET',
+                type: "POST",
                 success: function () {
+                    window.console.log( 'j' );
                     me.notifyReleaseSuccess( examId );
                 },
                 error: function () {
@@ -80,7 +79,7 @@ new Vue( {
             var path = this.hideRoute( examId );
             $.ajax( {
                 url: path,
-                type: 'GET',
+                type: "POST",
                 success: function () {
                     me.notifyHideSuccess( examId );
                 },
@@ -111,7 +110,7 @@ new Vue( {
 
     events: {
         'exam-release-event': function ( examId ) {
-            window.console.log( 'examButtons', 'caught exam-release-event', examId);
+            window.console.log( 'examButtons', 'caught exam-release-event', examId );
             this.releaseExam( examId );
         },
 
@@ -124,6 +123,12 @@ new Vue( {
     directives: {},
 
     ready: function () {
+        $.ajaxSetup( {
+            headers: {
+                'X-CSRF-TOKEN': $( 'meta[name="csrf-token"]' ).attr( 'content' )
+            }
+        } );
+        window.console.log( 'examButtons ready' );
     }
 } );
 
