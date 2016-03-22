@@ -17,24 +17,33 @@
     @if ( sizeof($exams) > 0 )
         @foreach($exams as $exam)
             <div class="row">
-                <div class="col-lg-5">
-                    <exam-buttons-dropdown
-                            exam-id="{{ $exam->id }}"
-                            base-url="{!! url() !!}"></exam-buttons-dropdown>
-                </div>
-                <div class="col-lg-3">
+                <div class="col-lg-3 col-xs-4">
                     <exam-release-toggle
                             exam-id="{{ $exam->id }}"
                             released="{{ $exam->isReleased() }}"
                     ></exam-release-toggle>
                 </div>
-                <div class="col-lg-4">
-                    <exam-buttons
+
+                <div class="col-xs-4">
+                    <exam-buttons-dropdown
                             exam-id="{{ $exam->id }}"
-                            base-url="{!! url() !!}"
-                            released="{{ $exam->isReleased() }}"
-                    ></exam-buttons>
+                            base-url="{!! url() !!}"></exam-buttons-dropdown>
                 </div>
+
+                <div class="col-lg-5"></div>
+                {{--<div class="col-lg-3">--}}
+                    {{--<exam-release-toggle--}}
+                            {{--exam-id="{{ $exam->id }}"--}}
+                            {{--released="{{ $exam->isReleased() }}"--}}
+                    {{--></exam-release-toggle>--}}
+                {{--</div>--}}
+                {{--<div class="col-lg-4">--}}
+                    {{--<exam-buttons--}}
+                            {{--exam-id="{{ $exam->id }}"--}}
+                            {{--base-url="{!! url() !!}"--}}
+                            {{--released="{{ $exam->isReleased() }}"--}}
+                    {{--></exam-buttons>--}}
+                {{--</div>--}}
             </div>
         @endforeach
     @endif

@@ -21,7 +21,7 @@ new Vue( {
     components: {
         'exam-release-toggle': require( './components/examReleaseToggle.js' ),
         'exam-buttons': require( './components/reportExamButtons.js' ),
-        'exam-buttons-dropdown': require('./components/examButtonsDropdown.js')
+        'exam-buttons-dropdown': require( './components/examButtonsDropdown.js' )
     },
 
     data: {},
@@ -31,6 +31,9 @@ new Vue( {
             return baseUrl;
         },
 
+    },
+
+    methods: {
         releaseRoute: function ( examId ) {
             return "/report/" + examId + "/release";
         },
@@ -38,59 +41,55 @@ new Vue( {
         hideRoute: function ( examId ) {
             return "/report/" + examId + "/unrelease";
         },
+        /**
+         * Make the request to server to release the exam.
+         *
+         * This will compile student scores and stats, then sends notification emails to all
+         * graded students who have not yet received an email. Normally, this will be most (if not all)
+         * of the class.
+         *
+         * Any late graded exams can be processed by releasing again or individually via
+         * the student controls page
+         *
+         * @param examId
+         */
+        releaseExam: function ( examId ) {
+            var me = this;
+            var path = this.releaseRoute( examId );
+            $.ajax( {
+                url: path,
+                type: 'GET',
+                success: function () {
+                    me.notifyReleaseSuccess( examId );
+                },
+                error: function () {
+                    me.notifyReleaseError( examId );
+                },
+                complete: function () {
+                }
+            } );
+        },
 
-        methods: {
-            /**
-             * Make the request to server to release the exam.
-             *
-             * This will compile student scores and stats, then sends notification emails to all
-             * graded students who have not yet received an email. Normally, this will be most (if not all)
-             * of the class.
-             *
-             * Any late graded exams can be processed by releasing again or individually via
-             * the student controls page
-             *
-             * @param examId
-             */
-            releaseExam: function ( examId ) {
-                var me = this;
-                var path = this.releaseRoute( examId );
-                $.ajax( {
-                    url: path,
-                    type: 'GET',
-                    success: function () {
-                        me.notifyReleaseSuccess( examId );
-                    },
-                    error: function () {
-                        me.notifyReleaseError( examId );
-                    },
-                    complete: function () {
-                    }
-                } );
-            },
-
-            /**
-             * Makes the request to the server to hide the exam.
-             * This removes student access to the exam, deleting any response keys that have been generated.
-             * @param examId
-             */
-            hideExam: function ( examId ) {
-                var me = this;
-                var path = this.hideRoute( examId );
-                $.ajax( {
-                    url: path,
-                    type: 'GET',
-                    success: function () {
-                        me.notifyHideSuccess( examId );
-                    },
-                    error: function () {
-                        me.notifyHideError( examId );
-                    },
-                    complete: function () {
-                    }
-                } );
-            }
-
+        /**
+         * Makes the request to the server to hide the exam.
+         * This removes student access to the exam, deleting any response keys that have been generated.
+         * @param examId
+         */
+        hideExam: function ( examId ) {
+            var me = this;
+            var path = this.hideRoute( examId );
+            $.ajax( {
+                url: path,
+                type: 'GET',
+                success: function () {
+                    me.notifyHideSuccess( examId );
+                },
+                error: function () {
+                    me.notifyHideError( examId );
+                },
+                complete: function () {
+                }
+            } );
         },
 
         notifyReleaseSuccess: function ( examId ) {
@@ -112,20 +111,19 @@ new Vue( {
 
     events: {
         'exam-release-event': function ( examId ) {
-            window.console.log( 'examButtons', 'caught exam-release-event', examId );
+            window.console.log( 'examButtons', 'caught exam-release-event', examId);
+            this.releaseExam( examId );
         },
+
         'exam-hide-event': function ( examId ) {
             window.console.log( 'examButtons', 'caught exam-hide-event', examId );
+            this.hideExam( examId );
         },
     },
 
-
-    directives: {}
-    ,
+    directives: {},
 
     ready: function () {
-
     }
-} )
-;
+} );
 

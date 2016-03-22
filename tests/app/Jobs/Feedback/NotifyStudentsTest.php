@@ -9,7 +9,7 @@
 namespace Jobs\Feedback;
 
 
-class NotifyStudentsTest extends \PHPUnit_Framework_TestCase
+class NotifyStudentsTest extends \TestCase
 {
 
     protected $object;

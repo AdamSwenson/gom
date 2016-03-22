@@ -16,12 +16,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
     /** @var  \Faker\Factory */
     public $faker;
-
-    /** @var  User */
-    public $user;
-
-    /** @var  Exam */
-    public $exam;
+    
 
     public static $userid = 1;
 

@@ -17,7 +17,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Http\Request;
 use Mockery\Mock;
 
-class StudentControllerTest extends \TestCase
+class StudentControllerTest extends \ReseedingTestCase
 {
     use WithoutMiddleware;
 
@@ -35,6 +35,7 @@ class StudentControllerTest extends \TestCase
     {
 //        \Mockery::close();
         parent::setUp();
+        $this->prepareDatabase();
         $this->student = Student::all()->random();
         // $this->dao = \Mockery::mock('\App\Repositories\Student\IStudentRepository');
         //$this->app->instance('\App\Repositories\Student\IStudentRepository', $this->dao);
@@ -258,7 +259,7 @@ class StudentControllerTest extends \TestCase
 //        }
 
         #Call
-        $this->object->updateAll($request, $kumi);
+        $this->object->updateAll($exam, $request);
 
         #Check
         foreach($this->expectedDbEntries as $data)
@@ -310,7 +311,8 @@ class StudentControllerTest extends \TestCase
             $this->assertNotEmpty($s);
             $this->assertEquals($data['last_name'], $s->last_name);
             $this->assertEquals($data['first_name'], $s->first_name);
-            $this->seeInDatabase('students', $data);
+            $this->assertEquals($data['id'], $s->id, "Has expected student id");
+        //    $this->seeInDatabase('students', $data);
         }
     }
 
@@ -348,7 +350,15 @@ class StudentControllerTest extends \TestCase
         $this->assertNotNull($response);
         foreach($this->expectedDbEntries as $data)
         {
-            $this->seeInDatabase('students', $data);
+            $s = Student::where('last_name', $data['last_name'])
+                ->where('first_name', $data['first_name'])
+                ->first();
+
+            $this->assertNotEmpty($s);
+            $this->assertEquals($data['last_name'], $s->last_name);
+            $this->assertEquals($data['first_name'], $s->first_name);
+            $this->assertEquals($data['id'], $s->id, "Has expected student id");
+//            $this->seeInDatabase('students', $data);
         }
     }
 

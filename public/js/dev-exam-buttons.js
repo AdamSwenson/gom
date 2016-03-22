@@ -42,8 +42,11 @@ new Vue({
             return baseUrl;
         })(function () {
             return baseUrl;
-        }),
+        })
 
+    },
+
+    methods: {
         releaseRoute: function releaseRoute(examId) {
             return "/report/" + examId + "/release";
         },
@@ -51,57 +54,53 @@ new Vue({
         hideRoute: function hideRoute(examId) {
             return "/report/" + examId + "/unrelease";
         },
+        /**
+         * Make the request to server to release the exam.
+         *
+         * This will compile student scores and stats, then sends notification emails to all
+         * graded students who have not yet received an email. Normally, this will be most (if not all)
+         * of the class.
+         *
+         * Any late graded exams can be processed by releasing again or individually via
+         * the student controls page
+         *
+         * @param examId
+         */
+        releaseExam: function releaseExam(examId) {
+            var me = this;
+            var path = this.releaseRoute(examId);
+            $.ajax({
+                url: path,
+                type: 'GET',
+                success: function success() {
+                    me.notifyReleaseSuccess(examId);
+                },
+                error: function error() {
+                    me.notifyReleaseError(examId);
+                },
+                complete: function complete() {}
+            });
+        },
 
-        methods: {
-            /**
-             * Make the request to server to release the exam.
-             *
-             * This will compile student scores and stats, then sends notification emails to all
-             * graded students who have not yet received an email. Normally, this will be most (if not all)
-             * of the class.
-             *
-             * Any late graded exams can be processed by releasing again or individually via
-             * the student controls page
-             *
-             * @param examId
-             */
-            releaseExam: function releaseExam(examId) {
-                var me = this;
-                var path = this.releaseRoute(examId);
-                $.ajax({
-                    url: path,
-                    type: 'GET',
-                    success: function success() {
-                        me.notifyReleaseSuccess(examId);
-                    },
-                    error: function error() {
-                        me.notifyReleaseError(examId);
-                    },
-                    complete: function complete() {}
-                });
-            },
-
-            /**
-             * Makes the request to the server to hide the exam.
-             * This removes student access to the exam, deleting any response keys that have been generated.
-             * @param examId
-             */
-            hideExam: function hideExam(examId) {
-                var me = this;
-                var path = this.hideRoute(examId);
-                $.ajax({
-                    url: path,
-                    type: 'GET',
-                    success: function success() {
-                        me.notifyHideSuccess(examId);
-                    },
-                    error: function error() {
-                        me.notifyHideError(examId);
-                    },
-                    complete: function complete() {}
-                });
-            }
-
+        /**
+         * Makes the request to the server to hide the exam.
+         * This removes student access to the exam, deleting any response keys that have been generated.
+         * @param examId
+         */
+        hideExam: function hideExam(examId) {
+            var me = this;
+            var path = this.hideRoute(examId);
+            $.ajax({
+                url: path,
+                type: 'GET',
+                success: function success() {
+                    me.notifyHideSuccess(examId);
+                },
+                error: function error() {
+                    me.notifyHideError(examId);
+                },
+                complete: function complete() {}
+            });
         },
 
         notifyReleaseSuccess: function notifyReleaseSuccess(examId) {
@@ -124,9 +123,12 @@ new Vue({
     events: {
         'exam-release-event': function examReleaseEvent(examId) {
             window.console.log('examButtons', 'caught exam-release-event', examId);
+            this.releaseExam(examId);
         },
+
         'exam-hide-event': function examHideEvent(examId) {
             window.console.log('examButtons', 'caught exam-hide-event', examId);
+            this.hideExam(examId);
         }
     },
 
@@ -23539,7 +23541,7 @@ module.exports = {
 };
 
 },{"../templates/report-exam-buttons.template.html":25,"jquery":17}],23:[function(require,module,exports){
-module.exports = '<div class="btn-group">\n    <button\n            type="button" c\n            lass="btn btn-default dropdown-toggle"\n            data-toggle="dropdown"\n            aria-haspopup="true"\n            aria-expanded="false">\n        Actions <span class="caret"></span>\n    </button>\n    <ul class="dropdown-menu">\n        <li>\n            <a href="{{ analyticsTarget }}">\n                <span class="glyphicon glyphicon-stats"\n                      aria-hidden="true"></span> Analytics\n            </a>\n        </li>\n        <li>\n            <a href="{{ qualityControlsTarget }}">\n                <span class="glyphicon glyphicon-apple" aria-hidden="true"></span> Quality Control Tools</a>\n        </li>\n        <li>\n            <a href="{{ backupTarget }}">\n                <span class="glyphicon glyphicon glyphicon-save" aria-hidden="true"></span> Export Scores to Spreadsheet</a>\n        </li>\n\n        <li><a href="{{ studentControlsTarget }}">\n            <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Student Controls</a>\n        </li>\n    </ul>\n</div>';
+module.exports = '<div class="btn-group">\n    <button\n            type="button"\n            class="btn btn-primary dropdown-toggle"\n            data-toggle="dropdown"\n            aria-haspopup="true"\n            aria-expanded="false">\n        Actions <span class="caret"></span>\n    </button>\n    <ul class="dropdown-menu">\n        <li>\n            <a href="{{ analyticsTarget }}">\n                <span class="glyphicon glyphicon-stats"\n                      aria-hidden="true"></span> Analytics\n            </a>\n        </li>\n        <li>\n            <a href="{{ qualityControlsTarget }}">\n                <span class="glyphicon glyphicon-apple" aria-hidden="true"></span> Quality Control Tools</a>\n        </li>\n        <li>\n            <a href="{{ backupTarget }}">\n                <span class="glyphicon glyphicon glyphicon-save" aria-hidden="true"></span> Export Scores to Spreadsheet</a>\n        </li>\n\n        <li><a href="{{ studentControlsTarget }}">\n            <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Student Controls</a>\n        </li>\n    </ul>\n</div>';
 },{}],24:[function(require,module,exports){
 module.exports = '\n<input\n        id="{{ toggleId }}"\n        class="exam-release-toggle confirmRelease"\n        type="checkbox"\n        v-model="checked"\n        data-toggle="toggle"\n        data-on="{{ onStateText }}"\n        data-off="{{ offStateText}}"\n        data-width="{{ buttonWidth }}"\n        data-onstyle="{{ onStyle }}"\n        data-offstyle="{{ offStyle}}"\n/>\n';
 },{}],25:[function(require,module,exports){

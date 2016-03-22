@@ -13,7 +13,7 @@ use App\Exam;
 use App\QuestionAssignment;
 use App\QuestionScore;
 
-class QuestionScoreRepositoryTest extends \TestCase
+class QuestionScoreRepositoryTest extends \ReseedingTestCase
 {
     static public $examId = 1;
     protected $object;
