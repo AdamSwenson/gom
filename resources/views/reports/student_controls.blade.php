@@ -31,7 +31,15 @@
                     id="studentEmail{{ $student->getId()}}">{{ $student->getEmail() }}</td>
                 <td style="vertical-align:middle">{{ $student->getStudentId()}}</td>
                 <td style="text-align: right;">
-                    <a class="btn btn-default confirmStudentEmail"
+
+                    <a class="btn btn-info" title="Review Student Feedback" id="btnReview"
+                       data-feedback-available="{{ $student->isFeedBackAvailable($exam->getId()) }}"
+                       href="{{ url('report/'.$exam->getId().'/students/'.$student->getId()) }}">
+                        <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
+                        Review
+                    </a>
+
+                    <a class="btn btn-warning confirmStudentEmail"
                        style="width:120px;"
                        id="{{ 'studentId'.$student->getId() }}"
                        title="Email Student" data-graded="{{ $student->hasBeenGraded($exam->getId()) }}"
@@ -39,12 +47,7 @@
                        data-emailed="{{ $student->feedBackEmailSent($exam->getId()) }}">
                         <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Email
                     </a>
-                    <a class="btn btn-info" title="Review Student Feedback" id="btnReview"
-                       data-feedback-available="{{ $student->isFeedBackAvailable($exam->getId()) }}"
-                       href="{{ url('report/'.$exam->getId().'/students/'.$student->getId()) }}">
-                        <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
-                        Review
-                    </a>
+
                 </td>
             </tr>
         @endforeach
