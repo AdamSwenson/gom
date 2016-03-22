@@ -45,7 +45,7 @@ class UserLoginListener
 
         if ( ! empty($this->user) )
         {
-            //This will log the user log in
+            //This will log the user's log in
             $this->dispatch(new RecordUserLogin($this->user));
 
             //This will tell the backup system that the db has likely changed
