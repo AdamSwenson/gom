@@ -16,7 +16,7 @@ elixir( function ( mix ) {
 
     //mix.browserSync();
     /* ---------------------------------------------- styles ----------------------------------------------------*/
-    mix.sass(['libraries/bootswatch-spacelab.scss'], 'public/css/bootstrap-spacelab.css');
+    mix.sass( [ 'libraries/bootswatch-spacelab.scss' ], 'public/css/bootstrap-spacelab.css' );
 
     mix.sass( [
         'help/pictureStyling.scss',
@@ -34,10 +34,10 @@ elixir( function ( mix ) {
 //mix.sass('../../../node_modules/bootstrap/dist/css/bootstrap.css', 'public/css/bootstrap.css');
 //
 //    mix.sass('../../../node_modules/bootstrap-sass/dist/css/bootstrap.css', 'public/css/bootstrap.css');
-    
-    mix.sass([
+
+    mix.sass( [
         'common/common.sass'
-    ], 'public/css/common-package.css');
+    ], 'public/css/common-package.css' );
 
 
     //Styles used on grade pages
@@ -45,42 +45,42 @@ elixir( function ( mix ) {
         [
             'grade/mainGrading.scss'
         ], 'public/css/grade-package.css' );
-    mix.sass([
+    mix.sass( [
         'common/common.sass',
         'grade/examSelectTable.scss'
-    ], 'public/css/exam-table-package.css');
+    ], 'public/css/exam-table-package.css' );
 
 
     //reports pages
-    mix.sass([
+    mix.sass( [
         'reports/examControls.sass'
-    ], 'public/css/exam-controls-package.css');
-    mix.sass([
+    ], 'public/css/exam-controls-package.css' );
+    mix.sass( [
         'reports/examAnalytics.scss'
-    ], 'public/css/exam-analytics-package.css');
+    ], 'public/css/exam-analytics-package.css' );
 
 
     //setup pages
-    mix.sass([
+    mix.sass( [
         'common/common.sass',
         'setup/editRoster.scss'
-    ], 'public/css/edit-roster-package.css');
+    ], 'public/css/edit-roster-package.css' );
 
-    mix.sass([
+    mix.sass( [
         'common/common.sass',
         'setup/selectExam.scss'
-    ], 'public/css/select-exam-package.css');
+    ], 'public/css/select-exam-package.css' );
 
-    mix.sass([
+    mix.sass( [
         'common/common.sass',
         'grade/examSelectTable.scss'
-    ], 'public/css/exam-table-package.css');
+    ], 'public/css/exam-table-package.css' );
 
 
     /* ---------------------------------------------- scripts ----------------------------------------------------*/
 
     //Include in development
-    mix.browserify(['utilities/vueDebug.js'], 'public/js/debug.js');
+    mix.browserify( [ 'utilities/vueDebug.js' ], 'public/js/debug.js' );
 
     mix.browserify( [
             //'https://code.jquery.com/jquery-2.2.0.js',
@@ -102,13 +102,13 @@ elixir( function ( mix ) {
 
     //Report pages
     mix.browserify( 'reports/examAnalytics.js', 'public/js/report-exam-analytics-package.js' );
-    mix.browserify( 'reports/examButtons.js', 'public/js/report-exam-controls-package.js' );
+    mix.browserify( 'reports/examControls.js', 'public/js/report-exam-controls-package.js' );
     mix.browserify( 'reports/studentControls.js', 'public/js/report-student-controls-package.js' );
-    mix.browserify('reports/qualityControl.js', 'public/js/report-quality-control-package.js');
+    mix.browserify( 'reports/qualityControl.js', 'public/js/report-quality-control-package.js' );
 
     //Grading pages
     mix.browserify( 'grade/gradeAssign.js', 'public/js/grade-assign-package.js' );
-    mix.browserify( ['grade/gradeExam.js'], 'public/js/grade-exam-package.js' );
+    mix.browserify( [ 'grade/gradeExam.js' ], 'public/js/grade-exam-package.js' );
     mix.browserify( 'grade/examSelect.js', 'public/js/grade-exam-select-package.js' );
 
     //Feedback pages
@@ -119,6 +119,6 @@ elixir( function ( mix ) {
     mix.browserify( 'help/help.js', 'public/js/help-package.js' );
 
     //testing
-//    mix.browserify( 'reports/examButtons.js', 'public/js/dev-exam-buttons.js' );
+//    mix.browserify( 'reports/examControls.js', 'public/js/dev-exam-buttons.js' );
 
 } );

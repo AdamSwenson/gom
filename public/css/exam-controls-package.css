@@ -5896,4 +5896,7 @@ button.close {
   vertical-align: middle;
   min-width: 200px; }
 
+#examControlsPage .examNameEmptyCell {
+  vertical-align: middle; }
+
 /*# sourceMappingURL=exam-controls-package.css.map */

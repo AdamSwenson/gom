@@ -1,19 +1,16 @@
 <!-- Release an exam, un-release an exam, view analytics and review student feedback -->
 @extends('layouts.master')
 @section('pageTitle', 'Reports | gradeomatic')
-@section('description', 'Select an exam action')
+@section('description', 'Handle post-grading tasks')
 
 @section('otherCss')
     <link rel="stylesheet" href="{{ asset('css/exam-controls-package.css') }}"/>
-    {{--<link href="{{asset('css/exam-button-package.css')}}" rel="stylesheet">--}}
-
-
 @endsection
 
 @section('body')
     <div id="examControlsPage">
         <div id="app">
-            <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Reports & Release</h3>
+            <h3><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Post-Grading Tasks</h3>
             <h4>Release grades to students or view data about an exam</h4>
 
             <div class="panel panel-default">
@@ -34,8 +31,8 @@
                         @endforeach
                     @else
                         <tr>
-                            <td style="vertical-align:middle; width: 10%;"></td>
-                            <td style="vertical-align:middle"><i>No Exams Found</i></td>
+                            <td class="examDetailsCell" ></td>
+                            <td class="examNameEmptyCell"><i>No Exams Found</i></td>
                             <td></td>
                         </tr>
                     @endif
@@ -54,11 +51,6 @@
         var baseUrl = '{!! url() !!}';
     </script>
     <script type="text/javascript" src="{{ asset('js/report-exam-controls-package.js') }}"></script>
-
-
-    {{--<script type="text/javascript" src="{{ asset('js/exam-controls-package.js') }}"></script>--}}
-
-
 @endsection
 
 
