@@ -14,11 +14,15 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Question\IQuestionRepository;
+use Laracasts\Flash\Flash;
 
 class QuestionController extends Controller
 {
     //use ValidatesRequests;
+    const GENERIC_SUCCESS = "Success!";
+    const GENERIC_ERROR = "There was a problem saving your changes. Please try again.";
 
+    /* All the rest are probably deprecated since I don't think they will be used anywhere any more*/
     const SUCCESS_FLASH_NAME = "flash_message_success";
     const FAIL_FLASH_NAME = "flash_message_fail";
 
@@ -83,8 +87,9 @@ class QuestionController extends Controller
 
 
     /**
+     * POSSIBLY DEPRECATED?
      * Store a newly created resource in storage.
-     *
+     * 
      * @param QuestionRequest $request
      * @return Response
      */
@@ -150,39 +155,47 @@ class QuestionController extends Controller
     {
         //Check that user owns the exam
         $this->authorize('alter-object', $exam);
-
-        $examId = $exam->getId();
-
-        //Do all the heavy lifting...
-        $this->assignmentDao->updateAll($exam, $request);
-
-        // If someone deletes all questions and defeat checks, redirect back to exam select...
-        $checkIfEmpty = $this->assignmentDao->load_all_for_exam($examId);
-        if ( ! count($checkIfEmpty) )
+        try
         {
-            return redirect()->action('ExamController@index');
-        }
-        // ...because this line will crash if there is no question #1
-        $firstQuestionAssign = $this->assignmentDao->load($examId, 1);
-        $firstQId = $firstQuestionAssign->getQuestionId();
-        $firstQuestionObject = $this->questionDao->loadQuestionById($firstQId);
+            $examId = $exam->getId();
 
-        //asynchronously update the stored list of question counts etc
-        $this->dispatch(new UpdateStoredExamStats($exam));
+            //Do all the heavy lifting...
+            $this->assignmentDao->updateAll($exam, $request);
 
-        if ( $request->input('nextAction') == 'editExam' )
+            // If someone deletes all questions and defeat checks, redirect back to exam select...
+            $checkIfEmpty = $this->assignmentDao->load_all_for_exam($examId);
+            if ( ! count($checkIfEmpty) )
+            {
+                return redirect()->action('ExamController@index');
+            }
+            // ...because this line will crash if there is no question #1
+            $firstQuestionAssign = $this->assignmentDao->load($examId, 1);
+            $firstQId = $firstQuestionAssign->getQuestionId();
+            $firstQuestionObject = $this->questionDao->loadQuestionById($firstQId);
+
+            //asynchronously update the stored list of question counts etc
+            $this->dispatch(new UpdateStoredExamStats($exam));
+
+            Flash::success(self::GENERIC_SUCCESS);
+
+            if ( $request->input('nextAction') == 'editExam' )
+            {
+                return redirect()->action('ExamController@edit', ['exam' => $exam]);
+            } else
+            {
+                return redirect()->action('ElementController@editAll', array(
+                    'examId'   => $examId,
+                    'question' => $firstQuestionObject,
+                ));
+            }
+        } catch ( \Exception $e )
         {
-            return redirect()->action('ExamController@edit', ['exam' => $exam]);
-        } else
-        {
-            return redirect()->action('ElementController@editAll', array(
-                'examId'   => $examId,
-                'question' => $firstQuestionObject,
-            ));
+            Flash::error(self::GENERIC_ERROR);
+            return back();
         }
     }
 
-    /** Get all questions $exam obj and send to edit_question view
+    /** Get all questions $exam obj and show the edit_question view
      * @param $exam
      * @return $this
      */
@@ -228,10 +241,12 @@ class QuestionController extends Controller
 
         if ( ! empty($result) )
         {
-            Session::flash(self::SUCCESS_FLASH_NAME, self::DELETE_SUCCESS);
+            Flash::success(self::DELETE_SUCCESS);
+//            Session::flash(self::SUCCESS_FLASH_NAME, self::DELETE_SUCCESS);
         } else
         {
-            Session::flash(self::FAIL_FLASH_NAME, self::DELETE_FAIL);
+            Flash::success(self::DELETE_FAIL);
+//            Session::flash(self::FAIL_FLASH_NAME, self::DELETE_FAIL);
         }
 
         return view('Destroyed Question #' . $result);

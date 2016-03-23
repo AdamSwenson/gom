@@ -12,6 +12,7 @@ use App\Http\Requests;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Response;
+use Laracasts\Flash\Flash;
 
 /**
  * ExamController routes requests to appropriate page of the create exam workflow
@@ -19,23 +20,28 @@ use Illuminate\Http\Response;
  */
 class ExamController extends Controller
 {
-    const SUCCESS_FLASH_NAME = "flash_message_success";
-    const FAIL_FLASH_NAME = "flash_message_fail";
 
-    const CREATE_SUCCESS = "Successfully created exam";
-    const CREATE_FAIL = "There was a problem creating the exam";
+    const CLONE_FAIL = "There was a problem cloning the exam. Please try again.";
+    const CLONE_SUCCESS = "Successfully cloned ";
 
-    const UPDATE_SUCCESS = "Successfully updated the exam";
-    const UPDATE_FAIL = "There was a problem updating the exam";
+    const CREATE_SUCCESS = "Successfully created exam ";
+    const CREATE_FAIL = "There was a problem creating the exam ";
 
     const DELETE_SUCCESS = 'you have successfully destroyed an exam. I hope you are proud of yourself.';
     const DELETE_FAIL = 'There was a problem deleting the exam';
 
+    const UPDATE_SUCCESS = "Successfully updated the exam ";
+    const UPDATE_FAIL = "There was a problem updating the exam";
+
+    // $terms defines the various yearly divisions the user can choose from in the create / edit exam pages.
+    // I've it defined here, but custom terms could be a modified as a preference later on.
+    static public $terms = ['Winter', 'Spring', 'Summer', 'Fall'];
+
     /**@var IExamRepository */
     protected $examDao;
-    /** @var IQuestionAssignmentRepository  */
+    /** @var IQuestionAssignmentRepository */
     protected $questionAssignmentDao;
-    /** @var IStudentRepository  */
+    /** @var IStudentRepository */
     protected $studentDao;
 
     public function __construct(
@@ -57,25 +63,26 @@ class ExamController extends Controller
      */
     public function index()
     {
-       // $this->dispatch(new UpdateAllStoredExamStats());
+        // $this->dispatch(new UpdateAllStoredExamStats());
 
         $storedExamStatsDao = app()->make('App\Repositories\Exam\IStoredExamStatsRepository');
 
         $exams = $this->examDao->load_all_exams();
         $numberOfStudents = [];
         $numberOfQuestions = [];
-        foreach($exams as $exam) {
+        foreach ( $exams as $exam )
+        {
             $examId = $exam->getId();
             $numberStudents = $storedExamStatsDao->getNumberStudents($exam);
             $numberQuestions = $storedExamStatsDao->getNumberQuestions($exam);
-            $numberOfStudents[$examId] = $numberStudents;
-            $numberOfQuestions[$examId] = $numberQuestions;
+            $numberOfStudents[ $examId ] = $numberStudents;
+            $numberOfQuestions[ $examId ] = $numberQuestions;
         }
 
         return View::make('setup.select_exam', [
-            'exams' => $exams,
-            'numberOfStudents' => $numberOfStudents,
-            'numberOfQuestions' => $numberOfQuestions
+            'exams'             => $exams,
+            'numberOfStudents'  => $numberOfStudents,
+            'numberOfQuestions' => $numberOfQuestions,
         ]);
     }
 
@@ -88,12 +95,11 @@ class ExamController extends Controller
     {
         //create new exam
         $years[] = date('Y');
-        $years[] = strval( $years[0] + 1 );
+        $years[] = strval($years[0] + 1);
 
-        // $terms defines the various yearly divisions the user can choose from in the create / edit exam pages.
-        // I've it defined here, but custom terms could be a modified as a preference later on.
-        $terms = [ 'Winter', 'Spring', 'Summer', 'Fall'];
-        return view('setup/create_exam', [ 'years' => $years, 'terms' => $terms ]);
+        //custom terms logic would go here
+
+        return view('setup/create_exam', ['years' => $years, 'terms' => self::$terms]);
     }
 
     /**
@@ -101,28 +107,46 @@ class ExamController extends Controller
      * @param Exam $exam
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function cloneExam(Exam $exam) {
+    public function cloneExam(Exam $exam)
+    {
         //Check that user owns the exam
         $this->authorize('access-object', $exam);
+        try
+        {
+            $this->examDao->clone_exam($exam->getId());
+            $this->dispatch(new UpdateAllStoredExamStats());
+            Flash::success(self::CLONE_SUCCESS . $exam->getName());
 
-        $this->examDao->clone_exam($exam->getId());
+            return redirect()->action('ExamController@index');
+        } catch ( \Exception $e )
+        {
+            Flash::error(self::CLONE_FAIL);
 
-        return redirect()->action('ExamController@index');
+            return back();
+        }
     }
 
     /**
      * Store a newly created exam in DB.
-     *
-     * TODO Add error handling
      *
      * @param ExamRequest $request
      * @return Response
      */
     public function store(ExamRequest $request)
     {
-        $exam = $this->examDao->save_new_exam($request->input('examYear'), $request->input('examTerm'), $request->input('name'));
-        Session::flash(self::SUCCESS_FLASH_NAME, self::CREATE_SUCCESS);
-        return redirect()->route('editAllQuestions', $exam);
+        try
+        {
+            $exam = $this->examDao->save_new_exam($request->input('examYear'), $request->input('examTerm'), $request->input('name'));
+            $this->dispatch(new UpdateAllStoredExamStats());
+            Flash::success(self::CREATE_SUCCESS . $exam->getName());
+
+            return redirect()->route('editAllQuestions', $exam);
+        } catch ( \Exception $e )
+        {
+            Session::error(self::CREATE_FAIL);
+
+            return back();
+        }
     }
 
     /**
@@ -138,15 +162,15 @@ class ExamController extends Controller
 
         // create a list of years to choose from. Includes the year of the exam, plus this year and the next year.
         $offset = 0;
-        if ( $exam->getYear() < date('Y') ) {
+        if ( $exam->getYear() < date('Y') )
+        {
             $years[] = $exam->getYear();
             $offset = 1;
         }
         $years[] = date('Y');
-        $years[] = strval( $years[$offset] + 1 );
+        $years[] = strval($years[ $offset ] + 1);
 
-        $terms = [ 'Winter', 'Spring', 'Summer', 'Fall'];
-        return view('setup/edit_exam', [ 'exam' => $exam, 'years' => $years, 'terms' => $terms ]);
+        return view('setup/edit_exam', ['exam' => $exam, 'years' => $years, 'terms' => self::$terms]);
     }
 
     /**
@@ -160,16 +184,25 @@ class ExamController extends Controller
     {
         //Check that user owns the exam
         $this->authorize('alter-object', $exam);
+        try
+        {
+            $exam = $this->examDao->update_exam_object($exam, $request->input('examYear'), $request->input('examTerm'), $request->input('name'));
+            $this->dispatch(new UpdateAllStoredExamStats());
+            Flash::success(self::UPDATE_SUCCESS . $exam->getName());
+            $eid = $exam->getId();
+            if ( $request->input('nextAction') == 'selectExam' )
+            {
+                return redirect()->action('ExamController@index');
+            } else
+            {
+                return redirect()->route('editAllQuestions', $eid);
+            }
+        } catch ( Exception $e )
+        {
+            Flash::error(self::UPDATE_FAIL);
 
-        $exam = $this->examDao->update_exam_object($exam, $request->input('examYear'), $request->input('examTerm'), $request->input('name'));
-
-        Session::flash(self::SUCCESS_FLASH_NAME, self::UPDATE_SUCCESS);
-        $eid = $exam->getId();
-        if ($request->input('nextAction') == 'selectExam') {
-            return redirect()->action('ExamController@index');
+            return back();
         }
-        else
-            return redirect()->route('editAllQuestions', $eid);
     }
 
     /**
@@ -187,12 +220,18 @@ class ExamController extends Controller
         $this->authorize('destroy-object', $exam);
 
         $result = $this->examDao->delete_exam($exam);
-        if (!empty($result))
+        if ( ! empty($result) )
         {
-            Session::flash(self::SUCCESS_FLASH_NAME, self::DELETE_SUCCESS);
+            Flash::success(self::DELETE_SUCCESS);
+            
+             $this->dispatch(new UpdateAllStoredExamStats());
+//            Session::flash(self::SUCCESS_FLASH_NAME, self::DELETE_SUCCESS);
+        } else
+        {
+            Flash::error(self::DELETE_FAIL);
         }
 
-        return [ 'url_redirect' => 'exam' ] ;
+        return ['url_redirect' => 'exam'];
     }
 
 }

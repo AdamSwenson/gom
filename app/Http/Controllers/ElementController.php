@@ -13,10 +13,11 @@ use App\Repositories\Question\IQuestionAssignmentRepository;
 
 use App\Http\Requests;
 use Illuminate\Support\Facades\Gate;
+use Laracasts\Flash\Flash;
 
 class ElementController extends Controller
 {
-    /** @var IQuestionAssignmentRepository  */
+    /** @var IQuestionAssignmentRepository */
     protected $questionAssignmentDAO;
 
     /** @var IElementRepository */
@@ -48,8 +49,10 @@ class ElementController extends Controller
      */
     public function index(ElementRequest $request)
     {
-        if (!empty($questionId)) {
-        } else {
+        if ( ! empty($questionId) )
+        {
+        } else
+        {
             return Element::all();
         }
         //$element = $this->dao->loadElementById($elementId);
@@ -75,7 +78,8 @@ class ElementController extends Controller
         $respGeneric = $request->input('respGeneric');
         $element = $this->dao->createElement($elementName, '', $respGeneric);
 
-        if (!empty($element)) {
+        if ( ! empty($element) )
+        {
             $this->dao->addValencedContent($element->getId(), Comment::VALENCE_ABSENT, $request->input('respAbsent'));
             $this->dao->addValencedContent($element->getId(), Comment::VALENCE_POOR, $request->input('respPoor'));
             $this->dao->addValencedContent($element->getId(), Comment::VALENCE_OK, $request->input('respFair'));
@@ -83,6 +87,7 @@ class ElementController extends Controller
 
             $this->assignmentDao->record($request->input('examId'), $request->input('questionNumber'), $element->getId(), $request->input('subtask'));
         }
+
         return $element;
     }
 
@@ -106,10 +111,13 @@ class ElementController extends Controller
         // loadByIds() will loop if the same questionId appears several times on the same exam,
         // as it matches with the first Id found in the ordered Assignments.
         $index = 0;
-        foreach ($allQuestionAss as $questionAss) {
-              if ($questionId === $questionAss->question_id) {
+        foreach ( $allQuestionAss as $questionAss )
+        {
+            if ( $questionId === $questionAss->question_id )
+            {
                 break;
-            } else {
+            } else
+            {
                 $index++;
             }
         }
@@ -118,13 +126,16 @@ class ElementController extends Controller
         // if previous or next does not exist, set to 0.
         $pQId = 'editQuestions'; // 'edit_questions'
         $nQId = 'editStudents'; // 'edit_roster'
-        if (isset($index)) {
-            if ($index < count($allQuestionAss) - 1) {
-                $next = $allQuestionAss[$index + 1];
+        if ( isset($index) )
+        {
+            if ( $index < count($allQuestionAss) - 1 )
+            {
+                $next = $allQuestionAss[ $index + 1 ];
                 $nQId = $next->question_id;
             }
-            if ($index > 0) {
-                $prev = $allQuestionAss[$index - 1];
+            if ( $index > 0 )
+            {
+                $prev = $allQuestionAss[ $index - 1 ];
                 $pQId = $prev->question_id;
             }
         }
@@ -133,13 +144,15 @@ class ElementController extends Controller
 
 
         // show all elements for a given question along with the ids for 'next' and 'previous'
-        return view('setup.edit_element')->with(['examId' => $examId,
-            'nextAction' => $nQId,
-            'prevAction' => $pQId,
-            'questionId' => $questionId,
-            'qNumber' => $qNumber,
-            'questionName' => $question->getQuestionName(),
-            'elements' => $elements ]);
+        return view('setup.edit_element')->with([
+                                                    'examId'       => $examId,
+                                                    'nextAction'   => $nQId,
+                                                    'prevAction'   => $pQId,
+                                                    'questionId'   => $questionId,
+                                                    'qNumber'      => $qNumber,
+                                                    'questionName' => $question->getQuestionName(),
+                                                    'elements'     => $elements,
+                                                ]);
     }
 
     /**
@@ -156,23 +169,39 @@ class ElementController extends Controller
         //Check that user has permission to access the objects
         $this->authorize('access-object', $exam);
         $this->authorize('access-object', $question);
+        try
+        {
+            $this->assignmentDao->updateAll($exam, $question, $request);
+            $examId = $exam->getId();
 
-        $this->assignmentDao->updateAll($exam, $question, $request);
-        $examId = $exam->getId();
+            Flash::success("Elements successfully added to " . $question->getQuestionName());
 
-        /* Choose next action based on 'nextAction' param:
-            1. go back to QuestionController
-            2. go forward to StudentController
-            3. load another question for element editing
-        */
-        $nextAction = $request->input('nextAction');
-        if ($nextAction === 'editQuestions') {
-            return redirect()->route('editAllQuestions', $examId);
-        } else if ($nextAction === 'editStudents') {
-            return redirect()->route('editAllStudents', $examId);
-        } else {
-            return redirect()->action('ElementController@editAll', array('examId' => $examId,
-                'question' => $nextAction));
+            /* Choose next action based on 'nextAction' param:
+                1. go back to QuestionController
+                2. go forward to StudentController
+                3. load another question for element editing
+            */
+            $nextAction = $request->input('nextAction');
+            if ( $nextAction === 'editQuestions' )
+            {
+                return redirect()->route('editAllQuestions', $examId);
+            } else
+            {
+                if ( $nextAction === 'editStudents' )
+                {
+                    return redirect()->route('editAllStudents', $examId);
+                } else
+                {
+                    return redirect()->action('ElementController@editAll', array(
+                        'examId'   => $examId,
+                        'question' => $nextAction,
+                    ));
+                }
+            }
+        } catch ( \Exception $e )
+        {
+            Flash::error("There was a problem saving your edits. Please try again");
+            return back();
         }
     }
 

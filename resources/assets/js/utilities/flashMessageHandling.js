@@ -10,5 +10,5 @@ var $ = require( 'jquery' );
  */
 module.exports = function() {
 //Automatically hide non-important flash message
-    $( 'div.alert' ).not( 'alert-important' ).delay( 3000 ).slideUp( 300 );
+    $( 'div.alert' ).not( 'alert-important' ).delay( 2000 ).slideUp( 300 );
 }
