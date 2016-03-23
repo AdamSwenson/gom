@@ -1,3 +1,13 @@
+/*
+* DEPRECATED
+* 
+* NO LONGER USED.
+* 
+* REPLACED WITH examButtons.js
+* 
+* */
+
+
 var $ = require( 'jquery' );
 window.$ = $;
 var jQuery = $;

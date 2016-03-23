@@ -101,11 +101,10 @@ elixir( function ( mix ) {
     mix.browserify( 'setupPages/selectExam.js', 'public/js/exam-select-package.js' );
 
     //Report pages
-    mix.browserify( 'reports/examAnalytics.js', 'public/js/exam-analytics-package.js' );
-    mix.browserify( 'reports/examControls.js', 'public/js/exam-controls-package.js' );
-    mix.browserify( 'reports/studentControls.js', 'public/js/student-controls-package.js' );
-    mix.browserify( 'reports/examSelect.js', 'public/js/exam-select-package.js' );
-    mix.browserify('reports/qualityControl.js', 'public/js/quality-control-package.js');
+    mix.browserify( 'reports/examAnalytics.js', 'public/js/report-exam-analytics-package.js' );
+    mix.browserify( 'reports/examButtons.js', 'public/js/report-exam-controls-package.js' );
+    mix.browserify( 'reports/studentControls.js', 'public/js/report-student-controls-package.js' );
+    mix.browserify('reports/qualityControl.js', 'public/js/report-quality-control-package.js');
 
     //Grading pages
     mix.browserify( 'grade/gradeAssign.js', 'public/js/grade-assign-package.js' );
@@ -120,6 +119,6 @@ elixir( function ( mix ) {
     mix.browserify( 'help/help.js', 'public/js/help-package.js' );
 
     //testing
-    mix.browserify( 'reports/examButtons.js', 'public/js/dev-exam-buttons.js' );
+//    mix.browserify( 'reports/examButtons.js', 'public/js/dev-exam-buttons.js' );
 
 } );

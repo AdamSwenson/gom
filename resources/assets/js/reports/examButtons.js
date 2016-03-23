@@ -1,4 +1,5 @@
 /**
+ * Scripts for exam_controls.blade
  * Created by  adam on 3/3/16.
  */
 
@@ -8,10 +9,12 @@ window.$ = $;
 window.jQuery = $;
 require( 'bootstrap' );
 
+var common = require( '../common.js' );
+
 var Vue = require( 'vue' );
 
 //dev
-Vue.config.debug = true;
+//Vue.config.debug = true;
 
 new Vue( {
     el: '#app',

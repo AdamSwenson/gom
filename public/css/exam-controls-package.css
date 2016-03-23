@@ -5888,4 +5888,12 @@ button.close {
 #examControlsPage .panel {
   border: none; }
 
+#examControlsPage .examDetailsCell {
+  vertical-align: middle;
+  width: 10%; }
+
+#examControlsPage .examNameCell {
+  vertical-align: middle;
+  min-width: 200px; }
+
 /*# sourceMappingURL=exam-controls-package.css.map */

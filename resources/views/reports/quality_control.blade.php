@@ -134,5 +134,5 @@
     </script>
 
     @include('layouts.js.js_google_charts_include')
-    <script type="text/javascript" src="{{ asset('js/quality-control-package.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/report-quality-control-package.js') }}"></script>
 @endsection

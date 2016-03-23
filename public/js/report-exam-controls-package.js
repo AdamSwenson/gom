@@ -1,5 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
+ * Scripts for exam_controls.blade
  * Created by  adam on 3/3/16.
  */
 
@@ -11,10 +12,12 @@ window.$ = $;
 window.jQuery = $;
 require('bootstrap');
 
+var common = require('../common.js');
+
 var Vue = require('vue');
 
 //dev
-Vue.config.debug = true;
+//Vue.config.debug = true;
 
 new Vue({
     el: '#app',
@@ -143,7 +146,7 @@ new Vue({
     }
 });
 
-},{"./components/examButtonsDropdown.js":20,"./components/examReleaseToggle.js":21,"./components/reportExamButtons.js":22,"bootstrap":4,"jquery":17,"vue":19}],2:[function(require,module,exports){
+},{"../common.js":20,"./components/examButtonsDropdown.js":21,"./components/examReleaseToggle.js":22,"./components/reportExamButtons.js":23,"bootstrap":4,"jquery":17,"vue":19}],2:[function(require,module,exports){
 /**
  * bootbox.js [v4.4.0]
  *
@@ -23273,6 +23276,19 @@ module.exports = Vue;
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"_process":18}],20:[function(require,module,exports){
 /**
+ * Created by adam on 2/12/16.
+ */
+
+'use strict';
+
+var $ = require('jquery');
+
+var aj = require('./utilities/ajaxCsrfPrep.js')();
+var navBar = require('./utilities/navbar.js')();
+var flash = require('./utilities/flashMessageHandling.js')();
+
+},{"./utilities/ajaxCsrfPrep.js":27,"./utilities/flashMessageHandling.js":28,"./utilities/navbar.js":29,"jquery":17}],21:[function(require,module,exports){
+/**
  * Created by adam on 3/16/16.
  */
 //var $ = require('jquery');
@@ -23310,7 +23326,7 @@ module.exports = {
     }
 };
 
-},{"../templates/exam-buttons-dropdown.template.html":23}],21:[function(require,module,exports){
+},{"../templates/exam-buttons-dropdown.template.html":24}],22:[function(require,module,exports){
 /**
  * Created by adam on 3/16/16.
  */
@@ -23501,7 +23517,7 @@ module.exports = {
     }
 };
 
-},{"../templates/exam-release-toggle.template.html":24,"./../../../../../node_modules/bootstrap-toggle/js/bootstrap-toggle.js":3,"bootbox":2,"jquery":17}],22:[function(require,module,exports){
+},{"../templates/exam-release-toggle.template.html":25,"./../../../../../node_modules/bootstrap-toggle/js/bootstrap-toggle.js":3,"bootbox":2,"jquery":17}],23:[function(require,module,exports){
 /**
  * Created by adam on 3/3/16.
  */
@@ -23547,10 +23563,77 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/report-exam-buttons.template.html":25,"jquery":17}],23:[function(require,module,exports){
+},{"../templates/report-exam-buttons.template.html":26,"jquery":17}],24:[function(require,module,exports){
 module.exports = '<div class="btn-group">\n    <button\n            type="button"\n            class="btn btn-primary dropdown-toggle"\n            data-toggle="dropdown"\n            aria-haspopup="true"\n            aria-expanded="false">\n        Actions <span class="caret"></span>\n    </button>\n    <ul class="dropdown-menu">\n        <li>\n            <a href="{{ analyticsTarget }}">\n                <span class="glyphicon glyphicon-stats"\n                      aria-hidden="true"></span> Analytics\n            </a>\n        </li>\n        <li>\n            <a href="{{ qualityControlsTarget }}">\n                <span class="glyphicon glyphicon-apple" aria-hidden="true"></span> Quality Control Tools</a>\n        </li>\n        <li>\n            <a href="{{ backupTarget }}">\n                <span class="glyphicon glyphicon glyphicon-save" aria-hidden="true"></span> Export Scores to Spreadsheet</a>\n        </li>\n\n        <li><a href="{{ studentControlsTarget }}">\n            <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Student Controls</a>\n        </li>\n    </ul>\n</div>';
-},{}],24:[function(require,module,exports){
-module.exports = '\n<input\n        id="{{ toggleId }}"\n        class="exam-release-toggle confirmRelease"\n        type="checkbox"\n        v-model="checked"\n        data-toggle="toggle"\n        data-on="{{ onStateText }}"\n        data-off="{{ offStateText}}"\n        data-width="{{ buttonWidth }}"\n        data-onstyle="{{ onStyle }}"\n        data-offstyle="{{ offStyle}}"\n/>\n';
 },{}],25:[function(require,module,exports){
+module.exports = '\n<input\n        id="{{ toggleId }}"\n        class="exam-release-toggle confirmRelease"\n        type="checkbox"\n        v-model="checked"\n        data-toggle="toggle"\n        data-on="{{ onStateText }}"\n        data-off="{{ offStateText}}"\n        data-width="{{ buttonWidth }}"\n        data-onstyle="{{ onStyle }}"\n        data-offstyle="{{ offStyle}}"\n/>\n';
+},{}],26:[function(require,module,exports){
 module.exports = '<div>\n\n\n\n    <a class="btn btn-info"\n       title="Exam Analytics"\n       href="{{ analyticsTarget }}"\n    ><span\n            class="glyphicon glyphicon-stats"\n            aria-hidden="true"\n    ></span>\n    </a>\n\n    <a class="btn btn-default"\n       href="{{ qualityControlsTarget }}"\n       title="Quality Control"\n    >\n        <span class="glyphicon glyphicon-apple" aria-hidden="true"></span>\n    </a>\n\n    <a class="btn btn-default"\n       href="{{ backupTarget }}"\n       title="Export Scores to Csv"\n    >\n        <span class="glyphicon glyphicon glyphicon-save" aria-hidden="true"></span>\n    </a>\n    <a class="btn btn-info"\n       title="Student Controls"\n       href="{{ studentControlsTarget }}"\n    >\n        <span class="glyphicon glyphicon-user" aria-hidden="true"></span> </a>\n\n</div>';
-},{}]},{},[1]);
+},{}],27:[function(require,module,exports){
+'use strict';
+
+var $ = require('jquery');
+window.$ = $;
+var jQuery = $;
+window.jQuery = jQuery;
+
+/**
+ * Sets the csrf token for ajax requests
+ */
+module.exports = function () {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+};
+
+},{"jquery":17}],28:[function(require,module,exports){
+/**
+ * Created by adam on 10/4/15.
+ */
+
+'use strict';
+
+var $ = require('jquery');
+
+/**
+ * Automatically hide non-important flash message
+ */
+module.exports = function () {
+  //Automatically hide non-important flash message
+  $('div.alert').not('alert-important').delay(3000).slideUp(300);
+};
+
+},{"jquery":17}],29:[function(require,module,exports){
+/**
+ * Created by adam on 2/12/16.
+ */
+
+'use strict';
+
+var $ = require('jquery');
+window.$ = $;
+var jQuery = $;
+window.jQuery = jQuery;
+
+require('bootstrap');
+
+module.exports = function () {
+
+    /**
+     * Sets one of the nav tabs as active. Uses variable which should be set
+     * ahead of time on each page
+     * @param activeTab id of tab to make active
+     */
+    function setActiveNavTab(activeTab) {
+        if (activeTab) {
+            $('[id^="nav"]').attr('class', '');
+            $('#' + activeTab).attr('class', 'active');
+        }
+    }
+
+    setActiveNavTab(activeTab);
+};
+
+},{"bootstrap":4,"jquery":17}]},{},[1]);

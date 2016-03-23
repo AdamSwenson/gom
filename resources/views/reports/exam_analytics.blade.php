@@ -108,7 +108,7 @@
         console.log('questionScoresByQNum', questionScoresByQNumber);
         console.log('elementScoresByQENum', elementScoresByQENumber);
     </script>
-    <script type="text/javascript" src="{{ asset('js/exam-analytics-package.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/report-exam-analytics-package.js') }}"></script>
 
 @endsection
 

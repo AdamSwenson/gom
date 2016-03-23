@@ -25,6 +25,7 @@
                         <th class="col-sm-5"></th>
                     </tr>
                     </thead>
+
                     <tbody>
                     @if ( sizeof($exams) > 0 )
                         @foreach($exams as $exam)
@@ -39,6 +40,7 @@
                         </tr>
                     @endif
                     </tbody>
+
                 </table>
             </div>
         </div>
@@ -51,7 +53,7 @@
         var activeTab = 'navReport';
         var baseUrl = '{!! url() !!}';
     </script>
-    <script type="text/javascript" src="{{ asset('js/dev-exam-buttons.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/report-exam-controls-package.js') }}"></script>
 
 
     {{--<script type="text/javascript" src="{{ asset('js/exam-controls-package.js') }}"></script>--}}
