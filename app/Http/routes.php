@@ -92,12 +92,12 @@ Route::get('report', 'ReportController@showExams');
 Route::get('report/{exam}/gradeassign', array('uses' => 'ReportController@showGradeAssign'));
 Route::get('report/{exam}/students', 'ReportController@showStudents'); // shows student controls for the exam
 Route::get('report/{exam}/students/{student}', 'ReportController@showStudentFeedback'); // show feedback for the student
-Route::post('report/{exam}/students/{student}', 'ReportController@notifyStudent'); // email the student with feedback
-Route::get('report/{exam}/release', 'ReportController@releaseExam'); // releases {exam}
-Route::get('report/{exam}/unrelease', 'ReportController@unreleaseExam'); // delete student access and set to unreleased
 Route::get('report/{exam}/analytics','ReportController@showAnalytics');
 Route::get('report/{exam}/qualitycontrol', 'ReportController@showQualityControl');
 
+Route::post('report/{exam}/students/{student}', 'ReportController@notifyStudent'); // email the student with feedback
+Route::post('report/{exam}/release', 'ReportController@releaseExam'); // releases {exam}
+Route::post('report/{exam}/unrelease', 'ReportController@unreleaseExam'); // delete student access and set to unreleased
 
 
 /* ------------------------------------------------- Feedback ------------------------------------------------------------*/

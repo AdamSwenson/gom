@@ -1,126 +1,137 @@
-var $ = require( 'jquery' );
-window.$ = $;
-var jQuery = $;
-window.jQuery = jQuery;
+/**
+ * Scripts for exam_controls.blade
+ * Created by  adam on 3/3/16.
+ */
 
+var $ = require( 'jquery' );
+var jQuery = $;
+window.$ = $;
+window.jQuery = $;
 require( 'bootstrap' );
-var bootbox = require('bootbox');
 
 var common = require( '../common.js' );
 
-$(".examLock" ).on('click', function(){
-var examId = $(this ).data('examid');
-    removeAccess(examId);
-});
+var Vue = require( 'vue' );
 
-$(".confirmRelease" ).on('click', function(){
-    var examId = $(this ).data('examid');
-    confirmRelease(examId);
-});
+//dev
+//Vue.config.debug = true;
 
+new Vue( {
+    el: '#app',
 
-//set controls for all released exams
+    components: {
+        'exam-release-toggle': require( './components/examReleaseToggle.js' ),
+        'exam-buttons': require( './components/reportExamButtons.js' ),
+        'exam-buttons-dropdown': require( './components/examButtonsDropdown.js' )
+    },
 
-$('[id^="exam"]').each(function () {
-    if ($(this).attr('data-released') == '1') {
-        setAsReleased($(this));
-        enableLock($(this).siblings('#lock'));
-    }
-});
+    data: {},
 
-function confirmRelease(examId) {
-    var released = $('#exam' + examId).attr('data-released');
-    var confirmMsg = "Releasing this exam will e-mail all students \n their grades and personalized feedback. " +
-        "Do you wish to continue?";
-    if (released === '1') confirmMsg = "Re-releasing this exam sends all students an additional message informing them " +
-        "that exam grades or comments may have changed. Do you wish to continue?";
-    bootbox.confirm(confirmMsg, function (result) {
-        if (result) {
-            releaseExam(examId);
-        }
-    });
-}
-
-// Compiles student scores and stats, then sends notification emails to all graded students
-// who have not yet received an email. Normally, this will be most (if not all) of the class.
-// Any late graded exams can be processed by releasing again
-// or individually via the student controls page
-function releaseExam(examId) {
-    var $exam = $('#exam' + examId);
-    $exam.addClass('disabled');
-    var path = "/report/" + examId + "/release";
-    $.ajax({
-        url: path,
-        type: 'GET',
-        success: function () {
-            setAsReleased($exam);
-            alertEmailSent();
-            enableLock($exam.siblings('#lock'));
+    computed: {
+        baseUrl: function () {
+            return baseUrl;
         },
-        error: function () {
-            alert("Sorry, there was a problem releasing this exam!\nPlease try again.");
+
+    },
+
+    methods: {
+        releaseRoute: function ( examId ) {
+            return this.baseUrl + "/report/" + examId + "/release";
         },
-        complete: function () {
-            $exam.removeClass('disabled');
-        }
-    });
-}
 
-function alertEmailSent() {
-    bootbox.alert("All students have been e-mailed!", function () {
-    });
-}
-
-// removes student access to the exam, deleting any response keys that have been generated.
-function removeAccess(examId) {
-    bootbox.confirm('Removing access will prevent students from viewing feedback on the exam. Access can ' +
-        'be restored by releasing the exam again.', function (result) {
-        var $exam = $('#exam' + examId);
-        $exam.addClass('disabled');
-        if (result) {
-            var path = "/report/" + examId + "/unrelease";
-            $.ajax({
+        hideRoute: function ( examId ) {
+            return this.baseUrl + "/report/" + examId + "/unrelease";
+        },
+        /**
+         * Make the request to server to release the exam.
+         *
+         * This will compile student scores and stats, then sends notification emails to all
+         * graded students who have not yet received an email. Normally, this will be most (if not all)
+         * of the class.
+         *
+         * Any late graded exams can be processed by releasing again or individually via
+         * the student controls page
+         *
+         * @param examId
+         */
+        releaseExam: function ( examId ) {
+            var me = this;
+            var path = this.releaseRoute( examId );
+            $.ajax( {
                 url: path,
-                type: 'GET',
+                type: "POST",
                 success: function () {
-                    disableLock($exam.siblings('#lock'));
-                    setAsUnreleased($exam);
+                    window.console.log( 'j' );
+                    me.notifyReleaseSuccess( examId );
                 },
                 error: function () {
-                    $exam.removeClass('disabled');
-                    alert("Sorry, there was a problem locking this exam!\nPlease try again.");
+                    me.notifyReleaseError( examId );
                 },
                 complete: function () {
-                    $exam.removeClass('disabled');
                 }
-            });
+            } );
+        },
+
+        /**
+         * Makes the request to the server to hide the exam.
+         * This removes student access to the exam, deleting any response keys that have been generated.
+         * @param examId
+         */
+        hideExam: function ( examId ) {
+            var me = this;
+            var path = this.hideRoute( examId );
+            $.ajax( {
+                url: path,
+                type: "POST",
+                success: function () {
+                    me.notifyHideSuccess( examId );
+                },
+                error: function () {
+                    me.notifyHideError( examId );
+                },
+                complete: function () {
+                }
+            } );
+        },
+
+        notifyReleaseSuccess: function ( examId ) {
+            this.$broadcast( 'exam-release-success', examId );
+        },
+
+        notifyReleaseError: function ( examId ) {
+            this.$broadcast( 'exam-release-error', examId );
+        },
+
+        notifyHideSuccess: function ( examId ) {
+            this.$broadcast( 'exam-hide-success', examId );
+        },
+
+        notifyHideError: function ( examId ) {
+            this.$broadcast( 'exam-hide-error', examId );
         }
-    });
-}
+    },
 
-// changes the visuals and status for a released exam
-function setAsReleased($exam) {
-    $exam.attr('data-released', '1');
-    $exam.attr('class', 'btn btn-success');
-    $exam.html("<span class='glyphicon glyphicon-envelope' aria-hidden='true'></span>" +
-        " Released");
-}
+    events: {
+        'exam-release-event': function ( examId ) {
+            window.console.log( 'examButtons', 'caught exam-release-event', examId );
+            this.releaseExam( examId );
+        },
 
-// sets release exam button
-function setAsUnreleased($exam) {
-    $exam.attr('data-released', '0');
-    $exam.attr('class', 'btn btn-primary');
-    $exam.html("<span class='glyphicon glyphicon-envelope' aria-hidden='true'></span>" +
-        " Release Exam");
-}
+        'exam-hide-event': function ( examId ) {
+            window.console.log( 'examButtons', 'caught exam-hide-event', examId );
+            this.hideExam( examId );
+        },
+    },
 
-// Enables the "remove access" button for the exam
-function enableLock($btnLock) {
-    $btnLock.removeClass('btn-default disabled');
-    $btnLock.addClass('btn-primary');
-}
+    directives: {},
 
-function disableLock($btnLock) {
-    $btnLock.removeClass('btn-primary');
-    $btnLock.addClass('btn-default disabled');
-}
+    ready: function () {
+        $.ajaxSetup( {
+            headers: {
+                'X-CSRF-TOKEN': $( 'meta[name="csrf-token"]' ).attr( 'content' )
+            }
+        } );
+        window.console.log( 'examButtons ready' );
+    }
+} );
+

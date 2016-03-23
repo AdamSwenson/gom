@@ -60,7 +60,7 @@
         var activeTab = 'navReport';
     </script>
 
-    <script type="text/javascript" src="{{ asset('js/student-controls-package.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/report-student-controls-package.js') }}"></script>
 
 @endsection
 
