@@ -12320,5 +12320,7 @@ button.close {
 
 #topNavbar .navItem {
   color: white; }
+  #topNavbar .navItem .active {
+    background: white; }
 
 /*# sourceMappingURL=common-package.css.map */

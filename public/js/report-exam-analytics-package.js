@@ -38566,8 +38566,9 @@ var $ = require('jquery');
 var aj = require('./utilities/ajaxCsrfPrep.js')();
 var navBar = require('./utilities/navbar.js')();
 var flash = require('./utilities/flashMessageHandling.js')();
+var jira = require('./utilities/JiraIssueCollector.js')();
 
-},{"./utilities/ajaxCsrfPrep.js":27,"./utilities/flashMessageHandling.js":28,"./utilities/navbar.js":29,"jquery":18}],22:[function(require,module,exports){
+},{"./utilities/JiraIssueCollector.js":27,"./utilities/ajaxCsrfPrep.js":28,"./utilities/flashMessageHandling.js":29,"./utilities/navbar.js":30,"jquery":18}],22:[function(require,module,exports){
 /**
  * Created by ars62917 on 2/22/16.
  */
@@ -39019,6 +39020,28 @@ module.exports = function () {
 },{"./components/elementDistributionChartsButtons.js":22,"bootstrap":3,"jquery":18,"vue":20}],26:[function(require,module,exports){
 module.exports = '<div class="pull-left"><button v-on:click="showElementHistogram" class="btn btn-primary btn-xs elementHistButton ">Histogram</button> </div> <div><button v-on:click="showElementBoxplot" class="btn btn-primary btn-xs elementBoxplotButton ">Boxplot</button> </div>';
 },{}],27:[function(require,module,exports){
+/**
+ * Created by adam on 3/23/16.
+ */
+
+"use strict";
+
+var $ = require('jquery');
+
+/**
+ * Automatically hide non-important flash message
+ */
+module.exports = function () {
+
+    $.ajax({
+        url: "http://45.79.99.151:8080/s/ef44af2e6d014d37d98d906837ad6da6-T/en_US74vpon/64022/3/1.4.26/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=6447b52e",
+        type: "get",
+        cache: true,
+        dataType: "script"
+    });
+};
+
+},{"jquery":18}],28:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
@@ -39037,7 +39060,7 @@ module.exports = function () {
     });
 };
 
-},{"jquery":18}],28:[function(require,module,exports){
+},{"jquery":18}],29:[function(require,module,exports){
 /**
  * Created by adam on 10/4/15.
  */
@@ -39051,10 +39074,10 @@ var $ = require('jquery');
  */
 module.exports = function () {
   //Automatically hide non-important flash message
-  $('div.alert').not('alert-important').delay(3000).slideUp(300);
+  $('div.alert').not('alert-important').delay(2000).slideUp(300);
 };
 
-},{"jquery":18}],29:[function(require,module,exports){
+},{"jquery":18}],30:[function(require,module,exports){
 /**
  * Created by adam on 2/12/16.
  */

@@ -12320,6 +12320,8 @@ button.close {
 
 #topNavbar .navItem {
   color: white; }
+  #topNavbar .navItem .active {
+    background: white; }
 
 .btn-file {
   position: relative;

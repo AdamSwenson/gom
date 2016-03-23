@@ -151,7 +151,7 @@ function getQuestionCount() {
 //    }
 //);
 
-},{"../common.js":17,"../utilities/Sortable.js":18,"bootbox":2,"bootstrap":3,"jquery":16}],2:[function(require,module,exports){
+},{"../common.js":17,"../utilities/Sortable.js":19,"bootbox":2,"bootstrap":3,"jquery":16}],2:[function(require,module,exports){
 /**
  * bootbox.js [v4.4.0]
  *
@@ -13355,8 +13355,31 @@ var $ = require('jquery');
 var aj = require('./utilities/ajaxCsrfPrep.js')();
 var navBar = require('./utilities/navbar.js')();
 var flash = require('./utilities/flashMessageHandling.js')();
+var jira = require('./utilities/JiraIssueCollector.js')();
 
-},{"./utilities/ajaxCsrfPrep.js":19,"./utilities/flashMessageHandling.js":20,"./utilities/navbar.js":21,"jquery":16}],18:[function(require,module,exports){
+},{"./utilities/JiraIssueCollector.js":18,"./utilities/ajaxCsrfPrep.js":20,"./utilities/flashMessageHandling.js":21,"./utilities/navbar.js":22,"jquery":16}],18:[function(require,module,exports){
+/**
+ * Created by adam on 3/23/16.
+ */
+
+"use strict";
+
+var $ = require('jquery');
+
+/**
+ * Automatically hide non-important flash message
+ */
+module.exports = function () {
+
+    $.ajax({
+        url: "http://45.79.99.151:8080/s/ef44af2e6d014d37d98d906837ad6da6-T/en_US74vpon/64022/3/1.4.26/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=6447b52e",
+        type: "get",
+        cache: true,
+        dataType: "script"
+    });
+};
+
+},{"jquery":16}],19:[function(require,module,exports){
 /**
  * Created by adam on 9/16/15.
  */
@@ -14497,7 +14520,7 @@ var flash = require('./utilities/flashMessageHandling.js')();
 //}
 //module.exports = function() {
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
@@ -14516,7 +14539,7 @@ module.exports = function () {
     });
 };
 
-},{"jquery":16}],20:[function(require,module,exports){
+},{"jquery":16}],21:[function(require,module,exports){
 /**
  * Created by adam on 10/4/15.
  */
@@ -14530,10 +14553,10 @@ var $ = require('jquery');
  */
 module.exports = function () {
   //Automatically hide non-important flash message
-  $('div.alert').not('alert-important').delay(3000).slideUp(300);
+  $('div.alert').not('alert-important').delay(2000).slideUp(300);
 };
 
-},{"jquery":16}],21:[function(require,module,exports){
+},{"jquery":16}],22:[function(require,module,exports){
 /**
  * Created by adam on 2/12/16.
  */

@@ -81,9 +81,6 @@ Route::get('grade/exam/{exam}/assign', 'GradeController@assign'); // launch grad
 Route::post('grade/exam/{exam}/assign', 'GradeController@recordAssignments'); // record grade assignments
 Route::post('grade/exam/{exam}', 'GradeController@recordScore'); // record a question or element score
 Route::delete('grade/exam/{exam}', 'GradeController@removeScore'); // delete a question or element score
-//Route::get('grade/exam/{exam}/time','GradeController@loadTime');
-//Route::post('grade/exam/{exam}/time','GradeController@recordTime');
-//Route::get('grade/exam/{exam}/stats', 'GradeController@loadStats');
 
 /* ----------------------------------------------- Reports --------------------------------------------------------------- */
 /* Reporting and analytics */

@@ -1,5 +1,5 @@
 <!-- Generic nav bar template used by all pages once logged in. The active tab is set in JS by the page -->
-<div id="topNavbar"
+<nav id="topNavbar"
      class="navbar navbar-inverse navbar-static-top">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -99,4 +99,4 @@
             </ul>
         </div>
     </div>
-</div>
+</nav>
