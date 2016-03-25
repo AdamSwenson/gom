@@ -120,6 +120,8 @@ Route::get('backup/{exam}', function($exam){
     }
 });
 
+Route::get('test2', 'StudentController@devEditAll');
+
 Route::get('test1', function(){
    $exams = Exam::all();
     //$exams = Exam::where('id', '>', 0)->get();

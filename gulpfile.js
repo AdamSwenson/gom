@@ -63,7 +63,7 @@ elixir( function ( mix ) {
     //setup pages
     mix.sass( [
         'common/common.sass',
-        'setup/editRoster.scss'
+        'setup/editRoster.sass'
     ], 'public/css/edit-roster-package.css' );
 
     mix.sass( [
@@ -119,6 +119,7 @@ elixir( function ( mix ) {
     mix.browserify( 'help/help.js', 'public/js/help-package.js' );
 
     //testing
+    mix.browserify('setupPages/DEVeditRoster.js', 'public/js/dev-roster-edit-package.js');
 //    mix.browserify( 'reports/examControls.js', 'public/js/dev-exam-buttons.js' );
 
 } );

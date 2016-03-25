@@ -12323,6 +12323,9 @@ button.close {
   #topNavbar .navItem .active {
     background: white; }
 
+#setupNavigation .setupNavButton {
+  cursor: pointer; }
+
 .btn-file {
   position: relative;
   overflow: hidden; }
@@ -12358,5 +12361,15 @@ button.close {
   background: red;
   border: medium;
   border-color: red; }
+
+#rosterTable td input {
+  border: none; }
+
+#rosterTable .buttonCell {
+  text-align: center;
+  vertical-align: middle; }
+
+#rosterTable .sortableHeading {
+  cursor: pointer; }
 
 /*# sourceMappingURL=edit-roster-package.css.map */

@@ -12,37 +12,39 @@ var common = require('../common.js');
 
 var bootbox = require('bootbox');
 
-var rosterTable = require('./rosterTable.js');
-
+//var rosterTable = require( './rosterTable.js' );
 var rosterImport = require('./rosterFileImport.js');
-//require('./rosterFileImport.js')();
 
+var rt = require('./rosterTable.js');
+window.console.log(rt);
 $(".deleteStudentButton").on('click', function () {
     var rowId = $(this).data('rowid');
+    window.console.log(rowId);
     if (rowId) {
-        rosterTable.deleteStudent(rowId);
+        rt.deleteStudent(rowId);
     }
 });
 
 $("#sortByFirstName").on('click', function () {
-    rosterTable.sortRosterBy('firstName');
+    rt.sortRosterBy('firstName');
 });
 $("#sortByLastName").on('click', function () {
-    rosterTable.sortRosterBy('lastName');
+    rt.sortRosterBy('lastName');
 });
 
 $("#sortByStudentIdentifier").on('click', function () {
-    rosterTable.sortRosterBy('studentIdentifier');
+    rt.sortRosterBy('studentIdentifier');
 });
+
 $("#sortByEmail").on('click', function () {
-    rosterTable.sortRosterBy('email');
+    rt.sortRosterBy('email');
 });
 
 $("#addStudent").on('click', function () {
-    rosterTable.addStudent();
+    rt.addStudent();
 });
 $("#deleteRoster").on('click', function () {
-    rosterTable.deleteRoster();
+    rt.deleteRoster();
 });
 
 $("#importHelpButton").on('click', function () {
@@ -101,6 +103,7 @@ function submitAndNavigateTo(target) {
 //$(document).ready(function () {
 // 'upload file' listener
 $('#fileInput').change(function () {
+
     rosterImport.startRead();
     $(this).val(null);
 });
@@ -13327,12 +13330,13 @@ window.$ = $;
 var jQuery = $;
 window.jQuery = jQuery;
 
-var rosterTable = require('./rosterTable.js');
+//var rosterTable = require('./rosterTable.js');
 
 require('bootstrap');
 
 module.exports = {
 
+    rosterTable: require('./rosterTable.js'),
     test: function test() {
         window.console.log('test good');
     },
@@ -13368,7 +13372,7 @@ module.exports = {
         var email = defaultChar;
         if (this.emailCol >= 0) email = row[this.emailCol];
 
-        rosterTable.addStudentToTable(lName, fName, id, email);
+        this.rosterTable.addStudentToTable(lName, fName, id, email);
     },
 
     /**
@@ -13566,6 +13570,11 @@ require('bootstrap');
 var bootbox = require('bootbox');
 
 module.exports = {
+    me: undefined,
+
+    test: function test() {
+        window.console.log('test good');
+    },
 
     file: null,
     rows: null,
@@ -13621,7 +13630,7 @@ module.exports = {
             $student.remove();
             return;
         }
-
+        var me = this;
         bootbox.dialog({
             message: '<span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span> ' + 'Warning: this will delete the student, including their feedback and scores.',
             title: "Delete Student",
@@ -13636,7 +13645,7 @@ module.exports = {
                     className: "btn-danger btn-sm",
                     callback: function callback() {
                         $student.remove();
-                        updateRowValues();
+                        me.updateRowValues();
                     }
                 }
             }
@@ -13676,19 +13685,20 @@ module.exports = {
     sortAsc: true,
 
     sortRosterBy: function sortRosterBy(value) {
+        var me = this;
         var $roster = $('#studentRosterBody');
         $roster.append($roster.find('.dataRow').sort(function (a, b) {
             var i = $(a).find('[id^="' + value + '"]');
             var j = $(b).find('[id^="' + value + '"]');
             var result = $(i).prop('value').toUpperCase().localeCompare($(j).prop('value').toUpperCase());
             // flip results if we're sorting in DESC
-            if (!sortAsc) {
+            if (!me.sortAsc) {
                 result *= -1;
             }
             return result;
         }));
-        sortAsc = !sortAsc;
-        updateRowValues();
+        me.sortAsc = !me.sortAsc;
+        this.updateRowValues();
     }
 
 };

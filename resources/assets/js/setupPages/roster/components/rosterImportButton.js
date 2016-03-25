@@ -1,36 +1,45 @@
 /**
- * Created by Brian on 9/12/2015.
- *
- * Functions for file import logic.
- *
+ * Created by adam on 3/24/16.
  */
-
 var $ = require('jquery');
 window.$ = $;
-var jQuery = $;
-window.jQuery = jQuery;
-
-//var rosterTable = require('./rosterTable.js');
-
-require('bootstrap');
 
 module.exports = {
 
-    rosterTable: require('./rosterTable.js'),
-    test: function(){
-        window.console.log('test good');
+    template: require( '../templates/roster-import-button.template.html' ),
+
+    props: [],
+
+    data: function () {
+        return {
+            // basic setup for # of columns and column ordering. These will change based on the imported roster file
+            numColumns: 4,
+            lastNameCol: - 1,
+            firstNameCol: - 1,
+            idCol: - 1,
+            emailCol: - 1,
+
+            // [separatorChar] defines the character that will be used to divide lines into fields
+            // default: comma
+            separatorChar: ',',
+        };
     },
 
-    // basic setup for # of columns and column ordering. These will change based on the imported roster file
-    numColumns: 4,
-    lastNameCol: - 1,
-    firstNameCol: - 1,
-    idCol: - 1,
-    emailCol: - 1,
+    computed: {},
 
-    // [separatorChar] defines the character that will be used to divide lines into fields
-    // default: comma
-    separatorChar: ',',
+    methods: {
+        sendAddRowRequest: function(lastName, firstName, studentId, email){
+          this.$dispatch('please-add-row', {
+              lastName: lastName,
+              firstName: firstName,
+              studentId: studentId,
+              email: email
+          });
+        },
+        
+        importRoster: function(){
+          this.startRead();  
+        },
 
     /**
      * Map values found for firstNameCol, lastNameCol, idCol, and emailCol to display in the form.
@@ -56,7 +65,8 @@ module.exports = {
         if ( this.emailCol >= 0 )
             email = row[ this.emailCol ];
 
-        this.rosterTable.addStudentToTable( lName, fName, id, email );
+        this.sendAddRowRequest(lName, fName, id, email);
+        //this.rosterTable.addStudentToTable( lName, fName, id, email );
     },
 
     /**
@@ -88,8 +98,8 @@ module.exports = {
         }
 
         var reader = new FileReader();
-        var $inputFile = $( '#fileInput' )[ 0 ].files[ 0 ];
-
+        var $inputFile = $( '#fileInputV' )[ 0 ].files[ 0 ];
+        window.console.log($inputFile);
         reader.readAsText( $inputFile );
 
         reader.onload = function ( event ) {
@@ -243,4 +253,8 @@ module.exports = {
         }
     }
 
+
+    },
+
+    directives: {}
 };

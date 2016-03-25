@@ -47,28 +47,24 @@
     <form id="rosterData" method="post" role="form"
           action="{{ url('exam/'.$exam->getId().'/student/updateAll') }}">
         {!! csrf_field() !!}
-        <table class="table">
+        <table id="rosterTable" class="table">
             <thead>
             <!-- table headers -->
             <tr>
                 <th id="sortByLastName"
-                    class="col-md-3"
-                    style="cursor: pointer;"
+                    class="col-md-3 sortableHeading"
                     >Last Name
                 </th>
                 <th id="sortByFirstName"
-                    class="col-md-3"
-                    style="cursor: pointer;"
+                    class="col-md-3 sortableHeading"
                     >First Name
                 </th>
                 <th id="sortByStudentIdentifier"
-                    class="col-md-2"
-                    style="cursor: pointer;"
+                    class="col-md-2 sortableHeading"
                     >Student ID
                 </th>
                 <th id="sortByEmail"
-                    class="col-md-3"
-                    style="cursor: pointer;"
+                    class="col-md-3 sortableHeading"
                     >
                     Email
                 </th>

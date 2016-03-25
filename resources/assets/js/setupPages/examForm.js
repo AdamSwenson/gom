@@ -11,6 +11,8 @@ window.jQuery = jQuery;
 
 require( 'bootstrap' );
 
+var common = require( '../common.js' );
+
 var bootbox = require( 'bootbox' );
 
 

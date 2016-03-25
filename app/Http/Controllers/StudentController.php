@@ -165,10 +165,45 @@ class StudentController extends Controller
             $prevActionLabel = 'Edit Exam';
         }
 
-        return view('setup/edit_roster')->with(['exam' => $exam, 'students' => $students,
-            'prevAction' => $prevAction, 'prevActionLabel' => $prevActionLabel]);
+        return view('setup/edit_roster')->with(
+            ['exam' => $exam,
+             'students' => $students,
+            'prevAction' => $prevAction,
+             'prevActionLabel' => $prevActionLabel]);
     }
 
+    /**
+     * Show the form for importing and editing a student roster
+     * @param Exam $exam
+     * @param StudentRequest $request
+     * @return $this
+     */
+    public function devEditAll(StudentRequest $request)
+    {
+        $exam = Exam::find(1);
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
+        $examId = $exam->getId();
+        $this->kumiRepository->create($exam->getName(), $exam->getYear(), $exam);
+        $students = $this->dao->load_students_by_exam($examId);
+
+        // find out where the 'back' button should navigate. Default is editElements.
+        $prevAction = 'editElements';
+        $prevActionLabel = 'Edit Elements';
+        // if no questions, back button goes to exam
+        if (sizeof($this->questionAssignmentDao->load_all_for_exam($examId)) == 0)
+        {
+            $prevAction = 'editExam';
+            $prevActionLabel = 'Edit Exam';
+        }
+
+        return view('development.newrosterpage')->with(
+            ['exam' => $exam,
+             'students' => $students,
+             'prevAction' => $prevAction,
+             'prevActionLabel' => $prevActionLabel]);
+    }
 
     /**
      * Add or update student records.

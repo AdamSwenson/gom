@@ -13,6 +13,11 @@ require('bootstrap');
 var bootbox = require('bootbox');
 
 module.exports = {
+    me: this,
+
+    test: function(){
+        window.console.log('test good');
+    },
 
     file: null,
     rows: null,
@@ -68,7 +73,7 @@ module.exports = {
             $student.remove();
             return;
         }
-
+        var me = this;
         bootbox.dialog( {
             message: '<span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span> ' +
             'Warning: this will delete the student, including their feedback and scores.',
@@ -85,7 +90,7 @@ module.exports = {
                     className: "btn-danger btn-sm",
                     callback: function () {
                         $student.remove();
-                        updateRowValues();
+                        me.updateRowValues();
                     }
                 }
             }
@@ -127,6 +132,7 @@ module.exports = {
     sortAsc: true,
 
     sortRosterBy: function( value ) {
+        var me = this;
         var $roster = $( '#studentRosterBody' );
         $roster.append(
             $roster.find( '.dataRow' ).sort( function ( a, b ) {
@@ -135,15 +141,15 @@ module.exports = {
                 var result = $( i ).prop( 'value' ).toUpperCase().localeCompare(
                     $( j ).prop( 'value' ).toUpperCase() );
                 // flip results if we're sorting in DESC
-                if ( ! sortAsc ) {
+                if ( ! me.sortAsc ) {
                     result *= - 1;
                 }
                 return result;
             } )
         );
-        sortAsc = ! sortAsc;
-        updateRowValues();
-    },
+        me.sortAsc = ! me.sortAsc;
+        this.updateRowValues();
+    }
 
 
-}
+};

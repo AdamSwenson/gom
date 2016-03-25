@@ -1,15 +1,15 @@
 <!-- template used by "edit_roster" to display one table row displaying a single student.
     Holds student lname, fname, id, email and delete button -->
-<tr class="dataRow {{ $s['failed'] or '' }}"
-    id="dataRow{{ $row }}">
+<tr class="dataRow {{ isFailed }}"
+    id="dataRow{{ rowId }}">
     <td>
         <input
                 class="form-control"
                 type="text"
                 id="lastName"
-                name="lastName{{ $row }}"
+                name="lastName{{ rowId }}"
                 placeholder="Last Name"
-                value="{{ $s['last_name'] or '' }}"
+                v-model="lastName"
         >
     </td>
     <td>
@@ -17,10 +17,10 @@
                 class="form-control"
                 type="text"
                 id="firstName"
-                name="firstName{{ $row }}"
+                name="firstName{{ rowId }}"
                 placeholder="First Name"
-                value="{{ $s['first_name'] or '' }}"
-                >
+                v-model="firstName"
+        >
     </td>
     <td>
         <input
@@ -28,8 +28,8 @@
                 type="text"
                 id="studentIdentifier"
                 placeholder="Student ID"
-                name="studentIdentifier{{ $row }}"
-                value="{{ !empty($s['student_identifier']) ? $s['student_identifier'] : '' }}"
+                name="studentIdentifier{{ rowId }}"
+                v-model="studentId"
         >
     </td>
     <td>
@@ -37,24 +37,23 @@
                 class="form-control"
                 type="text"
                 id="email"
-                name="email{{ $row }}"
+                name="email{{ rowId }}"
                 placeholder="Email"
-                value="{{ $s['email'] or '' }}"
+                v-model="email"
         >
     </td>
-
-    <td class="buttonCell">
+    <td align="center" style="vertical-align: middle;">
         <a
-           class="deleteStudentButton"
-           data-rowid="{{ $row }}"
-           id="deleteButton"
+                class="deleteStudentButton"
+                data-rowid="{{ rowId }}"
+                v-on:click="deleteStudent"
         >
             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
         </a>
     </td>
     <input
             type="hidden"
-            name="id{{ $row }}"
-            value="{{ $s['id'] or '0' }}"
+            name="id{{ rowId }}"
+            value="{{ studentRecordId }}"
     >
 </tr>

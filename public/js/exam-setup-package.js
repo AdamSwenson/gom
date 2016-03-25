@@ -13,6 +13,8 @@ window.jQuery = jQuery;
 
 require('bootstrap');
 
+var common = require('../common.js');
+
 var bootbox = require('bootbox');
 
 $("#backNavButton").on('click', function () {
@@ -60,7 +62,7 @@ $('#yearList li').on('click', function () {
 //return false;
 //});
 
-},{"bootbox":2,"bootstrap":3,"jquery":16}],2:[function(require,module,exports){
+},{"../common.js":17,"bootbox":2,"bootstrap":3,"jquery":16}],2:[function(require,module,exports){
 /**
  * bootbox.js [v4.4.0]
  *
@@ -13252,4 +13254,107 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-},{}]},{},[1]);
+},{}],17:[function(require,module,exports){
+/**
+ * Created by adam on 2/12/16.
+ */
+
+'use strict';
+
+var $ = require('jquery');
+
+var aj = require('./utilities/ajaxCsrfPrep.js')();
+var navBar = require('./utilities/navbar.js')();
+var flash = require('./utilities/flashMessageHandling.js')();
+var jira = require('./utilities/JiraIssueCollector.js')();
+
+},{"./utilities/JiraIssueCollector.js":18,"./utilities/ajaxCsrfPrep.js":19,"./utilities/flashMessageHandling.js":20,"./utilities/navbar.js":21,"jquery":16}],18:[function(require,module,exports){
+/**
+ * Created by adam on 3/23/16.
+ */
+
+"use strict";
+
+var $ = require('jquery');
+
+/**
+ * Automatically hide non-important flash message
+ */
+module.exports = function () {
+
+    $.ajax({
+        url: "http://45.79.99.151:8080/s/ef44af2e6d014d37d98d906837ad6da6-T/en_US74vpon/64022/3/1.4.26/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=6447b52e",
+        type: "get",
+        cache: true,
+        dataType: "script"
+    });
+};
+
+},{"jquery":16}],19:[function(require,module,exports){
+'use strict';
+
+var $ = require('jquery');
+window.$ = $;
+var jQuery = $;
+window.jQuery = jQuery;
+
+/**
+ * Sets the csrf token for ajax requests
+ */
+module.exports = function () {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+};
+
+},{"jquery":16}],20:[function(require,module,exports){
+/**
+ * Created by adam on 10/4/15.
+ */
+
+'use strict';
+
+var $ = require('jquery');
+
+/**
+ * Automatically hide non-important flash message
+ */
+module.exports = function () {
+  //Automatically hide non-important flash message
+  $('div.alert').not('alert-important').delay(2000).slideUp(300);
+};
+
+},{"jquery":16}],21:[function(require,module,exports){
+/**
+ * Created by adam on 2/12/16.
+ */
+
+'use strict';
+
+var $ = require('jquery');
+window.$ = $;
+var jQuery = $;
+window.jQuery = jQuery;
+
+require('bootstrap');
+
+module.exports = function () {
+
+    /**
+     * Sets one of the nav tabs as active. Uses variable which should be set
+     * ahead of time on each page
+     * @param activeTab id of tab to make active
+     */
+    function setActiveNavTab(activeTab) {
+        if (activeTab) {
+            $('[id^="nav"]').attr('class', '');
+            $('#' + activeTab).attr('class', 'active');
+        }
+    }
+
+    setActiveNavTab(activeTab);
+};
+
+},{"bootstrap":3,"jquery":16}]},{},[1]);
