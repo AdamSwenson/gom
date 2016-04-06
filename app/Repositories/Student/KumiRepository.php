@@ -22,10 +22,15 @@ use App\Kumi;
 class KumiRepository implements IKumiRepository
 {
 
+    /**
+     * Loads a kumi by its name and year
+     * @param $name
+     * @param $year
+     * @return mixed
+     */
     public function load($name, $year)
     {
         return Kumi::where('nickname', $name)->where('year', $year)->first();
-
     }
 
     /**
@@ -36,7 +41,14 @@ class KumiRepository implements IKumiRepository
      */
     public function create($name, $year, $exam=null)
     {
-        $preExisting = $this->load($name, $year);
+        if(! is_null($exam)){
+            //Only uses the first associated kumi
+            $preExisting = $exam->classes()->first();
+        }else{
+            //load by exam name
+            $preExisting = $this->load($name, $year);
+        }
+
         if(!empty($preExisting))
         {
             return $preExisting;
@@ -57,14 +69,17 @@ class KumiRepository implements IKumiRepository
      * Until we get multiple class functionality working, this
      * will either retrieve the default Kumi already created for
      * the exam or make a new one, save it, and return it.
-     *
+     * 
      * @param Exam $exam
      * @return Kumi
      */
     public function loadOrCreateKumiForExam(Exam $exam)
     {
+        //Only uses the first associated kumi
+        $kumi = $exam->classes()->first();
+
         //If we already have a kumi for the exam, load it. Otherwise make one.
-        $kumi = $this->load($exam->getName(), $exam->getYear());
+        //$kumi = $this->load($exam->getName(), $exam->getYear());
         if (!$kumi)
         {
             $kumi = $this->create($exam->getName(), $exam->getYear(), $exam);

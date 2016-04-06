@@ -1,7 +1,7 @@
 /**
  * Created by adam on 3/24/16.
  */
-var $ = require('jquery');
+var $ = require( 'jquery' );
 window.$ = $;
 
 module.exports = {
@@ -28,230 +28,243 @@ module.exports = {
     computed: {},
 
     methods: {
-        sendAddRowRequest: function(lastName, firstName, studentId, email){
-          this.$dispatch('please-add-row', {
-              lastName: lastName,
-              firstName: firstName,
-              studentId: studentId,
-              email: email
-          });
-        },
-        
-        importRoster: function(){
-          this.startRead();  
+        sendAddRowRequest: function ( lastName, firstName, studentId, email ) {
+            this.$dispatch( 'please-add-row', {
+                lastName: lastName,
+                firstName: firstName,
+                studentId: studentId,
+                email: email
+            } );
         },
 
-    /**
-     * Map values found for firstNameCol, lastNameCol, idCol, and emailCol to display in the form.
-     // If a value type isn't discovered (-1) it won't be displayed.
-     * @param row
-     */
-    addRow: function ( row ) {
-        var defaultChar = '';
+        importRoster: function () {
+            this.startRead();
 
-        var fName = defaultChar;
-        if ( this.firstNameCol >= 0 )
-            fName = row[ this.firstNameCol ];
+        },
 
-        var lName = defaultChar;
-        if ( this.lastNameCol >= 0 )
-            lName = row[ this.lastNameCol ];
+        /**
+         * Map values found for firstNameCol, lastNameCol, idCol, and emailCol to display in the form.
+         // If a value type isn't discovered (-1) it won't be displayed.
+         * @param row
+         */
+        addRow: function ( row ) {
+            var defaultChar = '';
 
-        var id = defaultChar;
-        if ( this.idCol >= 0 )
-            id = row[ this.idCol ];
+            var fName = defaultChar;
+            if ( this.firstNameCol >= 0 )
+                fName = row[ this.firstNameCol ];
 
-        var email = defaultChar;
-        if ( this.emailCol >= 0 )
-            email = row[ this.emailCol ];
+            var lName = defaultChar;
+            if ( this.lastNameCol >= 0 )
+                lName = row[ this.lastNameCol ];
 
-        this.sendAddRowRequest(lName, fName, id, email);
-        //this.rosterTable.addStudentToTable( lName, fName, id, email );
-    },
+            var id = defaultChar;
+            if ( this.idCol >= 0 )
+                id = row[ this.idCol ];
 
-    /**
-     * check that the browser isn't ancient
-     * @returns {boolean}
-     */
-    browserSupportFileUpload: function () {
-        var isCompatible = false;
-        if ( window.File && window.FileReader && window.FileList && window.Blob ) {
-            isCompatible = true;
-        }
-        return isCompatible;
-    },
+            var email = defaultChar;
+            if ( this.emailCol >= 0 )
+                email = row[ this.emailCol ];
 
-    startRead: function () {
-        console.log( 'startRead called: reading file' );
+            this.sendAddRowRequest( lName, fName, id, email );
+            //this.rosterTable.addStudentToTable( lName, fName, id, email );
+        },
 
-        // reset columns. prevents bugs if two files with different orderings are imported.
-        var lastNameCol = - 1;
-        var firstNameCol = - 1;
-        var emailCol = - 1;
-        var idCol = - 1;
+        /**
+         * check that the browser isn't ancient
+         * @returns {boolean}
+         */
+        browserSupportFileUpload: function () {
+            var isCompatible = false;
+            if ( window.File && window.FileReader && window.FileList && window.Blob ) {
+                isCompatible = true;
+            }
+            return isCompatible;
+        },
 
-        var me = this;
+        startRead: function () {
+            console.log( 'startRead called: reading file' );
 
-        if ( ! this.browserSupportFileUpload() ) {
-            alert( 'The file upload function is not fully supported in this browser!' );
-            return;
-        }
+            // reset columns. prevents bugs if two files with different orderings are imported.
+            var lastNameCol = - 1;
+            var firstNameCol = - 1;
+            var emailCol = - 1;
+            var idCol = - 1;
 
-        var reader = new FileReader();
-        var $inputFile = $( '#fileInputV' )[ 0 ].files[ 0 ];
-        window.console.log($inputFile);
-        reader.readAsText( $inputFile );
+            var me = this;
 
-        reader.onload = function ( event ) {
-            // convert line endings
-            var rows = event.target.result.toString().replace( /[\r\n]+/g, "\n" ).split( "\n" );
-            var students = [];
-
-            // break each row into its elements
-            for ( var i = 0; i < rows.length; i ++ ) {
-                students[ i ] = rows[ i ].toString().split( me.separatorChar );
+            if ( ! this.browserSupportFileUpload() ) {
+                alert( 'The file upload function is not fully supported in this browser!' );
+                return;
             }
 
-            window.console.log('initialRead', students);
+            var reader = new FileReader();
+            var $inputFile = $( '#fileInput' )[ 0 ].files[ 0 ];
+            window.console.log( $inputFile );
+            reader.readAsText( $inputFile );
 
-            // remove any resulting lines with 1 or fewer elements
-            for ( i = students.length - 1; i >= 0; i -- ) {
-                // since this looks for rows with 2 or more consecutive commas, rows that import with a few empty columns
-                // at the beginning (eg:  [,,,data,data,data] ) will be spliced. IT should remove lines with only commas.
-                if ( students[ i ].length <= 1 || (rows[ i ].search( /,,+/ ) >= 0 ) ) {
-                    students.splice( i, 1 );
-                    rows.splice( i, 1 );
+            reader.onload = function ( event ) {
+                // convert line endings
+                var rows = event.target.result.toString().replace( /[\r\n]+/g, "\n" ).split( "\n" );
+                var students = [];
+
+                // break each row into its elements
+                for ( var i = 0; i < rows.length; i ++ ) {
+                    students[ i ] = rows[ i ].toString().split( me.separatorChar );
                 }
-            }
 
-            // analyze the file and look for column headers
-            var firstLine = students[ 0 ];
-            var startRow = 0;
-            if ( me.firstRowContainsTitles( firstLine ) ) {
-                me.guessColumnDataByTitles( firstLine );
-                // remove the header line as we don't need it any longer
-                rows.splice( 0, 1 );
-                students.splice( 0, 1 );
-            } else {
-                me.guessColumnDataByContent( students );
-            }
+                window.console.log( 'initialRead', students );
 
-            console.log( 'lnameCol:' + me.lastNameCol + ' fnameCol:' + me.firstNameCol + ' idCol:' + me.idCol + ' emailCol:' + me.emailCol );
-
-            for ( i = startRow; i < rows.length; i ++ ) {
-                me.addRow( students[ i ] );
-            }
-        };
-
-        reader.onerror = function () {
-            alert( 'Unable to read ' + file.fileName );
-        };
-    },
-
-    /**
-     * determines if the first row contains column headers that describe the column's content
-     * @param firstLine
-     * @returns {boolean}
-     */
-    firstRowContainsTitles: function ( firstLine ) {
-        var result = false;
-        if(typeof firstLine != 'undefined') {
-            for ( var i = 0; i < firstLine.length; i ++ ) {
-                if ( firstLine[ i ].search( /mail/i ) >= 0 || firstLine[ i ].search( /name/i ) >= 0 ) {
-                    result = true;
-                }
-                if ( firstLine[ i ].search( /@/ ) >= 0 ) {
-                    result = false;
-                }
-            }
-        }
-        return result;
-    },
-
-    /**
-     * examine column titles to pick likely ordering
-     * @param titles
-     */
-    guessColumnDataByTitles: function ( titles ) {
-        var numColumns = titles.length;
-
-        for ( var i = 0; i < numColumns; i ++ ) {
-            if ( titles[ i ].search( /mail/i ) >= 0 ) {
-                this.emailCol = i;
-            } else if ( titles[ i ].search( /id/ ) >= 0 ) {
-                this.idCol = i;
-            } else if ( titles[ i ].search( /first/ ) >= 0 ) {
-                this.firstNameCol = i;
-            } else if ( titles[ i ].search( /last/ ) >= 0 ) {
-                this.lastNameCol = i;
-            } else {
-                //console.log('column not found: "' + titles[i] + '"');
-            }
-        }
-    },
-
-    /**
-     * Examine table data to pick out column ordering
-     */
-    guessColumnDataByContent: function ( students ) {
-        window.console.log('guess', students);
-        var startCol = 0;
-        var startRow = 0;
-
-        var numColumns = students[ 0 ].length;
-        var foundColumns = [];
-
-        // commonNames[] is a list of the most common first names for students born between 1990-2000
-        // It is used to scan a column and make a guess at which contains first names
-        var commonNames = [
-            'Michael', 'Christopher', 'Matthew',
-            'Joshua', 'Jacob', 'Nicholas',
-            'Jessica', 'Ashley', 'Emily',
-            'Sarah', 'Samantha', 'Amanda'
-        ];
-
-
-        for ( var i = startCol; i < numColumns; i ++ ) {
-            if ( students[ 0 ][ i ].search( /@/ ) >= 0 ) {
-                // look for @, that's the email
-                this.emailCol = i;
-                foundColumns.push( i );
-            } else if ( students[ 0 ][ i ].search( /[0-9]{3}/ ) >= 0 ) {
-                // look for 3 digits in a row, that's the studentId
-                this.idCol = i;
-                foundColumns.push( i );
-            } else if ( students[ 0 ][ i ] == '' ) {
-                // add any empty columns to the blacklist so they are skipped later
-                foundColumns.push( i );
-            }
-        }
-
-        for ( i = startCol; i < numColumns; i ++ ) {
-            // skip any columns which have already been flagged as email or student ID
-            if ( foundColumns.indexOf( i ) > - 1 ) {
-                continue;
-            }
-            for ( var j = startRow; j < students.length; j ++ ) {
-                // any column with 3 more letters is set as last name. Next column found with letters is first name
-                if ( students[ j ][ i ].search( /.{3,}/ ) > - 1 ) {
-                    if ( this.lastNameCol == - 1 )
-                        this.lastNameCol = i;
-                    else if ( this.lastNameCol != i ) {
-                        this.firstNameCol = i;
+                // remove any resulting lines with 1 or fewer elements
+                for ( i = students.length - 1; i >= 0; i -- ) {
+                    // since this looks for rows with 2 or more consecutive commas, rows that import with a few empty columns
+                    // at the beginning (eg:  [,,,data,data,data] ) will be spliced. IT should remove lines with only commas.
+                    if ( students[ i ].length <= 1 || (rows[ i ].search( /,,+/ ) >= 0 ) ) {
+                        students.splice( i, 1 );
+                        rows.splice( i, 1 );
                     }
                 }
-                // look for common names and set firstNameCol if any are found
-                if ( $.inArray( students[ j ][ i ], commonNames ) > - 1 ) {
+
+                // analyze the file and look for column headers
+                var firstLine = students[ 0 ];
+                var startRow = 0;
+                if ( me.firstRowContainsTitles( firstLine ) ) {
+                    me.guessColumnDataByTitles( firstLine );
+                    // remove the header line as we don't need it any longer
+                    rows.splice( 0, 1 );
+                    students.splice( 0, 1 );
+                } else {
+                    me.guessColumnDataByContent( students );
+                }
+
+                console.log( 'lnameCol:' + me.lastNameCol + ' fnameCol:' + me.firstNameCol + ' idCol:' + me.idCol + ' emailCol:' + me.emailCol );
+
+                for ( i = startRow; i < rows.length; i ++ ) {
+                    me.addRow( students[ i ] );
+                }
+
+                //after rows are all added, ask for the table to be redrawn
+                me.requestTableRefresh();
+
+            };
+
+            reader.onerror = function () {
+                alert( 'Unable to read ' + file.fileName );
+            };
+        },
+
+        /**
+         * determines if the first row contains column headers that describe the column's content
+         * @param firstLine
+         * @returns {boolean}
+         */
+        firstRowContainsTitles: function ( firstLine ) {
+            var result = false;
+            if ( typeof firstLine != 'undefined' ) {
+                for ( var i = 0; i < firstLine.length; i ++ ) {
+                    if ( firstLine[ i ].search( /mail/i ) >= 0 || firstLine[ i ].search( /name/i ) >= 0 ) {
+                        result = true;
+                    }
+                    if ( firstLine[ i ].search( /@/ ) >= 0 ) {
+                        result = false;
+                    }
+                }
+            }
+            return result;
+        },
+
+        /**
+         * examine column titles to pick likely ordering
+         * @param titles
+         */
+        guessColumnDataByTitles: function ( titles ) {
+            var numColumns = titles.length;
+
+            for ( var i = 0; i < numColumns; i ++ ) {
+                if ( titles[ i ].search( /mail/i ) >= 0 ) {
+                    this.emailCol = i;
+                } else if ( titles[ i ].search( /id/ ) >= 0 ) {
+                    this.idCol = i;
+                } else if ( titles[ i ].search( /first/ ) >= 0 ) {
                     this.firstNameCol = i;
-                    if ( this.lastNameCol == this.firstNameCol ) {
-                        this.lastNameCol = - 1;
-                    }
-                    foundColumns.push( i );
-                    break;
+                } else if ( titles[ i ].search( /last/ ) >= 0 ) {
+                    this.lastNameCol = i;
+                } else {
+                    //console.log('column not found: "' + titles[i] + '"');
                 }
             }
+        },
+
+        /**
+         * Examine table data to pick out column ordering
+         */
+        guessColumnDataByContent: function ( students ) {
+            window.console.log( 'guess', students );
+            var startCol = 0;
+            var startRow = 0;
+
+            var numColumns = students[ 0 ].length;
+            var foundColumns = [];
+
+            // commonNames[] is a list of the most common first names for students born between 1990-2000
+            // It is used to scan a column and make a guess at which contains first names
+            var commonNames = [
+                'Michael', 'Christopher', 'Matthew',
+                'Joshua', 'Jacob', 'Nicholas',
+                'Jessica', 'Ashley', 'Emily',
+                'Sarah', 'Samantha', 'Amanda'
+            ];
+
+
+            for ( var i = startCol; i < numColumns; i ++ ) {
+                if ( students[ 0 ][ i ].search( /@/ ) >= 0 ) {
+                    // look for @, that's the email
+                    this.emailCol = i;
+                    foundColumns.push( i );
+                } else if ( students[ 0 ][ i ].search( /[0-9]{3}/ ) >= 0 ) {
+                    // look for 3 digits in a row, that's the studentId
+                    this.idCol = i;
+                    foundColumns.push( i );
+                } else if ( students[ 0 ][ i ] == '' ) {
+                    // add any empty columns to the blacklist so they are skipped later
+                    foundColumns.push( i );
+                }
+            }
+
+            for ( i = startCol; i < numColumns; i ++ ) {
+                // skip any columns which have already been flagged as email or student ID
+                if ( foundColumns.indexOf( i ) > - 1 ) {
+                    continue;
+                }
+                for ( var j = startRow; j < students.length; j ++ ) {
+                    // any column with 3 more letters is set as last name. Next column found with letters is first name
+                    if ( students[ j ][ i ].search( /.{3,}/ ) > - 1 ) {
+                        if ( this.lastNameCol == - 1 )
+                            this.lastNameCol = i;
+                        else if ( this.lastNameCol != i ) {
+                            this.firstNameCol = i;
+                        }
+                    }
+                    // look for common names and set firstNameCol if any are found
+                    if ( $.inArray( students[ j ][ i ], commonNames ) > - 1 ) {
+                        this.firstNameCol = i;
+                        if ( this.lastNameCol == this.firstNameCol ) {
+                            this.lastNameCol = - 1;
+                        }
+                        foundColumns.push( i );
+                        break;
+                    }
+                }
+            }
+        },
+
+        /**
+         * Requests that the table be redrawn so that the sorting,
+         * paging, et cetera are all updated
+         */
+        requestTableRefresh: function () {
+            this.$dispatch( 'please-update-row-values' );
         }
-    }
 
 
     },

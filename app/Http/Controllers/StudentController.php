@@ -152,7 +152,10 @@ class StudentController extends Controller
         $this->authorize('access-object', $exam);
 
         $examId = $exam->getId();
+        
+        //This doesn't seem to be necessary. A kumi gets created in the dao
         $this->kumiRepository->create($exam->getName(), $exam->getYear(), $exam);
+        
         $students = $this->dao->load_students_by_exam($examId);
 
         // find out where the 'back' button should navigate. Default is editElements.
@@ -185,6 +188,7 @@ class StudentController extends Controller
         $this->authorize('access-object', $exam);
 
         $examId = $exam->getId();
+
         $this->kumiRepository->create($exam->getName(), $exam->getYear(), $exam);
         $students = $this->dao->load_students_by_exam($examId);
 

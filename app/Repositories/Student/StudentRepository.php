@@ -85,18 +85,18 @@ class StudentRepository implements IStudentRepository
          * So, we'll return back the invalid records but add a class so that the
          * client can add styling to make it easier for the user to identify them.
         */
-        if (!empty($this->studentValidator->invalidRecords))
+        if ( ! empty($this->studentValidator->invalidRecords) )
         {
-            foreach ($this->studentValidator->invalidRecords as $i)
+            foreach ( $this->studentValidator->invalidRecords as $i )
             {
                 //We need to decide whether it was a preexisting record or a new
                 //record which was invalid lest we push two records back
-                if ($request->input('id' . $i) != 0)
+                if ( $request->input('id' . $i) != 0 )
                 {
                     //existing record
-                    foreach ($this->allStudents as $row)
+                    foreach ( $this->allStudents as $row )
                     {
-                        if ($row['id'] == $request->input('id' . $i))
+                        if ( $row['id'] == $request->input('id' . $i) )
                         {
                             //Add a failed key which the browser will use to attach a failure class
                             $row['failed'] = 'invalidRecord';
@@ -106,12 +106,12 @@ class StudentRepository implements IStudentRepository
                 } else
                 {
                     $this->allStudents[] = [
-                        'failed' => 'invalidRecord',
-                        'last_name' => $request->input('lastName' . $i),
-                        'first_name' => $request->input('firstName' . $i),
-                        'email' => $request->input('email' . $i),
+                        'failed'             => 'invalidRecord',
+                        'last_name'          => $request->input('lastName' . $i),
+                        'first_name'         => $request->input('firstName' . $i),
+                        'email'              => $request->input('email' . $i),
                         'student_identifier' => $request->input('studentIdentifier' . $i),
-                        'id' => $request->input('id' . $i)
+                        'id'                 => $request->input('id' . $i),
                     ];
                 }
             }
@@ -137,16 +137,19 @@ class StudentRepository implements IStudentRepository
     public function updateStudentsInDatabase(Request $request, $kumi)
     {
         //Write valid student records to the database and store them in $this->currentStudents
-        foreach ($this->studentValidator->validRecords as $rowNumber)
+        foreach ( $this->studentValidator->validRecords as $rowNumber )
         {
+            $id = $request->input('id' . $rowNumber);
             $lName = $request->input('lastName' . $rowNumber);
             $fName = $request->input('firstName' . $rowNumber);
-            $email = $request->input('email' . $rowNumber);
-            $identifier = $request->input('studentIdentifier' . $rowNumber);
-            $id = $request->input('id' . $rowNumber);
+
+            //these fields are nullable. we don't want them recorded as empty strings
+            $email = $request->has('email' . $rowNumber) ? $request->input('email' . $rowNumber) : null;
+            $identifier = $request->has('studentIdentifier' . $rowNumber) ? $request->input('studentIdentifier' . $rowNumber) : null;
+
             $student = null;
 
-            if ($id == 0) //new students have id==0
+            if ( $id == 0 ) //new students have id==0
             {
                 // create new student
                 $student = $this->create_student($lName, $fName, $identifier, $email);
@@ -158,14 +161,20 @@ class StudentRepository implements IStudentRepository
                 $student = $this->load_student_by_id($id);
                 $student->setStudentFName($fName);
                 $student->setStudentLName($lName);
-                $student->setStudentId($identifier);
-                $student->setEmail($email);
-                $student->save();
-            }
 
+                if(! is_null($identifier)){
+                    $student->setStudentId($identifier);
+                }
+
+                if(! is_null($email))
+                {
+                    $student->setEmail($email);
+                }
+            }
+            $student->save();
             //Add to list of students on the current exam
             $this->idsOnRosterIncludingInvalid[] = $student->getId();
-            $this->currentStudents[$id] = $student;
+            $this->currentStudents[ $id ] = $student;
         }
     }
 
@@ -177,13 +186,13 @@ class StudentRepository implements IStudentRepository
      */
     public function addInvalidIdsToList(Request $request)
     {
-        if (!empty($this->studentValidator->invalidRecords))
+        if ( ! empty($this->studentValidator->invalidRecords) )
         {
 
-            foreach ($this->studentValidator->invalidRecords as $rowId)
+            foreach ( $this->studentValidator->invalidRecords as $rowId )
             {
                 $recordId = $request->input('id' . $rowId);
-                if ($recordId !== 0) //Incoming records with id == 0 are new
+                if ( $recordId !== 0 ) //Incoming records with id == 0 are new
                 {
                     $this->idsOnRosterIncludingInvalid[] = $recordId;
                 }
@@ -222,11 +231,11 @@ class StudentRepository implements IStudentRepository
          * who are not on the roster
          */
         $studentsInDb = $this->load_students_by_exam($this->exam->getId());
-        if (count($studentsInDb) > 0 && count($this->idsOnRosterIncludingInvalid) > 0)
+        if ( count($studentsInDb) > 0 && count($this->idsOnRosterIncludingInvalid) > 0 )
         {
-            foreach ($studentsInDb as $student)
+            foreach ( $studentsInDb as $student )
             {
-                if (!in_array($student->getId(), $this->idsOnRosterIncludingInvalid))
+                if ( ! in_array($student->getId(), $this->idsOnRosterIncludingInvalid) )
                 {
                     $student->delete();
                 }
@@ -246,13 +255,13 @@ class StudentRepository implements IStudentRepository
      */
     protected function determineType($exam_or_examId)
     {
-        if ($exam_or_examId instanceof Exam)
+        if ( $exam_or_examId instanceof Exam )
         {
             return $exam_or_examId;
         } else
         {
-            $examId = (int)$exam_or_examId;
-            if (is_integer($examId))
+            $examId = (int) $exam_or_examId;
+            if ( is_integer($examId) )
             {
                 return Exam::findOrFail($examId);
             } else
@@ -275,14 +284,14 @@ class StudentRepository implements IStudentRepository
         $cleanLastName = $lastName;
         $cleanFirstName = $firstName;
         $cleanEmail = $email;
-        if (!empty($email))
+        if ( ! empty($email) )
         {
             $cleanEmail = $email;
         }
 
         $preExisting->setStudentLName($cleanLastName);
         $preExisting->setStudentFName($cleanFirstName);
-        if ($cleanEmail)
+        if ( $cleanEmail )
         {
             $preExisting->setEmail($cleanEmail);
         }
@@ -295,11 +304,10 @@ class StudentRepository implements IStudentRepository
     /**
      * Add a new student to the database
      *
-     *
      * @param $lastName
      * @param $firstName
-     * @param null $studentId
-     * @param null $email
+     * @param null|integer $studentId
+     * @param null|string $email
      * @return Student
      */
     public function create_student($lastName, $firstName, $studentId = null, $email = null)
@@ -308,24 +316,37 @@ class StudentRepository implements IStudentRepository
         $cleanFirstName = $firstName;
         $cleanStudentId = $studentId;
 
-        $cleanEmail = !empty($email) ? $email : "";
+        //TODO Why is this here? Shouldn't email be null?
+        $cleanEmail = ! empty($email) ? $email : "";
 
-        $preExisting = $this->load_student_by_sid($cleanStudentId);
+        /*
+        //removing this. There's no guarantee that people will use student identifiers
+        //which are unique across terms or classes. This might overwrite a student unintentionally.
+        //don't want to load the first student with a null student id!
+        $preExisting = ! is_null($cleanStudentId) ? $this->load_student_by_sid($cleanStudentId) : null;
         if (!empty($preExisting))
         {
-            $student = $this->update($preExisting, $cleanLastName, $cleanFirstName, $cleanEmail = null);
+            $student = $this->update($preExisting, $cleanLastName, $cleanFirstName, $cleanEmail);
+//            $student = $this->update($preExisting, $cleanLastName, $cleanFirstName, $cleanEmail = null);
         } else
         {
-            $student = new Student();
+        */
+        $student = new Student();
+
+        $student->setStudentLName($cleanLastName);
+        $student->setStudentFName($cleanFirstName);
+
+        if ( ! empty($cleanStudentId) )
+        {
             $student->setStudentId($cleanStudentId);//needs to be used so id will be encrypted
-            $student->setStudentLName($cleanLastName);
-            $student->setStudentFName($cleanFirstName);
-            if ($cleanEmail)
-            {
-                $student->setEmail($cleanEmail); //needs to be used so email will be encrypted
-            }
-            $student->save();
         }
+        if ( ! empty($cleanEmail) )
+        {
+            $student->setEmail($cleanEmail); //needs to be used so email will be encrypted
+        }
+        $student->save();
+
+//        }
 
         return $student;
     }
@@ -348,15 +369,14 @@ class StudentRepository implements IStudentRepository
         $students = [];
 
         $exam = $this->determineType($exam_or_examId);
-        if ($exam)
+        if ( $exam )
         {
             $classes = $exam->classes;
-            foreach ($classes as $c)
+            foreach ( $classes as $c )
             {
-                foreach ($c->students as $s)
+                foreach ( $c->students as $s )
                 {
-                    //array_push($students, $s);
-                    $students[$s->getId()] = $s;
+                    $students[ $s->getId() ] = $s;
                 }
             }
         }

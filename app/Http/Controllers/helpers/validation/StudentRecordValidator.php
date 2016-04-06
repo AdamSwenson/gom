@@ -197,6 +197,7 @@ class StudentRecordValidator implements IStudentRecordValidator
         {
             return $incomingCount;
         }
+        Flash::warning('You tried to record too many students at one time. Not all students were recorded. Please check the roster and add the remaining students.');
         //  throw new SilentlyLoggedException($type, " Incoming count was: $incomingCount. Allowed maximum was" . self::MAX_STUDENTS);
         return self::MAX_STUDENTS;
     }

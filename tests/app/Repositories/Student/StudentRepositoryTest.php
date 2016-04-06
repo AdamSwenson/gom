@@ -14,6 +14,7 @@ use App\Http\Controllers\helpers\validation\StudentRecordValidator;
 use App\Http\Requests\StudentRequest;
 use App\Kumi;
 use App\Student;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 
@@ -23,18 +24,18 @@ class StudentRepositoryTest extends \TestCase
     protected $object;
 
     public function setUp()
-    {    \Mockery::close();
+    {
+        \Mockery::close();
         parent::setUp();
         $this->object = new StudentRepository;
-        $this->exam =Exam::all()->random();
+        $this->exam = Exam::all()->random();
         $this->student = Student::all()->random();
     }
-public function tearDown()
-{
-    \Mockery::close();
-}
 
-
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
 
 
     /**
@@ -46,7 +47,7 @@ public function tearDown()
      * @param int $numberAltered Number of existing students with fields altered to have in request
      * @return StudentRequest
      */
-    public function buildTestDataAndRequest($numberNew=10, $numberOriginal=0, $numberAltered=0)
+    public function buildTestDataAndRequest($numberNew = 10, $numberOriginal = 0, $numberAltered = 0)
     {
         //Create new exam so have blank slate of students
         $this->exam = new \App\Exam();
@@ -54,8 +55,9 @@ public function tearDown()
         $this->exam->setTerm('Fall');
         $this->exam->setName($this->faker->word);
         $this->exam->save();
+        $students = Student::all();
 
-        for($i=1; $i<=$numberNew; $i++)
+        for ( $i = 1; $i <= $numberNew; $i++ )
         {
             $studentIdentifier = $this->faker->numberBetween(1111111, 9999999);
             $firstName = $this->faker->firstName;
@@ -63,82 +65,88 @@ public function tearDown()
             $email = $this->faker->email;
 
             $this->testData[] = [
-                "id$i" => 0,
+                "id$i"                => 0,
                 "studentIdentifier$i" => $studentIdentifier,
-                "lastName$i" => $lastName,
-                "firstName$i" => $firstName,
-                "email$i" => $email];
+                "lastName$i"          => $lastName,
+                "firstName$i"         => $firstName,
+                "email$i"             => $email,
+            ];
 
             $this->expectedDbEntries[] = [
                 'student_identifier' => $studentIdentifier,
-                'last_name' => $lastName,
-                'first_name' => $firstName,
-                'email' => $email
+                'last_name'          => $lastName,
+                'first_name'         => $firstName,
+                'email'              => $email,
             ];
         }
 
-        if( $numberOriginal > 0 )
+        if ( $numberOriginal > 0 )
         {
-            for($i=1; $i<= $numberOriginal; $i++)
+            for ( $i = 1; $i <= $numberOriginal; $i++ )
             {
-                $student = Student::all()->random();
+                $student = $students->pop();
 
                 $identifier = $student->getStudentId() ? $student->getStudentId() : '';
 
                 $this->testData[] = [
-                    "id$i" => $student->getId(),
+                    "id$i"                => $student->getId(),
                     "studentIdentifier$i" => $identifier,
-                    "lastName$i" => $student->last_name,
-                    "firstName$i" => $student->first_name,
-                    "email$i" => $student->getEmail()
+                    "lastName$i"          => $student->last_name,
+                    "firstName$i"         => $student->first_name,
+                    "email$i"             => $student->getEmail(),
                 ];
 
                 $this->expectedDbEntries[] = [
-                    "id" => $student->getId(),
-                    "last_name" => $student->last_name,
+                    "id"         => $student->getId(),
+                    "last_name"  => $student->last_name,
                     "first_name" => $student->first_name,
-                 //   "student_identifier" => $identifier,
-                 //   "email" => $student->getEmail()
+                    //   "student_identifier" => $identifier,
+                    //   "email" => $student->getEmail()
                 ];
             }
         }
 
-        if( $numberAltered > 0 )
+        if ( $numberAltered > 0 )
         {
-            $student = Student::all()->random();
+            //doing this so that won't have a student from both the
+            //original and altered arrays
+            $student = $students->pop();
             $studentIdentifier = $this->faker->numberBetween(1111111, 9999999);
             $firstName = $this->faker->firstName;
             $lastName = $this->faker->lastName;
             $email = $this->faker->email;
 
             $this->testData[] = [
-                "id$i" => $student->getId(),
+                "id$i"                => $student->getId(),
                 "studentIdentifier$i" => $studentIdentifier,
-                "lastName$i" => $lastName,
-                "firstName$i" => $firstName,
-                "email$i" => $email];
+                "lastName$i"          => $lastName,
+                "firstName$i"         => $firstName,
+                "email$i"             => $email,
+            ];
 
             $this->expectedDbEntries[] = [
-                'id' => $student->getId(),
+                'id'         => $student->getId(),
                 //'student_identifier' => $studentIdentifier,
-                'last_name' => $lastName,
+                'last_name'  => $lastName,
                 'first_name' => $firstName,
-              //  'email' => $email
+                //  'email' => $email
             ];
 
         }
 
         //Build the request
         $request = new StudentRequest();
-        foreach($this->testData as $d)
+        foreach ( $this->testData as $d )
         {
-            foreach ($d as $k => $v)
+            foreach ( $d as $k => $v )
             {
-                $request[$k] = $v;
+                $request[ $k ] = $v;
             }
         }
+
         return $request;
     }
+
     /**
      * @covers \App\Repositories\Student\StudentRepository::load_students_by_exam
      */
@@ -151,7 +159,7 @@ public function tearDown()
 
         $result = $this->object->load_students_by_exam($this->exam->getId());
         $this->assertNotEmpty($result);
-        foreach($result as $r)
+        foreach ( $result as $r )
         {
             $this->assertInstanceOf('\App\Student', $r, "returns a student object");
         }
@@ -192,9 +200,13 @@ public function tearDown()
         //check
         $this->assertNotEmpty($result);
         $this->assertInstanceOf('\App\Student', $result, "returns a student object");
-        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'student_identifier' => $studentId]);
+        $this->seeInDatabase('students', [
+            'last_name'          => $lastName,
+            'first_name'         => $firstName,
+            'student_identifier' => $studentId,
+        ]);
 //        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'student_identifier' => Crypt::encrypt($studentId)]);
-     }
+    }
 
     /**
      * @test
@@ -217,11 +229,11 @@ public function tearDown()
         $this->assertInstanceOf('\App\Student', $result, "returns a student object");
         $this->seeInDatabase('students',
                              [
-                                 'last_name' => $this->student->last_name,
+                                 'last_name'  => $this->student->last_name,
                                  'first_name' => $this->student->first_name,
-                          //       'student_identifier' => $this->student->student_identifier, //encrypted ok
-                         //        'email' => $this->student->email,//encrypted version ok
-                                 'user_id' => $userId
+                                 //       'student_identifier' => $this->student->student_identifier, //encrypted ok
+                                 //        'email' => $this->student->email,//encrypted version ok
+                                 'user_id'    => $userId,
                              ]);
 
         //cleanup: log back in as normal
@@ -237,9 +249,9 @@ public function tearDown()
         $lastName = $this->faker->lastName();
         $firstName = $this->faker->firstName();
         $email = $this->faker->unique()->email();
-
+        $sid = null;
         //call
-        $result = $this->object->create_student($lastName, $firstName, null, $email);
+        $result = $this->object->create_student($lastName, $firstName, $sid, $email);
 
         //check
         $this->assertNotEmpty($result);
@@ -251,9 +263,11 @@ public function tearDown()
 
         $this->assertNotEmpty($s, 'something returned from search');
         $this->assertInstanceOf('\App\Student', $result, "returns a student object");
-        $this->assertEquals($s->id, $result->id);
-        $this->assertEquals($s, $result);
- //       $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'email' => $email]);
+
+        $this->assertEquals($s->id, $result->id, "Looked up object has same id");
+
+//        $this->assertEquals($s, $result);
+        //       $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'email' => $email]);
 //        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'email' => Crypt::encrypt($email)]);
     }
 
@@ -322,13 +336,19 @@ public function tearDown()
 
     public function testDelete_student_by_sid()
     {
-        //TODO Fix this query
+        #prep
         $student = Student::whereNotNull('student_identifier')->first();
-        // Student::where('student_identifier', '!=', null)->first();
-      //  $student = Student::where('student_identifier', '!=', null)->first();
+        $sid = $student->student_identifier;
+        //check has a sid
+        $this->assertTrue($sid > 0);
 
-        $this->assertEquals(1, $this->object->delete_student_by_sid($student->student_identifier));
-        $this->notSeeInDatabase('students', ['user_id' => self::$userid, 'student_identifier' => $student->student_identifier] );
+        #call
+        $result = $this->object->delete_student_by_sid($student->student_identifier);
+        $this->assertEquals(1, $result);
+        $this->notSeeInDatabase('students', [
+            'user_id'            => self::$userid,
+            'student_identifier' => $sid,
+        ]);
     }
 
 
@@ -339,7 +359,8 @@ public function tearDown()
     {
         $result = $this->object->load_all_students();
         $this->assertNotEmpty($result);
-        foreach($result as $r){
+        foreach ( $result as $r )
+        {
             $this->assertInstanceOf('\App\Student', $r);
             $this->assertEquals(self::$userid, $r->user_id, "Only students belonging to user loaded");
         }
@@ -352,7 +373,7 @@ public function tearDown()
     }
 
 
-/* ---------------------------------------------------------- Update All tests--------------------------*/
+    /* ---------------------------------------------------------- Update All tests--------------------------*/
 
     /**
      * @test
@@ -360,30 +381,37 @@ public function tearDown()
     public function deleteStudentsNotOnRoster()
     {
         $indexToRemove = 1;
+        $initialNumberRecords = 10;
+        //TODO need to ensure that the exam already has a class full of students asociated
+        $exam = Exam::find(2);
 
         # prep
-        $request = $this->buildTestDataAndRequest(0, 10, 0);
-        $recordToRemove = $this->expectedDbEntries[$indexToRemove];
-        unset($this->expectedDbEntries[$indexToRemove]);
-        unset($request['id' . $indexToRemove]);
-        unset($request['last_name' . $indexToRemove]);
-        unset($request['first_name' . $indexToRemove]);
-        unset($request['student_identifier' . $indexToRemove]);
-        unset($request['email' . $indexToRemove]);
+        $request = $this->buildTestDataAndRequest(0, $initialNumberRecords, 0);
+        $recordToRemove = $this->expectedDbEntries[ $indexToRemove - 1 ]; //the expectedDbEntries array is 0-indexed whereas the row ids start with 1
+        unset($this->expectedDbEntries[ $indexToRemove - 1 ]);
+        unset($request[ 'id' . $indexToRemove ]);
+        unset($request[ 'lastName' . $indexToRemove ]);
+        unset($request[ 'firstName' . $indexToRemove ]);
+        unset($request[ 'studentIdentifier' . $indexToRemove ]);
+        unset($request[ 'email' . $indexToRemove ]);
+
+        //make sure that removed record
+//        $r = $request->all();
+//        $this->assertEquals(9, count($r), "request contains proper number of records");
 
         # call
-        $result = $this->object->update_all($this->exam, $request);
+        $result = $this->object->update_all($exam, $request);
 
         # check
-        $this->assertNotEmpty($result);
+        $this->assertInstanceOf(Collection::class, $result, "returns collection");
+        $this->assertEquals(0, $result->count(), "no invalid records so should be empty");
         $this->notSeeInDatabase('students', $recordToRemove);
 
-        foreach($this->expectedDbEntries as $data)
+        foreach ( $this->expectedDbEntries as $data )
         {
             $this->seeInDatabase('students', $data, "non deleted student still in db");
         }
     }
-
 
 
     /**
@@ -391,7 +419,6 @@ public function tearDown()
      */
     public function existingStudentMadeInvalidNotDeleted()
     {
-
 
 
         //check
@@ -423,7 +450,7 @@ public function tearDown()
         $this->object->exam = $exam;
         //push row numbers into validRecords array
         $validator = new StudentRecordValidator();
-        for($i=1; $i<=$numberStudents; $i++)
+        for ( $i = 1; $i <= $numberStudents; $i++ )
         {
             $validator->validRecords[] = $i;
         }
@@ -436,7 +463,7 @@ public function tearDown()
         $this->object->updateStudentsInDatabase($request, $kumi);
 
         #Check
-        foreach($this->expectedDbEntries as $data)
+        foreach ( $this->expectedDbEntries as $data )
         {
             $this->seeInDatabase('students', $data);
         }
@@ -457,7 +484,7 @@ public function tearDown()
 
         #Check
         $this->assertNotNull($response);
-        foreach($this->expectedDbEntries as $data)
+        foreach ( $this->expectedDbEntries as $data )
         {
             $this->seeInDatabase('students', $data);
         }
@@ -469,14 +496,14 @@ public function tearDown()
     public function updateAllOnlyUnalteredHappyPath()
     {
         #prep
-        $request = $this->buildTestDataAndRequest(0, $numberOriginal=10);
+        $request = $this->buildTestDataAndRequest(0, $numberOriginal = 10);
 
         #Call
         $response = $this->object->update_all($this->exam, $request);
 
         #Check
         $this->assertNotNull($response);
-        foreach($this->expectedDbEntries as $data)
+        foreach ( $this->expectedDbEntries as $data )
         {
             $this->seeInDatabase('students', $data);
         }
@@ -488,14 +515,14 @@ public function tearDown()
     public function updateAllOnlyAlteredHappyPath()
     {
         #prep
-        $request = $this->buildTestDataAndRequest(0, 0, $numberAltered=10);
+        $request = $this->buildTestDataAndRequest(0, 0, $numberAltered = 10);
 
         #Call
         $response = $this->object->update_all($this->exam, $request);
 
         #Check
         $this->assertNotNull($response);
-        foreach($this->expectedDbEntries as $data)
+        foreach ( $this->expectedDbEntries as $data )
         {
             $this->seeInDatabase('students', $data);
         }
@@ -514,12 +541,11 @@ public function tearDown()
 
         #Check
         $this->assertNotNull($response);
-        foreach($this->expectedDbEntries as $data)
+        foreach ( $this->expectedDbEntries as $data )
         {
             $this->seeInDatabase('students', $data);
         }
     }
-
 
 
 }

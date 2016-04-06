@@ -113,8 +113,9 @@
         //The tab to be set as active
         var activeTab = 'navSetup';
         var baseUrl = '{{ url() }}'; //duplicates the rootRoute set in master
-        var maxRow = '{{ $maxRow }}';
+        var maxRow = '{{ $maxRow or 0 }}';
     </script>
+
     <script language="javascript" type="text/javascript" src="{{ asset('js/dev-roster-edit-package.js') }}"></script>
 
 @endsection

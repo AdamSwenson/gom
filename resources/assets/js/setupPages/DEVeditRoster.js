@@ -11,7 +11,11 @@ window.jQuery = $;
 
 require( 'bootstrap' );
 
-var DataTable = require( 'datatables.net' )( window, $ );
+var DataTable = require( 'datatables.net-bs' )( window, $ );
+// var sorting = require('datatables.net.dataSourcePlugins')( window, $ );
+var buttons = require( 'datatables.net-buttons-bs' )( window, $ );
+var colReorder = require( 'datatables.net-colreorder' )( window, $ );
+
 var bootbox = require('bootbox');
 var Vue = require( 'vue' );
 
@@ -38,7 +42,8 @@ new Vue( {
 
         storage: {
             maxRow: 0,
-        }
+        },
+        table: false
     },
 
     computed: {
@@ -60,7 +65,10 @@ new Vue( {
 
     methods: {
         updateRowValues: function () {
-        },
+
+//                this.table.draw();
+
+         },
 
         notifyRowValuesUpdated: function () {
             this.$broadcast( 'row-values-updated' );
@@ -128,6 +136,7 @@ new Vue( {
         },
 
         'please-add-empty-row': function(){
+            window.console.log( 'editRoster.js', 'caught please-add-empty-row' );
             this.maxRow += 1;
             this.addRow( this.maxRow, '', '', '', '');
         },
@@ -138,6 +147,7 @@ new Vue( {
 
         'please-update-row-values': function () {
             window.console.log( 'editRoster.js', 'caught please-update-row-values' );
+            this.updateRowValues();
         },
         'please-validate-and-submit': function(target){
             window.console.log( 'editRoster.js', 'caught please-validate-and-submit', target );
@@ -148,15 +158,38 @@ new Vue( {
 
     directives: {
         datatable: {
+
             bind: function () {
                 window.console.log( 'bind called' );
+                /**
+                 * Read information from a column of input (type text) elements and return an
+                 * array to use as a basis for sorting.
+                 *
+                 *  @summary Sorting based on the values of `dt-tag input` elements in a column.
+                 *  @name Input element data source
+                 *  @requires DataTables 1.10+
+                 *  @author [Allan Jardine](http://sprymedia.co.uk)
+                 */
+
+                $.fn.dataTable.ext.order['dom-text'] = function  ( settings, col )
+                {
+                    return this.api().column( col, {order:'index'} ).nodes().map( function ( td, i ) {
+                        return $('input', td).val();
+                    } );
+                };
+
                 //$(this.el).DataTable();
-                // $( "#rosterTable" ).DataTable(
-                //     {
-                //         // paging: false,
-                //         // scrollY: 100,
-                //     }
-                // );
+                this.table = $( "#rosterTable" ).DataTable(
+                    {
+                        columnDefs: [
+                            //no idea why column didn't work. No idea why only works if type is numeric, even though
+                            //the relevant columns are strings. Whatevs. It works.
+                            { "orderDataType": "dom-text", "type": "numeric", targets:[0, 1, 2, 3] },
+                        ],
+                         paging: false,
+                        // scrollY: 100,
+                    }
+                );
             }
         }
     },
