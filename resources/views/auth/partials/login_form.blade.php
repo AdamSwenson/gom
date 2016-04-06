@@ -19,17 +19,31 @@
             <label for="email">Email</label>
             <input class="form-control" type="email" name="email" id="email" placeholder="Enter email">
         </div>
+
         <div class="form-group">
             <label for="password">Password</label>
             <input class="form-control" type="password" name="password" id="password" placeholder="Enter password">
         </div>
-        <div class="checkbox">
-            <label><input type="checkbox"> Remember me</label>
-            <a href={{url('password/email')}}>Forgot Password</a>
+
+        <div class="row">
+            <div class="col-xs-4">
+                <label class="checkbox-inline">
+                    <input type="checkbox" id="remember" name="remember"> Remember me
+                </label>
+            </div>
+
+            <div class="col-xs-4"></div>
+
+            <div class="col-xs-4 verticallyAligned">
+                <span class="">
+                    <a href={{url('password/email')}}>Forgot Password</a>
+                    </span>
+            </div>
         </div>
-        <br/>
-        <input class="btn btn-primary" value="Log In" type="submit">
-    </form>
-    <div class="col-xs-3"></div>
+</div>
+<br/>
+<input class="btn btn-primary" value="Log In" type="submit">
+</form>
+<div class="col-xs-3"></div>
 </div>
 
