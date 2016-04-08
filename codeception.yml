@@ -16,7 +16,7 @@ extensions:
 modules:
     config:
         Db:
-            dsn: 'mysql:host=localhost;dbname=gom_lar'
+            dsn: 'mysql:host=localhost;dbname=gom_testing'
             user: 'testuser4'
             password: 'testpass4'
             dump: tests/_data/dump.sql

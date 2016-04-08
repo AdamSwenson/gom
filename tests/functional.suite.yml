@@ -11,6 +11,7 @@ modules:
         - \Helper\Functional
         - Laravel5
         - Db
+
 #        - PhpBrowser
 #        - WebDriver
     config:
@@ -19,6 +20,3 @@ modules:
 #            cleanup: false
 #        PhpBrowser:
 #            url: 'http://localhost:8000'
-#        WebDriver:
-#            url: 'http://localhost/'
-#            browser: firefox

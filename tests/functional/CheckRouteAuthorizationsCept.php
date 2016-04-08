@@ -8,6 +8,7 @@ $I->wantTo('Call every route that should require the user to own the relevant ob
 //necessary until fix laravel session problem
 $I->disableMiddleware();
 
+\Illuminate\Support\Facades\Auth::loginUsingId(1);
 
 $owner = User::findOrFail(1);
 $stranger = User::findOrNew(2);
