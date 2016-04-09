@@ -23,4 +23,20 @@ class AcceptanceTester extends \Codeception\Actor
    /**
     * Define custom actions here
     */
+
+    /**
+     * @param $I
+     */
+    function test_login($I){
+        // if snapshot exists - skipping login
+        if ($I->loadSessionSnapshot('login')) return;
+        // logging in
+        $I->amOnPage('/auth/login');
+        $I->fillField(['id' => 'email'], 'test2@gradeomatic.net');
+        $I->fillField('//*[@id="password"]', 'testpass4');
+        $I->click('#login');
+        // saving snapshot
+        $I->saveSessionSnapshot('login');
+    }
+
 }

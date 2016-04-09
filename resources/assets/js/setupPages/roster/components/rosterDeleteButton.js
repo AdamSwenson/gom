@@ -29,7 +29,7 @@ module.exports = {
             if ( $roster.length == 0 ) return;
 
             bootbox.dialog( {
-                message: "Warning: This will remove all students from the current roster, including grades and feedback.",
+                message: "Warning: This will remove all students from the current roster, including their grades and feedback.",
                 title: "Delete Roster",
                 buttons: {
                     success: {

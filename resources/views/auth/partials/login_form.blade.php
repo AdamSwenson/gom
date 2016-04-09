@@ -42,7 +42,10 @@
         </div>
 </div>
 <br/>
-<input class="btn btn-primary" value="Log In" type="submit">
+<input id="login"
+       class="btn btn-primary"
+       value="Log In"
+       type="submit">
 </form>
 <div class="col-xs-3"></div>
 </div>

@@ -47,12 +47,17 @@ module.exports = {
     },
 
     methods: {
+        /**
+         * Checks whether the row has data 
+         * @returns {boolean}
+         */
         isRowEmpty: function () {
             if( (typeof this.lastName == 'undefined') && (typeof this.firstName == 'undefined') && (typeof this.studentId == 'undefined') && (typeof this.email == 'undefined' )){
                 return true;
             }
             return false;
         },
+        
         /**
          * Handles the actual row removal
          */
@@ -61,6 +66,10 @@ module.exports = {
             $studentRow.remove();
             this.sendUpdateRowValuesRequest()
         },
+
+        /**
+         * This calls the dialog and then the actual delete function
+         */
         deleteStudent: function () {
             // skip confirmation if row is empty
             if ( this.isRowEmpty() ) {
