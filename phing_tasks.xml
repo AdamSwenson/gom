@@ -7,6 +7,15 @@
         <exec command="vendor/bin/codecept run functional --steps" />
     </target>
 
+    <target name="runAcceptanceTests_artisanNotRunning" description="Runs the codeception test suite">
+        <echo message="Starting artisan" />
+        <exec command="php artisan serve" />
+        <echo message="Starting phantomjs (bwahhhhaaaaaaa)" />
+        <exec command="phantomjs --webdriver=4444" />
+        <echo message="Running tests" />
+        <exec command="vendor/bin/codecept run acceptance --steps" />
+    </target>
+
 
     <target name="refreshAndReseed" description="Runs artisan migrate:refresh and then seeds the database using laravel tools">
         <echo message="Updating  autoloader" />
