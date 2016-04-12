@@ -231,7 +231,11 @@ class StudentRepository implements IStudentRepository
          * who are not on the roster
          */
         $studentsInDb = $this->load_students_by_exam($this->exam->getId());
-        if ( count($studentsInDb) > 0 && count($this->idsOnRosterIncludingInvalid) > 0 )
+        if ( count($studentsInDb) > 0 )
+            //removed this to make the delete roster button work.
+            //seems okay. but concerned that there's some weird corner case
+            //that we're enabling by not checking this.....
+//        if ( count($studentsInDb) > 0 && count($this->idsOnRosterIncludingInvalid) > 0 )
         {
             foreach ( $studentsInDb as $student )
             {

@@ -1,7 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
  * This is the main javascript for edit_roster.blade
- * 
+ *
  * Created by  adam on 3/23/16.
  */
 
@@ -98,6 +98,8 @@ new Vue({
                 }
             });
             //replace the placeholder
+            //vue will complain in the console about this being called multiple times. But
+            //it doesn't seem to be creating any noticeable effects.
             row.$mount("#" + s);
         },
 
@@ -159,7 +161,7 @@ new Vue({
         datatable: {
 
             bind: function bind() {
-                window.console.log('bind called');
+                window.console.log('bind called: datatable');
                 /**
                  * Read information from a column of input (type text) elements and return an
                  * array to use as a basis for sorting.
@@ -195,6 +197,7 @@ new Vue({
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+
         window.console.log('editRoster.js ready');
     }
 });
@@ -42142,8 +42145,8 @@ module.exports = {
         }
     },
 
-    directives: {},
-    ready: function ready() {}
+    directives: {}
+
 };
 
 },{"../templates/student-row.template.html":33,"bootbox":2,"jquery":21}],29:[function(require,module,exports){
@@ -42151,7 +42154,7 @@ module.exports = '<!-- add student button -->\n<button class="btn btn-primary"\n
 },{}],30:[function(require,module,exports){
 module.exports = '<button\n        class="btn btn-danger"\n        id="deleteRoster"\n        v-on:click="deleteRoster"\n><span\n        class="glyphicon glyphicon-minus"\n        aria-hidden="true"></span>\n    Delete Roster\n</button>';
 },{}],31:[function(require,module,exports){
-module.exports = '<!-- file import button -->\n<span class="btn btn-primary btn-file">\n                <input type="file"\n                       id="fileInputV"\n                       name="file"\n                       v-on:change="importRoster"\n                       accept=".csv, text/plain"/>\n                <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>\n                Import Roster\n            </span>';
+module.exports = '<!-- file import button -->\n<span class="btn btn-primary btn-file">\n                <input type="file"\n                       id="fileInput"\n                       name="file"\n                       v-on:change="importRoster"\n                       accept=".csv, text/plain"/>\n                <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>\n                Import Roster\n            </span>';
 },{}],32:[function(require,module,exports){
 module.exports = '<button\n        id="importHelpButton"\n        class="btn btn-info"\n        v-on:click="showHelpModal"\n>\n    <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>\n    Import Help\n</button>';
 },{}],33:[function(require,module,exports){

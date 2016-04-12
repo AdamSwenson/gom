@@ -112,7 +112,5 @@ module.exports = {
 
     directives: {
     },
-    ready:function(){
 
-    }
 };

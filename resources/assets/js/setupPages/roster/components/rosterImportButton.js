@@ -266,7 +266,6 @@ module.exports = {
             this.$dispatch( 'please-update-row-values' );
         }
 
-
     },
 
     directives: {}

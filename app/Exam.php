@@ -116,6 +116,29 @@ class Exam extends BaseModel
 //     //   return $this->questions->pivot->wherePivot('question_number', $questionNumber)->first();
 //    }
 
+    /**
+     * Returns a collection of all students who have been associated with the exam
+     * @return \Illuminate\Support\Collection
+     */
+    public function getAllAssociatedStudents()
+    {
+        $students = [];
+        $classes = $this->classes;
+        foreach ($classes as $c)
+        {
+            foreach ($c->students as $s)
+            {
+                $students[] = $s;
+            }
+        }
+
+        //Make into a laravel collection and sort in descending order
+        $students = collect($students);
+        $students = $students->sortBy('last_name');
+
+        return $students;
+    }
+
 
     #------------------------------------------------------ foreign keys
 
@@ -247,8 +270,10 @@ class Exam extends BaseModel
      * Returns true if the exam has been released; false otherwise
      * @return bool
      */
-    public function isReleased(){
-        if(! empty($this->attributes['released']) && $this->attributes['released'] == true){
+    public function isReleased()
+    {
+        if (!empty($this->attributes['released']) && $this->attributes['released'] == true)
+        {
             return true;
         }
         return false;

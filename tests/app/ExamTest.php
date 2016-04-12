@@ -9,7 +9,6 @@
 namespace App;
 
 
-
 class ExamTest extends \TestCase
 {
 
@@ -102,6 +101,34 @@ class ExamTest extends \TestCase
         $this->assertEquals(1, $this->object->released);
     }
 
+    public function testGetAllAssociatedStudents()
+    {
+        #Prep
+        $exam = Exam::find(1);
+
+        //make sure has students
+        $this->assertTrue(count($exam->classes) > 0, "At least one associated class");
+        $students = [];
+        foreach ($exam->classes as $c)
+        {
+            foreach ($c->students as $s)
+            {
+                $students[] = $s;
+            }
+        }
+        $this->assertTrue(count($students) > 0, "At least one student associated with exam");
+
+        #call
+        $associatedStudents = $exam->getAllAssociatedStudents();
+
+        #check
+        $this->assertTrue(count($associatedStudents) > 0, "At least one student associated with exam");
+        foreach ($associatedStudents as $as)
+        {
+            $this->assertContains($as, $students, "returned student in the array of expected students");
+        }
+
+    }
 
     #------------------------------------------------------ foreign keys
 
@@ -178,7 +205,9 @@ class ExamTest extends \TestCase
 
     public function testGetTerm()
     {
-        $this->assertNotEmpty($this->exam->getTerm());
+        $result = $this->exam->getTerm();
+        $this->assertTrue(is_string($result));
+        $this->assertTrue(count($result) >= 1);
     }
 
     public function testGetName()
@@ -200,7 +229,8 @@ class ExamTest extends \TestCase
     }
 
     /** @test */
-    public function isReleasedForReleased(){
+    public function isReleasedForReleased()
+    {
         //prep
         $exam = factory(Exam::class)->make(['released' => 1]);
         $exam->released = 1;
@@ -210,7 +240,8 @@ class ExamTest extends \TestCase
     }
 
     /** @test */
-    public function isReleasedForNotReleased(){
+    public function isReleasedForNotReleased()
+    {
         //prep
         $exam = factory(Exam::class)->make(['released' => 0]);
         //check
