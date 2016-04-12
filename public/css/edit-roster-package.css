@@ -12363,7 +12363,8 @@ button.close {
   border-color: red; }
 
 #rosterTable td input {
-  border: none; }
+  border: none;
+  width: 100%; }
 
 #rosterTable .buttonCell {
   text-align: center;
