@@ -33,7 +33,7 @@ class AcceptanceTester extends \Codeception\Actor
         // logging in
         $I->amOnPage('/auth/login');
         $I->fillField(['id' => 'email'], 'test2@gradeomatic.net');
-        $I->fillField('//*[@id="password"]', 'testpass4');
+        $I->fillField('//*[@id="password"]', 'testtest');
         $I->click('#login');
         // saving snapshot
         $I->saveSessionSnapshot('login');

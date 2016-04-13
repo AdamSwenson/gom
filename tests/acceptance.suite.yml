@@ -10,5 +10,11 @@ modules:
         - WebDriver:
             url: 'http://localhost:8000'
             browser: phantomjs
+#            browser: firefox
+        - Db
 
         - \Helper\Acceptance
+
+extensions:
+    enabled: [Codeception\Extension\Recorder]
+

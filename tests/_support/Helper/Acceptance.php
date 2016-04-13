@@ -6,4 +6,17 @@ namespace Helper;
 class Acceptance extends \Codeception\Module
 {
 
+
+public static $examWith5QuestionsId = 1;
+public static $examWithNoQuestionsId = 4;
+
+
+    public function examIdWithQuestions(){
+        return self::$examWith5QuestionsId;
+    }
+
+    public function examIdNoQuestions(){
+        return self::$examWithNoQuestionsId;
+    }
+
 }
