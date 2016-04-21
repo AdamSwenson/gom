@@ -24,6 +24,10 @@ class AcceptanceTester extends \Codeception\Actor
     * Define custom actions here
     */
 
+    function start_artisan(){
+      //  shell_exec('APP_ENV=codeceptWorld php artisan serve');
+    }
+
     /**
      * @param $I
      */

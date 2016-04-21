@@ -50,7 +50,7 @@ $I->seeInField("form input[type=text]", "student2@email.com");
 $I->seeInField("form input[type=text]", "student4@email.com");
 
 $I->amGoingTo("Submit the form");
-$I->click("#backNavButton");
+$I->click(RosterEditPage::$forwardNavButton);
 
 # Properly redirected
 /* If there are no questions on the exam, it will redirect to the edit exam

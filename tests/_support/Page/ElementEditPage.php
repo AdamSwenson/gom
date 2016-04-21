@@ -12,6 +12,17 @@ class ElementEditPage
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
 
+
+    /**
+     * Returns the string expected when landing on the element edit page
+     * @param $examId
+     * @param $questionNumber
+     * @return string
+     */
+    public static function pageHeadingText($examId, $questionNumber){
+        return 'Question #' . $questionNumber . ' "Exam' . $examId . 'Question' . $questionNumber .'"';
+    }
+
     /**
      * Basic route example for your current URL
      * You can append any additional parameter to URL

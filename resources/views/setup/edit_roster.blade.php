@@ -5,110 +5,104 @@
 @section('description', 'Upload and modify student roster')
 
 @section('otherCss')
+@include('layouts.css.css_datatables')
         <!-- styling to change file button into bootstrap style and hide the file name -->
 <link rel="stylesheet" href="{{ asset('css/edit-roster-package.css') }}">
 
 @endsection
 
 @section('body')
-    <nav>
-        <ul class="pager">
-            <li class="next">
-                <a id="backNavButton" style="cursor:pointer;"><span
-                            class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save & Finish</a>
-            </li>
-            <li class="previous">
-                <a id="forwardNavButton" style="cursor:pointer;"><span
-                            class="glyphicon glyphicon-chevron-left"
-                            aria-hidden="true"></span> {{ $prevActionLabel }}</a>
-            </li>
-        </ul>
-    </nav>
+    <div id="app">
+        <setup-navs forward-nav-target="editExam"
+                    forward-nav-label="Save & Finish"
+                    forward-nav-icon="disk"
+                    back-nav-target="{{ $prevAction }}"
+                    back-nav-label=" {{ $prevActionLabel }}"
+                    back-nav-icon="left"></setup-navs>
 
-    <h2>Import Roster</h2>
+        <h2>Import Roster</h2>
 
-    <p>Roster files can be any CSV file having each student's information on a single row in the following
-        format: Last Name, First Name, Student ID (optional), Email (optional)</p>
+        <p>Roster files can be any CSV file having each student's information on a single row in the following
+            format: Last Name, First Name, Student ID (optional), Email (optional)</p>
 
-    <!-- file import button -->
-    <span class="btn btn-primary btn-file">
-                <input type="file" id="fileInput" name="file" accept=".csv, text/plain"/>
-                <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
-                Import Roster
-            </span>
-    <!-- import help -->
-    <a id="importHelpButton" class="btn btn-info">
-        <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
-        Import Help
-    </a>
+        <!-- file import button -->
+        <import-roster-button></import-roster-button>
 
-    <h2>Edit Roster</h2>
+        <!-- import help -->
+        <import-roster-help-button></import-roster-help-button>
 
-    <form id="rosterData" method="post" role="form"
-          action="{{ url('exam/'.$exam->getId().'/student/updateAll') }}">
-        {!! csrf_field() !!}
-        <table id="rosterTable" class="table">
-            <thead>
-            <!-- table headers -->
-            <tr>
-                <th id="sortByLastName"
-                    class="col-md-3 sortableHeading"
+        <h2>Edit Roster</h2>
+
+        <form id="rosterData" method="post" role="form"
+              action="{{ url('exam/'.$exam->getId().'/student/updateAll') }}">
+            {!! csrf_field() !!}
+            <table id="rosterTable"
+                   class="table"
+                   v-datatable
+            >
+                <thead>
+                <!-- table headers -->
+                <tr>
+                    <th id="sortByLastName"
+                        class="col-md-3 sortableHeading"
                     >Last Name
-                </th>
-                <th id="sortByFirstName"
-                    class="col-md-3 sortableHeading"
+                    </th>
+                    <th id="sortByFirstName"
+                        class="col-md-3 sortableHeading"
                     >First Name
-                </th>
-                <th id="sortByStudentIdentifier"
-                    class="col-md-2 sortableHeading"
+                    </th>
+                    <th id="sortByStudentIdentifier"
+                        class="col-md-2 sortableHeading"
                     >Student ID
-                </th>
-                <th id="sortByEmail"
-                    class="col-md-3 sortableHeading"
+                    </th>
+                    <th id="sortByEmail"
+                        class="col-md-3 sortableHeading"
                     >
-                    Email
-                </th>
-                <th class="col-md-1"></th>
-            </tr>
-            </thead>
-            <!-- Student roster -->
-            <tbody id="studentRosterBody">
-            @if(isset($students) && (count($students) > 0))
-                <?php $row = 1; ?>
-                @foreach($students as $s)
-                    @include('setup.partials.roster_form')
-                    <?php $row++ ?>
-                @endforeach
-            @endif
-            </tbody>
-        </table>
-        <input type="hidden" name="navigateTo" value="selectExam"/>
-    </form>
+                        Email
+                    </th>
+                    <th class="col-md-1"></th>
+                </tr>
+                </thead>
+                <!-- Student roster -->
+                <tbody id="studentRosterBody">
+                @if(isset($students) && (count($students) > 0))
+                    <?php $row = 1; ?>
+                    @foreach($students as $s)
+                        <tr is="student-row"
+                            row-id="{{ $row }}"
+                            student-record-id="{{ $s['id'] or 0 }}"
+                            last-name="{{ $s['last_name'] or '' }}"
+                            first-name="{{ $s['first_name'] or '' }}"
+                            student-id="{{ $s['student_identifier'] or '' }}"
+                            email="{{ $s['email'] or '' }}"
+                        ></tr>
+                        <?php $row++ ?>
+                    @endforeach
+                    <?php $maxRow = $row; ?>
+                @endif
+                </tbody>
+            </table>
+            <input type="hidden" name="navigateTo" value="selectExam"/>
+        </form>
 
-    <!-- add student button -->
-    <a class="btn btn-primary"
-       id="addStudent"><span
-                class="glyphicon glyphicon-plus"
-                aria-hidden="true"></span>
-        Add Student
-    </a>
-    <!-- delete roster button -->
-    <a class="btn btn-danger"
-       id="deleteRoster"><span
-                class="glyphicon glyphicon-minus"
-                aria-hidden="true"></span>
-        Delete Roster
-    </a>
+        <!-- add student button -->
+        <add-empty-row-button></add-empty-row-button>
 
-    <div style="display: none">
-        <table>
-            <tbody>
-            <?php $s = null; $row = 0; ?>
-                    <!-- this hidden field is duplicated and appended to the roster table when adding a new student -->
-            @include('setup.partials.roster_form')
-            </tbody>
-        </table>
+        <!-- delete roster button -->
+        <delete-roster-button></delete-roster-button>
+
+
+        <div style="display: none">
+            <table>
+                <tbody>
+                <?php $s = null; $row = 0; ?>
+                <!-- this hidden field is duplicated and appended to the roster table when adding a new student -->
+                @include('setup.partials.roster_form')
+                </tbody>
+            </table>
+        </div>
     </div>
+
 
 @endsection
 
@@ -118,11 +112,11 @@
     <script type="text/javascript">
         //The tab to be set as active
         var activeTab = 'navSetup';
-        var forwardNavTarget = 'editExam';
-        var backNavTarget = '{{ $prevAction }}';
-        var baseUrl = '{{ url() }}';
+        var baseUrl = '{{ url() }}'; //duplicates the rootRoute set in master
+        var maxRow = '{{ $maxRow or 0 }}';
     </script>
-    <script language="javascript" type="text/javascript" src="{{ asset('js/roster-edit-package.js') }}"></script>
+
+    <script language="javascript" type="text/javascript" src="{{ asset('js/dev-roster-edit-package.js') }}"></script>
 
 @endsection
 
