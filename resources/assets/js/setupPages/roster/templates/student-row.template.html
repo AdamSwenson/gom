@@ -6,7 +6,7 @@
         <input
                 class="form-control"
                 type="text"
-                id="lastName"
+                id="lastName{{ rowId }}"
                 name="lastName{{ rowId }}"
                 placeholder="Last Name"
                 v-model="lastName"
@@ -16,7 +16,7 @@
         <input
                 class="form-control"
                 type="text"
-                id="firstName"
+                id="firstName{{ rowId }}"
                 name="firstName{{ rowId }}"
                 placeholder="First Name"
                 v-model="firstName"
@@ -26,7 +26,7 @@
         <input
                 class="form-control"
                 type="text"
-                id="studentIdentifier"
+                id="studentIdentifier{{ rowId }}"
                 placeholder="Student ID"
                 name="studentIdentifier{{ rowId }}"
                 v-model="studentId"
@@ -36,7 +36,7 @@
         <input
                 class="form-control"
                 type="text"
-                id="email"
+                id="email{{ rowId }}"
                 name="email{{ rowId }}"
                 placeholder="Email"
                 v-model="email"
@@ -44,6 +44,7 @@
     </td>
     <td align="center" style="vertical-align: middle;">
         <a
+                id="deleteStudentButton{{ rowId }}"
                 class="deleteStudentButton"
                 data-rowid="{{ rowId }}"
                 v-on:click="deleteStudent"

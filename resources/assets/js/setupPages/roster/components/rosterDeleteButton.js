@@ -34,19 +34,20 @@ module.exports = {
                 buttons: {
                     success: {
                         label: 'Cancel',
-                        className: "btn-sm",
+                        className: "btn-sm cancelRosterDelete",
                         callback: function () {
                         }
                     },
                     danger: {
                         label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-                        className: "btn-danger btn-sm",
+                        className: "btn-danger btn-sm confirmRosterDelete",
                         callback: function () {
                             $roster.each( function () {
                                 $( this ).remove();
                             } );
                             bootbox.alert( {
-                                message: "Removal of students will not be complete until you click 'Save and Finish'. "
+                                message: "Removal of students will not be complete until you click 'Save and Finish'. ",
+                                className: "postDeleteMessageCloseButton"
                             } );
                         }
                     }

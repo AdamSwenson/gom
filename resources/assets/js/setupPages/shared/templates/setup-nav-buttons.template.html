@@ -5,8 +5,11 @@
                class="setupNavButton"
                v-on:click="navigateForward"
             >
-                <div v-show="isDisk"><span class='glyphicon glyphicon-floppy-disk' aria-hidden='true'></span> {{ forwardNavLabel }}</div>
-                <div v-show="isRight"> {{ forwardNavLabel }} <span class='glyphicon glyphicon-chevron-right' aria-hidden='true'></span> </div>
+                <div class="forwardNavLabel"
+                     v-show="isDisk">
+                        <span class='glyphicon glyphicon-floppy-disk' aria-hidden='true'></span> {{ forwardNavLabel }}
+                </div>
+                <div class="forwardNavLabel" v-show="isRight"> {{ forwardNavLabel }} <span class='glyphicon glyphicon-chevron-right' aria-hidden='true'></span> </div>
             </a>
         </li>
         <li class="previous">
@@ -15,8 +18,8 @@
                     class="setupNavButton"
                     v-on:click="navigateBack"
             >
-                <div v-if="isLeft"><span class='glyphicon glyphicon-chevron-left' aria-hidden='true'></span> {{ backNavLabel }}</div>
-                <div v-else>{{ backNavLabel }}</div>
+                <div class="backNavLabel" v-if="isLeft"><span class='glyphicon glyphicon-chevron-left' aria-hidden='true'></span> {{ backNavLabel }}</div>
+                <div class="backNavLabel" v-else>{{ backNavLabel }}</div>
             </a>
         </li>
     </ul>

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Question\IQuestionRepository;
@@ -190,6 +191,7 @@ class QuestionController extends Controller
             }
         } catch ( \Exception $e )
         {
+            Log::info('questionController.updateAll ' . $e);
             Flash::error(self::GENERIC_ERROR);
             return back();
         }

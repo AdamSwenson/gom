@@ -639,8 +639,9 @@ VALUES
   (1, 1, 'Exam1Term', 1970, 'TestExam#1 5QuestionsWElements User1', 0, 0, NOW(), NOW()),
   (2, 1, 'Exam2Term', 2000, 'TestExam#2 5QuestionsWElements User1', 0, 0, NOW(), NOW()),
   (3, 2, 'Exam3Term', 1990, 'TestExam#3 5QuestionsWElements User2', 0, 0, NOW(), NOW()),
-  (4, 1, 'Exam4Term', 1990, 'TestExam#4 NoQuestions User1', 0, 0, NOW(), NOW());
-
+  (4, 1, 'Exam4Term', 1990, 'TestExam#4 5QuestionsWElements User1', 0, 0, NOW(), NOW()),
+  (5, 1, 'Exam5Term', 1990, 'TestExam#5 NoQuestions User1', 0, 0, NOW(), NOW()),
+  (6, 1, 'Exam6Term', 1990, 'TestExam#6 5QuestionsNoElements User1', 0, 0, NOW(), NOW());
 
 /*!40000 ALTER TABLE `exams` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -1073,7 +1074,12 @@ VALUES
   (17, 4, 17, 2, NOW(), NOW()),
   (18, 4, 18, 3, NOW(), NOW()),
   (19, 4, 19, 4, NOW(), NOW()),
-  (20, 4, 20, 5, NOW(), NOW());
+  (20, 4, 20, 5, NOW(), NOW()),
+  (21, 6, 1, 1, NOW(), NOW()),
+  (22, 6, 2, 2, NOW(), NOW()),
+  (23, 6, 3, 3, NOW(), NOW()),
+  (24, 6, 4, 4, NOW(), NOW()),
+  (25, 6, 5, 5, NOW(), NOW());
 
 /*!40000 ALTER TABLE `question_assignments` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -1178,16 +1184,16 @@ VALUES
   (8, 1, 'Exam2Question3', 'Exam2Question3 Text.', 100.00, NOW(), NOW()),
   (9, 1, 'Exam2Question4', 'Exam2Question4 Text.', 100.00, NOW(), NOW()),
   (10, 1, 'Exam2Question5', 'Exam2Question5 Text.', 100.00, NOW(), NOW()),
-  (11, 1, 'Exam3Question1', 'Exam3Question1 Text.', 100.00, NOW(), NOW()),
-  (12, 1, 'Exam3Question2', 'Exam3Question2 Text.', 100.00, NOW(), NOW()),
-  (13, 1, 'Exam3Question3', 'Exam3Question3 Text.', 100.00, NOW(), NOW()),
-  (14, 1, 'Exam3Question4', 'Exam3Question4 Text.', 100.00, NOW(), NOW()),
-  (15, 1, 'Exam3Question5', 'Exam3Question5 Text.', 100.00, NOW(), NOW()),
-  (16, 2, 'Exam4Question1User2', 'Exam4Question1User2 Text.', 100.00, NOW(), NOW()),
-  (17, 2, 'Exam4Question2User2', 'Exam4Question2User2 Text.', 100.00, NOW(), NOW()),
-  (18, 2, 'Exam4Question3User2', 'Exam4Question3User2 Text.', 100.00, NOW(), NOW()),
-  (19, 2, 'Exam4Question4User2', 'Exam4Question4User2 Text.', 100.00, NOW(), NOW()),
-  (20, 2, 'Exam4Question5User2', 'Exam4Question5User2 Text.', 100.00, NOW(), NOW()),
+  (11, 2, 'Exam3Question1', 'Exam3Question1 Text.', 100.00, NOW(), NOW()),
+  (12, 2, 'Exam3Question2', 'Exam3Question2 Text.', 100.00, NOW(), NOW()),
+  (13, 2, 'Exam3Question3', 'Exam3Question3 Text.', 100.00, NOW(), NOW()),
+  (14, 2, 'Exam3Question4', 'Exam3Question4 Text.', 100.00, NOW(), NOW()),
+  (15, 2, 'Exam3Question5', 'Exam3Question5 Text.', 100.00, NOW(), NOW()),
+  (16, 1, 'Exam4Question1', 'Exam4Question1 Text.', 100.00, NOW(), NOW()),
+  (17, 1, 'Exam4Question2', 'Exam4Question2 Text.', 100.00, NOW(), NOW()),
+  (18, 1, 'Exam4Question3', 'Exam4Question3 Text.', 100.00, NOW(), NOW()),
+  (19, 1, 'Exam4Question4', 'Exam4Question4 Text.', 100.00, NOW(), NOW()),
+  (20, 1, 'Exam4Question5', 'Exam4Question5 Text.', 100.00, NOW(), NOW()),
   (21, 1, '', '', NULL, NOW(), NOW()),
   (22, 2, '', '', NULL, NOW(), NOW());
 
@@ -1227,15 +1233,15 @@ LOCK TABLES `students` WRITE;
 INSERT INTO `students` (`id`, `user_id`, `last_name`, `first_name`, `student_identifier`, `email`, `created_at`, `updated_at`)
 VALUES
   (1, 1, 'lastNameOfExisting1', 'firstNameOfExisting1', NULL, NULL, NOW(), NOW()),
-  (2, 1, 'lastNameOfExisting2', 'firstNameOfExisting', NULL, 'Ignacio.Abbott@Blick.biz', NOW(), NOW()),
-  (3, 1, 'lastNameOfExisting3', 'firstNameOfExisting3', '298542229', NULL, NOW(), NOW()),
-  (4, 1, 'lastNameOfExisting4', 'firstNameOfExisting4', '19844222', 'test@test.net', NOW(), NOW()),
-  (5, 1, 'lastNameOfExisting5', 'firstNameOfExisting5', '34566743', 'test2@test.net', NOW(), NOW()),
+  (2, 1, 'lastNameOfExisting2', 'firstNameOfExisting2', NULL, 'student2@email.com', NOW(), NOW()),
+  (3, 1, 'lastNameOfExisting3', 'firstNameOfExisting3', '333333333', NULL, NOW(), NOW()),
+  (4, 1, 'lastNameOfExisting4', 'firstNameOfExisting4', '444444444', 'student4@email.com', NOW(), NOW()),
+  (5, 1, 'lastNameOfExisting5', 'firstNameOfExisting5', '555555555', 'student5@email.com', NOW(), NOW()),
   (6, 2, 'lastNameOfExisting6', 'firstNameOfExisting6', NULL, NULL, NOW(), NOW()),
-  (7, 2, 'lastNameOfExisting7', 'firstNameOfExisting7', NULL, 'Feest.Aric@Barton.com', NOW(), NOW()),
-  (8, 2, 'lastNameOfExisting8', 'firstNameOfExisting8', '298542221', NULL, NOW(), NOW()),
-  (9, 2, 'lastNameOfExisting9', 'firstNameOfExisting9', '788068149', 'Gregorio.Parker@gmail.com', NOW(), NOW()),
-  (10, 2, 'lastNameOfExisting9', 'firstNameOfExisting9', '788068149', 'test3@test.net', NOW(), NOW());
+  (7, 2, 'lastNameOfExisting7', 'firstNameOfExisting7', NULL, 'student7@email.com', NOW(), NOW()),
+  (8, 2, 'lastNameOfExisting8', 'firstNameOfExisting8', '888888888', NULL, NOW(), NOW()),
+  (9, 2, 'lastNameOfExisting9', 'firstNameOfExisting9', '999999999', 'student9@email.com', NOW(), NOW()),
+  (10, 2, 'lastNameOfExisting10', 'firstNameOfExisting10', '000000000', 'student10@email.com', NOW(), NOW());
 
 /*!40000 ALTER TABLE `students` ENABLE KEYS */;
 UNLOCK TABLES;

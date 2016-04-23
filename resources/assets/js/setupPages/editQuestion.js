@@ -5,7 +5,8 @@ window.jQuery = jQuery;
 
 require( 'bootstrap' );
 var bootbox = require('bootbox');
-var Sortable = require('../utilities/Sortable.js');
+var Sortable = require('sortablejs');
+// var Sortable = require('../utilities/Sortable.js');
 var common = require( '../common.js' );
 
 //var navs = require('./navControls.js')();
@@ -18,6 +19,19 @@ $("#backNavButton" ).on('click', function(){
 $("#forwardNavButton" ).on('click', function(){
     submitForm(forwardNavTarget);
 });
+
+// handle addQuestion button
+$("#addQuestion").on('click',function () {
+    // copy empty form
+    var order = getQuestionCount() + 1;
+    var myClone = $('#questionItem0').clone();
+
+    // add to editableList and refresh
+    myClone.appendTo($("#questionList"));
+    updateListItemData(myClone, order);
+    updateNumbers();
+});
+
 
 // Basic form validation and prompts.
 // Exams must have 1 question and they must all have names.
@@ -76,18 +90,18 @@ function formFieldsValid() {
 
                 bootbox.dialog({
                     message: "<span class='glyphicon glyphicon-warning-sign'></span>" +
-                    " Warning: This will delete all elements and scores associated with the question",
+                    " Warning: This will permanently delete all elements and scores associated with the question",
                     title: "Delete Question",
                     buttons: {
                         success: {
                             label: 'Cancel',
-                            className: "btn-sm",
+                            className: "btn-sm bnt-primary cancelQuestionDelete",
                             callback: function () {
                             }
                         },
                         danger: {
                             label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-                            className: "btn-danger btn-sm",
+                            className: "btn-danger btn-sm confirmQuestionDelete",
                             callback: function () {
                                 if (el && el.parentNode.removeChild(el))
                                     updateNumbers();
@@ -112,17 +126,6 @@ function formFieldsValid() {
             }
         });
 
-        // handle addQuestion button
-        document.getElementById("addQuestion").onclick = function () {
-            // copy empty form
-            var order = getQuestionCount() + 1;
-            var myClone = $('#questionItem0').clone();
-
-            // add to editableList and refresh
-            myClone.appendTo($("#questionList"));
-            updateListItemData(myClone, order);
-            updateNumbers();
-        };
 
         // update all "questionItem" ids. These define the ordering when saved to the DB.
         function updateNumbers() {

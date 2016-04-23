@@ -1404,16 +1404,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.20",
+            "version": "1.0.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "e87a786e3ae12a25cf78a71bb07b4b384bfaa83a"
+                "reference": "35a83cf67d80d7040f306c77b0a84b9fbcc4fbfb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/e87a786e3ae12a25cf78a71bb07b4b384bfaa83a",
-                "reference": "e87a786e3ae12a25cf78a71bb07b4b384bfaa83a",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/35a83cf67d80d7040f306c77b0a84b9fbcc4fbfb",
+                "reference": "35a83cf67d80d7040f306c77b0a84b9fbcc4fbfb",
                 "shasum": ""
             },
             "require": {
@@ -1483,20 +1483,20 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2016-03-14 21:54:11"
+            "time": "2016-04-22 10:56:25"
         },
         {
             "name": "league/flysystem-dropbox",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem-dropbox.git",
-                "reference": "41b1d82d6887dc7f5a5f940c85fe5cc2c1263fa7"
+                "reference": "5d44f1d1a7f809115ec8fa2cfabad4599d51fb78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem-dropbox/zipball/41b1d82d6887dc7f5a5f940c85fe5cc2c1263fa7",
-                "reference": "41b1d82d6887dc7f5a5f940c85fe5cc2c1263fa7",
+                "url": "https://api.github.com/repos/thephpleague/flysystem-dropbox/zipball/5d44f1d1a7f809115ec8fa2cfabad4599d51fb78",
+                "reference": "5d44f1d1a7f809115ec8fa2cfabad4599d51fb78",
                 "shasum": ""
             },
             "require": {
@@ -1529,7 +1529,7 @@
                 }
             ],
             "description": "Flysystem adapter for Dropbox",
-            "time": "2016-04-13 07:01:52"
+            "time": "2016-04-22 13:15:41"
         },
         {
             "name": "monolog/monolog",

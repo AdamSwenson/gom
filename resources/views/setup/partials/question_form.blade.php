@@ -21,7 +21,9 @@
     <div class="input-group">
         <span class="input-group-addon">Question Name</span>
         <input id="questionName{{ $counter }}"
-               name="questionName{{ $counter }}" type="text" class="form-control input"
+               name="questionName{{ $counter }}"
+               type="text"
+               class="form-control input"
                value="{{ isset($q) ? $q->getQuestionName() : '' }}"
                placeholder="Enter a brief description of the question, i.e. &quot;Causes of the Civil War&quot;"
                aria-describedby="basic-addon">
@@ -29,16 +31,21 @@
     <h5>Question Text</h5>
 
     <div class="form-group">
-        <textarea class="form-control" rows="3" id="questionText{{ $counter }}"
+        <textarea class="form-control"
+                  rows="3"
+                  id="questionText{{ $counter }}"
                   name="questionText{{ $counter }}"
                   placeholder="Enter the full question text (optional)">{{ isset($q) ? $q->getQuestionText() : '' }}</textarea>
     </div>
     <div class="form-group">
-        <span class="btn btn-info btn-sm handle">
+        <span id="moveQuestionButton{{ $counter }}"
+              class="btn btn-info btn-sm handle">
             <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
             Move
         </span>
-        <a class="btn btn-danger btn-sm js-remove">
+
+        <a id="deleteQuestionButton{{ $counter }}"
+           class="btn btn-danger btn-sm js-remove">
             <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
             Delete
         </a>

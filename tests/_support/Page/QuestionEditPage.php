@@ -12,6 +12,9 @@ class QuestionEditPage
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
 
+    /** @var int The number of question fields displayed for a new exam */
+    public static $defaultNumberOfQuestions = 1;
+
     //Fields
     public static $questionNameIdBase = '#questionName';
     public static $questionTextIdBase = '#questionText';
@@ -20,7 +23,7 @@ class QuestionEditPage
     public static $moveButtonClass = "handle";
     /** @var string The class all the delete buttons share */
     public static $deleteButtonClass = "js-remove";
-    public static $addQuestionButtonId = "#addButton";
+    public static $addQuestionButtonId = "#addQuestion";
 
     //Visible page text
     public static $pageHeadingText = 'Add / Edit Questions: ';
@@ -35,6 +38,13 @@ class QuestionEditPage
     public static $backNavButton = "#backNavButton";
     /** @var string Text displayed on the back button to the user */
     public static $backNavButtonText = "";
+
+    public static $deleteConfirmationModalText = "Warning: This will permanently delete all elements and scores associated with the question";
+//    public static $deleteConfirmationModalText = "<span class='glyphicon glyphicon-warning-sign'></span> Warning: This will permanently delete all elements and scores associated with the question";
+    public static $deleteConfirmationModalConfirmButton = '.confirmQuestionDelete';
+    public static $deleteConfirmationModalCancelButton = '.cancelQuestionDelete';
+//    public static $deleteConfirmationModalConfirmButton = '/html/body/div[5]/div/div/div[3]/button[2]';
+//    public static $deleteConfirmationModalCancelButton = '/html/body/div[5]/div/div/div[3]/button[1]';
 
     /**
      * Returns the xpath of a questionName field
@@ -80,7 +90,8 @@ class QuestionEditPage
      */
     public static function deleteButtonXPath($questionNumber)
     {
-        return "//*[@id='questionItem{$questionNumber}']/div[4]/a";
+        return "//*[@id='deleteQuestionButton{$questionNumber}']";
+//        return "//*[@id='questionItem{$questionNumber}']/div[4]/a";
     }
 
     /**
@@ -89,16 +100,18 @@ class QuestionEditPage
      * @return string
      */
     public static function moveButtonXPath($questionNumber){
-        return "//*[@id='questionItem{$questionNumber}']/div[4]/span";
+        return "//*[@id='moveQuestionButton{$questionNumber}']";
+//        return "//*[@id='questionItem{$questionNumber}']/div[4]/span";
     }
 
     /**
      * On submit should go to editing elements for question 1. This returns the string to look for in the url.
      * @param $examId
+     * @param $questionId
      * @return string
      */
-    public static function redirectToUrl($examId){
-        return "/exam/{$examId}/question/1/element/edit";
+    public static function redirectToUrl($examId, $questionId){
+        return "/exam/{$examId}/question/{$questionId}/element/edit";
     }
 
     /**

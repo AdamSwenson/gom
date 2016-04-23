@@ -84,13 +84,13 @@ module.exports = {
                 buttons: {
                     success: {
                         label: 'Cancel',
-                        className: "btn-sm",
+                        className: "btn-sm cancelButton",
                         callback: function () {
                         }
                     },
                     danger: {
                         label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-                        className: "btn-danger btn-sm",
+                        className: "btn-danger btn-sm deleteConfirmButton",
                         callback: function () {
                             me.removeRow();
                         }

@@ -35,6 +35,7 @@
     "jquery": "^2.2.0",
     "jquery-ui": "^1.10.5",
     "laravel-elixir": "^2.0.0",
+    "sortablejs": "^1.4.2",
     "vue": "^1.0.0",
     "vue-charts": "0.0.5"
   }

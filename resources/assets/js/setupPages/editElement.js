@@ -9,7 +9,9 @@ window.jQuery = jQuery;
 
 require('bootstrap');
 
-var Sortable = require('../utilities/Sortable.js');
+var bootbox = require('bootbox');
+var Sortable = require('sortablejs');
+// var Sortable = require('../utilities/Sortable.js');
 var common = require( '../common.js' );
 
 
@@ -20,6 +22,21 @@ $("#prev-question" ).on('click', function(){
 $("#next-question" ).on('click', function(){
     submitForm(forwardNavTarget);
 });
+
+// handle add element button
+$( "#addElement" ).on('click', function () {
+    // copy empty form
+    var order = getElementCount() + 1;
+    var myClone = $( '#elementItem0' ).clone();
+    // set values
+
+    // add to editableList and refresh
+    myClone.appendTo( $( "#elementList" ) );
+    updateListItemData( myClone, order );
+    updateNumbers();
+    registerCustomtizeHandlers();
+});
+
 
 
 // validate and submit form. Currently, questions are valid with 0 elements.
@@ -115,19 +132,6 @@ $("#next-question" ).on('click', function(){
 
     registerCustomtizeHandlers();
 
-    // handle add element button
-    document.getElementById( "addElement" ).onclick = function () {
-        // copy empty form
-        var order = getElementCount() + 1;
-        var myClone = $( '#elementItem0' ).clone();
-        // set values
-
-        // add to editableList and refresh
-        myClone.appendTo( $( "#elementList" ) );
-        updateListItemData( myClone, order );
-        updateNumbers();
-        registerCustomtizeHandlers();
-    };
 
     // update all elements
     function updateNumbers() {
