@@ -24,14 +24,8 @@ $I->wantTo('Edit existing questions');
 $I->test_login($I);
 $I->amOnPage("exam/{$examId}/question/edit");
 $I->verifyQuestionEditPageIntact($I, $examName, $numQuestions);
-$I->amGoingTo("Check that the page looks as expected");
-//    $I->seeInTitle(QuestionEditPage::$pageTitleText);
-//    $I->see($examName);
-//    $I->seeElement(QuestionEditPage::$addQuestionButtonId);
-//    //correct navs
-//    $I->seeElement(QuestionEditPage::$forwardNavButton);
-//    $I->seeElement(QuestionEditPage::$backNavButton);
-    //make sure have expected preexisting text
+
+$I->amGoingTo("make sure have expected preexisting text");
     for ( $i = 1; $i <= $numQuestions; $i++ )
     {
         $v = $I->getQuestionFieldsInitialValues($examId, $i);

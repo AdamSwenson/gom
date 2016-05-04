@@ -86,7 +86,7 @@ $( "#addElement" ).on('click', function () {
                 buttons: {
                     success: {
                         label: 'Cancel',
-                        className: "btn-sm",
+                        className: "btn-sm btn-default",
                         callback: function () {
                         }
                     },

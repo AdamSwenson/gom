@@ -40,15 +40,18 @@
     <div class="form-group">
         <span id="moveQuestionButton{{ $counter }}"
               class="btn btn-info btn-sm handle">
-            <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
+            <span class="glyphicon glyphicon-move"
+                  aria-hidden="true"></span>
             Move
         </span>
 
-        <a id="deleteQuestionButton{{ $counter }}"
-           class="btn btn-danger btn-sm js-remove">
+        <button type="button"
+                name="deleteQuestionButton{{ $counter }}"
+                id="deleteQuestionButton{{ $counter }}"
+                class="btn btn-danger btn-sm js-remove">
             <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
             Delete
-        </a>
+        </button>
     </div>
     <input type="hidden" id="questionId" name="questionId{{ $counter }}"
            value="{{ isset($q) ? $q->getId() : '0' }}"/>

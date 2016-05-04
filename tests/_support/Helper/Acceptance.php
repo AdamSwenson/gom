@@ -4,10 +4,13 @@ namespace Helper;
 // here you can define custom actions
 // all public methods declared in helper class will be available in $I
 
+use App\Question;
 use Faker\Factory;
 use Page\ElementEditPage;
+use Page\GradeSelectExamPage;
 use Page\QuestionEditPage;
 use Page\RosterEditPage;
+use Page\SetupExamSelectPage;
 
 class Acceptance extends \Codeception\Module
 {
@@ -46,6 +49,9 @@ class Acceptance extends \Codeception\Module
             $I->seeElement(QuestionEditPage::questionNameXPath($questionNumber));
             $I->seeElement(QuestionEditPage::questionTextXPath($questionNumber));
             $I->seeElement(QuestionEditPage::maxScoreXPath($questionNumber));
+            //buttons
+            $I->seeElement(QuestionEditPage::deleteButtonXPath($questionNumber));
+            $I->seeElement(QuestionEditPage::moveButtonXPath($questionNumber));
         }
     }
 
@@ -67,12 +73,14 @@ class Acceptance extends \Codeception\Module
     /**
      * Runs tests for page title, page heading, appropriate navs, and question fields
      * @param $I
+     * @param $examId
      * @param $examName
      * @param $numberQuestions
      */
-    public function verifyQuestionEditPageIntact($I, $examName, $numberQuestions)
+    public function verifyQuestionEditPageIntact($I, $examId, $examName, $numberQuestions)
     {
         $I->amGoingTo("Check that everything is displayed properly");
+        $I->seeInCurrentUrl("exam/{$examId}/question/edit");
         $I->seeInTitle(QuestionEditPage::$pageTitleText);
         $I->see($examName);
         $I->seeElement(QuestionEditPage::$addQuestionButtonId);
@@ -92,10 +100,13 @@ class Acceptance extends \Codeception\Module
         for ( $i = 1; $i <= $numberQuestions; $i++ )
         {
             $v = $I->getQuestionFieldsInitialValues($examId, $i);
+            //question name
             $I->seeElement(QuestionEditPage::questionNameXPath($i));
             $I->seeInField(QuestionEditPage::questionNameXPath($i), $v['questionName']);
+            //question text
             $I->seeElement(QuestionEditPage::questionTextXPath($i));
             $I->seeInField(QuestionEditPage::questionTextXPath($i), $v['questionText']);
+            //max score
             $I->seeElement(QuestionEditPage::maxScoreXPath($i));
             $I->seeInField(QuestionEditPage::maxScoreXPath($i), $v['maxScore']);
         }
@@ -116,9 +127,9 @@ class Acceptance extends \Codeception\Module
         for ( $i = 1; $i <= $numberOfQuestions; $i++ )
         {
             $testData[ $i ] = [
-                'name'      => $Faker->text(30),
-                'text'      => $Faker->text(30),
-                'maxScore'   => $Faker->numberBetween(1,1000)
+                'name'     => $Faker->text(30),
+                'text'     => $Faker->text(30),
+                'maxScore' => $Faker->numberBetween(1, 1000),
             ];
         }
 
@@ -208,14 +219,170 @@ class Acceptance extends \Codeception\Module
 
     /* -------------------------------- Rosters --------------------- */
 
-    public function verifyRosterEditPageIntact($I){
+    public function verifyRosterEditPageIntact($I)
+    {
         $I->amGoingTo("Check that the page is in its initial state and everything is displayed as expected");
         $I->seeInTitle(RosterEditPage::$pageTitleText);
-        
+
         //correct navs
         $I->seeElement(RosterEditPage::$forwardNavButton);
         $I->see(RosterEditPage::$forwardNavText, RosterEditPage::$forwardNavXPath);
         $I->seeElement(RosterEditPage::$backNavButton);
         $I->see(RosterEditPage::$backNavText, RosterEditPage::$backNavXPath);
     }
+
+    /* ---------------------------------- Exam selection ----- */
+    /**
+     * Used for the exam select page on route '/exam'
+     * @param $I
+     * @param $id
+     */
+    public function checkExamRowPresent($I, $id){
+        $I->amGoingTo("Check that see exam term and title");
+        $I->see(SetupExamSelectPage::examTerm($id));
+        $I->see(SetupExamSelectPage::partialExamName($id));
+
+        $I->amGoingTo("Check that see correct edit button");
+        $I->seeLink(SetupExamSelectPage::$editButtonText, 'http://localhost:8000' . SetupExamSelectPage::editButtonTargetRoute($id));
+        $I->seeElement(SetupExamSelectPage::editButtonXPath($id)
+            , [
+//        'title' => SetupExamSelectPage::$editButtonTitle,
+//        'href'  => 'http://localhost:8000' . SetupExamSelectPage::editButtonTargetRoute($id),
+//        'class' => SetupExamSelectPage::$editButtonClass . ' btn btn-info',
+                       ]
+        );
+
+        $I->amGoingTo("Check that see correct clone button");
+        $I->seeLink(SetupExamSelectPage::$cloneButtonText, 'http://localhost:8000' . SetupExamSelectPage::cloneButtonTargetRoute($id));
+        $I->seeElement(SetupExamSelectPage::cloneButtonXPath($id)
+//        , [
+//        'title' => SetupExamSelectPage::$cloneButtonTitle,
+//        'href'  => 'http://localhost:8000' . SetupExamSelectPage::cloneButtonTargetRoute($id),
+////        'class' => SetupExamSelectPage::$cloneButtonClass . ' btn btn-default',
+//    ]
+        );
+
+        $I->amGoingTo("Check that see correct delete button");
+        $I->seeElement(SetupExamSelectPage::deleteButtonXPath($id)
+//        , [
+//        'title' => SetupExamSelectPage::$deleteButtonTitle,
+//        'class' => SetupExamSelectPage::$deleteButtonClass . ' btn btn-danger',
+//    ]
+        );
+    }
+
+    /**
+     * For the index page displayed on route: '/exam'
+     * Runs assertions to make sure see all fixed page elements, exams belonging to user, and no exams
+     * not belonging to the user.
+     * @param $I
+     * @param $examIdsWhichShouldSee
+     * @param $examIdsWhichShouldNotSee
+     *
+     * @todo Check exam statistics displayed properly
+     */
+    public function verifySetupExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee)
+    {
+        $I->amGoingTo("Make sure the page is intact and see all expected exams");
+        $I->seeElement(SetupExamSelectPage::$forwardNavButton);
+        $I->seeLink(SetupExamSelectPage::$forwardNavButtonText, SetupExamSelectPage::forwardNavButtonTarget());
+
+        foreach ( $examIdsWhichShouldSee as $id )
+        {
+            $I->checkExamRowPresent($I, $id);
+        }
+
+
+        if ( ! empty($examIdsWhichShouldNotSee) )
+        {
+            $I->amGoingTo("Check that other people's exams are absent");
+            foreach ( $examIdsWhichShouldNotSee as $id )
+            {
+                $I->amGoingTo("Check that do not see exam #{$id}'s term and title");
+                    $I->dontSee(SetupExamSelectPage::examTerm($id));
+                    $I->dontSee(SetupExamSelectPage::partialExamName($id));
+
+                $I->amGoingTo("Check that do not see exam #{$id}'s edit button");
+                    $I->dontSeeLink(SetupExamSelectPage::$editButtonText, 'http://localhost:8000' . SetupExamSelectPage::editButtonTargetRoute($id));
+                    $I->dontSeeElement(SetupExamSelectPage::editButtonXPath($id));
+
+                $I->amGoingTo("Check that do not see exam #{$id} clone button");
+                    $I->dontSeeLink(SetupExamSelectPage::$cloneButtonText, 'http://localhost:8000' . SetupExamSelectPage::cloneButtonTargetRoute($id));
+                    $I->dontSeeElement(SetupExamSelectPage::cloneButtonXPath($id));
+
+                $I->amGoingTo("Check that do not see exam #{$id} delete button");
+                    $I->dontSeeElement(SetupExamSelectPage::deleteButtonXPath($id));
+            }
+        }
+    }
+
+
+    /* ---------------------------------------------- Grade exam --------------------------------- */
+    public function checkExamRowPresentForGradeExamSelectPage($I, $examId){
+            $I->amGoingTo("Check that see exam #{$examId}term and title");
+            $I->see(GradeSelectExamPage::examTerm($examId));
+            $I->see(GradeSelectExamPage::partialExamName($examId));
+
+            $I->amGoingTo("Check that see correct grade button for exam #{$examId}");
+            $I->seeLink(GradeSelectExamPage::$gradeButtonText, GradeSelectExamPage::gradeButtonTargetRoute($examId));
+            $I->seeElement(GradeSelectExamPage::gradeButtonXPath($examId)
+                , [
+//        'title' => SetupExamSelectPage::$editButtonTitle,
+//        'class' => SetupExamSelectPage::$editButtonClass . ' btn btn-info',
+                ]
+            );
+
+            $I->amGoingTo("Check that see correct assign button for exam #{$examId}");
+            $I->seeLink(GradeSelectExamPage::$assignButtonText, GradeSelectExamPage::assignButtonTargetRoute($examId));
+            $I->seeElement(GradeSelectExamPage::assignButtonXPath($examId)
+//        , [
+//        'title' => SetupExamSelectPage::$cloneButtonTitle,
+////        'class' => SetupExamSelectPage::$cloneButtonClass . ' btn btn-default',
+//    ]
+            );
+
+
+    }
+
+    /**
+     * For the index page displayed on route: '/grade'
+     * Runs assertions to make sure see all fixed page elements, exams belonging to user, and no exams
+     * not belonging to the user.
+     * @param $I
+     * @param $examIdsWhichShouldSee
+     * @param $examIdsWhichShouldNotSee
+     *
+     * @todo Check exam statistics displayed properly
+     */
+    public function verifyGradeExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee){
+        $I->amGoingTo("Make sure the page is intact and see all expected exams");
+
+        foreach ( $examIdsWhichShouldSee as $id )
+        {
+            $I->checkExamRowPresentForGradeExamSelectPage($I, $id);
+        }
+
+        if ( ! empty($examIdsWhichShouldNotSee) )
+        {
+            $I->amGoingTo("Check that other people's exams are absent");
+            foreach ( $examIdsWhichShouldNotSee as $id )
+            {
+                $I->amGoingTo("Check that do not see exam #{$id}'s term and title");
+                $I->dontSee(GradeSelectExamPage::examTerm($id));
+                $I->dontSee(GradeSelectExamPage::partialExamName($id));
+
+                $I->amGoingTo("Check that do not see exam #{$id}'s grade button");
+                $I->dontSeeLink(GradeSelectExamPage::$gradeButtonText,GradeSelectExamPage::gradeButtonTargetRoute($id, true));
+                $I->dontSeeElement(GradeSelectExamPage::gradeButtonXPath($id));
+
+                $I->amGoingTo("Check that do not see exam #{$id} assign button");
+                $I->dontSeeLink(GradeSelectExamPage::$assignButtonText, GradeSelectExamPage::assignButtonTargetRoute($id, true));
+                $I->dontSeeElement(GradeSelectExamPage::assignButtonXPath($id));
+
+            }
+        }
+    }
+
 }
+
+

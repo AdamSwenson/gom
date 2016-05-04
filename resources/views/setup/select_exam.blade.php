@@ -14,7 +14,9 @@
     <nav>
         <ul class="pager">
             <li class="next">
-                <a href="{{ url('exam/create') }}" title="Create new exam">Create New Exam
+                <a id="forwardNavButton"
+                   href="{{ url('exam/create') }}"
+                   title="Create new exam">Create New Exam
                     <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
             </li>
         </ul>
@@ -34,7 +36,7 @@
         <tbody>
         @if ( sizeof($exams) > 0 )
             @foreach($exams as $exam)
-                <tr>
+                <tr id="examRow{{ $exam->getId() }}">
                     <td style="vertical-align:middle; width: 10%;">
                         {{ $exam->getTerm() }} {{ $exam->getYear() }}</td>
                     <td style="vertical-align:middle">
@@ -43,16 +45,19 @@
                     <td style="vertical-align: middle">{{ $numberOfStudents[$exam->getId()] or '0' }}</td>
                     <!-- edit / clone / delete buttons -->
                     <td style="text-align:right;">
-                        <a class="btn btn-info" href="{{ url('exam/'.$exam->getId().'/edit') }}"
+                        <a class="editExam btn btn-info"
+                           href="{{ url('exam/'.$exam->getId().'/edit') }}"
                            title="Edit Exam">
                             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                             Edit
                         </a>
-                        <a class="btn btn-default" href="{{ url('exam/'.$exam->getId().'/clone') }}"
+                        <a class="cloneExam btn btn-default"
+                           href="{{ url('exam/'.$exam->getId().'/clone') }}"
                            title="Clone Exam">
                             <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> Clone
                         </a>
-                        <a class="btn btn-danger" onclick="showConfirmation({{ $exam->getId() }})"
+                        <a class="deleteExam btn btn-danger"
+                           data-exam-id="{{ $exam->getId() }}"
                            title="Delete Exam">
                             <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
                             Delete

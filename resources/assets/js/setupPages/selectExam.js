@@ -8,22 +8,29 @@ require( 'bootstrap' );
 var bootbox = require('bootbox');
 var common = require( '../common.js' );
 
+
+$(".deleteExam").on('click', function(){
+   var examId = $(this).data('exam-id');
+    window.console.log('deleting ' + examId);
+    showConfirmation(examId);
+});
+
 function showConfirmation(examId) {
     bootbox.dialog({
-        message: '<span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span> ' +
+        message: '<p id="confirmationModalText"><span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span> ' +
         "Warning: This will delete all associated students, scores, questions and elements. " +
-        "<br/>Do you wish to proceed?",
+        "<br/>Do you wish to proceed?</p>",
         title: "Delete Exam",
         buttons: {
             success: {
                 label: 'Cancel',
-                className: "btn-sm",
+                className: "cancelDelete btn btn-default btn-sm",
                 callback: function () {
                 }
             },
             danger: {
                 label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-                className: "btn-danger btn-sm",
+                className: "confirmDelete btn-danger btn-sm",
                 callback: function () {
                     // do deletion for examId
                     deleteExam(examId);

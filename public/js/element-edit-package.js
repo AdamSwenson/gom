@@ -85,7 +85,7 @@ var editableList = Sortable.create(eList, {
             buttons: {
                 success: {
                     label: 'Cancel',
-                    className: "btn-sm",
+                    className: "btn-sm btn-default",
                     callback: function callback() {}
                 },
                 danger: {

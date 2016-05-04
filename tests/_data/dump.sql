@@ -636,8 +636,8 @@ LOCK TABLES `exams` WRITE;
 
 INSERT INTO `exams` (`id`, `user_id`, `term`, `year`, `name`, `locked`, `released`, `created_at`, `updated_at`)
 VALUES
-  (1, 1, 'Exam1Term', 1970, 'TestExam#1 5QuestionsWElements User1', 0, 0, NOW(), NOW()),
-  (2, 1, 'Exam2Term', 2000, 'TestExam#2 5QuestionsWElements User1', 0, 0, NOW(), NOW()),
+  (1, 1, 'Exam1Term', 1990, 'TestExam#1 5QuestionsWElements User1', 0, 0, NOW(), NOW()),
+  (2, 1, 'Exam2Term', 1990, 'TestExam#2 5QuestionsWElements User1', 0, 0, NOW(), NOW()),
   (3, 2, 'Exam3Term', 1990, 'TestExam#3 5QuestionsWElements User2', 0, 0, NOW(), NOW()),
   (4, 1, 'Exam4Term', 1990, 'TestExam#4 5QuestionsWElements User1', 0, 0, NOW(), NOW()),
   (5, 1, 'Exam5Term', 1990, 'TestExam#5 NoQuestions User1', 0, 0, NOW(), NOW()),

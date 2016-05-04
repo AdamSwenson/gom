@@ -34,7 +34,8 @@
                     <tr>
                         <td class="examDetailsCell"
                             {{--style="vertical-align:middle; width:10%;"--}}
-                        >{{ $exam->year or '' }} {{ $exam->term or '' }}</td>
+                        >{{ $exam->term or '' }} {{ $exam->year or '' }}</td>
+
                         <td class="examNameCell"
                             {{--style="vertical-align:middle;"--}}
                         >{{ $exam->name or 'No Name Found' }}</td>
@@ -53,14 +54,16 @@
 
                         <td class="examButtonsCell">
                             <a
+                                    id="gradeExam{{$examId}}"
                                     data-href="{{ url('grade/exam/'.$examId) }}"
-                                    class="btn btn-primary"
+                                    class="gradeButton btn btn-primary"
                                     title="Grade exam"
                             >
                                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Grade</a>
                             <a
+                                    id="assignExam{{$examId}}"
                                     data-href="{{ url('grade/exam/'.$examId.'/assign') }}"
-                                    class="btn btn-primary"
+                                    class="assignButton btn btn-primary"
                                     title="Assign letter grades"
                             >
                                 <span class="glyphicon glyphicon-signal" aria-hidden="true"></span> Assign</a>
