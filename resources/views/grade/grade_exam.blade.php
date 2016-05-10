@@ -25,19 +25,24 @@
                         <li <?php if ($qNumber == 1) {
                             echo "class='active'";
                         } ?> role="presentation">
-                            <a href="#panelQuestion{{ $qNumber }}" title="Grade question {{ $qNumber }}"
+                            <a id="tabQuestion{{ $qNumber }}"
+                               href="#panelQuestion{{ $qNumber }}"
+                               title="Grade question {{ $qNumber }}"
                                data-toggle="tab">
                                 Q{{ $qNumber }}</a></li>
                     @endforeach
                 </ul>
                 <!-- question panel -->
-                <div class="panel panel-default">
+                <div id="questionPanel"
+                     class="panel panel-default questionPanel">
                     <div class="panel-body">
                         <div class="tab-content">
                             <?php $elementIndex = 0; ?>
                             @foreach($questionAssignments as $qAssignment)
                                 <?php $qNumber = $qAssignment->getQuestionNumber(); ?>
-                                <div id="panelQuestion{{ $qNumber }}" data-question-number="{{ $qNumber }}" class="tab-pane fade
+                                <div id="panelQuestion{{ $qNumber }}"
+                                     data-question-number="{{ $qNumber }}"
+                                     class="tab-pane fade
                                             <?php if ($qNumber === 1) {
                                     echo "in active";
                                 } ?>">
@@ -111,7 +116,9 @@
                                   style="cursor: pointer;"
                             > </span>
                         </label>
-                        <input class="typeahead full-width" type="text" id="activeStudentName"
+                        <input id="activeStudentName"
+                               class="typeahead full-width"
+                               type="text"
                                placeholder="No Student Selected"
                                style="width: 160px;">
                     </div>
@@ -129,8 +136,9 @@
             <!-- graded / remaining counters -->
             <p>Graded: <span id="graded">0</span> Remaining: <span id="remaining">0</span></p>
             <!-- save & finish button -->
-            <a class="btn btn-success col-lg-12" href="{{ url('grade/') }}" id="finishButton"
-               style="display: none;">
+            <a id="finishButton"
+               class="btn btn-success col-lg-12 startHidden"
+               href="{{ url('grade/') }}">
                 <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish
             </a>
             <!-- student table shows the student roster -->

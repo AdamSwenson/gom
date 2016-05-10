@@ -3,12 +3,19 @@ $letterGrades = App\Repositories\Grade\GradeFactory::$grades;
 ?>
 
 <!-- Single button -->
-<div class="btn-group">
-    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<div id="letterGradeArea"
+     class="btn-group">
+    <button id="letterGradeButton{{$qNumber}}"
+            type="button"
+            class="btn btn-default dropdown-toggle"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false">
         <span id="letterGradeForQuestion{{ $qNumber }}">Letter grade</span> <span class="caret"></span>
     </button>
 
-    <ul class="dropdown-menu">
+    <ul id="letterGradeList"
+        class="dropdown-menu">
         @foreach($letterGrades as $g)
         <li><a class="letterGradeButton"
                data-letter-grade-button-id="letterGradeForQuestion{{ $qNumber }}"

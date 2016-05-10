@@ -1,7 +1,7 @@
 <!-- template used by 'grade_exam' to host -->
-<div class="list-group-item"
+<div id="element{{ $eNumber }}"
+     class="list-group-item"
      style="background-color: #DDDDDD;"
-     id="element{{ $elementIndex }}"
      data-element-index="{{ $elementIndex }}"
      data-element-id="{{ $elements[$eNumber-1]->getId() }}"
 >
@@ -18,7 +18,7 @@
                 </span>
         <!-- comment area -->
                 <span class="col-lg-7" style="background-color: #DDDDDD; padding-left: 0px; padding-right:0px;">
-                    <textarea
+                    <textarea id="commentQ{{ $qNumber }}E{{ $eNumber }}"
                             class="form-control"
                             rows="4"
                             name="commentQ{{ $qNumber }}E{{ $eNumber }}"

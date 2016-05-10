@@ -32,14 +32,18 @@
         <tbody id="studentRosterBody">
         <?php $studentIndex = 0; ?>
         @foreach($students as $student)
-            <tr id="studentListItem{{ $studentIndex }}" data-index="{{ $studentIndex }}"
+            <tr id="studentListItem{{ $studentIndex }}"
+                data-index="{{ $studentIndex }}"
                 data-fName="{{ $student->getStudentFName() }}"
                 data-lName="{{ $student->getStudentLName() }}"
                 data-sid="{{ $student->id }}"
                 data-student-identifier="{{ $student->getStudentId() }}">
-                <td class="col-xs-6" id="studentName{{ $studentIndex }}">{{ $student->getStudentLName() }}, {{ $student->getStudentFName() }}</td>
-                <td class="col-xs-4" id="studentIdentifier{{ $studentIndex }}">{{ !empty($student['student_identifier']) ? $student['student_identifier'] : '--' }}</td>
-                <td class="col-xs-2" id="examGrade<?= $studentIndex++; ?>">--</td>
+                <td class="col-xs-6"
+                    id="studentName{{ $studentIndex }}">{{ $student->getStudentLName() }}, {{ $student->getStudentFName() }}</td>
+                <td class="col-xs-4"
+                    id="studentIdentifier{{ $studentIndex }}">{{ !empty($student['student_identifier']) ? $student['student_identifier'] : '--' }}</td>
+                <td class="col-xs-2"
+                    id="examGrade<?= $studentIndex++; ?>">--</td>
             </tr>
         @endforeach
         </tbody>

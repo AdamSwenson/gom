@@ -65,6 +65,9 @@ var letterGradeButton = require( './letterGradeButton.js' )();
         toggleTimer();
     } );
 
+    $( "[id^='studentListItem']" ).on('click', function () {
+        onStudentSelect(this);
+    });
 
     /*
      * Set valenceCutoffs for comments --  these represent the maximum value for each valence group.
@@ -589,13 +592,14 @@ var letterGradeButton = require( './letterGradeButton.js' )();
     /*
      * A student is selected from the roster - DO LOTS OF STUFF
      */
-    $( "[id^='studentListItem']" ).click( function () {
+    function onStudentSelect(row){
+    // $( "[id^='studentListItem']" ).on('click', function () {
         saveTimer();
         $( '#selectPrompt' ).hide();
         $( '#questionArea' ).show( "fast" );
 
         // set the active student
-        activeStudent = $( this ).attr( "data-index" );
+        activeStudent = $( row ).attr( "data-index" );
         setSelectedNameAndId();
         setActiveStudentBackgroundColor();
 
@@ -627,7 +631,8 @@ var letterGradeButton = require( './letterGradeButton.js' )();
             }
         } );
 
-    } );
+    // } );
+}
 //bindLetterGradeHandler();
 //    return false;
 //} );

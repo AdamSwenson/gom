@@ -326,7 +326,7 @@ class GradeController extends Controller
      */
     public function index()
     {
-        //$this->dispatch(new UpdateAllStoredNumGraded());
+        $this->dispatch(new UpdateAllStoredNumGraded());
 
         $storedExamStatsDao = app()->make('App\Repositories\Exam\IStoredExamStatsRepository');
         $numGradedDao = app()->make('App\Repositories\Exam\INumberGradedRepository');
