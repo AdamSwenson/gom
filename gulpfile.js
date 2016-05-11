@@ -39,8 +39,7 @@ elixir( function ( mix ) {
         'common/common.sass'
     ], 'public/css/common-package.css' );
 
-
-    //Styles used on grade pages
+    /* ------------ grade pages -------------- */
     mix.sass(
         [
             'grade/mainGrading.scss'
@@ -51,7 +50,17 @@ elixir( function ( mix ) {
     ], 'public/css/exam-table-package.css' );
 
 
-    //reports pages
+    mix.sass( [
+        'common/common.sass',
+        'grade/examSelectTable.scss'
+    ], 'public/css/exam-table-package.css' );
+
+    /* ------------ reports pages -------------- */
+    //main index page
+    mix.sass( [
+        'common/common.sass',
+        'reports/examControls.sass'
+    ], 'public/css/report-index-package.css');
     mix.sass( [
         'reports/examControls.sass'
     ], 'public/css/exam-controls-package.css' );
@@ -59,8 +68,7 @@ elixir( function ( mix ) {
         'reports/examAnalytics.scss'
     ], 'public/css/exam-analytics-package.css' );
 
-
-    //setup pages
+    /* ------------ Setup pages -------------- */
     mix.sass( [
         'common/common.sass',
         'setup/editRoster.sass'
@@ -71,10 +79,6 @@ elixir( function ( mix ) {
         'setup/selectExam.scss'
     ], 'public/css/select-exam-package.css' );
 
-    mix.sass( [
-        'common/common.sass',
-        'grade/examSelectTable.scss'
-    ], 'public/css/exam-table-package.css' );
 
 
     /* ---------------------------------------------- scripts ----------------------------------------------------*/

@@ -4,7 +4,7 @@
 @section('description', 'Handle post-grading tasks')
 
 @section('otherCss')
-    <link rel="stylesheet" href="{{ asset('css/exam-controls-package.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('css/report-index-package.css') }}"/>
 @endsection
 
 @section('body')
@@ -47,7 +47,8 @@
 
 @section('jsArea')
     <script type="text/javascript">
-        var activeTab = 'navReport';
+//        var activeTab = 'navReport';
+        var activeTab = '';
         var baseUrl = '{!! url() !!}';
     </script>
     <script type="text/javascript" src="{{ asset('js/report-exam-controls-package.js') }}"></script>
