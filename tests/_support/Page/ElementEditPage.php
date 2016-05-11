@@ -100,5 +100,60 @@ public static function valenceTextPath($subtask, $valence){
         return static::$URL.$param;
     }
 
+    /* ------------------------- tests ----------------------------- */
+
+
+    /**
+     * Checks whether the fields for creating or editing a given element are present.
+     * If not is true, this checks whether there are no fields for the subtask
+     * @param $I
+     * @param int $subtask
+     * @param bool $not
+     */
+    public static function checkElementFieldsPresent($I, $subtask, $not = false)
+    {
+        if ( $not )
+        {
+            $I->dontSeeElement(self::elementItemXPath($subtask));
+            $I->dontSeeElement(self::elementNameXPath($subtask));
+            $I->dontSeeElement(self::elementTextXPath($subtask));
+            $I->dontSeeElement(self::customizeResponsesButtonXPath($subtask));
+            $I->dontSeeElement(self::commentFormXPath($subtask));
+        } else
+        {
+            $I->seeElement(self::elementItemXPath($subtask));
+            $I->seeElement(self::elementNameXPath($subtask));
+            $I->seeElement(self::elementTextXPath($subtask));
+            $I->seeElement(self::customizeResponsesButtonXPath($subtask));
+            // $I->seeElement(ElementEditPage::commentFormXPath($subtask));
+        }
+    }
+
+    /**
+     * Runs tests for page title, page heading, appropriate navs, and element fields
+     * @param $I
+     * @param $examId
+     * @param $questionId
+     * @param $numberOfElements
+     */
+    public static function verifyElementEditPageIntact($I, $examId, $questionId, $numberOfElements)
+    {
+        $I->amGoingTo("Check that everything on the element editing page is displayed properly");
+        //page level text
+        $I->seeInTitle(self::$pageTitleText);
+        $I->see(self::pageHeadingText($examId, $questionId));
+        //page level buttons
+        $I->seeElement(self::$addElementButtonXPath);
+        //correct navs
+        $I->seeElement(self::$forwardNavButton);
+        $I->seeElement(self::$backNavButton);
+        //fields present
+        for ( $i = 1; $i <= $numberOfElements; $i++ )
+        {
+            self::checkElementFieldsPresent($I, $i);
+        }
+
+    }
+
 
 }

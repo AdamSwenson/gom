@@ -13,31 +13,34 @@ $I->wait(2);
 $examId = $I->examIdWithQuestions();
 # Go to page
 $I->amOnPage("/exam/{$examId}/student/edit");
+$I->wait(2);
 
-$I->amGoingTo("Check that the page is in its initial state and everything is displayed as expected");
-    $I->seeInTitle(RosterEditPage::$pageTitleText);
-    //correct navs
-    $I->seeElement(RosterEditPage::$forwardNavButton);
-    $I->see(RosterEditPage::$forwardNavText, RosterEditPage::$forwardNavXPath);
-    $I->seeElement(RosterEditPage::$backNavButton);
-    $I->see(RosterEditPage::$backNavText, RosterEditPage::$backNavXPath);
-
-    //expected students
-    $s = RosterEditPage::students1Through5();
-    for ( $i = 1; $i <= 5; $i++ )
-    {
-        $v = $students[ $i ];
-        $I->seeInField("form input[type=text]", $v['last']);
-        $I->seeInField("form input[type=text]", $v['first']);
-        if ( ! is_null($v['sid']) )
-        {
-            $I->seeInField("form input[type=text]", $v['sid']);
-        }
-        if ( ! is_null($v['email']) )
-        {
-            $I->seeInField("form input[type=text]", $v['email']);
-        }
-    }
+RosterEditPage::verifyRosterEditPageIntact($I);
+RosterEditPage::verifyInitialValuesPresent($I);
+//$I->amGoingTo("Check that the page is in its initial state and everything is displayed as expected");
+//    $I->seeInTitle(RosterEditPage::$pageTitleText);
+//    //correct navs
+//    $I->seeElement(RosterEditPage::$forwardNavButton);
+//    $I->see(RosterEditPage::$forwardNavText, RosterEditPage::$forwardNavXPath);
+//    $I->seeElement(RosterEditPage::$backNavButton);
+//    $I->see(RosterEditPage::$backNavText, RosterEditPage::$backNavXPath);
+//
+//    //expected students
+//    $s = RosterEditPage::students1Through5();
+//    for ( $i = 1; $i <= count($s); $i++ )
+//    {
+//        $v = $students[ $i ];
+//        $I->seeInField("form input[type=text]", $v['last']);
+//        $I->seeInField("form input[type=text]", $v['first']);
+//        if ( ! is_null($v['sid']) )
+//        {
+//            $I->seeInField("form input[type=text]", $v['sid']);
+//        }
+//        if ( ! is_null($v['email']) )
+//        {
+//            $I->seeInField("form input[type=text]", $v['email']);
+//        }
+//    }
 
 
 $I->amGoingTo("Click the roster delete button but cancel ");

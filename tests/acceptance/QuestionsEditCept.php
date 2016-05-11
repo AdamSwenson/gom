@@ -23,12 +23,14 @@ $I = new AcceptanceTester($scenario);
 $I->wantTo('Edit existing questions');
 $I->test_login($I);
 $I->amOnPage("exam/{$examId}/question/edit");
-$I->verifyQuestionEditPageIntact($I, $examName, $numQuestions);
+QuestionEditPage::verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
+
+//$I->verifyQuestionEditPageIntact($I, $examName, $numQuestions);
 
 $I->amGoingTo("make sure have expected preexisting text");
     for ( $i = 1; $i <= $numQuestions; $i++ )
     {
-        $v = $I->getQuestionFieldsInitialValues($examId, $i);
+        $v = QuestionEditPage::getQuestionFieldsInitialValues($examId, $i);
         $I->seeElement(QuestionEditPage::questionNameXPath($i));
         $I->seeInField(QuestionEditPage::questionNameXPath($i), $v['questionName']);
         $I->seeElement(QuestionEditPage::questionTextXPath($i));
@@ -39,7 +41,7 @@ $I->amGoingTo("make sure have expected preexisting text");
 
 
 $I->amGoingTo("Edit the name, text, and max score of question #{$editedQuestionNumber}");
-    $v = $I->getQuestionFieldsInitialValues($examId, $editedQuestionNumber);
+    $v = QuestionEditPage::getQuestionFieldsInitialValues($examId, $editedQuestionNumber);
     $I->fillField(QuestionEditPage::questionNameXPath($editedQuestionNumber), $prependedText . $v['questionName']);
     $I->fillField(QuestionEditPage::questionTextXPath($editedQuestionNumber), $prependedText . $v['questionText']);
     $I->fillField(QuestionEditPage::maxScoreXPath($editedQuestionNumber), $newMaxScore);
@@ -48,8 +50,8 @@ $I->amGoingTo("Edit the name, text, and max score of question #{$editedQuestionN
 $I->amGoingTo("Swap the positions of questions #{$swappedQuestionNumbers[0]} and #{$swappedQuestionNumbers[1]}");
     $originalQuestionNumberOfMovedQuestion = $swappedQuestionNumbers[1];
     $targetQuestionNumber = $swappedQuestionNumbers[0];
-    $movedQuestionValues = $I->getQuestionFieldsInitialValues($examId, $swappedQuestionNumbers[1]);
-    $targetQuestionValues = $I->getQuestionFieldsInitialValues($examId, $swappedQuestionNumbers[0]);
+    $movedQuestionValues = QuestionEditPage::getQuestionFieldsInitialValues($examId, $swappedQuestionNumbers[1]);
+    $targetQuestionValues = QuestionEditPage::getQuestionFieldsInitialValues($examId, $swappedQuestionNumbers[0]);
 $I->dragAndDrop('#moveQuestionButton3', '#questionItem1');
 $I->wait(5);
 //$I->dragAndDrop("#moveQuestionButton{$swappedQuestionNumbers[1]}", "#moveQuestionButton{$swappedQuestionNumbers[0]}");

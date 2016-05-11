@@ -96,5 +96,72 @@ public static $deleteExamConfirmButtonXPath = "/html/body/div[5]/div/div/div[3]/
         return static::$URL . $param;
     }
 
+    /* ------------------------------------------- tests ----------------------------- */
+    /**
+     * Used for the exam select page on route '/exam'
+     * @param $I
+     * @param $id
+     */
+    public static function checkExamRowPresent($I, $id){
+        $I->amGoingTo("Check that see exam term and title");
+        $I->see(self::examTerm($id));
+        $I->see(self::partialExamName($id));
+
+        $I->amGoingTo("Check that see correct edit button");
+        $I->seeLink(self::$editButtonText, 'http://localhost:8000' . self::editButtonTargetRoute($id));
+        $I->seeElement(self::editButtonXPath($id));
+
+        $I->amGoingTo("Check that see correct clone button");
+        $I->seeLink(self::$cloneButtonText, 'http://localhost:8000' . self::cloneButtonTargetRoute($id));
+        $I->seeElement(self::cloneButtonXPath($id));
+
+        $I->amGoingTo("Check that see correct delete button");
+        $I->seeElement(self::deleteButtonXPath($id));
+    }
+
+    /**
+     * For the index page displayed on route: '/exam'
+     * Runs assertions to make sure see all fixed page elements, exams belonging to user, and no exams
+     * not belonging to the user.
+     * @param $I
+     * @param $examIdsWhichShouldSee
+     * @param $examIdsWhichShouldNotSee
+     *
+     * @todo Check exam statistics displayed properly
+     */
+    public static function verifySetupExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee)
+    {
+        $I->amGoingTo("Make sure the page is intact and see all expected exams");
+        $I->seeElement(self::$forwardNavButton);
+        $I->seeLink(self::$forwardNavButtonText, self::forwardNavButtonTarget());
+
+        foreach ( $examIdsWhichShouldSee as $id )
+        {
+            self::checkExamRowPresent($I, $id);
+        }
+
+
+        if ( ! empty($examIdsWhichShouldNotSee) )
+        {
+            $I->amGoingTo("Check that other people's exams are absent");
+            foreach ( $examIdsWhichShouldNotSee as $id )
+            {
+                $I->amGoingTo("Check that do not see exam #{$id}'s term and title");
+                $I->dontSee(self::examTerm($id));
+                $I->dontSee(self::partialExamName($id));
+
+                $I->amGoingTo("Check that do not see exam #{$id}'s edit button");
+                $I->dontSeeLink(self::$editButtonText, 'http://localhost:8000' . self::editButtonTargetRoute($id));
+                $I->dontSeeElement(self::editButtonXPath($id));
+
+                $I->amGoingTo("Check that do not see exam #{$id} clone button");
+                $I->dontSeeLink(self::$cloneButtonText, 'http://localhost:8000' . self::cloneButtonTargetRoute($id));
+                $I->dontSeeElement(self::cloneButtonXPath($id));
+
+                $I->amGoingTo("Check that do not see exam #{$id} delete button");
+                $I->dontSeeElement(self::deleteButtonXPath($id));
+            }
+        }
+    }
 
 }

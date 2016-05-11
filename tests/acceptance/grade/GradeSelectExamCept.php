@@ -15,7 +15,7 @@ $I->test_login($I);
 $I->amOnPage(GradeSelectExamPage::$URL);
 $I->wait(2);
 
-$I->verifyGradeExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee);
+GradeSelectExamPage::verifyGradeExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee);
 
 $I->amGoingTo("Click the grade button for an exam with students ");
 
@@ -28,7 +28,7 @@ $I->seeInCurrentUrl(GradeSelectExamPage::gradeButtonTargetRoute($examWithStudent
 $I->amOnPage(GradeSelectExamPage::$URL);
 $I->wait(2);
 //make sure nothing changed
-$I->verifyGradeExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee);
+GradeSelectExamPage::verifyGradeExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee);
 
 $I->amGoingTo("Click the assign button for an exam with students and make sure I am properly redirected");
 $I->click(GradeSelectExamPage::assignButtonXPath($examWithStudents));
@@ -37,7 +37,7 @@ $I->seeInCurrentUrl(GradeSelectExamPage::assignButtonTargetRoute($examWithStuden
 //go home
 $I->amOnPage(GradeSelectExamPage::$URL);
 $I->wait(2);
-$I->verifyGradeExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee);
+GradeSelectExamPage::verifyGradeExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee);
 
 
 

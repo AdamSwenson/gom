@@ -99,4 +99,63 @@ class GradeSelectExamPage
     }
 
 
+   /* ----------------------------------- tests ------------------------ */
+    /**
+     * Tests whether the specified exam row is present
+     * @param $I
+     * @param $examId
+     */
+    public static function checkExamRowPresentForGradeExamSelectPage($I, $examId){
+        $I->amGoingTo("Check that see exam #{$examId}term and title");
+        $I->see(self::examTerm($examId));
+        $I->see(self::partialExamName($examId));
+
+        $I->amGoingTo("Check that see correct grade button for exam #{$examId}");
+        $I->seeLink(self::$gradeButtonText, self::gradeButtonTargetRoute($examId));
+        $I->seeElement(self::gradeButtonXPath($examId));
+
+        $I->amGoingTo("Check that see correct assign button for exam #{$examId}");
+        $I->seeLink(self::$assignButtonText, self::assignButtonTargetRoute($examId));
+        $I->seeElement(self::assignButtonXPath($examId));
+
+    }
+
+    /**
+     * For the index page displayed on route: '/grade'
+     * Runs assertions to make sure see all fixed page elements, exams belonging to user, and no exams
+     * not belonging to the user.
+     * @param $I
+     * @param $examIdsWhichShouldSee
+     * @param $examIdsWhichShouldNotSee
+     *
+     * @todo Check exam statistics displayed properly
+     */
+    public static function verifyGradeExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee){
+        $I->amGoingTo("Make sure the page is intact and see all expected exams");
+
+        foreach ( $examIdsWhichShouldSee as $id )
+        {
+            self::checkExamRowPresentForGradeExamSelectPage($I, $id);
+        }
+
+        if ( ! empty($examIdsWhichShouldNotSee) )
+        {
+            $I->amGoingTo("Check that other people's exams are absent");
+            foreach ( $examIdsWhichShouldNotSee as $id )
+            {
+                $I->amGoingTo("Check that do not see exam #{$id}'s term and title");
+                $I->dontSee(self::examTerm($id));
+                $I->dontSee(self::partialExamName($id));
+
+                $I->amGoingTo("Check that do not see exam #{$id}'s grade button");
+                $I->dontSeeLink(self::$gradeButtonText,self::gradeButtonTargetRoute($id, true));
+                $I->dontSeeElement(self::gradeButtonXPath($id));
+
+                $I->amGoingTo("Check that do not see exam #{$id} assign button");
+                $I->dontSeeLink(self::$assignButtonText, self::assignButtonTargetRoute($id, true));
+                $I->dontSeeElement(self::assignButtonXPath($id));
+            }
+        }
+    }
+
 }

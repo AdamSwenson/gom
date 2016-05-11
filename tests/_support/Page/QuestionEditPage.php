@@ -124,5 +124,90 @@ class QuestionEditPage
         return static::$URL . $param;
     }
 
+    /* ------------------------------------------ tests ----------------------------- */
+
+    /**
+     * Returns array with keys questionName, questionText, maxScore
+     * @param $examId
+     * @param $questionNumber
+     * @return array
+     */
+    public static function getQuestionFieldsInitialValues($examId, $questionNumber)
+    {
+        return [
+            'questionName' => "Exam{$examId}Question{$questionNumber}",
+            'questionText' => "Exam{$examId}Question{$questionNumber} Text.",
+            'maxScore'     => 100,
+        ];
+    }
+
+    /**
+     * Checks whether the fields for creating or editing a given question number are present.
+     * If not is true, this checks whether there are no fields for the questionNumber
+     * @param $I
+     * @param $questionNumber
+     * @param bool $not
+     */
+    public function checkQuestionFieldsPresent($I, $questionNumber, $not = false)
+    {
+        if ( $not )
+        {
+            $I->dontSeeElement(self::questionNameXPath($questionNumber));
+            $I->dontSeeElement(self::questionTextXPath($questionNumber));
+            $I->dontSeeElement(self::maxScoreXPath($questionNumber));
+        } else
+        {
+            $I->seeElement(self::questionNameXPath($questionNumber));
+            $I->seeElement(self::questionTextXPath($questionNumber));
+            $I->seeElement(self::maxScoreXPath($questionNumber));
+            //buttons
+            $I->seeElement(self::deleteButtonXPath($questionNumber));
+            $I->seeElement(self::moveButtonXPath($questionNumber));
+        }
+    }
+
+
+    /**
+     * Runs tests for page title, page heading, appropriate navs, and question fields
+     * @param $I
+     * @param $examId
+     * @param $examName
+     * @param $numberQuestions
+     */
+    public static function verifyQuestionEditPageIntact($I, $examId, $examName, $numberQuestions)
+    {
+        $I->amGoingTo("Check that everything is displayed properly");
+        $I->seeInCurrentUrl("exam/{$examId}/question/edit");
+        $I->seeInTitle(self::$pageTitleText);
+        $I->see($examName);
+        $I->seeElement(self::$addQuestionButtonId);
+        //correct navs
+        $I->seeElement(self::$forwardNavButton);
+        $I->seeElement(self::$backNavButton);
+        //fields present
+        for ( $i = 1; $i <= $numberQuestions; $i++ )
+        {
+            self::checkQuestionFieldsPresent($I, $i);
+        }
+    }
+
+    public static function verifyQuestionsHaveInitialExpectedValues($I, $examId, $numberQuestions)
+    {
+        $I->amGoingTo("Check that the questions have the expected text");
+        for ( $i = 1; $i <= $numberQuestions; $i++ )
+        {
+            $v = self::getQuestionFieldsInitialValues($examId, $i);
+            //question name
+            $I->seeElement(self::questionNameXPath($i));
+            $I->seeInField(self::questionNameXPath($i), $v['questionName']);
+            //question text
+            $I->seeElement(self::questionTextXPath($i));
+            $I->seeInField(self::questionTextXPath($i), $v['questionText']);
+            //max score
+            $I->seeElement(self::maxScoreXPath($i));
+            $I->seeInField(self::maxScoreXPath($i), $v['maxScore']);
+        }
+    }
+
 
 }

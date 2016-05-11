@@ -19,8 +19,10 @@ $I->test_login($I);
 $I->amOnPage("exam/{$examId}/question/edit");
 $I->wait(2);
 
-$I->verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
-$I->verifyQuestionsHaveInitialExpectedValues($I, $examId, $numQuestions);
+QuestionEditPage::verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
+
+//$I->verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
+QuestionEditPage::verifyQuestionsHaveInitialExpectedValues($I, $examId, $numQuestions);
 
 
 $I->amGoingTo("Start deleting question #{$deletedQuestionNumber} but cancel the operation with the confirmation modal");
@@ -41,8 +43,9 @@ $I->wait(2);
     //check modal closed
     $I->dontSee(QuestionEditPage::$deleteConfirmationModalText);
     //check that nothing changed on page
-    $I->verifyQuestionEditPageIntact($I, $examName, $numQuestions);
-    $I->verifyQuestionsHaveInitialExpectedValues($I, $examId, $numQuestions);
+QuestionEditPage::verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
+//$I->verifyQuestionEditPageIntact($I, $examName, $numQuestions);
+QuestionEditPage::verifyQuestionsHaveInitialExpectedValues($I, $examId, $numQuestions);
 
 
 $I->amGoingTo("Delete question #{$deletedQuestionNumber}");
@@ -54,10 +57,10 @@ $I->amGoingTo("Delete question #{$deletedQuestionNumber}");
     $I->click(QuestionEditPage::$deleteConfirmationModalConfirmButton);
     $I->wait(2);
     //question 5 should have become the new question 4, so there's no longer a question 5
-    $I->checkQuestionFieldsPresent($I, $deletedQuestionNumber);
-    $I->checkQuestionFieldsPresent($I, $replacedDeletedQuestionNumber, true);
+QuestionEditPage::checkQuestionFieldsPresent($I, $deletedQuestionNumber);
+QuestionEditPage::checkQuestionFieldsPresent($I, $replacedDeletedQuestionNumber, true);
     //check that the new question 4 has the values previously had by question 5
-    $v = $I->getQuestionFieldsInitialValues($examId, $replacedDeletedQuestionNumber);
+    $v = QuestionEditPage::getQuestionFieldsInitialValues($examId, $replacedDeletedQuestionNumber);
     $I->seeInField(QuestionEditPage::questionNameXPath($deletedQuestionNumber), $v['questionName']);
     $I->seeInField(QuestionEditPage::questionTextXPath($deletedQuestionNumber), $v['questionText']);
     $I->seeInField(QuestionEditPage::maxScoreXPath($deletedQuestionNumber), $v['maxScore']);
@@ -70,7 +73,9 @@ $I->amGoingTo("Submit the form and check that I'm properly redirected");
 
 $I->amGoingTo("Go back to the edit page and see the changed questions");
     $I->amOnPage("exam/{$examId}/question/edit");
-    $I->verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
+QuestionEditPage::verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
+
+//    $I->verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
 //$I->seeInTitle(QuestionEditPage::$pageTitleText);
 //$I->see($examName);
 //$I->seeElement(QuestionEditPage::$addQuestionButtonId);
@@ -85,7 +90,7 @@ for ( $i = 1; $i <= $numQuestions; $i++ )
         case $deletedQuestionNumber:
             //Since we deleted questionNumber 4, the text displayed as questionNumber 4
             //should be the text which originally belonged to questionNumber 5.
-            $v = $I->getQuestionFieldsInitialValues($examId, $i + 1);
+            $v = QuestionEditPage::getQuestionFieldsInitialValues($examId, $i + 1);
             $I->seeElement(QuestionEditPage::questionNameXPath($deletedQuestionNumber));
             $I->seeInField(QuestionEditPage::questionNameXPath($deletedQuestionNumber), $v['questionName']);
             $I->seeElement(QuestionEditPage::questionTextXPath($deletedQuestionNumber));
@@ -93,7 +98,7 @@ for ( $i = 1; $i <= $numQuestions; $i++ )
             $I->seeElement(QuestionEditPage::maxScoreXPath($deletedQuestionNumber));
             $I->seeInField(QuestionEditPage::maxScoreXPath($deletedQuestionNumber), $v['maxScore']);
             //We should no longer see the text originally belonging to questionNumber 4
-            $v2 = $I->getQuestionFieldsInitialValues($examId, $deletedQuestionNumber);
+            $v2 = QuestionEditPage::getQuestionFieldsInitialValues($examId, $deletedQuestionNumber);
             $I->seeInField(QuestionEditPage::questionNameXPath($deletedQuestionNumber), $v2['questionName']);
             $I->seeInField(QuestionEditPage::questionTextXPath($deletedQuestionNumber), $v2['questionText']);
             $I->seeInField(QuestionEditPage::maxScoreXPath($deletedQuestionNumber), $v2['maxScore']);
@@ -109,7 +114,7 @@ for ( $i = 1; $i <= $numQuestions; $i++ )
             break;
 
         default:
-            $v = $I->getQuestionFieldsInitialValues($examId, $i);
+            $v = QuestionEditPage::getQuestionFieldsInitialValues($examId, $i);
             $I->seeElement(QuestionEditPage::questionNameXPath($i));
             $I->seeInField(QuestionEditPage::questionNameXPath($i), $v['questionName']);
             $I->seeElement(QuestionEditPage::questionTextXPath($i));

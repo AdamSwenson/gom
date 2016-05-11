@@ -15,7 +15,7 @@ $I->test_login($I);
 $I->wait(2);
 $I->amOnPage(SetupExamSelectPage::$URL);
 
-$I->verifySetupExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee);
+SetupExamSelectPage::verifySetupExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee);
 
 
 $I->amGoingTo("Click exam {$editedExamId}'s edit button and check that I am properly redirected");
@@ -24,7 +24,7 @@ $I->amGoingTo("Click exam {$editedExamId}'s edit button and check that I am prop
     //go back
     $I->amOnPage(SetupExamSelectPage::$URL);
     //make sure nothing changed
-    $I->verifySetupExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee);
+    SetupExamSelectPage::verifySetupExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee);
 
 
 $I->amGoingTo("Clone an exam");
@@ -55,7 +55,7 @@ $I->amGoingTo("Start deleting an exam and chicken out by pressing cancel");
     $I->dontSeeElement(SetupExamSelectPage::$deleteExamConfirmButtonXPath);
     $I->dontSee(SetupExamSelectPage::$deleteExamConfirmationText);
     //check that nothing changed
-    $I->verifySetupExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee);
+    SetupExamSelectPage::verifySetupExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee);
 
 
 $I->amGoingTo("Delete an exam");
@@ -84,7 +84,7 @@ $I->amGoingTo("Delete an exam");
     if ( $deletedExamId == array_pop($examIdsWhichShouldSee) )
     {
         $examIdsWhichShouldNotSee[] = $deletedExamId;
-        $I->verifySetupExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee);
+        SetupExamSelectPage::verifySetupExamSelectPageIntact($I, $examIdsWhichShouldSee, $examIdsWhichShouldNotSee);
     } else
     {
         throw Exception("The test assumes that the deleted exam was the last element of the examIdsWhichShouldSee array. This assumption made an ass out of you and the test");

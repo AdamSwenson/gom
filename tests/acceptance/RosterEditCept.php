@@ -27,25 +27,25 @@ $I->test_login($I);
 # Go to page
 $I->amOnPage("/exam/{$examId}/student/edit");
 $I->wait(2);
-$I->verifyRosterEditPageIntact($I);
-
-$I->amGoingTo("Check that students have expected initial values");
-    $s = RosterEditPage::students1Through5();
-    for ( $i = 1; $i <= 5; $i++ )
-    {
-        $v = $s[ $i ];
-        $I->amGoingTo("tell you about " . $v['last']); //*[@id="lastName"]
-        $I->seeInField("//*[@id='lastName{$i}']", $v['last']);
-        $I->seeInField("//*[@id='firstName{$i}']", $v['first']);
-        if ( ! is_null($v['sid']) )
-        {
-            $I->seeInField("//*[@id='studentIdentifier{$i}']", $v['sid']);
-        }
-        if ( ! is_null($v['email']) )
-        {
-            $I->seeInField("//*[@id='email{$i}']", $v['email']);
-        }
-    }
+RosterEditPage::verifyRosterEditPageIntact($I);
+RosterEditPage::verifyInitialValuesPresent($I);
+//$I->amGoingTo("Check that students have expected initial values");
+//    $s = RosterEditPage::students1Through5();
+//    for ( $i = 1; $i <= 5; $i++ )
+//    {
+//        $v = $s[ $i ];
+//        $I->amGoingTo("tell you about " . $v['last']); //*[@id="lastName"]
+//        $I->seeInField("//*[@id='lastName{$i}']", $v['last']);
+//        $I->seeInField("//*[@id='firstName{$i}']", $v['first']);
+//        if ( ! is_null($v['sid']) )
+//        {
+//            $I->seeInField("//*[@id='studentIdentifier{$i}']", $v['sid']);
+//        }
+//        if ( ! is_null($v['email']) )
+//        {
+//            $I->seeInField("//*[@id='email{$i}']", $v['email']);
+//        }
+//    }
 
 
 $I->amGoingTo("Start deleting the student in the second row but cancel the operation");

@@ -87,5 +87,37 @@ class RosterEditPage
         return $out;
     }
 
+    /* ---------------------------------- tests --------------------- */
+
+    public static function verifyRosterEditPageIntact($I)
+    {
+        $I->amGoingTo("Check that the page is in its initial state and everything is displayed as expected");
+        $I->seeInTitle(self::$pageTitleText);
+
+        //correct navs
+        $I->seeElement(self::$forwardNavButton);
+        $I->see(self::$forwardNavText, RosterEditPage::$forwardNavXPath);
+        $I->seeElement(self::$backNavButton);
+        $I->see(self::$backNavText, RosterEditPage::$backNavXPath);
+    }
+
+    public static function verifyInitialValuesPresent($I){
+        //expected students
+        $students = RosterEditPage::students1Through5();
+        for ( $i = 1; $i <= count($students); $i++ )
+        {
+            $v = $students[ $i ];
+            $I->seeInField("form input[type=text]", $v['last']);
+            $I->seeInField("form input[type=text]", $v['first']);
+            if ( ! is_null($v['sid']) )
+            {
+                $I->seeInField("form input[type=text]", $v['sid']);
+            }
+            if ( ! is_null($v['email']) )
+            {
+                $I->seeInField("form input[type=text]", $v['email']);
+            }
+        }
+    }
 
 }

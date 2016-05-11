@@ -10,15 +10,18 @@ $I->test_login($I);
 $examId = $I->examIdNoQuestions();
 # Go to page
 $I->amOnPage("/exam/{$examId}/student/edit");
+$I->wait(2);
+RosterEditPage::verifyRosterEditPageIntact($I);
+RosterEditPage::verifyInitialValuesPresent($I);
 
-$I->amGoingTo("Check that the page is in its initial state and everything is displayed as expected");
-    # Make sure seeing what should
-    $I->seeInTitle(RosterEditPage::$pageTitleText);
-    //correct navs
-    $I->seeElement(RosterEditPage::$forwardNavButton);
-    $I->see(RosterEditPage::$forwardNavText, RosterEditPage::$forwardNavXPath);
-    $I->seeElement(RosterEditPage::$backNavButton);
-    $I->see(RosterEditPage::$backNavText, RosterEditPage::$backNavXPath);
+//$I->amGoingTo("Check that the page is in its initial state and everything is displayed as expected");
+//    # Make sure seeing what should
+//    $I->seeInTitle(RosterEditPage::$pageTitleText);
+//    //correct navs
+//    $I->seeElement(RosterEditPage::$forwardNavButton);
+//    $I->see(RosterEditPage::$forwardNavText, RosterEditPage::$forwardNavXPath);
+//    $I->seeElement(RosterEditPage::$backNavButton);
+//    $I->see(RosterEditPage::$backNavText, RosterEditPage::$backNavXPath);
 
 
 //Submit file
@@ -109,14 +112,16 @@ $examId2 = 1;
 
 # Go to page
 $I->amOnPage("/exam/{$examId2}/student/edit");
-
-# Make sure seeing what should
-$I->seeInTitle('Edit Roster | gradeomatic');
-//correct navs
-$I->seeElement("#forwardNavButton");
-//$I->seeLink("Edit Exam");
-$I->seeElement("#backNavButton");
-//$I->seeLink(" Save & Finish");
+$I->wait(2);
+RosterEditPage::verifyRosterEditPageIntact($I);
+RosterEditPage::verifyInitialValuesPresent($I);
+//# Make sure seeing what should
+//$I->seeInTitle('Edit Roster | gradeomatic');
+////correct navs
+//$I->seeElement("#forwardNavButton");
+////$I->seeLink("Edit Exam");
+//$I->seeElement("#backNavButton");
+////$I->seeLink(" Save & Finish");
 
 //Submit file
 $I->attachFile('#fileInput', 'acceptance_test_roster.csv');
