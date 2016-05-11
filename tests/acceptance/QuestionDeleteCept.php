@@ -26,7 +26,8 @@ $I->verifyQuestionsHaveInitialExpectedValues($I, $examId, $numQuestions);
 $I->amGoingTo("Start deleting question #{$deletedQuestionNumber} but cancel the operation with the confirmation modal");
     $I->dontSee(QuestionEditPage::$deleteConfirmationModalText);
 //Searches for the link text
-$I->click('Delete', "#questionItem4");
+$I->click("//*[@id='deleteQuestionButton{$deletedQuestionNumber}']");
+//$I->click('Delete', "#questionItem4");
 //$I->click(QuestionEditPage::deleteButtonXPath($deletedQuestionNumber));
 //$I->click("//*[@id='deleteQuestionButton4']");
 $I->wait(2);
