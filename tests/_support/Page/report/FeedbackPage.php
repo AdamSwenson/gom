@@ -4,12 +4,27 @@ namespace Page\report;
 class FeedbackPage
 {
     // include url of current page
-    public static $URL = '';
+    public static $URL = '/feedback';
 
     public static $elementChartDivClass = "";
 
+    public static $studentNameId = 'studentName';
+    public static $studentIdentifierId = 'studentIdentifier';
+    public static $gradeId = "letterGrade";
+    public static $accessKeyId = "accessKey";
+
+
     public static function overallChartXPath($accessKey){
         return "//*[@id='overall_s{$accessKey}']";
+    }
+
+    /**
+     * Creates the url to view feedback that a student would receive in their email
+     * @param $accessKey
+     * @return string
+     */
+    public static function routeWithAccessKeyInRequest($accessKey){
+        return static::$URL . '?accessKey=' . $accessKey;
     }
 
 

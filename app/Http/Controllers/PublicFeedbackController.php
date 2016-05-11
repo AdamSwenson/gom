@@ -71,8 +71,8 @@ class PublicFeedbackController extends Controller
             $data['content'] = $fb->content; //stored as array so should cast to array
             //add the access key to the content array so can just return that.
             $data['accessKey'] = $accessKey;
-            $data['studentName'] = $info['studentName'];
-            $data['studentIdentifier'] = $info['studentIdentifier'];
+            $data['studentName'] = $info[0]['studentName'];
+            $data['studentIdentifier'] = $info[0]['studentIdentifier'];
             $data['grade'] = $fb->grade_display;
 
             return View::make(self::FEEDBACK_DISPLAY_VIEW)
