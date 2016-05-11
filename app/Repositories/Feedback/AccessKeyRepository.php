@@ -13,7 +13,9 @@ use App\Exceptions\FeedbackCreationException;
 use App\Exceptions\InputTypeException;
 use App\Feedback;
 use App\Repositories\Feedback\PseudoIDMaker;
+use App\Student;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -68,7 +70,7 @@ class AccessKeyRepository implements IAccessKeyRepository
             $k->setExpirationDate($expire);
 
             //save student info so don't have to look up from feedback processes
-            $student = Student::UserOnly()->where('student_id', $studentId)->firstOrFail();
+            $student = Student::loggedIn()->where('id', $studentId)->firstOrFail();
             $name = $student->getFullName() ? $student->getFullName() : '';
             $id = $student->student_identifier ? $student->student_identifier : '';
             $k->student_info = [
@@ -76,6 +78,9 @@ class AccessKeyRepository implements IAccessKeyRepository
                 'studentIdentifier' => $id,
             ];
 
+            //access key doesn't automatically add user,
+            //so do it manually
+            $k->user()->associate(Auth::user());
             $k->save();
 
             if ( $k )

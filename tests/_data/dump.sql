@@ -47,7 +47,7 @@ CREATE TABLE `access_keys` (
 
 INSERT INTO `access_keys` (`id`, `user_id`, `access_key`, `student_id`, `student_info`, `exam_id`, `email_sent`, `access_expires`, `created_at`, `updated_at`)
 VALUES
-  (1, 1, '634b0f6bb2e56e46da6ab48d284d08b101ec1aa168cd715a9a0e570f5947135b', 1, '[{\"studentName\":\"name1\", \"studentIdentifier\":\"identifier1\"}]', 1, 0, '2019-01-01', NOW(), NOW());
+  (1, 1, '634b0f6bb2e56e46da6ab48d284d08b101ec1aa168cd715a9a0e570f5947135b', 1, '{\"studentName\":\"name1\", \"studentIdentifier\":\"identifier1\"}', 1, 0, '2019-01-01', NOW(), NOW());
 
 # Dump of table comments
 # ------------------------------------------------------------
