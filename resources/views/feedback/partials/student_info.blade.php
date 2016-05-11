@@ -1,21 +1,25 @@
 <div id="studentInfo">
     <div class="row">
         <dl class="dl-horizontal">
-            @if($data->name)
+{{--            @if(array_key_exists('studentName', $data))--}}
                 <dt>Name</dt>
-                <dd>{{ $data->name }}</dd>
-            @endif
+                <dd>{{ $data['studentName'] }}</dd>
+            {{--@endif--}}
 
-            @if($data->student_id)
+            {{--@if(array_has('studentIdentifier', $data))--}}
                 <dt>ID</dt>
-                <dd>{{ $data->student_id }}</dd>
-            @endif
+                <dd>{{ $data['studentIdentifier'] }}</dd>
+            {{--@endif--}}
 
-            <dt>Grade</dt>
-            <dd>{{ $data->grade() }}</dd>
+{{--            @if(array_has('grade', $data))--}}
+                <dt>Grade</dt>
+                <dd>{{ $data['grade'] }}</dd>
+            {{--@endif--}}
 
-            <dt>Access Code</dt>
-            <dd>{{ $data->getAccessKey() }}</dd>
+{{--            @if(array_has('accessKey', $data))--}}
+                <dt>Access Code</dt>
+                <dd>{{ $data['accessKey'] }}</dd>
+            {{--@endif--}}
         </dl>
     </div>
 </div>

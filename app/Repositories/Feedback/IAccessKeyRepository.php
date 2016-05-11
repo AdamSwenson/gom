@@ -60,4 +60,12 @@ interface IAccessKeyRepository
      * @return string The access key for the student
      */
     public function getAccessKeyForStudent($examId, $studentId);
+
+    /**
+     * Returns an array of information about the student given the access key
+     * Array keys: studentName, studentIdentifier
+     * @param $accessKey
+     * @return array
+     */
+    public function getStudentInfo($accessKey);
 }

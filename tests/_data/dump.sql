@@ -23,34 +23,31 @@
 # ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `access_keys`;
-
 CREATE TABLE `access_keys` (
-  `id`             INT(10) UNSIGNED        NOT NULL AUTO_INCREMENT,
-  `user_id`        INT(10) UNSIGNED        NOT NULL,
-  `access_key`     VARCHAR(255)
-                   COLLATE utf8_unicode_ci NOT NULL,
-  `student_id`     INT(10) UNSIGNED        NOT NULL,
-  `exam_id`        INT(10) UNSIGNED        NOT NULL,
-  `email_sent`     TINYINT(1)              NOT NULL DEFAULT '0',
-  `access_expires` DATE                             DEFAULT NULL,
-  `created_at`     TIMESTAMP               NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `updated_at`     TIMESTAMP               NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL,
+  `access_key` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `student_id` int(10) unsigned NOT NULL,
+  `exam_id` int(10) unsigned NOT NULL,
+  `email_sent` tinyint(1) NOT NULL DEFAULT '0',
+  `access_expires` date DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `student_info` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `access_keys_student_id_exam_id_unique` (`student_id`, `exam_id`),
+  UNIQUE KEY `access_keys_student_id_exam_id_unique` (`student_id`,`exam_id`),
   KEY `access_keys_user_id_index` (`user_id`),
   KEY `access_keys_access_key_index` (`access_key`),
   KEY `access_keys_student_id_index` (`student_id`),
   KEY `access_keys_exam_id_index` (`exam_id`),
-  CONSTRAINT `access_keys_exam_id_foreign` FOREIGN KEY (`exam_id`) REFERENCES `exams` (`id`)
-    ON DELETE CASCADE,
-  CONSTRAINT `access_keys_student_id_foreign` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`)
-    ON DELETE CASCADE,
-  CONSTRAINT `access_keys_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-    ON DELETE CASCADE
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci;
+  CONSTRAINT `access_keys_exam_id_foreign` FOREIGN KEY (`exam_id`) REFERENCES `exams` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `access_keys_student_id_foreign` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `access_keys_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+INSERT INTO `access_keys` (`id`, `user_id`, `access_key`, `student_id`, `student_info`, `exam_id`, `email_sent`, `access_expires`, `created_at`, `updated_at`)
+VALUES
+  (1, 1, '634b0f6bb2e56e46da6ab48d284d08b101ec1aa168cd715a9a0e570f5947135b', 1, "[{'studentName':'name1', 'studentIdentifier':'identifier1'}]", 1, 0, '2019-01-01', NOW(), NOW());
 
 # Dump of table comments
 # ------------------------------------------------------------
@@ -761,6 +758,11 @@ CREATE TABLE `feedback` (
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
+
+INSERT INTO `feedback` (`access_key`, `content`, `created_at`, `updated_at`, `grade_display`, `grade_calc`)
+VALUES
+  ('634b0f6bb2e56e46da6ab48d284d08b101ec1aa168cd715a9a0e570f5947135b', '[{\"questionNumber\":1,\"questionId\":6,\"questionName\":\"Aut recusandae.\",\"questionAssignmentId\":6,\"elements\":{\"1\":{\"questionNumber\":1,\"subtask\":1,\"elementId\":26,\"elementAssignmentId\":26,\"elementName\":\"Sint non numquam.\",\"score\":0.84,\"average\":5.1369,\"comment\":\"Eum ut velit cum rerum ab. Maxime alias dolores autem voluptate eum. Quia esse maxime accusamus alias consequuntur sit. Accusamus dolores repellendus qui molestias.\"},\"2\":{\"questionNumber\":1,\"subtask\":2,\"elementId\":27,\"elementAssignmentId\":27,\"elementName\":\"Sint soluta et non.\",\"score\":0.28,\"average\":4.9965,\"comment\":\"Unde temporibus porro quod accusamus ea. Vel asperiores labore asperiores et culpa et dolores. Ipsum laudantium numquam quis.\"},\"3\":{\"questionNumber\":1,\"subtask\":3,\"elementId\":28,\"elementAssignmentId\":28,\"elementName\":\"Numquam veritatis.\",\"score\":4.67,\"average\":5.0482,\"comment\":\"Unde earum impedit voluptatibus qui dolor enim. Atque autem ut voluptas et facere quisquam quia. Ab quaerat officia ut eos ex voluptate iure.\"},\"4\":{\"questionNumber\":1,\"subtask\":4,\"elementId\":29,\"elementAssignmentId\":29,\"elementName\":\"Eveniet et sed et.\",\"score\":7.09,\"average\":4.6617,\"comment\":\"Animi facere officiis beatae et quidem ipsum. Dolorum eum molestiae at et similique dolores et expedita. A possimus consequatur sed repellat ut. Ipsa voluptatem repudiandae rerum autem.\"},\"5\":{\"questionNumber\":1,\"subtask\":5,\"elementId\":30,\"elementAssignmentId\":30,\"elementName\":\"Nesciunt saepe.\",\"score\":0.02,\"average\":4.8319,\"comment\":\"Aperiam et cupiditate architecto vel. Voluptatibus nostrum quos beatae consequatur sunt possimus. Qui ea repellendus dolorum vitae ab corrupti. Voluptate ullam corporis blanditiis corrupti.\"}},\"score\":64.9,\"average\":45.199},{\"questionNumber\":2,\"questionId\":7,\"questionName\":\"In assumenda qui.\",\"questionAssignmentId\":7,\"elements\":{\"1\":{\"questionNumber\":2,\"subtask\":1,\"elementId\":31,\"elementAssignmentId\":31,\"elementName\":\"Eum natus quidem.\",\"score\":4.58,\"average\":5.4708,\"comment\":\"Quidem qui dolores omnis non incidunt praesentium. Provident et unde voluptatem labore dignissimos reiciendis aut.\"},\"2\":{\"questionNumber\":2,\"subtask\":2,\"elementId\":32,\"elementAssignmentId\":32,\"elementName\":\"Quisquam rem.\",\"score\":0.78,\"average\":4.8605,\"comment\":\"Qui eos sed perspiciatis ut. Iste in accusantium labore dolorem. Incidunt repellat nemo sapiente incidunt sit sequi aut.\"},\"3\":{\"questionNumber\":2,\"subtask\":3,\"elementId\":33,\"elementAssignmentId\":33,\"elementName\":\"Nihil voluptates.\",\"score\":4.48,\"average\":5.383,\"comment\":\"Iusto esse vel sunt atque autem inventore. Ducimus consequatur ratione architecto sint veniam ipsa.\"},\"4\":{\"questionNumber\":2,\"subtask\":4,\"elementId\":34,\"elementAssignmentId\":34,\"elementName\":\"Quam deserunt ut.\",\"score\":3.57,\"average\":4.9138,\"comment\":\"Ipsam vitae accusamus quam sunt nostrum vitae aut. Voluptas adipisci ea totam quibusdam. Dolorem magnam natus consequatur sed quisquam aut molestiae. Et minima et id non qui cupiditate nisi.\"},\"5\":{\"questionNumber\":2,\"subtask\":5,\"elementId\":35,\"elementAssignmentId\":35,\"elementName\":\"Incidunt impedit.\",\"score\":3.8,\"average\":4.9498,\"comment\":\"Dignissimos eveniet fugiat repellendus asperiores. Quia nisi odio aut fuga sint debitis animi dignissimos. Nesciunt aut eveniet voluptas dolores.\\nFacere sunt pariatur ad et. Et nam id tempore in.\"}},\"score\":40.63,\"average\":44.5329},{\"questionNumber\":3,\"questionId\":8,\"questionName\":\"Ratione qui sequi.\",\"questionAssignmentId\":8,\"elements\":{\"1\":{\"questionNumber\":3,\"subtask\":1,\"elementId\":36,\"elementAssignmentId\":36,\"elementName\":\"Alias voluptas eum.\",\"score\":8.57,\"average\":5.7543,\"comment\":\"Tempore nam maiores voluptatem modi quos et quasi et. Aut tempora odit molestiae sed. Dicta illum sed eveniet reprehenderit dolores est qui. Deleniti modi aliquid nisi qui amet.\"},\"2\":{\"questionNumber\":3,\"subtask\":2,\"elementId\":37,\"elementAssignmentId\":37,\"elementName\":\"Laudantium sit non.\",\"score\":8.25,\"average\":4.8508,\"comment\":\"Numquam et unde autem nobis qui. Doloribus suscipit quibusdam explicabo sit quisquam. Necessitatibus illum aliquid voluptas quasi odit.\"},\"3\":{\"questionNumber\":3,\"subtask\":3,\"elementId\":38,\"elementAssignmentId\":38,\"elementName\":\"Aliquid sunt et.\",\"score\":2.5,\"average\":4.868,\"comment\":\"Harum molestiae quasi possimus porro error. Doloremque omnis iure nam eos libero consectetur. Unde eligendi cum aut magnam dolorem laboriosam et optio.\"},\"4\":{\"questionNumber\":3,\"subtask\":4,\"elementId\":39,\"elementAssignmentId\":39,\"elementName\":\"Eligendi quia.\",\"score\":9.76,\"average\":4.9763,\"comment\":\"Veritatis minima et iusto eum architecto quod. Voluptatum aperiam corporis fugiat molestiae. Culpa voluptatem omnis voluptas facilis.\"},\"5\":{\"questionNumber\":3,\"subtask\":5,\"elementId\":40,\"elementAssignmentId\":40,\"elementName\":\"Consequatur aliquid.\",\"score\":1.96,\"average\":4.9244,\"comment\":\"Quod occaecati sequi animi autem ut deleniti sit consequatur. Porro quos aut et assumenda delectus vero. Occaecati temporibus quis vitae ullam aut. Maxime sint cum eligendi at dolor temporibus.\"}},\"score\":99.72,\"average\":47.8591},{\"questionNumber\":4,\"questionId\":9,\"questionName\":\"Rerum est dolorem.\",\"questionAssignmentId\":9,\"elements\":{\"1\":{\"questionNumber\":4,\"subtask\":1,\"elementId\":41,\"elementAssignmentId\":41,\"elementName\":\"Expedita natus qui.\",\"score\":1.96,\"average\":4.7195,\"comment\":\"Sed nihil asperiores omnis. Corporis quis neque qui suscipit facilis beatae consequuntur. Ad ea laborum minima magni et molestias. Nihil voluptatum illum qui eius.\"},\"2\":{\"questionNumber\":4,\"subtask\":2,\"elementId\":42,\"elementAssignmentId\":42,\"elementName\":\"Eveniet molestiae.\",\"score\":6.75,\"average\":5.4833,\"comment\":\"Sit et et explicabo beatae ratione voluptate unde. Ut magnam ut porro quam et nulla aut. Molestiae fuga earum dolore nihil nostrum recusandae quia. Rerum adipisci minima voluptas alias officiis sed.\"},\"3\":{\"questionNumber\":4,\"subtask\":3,\"elementId\":43,\"elementAssignmentId\":43,\"elementName\":\"Eveniet accusamus.\",\"score\":5.46,\"average\":5.0247,\"comment\":\"Ut in beatae ex dignissimos ipsa velit qui neque. Eligendi quis consequatur est velit. Eligendi natus architecto possimus error quam modi vel sunt. Neque cupiditate quia veritatis delectus.\"},\"4\":{\"questionNumber\":4,\"subtask\":4,\"elementId\":44,\"elementAssignmentId\":44,\"elementName\":\"Repellat quo velit.\",\"score\":6.34,\"average\":4.8787,\"comment\":\"Magni eos architecto reprehenderit in aliquam. Sunt omnis voluptas laboriosam aspernatur. Iusto culpa rerum est suscipit consequatur.\"},\"5\":{\"questionNumber\":4,\"subtask\":5,\"elementId\":45,\"elementAssignmentId\":45,\"elementName\":\"Nisi voluptas.\",\"score\":4.52,\"average\":4.9129,\"comment\":\"Fugit quia fugiat nam et. Ipsam natus enim accusamus voluptas aspernatur esse aut. Et quae quia vel voluptatem. Sed enim rem numquam tempore harum et.\"}},\"score\":23.29,\"average\":46.4824},{\"questionNumber\":5,\"questionId\":10,\"questionName\":\"Molestiae facere.\",\"questionAssignmentId\":10,\"elements\":{\"1\":{\"questionNumber\":5,\"subtask\":1,\"elementId\":46,\"elementAssignmentId\":46,\"elementName\":\"Occaecati rem aut.\",\"score\":9.49,\"average\":5.3639,\"comment\":\"Blanditiis aliquid soluta placeat sunt. Porro molestiae totam quae voluptas quisquam. Voluptate modi voluptatem nihil quia cum unde.\"},\"2\":{\"questionNumber\":5,\"subtask\":2,\"elementId\":47,\"elementAssignmentId\":47,\"elementName\":\"Autem mollitia.\",\"score\":0.69,\"average\":4.6609,\"comment\":\"Libero alias accusantium ut hic sunt quaerat rem. At consequuntur exercitationem officia numquam aut harum ea. Accusantium vel iste ut voluptatem. Quam quo unde laudantium quo.\"},\"3\":{\"questionNumber\":5,\"subtask\":3,\"elementId\":48,\"elementAssignmentId\":48,\"elementName\":\"Incidunt impedit.\",\"score\":7.11,\"average\":5.5919,\"comment\":\"Repudiandae cupiditate a beatae illum. Aut magnam aliquid ratione debitis. Aut quo neque debitis aut excepturi exercitationem suscipit. Provident quisquam veritatis placeat illum nostrum sint sit.\"},\"4\":{\"questionNumber\":5,\"subtask\":4,\"elementId\":49,\"elementAssignmentId\":49,\"elementName\":\"Est occaecati.\",\"score\":8.01,\"average\":4.9827,\"comment\":\"Esse soluta et est doloribus minus ipsa. Aut et iste labore cum odit sunt. Fugit reiciendis nemo ut soluta omnis est. Ut odio autem iusto distinctio iure odio ipsam nam.\"},\"5\":{\"questionNumber\":5,\"subtask\":5,\"elementId\":50,\"elementAssignmentId\":50,\"elementName\":\"Voluptas est est.\",\"score\":5.89,\"average\":5.2466,\"comment\":\"Pariatur ut praesentium et. Ea explicabo dicta iusto facere et in odit. Dolorem asperiores est enim autem facilis quasi. Dolores at nam voluptatem impedit. Doloribus eligendi facilis sit odio saepe.\"}},\"score\":8.26,\"average\":47.965}]', NOW(), NOW(), 'A+', '98');
+
 
 # Dump of table grade_assignments
 # ------------------------------------------------------------

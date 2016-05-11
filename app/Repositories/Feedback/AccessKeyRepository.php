@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\DB;
 class AccessKeyRepository implements IAccessKeyRepository
 {
 
-    const TRIM_TO_LENGTH = 100;
+    const TRIM_TO_LENGTH = 1000;
 
     protected $validKey;
 
@@ -50,7 +50,7 @@ class AccessKeyRepository implements IAccessKeyRepository
     public function createAccessKey($examId, $studentId, $daysUntilExpiration = 10, $forceNew = false)
     {
         $accessKey = $this->generateNewKey();
-        if ($accessKey)
+        if ( $accessKey )
         {
             $expire = Carbon::now()->addDays($daysUntilExpiration);
 
@@ -58,7 +58,7 @@ class AccessKeyRepository implements IAccessKeyRepository
 
             //Keep the existing key if one already exists
             //of if have been instructed to create a new access key
-            if (empty($k->access_key) || $forceNew)
+            if ( empty($k->access_key) || $forceNew )
             {
                 $k->setKey($accessKey);
             }
@@ -66,9 +66,19 @@ class AccessKeyRepository implements IAccessKeyRepository
             $k->setExamId($examId);
             $k->setStudentId($studentId);
             $k->setExpirationDate($expire);
+
+            //save student info so don't have to look up from feedback processes
+            $student = Student::UserOnly()->where('student_id', $studentId)->firstOrFail();
+            $name = $student->getFullName() ? $student->getFullName() : '';
+            $id = $student->student_identifier ? $student->student_identifier : '';
+            $k->student_info = [
+                'studentName'       => $name,
+                'studentIdentifier' => $id,
+            ];
+
             $k->save();
 
-            if ($k)
+            if ( $k )
             {
                 return $k->getKey();
             }
@@ -85,6 +95,7 @@ class AccessKeyRepository implements IAccessKeyRepository
     public function removeAccessKey($accessKey)
     {
         $key = AccessKey::where('access_key', $accessKey)->firstOrFail();
+
         return $key->delete();
     }
 
@@ -127,7 +138,7 @@ class AccessKeyRepository implements IAccessKeyRepository
     public function retrieveFeedback($accessKey)
     {
         $this->validateKey($accessKey);
-        if (!empty($this->validKey))
+        if ( ! empty($this->validKey) )
         {
             return $this->loadFeedback();
         }
@@ -146,11 +157,32 @@ class AccessKeyRepository implements IAccessKeyRepository
     public function getAccessKeyForStudent($examId, $studentId)
     {
         $key = AccessKey::where('exam_id', $examId)->where('student_id', $studentId)->first();
-        if( !empty($key) )
+        if ( ! empty($key) )
         {
             return $key->getKey();
         }
+
         return null;
+    }
+
+
+    /**
+     * Returns an array of information about the student given the access key
+     * Array keys: studentName, studentIdentifier
+     * @param $accessKey
+     * @return array
+     */
+    public function getStudentInfo($accessKey)
+    {
+        $key = AccessKey::where('access_key', $accessKey)->first();
+
+        return $key->student_info;
+
+//        $name = $key->student->getFullName() ? $key->student->getFullName() : '';
+//        $id = $key->student->student_identifier ? $key->student->student_identifier : '';
+//        return [ 'studentName' => $name,
+//                 'studentIdentifier' => $id,
+//        ];
     }
 
     /**
@@ -177,13 +209,13 @@ class AccessKeyRepository implements IAccessKeyRepository
         $trimmed = \trim($accessKey);
 
         //Check that not longer than allowed length
-        if (\mb_strlen($trimmed) <= self::TRIM_TO_LENGTH)
+        if ( \mb_strlen($trimmed) <= self::TRIM_TO_LENGTH )
         {
             //Clean it to make sure it is just nice stringy goodness
             $cleaned = \filter_var($trimmed, \FILTER_SANITIZE_STRING);
         }
 
-        if (!empty($cleaned))
+        if ( ! empty($cleaned) )
         {
             $this->validKey = $cleaned;
 
@@ -199,12 +231,12 @@ class AccessKeyRepository implements IAccessKeyRepository
      */
     protected function loadFeedback()
     {
-        if (!empty($this->validKey))
+        if ( ! empty($this->validKey) )
         {
-            $data = Feedback::findOrFail($this->validKey);
-
-            return $data;
+            return Feedback::findOrFail($this->validKey);
         }
+
+        return null;
     }
 
     /**
@@ -215,7 +247,7 @@ class AccessKeyRepository implements IAccessKeyRepository
     protected function generateNewKey()
     {
         $candidate = $this->createCandidateKey();
-        if ($this->checkIfKeyIsUnique($candidate))
+        if ( $this->checkIfKeyIsUnique($candidate) )
         {
             return $candidate;
         }
@@ -230,10 +262,11 @@ class AccessKeyRepository implements IAccessKeyRepository
     protected function checkIfKeyIsUnique($candidate)
     {
         $key = DB::table('access_keys')->where('access_key', $candidate)->first();
-        if (empty($key))
+        if ( empty($key) )
         {
             return $candidate;
         }
+
         return false;
     }
 

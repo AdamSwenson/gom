@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App
  */
-class AccessKey extends BaseModel
+class AccessKey extends BaseModelNoUser
 {
 
     /** The number of random bytes to create for lookup id  */
@@ -28,9 +28,9 @@ class AccessKey extends BaseModel
     protected $fillable = ['student_id', 'exam_id', 'access_key'];
 
     protected $casts = [
-        'accessKey' => 'string'
+        'accessKey' => 'string',
+        'student_info' => 'array'
     ];
-
 
     public function getKey()
     {

@@ -3,9 +3,7 @@ window.$ = $;
 var jQuery = $;
 window.jQuery = jQuery;
 
-require( 'jquery-ui' );
+// require( 'jquery-ui' );
 require( 'bootstrap' );
 
 var common = require( '../common.js' );
-
-$('#submitButton').button();

@@ -43,7 +43,7 @@ class StudentAccessRequest extends Request
     {
         return [
           'accessKey' => 'The access key you provided was invalid',
-            'accessKey.required' => 'The access key you provided was invalid',
+            'accessKey.required' => 'Please enter your access key',
             'accessKey.exists' => 'The access key you provided was invalid',
             'accessKey.alpha_num' => 'The access key you provided was invalid',
             'accessKey.max' => 'The access key you provided was invalid'

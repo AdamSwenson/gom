@@ -1,4 +1,6 @@
 <?php
+//Expects an array named data, which has all feedback fields as keys
+
 //Some things which return this view may just send a single data array,
 //this wraps it in an outer array so that we can use it just like in the
 //case where we want to see multiple feedback pages
@@ -11,10 +13,14 @@ $r = [];
 //Make sure everything has the format the js is expecting
 foreach ( $dataAll as $data )
 {
-    $r[ $data->getAccessKey() ] = $data->content;
+//    $r[ 'accessKey' ] = $data->content;
+//    $r[ $data->getAccessKey() ] = $data->content;
+    $r[ $data['accessKey'] ] = $data;
 }
 $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
+//var_dump($encodedStudentData);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -58,12 +64,13 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
 
 <div class="container-fluid">
     @foreach($dataAll as $data)
+        <?php $accessKey = $data['accessKey']; ?>
         @include('feedback.partials.student_info')
 
         @include('feedback.partials.overall_chart')
 
         <div id="questionResultsHere">
-            @foreach($data->content as $question)
+            @foreach($data['content'] as $question)
                 @include('feedback.partials.question')
             @endforeach
         </div>

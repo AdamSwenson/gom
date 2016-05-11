@@ -19,13 +19,14 @@ var common = require( '../common.js' );
  * which is an array with accessKeys as keys with json arrays as the value
  */
 function drawAllStudentCharts() {
+    window.console.log(studentData);
     $.each( studentData, function ( $sid, $data ) {
 
         //Make the chart displaying how they did on each question vs class
         makeOverallChart( $sid, $data );
 
         //Make a chart for the scores on all the elements for a given question
-        $.each( $data, function ( $k, $v ) {
+        $.each( $data.content, function ( $k, $v ) {
             //Don't make a chart for questions which student didn't answer
             if ( ! $.isEmptyObject( $v.elements ) ) {
                 var chartTarget = 's' + $sid + '_q' + $v.questionNumber;
@@ -59,14 +60,14 @@ function makeOverallChart( sid, studentData ) {
     data.addColumn( 'number', 'Your Score' );
     data.addColumn( 'number', 'Class Average' );
 
-    $.each( studentData, function ( $k, $v ) {
+    $.each( studentData.content, function ( ) {
         //Build up question name for label
         //Since question name is optional, only add it if it is present
-        var questionName = 'Q' + $v[ 'questionNumber' ] + ' ';
-        questionName += $v[ 'questionName' ] ? $v[ 'questionName' ] : ' ';
+        var questionName = 'Q' + this[ 'questionNumber' ] + ' ';
+        questionName += this[ 'questionName' ] ? this[ 'questionName' ] : ' ';
 
         //push row into data table
-        data.addRow( [ questionName, $v[ 'score' ], $v[ 'average' ] ] );
+        data.addRow( [ questionName, this[ 'score' ], this[ 'average' ] ] );
     } );
 
     //Draw the chart
