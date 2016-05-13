@@ -3,25 +3,20 @@
 use Page\RosterEditPage;
 
 $I = new AcceptanceTester($scenario);
-$I->wantTo('upload a csv file full of students and see the students in the database');
-//Log in
-$I->test_login($I);
+$I->wantTo('upload a csv file full of students for an exam with no preexisting students and see the students in the database');
+
+$examWithQuestionsId = 1;
 #Exam with no questions is exam #4
 $examId = $I->examIdNoQuestions();
+
+//Log in
+$I->test_login($I);
 # Go to page
 $I->amOnPage("/exam/{$examId}/student/edit");
 $I->wait(2);
 RosterEditPage::verifyRosterEditPageIntact($I);
-RosterEditPage::verifyInitialValuesPresent($I);
-
-//$I->amGoingTo("Check that the page is in its initial state and everything is displayed as expected");
-//    # Make sure seeing what should
-//    $I->seeInTitle(RosterEditPage::$pageTitleText);
-//    //correct navs
-//    $I->seeElement(RosterEditPage::$forwardNavButton);
-//    $I->see(RosterEditPage::$forwardNavText, RosterEditPage::$forwardNavXPath);
-//    $I->seeElement(RosterEditPage::$backNavButton);
-//    $I->see(RosterEditPage::$backNavText, RosterEditPage::$backNavXPath);
+//no students assoc w exam 4
+//RosterEditPage::verifyInitialValuesPresent($I);
 
 
 //Submit file
@@ -49,18 +44,6 @@ $I->amGoingTo("Check that all the data in the spreadsheet are represented on the
     $I->seeInField("form input[type=text]", "student1@email.com");
     $I->seeInField("form input[type=text]", "student2@email.com");
     $I->seeInField("form input[type=text]", "student4@email.com");
-//    $s = RosterEditPage::students1Through5();
-//    foreach( $s as $v){
-//            $I->seeInField("form input[type=text]", $v['last']);
-//            $I->seeInField("form input[type=text]", $v['first']);
-//            if(! is_null($v['sid'])){
-//                $I->seeInField("form input[type=text]", $v['sid']);
-//            }
-//            if(! is_null($v['email'])){
-//                $I->seeInField("form input[type=text]", $v['email']);
-//            }
-//        }
-
 
 $I->amGoingTo("Submit the form");
     $I->click(RosterEditPage::$forwardNavButton);
@@ -108,33 +91,25 @@ $I->amGoingTo("Check that all the students were saved to the database");
 
 
 $I->amGoingTo("Check that we will get the default redirection experience if the exam has questions");
-$examId2 = 1;
+    # Go to page
+    $I->amOnPage("/exam/{$examWithQuestionsId}/student/edit");
+    $I->wait(2);
+    // Make sure seeing what should
+    RosterEditPage::verifyRosterEditPageIntact($I);
+    RosterEditPage::verifyInitialValuesPresent($I);
+    //Submit file
+    $I->attachFile('#fileInput', 'acceptance_test_roster.csv');
+    $I->click("#backNavButton");
 
-# Go to page
-$I->amOnPage("/exam/{$examId2}/student/edit");
-$I->wait(2);
-RosterEditPage::verifyRosterEditPageIntact($I);
-RosterEditPage::verifyInitialValuesPresent($I);
-//# Make sure seeing what should
-//$I->seeInTitle('Edit Roster | gradeomatic');
-////correct navs
-//$I->seeElement("#forwardNavButton");
-////$I->seeLink("Edit Exam");
-//$I->seeElement("#backNavButton");
-////$I->seeLink(" Save & Finish");
-
-//Submit file
-$I->attachFile('#fileInput', 'acceptance_test_roster.csv');
-$I->click("#backNavButton");
-
-$I->seeInTitle("Edit Elements | gradeomatic");
-//since we don't need to know which question id is involved, we split this
-//between two lines
-//the actual url would be http://localhost:8000/exam/3/question/15/element/edit
-$I->seeInCurrentUrl("/exam/{$examId2}/question");
-$I->seeInCurrentUrl("/element/edit");
+    $I->seeInTitle("Edit Elements | gradeomatic");
+    //since we don't need to know which question id is involved, we split this
+    //between two lines
+    //the actual url would be http://localhost:8000/exam/3/question/15/element/edit
+    $I->seeInCurrentUrl("/exam/{$examWithQuestionsId}/question");
+    $I->seeInCurrentUrl("/element/edit");
 
 
 
 
 //success message
+//TODO Write acceptance tests for success message display

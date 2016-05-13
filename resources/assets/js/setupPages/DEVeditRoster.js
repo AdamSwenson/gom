@@ -86,7 +86,7 @@ new Vue({
             var row = new Row({
                 el: el,
                 replace: true,
-                data: {
+                propsData: {
                     studentRecordId: 0, //server expects new students to have an id of 0
                     rowId: rowId,
                     lastName: lastName,

@@ -108,7 +108,7 @@ $I->amGoingTo("Add a student");
     $I->fillField("//*[@id='firstName{$newRowIdx}']", $newStudentFirstName);
     $I->fillField("//*[@id='studentIdentifier{$newRowIdx}']", $newStudentSid);
     $I->fillField("//*[@id='email{$newRowIdx}']", $newStudentEmail);
-    //submit the form
+    //submit the form  
     $I->click(RosterEditPage::$forwardNavButton);
     # Properly redirected
     $I->seeInTitle('Edit Exam | gradeomatic');
