@@ -102,23 +102,38 @@ for ( $i = 1; $i <= $numQuestions; $i++ )
     $I->expectTo("see the list of grades once I click the button");
     $I->click(GradingPage::letterGradeButtonXPath($i));
     $I->wait(1);
+    $I->seeElement(['id' => GradingPage::$letterGradeListId]);
     foreach ( $letterGrades as $g )
     {
         $I->expectTo("see the grade {$g['display_value']}");
-        $I->see($g['display_value'], GradingPage::$letterGradeButtonContainerXPath);
+        $I->see($g['display_value'], ['id' => GradingPage::$letterGradeListId]);
     }
 
-    foreach ( $letterGrades as $g )
-    {
-        $I->see($g['display_value'], GradingPage::$letterGradeButtonContainerXPath);
-        $I->amGoingTo("select {$g['display_value']} and see the question score updated properly");
-        //click the list item
-        $I->click($g['display_value'], GradingPage::$letterGradeListXPath);
+
+    $I->amGoingTo("Click each grade button and make sure the value changes");
+        $I->click(GradingPage::questionPanelTabXPath(2));
         $I->wait(2);
-        $expectedScore = intval($maxScore * (.01 * $g['calc_value']));
-        $I->expectTo("see the question score {$expectedScore}");
-        $I->seeInField(GradingPage::questionScoreFieldXPath($i), $expectedScore);
+    $I->click(GradingPage::questionPanelTabXPath(1));
+    $I->wait(2);
+    $i = 1;
+        foreach ( $letterGrades as $g )
+        {
+            //click the letter grade button
+            $I->click(GradingPage::letterGradeButtonXPath($i));
+            $I->wait(1);
+            //check that see the value
+            $I->see($g['display_value'], ['id' => GradingPage::$letterGradeListId]);
+            $I->amGoingTo("select {$g['display_value']} and see the question score updated properly");
+            //click the list item
+            //      $I->click("//*[@id='letterGradeList']/li[{$i}]/a");
+            $I->click($g['display_value'], ['id' => GradingPage::$letterGradeListId]);
+            $I->wait(2);
+            $expectedScore = intval($maxScore * (.01 * $g['calc_value']));
+            $I->expectTo("see the question score {$expectedScore}");
+            $I->seeInField(GradingPage::questionScoreFieldXPath($i), $expectedScore);
 //todo add check that see tooltip
+            //*[@id="letterGradeList"]/li[2]/a
+            //*[@id="letterGradeList"]/li[1]/a
 
 //        $I->amGoingTo("navigate to another question then come back to see if has same value");
 //        $otherTab = $i == $numQuestions ? 1 : $i + 1;
@@ -127,17 +142,17 @@ for ( $i = 1; $i <= $numQuestions; $i++ )
 //        $I->click(GradingPage::questionPanelTabXPath($i));
 //        $I->seeInField(GradingPage::questionScoreFieldXPath($i), $expectedScore);
 
-        //click the letter grade button
-        $I->click(GradingPage::letterGradeButtonXPath($i));
-        $I->wait(2);
-        foreach ( $letterGrades as $g )
-        {
-            $I->expectTo("see the grade {$g['display_value']}");
-            $I->see($g['display_value'], GradingPage::$letterGradeButtonContainerXPath);
+            //click the letter grade button
+            $I->click(GradingPage::letterGradeButtonXPath($i));
+            $I->wait(2);
+            foreach ( $letterGrades as $g )
+            {
+                $I->expectTo("see the grade {$g['display_value']}");
+                $I->see($g['display_value'], GradingPage::$letterGradeButtonContainerXPath);
+            }
         }
 
 
-    }
 }
 
 

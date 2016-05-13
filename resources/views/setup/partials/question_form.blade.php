@@ -11,9 +11,15 @@
             <!-- max grade -->
             <div class="input-group">
                 <span class="input-group-addon">Max Score</span>
-                <input id="maxScore{{ $counter }}" style="width:6em;" name="maxScore{{ $counter }}" type="number" min="0"
+                <input id="maxScore{{ $counter }}"
+                       style="width:6em;"
+                       name="maxScore{{ $counter }}"
+                       type="number"
+                       min="0"
                        title="maximum score for this question"
-                       class="form-control input" aria-describedby="basic-addon" value="{{ $q['max_score'] or '' }}">
+                       class="form-control input"
+                       aria-describedby="basic-addon"
+                       value="{{ $q['max_score'] or '' }}">
             </div>
         </div>
     </div>
@@ -38,8 +44,7 @@
                   placeholder="Enter the full question text (optional)">{{ isset($q) ? $q->getQuestionText() : '' }}</textarea>
     </div>
     <div class="form-group questionButtonArea">
-        <span id="moveQuestionButton{{ $counter }}"
-              class="btn btn-info btn-sm handle">
+        <span class="btn btn-info btn-sm handle">
             <span class="glyphicon glyphicon-move"
                   aria-hidden="true"></span>
             Move
@@ -47,12 +52,13 @@
 
         <button type="button"
                 name="deleteQuestionButton{{ $counter }}"
-                id="deleteQuestionButton{{ $counter }}"
                 class="btn btn-danger btn-sm js-remove">
             <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
             Delete
         </button>
     </div>
-    <input type="hidden" id="questionId" name="questionId{{ $counter }}"
+    <input type="hidden"
+           id="questionId"
+           name="questionId{{ $counter }}"
            value="{{ isset($q) ? $q->getId() : '0' }}"/>
 </li>

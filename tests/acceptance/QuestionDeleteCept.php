@@ -17,7 +17,7 @@ $I = new AcceptanceTester($scenario);
 $I->wantTo('Delete questions and see them removed in the db');
 $I->test_login($I);
 $I->amOnPage("exam/{$examId}/question/edit");
-$I->wait(2);
+$I->wait(5);
 
 QuestionEditPage::verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
 
@@ -49,10 +49,15 @@ QuestionEditPage::verifyQuestionsHaveInitialExpectedValues($I, $examId, $numQues
 */
 
 $I->amGoingTo("Delete question #{$deletedQuestionNumber}");
-    $I->click("//*[@id='deleteQuestionButton{$deletedQuestionNumber}']");
-    $I->wait(2);
+    $I->seeElement(QuestionEditPage::deleteButtonLocator($deletedQuestionNumber));
+    $I->click(QuestionEditPage::deleteButtonLocator($deletedQuestionNumber));
+$I->wait(10);
+//"//*[@id='deleteQuestionButton{$deletedQuestionNumber}']");
+//$I->waitForElementVisible('.modal-dialog', 30);
+//$I->waitForElementVisible(QuestionEditPage::$deleteConfirmationTextId, 30);
     //confirmation modal
 //    $I->see('.modal-dialog');
+    $I->seeElement(QuestionEditPage::$deleteConfirmationTextId);
     $I->see(QuestionEditPage::$deleteConfirmationModalText);
     $I->click(QuestionEditPage::$deleteConfirmationModalConfirmButton);
     $I->wait(2);

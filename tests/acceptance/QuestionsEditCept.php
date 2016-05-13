@@ -52,7 +52,7 @@ $I->amGoingTo("Swap the positions of questions #{$swappedQuestionNumbers[0]} and
     $targetQuestionNumber = $swappedQuestionNumbers[0];
     $movedQuestionValues = QuestionEditPage::getQuestionFieldsInitialValues($examId, $swappedQuestionNumbers[1]);
     $targetQuestionValues = QuestionEditPage::getQuestionFieldsInitialValues($examId, $swappedQuestionNumbers[0]);
-$I->dragAndDrop('#moveQuestionButton3', '#questionItem1');
+$I->dragAndDrop(QuestionEditPage::moveButtonLocator(3), '#questionItem1');
 $I->wait(5);
 //$I->dragAndDrop("#moveQuestionButton{$swappedQuestionNumbers[1]}", "#moveQuestionButton{$swappedQuestionNumbers[0]}");
 //

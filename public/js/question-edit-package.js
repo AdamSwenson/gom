@@ -76,51 +76,52 @@ function formFieldsValid() {
 
 // Sortable is the lib for drag and drop questions
 // create an editable list and set up some filters to handle callbacks
-//$(document).ready(function () {
+$(document).ready(function () {
 
-localStorage.clear();
-var qList = document.getElementById('questionList');
-var editableList = Sortable.create(qList, {
-    filter: '.js-remove',
-    animation: 150,
-    handle: '.handle',
-    ghostClass: "sortable-ghost",
-    onFilter: function onFilter(evt) {
-        // handle deletion - items will be deleted once the form is submitted
-        var el = editableList.closest(evt.item); // get dragged item
+    localStorage.clear();
+    var qList = document.getElementById('questionList');
+    var editableList = Sortable.create(qList, {
+        filter: '.js-remove',
+        animation: 150,
+        handle: '.handle',
+        ghostClass: "sortable-ghost",
+        onFilter: function onFilter(evt) {
+            // handle deletion - items will be deleted once the form is submitted
+            var el = editableList.closest(evt.item); // get dragged item
 
-        bootbox.dialog({
-            message: "<span class='glyphicon glyphicon-warning-sign'></span>" + " Warning: This will permanently delete all elements and scores associated with the question",
-            title: "Delete Question",
-            buttons: {
-                success: {
-                    label: 'Cancel',
-                    className: "btn-sm bnt-primary cancelQuestionDelete",
-                    callback: function callback() {}
-                },
-                danger: {
-                    label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-                    className: "btn-danger btn-sm confirmQuestionDelete",
-                    callback: function callback() {
-                        if (el && el.parentNode.removeChild(el)) updateNumbers();
+            bootbox.dialog({
+                message: "<p id='questionDeleteWarning'> <span class='glyphicon glyphicon-warning-sign'></span>" + " Warning: This will permanently delete all elements and scores associated with the question </p>",
+                title: "Delete Question",
+                buttons: {
+                    success: {
+                        label: 'Cancel',
+                        className: "btn-sm bnt-primary cancelQuestionDelete",
+                        callback: function callback() {}
+                    },
+                    danger: {
+                        label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
+                        className: "btn-danger btn-sm confirmQuestionDelete",
+                        callback: function callback() {
+                            if (el && el.parentNode.removeChild(el)) updateNumbers();
+                        }
                     }
                 }
-            }
-        });
-    },
-    store: {
-        // store the ordering to localStorage
-        get: function get(sortable) {
-            var order = localStorage.getItem(sortable.options.group);
-            //window.console.log(localStorage.getItem(sortable.options.group));
-            return order ? order.split('|') : [];
+            });
         },
-        set: function set(sortable) {
-            var order = sortable.toArray();
-            localStorage.setItem(sortable.options.group, order.join('|'));
-            updateNumbers();
+        store: {
+            // store the ordering to localStorage
+            get: function get(sortable) {
+                var order = localStorage.getItem(sortable.options.group);
+                //window.console.log(localStorage.getItem(sortable.options.group));
+                return order ? order.split('|') : [];
+            },
+            set: function set(sortable) {
+                var order = sortable.toArray();
+                localStorage.setItem(sortable.options.group, order.join('|'));
+                updateNumbers();
+            }
         }
-    }
+    });
 });
 
 // update all "questionItem" ids. These define the ordering when saved to the DB.

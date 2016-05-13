@@ -39,6 +39,7 @@ class QuestionEditPage
     /** @var string Text displayed on the back button to the user */
     public static $backNavButtonText = "";
 
+    public static $deleteConfirmationTextId = "questionDeleteWarning";
     public static $deleteConfirmationModalText = "Warning: This will permanently delete all elements and scores associated with the question";
 //    public static $deleteConfirmationModalText = "<span class='glyphicon glyphicon-warning-sign'></span> Warning: This will permanently delete all elements and scores associated with the question";
     public static $deleteConfirmationModalConfirmButton = '.confirmQuestionDelete';

@@ -46,6 +46,8 @@ class GradingPage
     public static $sliderValenceLabels = ['Missing', 'Poor', 'Fair', 'Excellent'];
 
 
+    public static $letterGradeListId = "letterGradeList";
+
     /**
      * Returns x path to the tab for selecting a question
      * @param $questionNumber
