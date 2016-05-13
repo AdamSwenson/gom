@@ -20,6 +20,9 @@ class AcceptanceTester extends \Codeception\Actor
 {
     use _generated\AcceptanceTesterActions;
 
+    public $loginPageRoute = '/auth/login';
+    public $loginEmail = 'test2@gradeomatic.net';
+    public $loginPassword = 'testtest';
    /**
     * Define custom actions here
     */
@@ -32,15 +35,32 @@ class AcceptanceTester extends \Codeception\Actor
      * @param $I
      */
     function test_login($I){
+        $this->login($I);
+//        // if snapshot exists - skipping login
+//        if ($I->loadSessionSnapshot('login')) return;
+//        // logging in
+//        $I->amOnPage($this->loginPageRoute);
+//        $I->fillField(['id' => 'email'], $this->loginEmail);
+//        $I->fillField('//*[@id="password"]', $this->loginPassword);
+//        $I->click('#login');
+//        // saving snapshot
+//        $I->saveSessionSnapshot('login');
+    }
+
+
+    public $loggedIn;
+    public function login($I)
+    {
         // if snapshot exists - skipping login
-        if ($I->loadSessionSnapshot('login')) return;
+        if ($this->loggedIn) return;
         // logging in
-        $I->amOnPage('/auth/login');
-        $I->fillField(['id' => 'email'], 'test2@gradeomatic.net');
-        $I->fillField('//*[@id="password"]', 'testtest');
+        $I->amOnPage($this->loginPageRoute);
+
+        $I->fillField(['id' => 'email'], $this->loginEmail);
+        $I->fillField('//*[@id="password"]', $this->loginPassword);
         $I->click('#login');
         // saving snapshot
         $I->saveSessionSnapshot('login');
+        $this->loggedIn = true;
     }
-
 }

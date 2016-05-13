@@ -30,6 +30,60 @@ class Acceptance extends \Codeception\Module
         return self::$examWithNoQuestionsId;
     }
 
+    /**
+     * Creates test data for questions.
+     * Returns array with questionNumbers as keys. Each key has an array
+     * of data with keys: name, text, maxScore
+     * @param int $numberOfQuestions Number of questions to create data for
+     * @return array
+     */
+    public function generateQuestionTestData($numberOfQuestions)
+    {
+        $testData = [];
+        $Faker = Factory::create();
+        for ( $i = 1; $i <= $numberOfQuestions; $i++ )
+        {
+            $testData[ $i ] = [
+                'name'     => $Faker->text(30),
+                'text'     => $Faker->text(30),
+                'maxScore' => $Faker->numberBetween(1, 1000),
+            ];
+        }
+
+        return $testData;
+    }
+
+    /* -------------------------------- Element pages -------------------- */
+
+
+    /**
+     * Creates test data for elements.
+     * Keys: name, text, missing, poor, fair, excellent
+     * @param $numberOfElements
+     * @return array
+     */
+    public function generateElementTestData($numberOfElements)
+    {
+        $testData = [];
+        $Faker =
+        $Faker = Factory::create();
+        for ( $i = 1; $i <= $numberOfElements; $i++ )
+        {
+            $testData[ $i ] = [
+                'name'      => $Faker->text(30),
+                'text'      => $Faker->text(30),
+                'missing'   => $Faker->text(30),
+                'poor'      => $Faker->text(30),
+                'fair'      => $Faker->text(30),
+                'excellent' => $Faker->text(30),
+            ];
+        }
+
+        return $testData;
+    }
+
+
+
 //    /**
 //     * Checks whether the fields for creating or editing a given question number are present.
 //     * If not is true, this checks whether there are no fields for the questionNumber
@@ -112,31 +166,9 @@ class Acceptance extends \Codeception\Module
 //        }
 //    }
 
-    /**
-     * Creates test data for questions.
-     * Returns array with questionNumbers as keys. Each key has an array
-     * of data with keys: name, text, maxScore
-     * @param int $numberOfQuestions Number of questions to create data for
-     * @return array
-     */
-    public function generateQuestionTestData($numberOfQuestions)
-    {
-        $testData = [];
-        $Faker = Factory::create();
-        for ( $i = 1; $i <= $numberOfQuestions; $i++ )
-        {
-            $testData[ $i ] = [
-                'name'     => $Faker->text(30),
-                'text'     => $Faker->text(30),
-                'maxScore' => $Faker->numberBetween(1, 1000),
-            ];
-        }
-
-        return $testData;
-    }
 
 
-    /* -------------------------------- Element pages -------------------- */
+
 //
 //    /**
 //     * Checks whether the fields for creating or editing a given element are present.
@@ -163,32 +195,6 @@ class Acceptance extends \Codeception\Module
 //            // $I->seeElement(ElementEditPage::commentFormXPath($subtask));
 //        }
 //    }
-
-    /**
-     * Creates test data for elements.
-     * Keys: name, text, missing, poor, fair, excellent
-     * @param $numberOfElements
-     * @return array
-     */
-    public function generateElementTestData($numberOfElements)
-    {
-        $testData = [];
-        $Faker =
-        $Faker = Factory::create();
-        for ( $i = 1; $i <= $numberOfElements; $i++ )
-        {
-            $testData[ $i ] = [
-                'name'      => $Faker->text(30),
-                'text'      => $Faker->text(30),
-                'missing'   => $Faker->text(30),
-                'poor'      => $Faker->text(30),
-                'fair'      => $Faker->text(30),
-                'excellent' => $Faker->text(30),
-            ];
-        }
-
-        return $testData;
-    }
 
 //    /**
 //     * Runs tests for page title, page heading, appropriate navs, and element fields

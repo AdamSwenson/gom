@@ -24,7 +24,7 @@ QuestionEditPage::verifyQuestionEditPageIntact($I, $examId, $examName, $numQuest
 //$I->verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
 QuestionEditPage::verifyQuestionsHaveInitialExpectedValues($I, $examId, $numQuestions);
 
-
+/*
 $I->amGoingTo("Start deleting question #{$deletedQuestionNumber} but cancel the operation with the confirmation modal");
     $I->dontSee(QuestionEditPage::$deleteConfirmationModalText);
 //Searches for the link text
@@ -46,7 +46,7 @@ $I->wait(2);
 QuestionEditPage::verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
 //$I->verifyQuestionEditPageIntact($I, $examName, $numQuestions);
 QuestionEditPage::verifyQuestionsHaveInitialExpectedValues($I, $examId, $numQuestions);
-
+*/
 
 $I->amGoingTo("Delete question #{$deletedQuestionNumber}");
     $I->click("//*[@id='deleteQuestionButton{$deletedQuestionNumber}']");
