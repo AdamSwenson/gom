@@ -46,6 +46,10 @@ class QuestionEditPage
 //    public static $deleteConfirmationModalConfirmButton = '/html/body/div[5]/div/div/div[3]/button[2]';
 //    public static $deleteConfirmationModalCancelButton = '/html/body/div[5]/div/div/div[3]/button[1]';
 
+public static function questionPanelId($questionNumber){
+    return "questionItem{$questionNumber}";
+}
+
     /**
      * Returns the xpath of a questionName field
      * The question number will be the last part of the string.
@@ -94,14 +98,33 @@ class QuestionEditPage
 //        return "//*[@id='questionItem{$questionNumber}']/div[4]/a";
     }
 
+//    /**
+//     * Returns the xpath to the button for dragging and rearranging questions
+//     * @param $questionNumber
+//     * @return string
+//     */
+//    public static function moveButtonXPath($questionNumber){
+//        return "//*[@id='moveQuestionButton{$questionNumber}']";
+////        return "//*[@id='questionItem{$questionNumber}']/div[4]/span";
+//    }
+
+
     /**
-     * Returns the xpath to the button for dragging and rearranging questions
+     * Returns a unique identifier of the delete button for that questionNumber
      * @param $questionNumber
-     * @return string
+     * @return array
      */
-    public static function moveButtonXPath($questionNumber){
-        return "//*[@id='moveQuestionButton{$questionNumber}']";
-//        return "//*[@id='questionItem{$questionNumber}']/div[4]/span";
+    public static function deleteButtonLocator($questionNumber){
+        return ['css' => '#' . self::questionPanelId($questionNumber) . ' .questionButtonArea .js-remove'];
+    }
+
+    /**
+     * Returns the unique locator for the move button belonging to a question
+     * @param $questionNumber
+     * @return array
+     */
+    public static function moveButtonLocator($questionNumber){
+        return ['css' => '#' . self::questionPanelId($questionNumber) . ' .questionButtonArea .handle'];
     }
 
     /**
@@ -157,12 +180,16 @@ class QuestionEditPage
             $I->dontSeeElement(self::maxScoreXPath($questionNumber));
         } else
         {
+            $I->seeElement(['id' => self::questionPanelId($questionNumber)]);
             $I->seeElement(self::questionNameXPath($questionNumber));
             $I->seeElement(self::questionTextXPath($questionNumber));
             $I->seeElement(self::maxScoreXPath($questionNumber));
             //buttons
-            $I->seeElement(self::deleteButtonXPath($questionNumber));
-            $I->seeElement(self::moveButtonXPath($questionNumber));
+            //note that any ew question's buttons will not have the right ids
+            #move button
+            $I->seeElement(self::moveButtonLocator($questionNumber));
+            #delete button
+            $I->seeElement(self::deleteButtonLocator($questionNumber));
         }
     }
 

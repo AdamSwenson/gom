@@ -19,11 +19,11 @@ QuestionEditPage::verifyQuestionEditPageIntact($I, $examId, $examName, $numQuest
 
 $I->amGoingTo("Add a second question field");
     //check that a question 2 isn't already present
-QuestionEditPage::checkQuestionFieldsPresent($I, 2, true);
+    QuestionEditPage::checkQuestionFieldsPresent($I, 2, true);
     //click the add button
     $I->click(QuestionEditPage::$addQuestionButtonId);
     //check that a second question field is present
-QuestionEditPage::checkQuestionFieldsPresent($I, 2);
+    QuestionEditPage::checkQuestionFieldsPresent($I, 2);
     $numQuestions += 1;
 
 
