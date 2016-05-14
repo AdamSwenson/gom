@@ -82,5 +82,6 @@ $I->amGoingTo("Try each of the drop down options (except export) and check that 
     ReportIndexPage::verifyPageIntact($I, $numberOfExams, $examIdsToSkip);
 
 
-$I->amGoingTo("Check that export buttons work");
-//export
+//$I->amGoingTo("Check that export buttons work");
+//The internet says this isn't worth doing 
+//e.g., http://ardesco.lazerycode.com/index.php/2012/07/how-to-download-files-with-selenium-and-why-you-shouldnt/

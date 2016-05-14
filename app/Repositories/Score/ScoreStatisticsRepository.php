@@ -110,12 +110,18 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
 
 
     /**
+     * Returns collection of arrays with keys:
+     * dateTime
+     * totalScore
+     * seconds
+     * studentId (the internal db id)
+     * studentIdentifier (the user assigned id)
+     * studentName
      * @param Exam $exam
      * @return \Illuminate\Support\Collection
      */
     public function getScoresAndTimesByGradedOrder(Exam $exam)
     {
-        //TODO Add student Id so user can identify anomalies
         $results = [];
         $times = $this->gradingTimeDao->getTimesForExamByGradedOrder($exam->id);
         foreach ($times as $t)
@@ -125,6 +131,7 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
                 "dateTime" => $t->updated_at->toDateTimeString(),
                 "totalScore" => $totalScore,
                 "seconds" => $t->seconds,
+                "studentId" => $t->student->id,
                 "studentIdentifier" => $t->student->getStudentId(),
                 "studentName" => $t->student->getFullName()
             ];
@@ -254,7 +261,8 @@ class ScoreStatisticsRepository implements IScoreStatisticsRepository
 
 
     /**
-     * Gets statistics for question scores
+     * Gets statistics for question scores. Stores them in
+     * $this->questionAssignmentStats
      * @param Exam $exam
      */
     protected function loadQuestionStatsForExam(Exam $exam)
