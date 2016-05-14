@@ -51,8 +51,9 @@ class AccessKeyRepository implements IAccessKeyRepository
      */
     public function createAccessKey($examId, $studentId, $daysUntilExpiration = 10, $forceNew = false)
     {
-        $accessKey = $this->generateNewKey();
-        if ( $accessKey )
+        //make a new hash
+        $accessHash = $this->generateNewKey();
+        if ( $accessHash )
         {
             $expire = Carbon::now()->addDays($daysUntilExpiration);
 
@@ -62,7 +63,7 @@ class AccessKeyRepository implements IAccessKeyRepository
             //of if have been instructed to create a new access key
             if ( empty($k->access_key) || $forceNew )
             {
-                $k->setKey($accessKey);
+                $k->setKey($accessHash);
             }
 
             $k->setExamId($examId);
@@ -70,7 +71,8 @@ class AccessKeyRepository implements IAccessKeyRepository
             $k->setExpirationDate($expire);
 
             //save student info so don't have to look up from feedback processes
-            $student = Student::loggedIn()->where('id', $studentId)->firstOrFail();
+            $student = Student::loggedIn()
+                ->where('id', $studentId)->firstOrFail();
             $name = $student->getFullName() ? $student->getFullName() : '';
             $id = $student->student_identifier ? $student->student_identifier : '';
             $k->student_info = [
@@ -78,9 +80,10 @@ class AccessKeyRepository implements IAccessKeyRepository
                 'studentIdentifier' => $id,
             ];
 
-            //access key doesn't automatically add user,
-            //so do it manually
-            $k->user()->associate(Auth::user());
+//            //access key doesn't automatically add user,
+//            //so do it manually
+//            $k->user()->associate(Auth::user());
+
             $k->save();
 
             if ( $k )
@@ -179,9 +182,21 @@ class AccessKeyRepository implements IAccessKeyRepository
      */
     public function getStudentInfo($accessKey)
     {
-        $key = AccessKey::where('access_key', $accessKey)->first();
+        //if had the object passed in for some weird reason
+        if ( $accessKey instanceof AccessKey )
+        {
+            return $accessKey->student_info;
+        }
+        //it's a string as usual
+        $this->validateKey($accessKey);
+        if ( ! empty($this->validKey) )
+        {
+            $key = AccessKey::where('access_key', $accessKey)->first();
 
-        return $key->student_info;
+            return $key->student_info;
+        }
+
+        return null;
 
 //        $name = $key->student->getFullName() ? $key->student->getFullName() : '';
 //        $id = $key->student->student_identifier ? $key->student->student_identifier : '';

@@ -10,7 +10,11 @@ namespace App\HTTP\Controllers;
 
 
 use App\Exam;
+use App\Jobs\AsyncStorage\UpdateStoredExamStats;
 use App\Question;
+use App\QuestionAssignment;
+use App\Repositories\Question\IQuestionAssignmentRepository;
+use App\Repositories\Question\IQuestionRepository;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 /**
@@ -35,7 +39,10 @@ class QuestionControllerTest extends \TestCase
 
         $this->question = Question::all()->random();
         $this->examId = $this->faker->randomNumber(3);
-        $this->incoming = ['questionName' => $this->faker->text(5), 'questionDesc' => $this->faker->text()];
+        $this->incoming = [
+            'questionName' => $this->faker->text(5),
+            'questionDesc' => $this->faker->text(),
+        ];
     }
 
     public function tearDown()
@@ -72,12 +79,11 @@ class QuestionControllerTest extends \TestCase
     }
 
 
-
-/*
-    public function testCreate(QuestionRequest $request)
-    {
-        // $exam from URL: questions must know which exam to be associated with(?)
-    }*/
+    /*
+        public function testCreate(QuestionRequest $request)
+        {
+            // $exam from URL: questions must know which exam to be associated with(?)
+        }*/
 
     public function testStore()
     {
@@ -106,15 +112,15 @@ class QuestionControllerTest extends \TestCase
 
     public function testShow()
     {
-     $response = $this->action('POST', 'QuestionController@show', $this->question);
+        $response = $this->action('POST', 'QuestionController@show', $this->question);
         $this->assertNotNull($response);
     }
 
 
-  public function testEdit()
+    public function testEdit()
     {
         $response = $this->action('POST', 'QuestionController@edit', ['questionId' => 1]);
-$this->assertNotNull($response);
+        $this->assertNotNull($response);
 
     }
 
@@ -133,19 +139,28 @@ $this->assertNotNull($response);
 
     public function testUpdateAll()
     {
-        $this->markTestIncomplete();
+//        $this->markTestIncomplete();
+        $this->incoming['examId'] = $this->examId;
+        $qAssignment = QuestionAssignment::all()->random();
+
+
+        $assignmentDao = $this->createMock(IQuestionAssignmentRepository::class);
+        $questionDao = $this->createMock(IQuestionRepository::class);
+
+        //expectations
+        $assignmentDao->shouldReceive('updateAll')->with(Exam::find($this->examId));
+
+        $assignmentDao->shouldReceive('load_all_for_exam')->with($this->examId)->andReturn([1, 2]);
+        $assignmentDao->shouldReceive('load')->with($this->examId, 1)->andReturn($qAssignment);
+
+        $questionDao->shouldReceive('loadQuestionById')->with($qAssignment->getQuestionId());
+
+        $response = $this->action('POST', 'QuestionController@updateAll', $this->incoming);
+        $this->assertNotNull($response);
+
+        //TODO figure out why not picking this up
+        //$this->expectsJobs(UpdateStoredExamStats::class);
     }
-//        // this function will take a request and process all the questions therein.
-//        /* it will:
-//            -Create a new question if the id is empty
-//            -update an existing question if the id exists
-//            -set the order property for each question
-//            -pass the first questionId and examId to ElementController@
-//        */
-//        $data['examId'] = $exam;
-//        $data['questionId'] = 1;
-//        return view('setup.edit_element')->with(['data' => $data]);
-//    }
 
 
     public function testDestroy()
@@ -155,7 +170,6 @@ $this->assertNotNull($response);
         $response = $this->action('POST', 'QuestionController@destroy', ['questionId' => $this->question->getId()]);
         $this->assertNotNull($response);
     }
-
 
 
 }

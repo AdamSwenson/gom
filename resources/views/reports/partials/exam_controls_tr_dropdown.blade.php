@@ -1,4 +1,4 @@
-<tr>
+<tr id="reportsForExam{{ $examId }}">
     <!-- width will override the column width setting for term info -->
     <td class="examDetailsCell" >
         {{ $exam->term or '' }}

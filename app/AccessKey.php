@@ -108,14 +108,14 @@ class AccessKey extends BaseModelNoUser
     }
 
     #------------------------------------------ foreign keys
-    /**
-     * Junction to user
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user()
-    {
-        return $this->belongsTo('App\User');
-    }
+//    /**
+//     * Junction to user
+//     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+//     */
+//    public function user()
+//    {
+//        return $this->belongsTo('App\User');
+//    }
 
     public function exam()
     {

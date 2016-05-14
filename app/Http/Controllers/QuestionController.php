@@ -90,7 +90,7 @@ class QuestionController extends Controller
     /**
      * POSSIBLY DEPRECATED?
      * Store a newly created resource in storage.
-     * 
+     *
      * @param QuestionRequest $request
      * @return Response
      */
@@ -193,6 +193,7 @@ class QuestionController extends Controller
         {
             Log::info('questionController.updateAll ' . $e);
             Flash::error(self::GENERIC_ERROR);
+
             return back();
         }
     }
@@ -226,6 +227,7 @@ class QuestionController extends Controller
     }
 
     /**
+     * TODO Determine if deprecated
      * Remove the specified question from storage.
      *
      * @param Exam $exam
@@ -244,11 +246,9 @@ class QuestionController extends Controller
         if ( ! empty($result) )
         {
             Flash::success(self::DELETE_SUCCESS);
-//            Session::flash(self::SUCCESS_FLASH_NAME, self::DELETE_SUCCESS);
         } else
         {
-            Flash::success(self::DELETE_FAIL);
-//            Session::flash(self::FAIL_FLASH_NAME, self::DELETE_FAIL);
+            Flash::error(self::DELETE_FAIL);
         }
 
         return view('Destroyed Question #' . $result);

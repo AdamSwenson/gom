@@ -18,7 +18,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 
-class StudentRepositoryTest extends \TestCase
+class StudentRepositoryTest extends \ReseedingTestCase
 {
 
     protected $object;
@@ -27,6 +27,7 @@ class StudentRepositoryTest extends \TestCase
     {
         \Mockery::close();
         parent::setUp();
+        $this->prepareDatabase();
         $this->object = new StudentRepository;
         $this->exam = Exam::all()->random();
         $this->student = Student::all()->random();
@@ -380,11 +381,11 @@ class StudentRepositoryTest extends \TestCase
      */
     public function deleteStudentsNotOnRoster()
     {
+
         $indexToRemove = 1;
         $initialNumberRecords = 10;
-        //TODO need to ensure that the exam already has a class full of students asociated
+        //TODO need to ensure that the exam already has a class full of students associated
         $exam = Exam::find(2);
-
         # prep
         $request = $this->buildTestDataAndRequest(0, $initialNumberRecords, 0);
         $recordToRemove = $this->expectedDbEntries[ $indexToRemove - 1 ]; //the expectedDbEntries array is 0-indexed whereas the row ids start with 1

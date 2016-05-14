@@ -66,16 +66,23 @@ $factory->define(App\Exam::class, function (Faker\Generator $faker)
 
 $factory->define(App\Student::class, function (Faker\Generator $faker)
 {
-    $faker2 = Factory::create();
+    //$faker2 = Factory::create();
 
-    return [
-//        'id' => $faker->unique()->randomNumber(3),
-        'user_id' => 1,
-        'student_identifier' => $faker2->unique()->randomNumber(9),
-        'last_name' => $faker2->lastName,
-        'first_name' => $faker2->firstName,
-        'email' => $faker2->optional()->email
+    return  ['user_id' => 1,
+        'student_identifier' => '345567888',
+        'last_name' => 'ssdfdfsdf',
+        'first_name' => 'ljsdlfjsldkfj',
+        'email' => 'jjsdlf@slkdfjld.com'
     ];
+//
+//    return [
+////        'id' => $faker->unique()->randomNumber(3),
+//        'user_id' => 1,
+//        'student_identifier' => $faker2->unique()->randomNumber(9),
+//        'last_name' => $faker2->lastName,
+//        'first_name' => $faker2->firstName,
+//        'email' => $faker2->optional()->email
+//    ];
 
 });
 

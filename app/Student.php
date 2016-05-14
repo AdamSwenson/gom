@@ -4,6 +4,7 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class Student
@@ -12,7 +13,8 @@ use Illuminate\Support\Facades\Crypt;
  *
  * Each student can take an exam exactly once.
  *
- * The sid property is a unique string (usually, but not necessarily, an integer provided by the user, it is not the same as the id.
+ * The sid property is a unique string (usually, but not necessarily, an integer provided by the user, it is not the
+ * same as the id.
  *
  * Here is a list keys that are available in the attributes array (08/04/15)
  *     'id' , 'user_id' , 'student_identifier' , 'first_name' , 'last_name' , 'email' , 'created_at' , 'updated_at' ,
@@ -37,20 +39,20 @@ class Student extends BaseModel
         'student_identifier',
         'first_name',
         'last_name',
-        'email'
+        'email',
     ];
 
     protected $casts = [
         'student_identifier' => 'integer',
-        'last_name' => 'string',
-        'first_name' => 'string',
-        'email' => 'string'
+        'last_name'          => 'string',
+        'first_name'         => 'string',
+        'email'              => 'string',
     ];
 
     /** @var array Attributes which should be encrypted in the database */
     protected $encryptedAttributes = [
         'student_identifier',
-        'email'
+        'email',
     ];
 
 
@@ -195,7 +197,6 @@ class Student extends BaseModel
     }
 
 
-
     /**
      * Sets the user-given identifying number for the student.
      * Alias for the laravel convention using setter
@@ -301,6 +302,7 @@ class Student extends BaseModel
     public function feedbackEmailSent($examId)
     {
         $ak = AccessKey::where('exam_id', $examId)->where('student_id', $this->attributes['id'])->first();
+
         return $ak ? $ak->getEmailSent() : false;
     }
 
@@ -313,8 +315,21 @@ class Student extends BaseModel
      */
     public function hasBeenGraded($examId)
     {
-        // returning true to test UI for now
-        return true;
+        $query = <<<MYSQL
+        SELECT count(qs.score) AS numberAnswered 
+        FROM question_scores qs 
+        INNER JOIN question_assignments qa ON qa.id = qs.question_assignment_id 
+        WHERE qa.exam_id = :examId AND qs.student_id = :studentId;
+        
+MYSQL;
+        $values = ['examId' => $examId, 'studentId' => $this->attributes['id']];
+        $result = DB::select($query, $values);
+        if ( $result[0]->numberAnswered > 0 )
+        {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -327,13 +342,14 @@ class Student extends BaseModel
     public function isFeedbackAvailable($examId)
     {
         $expirationDate = $this->getFeedbackAccessExpirationDate($examId);
-        if(! is_null($expirationDate))
+        if ( ! is_null($expirationDate) )
         {
-            if(Carbon::now()->lte($expirationDate))
+            if ( Carbon::now()->lte($expirationDate) )
             {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -345,6 +361,7 @@ class Student extends BaseModel
     public function getFeedbackAccessExpirationDate($examId)
     {
         $ak = AccessKey::where('exam_id', $examId)->where('student_id', $this->attributes['id'])->first();
+
         return $ak ? $ak->getExpirationDate() : false;
     }
 

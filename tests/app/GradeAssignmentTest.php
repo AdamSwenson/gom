@@ -110,7 +110,7 @@ class GradeAssignmentTest extends \TestCase
         //Save it
         $g->save();
 
-        $this->seeInDatabase('', ['exam_id' => 0, 'grade_id' => 112, 'min_score' => 0]);
+        $this->seeInDatabase('grade_assignments', ['exam_id' => 0, 'grade_id' => 112, 'min_score' => 0]);
 
     }
 

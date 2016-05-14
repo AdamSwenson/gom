@@ -11,6 +11,7 @@ namespace App\Repositories\Time;
 
 use App\Exam;
 use App\GradingTime;
+use Illuminate\Support\Collection;
 
 class GradingTimeRepositoryTest extends \TestCase
 {
@@ -22,7 +23,7 @@ class GradingTimeRepositoryTest extends \TestCase
     {
         parent::setUp();
         $this->object = new GradingTimeRepository;
-        $this->exam = Exam::where('exam_id', self::$examId)->first();
+        $this->exam = Exam::where('id', self::$examId)->first();
     }
 
     public function testLoad()
@@ -79,7 +80,8 @@ class GradingTimeRepositoryTest extends \TestCase
 
             //check if in expected order
             $currentTime = $r->updated_at;
-            if(! is_null($prior)){
+            if ( ! is_null($prior) )
+            {
                 $this->assertTrue($currentTime->gte($prior), "This exam was graded after the exam in the previous element of the result");
             }
             $prior = $currentTime;

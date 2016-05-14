@@ -24,7 +24,7 @@ class QuestionScoreRepositoryTest extends \ReseedingTestCase
     public function setUp()
     {
         parent::setUp();
-
+        \Auth::loginUsingId(self::$userid);
         $this->object = new QuestionScoreRepository;
         $this->questionScore = QuestionScore::all()->random();
         $this->exam = Exam::find(self::$examId);

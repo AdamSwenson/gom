@@ -485,6 +485,7 @@ class GradeController extends Controller
      * @param Exam $exam
      * @param GradingRequest $request
      * @return Response json
+     * @throws \Exception
      */
     public function recordScore(Exam $exam, GradingRequest $request)
     {
@@ -553,6 +554,7 @@ class GradeController extends Controller
         } catch ( \Exception $e )
         {
             throw $e;
+
             return $this->sendAjaxFailure();
 
         }
@@ -603,54 +605,54 @@ class GradeController extends Controller
         }
     }
 
-    /**
-     * Load the time spent grade a particular student exam
-     *
-     * @param Exam $exam
-     * @param GradingRequest $request
-     * @return mixed
-     */
-    public function loadTime(Exam $exam, GradingRequest $request)
-    {
-        //Check that user owns the exam
-        $this->authorize('access-object', $exam);
-
-        if ( $request->has('student_id') )
-        {
-            $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
-            $time = $dao->load($exam->getId(), $request->input('student_id'));
-
-            return $time;
-        }
-    }
-
-    /**
-     * Loads array of statistics for grade time.
-     * See IGradingStatsRepository for description of array.
-     *
-     * @param Exam $exam
-     * @return mixed
-     */
-    public function loadStats(Exam $exam)
-    {
-        //Check that user owns the exam
-        $this->authorize('access-object', $exam);
-
-        $dao = app()->make('App\Repositories\Time\IGradingStatsRepository');
-        $stats = $dao->get_grading_time_stats($exam->getId());
-
-        return $stats;
-    }
-
-    /**
-     * This will check whether
-     * @param Exam $exam
-     * @param Student $student
-     */
-    public function updateNumberGraded(Exam $exam, Student $student)
-    {
-
-    }
-
+//    /**
+//     * Load the time spent grade a particular student exam
+//     *
+//     * @param Exam $exam
+//     * @param GradingRequest $request
+//     * @return mixed
+//     */
+//    public function loadTime(Exam $exam, GradingRequest $request)
+//    {
+//        //Check that user owns the exam
+//        $this->authorize('access-object', $exam);
+//
+//        if ( $request->has('student_id') )
+//        {
+//            $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
+//            $time = $dao->load($exam->getId(), $request->input('student_id'));
+//
+//            return $time;
+//        }
+//    }
+//
+//    /**
+//     * Loads array of statistics for grade time.
+//     * See IGradingStatsRepository for description of array.
+//     *
+//     * @param Exam $exam
+//     * @return mixed
+//     */
+//    public function loadStats(Exam $exam)
+//    {
+//        //Check that user owns the exam
+//        $this->authorize('access-object', $exam);
+//
+//        $dao = app()->make('App\Repositories\Time\IGradingStatsRepository');
+//        $stats = $dao->get_grading_time_stats($exam->getId());
+//
+//        return $stats;
+//    }
+//
+//    /**
+//     * This will check whether
+//     * @param Exam $exam
+//     * @param Student $student
+//     */
+//    public function updateNumberGraded(Exam $exam, Student $student)
+//    {
+//
+//    }
+//
 
 }

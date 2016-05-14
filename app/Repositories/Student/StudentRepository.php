@@ -239,7 +239,7 @@ class StudentRepository implements IStudentRepository
         {
             foreach ( $studentsInDb as $student )
             {
-                if ( ! in_array($student->getId(), $this->idsOnRosterIncludingInvalid) )
+                if ( ! in_array($student->id, $this->idsOnRosterIncludingInvalid) )
                 {
                     $student->delete();
                 }

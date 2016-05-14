@@ -9,21 +9,25 @@
     </button>
     <ul class="dropdown-menu">
         <li>
-            <a href="{{ analyticsTarget }}">
+            <a class="analyticsLink"
+               href="{{ analyticsTarget }}">
                 <span class="glyphicon glyphicon-stats"
                       aria-hidden="true"></span> Analytics
             </a>
         </li>
         <li>
-            <a href="{{ qualityControlsTarget }}">
+            <a class="qualityControlLink"
+                    href="{{ qualityControlsTarget }}">
                 <span class="glyphicon glyphicon-apple" aria-hidden="true"></span> Quality Control Tools</a>
         </li>
         <li>
-            <a href="{{ backupTarget }}">
+            <a class="backupLink"
+               href="{{ backupTarget }}">
                 <span class="glyphicon glyphicon glyphicon-save" aria-hidden="true"></span> Export Scores to Spreadsheet</a>
         </li>
 
-        <li><a href="{{ studentControlsTarget }}">
+        <li><a class="studentControlsLink"
+               href="{{ studentControlsTarget }}">
             <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Student Controls</a>
         </li>
     </ul>

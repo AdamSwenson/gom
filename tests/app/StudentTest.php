@@ -69,13 +69,38 @@ public $expiration_date;
 //    {
 //    }
 
-//    /**
-//     *
-//     */
-//    public function hasBeenGraded($examId)
-//    {
-//
-//    }
+    /**
+     * @test
+     */
+    public function hasBeenGradedWhenNotGraded()
+    {
+        $examId = Exam::all()->random()->id;
+        $student = factory(Student::class)->create();
+        $result = $student->hasBeenGraded($examId);
+        $this->assertFalse($result);
+            }
+
+    /**
+     * @test
+     */
+    public function hasBeenGradedWhenGraded()
+    {
+        $qa = QuestionAssignment::all()->random();
+        $e = $qa->exam;
+        $examId = $qa->getExamId();
+        $student = factory(Student::class)->create();
+        $this->assertFalse($student->hasBeenGraded($examId));
+
+        $query = <<<MYSQL
+        INSERT INTO question_scores (question_assignment_id, student_id, score)
+        VALUES (:qaId, :sid, 45.2);
+MYSQL;
+
+        $values = ['qaId' => $qa->id, 'sid' => $student->id];
+        \DB::insert($query, $values);
+        
+        $this->assertTrue($student->hasBeenGraded($examId));
+    }
 
     /**
      * @test

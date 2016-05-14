@@ -1,4 +1,12 @@
 <?php
+if(getenv("IS_JENKINS") && getenv("IS_JENKINS") == 'yep'){
+        $path = base_path();
+        require_once $path . '/vendor/autoload.php';
+
+}
+//        $path = base_path();
+//        require_once $path . '/vendor/autoload.php';
+
 ///**
 // * Created by PhpStorm.
 // * User: adam

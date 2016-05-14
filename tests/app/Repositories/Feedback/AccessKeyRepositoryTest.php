@@ -201,7 +201,20 @@ class AccessKeyRepositoryTest extends \TestCase
 
 
     public function testGetStudentInfo(){
-        $this->markTestIncomplete();
+        #Prep
+        $examId = factory(Exam::class)->create()->id;
+        $student = Student::all()->random();
+        $hash = $this->object->createAccessKey($examId, $student->id);
+        $key = AccessKey::where('access_key', $hash)->first();
+        $this->assertInstanceOf(AccessKey::class, $key );
+
+        #Call
+        $result = $this->object->getStudentInfo($key);
+
+        #Check
+        $this->assertTrue(is_array($result));
+        $this->assertEquals($student->getFullName(), $result['studentName'] );
+        $this->assertEquals($student->student_identifier, $result['studentIdentifier']);
     }
 
 }

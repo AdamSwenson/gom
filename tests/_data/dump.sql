@@ -24,30 +24,34 @@
 
 DROP TABLE IF EXISTS `access_keys`;
 CREATE TABLE `access_keys` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) unsigned NOT NULL,
-  `access_key` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `student_id` int(10) unsigned NOT NULL,
-  `exam_id` int(10) unsigned NOT NULL,
-  `email_sent` tinyint(1) NOT NULL DEFAULT '0',
-  `access_expires` date DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `student_info` text COLLATE utf8_unicode_ci,
+  `id`             INT(10) UNSIGNED        NOT NULL AUTO_INCREMENT,
+  `access_key`     VARCHAR(255)
+                   COLLATE utf8_unicode_ci NOT NULL,
+  `student_id`     INT(10) UNSIGNED        NOT NULL,
+  `exam_id`        INT(10) UNSIGNED        NOT NULL,
+  `email_sent`     TINYINT(1)              NOT NULL DEFAULT '0',
+  `access_expires` DATE                             DEFAULT NULL,
+  `created_at`     TIMESTAMP               NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at`     TIMESTAMP               NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `student_info`   TEXT COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `access_keys_student_id_exam_id_unique` (`student_id`,`exam_id`),
-  KEY `access_keys_user_id_index` (`user_id`),
+  UNIQUE KEY `access_keys_student_id_exam_id_unique` (`student_id`, `exam_id`),
   KEY `access_keys_access_key_index` (`access_key`),
   KEY `access_keys_student_id_index` (`student_id`),
   KEY `access_keys_exam_id_index` (`exam_id`),
-  CONSTRAINT `access_keys_exam_id_foreign` FOREIGN KEY (`exam_id`) REFERENCES `exams` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `access_keys_student_id_foreign` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `access_keys_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  CONSTRAINT `access_keys_exam_id_foreign` FOREIGN KEY (`exam_id`) REFERENCES `exams` (`id`)
+    ON DELETE CASCADE,
+  CONSTRAINT `access_keys_student_id_foreign` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`)
+    ON DELETE CASCADE
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
-INSERT INTO `access_keys` (`id`, `user_id`, `access_key`, `student_id`, `student_info`, `exam_id`, `email_sent`, `access_expires`, `created_at`, `updated_at`)
+INSERT INTO `access_keys` (`id`, `access_key`, `student_id`, `student_info`, `exam_id`, `email_sent`, `access_expires`, `created_at`, `updated_at`)
 VALUES
-  (1, 1, '634b0f6bb2e56e46da6ab48d284d08b101ec1aa168cd715a9a0e570f5947135b', 1, '{\"studentName\":\"name1\", \"studentIdentifier\":\"identifier1\"}', 1, 0, '2019-01-01', NOW(), NOW());
+  (1, '634b0f6bb2e56e46da6ab48d284d08b101ec1aa168cd715a9a0e570f5947135b', 1,
+   '{\"studentName\":\"name1\", \"studentIdentifier\":\"identifier1\"}', 1, 0, '2019-01-01', NOW(), NOW());
 
 # Dump of table comments
 # ------------------------------------------------------------
@@ -76,7 +80,8 @@ CREATE TABLE `comments` (
   COLLATE = utf8_unicode_ci;
 
 LOCK TABLES `comments` WRITE;
-/*!40000 ALTER TABLE `comments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `comments`
+  DISABLE KEYS */;
 
 INSERT INTO `comments` (`id`, `user_id`, `element_id`, `valence`, `body`, `created_at`, `updated_at`)
 VALUES
@@ -180,109 +185,110 @@ VALUES
   (98, 1, 25, '1', 'comment98BodyText', NOW(), NOW()),
   (99, 1, 25, '2', 'comment99BodyText', NOW(), NOW()),
   (100, 1, 25, '3', 'comment100BodyText', NOW(), NOW()),
-  (101,1,26,'0','comment101BodyText',NOW(),NOW()),
-  (102,1,26,'1','comment102BodyText',NOW(),NOW()),
-  (103,1,26,'2','comment103BodyText',NOW(),NOW()),
-  (104,1,26,'3','comment104BodyText',NOW(),NOW()),
-  (105,1,27,'0','comment105BodyText',NOW(),NOW()),
-  (106,1,27,'1','comment106BodyText',NOW(),NOW()),
-  (107,1,27,'2','comment107BodyText',NOW(),NOW()),
-  (108,1,27,'3','comment108BodyText',NOW(),NOW()),
-  (109,1,28,'0','comment109BodyText',NOW(),NOW()),
-  (110,1,28,'1','comment110BodyText',NOW(),NOW()),
-  (111,1,28,'2','comment111BodyText',NOW(),NOW()),
-  (112,1,28,'3','comment112BodyText',NOW(),NOW()),
-  (113,1,29,'0','comment113BodyText',NOW(),NOW()),
-  (114,1,29,'1','comment114BodyText',NOW(),NOW()),
-  (115,1,29,'2','comment115BodyText',NOW(),NOW()),
-  (116,1,29,'3','comment116BodyText',NOW(),NOW()),
-  (117,1,30,'0','comment117BodyText',NOW(),NOW()),
-  (118,1,30,'1','comment118BodyText',NOW(),NOW()),
-  (119,1,30,'2','comment119BodyText',NOW(),NOW()),
-  (120,1,30,'3','comment120BodyText',NOW(),NOW()),
-  (121,1,31,'0','comment121BodyText',NOW(),NOW()),
-  (122,1,31,'1','comment122BodyText',NOW(),NOW()),
-  (123,1,31,'2','comment123BodyText',NOW(),NOW()),
-  (124,1,31,'3','comment124BodyText',NOW(),NOW()),
-  (125,1,32,'0','comment125BodyText',NOW(),NOW()),
-  (126,1,32,'1','comment126BodyText',NOW(),NOW()),
-  (127,1,32,'2','comment127BodyText',NOW(),NOW()),
-  (128,1,32,'3','comment128BodyText',NOW(),NOW()),
-  (129,1,33,'0','comment129BodyText',NOW(),NOW()),
-  (130,1,33,'1','comment130BodyText',NOW(),NOW()),
-  (131,1,33,'2','comment131BodyText',NOW(),NOW()),
-  (132,1,33,'3','comment132BodyText',NOW(),NOW()),
-  (133,1,34,'0','comment133BodyText',NOW(),NOW()),
-  (134,1,34,'1','comment134BodyText',NOW(),NOW()),
-  (135,1,34,'2','comment135BodyText',NOW(),NOW()),
-  (136,1,34,'3','comment136BodyText',NOW(),NOW()),
-  (137,1,35,'0','comment137BodyText',NOW(),NOW()),
-  (138,1,35,'1','comment138BodyText',NOW(),NOW()),
-  (139,1,35,'2','comment139BodyText',NOW(),NOW()),
-  (140,1,35,'3','comment140BodyText',NOW(),NOW()),
-  (141,1,36,'0','comment141BodyText',NOW(),NOW()),
-  (142,1,36,'1','comment142BodyText',NOW(),NOW()),
-  (143,1,36,'2','comment143BodyText',NOW(),NOW()),
-  (144,1,36,'3','comment144BodyText',NOW(),NOW()),
-  (145,1,37,'0','comment145BodyText',NOW(),NOW()),
-  (146,1,37,'1','comment146BodyText',NOW(),NOW()),
-  (147,1,37,'2','comment147BodyText',NOW(),NOW()),
-  (148,1,37,'3','comment148BodyText',NOW(),NOW()),
-  (149,1,38,'0','comment149BodyText',NOW(),NOW()),
-  (150,1,38,'1','comment150BodyText',NOW(),NOW()),
-  (151,1,38,'2','comment151BodyText',NOW(),NOW()),
-  (152,1,38,'3','comment152BodyText',NOW(),NOW()),
-  (153,1,39,'0','comment153BodyText',NOW(),NOW()),
-  (154,1,39,'1','comment154BodyText',NOW(),NOW()),
-  (155,1,39,'2','comment155BodyText',NOW(),NOW()),
-  (156,1,39,'3','comment156BodyText',NOW(),NOW()),
-  (157,1,40,'0','comment157BodyText',NOW(),NOW()),
-  (158,1,40,'1','comment158BodyText',NOW(),NOW()),
-  (159,1,40,'2','comment159BodyText',NOW(),NOW()),
-  (160,1,40,'3','comment160BodyText',NOW(),NOW()),
-  (161,1,41,'0','comment161BodyText',NOW(),NOW()),
-  (162,1,41,'1','comment162BodyText',NOW(),NOW()),
-  (163,1,41,'2','comment163BodyText',NOW(),NOW()),
-  (164,1,41,'3','comment164BodyText',NOW(),NOW()),
-  (165,1,42,'0','comment165BodyText',NOW(),NOW()),
-  (166,1,42,'1','comment166BodyText',NOW(),NOW()),
-  (167,1,42,'2','comment167BodyText',NOW(),NOW()),
-  (168,1,42,'3','comment168BodyText',NOW(),NOW()),
-  (169,1,43,'0','comment169BodyText',NOW(),NOW()),
-  (170,1,43,'1','comment170BodyText',NOW(),NOW()),
-  (171,1,43,'2','comment171BodyText',NOW(),NOW()),
-  (172,1,43,'3','comment172BodyText',NOW(),NOW()),
-  (173,1,44,'0','comment173BodyText',NOW(),NOW()),
-  (174,1,44,'1','comment174BodyText',NOW(),NOW()),
-  (175,1,44,'2','comment175BodyText',NOW(),NOW()),
-  (176,1,44,'3','comment176BodyText',NOW(),NOW()),
-  (177,1,45,'0','comment177BodyText',NOW(),NOW()),
-  (178,1,45,'1','comment178BodyText',NOW(),NOW()),
-  (179,1,45,'2','comment179BodyText',NOW(),NOW()),
-  (180,1,45,'3','comment180BodyText',NOW(),NOW()),
-  (181,1,46,'0','comment181BodyText',NOW(),NOW()),
-  (182,1,46,'1','comment182BodyText',NOW(),NOW()),
-  (183,1,46,'2','comment183BodyText',NOW(),NOW()),
-  (184,1,46,'3','comment184BodyText',NOW(),NOW()),
-  (185,1,47,'0','comment185BodyText',NOW(),NOW()),
-  (186,1,47,'1','comment186BodyText',NOW(),NOW()),
-  (187,1,47,'2','comment187BodyText',NOW(),NOW()),
-  (188,1,47,'3','comment188BodyText',NOW(),NOW()),
-  (189,1,48,'0','comment189BodyText',NOW(),NOW()),
-  (190,1,48,'1','comment190BodyText',NOW(),NOW()),
-  (191,1,48,'2','comment191BodyText',NOW(),NOW()),
-  (192,1,48,'3','comment192BodyText',NOW(),NOW()),
-  (193,1,49,'0','comment193BodyText',NOW(),NOW()),
-  (194,1,49,'1','comment194BodyText',NOW(),NOW()),
-  (195,1,49,'2','comment195BodyText',NOW(),NOW()),
-  (196,1,49,'3','comment196BodyText',NOW(),NOW()),
-  (197,1,50,'0','comment197BodyText',NOW(),NOW()),
-  (198,1,50,'1','comment198BodyText',NOW(),NOW()),
-  (199,1,50,'2','comment199BodyText',NOW(),NOW()),
-  (200,1,50,'3','comment200BodyText',NOW(),NOW());
+  (101, 1, 26, '0', 'comment101BodyText', NOW(), NOW()),
+  (102, 1, 26, '1', 'comment102BodyText', NOW(), NOW()),
+  (103, 1, 26, '2', 'comment103BodyText', NOW(), NOW()),
+  (104, 1, 26, '3', 'comment104BodyText', NOW(), NOW()),
+  (105, 1, 27, '0', 'comment105BodyText', NOW(), NOW()),
+  (106, 1, 27, '1', 'comment106BodyText', NOW(), NOW()),
+  (107, 1, 27, '2', 'comment107BodyText', NOW(), NOW()),
+  (108, 1, 27, '3', 'comment108BodyText', NOW(), NOW()),
+  (109, 1, 28, '0', 'comment109BodyText', NOW(), NOW()),
+  (110, 1, 28, '1', 'comment110BodyText', NOW(), NOW()),
+  (111, 1, 28, '2', 'comment111BodyText', NOW(), NOW()),
+  (112, 1, 28, '3', 'comment112BodyText', NOW(), NOW()),
+  (113, 1, 29, '0', 'comment113BodyText', NOW(), NOW()),
+  (114, 1, 29, '1', 'comment114BodyText', NOW(), NOW()),
+  (115, 1, 29, '2', 'comment115BodyText', NOW(), NOW()),
+  (116, 1, 29, '3', 'comment116BodyText', NOW(), NOW()),
+  (117, 1, 30, '0', 'comment117BodyText', NOW(), NOW()),
+  (118, 1, 30, '1', 'comment118BodyText', NOW(), NOW()),
+  (119, 1, 30, '2', 'comment119BodyText', NOW(), NOW()),
+  (120, 1, 30, '3', 'comment120BodyText', NOW(), NOW()),
+  (121, 1, 31, '0', 'comment121BodyText', NOW(), NOW()),
+  (122, 1, 31, '1', 'comment122BodyText', NOW(), NOW()),
+  (123, 1, 31, '2', 'comment123BodyText', NOW(), NOW()),
+  (124, 1, 31, '3', 'comment124BodyText', NOW(), NOW()),
+  (125, 1, 32, '0', 'comment125BodyText', NOW(), NOW()),
+  (126, 1, 32, '1', 'comment126BodyText', NOW(), NOW()),
+  (127, 1, 32, '2', 'comment127BodyText', NOW(), NOW()),
+  (128, 1, 32, '3', 'comment128BodyText', NOW(), NOW()),
+  (129, 1, 33, '0', 'comment129BodyText', NOW(), NOW()),
+  (130, 1, 33, '1', 'comment130BodyText', NOW(), NOW()),
+  (131, 1, 33, '2', 'comment131BodyText', NOW(), NOW()),
+  (132, 1, 33, '3', 'comment132BodyText', NOW(), NOW()),
+  (133, 1, 34, '0', 'comment133BodyText', NOW(), NOW()),
+  (134, 1, 34, '1', 'comment134BodyText', NOW(), NOW()),
+  (135, 1, 34, '2', 'comment135BodyText', NOW(), NOW()),
+  (136, 1, 34, '3', 'comment136BodyText', NOW(), NOW()),
+  (137, 1, 35, '0', 'comment137BodyText', NOW(), NOW()),
+  (138, 1, 35, '1', 'comment138BodyText', NOW(), NOW()),
+  (139, 1, 35, '2', 'comment139BodyText', NOW(), NOW()),
+  (140, 1, 35, '3', 'comment140BodyText', NOW(), NOW()),
+  (141, 1, 36, '0', 'comment141BodyText', NOW(), NOW()),
+  (142, 1, 36, '1', 'comment142BodyText', NOW(), NOW()),
+  (143, 1, 36, '2', 'comment143BodyText', NOW(), NOW()),
+  (144, 1, 36, '3', 'comment144BodyText', NOW(), NOW()),
+  (145, 1, 37, '0', 'comment145BodyText', NOW(), NOW()),
+  (146, 1, 37, '1', 'comment146BodyText', NOW(), NOW()),
+  (147, 1, 37, '2', 'comment147BodyText', NOW(), NOW()),
+  (148, 1, 37, '3', 'comment148BodyText', NOW(), NOW()),
+  (149, 1, 38, '0', 'comment149BodyText', NOW(), NOW()),
+  (150, 1, 38, '1', 'comment150BodyText', NOW(), NOW()),
+  (151, 1, 38, '2', 'comment151BodyText', NOW(), NOW()),
+  (152, 1, 38, '3', 'comment152BodyText', NOW(), NOW()),
+  (153, 1, 39, '0', 'comment153BodyText', NOW(), NOW()),
+  (154, 1, 39, '1', 'comment154BodyText', NOW(), NOW()),
+  (155, 1, 39, '2', 'comment155BodyText', NOW(), NOW()),
+  (156, 1, 39, '3', 'comment156BodyText', NOW(), NOW()),
+  (157, 1, 40, '0', 'comment157BodyText', NOW(), NOW()),
+  (158, 1, 40, '1', 'comment158BodyText', NOW(), NOW()),
+  (159, 1, 40, '2', 'comment159BodyText', NOW(), NOW()),
+  (160, 1, 40, '3', 'comment160BodyText', NOW(), NOW()),
+  (161, 1, 41, '0', 'comment161BodyText', NOW(), NOW()),
+  (162, 1, 41, '1', 'comment162BodyText', NOW(), NOW()),
+  (163, 1, 41, '2', 'comment163BodyText', NOW(), NOW()),
+  (164, 1, 41, '3', 'comment164BodyText', NOW(), NOW()),
+  (165, 1, 42, '0', 'comment165BodyText', NOW(), NOW()),
+  (166, 1, 42, '1', 'comment166BodyText', NOW(), NOW()),
+  (167, 1, 42, '2', 'comment167BodyText', NOW(), NOW()),
+  (168, 1, 42, '3', 'comment168BodyText', NOW(), NOW()),
+  (169, 1, 43, '0', 'comment169BodyText', NOW(), NOW()),
+  (170, 1, 43, '1', 'comment170BodyText', NOW(), NOW()),
+  (171, 1, 43, '2', 'comment171BodyText', NOW(), NOW()),
+  (172, 1, 43, '3', 'comment172BodyText', NOW(), NOW()),
+  (173, 1, 44, '0', 'comment173BodyText', NOW(), NOW()),
+  (174, 1, 44, '1', 'comment174BodyText', NOW(), NOW()),
+  (175, 1, 44, '2', 'comment175BodyText', NOW(), NOW()),
+  (176, 1, 44, '3', 'comment176BodyText', NOW(), NOW()),
+  (177, 1, 45, '0', 'comment177BodyText', NOW(), NOW()),
+  (178, 1, 45, '1', 'comment178BodyText', NOW(), NOW()),
+  (179, 1, 45, '2', 'comment179BodyText', NOW(), NOW()),
+  (180, 1, 45, '3', 'comment180BodyText', NOW(), NOW()),
+  (181, 1, 46, '0', 'comment181BodyText', NOW(), NOW()),
+  (182, 1, 46, '1', 'comment182BodyText', NOW(), NOW()),
+  (183, 1, 46, '2', 'comment183BodyText', NOW(), NOW()),
+  (184, 1, 46, '3', 'comment184BodyText', NOW(), NOW()),
+  (185, 1, 47, '0', 'comment185BodyText', NOW(), NOW()),
+  (186, 1, 47, '1', 'comment186BodyText', NOW(), NOW()),
+  (187, 1, 47, '2', 'comment187BodyText', NOW(), NOW()),
+  (188, 1, 47, '3', 'comment188BodyText', NOW(), NOW()),
+  (189, 1, 48, '0', 'comment189BodyText', NOW(), NOW()),
+  (190, 1, 48, '1', 'comment190BodyText', NOW(), NOW()),
+  (191, 1, 48, '2', 'comment191BodyText', NOW(), NOW()),
+  (192, 1, 48, '3', 'comment192BodyText', NOW(), NOW()),
+  (193, 1, 49, '0', 'comment193BodyText', NOW(), NOW()),
+  (194, 1, 49, '1', 'comment194BodyText', NOW(), NOW()),
+  (195, 1, 49, '2', 'comment195BodyText', NOW(), NOW()),
+  (196, 1, 49, '3', 'comment196BodyText', NOW(), NOW()),
+  (197, 1, 50, '0', 'comment197BodyText', NOW(), NOW()),
+  (198, 1, 50, '1', 'comment198BodyText', NOW(), NOW()),
+  (199, 1, 50, '2', 'comment199BodyText', NOW(), NOW()),
+  (200, 1, 50, '3', 'comment200BodyText', NOW(), NOW());
 
 
-/*!40000 ALTER TABLE `comments` ENABLE KEYS */;
+/*!40000 ALTER TABLE `comments`
+  ENABLE KEYS */;
 UNLOCK TABLES;
 
 # Dump of table element_assignments
@@ -315,7 +321,8 @@ CREATE TABLE `element_assignments` (
   COLLATE = utf8_unicode_ci;
 
 LOCK TABLES `element_assignments` WRITE;
-/*!40000 ALTER TABLE `element_assignments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `element_assignments`
+  DISABLE KEYS */;
 
 INSERT INTO `element_assignments` (`id`, `exam_id`, `question_id`, `element_id`, `subtask`, `created_at`, `updated_at`)
 VALUES
@@ -395,7 +402,8 @@ VALUES
   (74, 3, 15, 74, 4, NOW(), NOW()),
   (75, 3, 15, 75, 5, NOW(), NOW());
 
-/*!40000 ALTER TABLE `element_assignments` ENABLE KEYS */;
+/*!40000 ALTER TABLE `element_assignments`
+  ENABLE KEYS */;
 UNLOCK TABLES;
 
 # Dump of table element_scores
@@ -426,7 +434,8 @@ CREATE TABLE `element_scores` (
   COLLATE = utf8_unicode_ci;
 
 LOCK TABLES `element_scores` WRITE;
-/*!40000 ALTER TABLE `element_scores` DISABLE KEYS */;
+/*!40000 ALTER TABLE `element_scores`
+  DISABLE KEYS */;
 
 
 INSERT INTO `element_scores` (`id`, `element_assignment_id`, `student_id`, `score`, `comment_text`, `created_at`, `updated_at`)
@@ -531,7 +540,8 @@ VALUES
   (123, 25, 3, 19.88, 'customText123', NOW(), NOW()),
   (124, 25, 4, 2.89, 'customText124', NOW(), NOW());
 
-/*!40000 ALTER TABLE `element_scores` ENABLE KEYS */;
+/*!40000 ALTER TABLE `element_scores`
+  ENABLE KEYS */;
 UNLOCK TABLES;
 
 # Dump of table elements
@@ -559,7 +569,8 @@ CREATE TABLE `elements` (
   COLLATE = utf8_unicode_ci;
 
 LOCK TABLES `elements` WRITE;
-/*!40000 ALTER TABLE `elements` DISABLE KEYS */;
+/*!40000 ALTER TABLE `elements`
+  DISABLE KEYS */;
 
 INSERT INTO `elements` (`id`, `user_id`, `elementName`, `displayText`, `commentText`, `created_at`, `updated_at`)
 VALUES
@@ -639,7 +650,8 @@ VALUES
   (74, 2, 'Element74Name', 'Element74DisplayText', 'Element74CommentText', NOW(), NOW()),
   (75, 2, 'Element75Name', 'Element75DisplayText', 'Element75CommentText', NOW(), NOW());
 
-/*!40000 ALTER TABLE `elements` ENABLE KEYS */;
+/*!40000 ALTER TABLE `elements`
+  ENABLE KEYS */;
 UNLOCK TABLES;
 
 # Dump of table exam_kumi
@@ -666,7 +678,8 @@ CREATE TABLE `exam_kumi` (
   COLLATE = utf8_unicode_ci;
 
 LOCK TABLES `exam_kumi` WRITE;
-/*!40000 ALTER TABLE `exam_kumi` DISABLE KEYS */;
+/*!40000 ALTER TABLE `exam_kumi`
+  DISABLE KEYS */;
 
 INSERT INTO `exam_kumi` (`id`, `exam_id`, `kumi_id`, `created_at`, `updated_at`)
 VALUES
@@ -675,7 +688,8 @@ VALUES
   (3, 3, 3, '2016-02-16 17:57:08', '2016-02-16 17:57:08'),
   (4, 2, 4, '2016-03-14 15:18:27', '2016-03-14 15:18:27');
 
-/*!40000 ALTER TABLE `exam_kumi` ENABLE KEYS */;
+/*!40000 ALTER TABLE `exam_kumi`
+  ENABLE KEYS */;
 UNLOCK TABLES;
 
 # Dump of table exams
@@ -705,7 +719,8 @@ CREATE TABLE `exams` (
   COLLATE = utf8_unicode_ci;
 
 LOCK TABLES `exams` WRITE;
-/*!40000 ALTER TABLE `exams` DISABLE KEYS */;
+/*!40000 ALTER TABLE `exams`
+  DISABLE KEYS */;
 
 INSERT INTO `exams` (`id`, `user_id`, `term`, `year`, `name`, `locked`, `released`, `created_at`, `updated_at`)
 VALUES
@@ -716,7 +731,8 @@ VALUES
   (5, 1, 'Exam5Term', 1990, 'TestExam#5 NoQuestions User1', 0, 0, NOW(), NOW()),
   (6, 1, 'Exam6Term', 1990, 'TestExam#6 5QuestionsNoElements User1', 0, 0, NOW(), NOW());
 
-/*!40000 ALTER TABLE `exams` ENABLE KEYS */;
+/*!40000 ALTER TABLE `exams`
+  ENABLE KEYS */;
 UNLOCK TABLES;
 
 # Dump of table failed_jobs
@@ -761,8 +777,9 @@ CREATE TABLE `feedback` (
 
 INSERT INTO `feedback` (`access_key`, `content`, `created_at`, `updated_at`, `grade_display`, `grade_calc`)
 VALUES
-  ('634b0f6bb2e56e46da6ab48d284d08b101ec1aa168cd715a9a0e570f5947135b', '[{\"questionNumber\":1,\"questionId\":6,\"questionName\":\"Aut recusandae.\",\"questionAssignmentId\":6,\"elements\":{\"1\":{\"questionNumber\":1,\"subtask\":1,\"elementId\":26,\"elementAssignmentId\":26,\"elementName\":\"Sint non numquam.\",\"score\":0.84,\"average\":5.1369,\"comment\":\"Eum ut velit cum rerum ab. Maxime alias dolores autem voluptate eum. Quia esse maxime accusamus alias consequuntur sit. Accusamus dolores repellendus qui molestias.\"},\"2\":{\"questionNumber\":1,\"subtask\":2,\"elementId\":27,\"elementAssignmentId\":27,\"elementName\":\"Sint soluta et non.\",\"score\":0.28,\"average\":4.9965,\"comment\":\"Unde temporibus porro quod accusamus ea. Vel asperiores labore asperiores et culpa et dolores. Ipsum laudantium numquam quis.\"},\"3\":{\"questionNumber\":1,\"subtask\":3,\"elementId\":28,\"elementAssignmentId\":28,\"elementName\":\"Numquam veritatis.\",\"score\":4.67,\"average\":5.0482,\"comment\":\"Unde earum impedit voluptatibus qui dolor enim. Atque autem ut voluptas et facere quisquam quia. Ab quaerat officia ut eos ex voluptate iure.\"},\"4\":{\"questionNumber\":1,\"subtask\":4,\"elementId\":29,\"elementAssignmentId\":29,\"elementName\":\"Eveniet et sed et.\",\"score\":7.09,\"average\":4.6617,\"comment\":\"Animi facere officiis beatae et quidem ipsum. Dolorum eum molestiae at et similique dolores et expedita. A possimus consequatur sed repellat ut. Ipsa voluptatem repudiandae rerum autem.\"},\"5\":{\"questionNumber\":1,\"subtask\":5,\"elementId\":30,\"elementAssignmentId\":30,\"elementName\":\"Nesciunt saepe.\",\"score\":0.02,\"average\":4.8319,\"comment\":\"Aperiam et cupiditate architecto vel. Voluptatibus nostrum quos beatae consequatur sunt possimus. Qui ea repellendus dolorum vitae ab corrupti. Voluptate ullam corporis blanditiis corrupti.\"}},\"score\":64.9,\"average\":45.199},{\"questionNumber\":2,\"questionId\":7,\"questionName\":\"In assumenda qui.\",\"questionAssignmentId\":7,\"elements\":{\"1\":{\"questionNumber\":2,\"subtask\":1,\"elementId\":31,\"elementAssignmentId\":31,\"elementName\":\"Eum natus quidem.\",\"score\":4.58,\"average\":5.4708,\"comment\":\"Quidem qui dolores omnis non incidunt praesentium. Provident et unde voluptatem labore dignissimos reiciendis aut.\"},\"2\":{\"questionNumber\":2,\"subtask\":2,\"elementId\":32,\"elementAssignmentId\":32,\"elementName\":\"Quisquam rem.\",\"score\":0.78,\"average\":4.8605,\"comment\":\"Qui eos sed perspiciatis ut. Iste in accusantium labore dolorem. Incidunt repellat nemo sapiente incidunt sit sequi aut.\"},\"3\":{\"questionNumber\":2,\"subtask\":3,\"elementId\":33,\"elementAssignmentId\":33,\"elementName\":\"Nihil voluptates.\",\"score\":4.48,\"average\":5.383,\"comment\":\"Iusto esse vel sunt atque autem inventore. Ducimus consequatur ratione architecto sint veniam ipsa.\"},\"4\":{\"questionNumber\":2,\"subtask\":4,\"elementId\":34,\"elementAssignmentId\":34,\"elementName\":\"Quam deserunt ut.\",\"score\":3.57,\"average\":4.9138,\"comment\":\"Ipsam vitae accusamus quam sunt nostrum vitae aut. Voluptas adipisci ea totam quibusdam. Dolorem magnam natus consequatur sed quisquam aut molestiae. Et minima et id non qui cupiditate nisi.\"},\"5\":{\"questionNumber\":2,\"subtask\":5,\"elementId\":35,\"elementAssignmentId\":35,\"elementName\":\"Incidunt impedit.\",\"score\":3.8,\"average\":4.9498,\"comment\":\"Dignissimos eveniet fugiat repellendus asperiores. Quia nisi odio aut fuga sint debitis animi dignissimos. Nesciunt aut eveniet voluptas dolores.\\nFacere sunt pariatur ad et. Et nam id tempore in.\"}},\"score\":40.63,\"average\":44.5329},{\"questionNumber\":3,\"questionId\":8,\"questionName\":\"Ratione qui sequi.\",\"questionAssignmentId\":8,\"elements\":{\"1\":{\"questionNumber\":3,\"subtask\":1,\"elementId\":36,\"elementAssignmentId\":36,\"elementName\":\"Alias voluptas eum.\",\"score\":8.57,\"average\":5.7543,\"comment\":\"Tempore nam maiores voluptatem modi quos et quasi et. Aut tempora odit molestiae sed. Dicta illum sed eveniet reprehenderit dolores est qui. Deleniti modi aliquid nisi qui amet.\"},\"2\":{\"questionNumber\":3,\"subtask\":2,\"elementId\":37,\"elementAssignmentId\":37,\"elementName\":\"Laudantium sit non.\",\"score\":8.25,\"average\":4.8508,\"comment\":\"Numquam et unde autem nobis qui. Doloribus suscipit quibusdam explicabo sit quisquam. Necessitatibus illum aliquid voluptas quasi odit.\"},\"3\":{\"questionNumber\":3,\"subtask\":3,\"elementId\":38,\"elementAssignmentId\":38,\"elementName\":\"Aliquid sunt et.\",\"score\":2.5,\"average\":4.868,\"comment\":\"Harum molestiae quasi possimus porro error. Doloremque omnis iure nam eos libero consectetur. Unde eligendi cum aut magnam dolorem laboriosam et optio.\"},\"4\":{\"questionNumber\":3,\"subtask\":4,\"elementId\":39,\"elementAssignmentId\":39,\"elementName\":\"Eligendi quia.\",\"score\":9.76,\"average\":4.9763,\"comment\":\"Veritatis minima et iusto eum architecto quod. Voluptatum aperiam corporis fugiat molestiae. Culpa voluptatem omnis voluptas facilis.\"},\"5\":{\"questionNumber\":3,\"subtask\":5,\"elementId\":40,\"elementAssignmentId\":40,\"elementName\":\"Consequatur aliquid.\",\"score\":1.96,\"average\":4.9244,\"comment\":\"Quod occaecati sequi animi autem ut deleniti sit consequatur. Porro quos aut et assumenda delectus vero. Occaecati temporibus quis vitae ullam aut. Maxime sint cum eligendi at dolor temporibus.\"}},\"score\":99.72,\"average\":47.8591},{\"questionNumber\":4,\"questionId\":9,\"questionName\":\"Rerum est dolorem.\",\"questionAssignmentId\":9,\"elements\":{\"1\":{\"questionNumber\":4,\"subtask\":1,\"elementId\":41,\"elementAssignmentId\":41,\"elementName\":\"Expedita natus qui.\",\"score\":1.96,\"average\":4.7195,\"comment\":\"Sed nihil asperiores omnis. Corporis quis neque qui suscipit facilis beatae consequuntur. Ad ea laborum minima magni et molestias. Nihil voluptatum illum qui eius.\"},\"2\":{\"questionNumber\":4,\"subtask\":2,\"elementId\":42,\"elementAssignmentId\":42,\"elementName\":\"Eveniet molestiae.\",\"score\":6.75,\"average\":5.4833,\"comment\":\"Sit et et explicabo beatae ratione voluptate unde. Ut magnam ut porro quam et nulla aut. Molestiae fuga earum dolore nihil nostrum recusandae quia. Rerum adipisci minima voluptas alias officiis sed.\"},\"3\":{\"questionNumber\":4,\"subtask\":3,\"elementId\":43,\"elementAssignmentId\":43,\"elementName\":\"Eveniet accusamus.\",\"score\":5.46,\"average\":5.0247,\"comment\":\"Ut in beatae ex dignissimos ipsa velit qui neque. Eligendi quis consequatur est velit. Eligendi natus architecto possimus error quam modi vel sunt. Neque cupiditate quia veritatis delectus.\"},\"4\":{\"questionNumber\":4,\"subtask\":4,\"elementId\":44,\"elementAssignmentId\":44,\"elementName\":\"Repellat quo velit.\",\"score\":6.34,\"average\":4.8787,\"comment\":\"Magni eos architecto reprehenderit in aliquam. Sunt omnis voluptas laboriosam aspernatur. Iusto culpa rerum est suscipit consequatur.\"},\"5\":{\"questionNumber\":4,\"subtask\":5,\"elementId\":45,\"elementAssignmentId\":45,\"elementName\":\"Nisi voluptas.\",\"score\":4.52,\"average\":4.9129,\"comment\":\"Fugit quia fugiat nam et. Ipsam natus enim accusamus voluptas aspernatur esse aut. Et quae quia vel voluptatem. Sed enim rem numquam tempore harum et.\"}},\"score\":23.29,\"average\":46.4824},{\"questionNumber\":5,\"questionId\":10,\"questionName\":\"Molestiae facere.\",\"questionAssignmentId\":10,\"elements\":{\"1\":{\"questionNumber\":5,\"subtask\":1,\"elementId\":46,\"elementAssignmentId\":46,\"elementName\":\"Occaecati rem aut.\",\"score\":9.49,\"average\":5.3639,\"comment\":\"Blanditiis aliquid soluta placeat sunt. Porro molestiae totam quae voluptas quisquam. Voluptate modi voluptatem nihil quia cum unde.\"},\"2\":{\"questionNumber\":5,\"subtask\":2,\"elementId\":47,\"elementAssignmentId\":47,\"elementName\":\"Autem mollitia.\",\"score\":0.69,\"average\":4.6609,\"comment\":\"Libero alias accusantium ut hic sunt quaerat rem. At consequuntur exercitationem officia numquam aut harum ea. Accusantium vel iste ut voluptatem. Quam quo unde laudantium quo.\"},\"3\":{\"questionNumber\":5,\"subtask\":3,\"elementId\":48,\"elementAssignmentId\":48,\"elementName\":\"Incidunt impedit.\",\"score\":7.11,\"average\":5.5919,\"comment\":\"Repudiandae cupiditate a beatae illum. Aut magnam aliquid ratione debitis. Aut quo neque debitis aut excepturi exercitationem suscipit. Provident quisquam veritatis placeat illum nostrum sint sit.\"},\"4\":{\"questionNumber\":5,\"subtask\":4,\"elementId\":49,\"elementAssignmentId\":49,\"elementName\":\"Est occaecati.\",\"score\":8.01,\"average\":4.9827,\"comment\":\"Esse soluta et est doloribus minus ipsa. Aut et iste labore cum odit sunt. Fugit reiciendis nemo ut soluta omnis est. Ut odio autem iusto distinctio iure odio ipsam nam.\"},\"5\":{\"questionNumber\":5,\"subtask\":5,\"elementId\":50,\"elementAssignmentId\":50,\"elementName\":\"Voluptas est est.\",\"score\":5.89,\"average\":5.2466,\"comment\":\"Pariatur ut praesentium et. Ea explicabo dicta iusto facere et in odit. Dolorem asperiores est enim autem facilis quasi. Dolores at nam voluptatem impedit. Doloribus eligendi facilis sit odio saepe.\"}},\"score\":8.26,\"average\":47.965}]', NOW(), NOW(), 'A+', '98');
-
+  ('634b0f6bb2e56e46da6ab48d284d08b101ec1aa168cd715a9a0e570f5947135b',
+   '[{\"questionNumber\":1,\"questionId\":6,\"questionName\":\"Aut recusandae.\",\"questionAssignmentId\":6,\"elements\":{\"1\":{\"questionNumber\":1,\"subtask\":1,\"elementId\":26,\"elementAssignmentId\":26,\"elementName\":\"Sint non numquam.\",\"score\":0.84,\"average\":5.1369,\"comment\":\"Eum ut velit cum rerum ab. Maxime alias dolores autem voluptate eum. Quia esse maxime accusamus alias consequuntur sit. Accusamus dolores repellendus qui molestias.\"},\"2\":{\"questionNumber\":1,\"subtask\":2,\"elementId\":27,\"elementAssignmentId\":27,\"elementName\":\"Sint soluta et non.\",\"score\":0.28,\"average\":4.9965,\"comment\":\"Unde temporibus porro quod accusamus ea. Vel asperiores labore asperiores et culpa et dolores. Ipsum laudantium numquam quis.\"},\"3\":{\"questionNumber\":1,\"subtask\":3,\"elementId\":28,\"elementAssignmentId\":28,\"elementName\":\"Numquam veritatis.\",\"score\":4.67,\"average\":5.0482,\"comment\":\"Unde earum impedit voluptatibus qui dolor enim. Atque autem ut voluptas et facere quisquam quia. Ab quaerat officia ut eos ex voluptate iure.\"},\"4\":{\"questionNumber\":1,\"subtask\":4,\"elementId\":29,\"elementAssignmentId\":29,\"elementName\":\"Eveniet et sed et.\",\"score\":7.09,\"average\":4.6617,\"comment\":\"Animi facere officiis beatae et quidem ipsum. Dolorum eum molestiae at et similique dolores et expedita. A possimus consequatur sed repellat ut. Ipsa voluptatem repudiandae rerum autem.\"},\"5\":{\"questionNumber\":1,\"subtask\":5,\"elementId\":30,\"elementAssignmentId\":30,\"elementName\":\"Nesciunt saepe.\",\"score\":0.02,\"average\":4.8319,\"comment\":\"Aperiam et cupiditate architecto vel. Voluptatibus nostrum quos beatae consequatur sunt possimus. Qui ea repellendus dolorum vitae ab corrupti. Voluptate ullam corporis blanditiis corrupti.\"}},\"score\":64.9,\"average\":45.199},{\"questionNumber\":2,\"questionId\":7,\"questionName\":\"In assumenda qui.\",\"questionAssignmentId\":7,\"elements\":{\"1\":{\"questionNumber\":2,\"subtask\":1,\"elementId\":31,\"elementAssignmentId\":31,\"elementName\":\"Eum natus quidem.\",\"score\":4.58,\"average\":5.4708,\"comment\":\"Quidem qui dolores omnis non incidunt praesentium. Provident et unde voluptatem labore dignissimos reiciendis aut.\"},\"2\":{\"questionNumber\":2,\"subtask\":2,\"elementId\":32,\"elementAssignmentId\":32,\"elementName\":\"Quisquam rem.\",\"score\":0.78,\"average\":4.8605,\"comment\":\"Qui eos sed perspiciatis ut. Iste in accusantium labore dolorem. Incidunt repellat nemo sapiente incidunt sit sequi aut.\"},\"3\":{\"questionNumber\":2,\"subtask\":3,\"elementId\":33,\"elementAssignmentId\":33,\"elementName\":\"Nihil voluptates.\",\"score\":4.48,\"average\":5.383,\"comment\":\"Iusto esse vel sunt atque autem inventore. Ducimus consequatur ratione architecto sint veniam ipsa.\"},\"4\":{\"questionNumber\":2,\"subtask\":4,\"elementId\":34,\"elementAssignmentId\":34,\"elementName\":\"Quam deserunt ut.\",\"score\":3.57,\"average\":4.9138,\"comment\":\"Ipsam vitae accusamus quam sunt nostrum vitae aut. Voluptas adipisci ea totam quibusdam. Dolorem magnam natus consequatur sed quisquam aut molestiae. Et minima et id non qui cupiditate nisi.\"},\"5\":{\"questionNumber\":2,\"subtask\":5,\"elementId\":35,\"elementAssignmentId\":35,\"elementName\":\"Incidunt impedit.\",\"score\":3.8,\"average\":4.9498,\"comment\":\"Dignissimos eveniet fugiat repellendus asperiores. Quia nisi odio aut fuga sint debitis animi dignissimos. Nesciunt aut eveniet voluptas dolores.\\nFacere sunt pariatur ad et. Et nam id tempore in.\"}},\"score\":40.63,\"average\":44.5329},{\"questionNumber\":3,\"questionId\":8,\"questionName\":\"Ratione qui sequi.\",\"questionAssignmentId\":8,\"elements\":{\"1\":{\"questionNumber\":3,\"subtask\":1,\"elementId\":36,\"elementAssignmentId\":36,\"elementName\":\"Alias voluptas eum.\",\"score\":8.57,\"average\":5.7543,\"comment\":\"Tempore nam maiores voluptatem modi quos et quasi et. Aut tempora odit molestiae sed. Dicta illum sed eveniet reprehenderit dolores est qui. Deleniti modi aliquid nisi qui amet.\"},\"2\":{\"questionNumber\":3,\"subtask\":2,\"elementId\":37,\"elementAssignmentId\":37,\"elementName\":\"Laudantium sit non.\",\"score\":8.25,\"average\":4.8508,\"comment\":\"Numquam et unde autem nobis qui. Doloribus suscipit quibusdam explicabo sit quisquam. Necessitatibus illum aliquid voluptas quasi odit.\"},\"3\":{\"questionNumber\":3,\"subtask\":3,\"elementId\":38,\"elementAssignmentId\":38,\"elementName\":\"Aliquid sunt et.\",\"score\":2.5,\"average\":4.868,\"comment\":\"Harum molestiae quasi possimus porro error. Doloremque omnis iure nam eos libero consectetur. Unde eligendi cum aut magnam dolorem laboriosam et optio.\"},\"4\":{\"questionNumber\":3,\"subtask\":4,\"elementId\":39,\"elementAssignmentId\":39,\"elementName\":\"Eligendi quia.\",\"score\":9.76,\"average\":4.9763,\"comment\":\"Veritatis minima et iusto eum architecto quod. Voluptatum aperiam corporis fugiat molestiae. Culpa voluptatem omnis voluptas facilis.\"},\"5\":{\"questionNumber\":3,\"subtask\":5,\"elementId\":40,\"elementAssignmentId\":40,\"elementName\":\"Consequatur aliquid.\",\"score\":1.96,\"average\":4.9244,\"comment\":\"Quod occaecati sequi animi autem ut deleniti sit consequatur. Porro quos aut et assumenda delectus vero. Occaecati temporibus quis vitae ullam aut. Maxime sint cum eligendi at dolor temporibus.\"}},\"score\":99.72,\"average\":47.8591},{\"questionNumber\":4,\"questionId\":9,\"questionName\":\"Rerum est dolorem.\",\"questionAssignmentId\":9,\"elements\":{\"1\":{\"questionNumber\":4,\"subtask\":1,\"elementId\":41,\"elementAssignmentId\":41,\"elementName\":\"Expedita natus qui.\",\"score\":1.96,\"average\":4.7195,\"comment\":\"Sed nihil asperiores omnis. Corporis quis neque qui suscipit facilis beatae consequuntur. Ad ea laborum minima magni et molestias. Nihil voluptatum illum qui eius.\"},\"2\":{\"questionNumber\":4,\"subtask\":2,\"elementId\":42,\"elementAssignmentId\":42,\"elementName\":\"Eveniet molestiae.\",\"score\":6.75,\"average\":5.4833,\"comment\":\"Sit et et explicabo beatae ratione voluptate unde. Ut magnam ut porro quam et nulla aut. Molestiae fuga earum dolore nihil nostrum recusandae quia. Rerum adipisci minima voluptas alias officiis sed.\"},\"3\":{\"questionNumber\":4,\"subtask\":3,\"elementId\":43,\"elementAssignmentId\":43,\"elementName\":\"Eveniet accusamus.\",\"score\":5.46,\"average\":5.0247,\"comment\":\"Ut in beatae ex dignissimos ipsa velit qui neque. Eligendi quis consequatur est velit. Eligendi natus architecto possimus error quam modi vel sunt. Neque cupiditate quia veritatis delectus.\"},\"4\":{\"questionNumber\":4,\"subtask\":4,\"elementId\":44,\"elementAssignmentId\":44,\"elementName\":\"Repellat quo velit.\",\"score\":6.34,\"average\":4.8787,\"comment\":\"Magni eos architecto reprehenderit in aliquam. Sunt omnis voluptas laboriosam aspernatur. Iusto culpa rerum est suscipit consequatur.\"},\"5\":{\"questionNumber\":4,\"subtask\":5,\"elementId\":45,\"elementAssignmentId\":45,\"elementName\":\"Nisi voluptas.\",\"score\":4.52,\"average\":4.9129,\"comment\":\"Fugit quia fugiat nam et. Ipsam natus enim accusamus voluptas aspernatur esse aut. Et quae quia vel voluptatem. Sed enim rem numquam tempore harum et.\"}},\"score\":23.29,\"average\":46.4824},{\"questionNumber\":5,\"questionId\":10,\"questionName\":\"Molestiae facere.\",\"questionAssignmentId\":10,\"elements\":{\"1\":{\"questionNumber\":5,\"subtask\":1,\"elementId\":46,\"elementAssignmentId\":46,\"elementName\":\"Occaecati rem aut.\",\"score\":9.49,\"average\":5.3639,\"comment\":\"Blanditiis aliquid soluta placeat sunt. Porro molestiae totam quae voluptas quisquam. Voluptate modi voluptatem nihil quia cum unde.\"},\"2\":{\"questionNumber\":5,\"subtask\":2,\"elementId\":47,\"elementAssignmentId\":47,\"elementName\":\"Autem mollitia.\",\"score\":0.69,\"average\":4.6609,\"comment\":\"Libero alias accusantium ut hic sunt quaerat rem. At consequuntur exercitationem officia numquam aut harum ea. Accusantium vel iste ut voluptatem. Quam quo unde laudantium quo.\"},\"3\":{\"questionNumber\":5,\"subtask\":3,\"elementId\":48,\"elementAssignmentId\":48,\"elementName\":\"Incidunt impedit.\",\"score\":7.11,\"average\":5.5919,\"comment\":\"Repudiandae cupiditate a beatae illum. Aut magnam aliquid ratione debitis. Aut quo neque debitis aut excepturi exercitationem suscipit. Provident quisquam veritatis placeat illum nostrum sint sit.\"},\"4\":{\"questionNumber\":5,\"subtask\":4,\"elementId\":49,\"elementAssignmentId\":49,\"elementName\":\"Est occaecati.\",\"score\":8.01,\"average\":4.9827,\"comment\":\"Esse soluta et est doloribus minus ipsa. Aut et iste labore cum odit sunt. Fugit reiciendis nemo ut soluta omnis est. Ut odio autem iusto distinctio iure odio ipsam nam.\"},\"5\":{\"questionNumber\":5,\"subtask\":5,\"elementId\":50,\"elementAssignmentId\":50,\"elementName\":\"Voluptas est est.\",\"score\":5.89,\"average\":5.2466,\"comment\":\"Pariatur ut praesentium et. Ea explicabo dicta iusto facere et in odit. Dolorem asperiores est enim autem facilis quasi. Dolores at nam voluptatem impedit. Doloribus eligendi facilis sit odio saepe.\"}},\"score\":8.26,\"average\":47.965}]',
+   NOW(), NOW(), 'A+', '98');
 
 # Dump of table grade_assignments
 # ------------------------------------------------------------
@@ -790,7 +807,8 @@ CREATE TABLE `grade_assignments` (
   COLLATE = utf8_unicode_ci;
 
 LOCK TABLES `grade_assignments` WRITE;
-/*!40000 ALTER TABLE `grade_assignments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `grade_assignments`
+  DISABLE KEYS */;
 
 INSERT INTO `grade_assignments` (`id`, `user_id`, `exam_id`, `grade_id`, `min_score`, `created_at`, `updated_at`)
 VALUES
@@ -821,7 +839,8 @@ VALUES
   (38, 1, 3, 111, 30.00, '2016-02-16 17:57:14', '2016-02-16 17:57:14'),
   (39, 1, 3, 112, 25.00, '2016-02-16 17:57:14', '2016-02-16 17:57:14');
 
-/*!40000 ALTER TABLE `grade_assignments` ENABLE KEYS */;
+/*!40000 ALTER TABLE `grade_assignments`
+  ENABLE KEYS */;
 UNLOCK TABLES;
 
 # Dump of table grades
@@ -864,32 +883,25 @@ CREATE TABLE `grading_times` (
   COLLATE = utf8_unicode_ci;
 
 LOCK TABLES `grading_times` WRITE;
-/*!40000 ALTER TABLE `grading_times` DISABLE KEYS */;
+/*!40000 ALTER TABLE `grading_times`
+  DISABLE KEYS */;
 
 INSERT INTO `grading_times` (`id`, `exam_id`, `student_id`, `seconds`, `created_at`, `updated_at`)
 VALUES
-  (1, 1, 1, 431.47, '2016-02-16 17:57:12', '2016-01-25 20:26:51'),
-  (3, 3, 1, 111.23, '2016-02-16 17:57:12', '2016-02-04 05:36:55'),
-  (4, 1, 2, 3.68, '2016-02-16 17:57:12', '2016-01-25 04:09:33'),
-  (6, 3, 2, 184.21, '2016-02-16 17:57:12', '2016-01-31 06:05:22'),
-  (7, 1, 3, 247.25, '2016-02-16 17:57:12', '2016-02-07 10:51:30'),
-  (9, 3, 3, 163.81, '2016-02-16 17:57:12', '2016-02-08 02:08:29'),
-  (10, 1, 4, 111.67, '2016-02-16 17:57:12', '2016-02-04 13:15:46'),
-  (12, 3, 4, 45.24, '2016-02-16 17:57:12', '2016-01-24 15:11:24'),
-  (13, 1, 5, 485.07, '2016-02-16 17:57:12', '2016-01-21 05:10:48'),
-  (15, 3, 5, 272.23, '2016-02-16 17:57:12', '2016-01-18 10:10:26'),
-  (16, 1, 6, 260.79, '2016-02-16 17:57:12', '2016-02-06 23:35:52'),
-  (18, 3, 6, 279.68, '2016-02-16 17:57:12', '2016-02-12 02:58:26'),
-  (19, 1, 7, 479.43, '2016-02-16 17:57:12', '2016-01-18 16:56:08'),
-  (21, 3, 7, 216.44, '2016-02-16 17:57:12', '2016-01-20 21:48:20'),
-  (22, 1, 8, 68.09, '2016-02-16 17:57:12', '2016-02-09 13:47:35'),
-  (24, 3, 8, 336.97, '2016-02-16 17:57:12', '2016-01-26 16:23:04'),
-  (25, 1, 9, 18.14, '2016-02-16 17:57:12', '2016-02-03 23:32:47'),
-  (27, 3, 9, 164.10, '2016-02-16 17:57:12', '2016-02-05 03:12:42'),
-  (28, 1, 10, 264.55, '2016-02-16 17:57:12', '2016-02-08 04:14:13'),
-  (30, 3, 10, 449.66, '2016-02-16 17:57:12', '2016-01-29 21:47:59');
+  (1, 1, 1, 431.47, NOW(), NOW()),
+  (2, 1, 2, 3.68, NOW(), NOW()),
+  (3, 1, 3, 247.25, NOW(), NOW()),
+  (4, 1, 4, 111.67, NOW(), NOW()),
+  (5, 1, 5, 485.07, NOW(), NOW()),
+  (6, 3, 6, 279.68, NOW(), NOW()),
+  (7, 3, 7, 216.44, NOW(), NOW()),
+  (8, 3, 8, 336.97, NOW(), NOW()),
+  (9, 3, 9, 164.10, NOW(), NOW()),
+  (10, 3, 10, 449.66, NOW(), NOW());
 
-/*!40000 ALTER TABLE `grading_times` ENABLE KEYS */;
+
+/*!40000 ALTER TABLE `grading_times`
+  ENABLE KEYS */;
 UNLOCK TABLES;
 
 # Dump of table jobs
@@ -938,7 +950,8 @@ CREATE TABLE `kumi_student` (
   COLLATE = utf8_unicode_ci;
 
 LOCK TABLES `kumi_student` WRITE;
-/*!40000 ALTER TABLE `kumi_student` DISABLE KEYS */;
+/*!40000 ALTER TABLE `kumi_student`
+  DISABLE KEYS */;
 
 INSERT INTO `kumi_student` (`id`, `kumi_id`, `student_id`, `created_at`, `updated_at`)
 VALUES
@@ -959,7 +972,8 @@ VALUES
   (15, 2, 4, '2016-02-16 17:57:08', '2016-02-16 17:57:08'),
   (16, 2, 5, '2016-02-16 17:57:08', '2016-02-16 17:57:08');
 
-/*!40000 ALTER TABLE `kumi_student` ENABLE KEYS */;
+/*!40000 ALTER TABLE `kumi_student`
+  ENABLE KEYS */;
 UNLOCK TABLES;
 
 # Dump of table kumis
@@ -985,7 +999,8 @@ CREATE TABLE `kumis` (
   COLLATE = utf8_unicode_ci;
 
 LOCK TABLES `kumis` WRITE;
-/*!40000 ALTER TABLE `kumis` DISABLE KEYS */;
+/*!40000 ALTER TABLE `kumis`
+  DISABLE KEYS */;
 
 INSERT INTO `kumis` (`id`, `user_id`, `year`, `nickname`, `created_at`, `updated_at`)
 VALUES
@@ -994,7 +1009,8 @@ VALUES
   (3, 1, 2005, 'Dolor.', '2016-02-16 17:49:03', '2016-02-16 17:49:03'),
   (4, 1, 2000, 'Est.', '2016-03-14 15:18:25', '2016-03-14 15:18:25');
 
-/*!40000 ALTER TABLE `kumis` ENABLE KEYS */;
+/*!40000 ALTER TABLE `kumis`
+  ENABLE KEYS */;
 UNLOCK TABLES;
 
 # Dump of table migrations
@@ -1012,7 +1028,8 @@ CREATE TABLE `migrations` (
   COLLATE = utf8_unicode_ci;
 
 LOCK TABLES `migrations` WRITE;
-/*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
+/*!40000 ALTER TABLE `migrations`
+  DISABLE KEYS */;
 
 INSERT INTO `migrations` (`migration`, `batch`)
 VALUES
@@ -1042,7 +1059,8 @@ VALUES
   ('2015_09_22_144806_make_grade_assignments_table', 1),
   ('2015_10_13_190309_add_grade_fields_to_feedback', 1);
 
-/*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
+/*!40000 ALTER TABLE `migrations`
+  ENABLE KEYS */;
 UNLOCK TABLES;
 
 # Dump of table password_resets
@@ -1089,7 +1107,8 @@ CREATE TABLE `question_assignments` (
   COLLATE = utf8_unicode_ci;
 
 LOCK TABLES `question_assignments` WRITE;
-/*!40000 ALTER TABLE `question_assignments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `question_assignments`
+  DISABLE KEYS */;
 
 INSERT INTO `question_assignments` (`id`, `exam_id`, `question_id`, `question_number`, `created_at`, `updated_at`)
 VALUES
@@ -1119,7 +1138,8 @@ VALUES
   (24, 6, 4, 4, NOW(), NOW()),
   (25, 6, 5, 5, NOW(), NOW());
 
-/*!40000 ALTER TABLE `question_assignments` ENABLE KEYS */;
+/*!40000 ALTER TABLE `question_assignments`
+  ENABLE KEYS */;
 UNLOCK TABLES;
 
 # Dump of table question_scores
@@ -1151,7 +1171,8 @@ CREATE TABLE `question_scores` (
   COLLATE = utf8_unicode_ci;
 
 LOCK TABLES `question_scores` WRITE;
-/*!40000 ALTER TABLE `question_scores` DISABLE KEYS */;
+/*!40000 ALTER TABLE `question_scores`
+  DISABLE KEYS */;
 
 INSERT INTO `question_scores` (`id`, `question_assignment_id`, `student_id`, `score`, `is_custom`, `created_at`, `updated_at`)
 VALUES
@@ -1181,7 +1202,8 @@ VALUES
   (24, 5, 4, 94.83, 0, NOW(), NOW()),
   (25, 5, 5, 6.29, 0, NOW(), NOW());
 
-/*!40000 ALTER TABLE `question_scores` ENABLE KEYS */;
+/*!40000 ALTER TABLE `question_scores`
+  ENABLE KEYS */;
 UNLOCK TABLES;
 
 # Dump of table questions
@@ -1208,7 +1230,8 @@ CREATE TABLE `questions` (
   COLLATE = utf8_unicode_ci;
 
 LOCK TABLES `questions` WRITE;
-/*!40000 ALTER TABLE `questions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `questions`
+  DISABLE KEYS */;
 
 INSERT INTO `questions` (`id`, `user_id`, `questionName`, `questionText`, `max_score`, `created_at`, `updated_at`)
 VALUES
@@ -1235,7 +1258,8 @@ VALUES
   (21, 1, '', '', NULL, NOW(), NOW()),
   (22, 2, '', '', NULL, NOW(), NOW());
 
-/*!40000 ALTER TABLE `questions` ENABLE KEYS */;
+/*!40000 ALTER TABLE `questions`
+  ENABLE KEYS */;
 UNLOCK TABLES;
 
 # Dump of table students
@@ -1266,7 +1290,8 @@ CREATE TABLE `students` (
   COLLATE = utf8_unicode_ci;
 
 LOCK TABLES `students` WRITE;
-/*!40000 ALTER TABLE `students` DISABLE KEYS */;
+/*!40000 ALTER TABLE `students`
+  DISABLE KEYS */;
 
 INSERT INTO `students` (`id`, `user_id`, `last_name`, `first_name`, `student_identifier`, `email`, `created_at`, `updated_at`)
 VALUES
@@ -1281,7 +1306,8 @@ VALUES
   (9, 2, 'lastNameOfExisting9', 'firstNameOfExisting9', '999999999', 'student9@email.com', NOW(), NOW()),
   (10, 2, 'lastNameOfExisting10', 'firstNameOfExisting10', '000000000', 'student10@email.com', NOW(), NOW());
 
-/*!40000 ALTER TABLE `students` ENABLE KEYS */;
+/*!40000 ALTER TABLE `students`
+  ENABLE KEYS */;
 UNLOCK TABLES;
 
 # Dump of table users
@@ -1309,7 +1335,8 @@ CREATE TABLE `users` (
   COLLATE = utf8_unicode_ci;
 
 LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+/*!40000 ALTER TABLE `users`
+  DISABLE KEYS */;
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `remember_token`, `created_at`, `updated_at`)
 VALUES
@@ -1320,7 +1347,8 @@ VALUES
   (3, 'scratchUser3', 'test3@gradeomatic.net', '$2y$10$/ZW8GPWYFi69p97uF3Xf6OjwjSjuwLSPv/lmmTRqr857yEOaQ3qui', NULL,
    '2016-02-16 17:48:55', '2016-02-16 17:48:55');
 
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+/*!40000 ALTER TABLE `users`
+  ENABLE KEYS */;
 UNLOCK TABLES;
 
 # Dump of table waitlist

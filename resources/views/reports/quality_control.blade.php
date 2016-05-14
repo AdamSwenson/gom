@@ -7,7 +7,7 @@
  */ ?>
 
 @extends('layouts.master')
-@section('pageTitle', 'Quality control tools')
+@section('pageTitle', 'Quality control | gradeomatic')
 @section('cssLinks')
 
 @endsection

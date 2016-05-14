@@ -140,9 +140,31 @@ class FeedbackBuilderTest extends \TestCase
 
         $this->elementScoreRepository->shouldReceive('load')->andReturn($elscore);
 
+        $testData = [
+            [
+                'questionNumber'       => 1,
+                'questionName'         => 'qname',
+                'questionAssignmentId' => 1,
+                'questionScore'        => 89.3,
+            ],
+            [
+                'questionNumber'       => 2,
+                'questionName'         => 'qname2',
+                'questionAssignmentId' => 2,
+                'questionScore'        => 20.4,
+            ],
+        ];
+
+        $this->questionScoreRepository
+            ->shouldReceive('load_for_student_on_exam')
+            ->andReturn($testData);
+
         $ak = AccessKey::all()->random();
         $f = Feedback::where('access_key', $ak->access_key)->first();
-        if($f) $f->delete();
+        if ( $f )
+        {
+            $f->delete();
+        }
         $this->accessKeyRepository
             ->shouldReceive('createAccessKey')
             ->andReturn($ak->access_key);
@@ -202,6 +224,25 @@ class FeedbackBuilderTest extends \TestCase
         $this->elementScoreRepository
             ->shouldReceive('load')
             ->andReturn($elscore);
+        $testData = [
+            [
+                'questionNumber'       => 1,
+                'questionName'         => 'qname',
+                'questionAssignmentId' => 1,
+                'questionScore'        => 89.3,
+            ],
+            [
+                'questionNumber'       => 2,
+                'questionName'         => 'qname2',
+                'questionAssignmentId' => 2,
+                'questionScore'        => 20.4,
+            ],
+        ];
+
+        $this->questionScoreRepository
+            ->shouldReceive('load_for_student_on_exam')
+            ->andReturn($testData);
+
 
         $this->accessKeyRepository
             ->shouldReceive('getAccessKeyForStudent')
@@ -230,13 +271,13 @@ class FeedbackBuilderTest extends \TestCase
         $content = [
             'item1' => $this->faker->text(1000),
             'item2' => $this->faker->text(1000),
-            'item3' => $this->faker->text(1000)
+            'item3' => $this->faker->text(1000),
         ];
 
         $this->object->storeFeedback($ak->access_key, $content);
         $this->seeInDatabase('feedback', [
             'access_key' => $ak->access_key,
-            'content' => json_encode($content)
+            'content'    => json_encode($content),
         ]);
     }
 
@@ -254,7 +295,7 @@ class FeedbackBuilderTest extends \TestCase
         $testContent = [
             'item1' => $this->faker->text(100),
             'item2' => $this->faker->text(100),
-            'item3' => $this->faker->text(100)
+            'item3' => $this->faker->text(100),
         ];
         $result = $this->object->storeFeedback($accessKey, $testContent);
 
@@ -263,14 +304,14 @@ class FeedbackBuilderTest extends \TestCase
 
         //New content written to db with same access key
         $this->seeInDatabase('feedback', [
-                                 'access_key' => $accessKey,
-                                 'content' => json_encode($testContent)
+            'access_key' => $accessKey,
+            'content'    => json_encode($testContent),
         ]);
 
         //Make sure that the old content has been replaced
         $this->notSeeInDatabase('feedback', [
             'access_key' => $accessKey,
-            'content' => json_encode($existingContent)
+            'content'    => json_encode($existingContent),
         ]);
     }
 

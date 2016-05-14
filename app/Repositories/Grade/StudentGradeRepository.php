@@ -68,7 +68,7 @@ class StudentGradeRepository
      */
     public function calculateTotalScoreForStudent(Exam $exam, Student $student)
     {
-        $questionScores = $this->questionScoreDao->load_for_student_on_exam($exam->getId(), $student->getId());
+        $questionScores = $this->questionScoreDao->load_for_student_on_exam($exam->getId(), $student->id);
 
         $examScore = 0;
         foreach ($questionScores as $score)

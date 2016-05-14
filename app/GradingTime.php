@@ -11,11 +11,14 @@ class GradingTime extends Model
     protected $fillable = [];
 
     protected $casts = [
-        'seconds' => 'float'
+        'seconds' => 'float',
     ];
 
-    public function student(){
-
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function student()
+    {
         return $this->belongsTo(Student::class);
     }
 }

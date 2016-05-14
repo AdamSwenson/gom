@@ -91,31 +91,31 @@ class GradeControllerTest extends \TestCase
         $mock->shouldReceive('record')
             ->with([$data['examId'], $data['studentId'], $data['time']])
             ->andReturn(GradingTime::all()->random());
-        $result = $this->action('POST', 'GradeController@recordTime', $data);
+        $result = $this->action('POST', 'GradeController@recordScore', $data);
         $this->assertNotNull($result);
     }
 
-    public function testLoadTime()
-    {
-        $data = ['examId' => 1, 'studentId' => 2];
-        $mock = $this->createMock('App\Repositories\Time\IGradingTimeRepository');
-        $mock->shouldReceive('load')
-            ->with([$data['examId'], $data['studentId']])
-            ->andReturn(GradingTime::all()->random());
-        $result = $this->action('GET', 'GradeController@loadTime', $data);
-        $this->assertNotNull($result);
-    }
-
-    public function testLoadStats()
-    {
-        $data = ['examId' => 1];
-        $mock = $this->createMock('App\Repositories\Time\IGradingStatsRepository');
-        $mock->shouldReceive('get_grading_time_stats')
-            ->with($data['examId'])
-            ->andReturn(array('stats', 'stats'));
-        $result = $this->action('GET', 'GradeController@loadStats', $data);
-        $this->assertNotNull($result);
-    }
+//    public function testLoadTime()
+//    {
+//        $data = ['examId' => 1, 'studentId' => 2];
+//        $mock = $this->createMock('App\Repositories\Time\IGradingTimeRepository');
+//        $mock->shouldReceive('load')
+//            ->with([$data['examId'], $data['studentId']])
+//            ->andReturn(GradingTime::all()->random());
+//        $result = $this->action('GET', 'GradeController@loadTime', $data);
+//        $this->assertNotNull($result);
+//    }
+//
+//    public function testLoadStats()
+//    {
+//        $data = ['examId' => 1];
+//        $mock = $this->createMock('App\Repositories\Time\IGradingStatsRepository');
+//        $mock->shouldReceive('get_grading_time_stats')
+//            ->with($data['examId'])
+//            ->andReturn(array('stats', 'stats'));
+//        $result = $this->action('GET', 'GradeController@loadStats', $data);
+//        $this->assertNotNull($result);
+//    }
 
 /*
     public function testGetAutoSID()
