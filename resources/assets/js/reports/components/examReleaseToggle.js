@@ -119,7 +119,7 @@ module.exports = {
          */
         confirmRelease: function () {
             var me = this;
-            var confirmMsg = this.previouslyReleased == true ? this.confirmMessages.release.reRelease : this.confirmMessages.release.initial;
+            var confirmMsg = this.priorRelease == true ? this.confirmMessages.release.reRelease : this.confirmMessages.release.initial;
 
             bootbox.confirm( confirmMsg, function ( result ) {
                 window.console.log('confirmRelease', result );
@@ -221,7 +221,7 @@ module.exports = {
         handleSuccessfulRelease: function () {
             //only now should this guy think he's released
             this.storage.isReleased = true;
-            this.storage.priorRelease = true;
+            this.storage.previouslyReleased = true;
             bootbox.alert( this.successMessages.release, function () {
             } );
         },
@@ -246,6 +246,21 @@ module.exports = {
             //flop the switch back
             $("#" + this.toggleId ).bootstrapToggle('off');
         },
+
+        /**
+         * Check whether the exam has been graded. If not,
+         * disable the toggle.
+         */
+        checkIfGraded: function(){
+            if ( typeof this.graded != 'undefined' && this.graded == "1"){
+                window.console.log(this.graded);
+                return false;
+                }
+            window.console.log('out', this.graded);
+                $("#" + this.toggleId ).bootstrapToggle('disable');
+
+            //or do here? should disabled be the default?
+        }
     },
 
     events: {
@@ -294,5 +309,7 @@ module.exports = {
         }else{
             this.storage.isReleased = false;
         }
+
+        this.checkIfGraded();
     }
 };

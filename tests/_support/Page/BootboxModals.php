@@ -51,7 +51,7 @@ class BootboxModals
     public static function waitForBootboxModal($I, $expectButtons = false, $waitForDisappear = false){
         if( ! $waitForDisappear){
             $I->expect("the standard bootbox confirmation modal to appear");
-            $I->waitForElementVisible(['css' => '.modal-content']);
+            $I->waitForElementVisible(['css' => '.modal-content .modal-body']);
             $I->seeElement(['css' => '.modal-content .modal-body']);
             $I->seeElement(['css' => '.modal-content .modal-body .bootbox-body']);
 

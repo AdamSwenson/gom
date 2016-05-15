@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Support\Facades\Auth;
 
 
 /**
@@ -20,7 +21,18 @@ class FunctionalTester extends \Codeception\Actor
 {
     use _generated\FunctionalTesterActions;
 
+    public $userId = 1;
+
    /**
     * Define custom actions here
     */
+
+    /**
+     * @param $I
+     */
+    public function logIn($I){
+        $user = Auth::loginUsingId($this->userId);
+        $I->amLoggedAs( $user );
+    }
+
 }

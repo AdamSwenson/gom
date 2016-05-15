@@ -696,40 +696,35 @@ UNLOCK TABLES;
 # ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `exams`;
-
 CREATE TABLE `exams` (
-  `id`         INT(10) UNSIGNED        NOT NULL AUTO_INCREMENT,
-  `user_id`    INT(10) UNSIGNED        NOT NULL,
-  `term`       VARCHAR(255)
-               COLLATE utf8_unicode_ci NOT NULL,
-  `year`       INT(11)                 NOT NULL,
-  `name`       VARCHAR(255)
-               COLLATE utf8_unicode_ci NOT NULL,
-  `locked`     TINYINT(1)              NOT NULL,
-  `released`   TINYINT(1)              NOT NULL,
-  `created_at` TIMESTAMP               NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `updated_at` TIMESTAMP               NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL,
+  `term` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `year` int(11) NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `locked` tinyint(1) NOT NULL,
+  `released` tinyint(1) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `previously_released` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `exams_user_id_foreign` (`user_id`),
-  CONSTRAINT `exams_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-    ON DELETE CASCADE
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci;
+  CONSTRAINT `exams_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 LOCK TABLES `exams` WRITE;
 /*!40000 ALTER TABLE `exams`
   DISABLE KEYS */;
 
-INSERT INTO `exams` (`id`, `user_id`, `term`, `year`, `name`, `locked`, `released`, `created_at`, `updated_at`)
+INSERT INTO `exams` (`id`, `user_id`, `term`, `year`, `name`, `locked`, `released`, `created_at`, `updated_at`, `previously_released`)
 VALUES
-  (1, 1, 'Exam1Term', 1990, 'TestExam#1 5QuestionsWElements User1', 0, 0, NOW(), NOW()),
-  (2, 1, 'Exam2Term', 1990, 'TestExam#2 5QuestionsWElements User1', 0, 0, NOW(), NOW()),
-  (3, 2, 'Exam3Term', 1990, 'TestExam#3 5QuestionsWElements User2', 0, 0, NOW(), NOW()),
-  (4, 1, 'Exam4Term', 1990, 'TestExam#4 5QuestionsWElements User1', 0, 0, NOW(), NOW()),
-  (5, 1, 'Exam5Term', 1990, 'TestExam#5 NoQuestions User1', 0, 0, NOW(), NOW()),
-  (6, 1, 'Exam6Term', 1990, 'TestExam#6 5QuestionsNoElements User1', 0, 0, NOW(), NOW());
+  (1, 1, 'Exam1Term', 1990, 'TestExam#1 5QuestionsWElements User1', 0, 0, NOW(), NOW(), 0),
+  (2, 1, 'Exam2Term', 1990, 'TestExam#2 5QuestionsWElements User1', 0, 0, NOW(), NOW(), 0),
+  (3, 2, 'Exam3Term', 1990, 'TestExam#3 5QuestionsWElements User2', 0, 0, NOW(), NOW(), 0),
+  (4, 1, 'Exam4Term', 1990, 'TestExam#4 5QuestionsWElements User1', 0, 0, NOW(), NOW(), 0),
+  (5, 1, 'Exam5Term', 1990, 'TestExam#5 NoQuestions User1', 0, 0, NOW(), NOW(), 0),
+  (6, 1, 'Exam6Term', 1990, 'TestExam#6 5QuestionsNoElements User1', 0, 0, NOW(), NOW(), 0);
 
 /*!40000 ALTER TABLE `exams`
   ENABLE KEYS */;
