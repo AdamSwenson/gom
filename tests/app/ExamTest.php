@@ -25,6 +25,137 @@ class ExamTest extends \TestCase
     }
 
 
+    /**
+     * @test
+     */
+    public function releaseExam()
+    {
+        #prep
+        $exam = factory(Exam::class)->create();
+        $this->assertTrue($exam->released == false, "Default released");
+        $this->assertTrue($exam->previously_released == false, "Default previously released");
+        $examId = $exam->id;
+
+        #call
+        $exam->releaseExam();
+
+        #check
+        $e = Exam::find($examId);
+        $this->assertTrue(! is_null($e), "found something");
+        $this->assertInstanceOf(Exam::class, $e, "found an exam");
+        $this->assertTrue($exam->released == true, "Released set to true in db");
+        $this->assertTrue($exam->previously_released == true, "Previously released set to true in db");
+
+    }
+
+    /**
+     * @test
+     */
+    public function hideExam()
+    {
+        #prep
+        $exam = factory(Exam::class)->create(['released' => true, 'previously_released' => true]);
+        $exam->released = true;
+        $exam->previously_released = true;
+        $exam->save();
+        $this->assertTrue($exam->released == true, "Starts released");
+        $this->assertTrue($exam->previously_released == true, "Starts previously released");
+        $examId = $exam->id;
+
+        #call
+        $exam->hideExam();
+
+        #check
+        $e = Exam::find($examId);
+        $this->assertTrue(! is_null($e), "found something");
+        $this->assertInstanceOf(Exam::class, $e, "found an exam");
+        $this->assertTrue($exam->released == false, "Released set to false in db");
+        $this->assertTrue($exam->previously_released == true, "Previously released still set to true in db");
+    }
+
+    /**
+     * @test
+     */
+    public function isReleasedWhereNotReleased()
+    {
+        #prep
+        $exam = factory(Exam::class)->create();
+        $exam->released = true;
+        $exam->previously_released = false;
+        $exam->save();
+        $examId = $exam->id;
+        $exam = Exam::find($examId);
+
+       $this->assertTrue($exam->released === true, "Starts not released");
+        $this->assertTrue($exam->previously_released === false, "Starts not previously released");
+
+        #call and check
+        $this->assertTrue($exam->isReleased() == true, "returns false");
+    }
+
+    /**
+     * @test
+     */
+    public function isReleasedWhereReleased()
+    {
+        #prep
+        $exam = factory(Exam::class)->create(['released' => true, 'previously_released' => true]);
+        $exam->released = true;
+        $exam->previously_released = true;
+        $exam->save();
+        $this->assertTrue($exam->released == true, "Starts released");
+        $this->assertTrue($exam->previously_released == true, "Starts previously released");
+
+        #call and check
+        $this->assertTrue($exam->isReleased() == true, "returns true");
+    }
+
+
+
+    /**
+     * @test
+     */
+    public function isGraded()
+    {
+        $exam = Exam::find(1);
+        $this->assertEquals(true, $exam->isGraded(), "is in fact graded");
+
+        $exam2 = factory(Exam::class)->create();
+        $this->assertEquals(false, $exam2->isGraded(), "is not in fact graded");
+    }
+
+    /**
+     * @test
+     */
+    public function wasPreviouslyReleasedWhereTrue(){
+        #prep
+        $exam = factory(Exam::class)->create(['previously_released' => true]);
+        $exam->previously_released = true;
+        $exam->save();
+        $this->assertTrue($exam->previously_released, "Starts previously released");
+
+        #call and check
+        $this->assertTrue($exam->wasPreviouslyReleased(), "returns true");
+    }
+
+    /**
+     * @test
+     */
+    public function wasPreviouslyReleasedWhereFalse(){
+        #prep
+        $exam = factory(Exam::class)->create(['previously_released' => false]);
+        $this->assertTrue($exam->released  == false, "Starts released");
+        $this->assertTrue($exam->previously_released == false, "Starts not previously released");
+
+        #call and check
+        $this->assertFalse($exam->wasPreviouslyReleased(), "returns false");
+    }
+
+
+
+
+    /* ----------------- Queries --------------- */
+
     public function testScopeOnClasses()
     {
 

@@ -22,13 +22,27 @@ module.exports = {
 
     props: [
         'exam-id',
-        'released'
+        'released',
+        'graded',
+        'previously-released'
     ],
 
     data: function () {
         return {
             storage: {
-                checked: null
+                checked: null,
+                /**
+                 * This will be initially set from the prop. It
+                 * will also be altered after successful ajax calls.
+                 * The reason for separating this from checked is that
+                 * the checked state changes when the toggle is clicked
+                 * regardless of whether the release operation is actually
+                 * carried out.
+                 * Thus this state only changes upon confirmation from the
+                 * server.
+                 */
+                isReleased: null,
+                previouslyReleased: null
             },
             onStateText: "<span class='glyphicon glyphicon-lock' aria-hidden='true'></span> Hide exam from students",
             offStateText: "<span class='glyphicon glyphicon-envelope' aria-hidden='true'></span> Release exam to students",
@@ -38,21 +52,21 @@ module.exports = {
             offStyle: "primary",
             confirmMessages: {
                 release: {
-                    initial: "<p>Releasing this exam will e-mail all students their grades and personalized feedback.</p> <p>Do you wish to continue?</p>",
+                    initial: "<p class='confirmText releaseConfirm'>Releasing this exam will e-mail all students their grades and personalized feedback.</p> <p class='confirmText releaseConfirm'>Do you wish to continue?</p>",
 
-                    reRelease: "<p>Re-releasing this exam sends all students an additional message informing them that exam grades or comments may have changed.</p> <p>Do you wish to continue?</p>",
+                    reRelease: "<p class='confirmText reReleaseConfirm'>Re-releasing this exam sends all students an additional message informing them that exam grades or comments may have changed.</p><p class='confirmText reReleaseConfirm'> Do you wish to continue?</p>",
                 },
                 hide: {
-                    initial: "<p>Removing access will prevent students from viewing feedback on the exam. Access can be restored by releasing the exam again.</p>"
+                    initial: "<p class='confirmText hideConfirm'>Removing access will prevent students from viewing feedback on the exam.</p> <p class='confirmText hideConfirm'> Access can be restored by releasing the exam again.</p>"
                 }
             },
             successMessages: {
-                release: "<p>All students have been e-mailed!</p>",
-                hide: "<p>All student access to the exam has been removed!</p>"
+                release: "<p class='successText releaseSuccess'>All students have been e-mailed!</p>",
+                hide: "<p class='successText hideSuccess'>All student access to the exam has been removed!</p>"
             },
             errorMessages: {
-                release: "<p>Sorry, there was a problem releasing this exam!</p><p>Please try again.</p>",
-                hide: "<p>Sorry, there was a problem hiding this exam!</p><p>Please try again.</p>"
+                release: "<p class='errorText releaseError'>Sorry, there was a problem releasing this exam!</p><p class='errorText releaseError'>Please try again.</p>",
+                hide: "<p class='errorText hideError'>Sorry, there was a problem hiding this exam!</p><p class='errorText hideError'> Please try again.</p>"
             }
         };
     },
@@ -62,6 +76,30 @@ module.exports = {
             if ( typeof this.released != 'undefined' ) {
                 this.storage.checked = this.released;
                 return this.released;
+            }
+            return false;
+        },
+        /**
+         * Whether the exam has been released before. This
+         * matters to which confirmation message the user
+         * receives on release requests.
+         * @returns {*}
+         */
+        priorRelease: function(){
+            if(this.storage.previouslyReleased != null){
+                //if the value has been set, return it.
+                //this should trump the original server value in case
+                //the exam has been released and hidden in the current
+                //session
+                return this.storage.previouslyReleased;
+            }
+            else if ( typeof this.previouslyReleased != 'undefined' ) {
+                //if the value isn't stored, then set the server's value
+                //in storage before returning it
+                if(this.previouslyReleased == "1"){
+                    this.storage.previouslyReleased = true;
+                }
+                return this.storage.previouslyReleased;
             }
             return false;
         },
@@ -81,12 +119,14 @@ module.exports = {
          */
         confirmRelease: function () {
             var me = this;
-            var confirmMsg = this.released == 1 ? this.confirmMessages.release.reRelease : this.confirmMessages.release.initial;
+            var confirmMsg = this.previouslyReleased == true ? this.confirmMessages.release.reRelease : this.confirmMessages.release.initial;
 
             bootbox.confirm( confirmMsg, function ( result ) {
-                window.console.log( result );
+                window.console.log('confirmRelease', result );
                 if ( result ) {
                     me.sendReleaseExamEvent();
+                }else{
+                    me.handleCanceledRelease();
                 }
             } );
         },
@@ -94,8 +134,11 @@ module.exports = {
         confirmHide: function () {
             var me = this;
             bootbox.confirm( this.confirmMessages.hide.initial, function ( result ) {
+                window.console.log('confirmHide', result );
                 if ( result ) {
-                    me.sendHideExamEvent()
+                    me.sendHideExamEvent();
+                }else{
+                    me.handleCanceledHide();
                 }
             } );
         },
@@ -111,8 +154,54 @@ module.exports = {
                 //request is to release exam
                 return this.confirmRelease();
             }
-            //box was checked, now not. So, exam needs to be hidden
-            return this.confirmHide();
+            //the box was checked, now it is not. This gets a bit tricky, though....
+            switch(this.storage.isReleased){
+                case true:
+                    //isReleased only gets set to true in two cases:
+                    // (1) if the exam was released when the page was loaded; or
+                    // (2) if the ajax request to release was successful.
+                    // In either case, the exam is marked released in the database.
+                    // So, we know that the request is to hide the exam.
+                    return this.confirmHide();
+                    break;
+                case false:
+                    //We're here because of a toggle event. Toggle events occur when
+                    //a user clicks, or when the state is programmatically changed.
+                    //The latter can occur in two ways:
+                    //(B1) The user canceled the release request; or
+                    //(B2) The release request failed on the server's side.
+                    //(B3) The user canceled the hide request; or
+                    //(B4) The hide request failed on the server side.
+                    //isReleased is false only if
+                    //(A1) it was set onload because the prop released was undefined.
+                    //(A2) a successful hide request happened.
+                    //Thus neither B1 nor B2 requires any confirmation action.
+                    return false;
+                    break;
+                default:
+                    return false;
+                    //includes original state (null)
+            }
+
+        },
+
+        /**
+         * Called when the user cancels the release request
+         */
+        handleCanceledRelease: function(){
+            //The operation was canceled. But the toggle
+            //is still in the checked state. If we don't
+            //reset it, it will think that the exam has
+            //already been released. So, let's reset it
+            $("#" + this.toggleId ).bootstrapToggle('off');
+        },
+
+        handleCanceledHide: function(){
+            //The operation was canceled. But the toggle
+            //is still in the unchecked state. If we don't
+            //reset it, it will think that the exam has
+            //been released. So, let's reset it
+            $("#" + this.toggleId ).bootstrapToggle('on');
         },
 
         /**
@@ -130,11 +219,16 @@ module.exports = {
         },
 
         handleSuccessfulRelease: function () {
+            //only now should this guy think he's released
+            this.storage.isReleased = true;
+            this.storage.priorRelease = true;
             bootbox.alert( this.successMessages.release, function () {
             } );
         },
 
         handleSuccessfulHide: function () {
+            //only now should this guy be sure he's not released
+            this.storage.isReleased = false;
             bootbox.alert(this.successMessages.hide , function () {
             } );
         },
@@ -145,12 +239,12 @@ module.exports = {
             //flop the switch back
             $("#" + this.toggleId ).bootstrapToggle('on');
         },
+
         handleErrorOnHide: function () {
             //notify of error
             bootbox.alert( this.errorMessages.hide );
             //flop the switch back
             $("#" + this.toggleId ).bootstrapToggle('off');
-            //$("#" + this.toggleId ).prop('checked', true ).change();
         },
     },
 
@@ -188,5 +282,17 @@ module.exports = {
         $( "#" + this.toggleId ).change( function () {
             me.handleExamReleaseToggle();
         } );
+
+        //set isReleased state
+        if ( typeof this.released != 'undefined' && this.released != '') {
+            if(this.released == "1"){
+                this.storage.isReleased = true;
+            }else{
+                //just in case...
+                this.storage.isReleased = this.released;
+            }
+        }else{
+            this.storage.isReleased = false;
+        }
     }
 };

@@ -84,7 +84,9 @@ class Feedback extends Model
     {
         if (empty($this->questionNumbers))
         {
-            foreach (json_decode($this->attributes['content']) as $c)
+            $j = $this->content();
+            $content = json_decode($j);
+            foreach ($content as $c)
             {
                 $this->questionNumbers[] = $c->questionNumber;
             }

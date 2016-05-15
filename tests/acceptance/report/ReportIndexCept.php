@@ -9,7 +9,7 @@ $numberOfExams = 5;
 $examIdsToSkip = [3]; //belongs to another user
 
 $I = new AcceptanceTester($scenario);
-$I->wantTo('Inspect the /report page and make sure it works correctly');
+$I->wantTo('Inspect the /report page and make sure the navigation functions work correctly. (Releasing and locking are handled in separate file)');
 $I->test_login($I);
 $I->amOnPage(ReportIndexPage::$URL);
 $I->wait(2);
@@ -29,10 +29,6 @@ for ( $i = 1; $i <= $numberOfExams; $i++ )
         $I->seeLink(ReportIndexPage::$studentControlsText, ReportIndexPage::studentControlsLink($i));
     }
 }
-
-$I->amGoingTo("release an exam and verify that it was released");
-
-$I->amGoingTo("lock a previously released exam and verify that it was locked");
 
 $I->amGoingTo("Try each of the drop down options (except export) and check that I am properly redirected");
     $I->expectTo("be redirected to the analytics page");
@@ -80,6 +76,12 @@ $I->amGoingTo("Try each of the drop down options (except export) and check that 
     $I->amOnPage(ReportIndexPage::$URL);
     $I->wait(2);
     ReportIndexPage::verifyPageIntact($I, $numberOfExams, $examIdsToSkip);
+
+
+$I->wantTo("Check that the correct message displays if no exams have been created");
+//<td class="examDetailsCell" ></td>
+//<td class="examNameEmptyCell"><i>No Exams Found</i></td>
+//<td></td>
 
 
 //$I->amGoingTo("Check that export buttons work");

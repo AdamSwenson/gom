@@ -63,6 +63,8 @@ class DatabaseSeeder extends Seeder
         $this->call(GradeAssignmentSeeder::class);
         //$this->call('ItemSeeder');
         //$this->call('ItemAssignmentSeeder');
+        $this->call(AccessKeysTableSeeder::class);
+        $this->call(FeedbackTableSeeder::class);
         Model::reguard();
     }
 }

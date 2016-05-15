@@ -49,18 +49,29 @@ $factory->define(App\User::class, function (Faker\Generator $faker)
     ];
 });
 
-
 $factory->define(App\Exam::class, function (Faker\Generator $faker)
 {
     return [
         'user_id' => 1,
-        'term' => Factory::create()->text,
-        'name' => Factory::create()->text,
-        'year' => Factory::create()->year,
+        'term' => $faker->text,
+        'name' => $faker->text,
+        'year' => $faker->year,
         'released' => 0,
         'locked' => 0
     ];
 });
+//
+//$factory->define(App\Exam::class, function (Faker\Generator $faker)
+//{
+//    return [
+//        'user_id' => 1,
+//        'term' => Factory::create()->text,
+//        'name' => Factory::create()->text,
+//        'year' => Factory::create()->year,
+//        'released' => 0,
+//        'locked' => 0
+//    ];
+//});
 
 
 

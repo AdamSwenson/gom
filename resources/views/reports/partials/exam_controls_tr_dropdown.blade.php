@@ -11,7 +11,9 @@
     <td>
         <exam-release-toggle
         exam-id="{{ $exam->id }}"
-        released="{{ $exam->isReleased() }}"></exam-release-toggle>
+        released="{{ $exam->isReleased() }}"
+        previously-released="{{ $exam->wasPreviouslyReleased() }}"
+        graded="{{ $exam->isGraded() }}"></exam-release-toggle>
 
         <exam-buttons-dropdown
              exam-id="{{ $exam->id }}"

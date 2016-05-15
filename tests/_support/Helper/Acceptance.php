@@ -30,6 +30,66 @@ class Acceptance extends \Codeception\Module
         return self::$examWithNoQuestionsId;
     }
 
+
+//    /**
+//     * Returns the locator for a standard bootbox confirmation
+//     * modal's confirm button.
+//     * @return array
+//     */
+//    public function bootboxConfirmButtonLocator()
+//    {
+//        return ['css' => 'body > div.bootbox.modal.fade.bootbox-confirm.in > div > div > div.modal-footer > button.btn.btn-primary'];
+//    }
+//
+//    /**
+//     * Returns the locator for a standard bootbox confirmation modal's
+//     * cancel button
+//     * @return array
+//     */
+//    public function bootboxCancelButtonLocator()
+//    {
+//        return ['css' => 'body > div.bootbox.modal.fade.bootbox-confirm.in > div > div > div.modal-footer > button.btn.btn-default'];
+//    }
+//
+//
+//    /**
+//     * If using a standard bootbox confirm dialog, this will wait
+//     * for the modal to display and make sure that the main divs
+//     * are present.
+//     *
+//     * Optionally, it will check for the presence of cancel and
+//     * confirm buttons.
+//     *
+//     * It can also wait for the modal to disappear and check that it's gone.
+//     *
+//     * @param $I
+//     * @param bool $expectButtons
+//     * @param bool $waitForDisappear If true, waits and checks that modal disappeared
+//     */
+//    public function waitForBootboxModal($I, $expectButtons = false, $waitForDisappear = false){
+//        if( ! $waitForDisappear){
+//            $I->expect("the standard bootbox confirmation modal to appear");
+//            $I->waitForElementVisible(['css' => '.modal-content']);
+//            $I->seeElement(['css' => '.modal-content .modal-body']);
+//
+//            if($expectButtons){
+//                $I->expectTo("see the standard bootbox confirm and cancel buttons");
+//                $I->seeElement($this->bootboxCancelButtonLocator());
+//                $I->seeElement($this->bootboxConfirmButtonLocator());
+//            }
+//        }
+//        else{
+//            $I->expect("the standard bootbox confirmation modal to disappear");
+//            $I->waitForElementNotVisible(['css' => '.modal-content']);
+//            $I->dontSeeElement(['css' => '.modal-content .modal-body']);
+//            if($expectButtons){
+//                $I->expectTo("the standard bootbox confirm and cancel buttons to disappear");
+//                $I->dontSeeElement($I->bootboxCancelButtonLocator());
+//                $I->dontSeeElement($I->bootboxConfirmButtonLocator());
+//            }
+//        }
+//    }
+
     /**
      * Creates test data for questions.
      * Returns array with questionNumbers as keys. Each key has an array

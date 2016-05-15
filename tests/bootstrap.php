@@ -3,8 +3,9 @@ if ( getenv("IS_JENKINS") && getenv("IS_JENKINS") == 'yep' )
 {
     try
     {
-        $path = base_path();
-        require_once $path . '/vendor/autoload.php';
+          require_once 'vendor/autoload.php';
+//        $path = base_path();
+//        require_once $path . '/vendor/autoload.php';
     } catch ( Exception $e )
     {
         //  require_once 'vendor/autoload.php';

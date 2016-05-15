@@ -29,7 +29,6 @@ class BaseModel extends Model
     public static function boot()
     {
         parent::boot();
-
         static::addGlobalScope(new UserOnlyScope());
 
         static::creating(function($model)
@@ -51,6 +50,7 @@ class BaseModel extends Model
 //            $user = \Auth::user();
             $model->user_id = $user->id;
         });
+
 
     }
 

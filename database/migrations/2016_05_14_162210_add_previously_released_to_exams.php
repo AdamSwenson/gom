@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddStudentInfoFieldToAccessKeys extends Migration
+class AddPreviouslyReleasedToExams extends Migration
 {
     /**
      * Run the migrations.
@@ -12,8 +12,9 @@ class AddStudentInfoFieldToAccessKeys extends Migration
      */
     public function up()
     {
-        Schema::table('access_keys', function (Blueprint $table) {
-            $table->json('student_info')->nullable();
+        Schema::table('exams', function (Blueprint $table)
+        {
+            $table->boolean('previously_released')->default(false);
         });
     }
 
@@ -24,8 +25,9 @@ class AddStudentInfoFieldToAccessKeys extends Migration
      */
     public function down()
     {
-        Schema::table('access_keys', function (Blueprint $table) {
-            $table->dropColumn('student_info');
+        Schema::table('exams', function (Blueprint $table)
+        {
+            $table->dropColumn('previously_released');
         });
     }
 }

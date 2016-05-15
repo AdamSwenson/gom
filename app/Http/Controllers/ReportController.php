@@ -174,10 +174,11 @@ class ReportController extends Controller
         $this->authorize('access-object', $exam);
 
         $this->createFeedback($exam);
-        if (!$exam->getReleased())
+        if (!$exam->isReleased())
         {
-            $exam->setReleased(true);
-            $exam->save();
+            $exam->releaseExam();
+//            $exam->setReleased(true);
+//            $exam->save();
         }
         $job = (new NotifyAllStudents($exam))->onQueue('emails');
         $this->dispatch($job);
@@ -193,8 +194,8 @@ class ReportController extends Controller
         //Check that user owns the exam
         $this->authorize('access-object', $exam);
 
-        $exam->setReleased(false);
-        $exam->save();
+//        $exam->setReleased(false);
+//        $exam->save();
         $keys = $this->accessKeyDao->getAccessKeysForExam($exam->getId());
         if (!empty($keys))
         {
@@ -203,6 +204,8 @@ class ReportController extends Controller
                 $this->accessKeyDao->removeAccessKey($key->getKey());
             }
         }
+
+        $exam->hideExam();
     }
 
     /**
@@ -321,7 +324,7 @@ class ReportController extends Controller
         $examId = $exam->getId();
         $students = $this->studentRepository->load_students_by_exam($exam->getId());
 
-        if (!$exam->getReleased())
+        if (!$exam->isReleased())
         {
             $this->feedbackBuilder->buildFeedback($examId);
         }

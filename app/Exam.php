@@ -4,6 +4,17 @@ namespace App;
 
 use Illuminate\Support\Facades\DB;
 
+/**
+ * 'term' => 'string',
+ * 'name' => 'string',
+ * 'year' => 'year',
+ * 'locked' (boolean): The exam should no longer be editable (TODO not implemented; may not want anymore)
+ * 'released' (boolean): Whether the exam is currently available to students
+ * previously_released (boolean): Whether the exam was ever available to students. This matters because we may want to
+ * send a different email which informs them that their previous access code is invalid.
+ *
+ * @package App
+ */
 class Exam extends BaseModel
 {
     /** Maximum length in utf-8 characters of the term field (used in sanitizing) */
@@ -21,21 +32,133 @@ class Exam extends BaseModel
     protected $fillable = [
         'term',
         'name',
-        'year'
+        'year',
+        'released',
+        'previously_released'
     ];
 
     protected $casts = [
-        'term' => 'string',
-        'name' => 'string',
-        'year' => 'year',
-        'locked' => 'boolean',
-        'released' => 'boolean'
+        'term'     => 'string',
+        'name'     => 'string',
+        'year'     => 'year',
+        'locked'   => 'boolean',
+        'released' => 'boolean',
+        'previously_released' => 'boolean',
     ];
 
     public function __construct()
     {
         parent::boot();
     }
+
+# -------------------------- Helpful methods
+
+
+    /**
+     * Marks the exam as released.
+     * Also sets the previously_released to true
+     */
+    public function releaseExam()
+    {
+        $this->attributes['released'] = true;
+        $this->attributes['previously_released'] = true;
+        $this->save();
+
+        return true;
+    }
+
+    /**
+     * Removes the released status.
+     * Does not affect the previously_released value
+     */
+    public function hideExam()
+    {
+        $this->attributes['released'] = false;
+        $this->save();
+
+        return true;
+    }
+
+    /**
+     * Returns true if the exam is currently released; false otherwise
+     * @return bool
+     */
+    public function isReleased()
+    {
+        if ( ! empty($this->attributes['released']) && $this->attributes['released'] == true )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Returns true if at least one question for at least one student
+     * has been graded. Returns false otherwise.
+     * @return bool
+     */
+    public function isGraded()
+    {
+        $query = <<<MYSQL
+        SELECT count(qs.score) AS numberGraded FROM question_scores qs
+        INNER JOIN question_assignments qa ON qa.id = qs.question_assignment_id
+        WHERE qa.exam_id = :examId;
+MYSQL;
+        $result = DB::select($query, ['examId' => $this->attributes['id']]);
+        if ( $result[0]->numberGraded > 0 )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns true if the exam has ever been released
+     * @return bool
+     */
+    public function wasPreviouslyReleased()
+    {
+        if ( ! empty($this->attributes['previously_released']) && $this->attributes['previously_released'] == true )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Returns a collection of all students who have been associated with the exam
+     * @return \Illuminate\Support\Collection
+     */
+    public function getAllAssociatedStudents()
+    {
+        $students = [];
+        $classes = $this->classes;
+        foreach ( $classes as $c )
+        {
+            foreach ( $c->students as $s )
+            {
+                $students[] = $s;
+            }
+        }
+
+        //Make into a laravel collection and sort in descending order
+        $students = collect($students);
+        $students = $students->sortBy('last_name');
+
+        return $students;
+    }
+
+
+
+
+
+
+
 #------------------------------------------------------- Queries
 
     /**
@@ -60,7 +183,7 @@ class Exam extends BaseModel
     }
 
     /**
-     * Limits the query to exams which have not been released
+     * Limits the query to exams which are not currently released
      * @param $query
      * @return mixed
      */
@@ -70,7 +193,7 @@ class Exam extends BaseModel
     }
 
     /**
-     * Limits the query to exams which have been released
+     * Limits the query to exams which are currently released
      * @param $query
      * @return mixed
      */
@@ -115,29 +238,6 @@ class Exam extends BaseModel
 //    {
 //     //   return $this->questions->pivot->wherePivot('question_number', $questionNumber)->first();
 //    }
-
-    /**
-     * Returns a collection of all students who have been associated with the exam
-     * @return \Illuminate\Support\Collection
-     */
-    public function getAllAssociatedStudents()
-    {
-        $students = [];
-        $classes = $this->classes;
-        foreach ($classes as $c)
-        {
-            foreach ($c->students as $s)
-            {
-                $students[] = $s;
-            }
-        }
-
-        //Make into a laravel collection and sort in descending order
-        $students = collect($students);
-        $students = $students->sortBy('last_name');
-
-        return $students;
-    }
 
 
     #------------------------------------------------------ foreign keys
@@ -266,18 +366,6 @@ class Exam extends BaseModel
         return $this->attributes['released'];
     }
 
-    /**
-     * Returns true if the exam has been released; false otherwise
-     * @return bool
-     */
-    public function isReleased()
-    {
-        if (!empty($this->attributes['released']) && $this->attributes['released'] == true)
-        {
-            return true;
-        }
-        return false;
-    }
 
     /**
      * Get the [user_id] column value.
