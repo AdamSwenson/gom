@@ -8,6 +8,7 @@ $letterGrade = "A+";
 $name = 'name1';
 $identifier = 'identifier1';
 
+$scenario->group('feedback');
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Check that feedback page displays normally');
 $I->amOnPage(FeedbackPage::routeWithAccessKeyInRequest($accessKey));

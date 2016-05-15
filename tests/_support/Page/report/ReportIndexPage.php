@@ -184,9 +184,9 @@ class ReportIndexPage
     public static function verifyPageIntact($I, $numberOfExams, $examIdsToSkip)
     {
         $I->expectTo("see the standard page text components");
-        $I->seeInTitle(ReportIndexPage::$pageTitleText);
-        $I->see(ReportIndexPage::$pageHeadingText);
-        $I->see(ReportIndexPage::$pageSubHeadingText);
+        $I->seeInTitle(self::$pageTitleText);
+        $I->see(self::$pageHeadingText);
+        $I->see(self::$pageSubHeadingText);
 
         $I->expectTo("see a table row with buttons for each exam");
         if ( $numberOfExams > 0 )

@@ -19,6 +19,7 @@ $swappedQuestionNumbers = [1, 3];
 //This will be used to check that we are properly redirected.
 $firstQuestionId = 6;
 
+$scenario->group('question');
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Edit existing questions');
 $I->test_login($I);

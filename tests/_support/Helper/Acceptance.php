@@ -7,7 +7,7 @@ namespace Helper;
 use App\Question;
 use Faker\Factory;
 use Page\ElementEditPage;
-use Page\GradeSelectExamPage;
+use Page\grade\GradeSelectExamPage;
 use Page\QuestionEditPage;
 use Page\RosterEditPage;
 use Page\SetupExamSelectPage;

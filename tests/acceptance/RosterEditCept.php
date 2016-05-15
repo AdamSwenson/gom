@@ -17,6 +17,8 @@ $editedStudentLastName = 'new_student3last';
 $editedStudentFirstName = 'new_student3first';
 $editedStudentEmail = 'new_student3@email.com';
 
+
+$scenario->group('roster');
 $I = new AcceptanceTester($scenario);
 
 $I->wantTo('Visit the roster edit page which already contains students, then make edits and see them in the database');

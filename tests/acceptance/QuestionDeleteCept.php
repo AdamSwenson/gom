@@ -1,4 +1,5 @@
 <?php
+use Page\BootboxModals;
 use Page\QuestionEditPage;
 
 $deletedQuestionNumber = 4;
@@ -12,17 +13,17 @@ $numQuestions = 5;
 //the id of question 1, for building the redirection route
 $firstQuestionId = 6;
 
-
+$scenario->group('question');
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Delete questions and see them removed in the db');
 $I->test_login($I);
 $I->amOnPage("exam/{$examId}/question/edit");
-$I->wait(5);
+$I->wait(2);
+$I->waitForElement(['id' => 'scriptBox']);
 
-QuestionEditPage::verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
-
-//$I->verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
-QuestionEditPage::verifyQuestionsHaveInitialExpectedValues($I, $examId, $numQuestions);
+$I->wantTo("see that the page is as I initially expect");
+    QuestionEditPage::verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
+    QuestionEditPage::verifyQuestionsHaveInitialExpectedValues($I, $examId, $numQuestions);
 
 /*
 $I->amGoingTo("Start deleting question #{$deletedQuestionNumber} but cancel the operation with the confirmation modal");
@@ -48,23 +49,28 @@ QuestionEditPage::verifyQuestionEditPageIntact($I, $examId, $examName, $numQuest
 QuestionEditPage::verifyQuestionsHaveInitialExpectedValues($I, $examId, $numQuestions);
 */
 
-$I->amGoingTo("Delete question #{$deletedQuestionNumber}");
+$I->wantTo("Delete question #{$deletedQuestionNumber}");
+    $I->amGoingTo("Click the delete button");
     $I->seeElement(QuestionEditPage::deleteButtonLocator($deletedQuestionNumber));
-    $I->click(QuestionEditPage::deleteButtonLocator($deletedQuestionNumber));
-$I->wait(10);
-//"//*[@id='deleteQuestionButton{$deletedQuestionNumber}']");
-//$I->waitForElementVisible('.modal-dialog', 30);
-//$I->waitForElementVisible(QuestionEditPage::$deleteConfirmationTextId, 30);
-    //confirmation modal
-//    $I->see('.modal-dialog');
-    $I->seeElement(QuestionEditPage::$deleteConfirmationTextId);
+$I->dragAndDrop(QuestionEditPage::deleteButtonLocator($deletedQuestionNumber), QuestionEditPage::deleteButtonLocator($deletedQuestionNumber) );
+//$I->executeJS(" $('#deleteQuestionButton{$deletedQuestionNumber}').click(); ");
+//$I->click(['id' => "deleteQuestionButton{$deletedQuestionNumber}"]);
+//$I->click(QuestionEditPage::deleteButtonLocator($deletedQuestionNumber));
+    BootboxModals::waitForBootboxModal($I);
+    $I->wait(2);
+
+    $I->expectTo("see the question delete confirmation modal");
+    $I->seeElement(['id' => QuestionEditPage::$deleteConfirmationTextId]);
     $I->see(QuestionEditPage::$deleteConfirmationModalText);
     $I->click(QuestionEditPage::$deleteConfirmationModalConfirmButton);
+    BootboxModals::waitForBootboxModal($I, false, true);
     $I->wait(2);
-    //question 5 should have become the new question 4, so there's no longer a question 5
-QuestionEditPage::checkQuestionFieldsPresent($I, $deletedQuestionNumber);
-QuestionEditPage::checkQuestionFieldsPresent($I, $replacedDeletedQuestionNumber, true);
-    //check that the new question 4 has the values previously had by question 5
+
+    $I->expect("question 5 to have become the new question 4, so there's no longer a question 5");
+    QuestionEditPage::checkQuestionFieldsPresent($I, $deletedQuestionNumber);
+    QuestionEditPage::checkQuestionFieldsPresent($I, $replacedDeletedQuestionNumber, true);
+
+    $I->amGoingTo("check that the new question 4 has the values previously had by question 5");
     $v = QuestionEditPage::getQuestionFieldsInitialValues($examId, $replacedDeletedQuestionNumber);
     $I->seeInField(QuestionEditPage::questionNameXPath($deletedQuestionNumber), $v['questionName']);
     $I->seeInField(QuestionEditPage::questionTextXPath($deletedQuestionNumber), $v['questionText']);
@@ -78,7 +84,7 @@ $I->amGoingTo("Submit the form and check that I'm properly redirected");
 
 $I->amGoingTo("Go back to the edit page and see the changed questions");
     $I->amOnPage("exam/{$examId}/question/edit");
-QuestionEditPage::verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
+    QuestionEditPage::verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
 
 //    $I->verifyQuestionEditPageIntact($I, $examId, $examName, $numQuestions);
 //$I->seeInTitle(QuestionEditPage::$pageTitleText);

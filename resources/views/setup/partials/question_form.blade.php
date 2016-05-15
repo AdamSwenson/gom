@@ -1,5 +1,8 @@
 <!-- Used by "edit_question" to hold fields and buttons for an individual question -->
-<li class="list-group-item" id="questionItem{{ $counter }}">
+<li class="list-group-item"
+    id="questionItem{{ $counter }}"
+    data-original-number="{{$counter}}"
+>
 
     <div class="row">
         <div class="col-sm-4">
@@ -51,8 +54,10 @@
         </span>
 
         <button type="button"
+                id="deleteQuestionButton{{ $counter }}"
                 name="deleteQuestionButton{{ $counter }}"
-                class="btn btn-danger btn-sm js-remove">
+                class="btn btn-danger btn-sm js-remove"
+                data-question-number="{{$counter}}">
             <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
             Delete
         </button>

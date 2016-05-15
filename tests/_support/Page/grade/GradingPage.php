@@ -146,4 +146,67 @@ public static function verifyGradingPageIntact($I, $examId){
         $I->seeElement(['id' => 'questionPanel']);
     }
 
+    /**
+     * Clicks on the specified question tab.
+     * First checks that the tab is hidden. Then checks
+     * that the tab is displayed.
+     * @param $I
+     * @param $questionNumber
+     */
+    public static function clickQuestionTab($I, $questionNumber){
+        $I->expectTo("not see the question panel for question $ {$questionNumber}");
+        $I->dontSeeElement(['css' => "#panelQuestion{$questionNumber}"]);
+
+        $I->amGoingTo("click the tab for question #{$questionNumber}");
+        $I->click(self::questionPanelTabXPath($questionNumber));
+        $I->waitForElementVisible(['css' => "#panelQuestion{$questionNumber}"]);
+
+        $I->expectTo("not see the question panel for question $ {$questionNumber}");
+        $I->seeElement(['css' => "#panelQuestion{$questionNumber}"]);
+    }
+
+    /**
+     * Tests to make sure all expected items are present in the
+     * specified panel.
+     * @param $I
+     * @param $questionNumber
+     * @param $numElements
+     */
+    public static function verifyQuestionPanelIntact($I, $questionNumber, $numElements){
+        $I->expectTo("see that the letter grade button and question score field are present");
+        $I->seeElement(self::letterGradeButtonLabelXPath($questionNumber));
+        $I->seeElement(self::letterGradeButtonXPath($questionNumber));
+        $I->see(self::$letterGradeButtonText);
+        $I->seeElement(self::questionScoreFieldXPath($questionNumber));
+
+        $I->amGoingTo("Check that the element fields for question {$questionNumber} are displayed properly");
+        for ( $j = 1; $j <= $numElements; $j++ )
+        {
+            $I->expectTo("see the div for element Q{$questionNumber}E{$j}");
+            $I->seeElement(self::elementAreaXPath($questionNumber, $j));
+            $I->expectTo("see the common part of the element name ");
+            $I->see("Element #{$j}: ");
+            //todo expected element nameself::
+            $I->expectTo("see the comment area for Q{$questionNumber}E{$j}");
+            $I->seeElement(self::commentXPath($questionNumber, $j));
+        }
+        
+        $I->amGoingTo("Check that the sliders for question {$questionNumber} are displayed properly");
+        for ( $j = 1; $j <= $numElements; $j++ )
+        {
+            $I->amGoingTo("Inspect the slider parts for Q{$questionNumber}E{$j}");
+            $I->expect("The original input will be hidden and replaced with the bootstrap slider");
+            $I->dontSeeElement(self::sliderXPath($questionNumber, $j));
+            $I->seeElementInDOM(self::sliderXPath($questionNumber, $j));
+
+            $I->expect("The valence labels will be visible. ");
+            foreach ( self::$sliderValenceLabels as $v )
+            {
+                //$I->see($v); //, "#Q{$i}E{$j}");
+                $I->see($v, self::elementAreaXPath($questionNumber, $j));
+            }
+        }
+    }
+
+
 }

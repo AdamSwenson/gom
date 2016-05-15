@@ -36,20 +36,21 @@
                             {{--style="vertical-align:middle; width:10%;"--}}
                         >{{ $exam->term or '' }} {{ $exam->year or '' }}</td>
 
-                        <td class="examNameCell"
+                        <td id="examName{{$examId}}"
+                                class="examNameCell"
                             {{--style="vertical-align:middle;"--}}
                         >{{ $exam->name or 'No Name Found' }}</td>
 
-                        <td class="examDetailsCell"
-                            id="numQuestions"
+                        <td class="examDetailsCell numQuestions"
+                            id="numQuestions{{$examId}}"
                         >{{ $numQuestions[ $examId ] or '0' }}</td>
 
-                        <td class="examNameCell"
-                            id="numStudents"
+                        <td class="examNameCell numStudents"
+                            id="numStudents{{$examId}}"
                         >{{ $numStudents[ $examId ] or '0' }}</td>
 
-                        <td class="examNameCell"
-                            id="numGraded"
+                        <td class="examNameCell numGraded"
+                            id="numGraded{{$examId}}"
                         >{{ $numGraded[ $examId ] or '--' }}</td>
 
                         <td class="examButtonsCell">

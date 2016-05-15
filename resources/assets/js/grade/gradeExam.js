@@ -13,7 +13,6 @@ var typeahead = require( '../libraries/typeahead.bundle.js' );
 //var Slider = require( "bootstrap-slider" );
 var Slider = require( "../libraries/bootstrap-slider-modified.js" );
 
-//var mySlider = new Slider();
 var letterGradeButton = require( './letterGradeButton.js' )();
 
 (function () {

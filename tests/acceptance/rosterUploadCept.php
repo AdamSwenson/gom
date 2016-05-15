@@ -2,6 +2,7 @@
 
 use Page\RosterEditPage;
 
+$scenario->group('roster');
 $I = new AcceptanceTester($scenario);
 $I->wantTo('upload a csv file full of students for an exam with no preexisting students and see the students in the database');
 
@@ -11,9 +12,11 @@ $examId = $I->examIdNoQuestions();
 
 //Log in
 $I->test_login($I);
+$I->wait(5);
 # Go to page
 $I->amOnPage("/exam/{$examId}/student/edit");
-$I->wait(2);
+$I->wait(5);
+//$I->waitForElement(['css' => '#scriptBox']);
 RosterEditPage::verifyRosterEditPageIntact($I);
 //no students assoc w exam 4
 //RosterEditPage::verifyInitialValuesPresent($I);

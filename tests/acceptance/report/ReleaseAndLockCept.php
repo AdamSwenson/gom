@@ -8,6 +8,7 @@ $examIdsToSkip = [3]; //belongs to another user
 $toReleaseExamId = 1; //has graded students
 $cannotReleaseExamId = 2;//will not be able to be released
 
+$scenario->group('feedback');
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Make sure that the /report page behaves correctly for releasing and locking an exam. (Other /report actions are handled separately)');
 $I->test_login($I);
@@ -76,7 +77,8 @@ $I->wantTo("hide the exam which I just released and verify that it is no longer 
     $I->expectTo("see the success message in a modal once the ajax call has completed");
     BootboxModals::waitForBootboxModal($I);
     $I->seeElement(BootboxModals::bootboxAlertOkButtonLocator());
-    $I->see(ReportIndexPage::$hideSuccessText);
+    $I->seeElement(['css' => '.' . ReportIndexPage::$hideSuccessTextClass]);
+//    $I->see(ReportIndexPage::$hideSuccessText);
 
     $I->expect("the success message to disappear when I click ok in the alert");
     $I->click(BootboxModals::bootboxAlertOkButtonLocator());

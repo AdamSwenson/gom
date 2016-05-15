@@ -14,6 +14,7 @@ var common = require('../common.js');
 
 //var navs = require('./navControls.js')();
 
+// (function () {
 $("#backNavButton").on('click', function () {
     submitForm(backNavTarget);
 });
@@ -74,56 +75,104 @@ function formFieldsValid() {
     return valid;
 }
 
-// Sortable is the lib for drag and drop questions
-// create an editable list and set up some filters to handle callbacks
-$(document).ready(function () {
+/**
+ * Handle deletion - items will be deleted once the form is submitted
+ * This is actually listening for an attempt to drag a filtered element.
+ * It fires on mousedown, so it is practically equivalent to a click.
+ *
+ * evt.item is HTMLElement receiving the `mousedown|tapstart` event.
+ *
+ * @param evt
+ */
+function handleDelete(evt, editableList) {
+    //get the element from the list
+    var el = editableList.closest(evt.item);
 
-    localStorage.clear();
-    var qList = document.getElementById('questionList');
-    var editableList = Sortable.create(qList, {
-        filter: '.js-remove',
-        animation: 150,
-        handle: '.handle',
-        ghostClass: "sortable-ghost",
-        onFilter: function onFilter(evt) {
-            // handle deletion - items will be deleted once the form is submitted
-            var el = editableList.closest(evt.item); // get dragged item
-
-            bootbox.dialog({
-                message: "<p id='questionDeleteWarning'> <span class='glyphicon glyphicon-warning-sign'></span>" + " Warning: This will permanently delete all elements and scores associated with the question </p>",
-                title: "Delete Question",
-                buttons: {
-                    success: {
-                        label: 'Cancel',
-                        className: "btn-sm bnt-primary cancelQuestionDelete",
-                        callback: function callback() {}
-                    },
-                    danger: {
-                        label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-                        className: "btn-danger btn-sm confirmQuestionDelete",
-                        callback: function callback() {
-                            if (el && el.parentNode.removeChild(el)) updateNumbers();
-                        }
-                    }
-                }
-            });
-        },
-        store: {
-            // store the ordering to localStorage
-            get: function get(sortable) {
-                var order = localStorage.getItem(sortable.options.group);
-                //window.console.log(localStorage.getItem(sortable.options.group));
-                return order ? order.split('|') : [];
+    bootbox.dialog({
+        message: "<p class='questionDeleteWarning' id='questionDeleteWarning'> <span class='glyphicon glyphicon-warning-sign'></span>" + " Warning: This will permanently delete all elements and scores associated with the question </p>",
+        title: "Delete Question",
+        buttons: {
+            success: {
+                label: 'Cancel',
+                className: "btn-sm bnt-primary cancelQuestionDelete",
+                callback: function callback() {}
             },
-            set: function set(sortable) {
-                var order = sortable.toArray();
-                localStorage.setItem(sortable.options.group, order.join('|'));
-                updateNumbers();
+            danger: {
+                label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
+                className: "btn-danger btn-sm confirmQuestionDelete",
+                callback: function callback() {
+                    if (el && el.parentNode.removeChild(el)) updateNumbers();
+                }
             }
         }
     });
-});
+}
 
+(function () {
+    // Sortable is the lib for drag and drop questions
+    // create an editable list and set up some filters to handle callbacks
+    $(document).ready(function () {
+
+        localStorage.clear();
+        var qList = document.getElementById('questionList');
+        var editableList = Sortable.create(qList, {
+            filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
+            animation: 150,
+            handle: '.handle', // Drag handle selector within list items
+            ghostClass: "sortable-ghost", // Class name for the drop placeholder
+
+            onFilter: function onFilter(evt) {
+                handleDelete(evt, editableList);
+            },
+            store: {
+                // store the ordering to localStorage
+                get: function get(sortable) {
+                    var order = localStorage.getItem(sortable.options.group);
+                    //window.console.log(localStorage.getItem(sortable.options.group));
+                    return order ? order.split('|') : [];
+                },
+                set: function set(sortable) {
+                    var order = sortable.toArray();
+                    localStorage.setItem(sortable.options.group, order.join('|'));
+                    updateNumbers();
+                }
+            }
+        });
+
+        // $(".js-remove").on('click', function(){
+        //
+        //     var el = $(this);
+        //
+        //     bootbox.dialog( {
+        //         message: "<p class='questionDeleteWarning' id='questionDeleteWarning'> <span class='glyphicon glyphicon-warning-sign'></span>" +
+        //         " Warning: This will permanently delete all elements and scores associated with the question </p>",
+        //         title: "Delete Question",
+        //         buttons: {
+        //             success: {
+        //                 label: 'Cancel',
+        //                 className: "btn-sm bnt-primary cancelQuestionDelete",
+        //                 callback: function () {
+        //                 }
+        //             },
+        //             danger: {
+        //                 label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
+        //                 className: "btn-danger btn-sm confirmQuestionDelete",
+        //                 callback: function () {
+        //                     if ( el )
+        //                         window.console.log(el);
+        //                         var questionNumber = el.data('question-number');
+        //
+        //                         var parent = $("#questionItem" + questionNumber)
+        //                         parent.remove();
+        //                     // if ( el && el.parentNode.removeChild( el ) )
+        //                         updateNumbers();
+        //                 }
+        //             }
+        //         }
+        //     });
+        // });
+    });
+})();
 // update all "questionItem" ids. These define the ordering when saved to the DB.
 function updateNumbers() {
     $('#questionForm').find("[id^='questionItem']").each(function (index, el) {
@@ -150,8 +199,8 @@ function getQuestionCount() {
 }
 
 //        return false;
-//    }
-//);
+//     }
+// );
 
 },{"../common.js":18,"bootbox":2,"bootstrap":3,"jquery":16,"sortablejs":17}],2:[function(require,module,exports){
 /**

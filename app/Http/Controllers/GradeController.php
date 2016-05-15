@@ -10,6 +10,7 @@ use App\Http\Requests\GradingRequest;
 use App\Exam;
 use App\Jobs\AsyncStorage\UpdateAllStoredExamStats;
 use App\Jobs\AsyncStorage\UpdateAllStoredNumGraded;
+use App\Jobs\AsyncStorage\UpdateStoredExamStats;
 use App\Jobs\AsyncStorage\UpdateStoredNumGraded;
 use App\Repositories\Exam\IExamRepository;
 use App\Repositories\Grade\GradeFactory;

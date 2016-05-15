@@ -11,8 +11,10 @@ $examIdsToSkip = [3]; //belongs to another user
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Inspect the /report page and make sure the navigation functions work correctly. (Releasing and locking are handled in separate file)');
 $I->test_login($I);
-$I->amOnPage(ReportIndexPage::$URL);
 $I->wait(2);
+$I->amOnPage(ReportIndexPage::$URL);
+$I->wait(10);
+//$I->waitForElement(['id' => 'scriptBox']);
 
 ReportIndexPage::verifyPageIntact($I, $numberOfExams, $examIdsToSkip);
 

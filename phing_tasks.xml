@@ -2,9 +2,45 @@
 
 <project name="gom" description="gradeomatic tasks" default="main">
 
-    <target name="runCodeceptionTests" description="Runs the codeception test suite">
-        <echo message="Running tests" />
+    <target name="runFunctionalTests" description="Runs the codeception test suite">
+        <echo message="Running functional tests" />
         <exec command="vendor/bin/codecept run functional --steps" />
+    </target>
+
+    <target name="runAcceptanceTests" description="Runs the codeception test suite">
+        <echo message="Running acceptance tests" />
+        <exec command="vendor/bin/codecept run functional --steps" />
+    </target>
+
+    <target name="runFailedTests" description="Runs the codeception test suite">
+        <echo message="Running failed tests" />
+        <exec command="vendor/bin/codecept run -g failed" />
+    </target>
+
+    <target name="rosterAcceptanceTests" description="Runs the codeception test suite">
+        <echo message="Running roster tests" />
+        <exec command="vendor/bin/codecept run -g roster" />
+    </target>
+
+    <target name="questionAcceptanceTests" description="Runs the codeception test suite">
+        <echo message="Running question tests" />
+        <exec command="vendor/bin/codecept run -g question" />
+    </target>
+
+    <target name="elementAcceptanceTests" description="Runs the codeception test suite">
+        <echo message="Running element tests" />
+        <exec command="vendor/bin/codecept run -g element" />
+    </target>
+
+
+    <target name="feedbackAcceptanceTests" description="Runs the codeception test suite">
+        <echo message="Running feedback tests" />
+        <exec command="vendor/bin/codecept run -g feedback" />
+    </target>
+
+    <target name="gradeAcceptanceTests" description="Runs the codeception test suite">
+        <echo message="Running grade tests" />
+        <exec command="vendor/bin/codecept run -g grade" />
     </target>
 
     <target name="runAcceptanceTests_artisanNotRunning" description="Runs the codeception test suite">

@@ -59,7 +59,7 @@
     <php>
         <env name="IS_JENKINS" value="yep"/>
         <env name="APP_ENV" value="testing"/>
-        <env name="DB_DATABASE" value="gom_lar"/>
+        <env name="DB_DATABASE" value="gom_testing"/>
         <env name="CACHE_DRIVER" value="array"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="QUEUE_DRIVER" value="sync"/>

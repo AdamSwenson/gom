@@ -15,11 +15,15 @@ class ExamTest extends \TestCase
     public $exam;
     protected $object;
 
+    public $examWithQuestionsAndStudentsId = 1;
+    public $examWithQuestionsButNoStudentsId = 6;
+
     public function setUp()
     {
         parent::setUp();
         $this->object = new Exam;
-        $this->exam = Exam::all()->random();
+        $this->exam = Exam::find($this->examWithQuestionsAndStudentsId);
+        //$this->exam = Exam::all()->random();
 
         \Auth::loginUsingId(self::$userid);
     }
@@ -151,7 +155,42 @@ class ExamTest extends \TestCase
         $this->assertFalse($exam->wasPreviouslyReleased(), "returns false");
     }
 
+    /**
+     * @test
+     */
+    public function isGradableGivesTrueWithQuestionsAndStudents(){
+        #prep
+        $exam = Exam::find(1);
 
+        #call and test
+        $this->assertEquals(true, $exam->isGradable());
+    }
+
+    /**
+     * @test
+     */
+    public function isGradableGivesFalseWithNoQuestions(){
+        $exam = factory(Exam::class)->create();
+
+        $this->assertEquals(false, $exam->isGradable());
+    }
+
+    /**
+     * @test
+     */
+    public function isGradableGivesFalseWithNoStudents(){
+        #prep
+        $exam = Exam::find($this->examWithQuestionsButNoStudentsId);
+        $this->assertInstanceOf(Exam::class, $exam, "exam object to test");
+        $this->assertEquals(0, count($exam->getAllAssociatedStudents()), "exam has no students");
+
+        #call
+        $result = $exam->isGradable();
+
+        #check
+        $this->assertEquals(false, $result, "returns false");
+
+    }
 
 
     /* ----------------- Queries --------------- */
@@ -275,18 +314,25 @@ class ExamTest extends \TestCase
 
     public function testElements()
     {
-        foreach ($this->exam->elements as $r)
+        $elements = $this->exam->elements;
+        $this->assertTrue(! is_null($elements), "Returned something");
+        $this->assertTrue(count($elements) >0, "At least one thing returned");
+        foreach ($elements as $r)
         {
-            $this->assertInstanceOf('App\Element', $r);
+            $this->assertInstanceOf('App\Element', $r, "Object returned is element model");
         }
     }
 
 
     public function testElementAssignments()
     {
-        foreach ($this->exam->elementAssignments as $r)
+        $elementAssignments = $this->exam->elementAssignments;
+        $this->assertTrue(! is_null($elementAssignments), "Returned something");
+        $this->assertTrue(count($elementAssignments) >0, "At least one thing returned");
+        foreach ($elementAssignments as $r)
         {
-            $this->assertInstanceOf('App\Element', $r);
+            $this->assertInstanceOf('App\Element', $r, "Returned element object");
+            $this->assertTrue(is_numeric($r->pivot->subtask), "Returned object has subtask");
         }
     }
 
@@ -300,19 +346,24 @@ class ExamTest extends \TestCase
 //    }
 
 
-    public function questions()
+    public function testQuestions()
     {
-        foreach ($this->exam->questions as $r)
+        $questions = $this->exam->questions;
+        $this->assertTrue(! is_null($questions), "Returned something");
+        $this->assertTrue(count($questions) >0, "At least one question returned");
+        foreach ($questions as $r)
         {
-            $this->assertInstanceOf('App\Question', $r);
+            $this->assertInstanceOf('App\Question', $r, "Object returned was a question model");
         }
     }
 
     public function testQuestionAssignments()
     {
+        $this->assertTrue(! is_null($this->exam->questionAssignments));
+
         foreach ($this->exam->questionAssignments as $r)
         {
-            $this->assertInstanceOf('App\Question', $r);
+            $this->assertInstanceOf('App\Question', $r, "question object returned");
             $this->assertTrue(is_integer($r->pivot->question_number));
         }
     }
@@ -326,6 +377,19 @@ class ExamTest extends \TestCase
         }
 
     }
+
+//    public function testStudents()
+//    {
+//        $students = $this->exam->students();
+//        $this->assertTrue(! is_null($students), "Returned something");
+//        $this->assertTrue(count($students) >0, "At least one thing returned");
+//        foreach ($this->exam->students as $r)
+//        {
+//            $this->assertInstanceOf(Student::class, $r, "student object returned");
+//        }
+//    }
+
+
 
     public function testUser()
     {
@@ -348,6 +412,10 @@ class ExamTest extends \TestCase
         $this->assertTrue(count($result) >= 1);
     }
 
+    
+    public function testGetUserId(){
+        $this->assertEquals(self::$userid, $this->exam->getUserId(), "returns user id" );
+    }
 
     public function testGetLocked()
     {

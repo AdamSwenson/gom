@@ -116,7 +116,10 @@ public static function questionPanelId($questionNumber){
      * @return array
      */
     public static function deleteButtonLocator($questionNumber){
-        return ['css' => '#' . self::questionPanelId($questionNumber) . ' .questionButtonArea .js-remove'];
+        return ['css' => "#questionItem{$questionNumber} > div.form-group.questionButtonArea > button"];
+//        return ['css' => '#' . self::questionPanelId($questionNumber) . ' .questionButtonArea .js-remove'];
+
+
     }
 
     /**

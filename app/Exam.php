@@ -34,15 +34,15 @@ class Exam extends BaseModel
         'name',
         'year',
         'released',
-        'previously_released'
+        'previously_released',
     ];
 
     protected $casts = [
-        'term'     => 'string',
-        'name'     => 'string',
-        'year'     => 'year',
-        'locked'   => 'boolean',
-        'released' => 'boolean',
+        'term'                => 'string',
+        'name'                => 'string',
+        'year'                => 'year',
+        'locked'              => 'boolean',
+        'released'            => 'boolean',
         'previously_released' => 'boolean',
     ];
 
@@ -51,8 +51,8 @@ class Exam extends BaseModel
         parent::boot();
     }
 
-# -------------------------- Helpful methods
 
+# -------------------------- Helpful methods
 
     /**
      * Marks the exam as released.
@@ -132,6 +132,7 @@ MYSQL;
 
     /**
      * Returns a collection of all students who have been associated with the exam
+     * The collection is sorted in descending order by last_name
      * @return \Illuminate\Support\Collection
      */
     public function getAllAssociatedStudents()
@@ -153,8 +154,27 @@ MYSQL;
         return $students;
     }
 
+    /**
+     * Returns true if there is at least one question and one student
+     * associated with the exam.
+     */
+    public function isGradable()
+    {
 
+        $questions = $this->questions;
 
+        if ( ! empty($questions) && count($questions) > 0 )
+        {
+            $students = $this->getAllAssociatedStudents();
+            if ( ! empty($students) && count($students) > 0 )
+            {
+                return true;
+            }
+
+        }
+
+        return false;
+    }
 
 
 
@@ -257,8 +277,9 @@ MYSQL;
      */
     public function elementAssignments()
     {
-        return $this->belongsToMany('App\Element', 'element_assignments')->withPivot('subtask')->withTimestamps();
-        //'App\QuestionAssignment');
+        return $this->belongsToMany('App\Element', 'element_assignments')
+            ->withPivot('subtask')
+            ->withTimestamps();
     }
 
     /**
@@ -268,7 +289,6 @@ MYSQL;
     public function elements()
     {
         return $this->belongsToMany('App\Element', 'element_assignments')->withPivot('subtask')->withTimestamps();
-//        return $this->hasMany('App\Element');
     }
 
 //    /**
@@ -286,7 +306,7 @@ MYSQL;
      */
     public function questions()
     {
-        return $this->hasManyThrough('App\Question', 'App\QuestionAssignment');
+        return $this->hasManyThrough('App\Question', 'App\QuestionAssignment', 'exam_id', 'id');
     }
 
     /**
@@ -306,6 +326,10 @@ MYSQL;
     {
         return $this->hasManyThrough('App\QuestionScore', 'App\QuestionAssignment');
     }
+
+//    public function students(){
+//         return $this->hasManyThrough(Student::class, Kumi::class); //, 'exam_id', 'id');
+//    }
 
     /**
      * Associated user
@@ -374,7 +398,7 @@ MYSQL;
      */
     public function getUserId()
     {
-        // TODO: Implement getUserId() method.
+        return $this->user->id;
     }
 
     /**
@@ -407,12 +431,6 @@ MYSQL;
     {
         $this->attributes['released'] = $value;
     }
-
-//    //Here active use - BaseModel
-//    public static function boot()
-//    {
-//        parent::boot();
-//    }
 
 }
 

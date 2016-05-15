@@ -6,6 +6,7 @@ $studentRowId = 1;
 $numQuestions = 5;
 $numElements  = 5;
 
+$scenario->group('grade');
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Confirm that the statistics and other dashboard features seen while grading are operating properly');
 
