@@ -60,7 +60,7 @@ elixir( function ( mix ) {
     mix.sass( [
         'common/common.sass',
         'reports/examControls.sass'
-    ], 'public/css/report-index-package.css');
+    ], 'public/css/report-index-package.css' );
     mix.sass( [
         'reports/examControls.sass'
     ], 'public/css/exam-controls-package.css' );
@@ -78,7 +78,6 @@ elixir( function ( mix ) {
         'common/common.sass',
         'setup/selectExam.scss'
     ], 'public/css/select-exam-package.css' );
-
 
 
     /* ---------------------------------------------- scripts ----------------------------------------------------*/
@@ -123,7 +122,7 @@ elixir( function ( mix ) {
     mix.browserify( 'help/help.js', 'public/js/help-package.js' );
 
     //testing
-    mix.browserify('setupPages/DEVeditRoster.js', 'public/js/dev-roster-edit-package.js');
+    mix.browserify( 'setupPages/DEVeditRoster.js', 'public/js/dev-roster-edit-package.js' );
 //    mix.browserify( 'reports/examControls.js', 'public/js/dev-exam-buttons.js' );
 
 } );
