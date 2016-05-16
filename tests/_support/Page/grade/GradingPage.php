@@ -159,11 +159,15 @@ public static function verifyGradingPageIntact($I, $examId){
 
     public static function clickStudentRow($I, $rowId){
         $I->amGoingTo("Click on row {$rowId} and check that the questions field displays");
-        $I->seeElement(['id' => 'studentListItem0']);
-//$I->executeJS("$('#studentListItem0').triggerHandler('click');");
-        $I->click(['id' => 'studentListItem0']);
-        $I->wait(2);
-        $I->seeElement(['id' => 'questionPanel']);
+        $I->seeElement(['css' => "#studentListItem{$rowId}"]);
+//        $I->click(['css' => "#studentListItem{$rowId}"]);
+        $I->click("//*[@id=\"studentListItem{$rowId}\"]");
+        $I->click(['css' => "html body div.container-fluid div.row div.col-md-4.rosterAndDashboardColumn div.panel.panel-default table#studentRoster.table.table-fixed.table-hover tbody#studentRosterBody tr#studentListItem0"]);
+        
+        /*        "html body div.container-fluid div.row div.col-md-4.rosterAndDashboardColumn div.panel.panel-default table#studentRoster.table.table-fixed.table-hover tbody#studentRosterBody tr#studentListItem0 td#studentName0.col-xs-6"*/
+//        $I->waitForElementVisible(['css' => "#panelQuestion{$rowId}"]);
+      //  $I->waitForElementVisible(['css' => "#questionArea"]);
+//        $I->seeElement(['id' => 'questionPanel']);
     }
 
     /**

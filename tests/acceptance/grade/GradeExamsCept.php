@@ -14,7 +14,7 @@ $I->wantTo('Check the grading page to make sure the everything is in its place a
 
 $I->test_login($I);
 $I->amOnPage(GradingPage::route($examId));
-$I->wait(2);
+$I->wait(5);
 
 GradingPage::verifyGradingPageIntact($I, $examId);
 
@@ -22,7 +22,7 @@ GradingPage::verifyGradingPageIntact($I, $examId);
 $I->wantTo("Click the student row {$studentRowId} and check that see everything expected (except for dashboard related changes, which are checked elsewhere)");
     $I->dontSeeElement(['id' => 'questionPanel']);
     GradingPage::clickStudentRow($I, $studentRowId);
-
+$I->wait(4);
     $I->expectTo("see the selected student's name in the active student field");
         $I->seeInField(GradingPage::$activeStudentNameFieldXPath, "lastNameOfExisting{$studentNumber}, firstNameOfExisting{$studentNumber}");
 
