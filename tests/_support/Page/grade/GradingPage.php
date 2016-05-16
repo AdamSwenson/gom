@@ -48,6 +48,26 @@ class GradingPage
 
     public static $letterGradeListId = "letterGradeList";
 
+    /** @var string The text that should see if there are no elements associated */
+    public static $noElementsText = "No elements for this question";
+
+
+    public static function sliderContainerLocator($questionNumber, $subtask){
+        return ['css' => "#element{$subtask} > div > span.col-lg-5.sliderContainer.Q{$questionNumber}E{$subtask}"];
+    }
+
+
+
+    /* --------------------------- Dashboard ----------------------- */
+    public static function numberGradedLocator(){
+        return ["css" => "#graded"];
+    }
+
+    public static function numberRemainingLocator(){
+        return ["css" => "#remaining"];
+    }
+
+
     /**
      * Returns x path to the tab for selecting a question
      * @param $questionNumber
@@ -173,6 +193,7 @@ public static function verifyGradingPageIntact($I, $examId){
      * @param $numElements
      */
     public static function verifyQuestionPanelIntact($I, $questionNumber, $numElements){
+        
         $I->expectTo("see that the letter grade button and question score field are present");
         $I->seeElement(self::letterGradeButtonLabelXPath($questionNumber));
         $I->seeElement(self::letterGradeButtonXPath($questionNumber));
@@ -190,21 +211,31 @@ public static function verifyGradingPageIntact($I, $examId){
             $I->expectTo("see the comment area for Q{$questionNumber}E{$j}");
             $I->seeElement(self::commentXPath($questionNumber, $j));
         }
-        
+
         $I->amGoingTo("Check that the sliders for question {$questionNumber} are displayed properly");
+
+        $I->waitForElementVisible(self::sliderContainerLocator($questionNumber, 1));
+
         for ( $j = 1; $j <= $numElements; $j++ )
         {
-            $I->amGoingTo("Inspect the slider parts for Q{$questionNumber}E{$j}");
-            $I->expect("The original input will be hidden and replaced with the bootstrap slider");
-            $I->dontSeeElement(self::sliderXPath($questionNumber, $j));
-            $I->seeElementInDOM(self::sliderXPath($questionNumber, $j));
-
-            $I->expect("The valence labels will be visible. ");
-            foreach ( self::$sliderValenceLabels as $v )
-            {
-                //$I->see($v); //, "#Q{$i}E{$j}");
-                $I->see($v, self::elementAreaXPath($questionNumber, $j));
-            }
+//            $I->amGoingTo("Inspect the slider parts for Q{$questionNumber}E{$j}");
+//            $I->expectTo("see the slider container span");
+//            $I->seeElement(self::sliderContainerLocator($questionNumber, $j));
+//
+//            $I->expect("that the original input will be hidden and replaced with the bootstrap slider");
+////            $I->dontSeeElement(self::sliderXPath($questionNumber, $j));
+//            $I->seeElementInDOM(self::sliderXPath($questionNumber, $j));
+//
+//            $I->expect("The valence labels will be visible. ");
+//            $k = 1;
+//            foreach ( self::$sliderValenceLabels as $v )
+//            {
+//
+//                //$I->see($v); //, "#Q{$i}E{$j}");
+//                $I->see($v, ['css' => "#element{$j} > div > span.col-lg-5.sliderContainer.Q{$questionNumber}E{$j} > div > div.slider-tick-label-container > div:nth-child($k)"]);
+//                $k++;
+//                #element1 > div > span.col-lg-5.sliderContainer.Q1E1 > div > div.slider-tick-label-container > div:nth-child(1)
+//            }
         }
     }
 

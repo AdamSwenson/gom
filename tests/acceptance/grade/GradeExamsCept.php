@@ -41,20 +41,18 @@ $I->wantTo("Click the question tabs and check that expected things display");
     for ( $i = 2; $i <= $numQuestions; $i++ )
     {
         GradingPage::clickQuestionTab($I, $i);
-        $I->wait(5);
         GradingPage::verifyQuestionPanelIntact($I, $i, $numElements);
     }
     $I->amGoingTo("go back and check question 1 (since it was showing when we started the test");
     GradingPage::clickQuestionTab($I, 1);
-    $I->wait(5);
     GradingPage::verifyQuestionPanelIntact($I, 1, $numElements);
 
 
 $I->wantTo("Click the grade blind icon and see that the student names are hidden");
 
+$I->wantTo("See the default message if there are no elements for a question");
 
-
-
+$I->see('catfood');
 //switch student
 
 //switch back to first student

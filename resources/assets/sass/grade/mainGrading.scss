@@ -1,7 +1,10 @@
 
 @import "../libraries/bootstrap-slider";
 
-@import "studentTable";
+@import "components/questionPanel";
+@import "components/elementArea";
+@import "components/studentTable";
+
 @import "../common/bootstrap_overrides";
 
 .typeahead {
@@ -30,4 +33,13 @@
 
 .slider-horizontal {
   margin-right: 35px;
+}
+
+.questionAndSliderColumn{
+  width-max: 700px;
+}
+
+.rosterAndDashboardColumn{
+  max-width: 550px;
+  min-width: 340px;
 }

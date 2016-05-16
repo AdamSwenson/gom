@@ -12323,6 +12323,9 @@ button.close {
   #topNavbar .navItem .active {
     background: white; }
 
+.startHidden {
+  display: none; }
+
 a {
   cursor: pointer; }
 

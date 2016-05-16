@@ -19,6 +19,7 @@ var Slider = require("../libraries/bootstrap-slider-modified.js");
 var letterGradeButton = require('./letterGradeButton.js')();
 
 (function () {
+    // $( document ).ready( function () {
 
     // studentNames supplies name data for the search box (typeahead)
     var $studentNames = $('[id^="studentName"]');
@@ -48,9 +49,24 @@ var letterGradeButton = require('./letterGradeButton.js')();
     var activeStudentColor = '#337ab7';
     var gradedStudentColor = '#5cb85c';
 
-    updateExamGrades();
+    /*
+     * Set valenceCutoffs for comments --  these represent the maximum value for each valence group.
+     * Magic numbers for now, but will accept data from the server for valenceCutoffs, valenceLabels and valenceLabelPositions
+     *
+     */
+    var sliderSettings = {
+        valenceCutoffs: [0, 3.25, 6.75, 10],
+        valenceLabels: ["Missing", "Poor", "Fair", "Excellent"],
+        valenceLabelPositions: [0, 33, 67, 100],
+        sliderStep: .25
+    };
 
-    //Controls
+    var valenceCutoffs = [0, 3.25, 6.75, 10];
+    var valenceLabels = ["Missing", "Poor", "Fair", "Excellent"];
+    var valenceLabelPositions = [0, 33, 67, 100];
+    var sliderStep = .25;
+
+    //Listeners
     $("#nameVisibilityControl").on('click', function () {
         toggleNameVisibility();
     });
@@ -71,15 +87,23 @@ var letterGradeButton = require('./letterGradeButton.js')();
         onStudentSelect(this);
     });
 
-    /*
-     * Set valenceCutoffs for comments --  these represent the maximum value for each valence group.
-     * Magic numbers for now, but will accept data from the server for valenceCutoffs, valenceLabels and valenceLabelPositions
-     *
-     */
-    var valenceCutoffs = [0, 3.25, 6.75, 10];
-    var valenceLabels = ["Missing", "Poor", "Fair", "Excellent"];
-    var valenceLabelPositions = [0, 33, 67, 100];
-    var sliderStep = .25;
+    $('[id^="questionScore"]').bind('change', function () {
+        // Handle question score inputs. When focus is lost, store values,
+        // update grades and save timers.
+        handleQuestionScoreChange(this);
+        updateStudentDataArea();
+        resumeTimerIfPaused();
+    });
+
+    //  Handle changes to the comment TextArea when focus is lost. Saves data and timers.
+    $('[name^="comment"]').focusout(function () {
+        if (activeStudent === null) return;
+        updateAndSaveComment($(this));
+        //saveTimer();
+        resumeTimerIfPaused();
+    });
+
+    updateExamGrades();
 
     /* initialize Sliders with valenceCutoffs */
     var $sliders = $('input.slider').slider({
@@ -91,16 +115,18 @@ var letterGradeButton = require('./letterGradeButton.js')();
         ticks_position: valenceLabels
     });
 
-    /*
-     * GENERAL FUNCTIONS
-     */
+    /* -------------------------------- GENERAL FUNCTIONS ------------------------------ */
 
-    // Returns which valence group a [score] belongs to by comparing with valenceCutoffs[]
-    // i.e. a score > 0 and <= 2.5 will be in the 'poor' valence (1)
-    function getValence(score) {
+    /**
+     * Returns which valence group a [score] belongs to by comparing with valenceCutoffs[] 
+     * i.e. a score > 0 and <= 2.5 will be in the 'poor' valence (1)
+     * @param score
+     * @returns {number}
+     */
+    function getValence(sliderSettings, score) {
         var valence = 0;
-        for (var j = valenceCutoffs.length - 2; j >= 0; j--) {
-            if (score > valenceCutoffs[j]) {
+        for (var j = sliderSettings.valenceCutoffs.length - 2; j >= 0; j--) {
+            if (score > sliderSettings.valenceCutoffs[j]) {
                 valence = j + 1;
                 break;
             }
@@ -157,7 +183,8 @@ var letterGradeButton = require('./letterGradeButton.js')();
         createGradeRequest('element_id', elementId, score, $comment.val());
     }
 
-    /* Creates a key/value array GradeRequest to upload.
+    /**
+     * Creates a key/value array GradeRequest to upload.
      * Params: dataType: the label for thing to be modified
      *      elementId: question or element ID to receive the update
      *      score: the score for the question or element
@@ -222,6 +249,10 @@ var letterGradeButton = require('./letterGradeButton.js')();
         });
     }
 
+    /**
+     * Returns the id of the student currently being graded
+     * @returns {*}
+     */
     function getActiveStudentId() {
         if (activeStudent === null) {
             return null;
@@ -371,12 +402,15 @@ var letterGradeButton = require('./letterGradeButton.js')();
         sortAsc = !sortAsc;
     }
 
-    // sums elements scores and sets question scores - will be used for StandardScoring
+    /**
+     * sums elements scores and sets question scores - will be used for StandardScoring
+     */
     function updateStandardScores() {}
     //
 
     /**
-     * save timer for the active student and update the displays for avg time, total time, and time remaining
+     * Save timer for the active student and update the displays
+     * for avg time, total time, and time remaining
      */
     function saveTimer() {
         if (activeStudent === null) return;
@@ -496,7 +530,45 @@ var letterGradeButton = require('./letterGradeButton.js')();
      then save score, text and time
      *  */
     $('input.slider').on('slideStop', function (slideEvt) {
+        handleElementSliderStopEvent(slideEvt, elementScores, stockComments, sliderSettings);
+        // // update the element's score visually and in elementScores[]
+        // var elementNumber = $( this ).closest( '[id^="element"]' ).attr( 'data-element-index' );
+        // var oldScore = elementScores[ activeStudent ][ elementNumber ];
+        // var newScore = slideEvt.value;
+        //
+        // elementScores[ activeStudent ][ elementNumber ] = newScore;
+        //
+        // // update comment text -- only replace text if the score has changed valence regions
+        // var $parent = $( this ).parents( '[id^="element"]' );
+        // var $elementComment = $parent.find( 'textArea' );
+        // if ( getValence( newScore ) != getValence( oldScore ) ) {
+        //     // Score is in a new valence region.
+        //     // plug in the appropriate comment text and save to DB
+        //     var stockResponse = stockComments[ elementNumber ][ getValence( newScore ) ];
+        //     $elementComment.val( stockResponse );
+        //     updateAndSaveComment( $elementComment );
+        // } else {
+        //     // Score is in the same valence region.
+        //     // Jump straight to saving without changing the elementComment
+        //     var elementId = $( this ).closest( '[id^="element"]' ).attr( 'data-element-id' );
+        //     createGradeRequest( 'element_id', elementId, newScore, null );
+        // }
+        //
+        // // If using bell curve (standardScoring), element score affects the total question score, so update
+        // if ( standardScoring ) {
+        //     updateStandardScores();
+        // }
+        //
+        // updateStudentDataArea();
+        // resumeTimerIfPaused();
+    });
 
+    /**
+     * Called when an element slider stops movement. Updates element
+     * score and text (if necessary), then saves score, text and time
+     * @param slideEvt
+     */
+    function handleElementSliderStopEvent(slideEvt, elementScores, stockComments, sliderSettings) {
         // update the element's score visually and in elementScores[]
         var elementNumber = $(this).closest('[id^="element"]').attr('data-element-index');
         var oldScore = elementScores[activeStudent][elementNumber];
@@ -507,10 +579,10 @@ var letterGradeButton = require('./letterGradeButton.js')();
         // update comment text -- only replace text if the score has changed valence regions
         var $parent = $(this).parents('[id^="element"]');
         var $elementComment = $parent.find('textArea');
-        if (getValence(newScore) != getValence(oldScore)) {
+        if (getValence(sliderSettings, newScore) != getValence(sliderSettings, oldScore)) {
             // Score is in a new valence region.
             // plug in the appropriate comment text and save to DB
-            var stockResponse = stockComments[elementNumber][getValence(newScore)];
+            var stockResponse = stockComments[elementNumber][getValence(sliderSettings, newScore)];
             $elementComment.val(stockResponse);
             updateAndSaveComment($elementComment);
         } else {
@@ -527,19 +599,24 @@ var letterGradeButton = require('./letterGradeButton.js')();
 
         updateStudentDataArea();
         resumeTimerIfPaused();
-    });
+    }
 
-    // Handle question score inputs. When focus is lost, store values, update grades and save timers.
-    $('[id^="questionScore"]').bind('change', function () {
-        var qNumber = $(this).attr('data-number');
-        var score = parseFloat($(this).val());
-        var maxScore = parseFloat($(this).attr('max'));
+    /**
+     * Handle question score inputs. When focus is lost, store values,
+     * update grades and save timers.
+     *
+     * @param me Context from bound input
+     */
+    function handleQuestionScoreChange(me) {
+        var qNumber = $(me).attr('data-number');
+        var score = parseFloat($(me).val());
+        var maxScore = parseFloat($(me).attr('max'));
         if (score > maxScore) {
             score = maxScore;
-            $(this).val(maxScore);
+            $(me).val(maxScore);
         }
         questionScores[activeStudent][qNumber - 1] = score;
-        var questionAssId = $(this).attr('data-question-assignment-id');
+        var questionAssId = $(me).attr('data-question-assignment-id');
 
         if (score >= 0) {
             createGradeRequest('question_assignment_id', questionAssId, score, null);
@@ -565,25 +642,14 @@ var letterGradeButton = require('./letterGradeButton.js')();
                 }
             });
         }
-
-        updateStudentDataArea();
-        resumeTimerIfPaused();
-    });
-
-    //  Handle changes to the comment TextArea when focus is lost. Saves data and timers.
-    $('[name^="comment"]').focusout(function () {
-        if (activeStudent === null) return;
-        updateAndSaveComment($(this));
-        //saveTimer();
-        resumeTimerIfPaused();
-    });
+    }
 
     /*
      * A student is selected from the roster - DO LOTS OF STUFF
      */
     function onStudentSelect(row) {
-        // $( "[id^='studentListItem']" ).on('click', function () {
         saveTimer();
+
         $('#selectPrompt').hide();
         $('#questionArea').show("fast");
 
@@ -619,9 +685,8 @@ var letterGradeButton = require('./letterGradeButton.js')();
                 $(this).val(thisComment);
             }
         });
-
-        // } );
     }
+
     //bindLetterGradeHandler();
     //    return false;
     //} );

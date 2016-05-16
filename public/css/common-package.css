@@ -12323,4 +12323,7 @@ button.close {
   #topNavbar .navItem .active {
     background: white; }
 
+.startHidden {
+  display: none; }
+
 /*# sourceMappingURL=common-package.css.map */
