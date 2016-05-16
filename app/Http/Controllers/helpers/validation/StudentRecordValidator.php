@@ -11,6 +11,7 @@ namespace App\Http\Controllers\helpers\validation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\MessageBag;
+use Laracasts\Flash\Flash;
 
 /**
  * Handles validation of student records when importing.
@@ -197,6 +198,7 @@ class StudentRecordValidator implements IStudentRecordValidator
         {
             return $incomingCount;
         }
+
         Flash::warning('You tried to record too many students at one time. Not all students were recorded. Please check the roster and add the remaining students.');
         //  throw new SilentlyLoggedException($type, " Incoming count was: $incomingCount. Allowed maximum was" . self::MAX_STUDENTS);
         return self::MAX_STUDENTS;
