@@ -13,6 +13,15 @@ settings:
 extensions:
     enabled:
         - Codeception\Extension\RunFailed
+        - Codeception\Extension\Recorder
+        - Codeception\Extension\Logger
+    config:
+        Codeception\Extension\Logger:
+          - max_files: 20
+
+        Codeception\Extension\Recorder:
+          - delete_successful: true
+
 modules:
     config:
         Db:

@@ -10,12 +10,19 @@ modules:
         - WebDriver:
             url: 'http://localhost:8000'
             window_size: maximize
-#            browser: firefox
             browser: phantomjs
         - Db
 
         - \Helper\Acceptance
 
-extensions:
-    enabled: [Codeception\Extension\Recorder]
-
+#extensions:
+#    enabled: [Codeception\Extension\Logger, Codeception\Extension\Recorder]
+#    config:
+#      Codeception\Extension\Recorder:
+#        delete_successful: true
+#
+#      Codeception\Extension\Logger:
+#        max_files: 20
+#
+#
+#

@@ -8,7 +8,7 @@ $numQuestions = 5;
 $numElements = 5;
 $maxScore = 100;
 
-$scenario->group('grade');
+//$scenario->group('grade');
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Check the grading page to make sure the everything is in its place and that the large scale page changes work properly. More detailed grading operations are tested in other files');
 
