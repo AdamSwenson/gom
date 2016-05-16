@@ -118,7 +118,7 @@
 
         {{--var numQuestions = '{{  count( $questionAssignments ) }}';--}}
         {{--// for setting 'Grade' tab as active--}}
-        {{--var activeTab = 'navGrade';--}}
+
 
 
                 <?php
@@ -142,7 +142,7 @@
                 };
 
         window.console.log(data);
-
+        var activeTab = 'navGrade';
 
     </script>
 

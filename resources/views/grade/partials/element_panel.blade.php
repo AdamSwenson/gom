@@ -1,15 +1,12 @@
 <!-- template used by 'grade_exam' to host -->
 <div id="element{{ $eNumber }}"
      class="list-group-item elementPanel"
-     {{--style="background-color: #DDDDDD;"--}}
      data-element-index="{{ $elementIndex }}"
      data-element-id="{{ $elements[$eNumber-1]->getId() }}"
 >
     <h5>Element #{{ $eNumber }}: "{{ $elements[$eNumber-1]->getElementName() }}"</h5>
     <div class="row">
-                <span class="col-lg-5 sliderContainer Q{{ $qNumber }}E{{ $eNumber }}"
-                      {{--style="padding-right: 0px;"--}}
-                >
+                <span class="col-lg-5 sliderContainer Q{{ $qNumber }}E{{ $eNumber }}">
                     <!-- score slider -->
                     <label for="sliderQ{{ $qNumber }}E{{ $eNumber }}"></label>
                     <input id="sliderQ{{ $qNumber }}E{{ $eNumber }}"
