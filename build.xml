@@ -8,7 +8,7 @@
 
 
     <target name="build"
-         depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpunit,codeception,phpdox"
+         depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpunit,codeceptionAcceptance,phpdox"
          description=""/>
 
     <target name="build-parallel"
@@ -38,10 +38,10 @@
         </exec>
     </target>
 
-    <target name="codeception" description="Run codeception tests">
-        <exec executable="./vendor/bin/codecept run">
-            <arg value="--html --coverage-html"/>
-        </exec>
+    <target name="codeceptionAcceptance" description="Run codeception tests">
+        <!--<exec executable="vendor/bin/codecept run acceptance">-->
+            <!--<arg value="&#45;&#45;html &#45;&#45;xml &#45;&#45;coverage-html"/>-->
+        <!--</exec>-->
     </target>
 
     <target name="clean"

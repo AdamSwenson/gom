@@ -26,24 +26,20 @@
                 <li id="navSetup"
                     title="Create or edit an exam">
                     <a href="{{url('exam')}}"
-                       class="navItem">Setup</a>
+                       class="navItem"><span class="linkText">Setup</span></a>
                 </li>
 
                 <li id="navGrade"
                     title="Grade an exam">
                     <a href="{{url('grade')}}"
-                       class="navItem">Grade</a>
+                       class="navItem"><span class="linkText">Grade</span></a>
                 </li>
 
                 <li id="navReport"
                     title="Reports, Analytics and Student Feedback">
                     <a href="{{url('report')}}"
-                       class="navItem">Reports</a>
+                       class="navItem"><span class="linkText">Reports</span></a>
                 </li>
-                {{--<li id="navHelp"--}}
-                {{--title="Help" >--}}
-                {{--<a href="{{url('help')}}" style="color:white;"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>--}}
-                {{--</li>--}}
 
                 <li id="navHelp"
                     title="Help"
@@ -84,13 +80,6 @@
                     </ul>
                 </li>
 
-
-                {{--
-                <li id="navAccount">
-                    <a href="{{url('account')}}" title="Account & Settings " style="color:white;">
-                        <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></a>
-                </li>
-                --}}
                 <li id="navLogout">
                     <a href="{{url('auth/logout')}}"
                        title="Log Out"

@@ -31,10 +31,10 @@ class TestingServiceProvider extends ServiceProvider
 
             //use the testing database
             $this->app['config']['database.connections.mysql.database'] = 'gom_testing';
-            $this->app['config']['queue.default'] = 'sync';
-            Log::info('running codeception. environment is: ' . $this->app->environment());
 
-            Log::info("db is: " . env('DB_DATABASE'));
+            $this->app['config']['queue.default'] = 'sync';
+            
+            Log::info('running codeception. environment is: ' . $this->app->environment());
         }
 
     }

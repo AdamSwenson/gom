@@ -3,7 +3,7 @@ namespace PHPSTORM_META {
 
    /**
     * PhpStorm Meta file, to provide autocomplete information for PhpStorm
-    * Generated on 2016-03-21.
+    * Generated on 2016-05-16.
     *
     * @author Barry vd. Heuvel <barryvdh@gmail.com>
     * @see https://github.com/barryvdh/laravel-ide-helper
@@ -138,6 +138,8 @@ namespace PHPSTORM_META {
             'command.middleware.make' instanceof \Illuminate\Routing\Console\MiddlewareMakeCommand,
             'command.session.database' instanceof \Illuminate\Session\Console\SessionTableCommand,
             'hash' instanceof \Illuminate\Hashing\BcryptHasher,
+            'swift.transport' instanceof \Illuminate\Mail\TransportManager,
+            'swift.mailer' instanceof \Swift_Mailer,
             'mailer' instanceof \Illuminate\Mail\Mailer,
             'Illuminate\Contracts\Pipeline\Hub' instanceof \Illuminate\Pipeline\Hub,
             'queue' instanceof \Illuminate\Queue\QueueManager,
@@ -161,6 +163,7 @@ namespace PHPSTORM_META {
             'BackupManager\Databases\DatabaseProvider' instanceof \BackupManager\Databases\DatabaseProvider,
             'BackupManager\Compressors\CompressorProvider' instanceof \BackupManager\Compressors\CompressorProvider,
             'BackupManager\ShellProcessing\ShellProcessor' instanceof \BackupManager\ShellProcessing\ShellProcessor,
+            'command.tail' instanceof \Spatie\Tail\TailCommand,
         ],
         \Illuminate\Contracts\Container\Container::make('') => [
             '' == '@',
@@ -291,6 +294,8 @@ namespace PHPSTORM_META {
             'command.middleware.make' instanceof \Illuminate\Routing\Console\MiddlewareMakeCommand,
             'command.session.database' instanceof \Illuminate\Session\Console\SessionTableCommand,
             'hash' instanceof \Illuminate\Hashing\BcryptHasher,
+            'swift.transport' instanceof \Illuminate\Mail\TransportManager,
+            'swift.mailer' instanceof \Swift_Mailer,
             'mailer' instanceof \Illuminate\Mail\Mailer,
             'Illuminate\Contracts\Pipeline\Hub' instanceof \Illuminate\Pipeline\Hub,
             'queue' instanceof \Illuminate\Queue\QueueManager,
@@ -314,6 +319,7 @@ namespace PHPSTORM_META {
             'BackupManager\Databases\DatabaseProvider' instanceof \BackupManager\Databases\DatabaseProvider,
             'BackupManager\Compressors\CompressorProvider' instanceof \BackupManager\Compressors\CompressorProvider,
             'BackupManager\ShellProcessing\ShellProcessor' instanceof \BackupManager\ShellProcessing\ShellProcessor,
+            'command.tail' instanceof \Spatie\Tail\TailCommand,
         ],
         \App::make('') => [
             '' == '@',
@@ -444,6 +450,8 @@ namespace PHPSTORM_META {
             'command.middleware.make' instanceof \Illuminate\Routing\Console\MiddlewareMakeCommand,
             'command.session.database' instanceof \Illuminate\Session\Console\SessionTableCommand,
             'hash' instanceof \Illuminate\Hashing\BcryptHasher,
+            'swift.transport' instanceof \Illuminate\Mail\TransportManager,
+            'swift.mailer' instanceof \Swift_Mailer,
             'mailer' instanceof \Illuminate\Mail\Mailer,
             'Illuminate\Contracts\Pipeline\Hub' instanceof \Illuminate\Pipeline\Hub,
             'queue' instanceof \Illuminate\Queue\QueueManager,
@@ -467,6 +475,7 @@ namespace PHPSTORM_META {
             'BackupManager\Databases\DatabaseProvider' instanceof \BackupManager\Databases\DatabaseProvider,
             'BackupManager\Compressors\CompressorProvider' instanceof \BackupManager\Compressors\CompressorProvider,
             'BackupManager\ShellProcessing\ShellProcessor' instanceof \BackupManager\ShellProcessing\ShellProcessor,
+            'command.tail' instanceof \Spatie\Tail\TailCommand,
         ],
         app('') => [
             '' == '@',
@@ -597,6 +606,8 @@ namespace PHPSTORM_META {
             'command.middleware.make' instanceof \Illuminate\Routing\Console\MiddlewareMakeCommand,
             'command.session.database' instanceof \Illuminate\Session\Console\SessionTableCommand,
             'hash' instanceof \Illuminate\Hashing\BcryptHasher,
+            'swift.transport' instanceof \Illuminate\Mail\TransportManager,
+            'swift.mailer' instanceof \Swift_Mailer,
             'mailer' instanceof \Illuminate\Mail\Mailer,
             'Illuminate\Contracts\Pipeline\Hub' instanceof \Illuminate\Pipeline\Hub,
             'queue' instanceof \Illuminate\Queue\QueueManager,
@@ -620,6 +631,7 @@ namespace PHPSTORM_META {
             'BackupManager\Databases\DatabaseProvider' instanceof \BackupManager\Databases\DatabaseProvider,
             'BackupManager\Compressors\CompressorProvider' instanceof \BackupManager\Compressors\CompressorProvider,
             'BackupManager\ShellProcessing\ShellProcessor' instanceof \BackupManager\ShellProcessing\ShellProcessor,
+            'command.tail' instanceof \Spatie\Tail\TailCommand,
         ],
     ];
 }

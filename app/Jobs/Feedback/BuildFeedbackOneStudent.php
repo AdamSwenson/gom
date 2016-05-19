@@ -8,6 +8,7 @@
 
 namespace App\Jobs\Feedback;
 
+use App\Events\FeedbackCompilationFailureEvent;
 use App\Exam;
 use App\Jobs\Job;
 use App\Student;
@@ -56,7 +57,7 @@ class BuildFeedbackOneStudent extends Job implements SelfHandling, ShouldQueue
     public function __construct(Exam $exam, Student $student)
     {
         //make sure the user is stored for re-login on hydration
-        if (empty($this->userId))
+        if ( empty($this->userId) )
         {
             $this->userId = Auth::user()->id;
         }
@@ -73,18 +74,24 @@ class BuildFeedbackOneStudent extends Job implements SelfHandling, ShouldQueue
     public function handle()
     {
         /* Loading the exam and student model should be handled automatically, but it was having
-        problems (perhaps related to the wakeup and BaseModel issues).
+        problems (perhaps related to the wake up and BaseModel issues).
         So doing it explicitly for now (and on separate line to help with debugging. */
         $exam = Exam::findOrFail($this->exam->id);
         $student = Student::findOrFail($this->student->id);
 
-        $this->feedbackBuilder->recompileFeedbackForStudent($exam->id, $student->id);
+        //this solves error in feedback compilation caused by
+        //inconsistent argument types
+        $this->feedbackBuilder->recompileFeedbackForStudent($exam->id, $student);
 
-        if (!empty($feedback))
+        if ( ! empty($feedback) )
         {
             //once done, fire the notification that ready for distribution
-            //event(new FeedbackCompilationCompleteEvent($exam));
+            event(new FeedbackCompilationCompleteEvent($exam));
+        } else
+        {
+            //Error handling in case fails
+            event(new FeedbackCompilationFailureEvent($exam));
         }
-        //TODO Error handling in case fails
+
     }
 }

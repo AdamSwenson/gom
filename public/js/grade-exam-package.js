@@ -18261,13 +18261,21 @@ module.exports = function () {
      * @param activeTab id of tab to make active
      */
     function setActiveNavTab(activeTab) {
-        if (activeTab) {
+        if (typeof activeTab != 'undefined' && activeTab) {
             $('[id^="nav"]').attr('class', '');
-            $('#' + activeTab).attr('class', 'active');
+            /**
+             * temporarily not using the bootstrap active class
+             * because the style package makes it render weird.
+             */
+            // $( '#' + activeTab ).attr( 'class', 'active' );
+            $('#' + activeTab + ' .linkText').attr('class', 'underlined');
+            window.console.log('navTab', activeTab);
         }
     }
 
-    setActiveNavTab(activeTab);
+    (function () {
+        setActiveNavTab(activeTab);
+    })();
 };
 
 },{"bootstrap":3,"jquery":16}]},{},[1]);

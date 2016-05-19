@@ -91,6 +91,7 @@
         google.load("visualization", "1", {packages: ["corechart"]});
 
         var activeTab = 'navReport';
+
         var questionScores = JSON.parse('{!! $questionScores !!}');
         var questionScoresByQNumber = JSON.parse('{!! $questionScoresByQNumber !!}');
         var questionStats = JSON.parse('{!! $questionStats !!}');
