@@ -104,6 +104,12 @@ class FeedbackBuilder implements IFeedbackBuilder
     public function buildFeedback($examId)
     {
         $this->exam = Exam::find($examId);
+        
+        //Check whether the exam has been graded. 
+        //If not, bailout before doing anything else
+        if( ! $this->exam->isGraded()){
+            
+        }
 
         //Load statistical information
         $this->scoreStatsRepository->loadStats($this->exam);
@@ -201,7 +207,7 @@ class FeedbackBuilder implements IFeedbackBuilder
      */
     public function recompileFeedbackForStudent($examId, Student $student)
     {
-        $this->exam = Exam::find($examId);
+        $this->exam = Exam::findOrFail($examId);
 
         //Create one master array with all the questions and elements
         //it will check whether it has already been run

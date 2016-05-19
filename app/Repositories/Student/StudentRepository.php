@@ -357,7 +357,10 @@ class StudentRepository implements IStudentRepository
 
     /**
      * Returns all students associated with an exam sorted in
-     * descending order by last name
+     * descending order by last name.
+     *
+     * Will return a Collection regardless of whether
+     * students were located. 
      *
      * this is essentially doing something like:
      * SELECT sxc.sid FROM studentsXclasses sxc

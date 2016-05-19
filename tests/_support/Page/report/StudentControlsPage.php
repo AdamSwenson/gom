@@ -19,6 +19,11 @@ class StudentControlsPage
     public static $pageSubHeadingText = "Send email notifications or review student feedback";
 
 
+    public static $noStudentsMessageText = "This exam has no students associated with it.";
+    public static $noStudentsMessageClassName = "noStudentsMessage";
+
+    public static $controlRowClassName = "studentControlRow";
+
     /**
      * Basic route example for your current URL
      * You can append any additional parameter to URL
