@@ -24,7 +24,8 @@ elixir( function ( mix ) {
         'help/bodyText.scss'
     ], 'public/css/help-styles.css' );
 
-    mix.styles( [ 'libraries/bootstrap.min.css',
+    mix.styles( [ 
+        'libraries/bootstrap.min.css',
         'libraries/bootstrap-theme.min.css',
         'libraries/bootstrap-slider.css',
         'libraries/jquery-ui-1.11.4.css',
@@ -40,8 +41,7 @@ elixir( function ( mix ) {
     ], 'public/css/common-package.css' );
 
     /* ------------ grade pages -------------- */
-    mix.sass(
-        [
+    mix.sass( [
             'grade/mainGrading.scss'
         ], 'public/css/grade-package.css' );
     mix.sass( [
@@ -61,9 +61,11 @@ elixir( function ( mix ) {
         'common/common.sass',
         'reports/examControls.sass'
     ], 'public/css/report-index-package.css');
+    
     mix.sass( [
         'reports/examControls.sass'
     ], 'public/css/exam-controls-package.css' );
+    
     mix.sass( [
         'reports/examAnalytics.scss'
     ], 'public/css/exam-analytics-package.css' );
@@ -124,6 +126,8 @@ elixir( function ( mix ) {
 
     //testing
     mix.browserify('setupPages/DEVeditRoster.js', 'public/js/dev-roster-edit-package.js');
+
+    mix.browserify(['libraries/jquery-1.11.3.min.js'], 'public/js/jquery.js');
 //    mix.browserify( 'reports/examControls.js', 'public/js/dev-exam-buttons.js' );
 
 

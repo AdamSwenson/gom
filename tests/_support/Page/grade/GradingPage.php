@@ -222,24 +222,24 @@ public static function verifyGradingPageIntact($I, $examId){
 
         for ( $j = 1; $j <= $numElements; $j++ )
         {
-//            $I->amGoingTo("Inspect the slider parts for Q{$questionNumber}E{$j}");
-//            $I->expectTo("see the slider container span");
-//            $I->seeElement(self::sliderContainerLocator($questionNumber, $j));
-//
-//            $I->expect("that the original input will be hidden and replaced with the bootstrap slider");
-////            $I->dontSeeElement(self::sliderXPath($questionNumber, $j));
-//            $I->seeElementInDOM(self::sliderXPath($questionNumber, $j));
-//
-//            $I->expect("The valence labels will be visible. ");
-//            $k = 1;
-//            foreach ( self::$sliderValenceLabels as $v )
-//            {
-//
-//                //$I->see($v); //, "#Q{$i}E{$j}");
-//                $I->see($v, ['css' => "#element{$j} > div > span.col-lg-5.sliderContainer.Q{$questionNumber}E{$j} > div > div.slider-tick-label-container > div:nth-child($k)"]);
-//                $k++;
-//                #element1 > div > span.col-lg-5.sliderContainer.Q1E1 > div > div.slider-tick-label-container > div:nth-child(1)
-//            }
+            $I->amGoingTo("Inspect the slider parts for Q{$questionNumber}E{$j}");
+            $I->expectTo("see the slider container span");
+            $I->seeElement(self::sliderContainerLocator($questionNumber, $j));
+
+            $I->expect("that the original input will be hidden and replaced with the bootstrap slider");
+//            $I->dontSeeElement(self::sliderXPath($questionNumber, $j));
+            $I->seeElementInDOM(self::sliderXPath($questionNumber, $j));
+
+            $I->expect("The valence labels will be visible. ");
+            $k = 1;
+            foreach ( self::$sliderValenceLabels as $v )
+            {
+
+                //$I->see($v); //, "#Q{$i}E{$j}");
+                $I->see($v, ['css' => "#element{$j} > div > span.col-lg-5.sliderContainer.Q{$questionNumber}E{$j} > div > div.slider-tick-label-container > div:nth-child($k)"]);
+                $k++;
+                #element1 > div > span.col-lg-5.sliderContainer.Q1E1 > div > div.slider-tick-label-container > div:nth-child(1)
+            }
         }
     }
 

@@ -16,6 +16,18 @@ $I->test_login($I);
 $I->amOnPage(GradingPage::route($examId));
 $I->wait(2);
 
+$I->click(['css' => '#studentListItem0']);
+$I->wait(1);
+
+$I->expectTo("see that the question fields have displayed");
+$I->see('Question #1: "Exam' . $examId . 'Question1"');
+for ( $i = 1; $i <= $numQuestions; $i++ )
+{
+    $I->expectTo("see the question tab for q{$i}");
+    $I->see("Q{$i}");
+    $I->seeElement(GradingPage::questionPanelTabXPath($i));
+}
+
 $I->wantTo("Test the letter grade buttons");
 $letterGrades = App\Repositories\Grade\GradeFactory::$grades;
 for ( $i = 1; $i <= $numQuestions; $i++ )

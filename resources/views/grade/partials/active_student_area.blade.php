@@ -1,0 +1,23 @@
+<div class="form-group activeStudentInput">
+    <div id="activeStudentNameArea"
+         class="col-xs-7">
+        <label for="activeStudentName">
+                            <span id="nameVisibilityControl"
+                                  class="glyphicon glyphicon-pencil"
+                                  title="Click to hide student names"
+                            > </span>
+        </label>
+        <input id="activeStudentName"
+               class="typeahead full-width"
+               type="text"
+               placeholder="No Student Selected">
+    </div>
+    <div id="activeStudentIdentifierArea"
+         class="col-xs-5">
+        <label for="activeStudentIdentifier">ID</label>
+        <input class="typeahead full-width"
+               type="text"
+               id="activeStudentIdentifier"
+               placeholder="--">
+    </div>
+</div>

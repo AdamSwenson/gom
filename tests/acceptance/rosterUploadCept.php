@@ -12,10 +12,10 @@ $examId = $I->examIdNoQuestions();
 
 //Log in
 $I->test_login($I);
-$I->wait(5);
+$I->wait(2);
 # Go to page
 $I->amOnPage("/exam/{$examId}/student/edit");
-$I->wait(5);
+$I->wait(3);
 //$I->waitForElement(['css' => '#scriptBox']);
 RosterEditPage::verifyRosterEditPageIntact($I);
 //no students assoc w exam 4

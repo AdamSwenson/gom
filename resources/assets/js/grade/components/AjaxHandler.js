@@ -60,7 +60,7 @@ module.exports = {
             gradeRequest[ 'comment_text' ] = comment;
         }
         gradeRequest[ 'student_id' ] = Roster.getActiveStudentId();
-
+window.console.log('createGradeRequest', gradeRequest);
         this.saveDataWithTime( gradeRequest, data, Roster );
     },
 
@@ -69,6 +69,7 @@ module.exports = {
      * @param gradeRequest
      */
     saveDataWithTime: function ( gradeRequest, data, Roster ) {
+        var me = this;
         if ( ! gradeRequest ) {
             gradeRequest = {};
             gradeRequest[ 'student_id' ] = Roster.getActiveStudentId();
@@ -84,10 +85,10 @@ module.exports = {
                 //console.log('success! ');
             },
             error: function () {
-                this.showWarningMessage( this.messages.serverErrorTitle, this.messages.serverErrorText );
+                me.showWarningMessage( me.messages.serverErrorTitle, me.messages.serverErrorText );
             },
             timeout: function () {
-                this.showWarningMessage( this.messages.serverTimeoutTitle, this.messages.serverTimeoutText );
+                me.showWarningMessage( me.messages.serverTimeoutTitle, me.messages.serverTimeoutText );
             }
         } );
     },
@@ -98,7 +99,7 @@ module.exports = {
      * @param Roster
      */
     deleteScoreRequest: function ( questionAssId, Roster, ) {
-        // delete the score
+        var me = this;
         var examId = $( 'h3' ).attr( 'data-exam-id' );
         var gradeRequest = {};
         gradeRequest[ 'question_assignment_id' ] = questionAssId;
@@ -110,10 +111,10 @@ module.exports = {
             success: function () {
             },
             error: function () {
-                this.showWarningMessage( this.messages.serverErrorTitle, this.messages.serverErrorText );
+                me.showWarningMessage( me.messages.serverErrorTitle, me.messages.serverErrorText );
             },
             timeout: function () {
-                AjaxHandler.showWarningMessage( this.messages.serverTimeoutTitle, this.messages.serverTimeoutText );
+                me.showWarningMessage( me.messages.serverTimeoutTitle, me.messages.serverTimeoutText );
             }
         } );
     },

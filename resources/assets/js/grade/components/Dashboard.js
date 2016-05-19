@@ -1,8 +1,8 @@
-var $ = require('jquery');
+var $ = require( 'jquery' );
 window.$ = $;
 var jQuery = $;
 window.jQuery = jQuery;
-require('bootstrap');
+require( 'bootstrap' );
 
 /**
  * Responsible for managing and displaying grading statistics
@@ -11,10 +11,16 @@ require('bootstrap');
 module.exports = {
 
     /**
+     * This manages the number graded and number of exams remaining fields
+     *
      * examGrades[] keeps a persistent total of the exam score for each student.
-     * Exams without grades have a value of -1, because dealing with null and NaN is unpredictable across js and PHP.
-     * This shouldn't be an issue, as the DB has no notion of exam grades, they're only used here as a shorthand
-     * to store and quickly find information about the exam state.
+     * Exams without grades have a value of -1, because dealing with null and NaN
+     * is unpredictable across js and PHP.
+     * This shouldn't be an issue, as the DB has no notion of exam grades, they're
+     * only used here as a shorthand to store and quickly find information about
+     * the exam state.
+     *
+     * @param data
      */
     updateExamGrades: function ( data ) {
         for ( var i = 0; i < data.questionScores.length; i ++ ) {
@@ -27,7 +33,9 @@ module.exports = {
                     totalScore += parseFloat( gradeEntry );
                 }
             } );
-            if ( totalScore != null ) data.examGrades[ i ] = totalScore.toPrecision( 3 );
+            if ( totalScore != null ) {
+                data.examGrades[ i ] = totalScore.toPrecision( 3 );
+            }
             else {
                 data.examGrades[ i ] = - 1;
             }
@@ -40,8 +48,10 @@ module.exports = {
      */
     examsGraded: function ( data ) {
         var graded = 0;
-        for ( var i = 0; i < data.examGrades.length; i ++ ) {
-            if ( data.examGrades[ i ] >= 0 ) graded ++;
+        if(typeof data.examGrades != 'undefined') {
+            for ( var i = 0; i < data.examGrades.length; i ++ ) {
+                if ( data.examGrades[ i ] >= 0 ) graded ++;
+            }
         }
         return graded;
     },
@@ -51,11 +61,18 @@ module.exports = {
      * also displays the "Save & Finish" button when remaining == 0
      */
     updateGradedRemainingCounter: function ( data ) {
-        var total = data.examGrades.length;
+        if(typeof data.examGrades == 'undefined'){
+            var total = 0;
+        }else{
+            var total = Object.keys(data.examGrades).length;
+        }
+
         var graded = this.examsGraded( data );
         var remaining = total - graded;
+        window.console.log('updateGradedRemainingCounter', total, graded, remaining);
         $( "#graded" ).text( graded );
         $( "#remaining" ).text( remaining );
+        //show finish button
         if ( remaining === 0 ) {
             $( '#finishButton' ).show();
         }

@@ -8,13 +8,14 @@ $numQuestions = 5;
 $numElements = 5;
 $maxScore = 100;
 
-//$scenario->group('grade');
+$scenario->group('grade');
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Check the grading page to make sure the everything is in its place and that the large scale page changes work properly. More detailed grading operations are tested in other files');
 
 $I->test_login($I);
 $I->amOnPage(GradingPage::route($examId));
-$I->wait(5);
+$I->wait(3);
+
 
 GradingPage::verifyGradingPageIntact($I, $examId);
 
@@ -22,7 +23,7 @@ GradingPage::verifyGradingPageIntact($I, $examId);
 $I->wantTo("Click the student row {$studentRowId} and check that see everything expected (except for dashboard related changes, which are checked elsewhere)");
     $I->dontSeeElement(['id' => 'questionPanel']);
     GradingPage::clickStudentRow($I, $studentRowId);
-$I->wait(4);
+$I->wait(1);
     $I->expectTo("see the selected student's name in the active student field");
         $I->seeInField(GradingPage::$activeStudentNameFieldXPath, "lastNameOfExisting{$studentNumber}, firstNameOfExisting{$studentNumber}");
 
@@ -52,7 +53,6 @@ $I->wantTo("Click the grade blind icon and see that the student names are hidden
 
 $I->wantTo("See the default message if there are no elements for a question");
 
-$I->see('catfood');
 //switch student
 
 //switch back to first student

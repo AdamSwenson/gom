@@ -282,14 +282,8 @@
 .pager {
   margin-top: 0; }
 
-.typeahead {
-  border: 0px; }
-
 .startHidden {
   display: none; }
-
-.activeStudentInput {
-  font-size: 1.25em; }
 
 .input-group.full-width .input-group-btn:last-child > .btn {
   margin-left: 5px; }
@@ -305,11 +299,26 @@
 .slider-horizontal {
   margin-right: 35px; }
 
-.questionAndSliderColumn {
+#questionAndSliderColumn {
   width-max: 700px; }
 
-.rosterAndDashboardColumn {
+#rosterAndDashboardColumn {
   max-width: 550px;
   min-width: 340px; }
+
+.activeStudentInput {
+  font-size: 1.25em; }
+  .activeStudentInput .typeahead {
+    border: 0px; }
+  .activeStudentInput #activeStudentNameArea {
+    padding-right: 0px; }
+    .activeStudentInput #activeStudentNameArea #nameVisibilityControl {
+      cursor: pointer; }
+    .activeStudentInput #activeStudentNameArea #activeStudentName {
+      width: 160px; }
+  .activeStudentInput #activeStudentIdentifierArea {
+    padding-right: 0px; }
+    .activeStudentInput #activeStudentIdentifierArea #activeStudentIdentifier {
+      width: 90px; }
 
 /*# sourceMappingURL=grade-package.css.map */

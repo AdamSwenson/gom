@@ -7,9 +7,7 @@
     <span class="col-xs-5">
         <a id="btnTimer"
            class="btn btn-warning"
-           title="Toggle timer"
-                {{--href="javascript:toggleTimer()">--}}
-        >
+           title="Toggle timer">
             <span id="btnTimerIcon" class="glyphicon glyphicon-pause" aria-hidden="true"></span>
             <span id="btnTimerLabel">Paused</span>
         </a>

@@ -1,246 +1,269 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-// (function () {
-// alert('aa');
 'use strict';
 
-var $ = require('jquery');
-window.$ = $;
-var jQuery = $;
-window.jQuery = jQuery;
-require('bootstrap');
+window.onload = function () {
+    var $ = require('jquery');
+    window.$ = $;
+    var jQuery = $;
+    window.jQuery = jQuery;
 
-var common = require('../common.js');
-var bootbox = require('bootbox');
-//TODO figure out which typeahead to use
-//var typeahead = require('../libraries/bootstrap3-typeahead.min.js');
-var typeahead = require('../libraries/typeahead.bundle.js');
+    require('bootstrap');
 
-//var Slider = require( "bootstrap-slider" );
-var Slider = require("../libraries/bootstrap-slider-modified.js");
+    var common = require('../common.js');
+    var bootbox = require('bootbox');
 
-var letterGradeButton = require('./letterGradeButton.js')();
+    // //TODO figure out which typeahead to use
+    // //var typeahead = require('../libraries/bootstrap3-typeahead.min.js');
+    var typeahead = require('../libraries/typeahead.bundle.js');
 
-var Roster = require('./components/Roster.js');
-var Dashboard = require('./components/Dashboard.js');
-var AjaxHandler = require('./components/AjaxHandler.js');
+    var Slider = require("../libraries/bootstrap-slider-modified.js");
 
-var Timer = require('./components/Timer.js');
-var SearchBox = require('./components/SearchBox.js');
+    var letterGradeButton = require('./letterGradeButton.js')();
+    var Roster = require('./components/Roster.js');
+    var Dashboard = require('./components/Dashboard.js');
+    var AjaxHandler = require('./components/AjaxHandler.js');
+    var Timer = require('./components/Timer.js');
+    var SearchBox = require('./components/SearchBox.js');
+    var SliderTools = require('./components/SliderTools.js');
 
-var SliderTools = require('./components/SliderTools.js');
+    // /* -------------------------------- GENERAL FUNCTIONS ------------------------------ */
 
-/* initialize Sliders with valenceCutoffs */
-var $sliders = $('input.slider').slider({
-    tooltip: 'show',
-    value: 0,
-    step: SliderTools.settings.sliderStep,
-    ticks: SliderTools.settings.valenceCutoffs,
-    ticks_labels: SliderTools.settings.valenceLabels,
-    ticks_position: SliderTools.settings.valenceLabels
-});
+    /**
+     * Called when an element slider stops movement. Updates element
+     * score and text (if necessary), then saves score, text and time
+     * @param slideEvt
+     */
+    function handleElementSliderStopEvent(slideEvt, data, SliderTools, Roster, AjaxHandler, Dashboard) {
+        var $element = $(slideEvt.target).closest('[id^="element"]');
 
-/* -------------------------------- GENERAL FUNCTIONS ------------------------------ */
+        // update the element's score visually and in elementScores[]
+        var elementNumber = $element.attr('data-element-index');
+        //
+        // var elementNumber = $( slideEvt.target ).closest( '[id^="element"]' ).attr( 'data-element-index' );
+        var oldScore = data.elementScores[Roster.activeStudent][elementNumber];
+        var newScore = slideEvt.value;
 
-/**
- * Called when an element slider stops movement. Updates element
- * score and text (if necessary), then saves score, text and time
- * @param slideEvt
- */
-function handleElementSliderStopEvent(slideEvt, data, SliderTools, Roster, AjaxHandler, Dashboard) {
-    // update the element's score visually and in elementScores[]
-    var elementNumber = $(slideEvt.target).closest('[id^="element"]').attr('data-element-index');
-    var oldScore = data.elementScores[Roster.activeStudent][elementNumber];
-    var newScore = slideEvt.value;
+        window.console.log('slider stop', elementNumber, oldScore, newScore);
 
-    data.elementScores[Roster.activeStudent][elementNumber] = newScore;
+        data.elementScores[Roster.activeStudent][elementNumber] = newScore;
 
-    // update comment text -- only replace text if the score has changed valence regions
-    var $parent = $(this).parents('[id^="element"]');
-    var $elementComment = $parent.find('textArea');
-    if (SliderTools.getValence(newScore) != SliderTools.getValence(oldScore)) {
-        // Score is in a new valence region.
-        // plug in the appropriate comment text and save to DB
-        var stockResponse = data.stockComments[elementNumber][SliderTools.getValence(newScore)];
-        $elementComment.val(stockResponse);
-        AjaxHandler.updateAndSaveComment($elementComment, data, Roster);
-    } else {
-        // Score is in the same valence region.
-        // Jump straight to saving without changing the elementComment
-        var elementId = $(this).closest('[id^="element"]').attr('data-element-id');
-        AjaxHandler.createGradeRequest('element_id', elementId, newScore, null, Roster);
+        // update comment text -- only replace text if the score has changed valence regions
+        var $parent = $(this).parents('[id^="element"]');
+        var $elementComment = $parent.find('textArea');
+        if (SliderTools.getValence(newScore) != SliderTools.getValence(oldScore)) {
+            // Score is in a new valence region.
+            // plug in the appropriate comment text and save to DB
+            var stockResponse = data.stockComments[elementNumber][SliderTools.getValence(newScore)];
+            $elementComment.val(stockResponse);
+            AjaxHandler.updateAndSaveComment($elementComment, data, Roster);
+        } else {
+            // Score is in the same valence region.
+            // Jump straight to saving without changing the elementComment
+            //            var elementId = $( this ).closest( '[id^="element"]' ).attr( 'data-element-id' );
+
+            var elementId = $element.attr('data-element-id');
+            window.console.log($element);
+
+            AjaxHandler.createGradeRequest('element_id', elementId, newScore, null, Roster);
+        }
+
+        // If using bell curve (standardScoring), element score affects the total question score, so update
+        if (Roster.standardScoring) {
+            updateStandardScores();
+        }
+
+        updateStudentDataArea(data, Dashboard, Roster);
+        Timer.resumeTimerIfPaused(data, Roster, Dashboard);
     }
 
-    // If using bell curve (standardScoring), element score affects the total question score, so update
-    if (Roster.standardScoring) {
-        updateStandardScores();
+    /**
+     * Bulk function updates all the dependent data in the roster area.
+     * @param data
+     * @param Dashboard
+     * @param Roster
+     */
+    function updateStudentDataArea(data, Dashboard, Roster) {
+        Dashboard.updateExamGrades(data);
+        Dashboard.updateGradedRemainingCounter(data);
+        Roster.updateRosterGradeDisplay(data);
+        Roster.setStudentBackgroundColors(data);
     }
 
-    updateStudentDataArea(data, Dashboard, Roster);
-    Timer.resumeTimerIfPaused(data, Roster, Dashboard);
-}
+    /**
+     * Handle question score inputs. When focus is lost, store values,
+     * update grades and save timers.
+     *
+     * @param me Context from bound input
+     */
+    function handleQuestionScoreChange(me, data, Roster, AjaxHandler) {
+        var qNumber = $(me).attr('data-number');
+        var score = parseFloat($(me).val());
+        var maxScore = parseFloat($(me).attr('max'));
+        if (score > maxScore) {
+            score = maxScore;
+            $(me).val(maxScore);
+        }
+        data.questionScores[Roster.activeStudent][qNumber - 1] = score;
+        var questionAssId = $(me).attr('data-question-assignment-id');
 
-/**
- * Bulk function updates all the dependent data in the roster area.
- * @param data
- * @param Dashboard
- * @param Roster
- */
-function updateStudentDataArea(data, Dashboard, Roster) {
-    Dashboard.updateExamGrades(data);
-    Dashboard.updateGradedRemainingCounter(data);
-    Roster.updateRosterGradeDisplay(data);
-    Roster.setStudentBackgroundColors(data);
-}
-
-/**
- * Handle question score inputs. When focus is lost, store values,
- * update grades and save timers.
- *
- * @param me Context from bound input
- */
-function handleQuestionScoreChange(me, data, Roster, AjaxHandler) {
-    var qNumber = $(me).attr('data-number');
-    var score = parseFloat($(me).val());
-    var maxScore = parseFloat($(me).attr('max'));
-    if (score > maxScore) {
-        score = maxScore;
-        $(me).val(maxScore);
+        if (score >= 0) {
+            AjaxHandler.createGradeRequest('question_assignment_id', questionAssId, score, null, Roster);
+        } else {
+            AjaxHandler.deleteScoreRequest(questionAssId, Roster);
+        }
     }
-    data.questionScores[Roster.activeStudent][qNumber - 1] = score;
-    var questionAssId = $(me).attr('data-question-assignment-id');
 
-    if (score >= 0) {
-        AjaxHandler.createGradeRequest('question_assignment_id', questionAssId, score, null, Roster);
-    } else {
-        AjaxHandler.deleteScoreRequest(questionAssId, Roster);
-    }
-}
+    /**
+     * A student is selected from the roster - DO LOTS OF STUFF
+     * @param row
+     * @param data
+     * @param Timer
+     * @param Roster
+     */
+    function onStudentSelect(row, data, Timer, Roster, AjaxHandler, Dashboard) {
+        Timer.saveTimer(data, Roster, AjaxHandler, Dashboard);
 
-/**
- * A student is selected from the roster - DO LOTS OF STUFF
- * @param row
- * @param data
- * @param Timer
- * @param Roster
- */
-function onStudentSelect(row, data, Timer, Roster, AjaxHandler, Dashboard) {
-    alert('ss');
-    Timer.saveTimer(data, Roster, AjaxHandler, Dashboard);
+        $('#selectPrompt').hide();
+        $('#questionArea').show("fast");
 
-    $('#selectPrompt').hide();
-    $('#questionArea').show("fast");
+        // set the active student
+        Roster.activeStudent = $(row).attr("data-index");
+        Roster.setSelectedNameAndId();
+        Roster.setActiveStudentBackgroundColor(data);
 
-    // set the active student
-    Roster.activeStudent = $(row).attr("data-index");
-    Roster.setSelectedNameAndId();
-    Roster.setActiveStudentBackgroundColor(data);
+        // load the timer area with new values
+        Timer.loadTimer(data, Roster, Dashboard);
 
-    // load the timer area with new values
-    Timer.loadTimer(data, Roster, Dashboard);
+        // set question scores
+        $("[id^='questionScore']").each(function (index) {
+            var score = data.questionScores[Roster.activeStudent][index];
+            $(this).val(score);
+        });
 
-    // set question scores
-    $("[id^='questionScore']").each(function (index) {
-        var score = data.questionScores[Roster.activeStudent][index];
-        $(this).val(score);
-    });
+        // set slider values, if any exist
+        if (typeof $sliders != 'undefined' && $sliders) {
+            $sliders.each(function (index, item) {
+                var score = data.elementScores[Roster.activeStudent][index];
+                $(item).slider('setValue', score);
+            });
+        }
 
-    // set slider values, if any exist
-    if ($sliders) {
-        $sliders.each(function (index, item) {
-            var score = data.elementScores[Roster.activeStudent][index];
-            $(item).slider('setValue', score);
+        // set comments
+        $('[name^="commentQ"]').each(function (index) {
+            var thisComment = data.elementComments[Roster.activeStudent][index];
+            // if NULL, disable comment text area until a slider is moved.
+            if (data.elementScores[Roster.activeStudent][index] === null) {
+                $(this).prop('readonly', 'true');
+            } else {
+                $(this).val(thisComment);
+            }
         });
     }
 
-    // set comments
-    $('[name^="commentQ"]').each(function (index) {
-        var thisComment = data.elementComments[Roster.activeStudent][index];
-        // if NULL, disable comment text area until a slider is moved.
-        if (data.elementScores[Roster.activeStudent][index] === null) {
-            $(this).prop('readonly', 'true');
-        } else {
-            $(this).val(thisComment);
-        }
+    /**
+     * sums elements scores and sets question scores - will be
+     * used for StandardScoring
+     */
+    function updateStandardScores() {}
+    //
+
+    /* -------------------------------------- Listeners ------------------------------------ */
+
+    // set up typeahead [search] boxes for name and ID
+    $('#activeStudentName').typeahead({
+        source: SearchBox.studentNames
     });
-}
 
-/**
- * sums elements scores and sets question scores - will be used for StandardScoring
- */
-function updateStandardScores() {}
-//
+    $('#activeStudentIdentifier').typeahead({
+        source: SearchBox.studentIdents
+    });
 
-// -------------------------------------- Document Ready -------------------------------------
+    //Dashboard listeners
+    $("#btnTimer").on('click', function () {
+        Timer.toggleTimer(data, Roster, Dashboard);
+    });
 
-// set up typeahead [search] boxes for name and ID
-$('#activeStudentName').typeahead({
-    source: SearchBox.studentNames
-});
+    //Roster listeners
+    $("#nameVisibilityControl").on('click', function () {
+        Roster.toggleNameVisibility();
+    });
 
-$('#activeStudentIdentifier').typeahead({
-    source: SearchBox.studentIdents
-});
+    $("#activeStudentName").on('change', function () {
+        SearchBox.handleStudentNameSearch();
+    });
 
-//Listeners
-$("#nameVisibilityControl").on('click', function () {
-    Roster.toggleNameVisibility();
-});
+    $("#activeStudentIdentifier").on('change', function () {
+        SearchBox.handleStudentIdentifierSearch();
+    });
 
-$("#activeStudentName").on('change', function () {
-    SearchBox.handleStudentNameSearch();
-});
+    /**
+     * Listener for student selection
+     */
+    $("[id^='studentListItem']").on('click', function () {
+        onStudentSelect(this, data, Timer, Roster, AjaxHandler, Dashboard);
+    });
 
-$("#activeStudentIdentifier").on('change', function () {
-    SearchBox.handleStudentIdentifierSearch();
-});
+    //Listeners for scores and other grade fields
+    /**
+     * Listener for changes to the question score field
+     */
+    $('[id^="questionScore"]').bind('change', function () {
+        // Handle question score inputs. When focus is lost, store values,
+        // update grades and save timers.
+        handleQuestionScoreChange(this, data, Roster, AjaxHandler);
+        updateStudentDataArea(data, Dashboard, Roster);
+        Timer.resumeTimerIfPaused(data, Roster, Dashboard);
+    });
 
-$("#btnTimer").on('click', function () {
-    Timer.toggleTimer(data, Roster, Dashboard);
-});
+    /**
+     * Handle changes to the comment TextArea when focus is lost. Saves data and timers.
+     */
+    $('[name^="comment"]').focusout(function () {
+        if (Roster.activeStudent === null) return;
+        AjaxHandler.updateAndSaveComment($(this, data, Roster));
+        //saveTimer();
+        Timer.resumeTimerIfPaused(data, Roster, Dashboard);
+    });
 
-// $( "#studentListItem1" ).on( 'click', function () {
+    // /* ------------------ table sorting listeners --------- */
+    $("#nameHeader").on('click', function () {
+        Roster.sortRosterBy('studentName', data);
+    });
+    $("#idHeader").on('click', function () {
+        Roster.sortRosterBy('studentIdentifier', data);
+    });
+    $("#gradeHeader").on('click', function () {
+        Roster.sortRosterBy('examGrade', data);
+    });
 
-$("[id^='studentListItem']").on('click', function () {
-    alert('sli');
-    onStudentSelect(this, data, Timer, Roster, AjaxHandler, Dashboard);
-});
+    /* ----------------- slider listeners --------------- */
+    /* When an element slider stops movement,
+     update element score and text (if necessary),
+     then save score, text and time
+     *  */
+    $('input.slider').on('slideStop', function (slideEvt) {
+        window.console.log('slide stopped');
+        handleElementSliderStopEvent(slideEvt, data, SliderTools, Roster, AjaxHandler, Dashboard);
+    });
 
-$('[id^="questionScore"]').bind('change', function () {
-    // Handle question score inputs. When focus is lost, store values,
-    // update grades and save timers.
-    handleQuestionScoreChange(this, data, Roster, AjaxHandler);
+    /* ----------------- stuff to do at end of load --------------- */
     updateStudentDataArea(data, Dashboard, Roster);
-    Timer.resumeTimerIfPaused(data, Roster, Dashboard);
-});
+    Roster.sortRosterBy('studentName');
+    Timer.updateTimer(data, Roster, Dashboard);
+    Dashboard.updateExamGrades(data);
 
-/**
- * Handle changes to the comment TextArea when focus is lost. Saves data and timers.
- */
-$('[name^="comment"]').focusout(function () {
-    if (Roster.activeStudent === null) return;
-    AjaxHandler.updateAndSaveComment($(this));
-    //saveTimer();
-    Timer.resumeTimerIfPaused(data, Roster, Dashboard);
-});
-
-/* When an element slider stops movement,
- update element score and text (if necessary),
- then save score, text and time
- *  */
-$('input.slider').on('slideStop', function (slideEvt) {
-    handleElementSliderStopEvent(slideEvt, data, SliderTools, Roster, AjaxHandler, Dashboard);
-});
-
-updateStudentDataArea(data, Dashboard, Roster);
-Roster.sortRosterBy('studentName');
-Timer.updateTimer(data, Roster, Dashboard);
-
-Dashboard.updateExamGrades(data);
-
-// ---------------------------------- end onload
-// alert('zz');
-// });
-// })();
+    $(document).ready(function () {
+        /* initialize Sliders with valenceCutoffs */
+        var $sliders = $('input.slider').slider({
+            tooltip: 'show',
+            value: 0,
+            step: SliderTools.settings.sliderStep,
+            ticks: SliderTools.settings.valenceCutoffs,
+            ticks_labels: SliderTools.settings.valenceLabels,
+            ticks_position: SliderTools.settings.valenceLabels
+        });
+    });
+};
 
 },{"../common.js":17,"../libraries/bootstrap-slider-modified.js":25,"../libraries/typeahead.bundle.js":26,"./components/AjaxHandler.js":18,"./components/Dashboard.js":19,"./components/Roster.js":20,"./components/SearchBox.js":21,"./components/SliderTools.js":22,"./components/Timer.js":23,"./letterGradeButton.js":24,"bootbox":2,"bootstrap":3,"jquery":16}],2:[function(require,module,exports){
 /**
@@ -13524,7 +13547,7 @@ module.exports = {
             gradeRequest['comment_text'] = comment;
         }
         gradeRequest['student_id'] = Roster.getActiveStudentId();
-
+        window.console.log('createGradeRequest', gradeRequest);
         this.saveDataWithTime(gradeRequest, data, Roster);
     },
 
@@ -13533,6 +13556,7 @@ module.exports = {
      * @param gradeRequest
      */
     saveDataWithTime: function saveDataWithTime(gradeRequest, data, Roster) {
+        var me = this;
         if (!gradeRequest) {
             gradeRequest = {};
             gradeRequest['student_id'] = Roster.getActiveStudentId();
@@ -13548,10 +13572,10 @@ module.exports = {
                 //console.log('success! ');
             },
             error: function error() {
-                this.showWarningMessage(this.messages.serverErrorTitle, this.messages.serverErrorText);
+                me.showWarningMessage(me.messages.serverErrorTitle, me.messages.serverErrorText);
             },
             timeout: function timeout() {
-                this.showWarningMessage(this.messages.serverTimeoutTitle, this.messages.serverTimeoutText);
+                me.showWarningMessage(me.messages.serverTimeoutTitle, me.messages.serverTimeoutText);
             }
         });
     },
@@ -13562,7 +13586,7 @@ module.exports = {
      * @param Roster
      */
     deleteScoreRequest: function deleteScoreRequest(questionAssId, Roster) {
-        // delete the score
+        var me = this;
         var examId = $('h3').attr('data-exam-id');
         var gradeRequest = {};
         gradeRequest['question_assignment_id'] = questionAssId;
@@ -13573,10 +13597,10 @@ module.exports = {
             type: 'DELETE',
             success: function success() {},
             error: function error() {
-                this.showWarningMessage(this.messages.serverErrorTitle, this.messages.serverErrorText);
+                me.showWarningMessage(me.messages.serverErrorTitle, me.messages.serverErrorText);
             },
             timeout: function timeout() {
-                AjaxHandler.showWarningMessage(this.messages.serverTimeoutTitle, this.messages.serverTimeoutText);
+                me.showWarningMessage(me.messages.serverTimeoutTitle, me.messages.serverTimeoutText);
             }
         });
     },
@@ -13619,10 +13643,16 @@ require('bootstrap');
 module.exports = {
 
     /**
+     * This manages the number graded and number of exams remaining fields
+     *
      * examGrades[] keeps a persistent total of the exam score for each student.
-     * Exams without grades have a value of -1, because dealing with null and NaN is unpredictable across js and PHP.
-     * This shouldn't be an issue, as the DB has no notion of exam grades, they're only used here as a shorthand
-     * to store and quickly find information about the exam state.
+     * Exams without grades have a value of -1, because dealing with null and NaN
+     * is unpredictable across js and PHP.
+     * This shouldn't be an issue, as the DB has no notion of exam grades, they're
+     * only used here as a shorthand to store and quickly find information about
+     * the exam state.
+     *
+     * @param data
      */
     updateExamGrades: function updateExamGrades(data) {
         for (var i = 0; i < data.questionScores.length; i++) {
@@ -13635,7 +13665,9 @@ module.exports = {
                     totalScore += parseFloat(gradeEntry);
                 }
             });
-            if (totalScore != null) data.examGrades[i] = totalScore.toPrecision(3);else {
+            if (totalScore != null) {
+                data.examGrades[i] = totalScore.toPrecision(3);
+            } else {
                 data.examGrades[i] = -1;
             }
         }
@@ -13647,8 +13679,10 @@ module.exports = {
      */
     examsGraded: function examsGraded(data) {
         var graded = 0;
-        for (var i = 0; i < data.examGrades.length; i++) {
-            if (data.examGrades[i] >= 0) graded++;
+        if (typeof data.examGrades != 'undefined') {
+            for (var i = 0; i < data.examGrades.length; i++) {
+                if (data.examGrades[i] >= 0) graded++;
+            }
         }
         return graded;
     },
@@ -13658,11 +13692,18 @@ module.exports = {
      * also displays the "Save & Finish" button when remaining == 0
      */
     updateGradedRemainingCounter: function updateGradedRemainingCounter(data) {
-        var total = data.examGrades.length;
+        if (typeof data.examGrades == 'undefined') {
+            var total = 0;
+        } else {
+            var total = Object.keys(data.examGrades).length;
+        }
+
         var graded = this.examsGraded(data);
         var remaining = total - graded;
+        window.console.log('updateGradedRemainingCounter', total, graded, remaining);
         $("#graded").text(graded);
         $("#remaining").text(remaining);
+        //show finish button
         if (remaining === 0) {
             $('#finishButton').show();
         }
@@ -13798,8 +13839,9 @@ module.exports = {
     /**
      * Sorts the StudentRoster by the clicked header. Sort order reverses with each press.
      * @param value
+     * @param data
      */
-    sortRosterBy: function sortRosterBy(value) {
+    sortRosterBy: function sortRosterBy(value, data) {
         var me = this;
         var $roster = $('#studentRosterBody');
         $roster.append($roster.find('[id^="studentListItem"]').sort(function (a, b) {
@@ -13810,8 +13852,8 @@ module.exports = {
                 result = $(i).text().toUpperCase().localeCompare($(j).text().toUpperCase());
             } else {
                 // sort by exam grade
-                var gradeA = examGrades[$(a).attr('data-index')];
-                var gradeB = examGrades[$(b).attr('data-index')];
+                var gradeA = data.examGrades[$(a).attr('data-index')];
+                var gradeB = data.examGrades[$(b).attr('data-index')];
                 result = gradeA - gradeB;
             }
             // flip results if we're sorting in DESC
@@ -13909,10 +13951,10 @@ module.exports = {
      *
      */
     settings: {
+        sliderStep: 0.25,
         valenceCutoffs: [0, 3.25, 6.75, 10],
         valenceLabels: ["Missing", "Poor", "Fair", "Excellent"],
-        valenceLabelPositions: [0, 33, 67, 100],
-        sliderStep: .25
+        valenceLabelPositions: [0, 33, 67, 100]
     },
 
     /**
@@ -13923,8 +13965,12 @@ module.exports = {
      */
     getValence: function getValence(score) {
         var valence = 0;
-        for (var j = this.settings.valenceCutoffs.length - 2; j >= 0; j--) {
-            if (score > this.settings.valenceCutoffs[j]) {
+        var me = this;
+        window.console.log(me.settings.valenceCutoffs.length);
+        for (var j = me.settings.valenceCutoffs.length - 2; j >= 0; j--) {
+            window.console.log('v', me.settings.valenceCutoffs[j]);
+            if (score > me.settings.valenceCutoffs[j]) {
+
                 valence = j + 1;
                 break;
             }

@@ -121,13 +121,14 @@ module.exports = {
         $( item ).find( '[class^="col"]' ).css( 'background-color', backColor );
         $( item ).css( 'color', textColor );
     },
-    
+
 
     /**
      * Sorts the StudentRoster by the clicked header. Sort order reverses with each press.
      * @param value
+     * @param data
      */
-    sortRosterBy: function ( value ) {
+    sortRosterBy: function ( value, data ) {
         var me = this;
         var $roster = $( '#studentRosterBody' );
         $roster.append(
@@ -140,8 +141,8 @@ module.exports = {
                         $( j ).text().toUpperCase() );
                 } else {
                     // sort by exam grade
-                    var gradeA = examGrades[ $( a ).attr( 'data-index' ) ];
-                    var gradeB = examGrades[ $( b ).attr( 'data-index' ) ];
+                    var gradeA = data.examGrades[ $( a ).attr( 'data-index' ) ];
+                    var gradeB = data.examGrades[ $( b ).attr( 'data-index' ) ];
                     result = gradeA - gradeB;
                 }
                 // flip results if we're sorting in DESC

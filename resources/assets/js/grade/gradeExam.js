@@ -1,45 +1,31 @@
-// (function () {
-    // alert('aa');
-var $ = require( 'jquery' );
-window.$ = $;
-var jQuery = $;
-window.jQuery = jQuery;
-require( 'bootstrap' );
+window.onload = function () {
+    var $ = require( 'jquery' );
+    window.$ = $;
+    var jQuery = $;
+    window.jQuery = jQuery;
 
 
-var common = require( '../common.js' );
-var bootbox = require( 'bootbox' );
-//TODO figure out which typeahead to use
-//var typeahead = require('../libraries/bootstrap3-typeahead.min.js');
-var typeahead = require( '../libraries/typeahead.bundle.js' );
+    require( 'bootstrap' );
 
-//var Slider = require( "bootstrap-slider" );
-var Slider = require( "../libraries/bootstrap-slider-modified.js" );
+    var common = require( '../common.js' );
+    var bootbox = require( 'bootbox' );
 
-var letterGradeButton = require( './letterGradeButton.js' )();
+// //TODO figure out which typeahead to use
+// //var typeahead = require('../libraries/bootstrap3-typeahead.min.js');
+    var typeahead = require( '../libraries/typeahead.bundle.js' );
 
-var Roster = require('./components/Roster.js');
-var Dashboard = require('./components/Dashboard.js');
-var AjaxHandler = require('./components/AjaxHandler.js');
+    var Slider = require( "../libraries/bootstrap-slider-modified.js" );
 
-var Timer = require('./components/Timer.js');
-var SearchBox = require('./components/SearchBox.js');
-
-var SliderTools = require('./components/SliderTools.js');
-
+    var letterGradeButton = require( './letterGradeButton.js' )();
+    var Roster = require( './components/Roster.js' );
+    var Dashboard = require( './components/Dashboard.js' );
+    var AjaxHandler = require( './components/AjaxHandler.js' );
+    var Timer = require( './components/Timer.js' );
+    var SearchBox = require( './components/SearchBox.js' );
+    var SliderTools = require( './components/SliderTools.js' );
 
 
-    /* initialize Sliders with valenceCutoffs */
-    var $sliders = $( 'input.slider' ).slider( {
-        tooltip: 'show',
-        value: 0,
-        step: SliderTools.settings.sliderStep,
-        ticks: SliderTools.settings.valenceCutoffs,
-        ticks_labels: SliderTools.settings.valenceLabels,
-        ticks_position: SliderTools.settings.valenceLabels
-    } );
-
-    /* -------------------------------- GENERAL FUNCTIONS ------------------------------ */
+    // /* -------------------------------- GENERAL FUNCTIONS ------------------------------ */
 
 
     /**
@@ -48,10 +34,16 @@ var SliderTools = require('./components/SliderTools.js');
      * @param slideEvt
      */
     function handleElementSliderStopEvent( slideEvt, data, SliderTools, Roster, AjaxHandler, Dashboard ) {
+        var $element = $( slideEvt.target ).closest( '[id^="element"]' );
+
         // update the element's score visually and in elementScores[]
-        var elementNumber = $( slideEvt.target ).closest( '[id^="element"]' ).attr( 'data-element-index' );
+        var elementNumber = $element.attr( 'data-element-index' );
+        //
+        // var elementNumber = $( slideEvt.target ).closest( '[id^="element"]' ).attr( 'data-element-index' );
         var oldScore = data.elementScores[ Roster.activeStudent ][ elementNumber ];
         var newScore = slideEvt.value;
+
+window.console.log('slider stop', elementNumber, oldScore, newScore);
 
         data.elementScores[ Roster.activeStudent ][ elementNumber ] = newScore;
 
@@ -63,12 +55,16 @@ var SliderTools = require('./components/SliderTools.js');
             // plug in the appropriate comment text and save to DB
             var stockResponse = data.stockComments[ elementNumber ][ SliderTools.getValence( newScore ) ];
             $elementComment.val( stockResponse );
-            AjaxHandler.updateAndSaveComment( $elementComment, data, Roster  );
+            AjaxHandler.updateAndSaveComment( $elementComment, data, Roster );
         } else {
             // Score is in the same valence region.
             // Jump straight to saving without changing the elementComment
-            var elementId = $( this ).closest( '[id^="element"]' ).attr( 'data-element-id' );
-            AjaxHandler.createGradeRequest( 'element_id', elementId, newScore, null,  Roster  );
+//            var elementId = $( this ).closest( '[id^="element"]' ).attr( 'data-element-id' );
+
+            var elementId = $element.attr( 'data-element-id' );
+            window.console.log($element);
+
+            AjaxHandler.createGradeRequest( 'element_id', elementId, newScore, null, Roster );
         }
 
         // If using bell curve (standardScoring), element score affects the total question score, so update
@@ -77,7 +73,7 @@ var SliderTools = require('./components/SliderTools.js');
         }
 
         updateStudentDataArea( data, Dashboard, Roster );
-        Timer.resumeTimerIfPaused(data, Roster, Dashboard);
+        Timer.resumeTimerIfPaused( data, Roster, Dashboard );
     }
 
     /**
@@ -126,7 +122,6 @@ var SliderTools = require('./components/SliderTools.js');
      * @param Roster
      */
     function onStudentSelect( row, data, Timer, Roster, AjaxHandler, Dashboard ) {
-        alert('ss');
         Timer.saveTimer( data, Roster, AjaxHandler, Dashboard );
 
         $( '#selectPrompt' ).hide();
@@ -135,7 +130,7 @@ var SliderTools = require('./components/SliderTools.js');
         // set the active student
         Roster.activeStudent = $( row ).attr( "data-index" );
         Roster.setSelectedNameAndId();
-        Roster.setActiveStudentBackgroundColor(data);
+        Roster.setActiveStudentBackgroundColor( data );
 
         // load the timer area with new values
         Timer.loadTimer( data, Roster, Dashboard );
@@ -147,7 +142,7 @@ var SliderTools = require('./components/SliderTools.js');
         } );
 
         // set slider values, if any exist
-        if ( $sliders ) {
+        if (typeof $sliders != 'undefined' && $sliders) {
             $sliders.each( function ( index, item ) {
                 var score = data.elementScores[ Roster.activeStudent ][ index ];
                 $( item ).slider( 'setValue', score );
@@ -168,17 +163,17 @@ var SliderTools = require('./components/SliderTools.js');
     }
 
     /**
-     * sums elements scores and sets question scores - will be used for StandardScoring
+     * sums elements scores and sets question scores - will be
+     * used for StandardScoring
      */
     function updateStandardScores() {
         //
     }
 
 
-    // -------------------------------------- Document Ready -------------------------------------
+/* -------------------------------------- Listeners ------------------------------------ */
 
-
-    // set up typeahead [search] boxes for name and ID
+// set up typeahead [search] boxes for name and ID
     $( '#activeStudentName' ).typeahead( {
         source: SearchBox.studentNames
     } );
@@ -187,7 +182,13 @@ var SliderTools = require('./components/SliderTools.js');
         source: SearchBox.studentIdents
     } );
 
-    //Listeners
+//Dashboard listeners
+    $( "#btnTimer" ).on( 'click', function () {
+        Timer.toggleTimer( data, Roster, Dashboard );
+    } );
+
+
+//Roster listeners
     $( "#nameVisibilityControl" ).on( 'click', function () {
         Roster.toggleNameVisibility();
     } );
@@ -200,17 +201,18 @@ var SliderTools = require('./components/SliderTools.js');
         SearchBox.handleStudentIdentifierSearch();
     } );
 
-    $( "#btnTimer" ).on( 'click', function () {
-        Timer.toggleTimer( data, Roster, Dashboard );
-    } );
-
-    // $( "#studentListItem1" ).on( 'click', function () {
-
-        $( "[id^='studentListItem']" ).on( 'click', function () {
-        alert('sli');
+    /**
+     * Listener for student selection
+     */
+    $( "[id^='studentListItem']" ).on( 'click', function () {
         onStudentSelect( this, data, Timer, Roster, AjaxHandler, Dashboard );
     } );
 
+
+//Listeners for scores and other grade fields
+    /**
+     * Listener for changes to the question score field
+     */
     $( '[id^="questionScore"]' ).bind( 'change', function () {
         // Handle question score inputs. When focus is lost, store values,
         // update grades and save timers.
@@ -224,28 +226,50 @@ var SliderTools = require('./components/SliderTools.js');
      */
     $( '[name^="comment"]' ).focusout( function () {
         if ( Roster.activeStudent === null ) return;
-        AjaxHandler.updateAndSaveComment( $( this ) );
+        AjaxHandler.updateAndSaveComment( $( this, data, Roster ) );
         //saveTimer();
         Timer.resumeTimerIfPaused( data, Roster, Dashboard );
     } );
 
 
+    // /* ------------------ table sorting listeners --------- */
+    $( "#nameHeader" ).on( 'click', function () {
+        Roster.sortRosterBy( 'studentName', data );
+    } );
+    $( "#idHeader" ).on( 'click', function () {
+        Roster.sortRosterBy( 'studentIdentifier', data );
+    } );
+    $( "#gradeHeader" ).on( 'click', function () {
+        Roster.sortRosterBy( 'examGrade', data );
+    } );
+
+    /* ----------------- slider listeners --------------- */
     /* When an element slider stops movement,
      update element score and text (if necessary),
      then save score, text and time
      *  */
     $( 'input.slider' ).on( 'slideStop', function ( slideEvt ) {
+        window.console.log('slide stopped');
         handleElementSliderStopEvent( slideEvt, data, SliderTools, Roster, AjaxHandler, Dashboard );
     } );
 
+    /* ----------------- stuff to do at end of load --------------- */
     updateStudentDataArea( data, Dashboard, Roster );
     Roster.sortRosterBy( 'studentName' );
     Timer.updateTimer( data, Roster, Dashboard );
-
     Dashboard.updateExamGrades( data );
 
-// ---------------------------------- end onload
-// alert('zz');
-// });
-// })();
+    $(document).ready(function(){
+        /* initialize Sliders with valenceCutoffs */
+        var $sliders = $( 'input.slider' ).slider( {
+            tooltip: 'show',
+            value: 0,
+            step: SliderTools.settings.sliderStep,
+            ticks: SliderTools.settings.valenceCutoffs,
+            ticks_labels: SliderTools.settings.valenceLabels,
+            ticks_position: SliderTools.settings.valenceLabels
+        } );
+
+    });
+};
 
