@@ -12320,8 +12320,9 @@ button.close {
 
 #topNavbar .navItem {
   color: white; }
-  #topNavbar .navItem .active {
-    background: white; }
+
+#topNavbar .underlined {
+  font-weight: 900; }
 
 a {
   cursor: pointer; }

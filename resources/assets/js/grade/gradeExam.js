@@ -637,9 +637,4 @@ var letterGradeButton = require( './letterGradeButton.js' )();
 //    return false;
 //} );
 
-    if (jQuery) {
-        alert("jquery is loaded");
-    } else {
-        alert("Not loaded");
-    }
 })();
