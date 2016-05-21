@@ -27,19 +27,38 @@ module.exports = {
         serverTimeoutText: "<p class='errorText timeoutMessage'>There was no response from the server. Either the server is down <br/> or you may be experiencing connection issues.</p>",
     },
 
-    /**
-     * updates a comment locally and saves to server
-     * @param $comment
-     */
-    updateAndSaveComment: function ( $comment, data, Roster ) {
-        $comment.removeAttr( 'readonly' );
-        var eleIndex = $comment.parents( '[id^="element"]' ).attr( 'data-element-index' );
-        var elementId = $comment.parents( '[id^="element"]' ).attr( 'data-element-id' );
-        var score = data.elementScores[ Roster.activeStudent ][ eleIndex ];
-        data.elementComments[ Roster.activeStudent ][ eleIndex ] = $comment.val();
+//     /**
+//      * updates a comment locally and saves to server
+//      *
+//      * DEPRECATING THIS
+//      * splitting into
+//      *
+//      * @param $comment
+//      */
+//     updateAndSaveComment: function ( $comment, data, Roster ) {
+//         $comment.removeAttr( 'readonly' );
+//
+//         //grab element and its properties
+//         var $element = $comment.parents( '[id^="element"]' );
+//         var eleIndex = $element.attr( 'data-element-index' );
+//         var elementId = $element.attr( 'data-element-id' );
+//
+//         //grab score and comment
+//         var score = data.elementScores[ Roster.activeStudent ][ eleIndex ];
+//         var commentText = $comment.val();
+//
+//         //store comment text in data object
+//         data.elementComments[ Roster.activeStudent ][ eleIndex ] = commentText;
+//
+// window.console.log('updateAndSaveComment', eleIndex, elementId, score, commentText);
+//
+//         this.createGradeRequest( 'element_id', elementId, score, commentText, Roster );
+//     },
 
-        this.createGradeRequest( 'element_id', elementId, score, $comment.val(), Roster );
+    saveComment: function ( data, Roster, elementId, score, commentText) {
+        this.createGradeRequest( data, 'element_id', elementId, score, commentText, Roster );
     },
+
 
     /**
      * Creates a key/value array GradeRequest to upload.
@@ -49,7 +68,7 @@ module.exports = {
      *      comment: text of the comment to update. Null unless modifying an element comment.
      * Requests will only include non-null scores and comments
      */
-    createGradeRequest: function ( dataType, dataId, score, comment, Roster ) {
+    createGradeRequest: function ( data, dataType, dataId, score, comment, Roster ) {
         var gradeRequest = {};
 
         gradeRequest[ dataType ] = dataId;
@@ -60,7 +79,7 @@ module.exports = {
             gradeRequest[ 'comment_text' ] = comment;
         }
         gradeRequest[ 'student_id' ] = Roster.getActiveStudentId();
-window.console.log('createGradeRequest', gradeRequest);
+
         this.saveDataWithTime( gradeRequest, data, Roster );
     },
 
@@ -74,7 +93,7 @@ window.console.log('createGradeRequest', gradeRequest);
             gradeRequest = {};
             gradeRequest[ 'student_id' ] = Roster.getActiveStudentId();
         }
-        gradeRequest[ 'time' ] = data.examGradingTimes[ Roster.activeStudent ];
+        gradeRequest[ 'time' ] = data.getStudentGradingTime(Roster.activeStudent );
         var examId = $( 'h3' ).attr( 'data-exam-id' );
 
         $.ajax( {

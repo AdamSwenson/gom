@@ -2,16 +2,13 @@
  * Created by ars62917 on 11/2/15.
  */
 
+var $ = require( 'jquery' );
+window.$ = $;
+var jQuery = $;
+window.jQuery = jQuery;
+
 module.exports = function() {
-    /**
-     * Initializes the letter grade button stuff
-     */
-    //function bindLetterGradeHandler() {
-    //    window.console.log( 'bind letter grade called' );
-        $( ".letterGradeButton" ).bind( 'click', function () {
-            handleLetterGradeClick( this );
-        } );
-    //}
+
 
     /**
      * Updates score by clicking on letter grade.
@@ -36,7 +33,7 @@ module.exports = function() {
         var maxScore = $( "#" + gradeTarget ).attr( "max" );
 
         //The new score to record
-        var newScore = (gradeValue * .01) * maxScore;
+        var newScore = Number((gradeValue * .01) * maxScore).toFixed(2);
 
         //Update the questionScore and trigger update event
         $( "#" + gradeTarget ).val( newScore ).trigger( 'change' );
@@ -91,4 +88,15 @@ module.exports = function() {
             } );
         }, 10 );
     }
+
+    /**
+     * Initializes the letter grade button stuff
+     */
+    //function bindLetterGradeHandler() {
+    //    window.console.log( 'bind letter grade called' );
+    (function(){
+        $( ".letterGrade" ).bind( 'click', function () {
+            handleLetterGradeClick( this );
+        } );
+    })();
 }

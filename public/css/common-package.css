@@ -12324,4 +12324,7 @@ button.close {
 #topNavbar .underlined {
   font-weight: 900; }
 
+.startHidden {
+  display: none; }
+
 /*# sourceMappingURL=common-package.css.map */

@@ -12324,6 +12324,9 @@ button.close {
 #topNavbar .underlined {
   font-weight: 900; }
 
+.startHidden {
+  display: none; }
+
 .table th {
   border: none; }
 

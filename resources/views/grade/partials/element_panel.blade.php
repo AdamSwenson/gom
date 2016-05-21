@@ -3,6 +3,7 @@
      class="list-group-item elementPanel"
      data-element-index="{{ $elementIndex }}"
      data-element-id="{{ $elements[$eNumber-1]->getId() }}"
+     data-comment-area-id="commentQ{{ $qNumber }}E{{ $eNumber }}"
 >
     <h5>Element #{{ $eNumber }}: "{{ $elements[$eNumber-1]->getElementName() }}"</h5>
     <div class="row">

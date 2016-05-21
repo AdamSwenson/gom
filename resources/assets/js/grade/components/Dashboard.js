@@ -42,32 +42,34 @@ module.exports = {
         }
     },
 
-    /**
-     * returns: # of exams graded
-     * @returns {number}
-     */
-    examsGraded: function ( data ) {
-        var graded = 0;
-        if(typeof data.examGrades != 'undefined') {
-            for ( var i = 0; i < data.examGrades.length; i ++ ) {
-                if ( data.examGrades[ i ] >= 0 ) graded ++;
-            }
-        }
-        return graded;
-    },
+    // /**
+    //  * returns: # of exams graded
+    //  * @returns {number}
+    //  */
+    // examsGraded: function ( data ) {
+    //     var graded = 0;
+    //     if(typeof data.examGrades != 'undefined') {
+    //         for ( var i = 0; i < data.examGrades.length; i ++ ) {
+    //             if ( data.examGrades[ i ] >= 0 ) graded ++;
+    //         }
+    //     }
+    //     return graded;
+    // },
 
     /**
      * update the "graded: xx remaining: xx" counters
      * also displays the "Save & Finish" button when remaining == 0
      */
     updateGradedRemainingCounter: function ( data ) {
-        if(typeof data.examGrades == 'undefined'){
-            var total = 0;
-        }else{
-            var total = Object.keys(data.examGrades).length;
-        }
+        var total = data.getNumberGraded();
+        var graded = data.getNumberGraded( );
 
-        var graded = this.examsGraded( data );
+        // if(typeof data.examGrades == 'undefined'){
+        //     var total = 0;
+        // }else{
+        //     var total = Object.keys(data.examGrades).length;
+        // }
+        // var graded = this.examsGraded( data );
         var remaining = total - graded;
         window.console.log('updateGradedRemainingCounter', total, graded, remaining);
         $( "#graded" ).text( graded );

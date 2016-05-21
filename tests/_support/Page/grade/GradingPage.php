@@ -1,6 +1,14 @@
 <?php
 namespace Page\grade;
 
+/**
+ * Class GradingPage
+ *
+ * TODO Refactor to use LetterGradeButtonArea for locations
+ * TODO Refactor to use DashboardArea for locations
+ *
+ * @package Page\grade
+ */
 class GradingPage
 {
     // include url of current page
@@ -14,6 +22,9 @@ class GradingPage
 
     public static $pageTitleText = "Grade Exam | gradeomatic";
     public static $pageSubHeadingText = "Select a student to begin grading";
+
+
+    public static $questionPanelLocator =  ['id' => 'questionPanel'];
 
     //active student fields (also typeahead)
     public static $activeStudentNameFieldXPath = "//*[@id='activeStudentName']";
@@ -44,6 +55,9 @@ class GradingPage
 
 
     public static $sliderValenceLabels = ['Missing', 'Poor', 'Fair', 'Excellent'];
+
+    public static $rosterAndDashboardColumnLocator = ['id' => 'rosterAndDashboardColumn'];
+    public static $questionAndSliderColumnLocator = ['id' => 'questionAndSliderColumn'];
 
 
     public static $letterGradeListId = "letterGradeList";
@@ -102,11 +116,20 @@ TAG;
         return "//*[@id='questionScore{$questionNumber}']";
     }
 
+    public static function questionScoreFieldLocator($questionNumber)
+    {
+        return ['id' => "questionScore{$questionNumber}"];
+    }
+
 
     /* ----------- Letter grade button -----------*/
     public static $letterGradeButtonContainerXPath = "//*[@id='letterGradeArea']";
     public static $letterGradeButtonText = "Letter grade";
     public static $letterGradeListXPath = "//*[@id='letterGradeList']";
+
+    public static $letterGradeListLocator = ['id' => 'letterGradeList'];
+
+
     /**
      * Returns the xpath to the label of the button
      * @param $questionNumber
@@ -116,6 +139,9 @@ TAG;
         return "//*[@id='letterGradeForQuestion{$questionNumber}']";
     }
 
+    public static function letterGradeButtonLocator($questionNumber){
+        return ['id' => "letterGradeForQuestion{$questionNumber}"];
+    }
     /**
      * Returns the xpath to the button itself
      * @param $questionNumber
@@ -137,6 +163,64 @@ TAG;
         return static::$URL.$param;
     }
     
+    /* --------------- Actions ----------------- */
+    public static function navigateToGradingPage($I, $examId){
+        $I->test_login($I);
+        $I->amOnPage(self::route($examId));
+        $I->waitForElementVisible(self::$rosterAndDashboardColumnLocator);
+
+        $I->amGoingTo("Check that the page title and url are correct");
+        $I->seeInCurrentUrl(self::route($examId));
+        $I->seeInTitle(self::$pageTitleText);
+        $I->see(self::$pageSubHeadingText);
+    }
+
+
+    /**
+     * Clicks on the student and waits for the main
+     * question panel to become visible.
+     * Note that if grading was already underway, this
+     * won't be enough to test for the expected effect.
+     * @param $I
+     * @param $rowId
+     */
+    public static function clickStudentRow($I, $rowId){
+        $I->amGoingTo("Click on row {$rowId} and check that the questions field displays");
+        $I->seeElement(['id' => "studentListItem{$rowId}"]);
+        $I->click(['id' => "studentListItem{$rowId}"]);
+        $I->waitForElementVisible(self::$questionPanelLocator);
+
+//        $I->seeElement(['id' => 'questionPanel']);
+//        $I->click(['css' => "#studentListItem{$rowId}"]);
+//        $I->click("//*[@id='studentListItem{$rowId}']");
+//        $I->click(['css' => "html body div.container-fluid div.row div.col-md-4.rosterAndDashboardColumn div.panel.panel-default table#studentRoster.table.table-fixed.table-hover tbody#studentRosterBody tr#studentListItem0"]);
+//
+        /*        "html body div.container-fluid div.row div.col-md-4.rosterAndDashboardColumn div.panel.panel-default table#studentRoster.table.table-fixed.table-hover tbody#studentRosterBody tr#studentListItem0 td#studentName0.col-xs-6"*/
+//        $I->waitForElementVisible(['css' => "#panelQuestion{$rowId}"]);
+        //  $I->waitForElementVisible(['css' => "#questionArea"]);
+//        $I->seeElement(['id' => 'questionPanel']);
+    }
+
+    /**
+     * Clicks on the specified question tab and waits for the question area to show.
+     * If $checkNotVisibleFirst is true, it checks that the tab is hidden. Then checks
+     * that the tab is displayed.
+     * @param $I
+     * @param $questionNumber
+     * @param bool $checkNotVisibleFirst
+     */
+    public static function clickQuestionTab($I, $questionNumber, $checkNotVisibleFirst = false){
+        if($checkNotVisibleFirst)
+        {
+            $I->expectTo("not see the question panel for question $ {$questionNumber}");
+            $I->dontSeeElement(['css' => "#panelQuestion{$questionNumber}"]);
+        }
+        $I->amGoingTo("click the tab for question #{$questionNumber}");
+
+        $I->click(['xpath' => self::questionPanelTabXPath($questionNumber)]);
+        $I->waitForElementVisible(['css' => "#panelQuestion{$questionNumber}"]);
+        $I->seeElement(['css' => "#panelQuestion{$questionNumber}"]);
+    }
     
     /* ----------------- Testing ---------- */
 public static function verifyGradingPageIntact($I, $examId){
@@ -156,38 +240,25 @@ public static function verifyGradingPageIntact($I, $examId){
     //$I->seeInField(self::$activeStudentNameFieldXPath, self::$activeStudentNameFieldDefaultText);
 }
 
-
-    public static function clickStudentRow($I, $rowId){
-        $I->amGoingTo("Click on row {$rowId} and check that the questions field displays");
-        $I->seeElement(['css' => "#studentListItem{$rowId}"]);
-//        $I->click(['css' => "#studentListItem{$rowId}"]);
-        $I->click("//*[@id=\"studentListItem{$rowId}\"]");
-        $I->click(['css' => "html body div.container-fluid div.row div.col-md-4.rosterAndDashboardColumn div.panel.panel-default table#studentRoster.table.table-fixed.table-hover tbody#studentRosterBody tr#studentListItem0"]);
-        
-        /*        "html body div.container-fluid div.row div.col-md-4.rosterAndDashboardColumn div.panel.panel-default table#studentRoster.table.table-fixed.table-hover tbody#studentRosterBody tr#studentListItem0 td#studentName0.col-xs-6"*/
-//        $I->waitForElementVisible(['css' => "#panelQuestion{$rowId}"]);
-      //  $I->waitForElementVisible(['css' => "#questionArea"]);
-//        $I->seeElement(['id' => 'questionPanel']);
+    public static function assertGradingPanelVisible($I, $not=false){
+        if($not){
+            $I->expect("not to see the panel with grading fields");
+            $I->dontSeeElement(self::$questionPanelLocator);
+        }else{
+            $I->expect("to see the panel with grading fields");
+            $I->seeElement(self::$questionPanelLocator);
+        }
     }
 
-    /**
-     * Clicks on the specified question tab.
-     * First checks that the tab is hidden. Then checks
-     * that the tab is displayed.
-     * @param $I
-     * @param $questionNumber
-     */
-    public static function clickQuestionTab($I, $questionNumber){
-        $I->expectTo("not see the question panel for question $ {$questionNumber}");
-        $I->dontSeeElement(['css' => "#panelQuestion{$questionNumber}"]);
-
-        $I->amGoingTo("click the tab for question #{$questionNumber}");
-        $I->click(self::questionPanelTabXPath($questionNumber));
-        $I->waitForElementVisible(['css' => "#panelQuestion{$questionNumber}"]);
-
-        $I->expectTo("not see the question panel for question $ {$questionNumber}");
-        $I->seeElement(['css' => "#panelQuestion{$questionNumber}"]);
+    public static function assertQuestionTabsVisible($I, $numberOfQuestions){
+        for ( $i = 1; $i <= $numberOfQuestions; $i++ )
+        {
+            $I->expectTo("see the question tab for q{$i}");
+            $I->see("Q{$i}");
+            $I->seeElement(['xpath' => self::questionPanelTabXPath($i)]);
+        }
     }
+
 
     /**
      * Tests to make sure all expected items are present in the

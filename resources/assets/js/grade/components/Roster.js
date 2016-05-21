@@ -17,6 +17,16 @@ module.exports = {
     gradedStudentColor: '#5cb85c',
 
     /**
+     * Returns boolean of whether a student is currently being graded
+     * @returns {boolean}
+     */
+    isActiveStudent: function(){
+        if ( this.activeStudent !== null ) {
+            return true;
+        }
+        return false;
+    },
+    /**
      * Returns the id of the student currently being graded
      * @returns {*}
      */

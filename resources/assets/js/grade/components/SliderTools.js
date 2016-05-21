@@ -24,15 +24,34 @@ module.exports = {
     getValence: function ( score ) {
         var valence = 0;
         var me = this;
-        window.console.log(me.settings.valenceCutoffs.length);
-        for ( var j = me.settings.valenceCutoffs.length - 2; j >= 0; j -- ) {
-            window.console.log('v', me.settings.valenceCutoffs[ j ]);
-            if ( score > me.settings.valenceCutoffs[ j ] ) {
 
+        //TODO Decide what should do if this gets null for the score
+
+        for ( var j = me.settings.valenceCutoffs.length - 2; j >= 0; j -- ) {
+            if ( score > me.settings.valenceCutoffs[ j ] ) {
                 valence = j + 1;
                 break;
             }
         }
         return valence;
+    },
+
+    /**
+     * Check whether the old and new scores have the same valence.
+     * If they are, return true.
+     * If not or if oldScore wasn't set, return false
+     * @param oldScore
+     * @param newScore
+     * @returns {boolean}
+     */
+    isSameValence: function( oldScore, newScore){
+        //if there was no old score, return false
+        if(typeof oldScore == 'undefined' || oldScore == null){
+            return false;
+        }
+        if( this.getValence( newScore ) != this.getValence( oldScore )){
+            return false;
+        }
+        return true;
     }
 };

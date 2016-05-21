@@ -15,9 +15,9 @@ $letterGrades = App\Repositories\Grade\GradeFactory::$grades;
     </button>
 
     <ul id="letterGradeList"
-        class="dropdown-menu">
+        class="dropdown-menu letterGradeList">
         @foreach($letterGrades as $g)
-        <li><a class="letterGradeButton"
+        <li><a class="letterGrade question{{$qNumber}} q{{$qNumber}}g{{ $g['calc_value'] }}"
                data-letter-grade-button-id="letterGradeForQuestion{{ $qNumber }}"
                data-target-id="questionScore{{ $qNumber }}"
                data-display-value="{{ $g['display_value'] }}"
