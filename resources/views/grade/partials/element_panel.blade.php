@@ -15,9 +15,7 @@
                            class="slider" />
                 </span>
         <!-- comment area -->
-                <span class="col-lg-7 commentContainer Q{{ $qNumber }}E{{ $eNumber }}"
-                      {{--style="background-color: #DDDDDD; padding-left: 0px; padding-right:0px;"--}}
-                >
+                <span class="col-lg-7 commentContainer Q{{ $qNumber }}E{{ $eNumber }}">
                     <textarea id="commentQ{{ $qNumber }}E{{ $eNumber }}"
                               class="form-control"
                               rows="4"

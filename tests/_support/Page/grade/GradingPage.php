@@ -27,9 +27,9 @@ class GradingPage
     public static $questionPanelLocator =  ['id' => 'questionPanel'];
 
     //active student fields (also typeahead)
-    public static $activeStudentNameFieldXPath = "//*[@id='activeStudentName']";
+    public static $activeStudentNameFieldLocator = ["id" => 'activeStudentName'];
     public static $activeStudentNameFieldDefaultText = "No Student Selected";
-    public static $activeStudentIdFieldXPath = "//*[@id='activeStudentIdentifier']";
+    public static $activeStudentIdFieldLocator = ["id" => 'activeStudentIdentifier'];
     public static $activeStudentIdFieldDefaultText = "--";
 
     //buttons
@@ -183,22 +183,13 @@ TAG;
      * won't be enough to test for the expected effect.
      * @param $I
      * @param $rowId
+     * @param int $waitTime
      */
-    public static function clickStudentRow($I, $rowId){
+    public static function clickStudentRow($I, $rowId, $waitTime=30){
         $I->amGoingTo("Click on row {$rowId} and check that the questions field displays");
         $I->seeElement(['id' => "studentListItem{$rowId}"]);
         $I->click(['id' => "studentListItem{$rowId}"]);
-        $I->waitForElementVisible(self::$questionPanelLocator);
-
-//        $I->seeElement(['id' => 'questionPanel']);
-//        $I->click(['css' => "#studentListItem{$rowId}"]);
-//        $I->click("//*[@id='studentListItem{$rowId}']");
-//        $I->click(['css' => "html body div.container-fluid div.row div.col-md-4.rosterAndDashboardColumn div.panel.panel-default table#studentRoster.table.table-fixed.table-hover tbody#studentRosterBody tr#studentListItem0"]);
-//
-        /*        "html body div.container-fluid div.row div.col-md-4.rosterAndDashboardColumn div.panel.panel-default table#studentRoster.table.table-fixed.table-hover tbody#studentRosterBody tr#studentListItem0 td#studentName0.col-xs-6"*/
-//        $I->waitForElementVisible(['css' => "#panelQuestion{$rowId}"]);
-        //  $I->waitForElementVisible(['css' => "#questionArea"]);
-//        $I->seeElement(['id' => 'questionPanel']);
+        $I->waitForElementVisible(self::$questionPanelLocator, $waitTime);
     }
 
     /**
@@ -234,10 +225,10 @@ public static function verifyGradingPageIntact($I, $examId){
     //$I->see(self::$finishButtonText);
 
     //active student fields
-    $I->seeElement(self::$activeStudentIdFieldXPath);
-    //$I->seeInField(self::$activeStudentIdFieldXPath, self::$activeStudentIdFieldDefaultText);
-    $I->seeElement(self::$activeStudentNameFieldXPath);
-    //$I->seeInField(self::$activeStudentNameFieldXPath, self::$activeStudentNameFieldDefaultText);
+    $I->seeElement(self::$activeStudentIdFieldLocator);
+    //$I->seeInField(self::$activeStudentIdFieldLocator, self::$activeStudentIdFieldDefaultText);
+    $I->seeElement(self::$activeStudentNameFieldLocator);
+    //$I->seeInField(self::$activeStudentNameFieldLocator, self::$activeStudentNameFieldDefaultText);
 }
 
     public static function assertGradingPanelVisible($I, $not=false){
@@ -267,7 +258,7 @@ public static function verifyGradingPageIntact($I, $examId){
      * @param $questionNumber
      * @param $numElements
      */
-    public static function verifyQuestionPanelIntact($I, $questionNumber, $numElements){
+    public static function assertQuestionPanelIntact($I, $questionNumber, $numElements){
         
         $I->expectTo("see that the letter grade button and question score field are present");
         $I->seeElement(self::letterGradeButtonLabelXPath($questionNumber));

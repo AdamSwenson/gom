@@ -14,7 +14,10 @@ module.exports = {
     nameHiddenString: "Name Hidden", // text to show when student names are invisible
     noActiveStudentString: "No Student Selected",
     activeStudentColor: '#337ab7',
+    alteredStudentTextColor: 'white',
     gradedStudentColor: '#5cb85c',
+    initialStudentColor: 'white',
+    initialTextColor : 'black',
 
     /**
      * Returns boolean of whether a student is currently being graded
@@ -101,11 +104,12 @@ module.exports = {
             var name = "#studentListItem" + i;
             var item = $( '#studentRoster' ).find( name );
             if ( this.activeStudent == i ) {
-                this.setRosterBackgroundColor( item, this.activeStudentColor, 'white' )
+                this.setRosterBackgroundColor( item, this.activeStudentColor, this.alteredStudentTextColor )
             } else if ( data.examGrades[ i ] >= 0 ) {
-                this.setRosterBackgroundColor( item, this.gradedStudentColor, 'white' );
+                this.setRosterBackgroundColor( item, this.gradedStudentColor, this.alteredStudentTextColor );
             } else {
-                this.setRosterBackgroundColor( item, 'white', 'black' );
+
+                this.setRosterBackgroundColor( item, this.initialStudentColor, initialTextColor );
             }
         }
     },
@@ -117,7 +121,7 @@ module.exports = {
         if ( this.activeStudent ) {
             this.setStudentBackgroundColors(data); // reset prev. selected student to it's color (white or green)
             var item = $( '#studentRoster' ).find( '#studentListItem' + this.activeStudent ); // set the activeStudent
-            this.setRosterBackgroundColor( item, this.activeStudentColor, 'white' );
+            this.setRosterBackgroundColor( item, this.activeStudentColor, this.alteredStudentTextColor );
         }
     },
 

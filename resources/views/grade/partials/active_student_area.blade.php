@@ -2,7 +2,8 @@
     <div id="activeStudentNameArea"
          class="col-xs-7">
         <label for="activeStudentName">
-                            <span id="nameVisibilityControl"
+            <span class="sr-only">Click to hide student names</span>
+            <span id="nameVisibilityControl"
                                   class="glyphicon glyphicon-pencil"
                                   title="Click to hide student names"
                             > </span>

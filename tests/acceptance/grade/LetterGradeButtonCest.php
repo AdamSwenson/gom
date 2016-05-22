@@ -34,6 +34,10 @@ class LetterGradeButtonCest
     {
     }
 
+    /**
+     * @group('grade')
+     * @param AcceptanceTester $I
+     */
     public function clickLetterGradeButton(AcceptanceTester $I)
     {
         $I->wantTo("Test the letter grade buttons");
@@ -45,6 +49,10 @@ class LetterGradeButtonCest
         }
     }
 
+    /**
+     * @group('grade')
+     * @param AcceptanceTester $I
+     */
     public function clickGradeButtons(AcceptanceTester $I)
     {
         $questionNumber = 2;
@@ -75,7 +83,7 @@ class LetterGradeButtonCest
             //todo add check that see tooltip
             //*[@id="letterGradeList"]/li[2]/a
             //*[@id="letterGradeList"]/li[1]/a
-            
+
         }
     }
 

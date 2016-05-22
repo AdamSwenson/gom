@@ -38,7 +38,7 @@ window.onload = function () {
         var $element = $( slideEvt.target ).closest( '[id^="element"]' );
         var $parent = $element.parents( '[id^="element"]' );
         var commentAreaId = $element.attr( 'data-comment-area-id' );
-        var $elementComment = $( '#' + commentAreaId )
+        var $elementComment = $( '#' + commentAreaId );
         var elementIndex = $element.attr( 'data-element-index' ); //the subtask number of the element
         var elementId = $element.attr( 'data-element-id' ); //the DB's id for the element
 
@@ -312,10 +312,10 @@ window.onload = function () {
             step: SliderTools.settings.sliderStep,
             ticks: SliderTools.settings.valenceCutoffs,
             ticks_labels: SliderTools.settings.valenceLabels,
-            ticks_position: SliderTools.settings.valenceLabels
+            ticks_position: SliderTools.settings.valenceLabels,
+            id:'TCO'
         } );
 
-    //    LetterGradeButton.bindLetterGradeHandler();
 
     } );
 };

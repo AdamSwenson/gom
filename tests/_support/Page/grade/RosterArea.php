@@ -23,5 +23,11 @@ class RosterArea
     public static $tableHeaderIdLocator = ['id' => "idHeader"];
     public static $tableHeaderGradeLocator = ['id' => "gradeHeader"];
 
+    public static $activeStudentColor = '#337ab7';
+    public static $gradedStudentColor = '#5cb85c';
+
+public static $initialStudentColor = 'white';
+public static $initialTextColor = 'black';
+public static $alteredStudentTextColor = 'white';
 
 }

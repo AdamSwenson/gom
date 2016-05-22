@@ -1,0 +1,15 @@
+{
+  "webdriver": 4444,
+
+  "webSecurityEnabled" : false,
+
+  "ignoreSslErrors": true,
+
+  "outputEncoding": "utf8",
+
+  "localToRemoteUrlAccessEnabled": true,
+
+  "printDebugMessages": true
+
+
+}
