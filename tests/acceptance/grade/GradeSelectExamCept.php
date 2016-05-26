@@ -15,6 +15,8 @@ $I = new AcceptanceTester($scenario);
 $I->wantTo('Open the exam selection page for grading and check that everything works');
 
 $I->test_login($I);
+$I->amOnPage('utilities/updateExamCounts');
+$I->wait(10);
 $I->amOnPage(GradeSelectExamPage::$URL);
 $I->wait(2);
 

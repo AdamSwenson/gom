@@ -110,23 +110,26 @@ Route::get('feedback/view', 'PublicFeedbackController@showFeedback');
 
 
 
-/* ---------------------------------------------- Backup -------------------------------------------------------------- */
-Route::get('backup/{exam}', function($exam){
-    $user = Auth::user();
-    if($user->owns($exam))
-    {
-        $exporter = app()->make('ExportScores');
-        $exporter->handle($exam);
-    }
-});
+/* ---------------------------------------------- Utilities -------------------------------------------------------------- */
+Route::get('backup/{exam}', 'UtilityController@exportExamScores');
+//Route::get('backup/{exam}', function($exam){
+//    $user = Auth::user();
+//    if($user->owns($exam))
+//    {
+//        $exporter = app()->make('ExportScores');
+//        $exporter->handle($exam);
+//    }
+//});
 
-Route::get('test2', 'StudentController@devEditAll');
+Route::get('utilities/updateExamCounts', 'UtilityController@updateExamCounts');
 
-Route::get('test1', function(){
-   $exams = Exam::all();
-    //$exams = Exam::where('id', '>', 0)->get();
-   return view('development.exambuttons', ['exams' => $exams]);
-});
+//Route::get('test2', 'StudentController@devEditAll');
+//
+//Route::get('test1', function(){
+//   $exams = Exam::all();
+//    //$exams = Exam::where('id', '>', 0)->get();
+//   return view('development.exambuttons', ['exams' => $exams]);
+//});
 
 
 

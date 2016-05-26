@@ -13881,13 +13881,16 @@ module.exports = {
             var name = "#studentListItem" + i;
             var item = $('#studentRoster').find(name);
             if (this.activeStudent == i) {
-                this.setRosterBackgroundColor(item, this.activeStudentColor, this.alteredStudentTextColor);
+                this.setRowToActiveStudent(item);
+                //                this.setRosterBackgroundColor( item, this.activeStudentColor, this.alteredStudentTextColor )
             } else if (data.examGrades[i] >= 0) {
-                this.setRosterBackgroundColor(item, this.gradedStudentColor, this.alteredStudentTextColor);
-            } else {
+                    this.setRowToGraded(item);
+                    //                this.setRosterBackgroundColor( item, this.gradedStudentColor, this.alteredStudentTextColor );
+                } else {
+                        this.setRowToUnaltered();
 
-                this.setRosterBackgroundColor(item, this.initialStudentColor, initialTextColor);
-            }
+                        // this.setRosterBackgroundColor( item, this.initialStudentColor, initialTextColor );
+                    }
         }
     },
 
@@ -13898,8 +13901,22 @@ module.exports = {
         if (this.activeStudent) {
             this.setStudentBackgroundColors(data); // reset prev. selected student to it's color (white or green)
             var item = $('#studentRoster').find('#studentListItem' + this.activeStudent); // set the activeStudent
-            this.setRosterBackgroundColor(item, this.activeStudentColor, this.alteredStudentTextColor);
+            this.setRowToActiveStudent(item);
+            //            this.setRosterBackgroundColor( item, this.activeStudentColor, this.alteredStudentTextColor );
         }
+    },
+
+    setRowToActiveStudent: function setRowToActiveStudent(item) {
+        $(item).removeClass('gradedStudentRow').removeClass('unalteredStudentRow').addClass('activeStudentRow');
+    },
+
+    setRowToGraded: function setRowToGraded(item) {
+
+        $(item).removeClass('activeStudentRow').removeClass('unalteredStudentRow').addClass('gradedStudentRow');
+    },
+
+    setRowToUnaltered: function setRowToUnaltered(item) {
+        $(item).removeClass('activeStudentRow').removeClass('gradedStudentRow').addClass('unalteredStudentRow');
     },
 
     /**

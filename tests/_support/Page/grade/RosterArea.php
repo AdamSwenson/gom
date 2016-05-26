@@ -26,8 +26,56 @@ class RosterArea
     public static $activeStudentColor = '#337ab7';
     public static $gradedStudentColor = '#5cb85c';
 
-public static $initialStudentColor = 'white';
-public static $initialTextColor = 'black';
-public static $alteredStudentTextColor = 'white';
+    public static $initialStudentColor = 'white';
+    public static $initialTextColor = 'black';
+    public static $alteredStudentTextColor = 'white';
 
+    /** @var string The class each student row has */
+    public static $studentRowClass = 'studentListItem';
+
+    public static $activeStudentRowClassName = 'activeStudentRow';
+    public static $gradedStudentRowClassName = 'gradedStudentRow';
+    public static $unalteredStudentRowClassName = 'unalteredStudentRow';
+
+    public static $activeStudentRowFullClass = 'studentListItem unalteredStudentRow';
+    public static $gradedStudentRowFullClass = 'studentListItem gradedStudentRow';
+
+
+    public static function studentRowLocator($rowIndex)
+    {
+        return ['id' => "studentListItem{$rowIndex}"];
+    }
+
+
+    public static function assertRowIsMarkedActive($I, $rowIndex, $not = false)
+    {
+        if ( $not )
+        {
+            $I->dontSeeElement(self::studentRowLocator($rowIndex), ['class' => self::$activeStudentRowClassName]);
+        } else
+        {
+            $I->seeElement(self::studentRowLocator($rowIndex), ['class' => self::$activeStudentRowClassName]);
+        }
+    }
+
+    public static function assertRowIsMarkedGraded($I, $rowIndex, $not = false)
+    {
+        if ( $not )
+        {
+            $I->dontSeeElement(self::studentRowLocator($rowIndex), ['class' => self::$gradedStudentRowFullClass]);
+        } else
+        {
+            $I->seeElement(self::studentRowLocator($rowIndex), ['class' => self::$gradedStudentRowFullClass]);
+        }
+
+    }
+
+    public static function assertRowIsUnaltered($I, $rowIndex)
+    {
+        self::assertRowIsMarkedActive($I, $rowIndex, true);
+        self::assertRowIsMarkedGraded($I, $rowIndex, true);
+        $I->seeElement(self::studentRowLocator($rowIndex), ['class' => self::$unalteredStudentRowClassName]);
+
+//do manual check also since the intial state won't have unaltered Student class?
+    }
 }

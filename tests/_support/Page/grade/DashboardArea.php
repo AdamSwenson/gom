@@ -22,7 +22,7 @@ class DashboardArea
     public static $timerRunningText = 'Running';
     public static $timerRunningClass = 'btn-success';
     public static $timerPausedText = 'Paused';
-    public static $timerPausedClass = 'brn-warning';
+    public static $timerPausedClass = 'btn-warning';
 
     //number exams display
     public static $gradedExamsLocator = ['id' => 'graded'];
@@ -39,14 +39,14 @@ class DashboardArea
     {
         $I->expectTo("see the timer button in its paused state");
         $I->seeElement(self::$timerButtonLocator, ['class' => 'btn ' . self::$timerPausedClass]);
-        $I->see(self::$timerPausedText, [self::$timerButtonLocator]);
+        $I->see(self::$timerPausedText, self::$timerButtonLocator);
     }
 
     public static function assertTimerButtonActive($I)
     {
         $I->expectTo("see the timer button in its active state");
         $I->seeElement(self::$timerButtonLocator, ['class' => 'btn ' . self::$timerRunningClass]);
-        $I->see(self::$timerRunningText, [self::$timerButtonLocator]);
+        $I->see(self::$timerRunningText, self::$timerButtonLocator);
     }
 
     /**

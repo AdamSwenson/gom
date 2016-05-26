@@ -244,21 +244,33 @@
   .elementPanel .sliderContainer {
     padding-right: 0px; }
 
-.table-fixed thead {
+#studentRoster .table-fixed thead {
   width: 97%; }
 
-.table-fixed tbody {
+#studentRoster .table-fixed tbody {
   height: 230px;
   overflow-y: auto;
   width: 100%; }
 
-.table-fixed thead, .table-fixed tbody, .table-fixed tr, .table-fixed td, .table-fixed th {
+#studentRoster .table-fixed thead, #studentRoster .table-fixed tbody, #studentRoster .table-fixed tr, #studentRoster .table-fixed td, #studentRoster .table-fixed th {
   display: block;
   border-collapse: collapse; }
 
-.table-fixed tbody td, .table-fixed thead > tr > th {
+#studentRoster .table-fixed tbody td, #studentRoster .table-fixed thead > tr > th {
   float: left;
   cursor: pointer; }
+
+.unalteredStudentRow {
+  background-color: white;
+  color: black; }
+
+.activeStudentRow {
+  background-color: #337ab7;
+  color: white; }
+
+.gradedStudentRow {
+  background-color: #5cb85c;
+  color: white; }
 
 .btn {
   border-radius: 2px; }

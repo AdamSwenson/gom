@@ -2,7 +2,7 @@
 
 use Page\RosterEditPage;
 
-$scenario->group('roster');
+$scenario->group(['roster', 'setup']);
 $I = new AcceptanceTester($scenario);
 $I->wantTo('upload a csv file full of students for an exam with no preexisting students and see the students in the database');
 

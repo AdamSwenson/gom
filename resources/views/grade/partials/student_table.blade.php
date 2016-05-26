@@ -24,6 +24,7 @@
         <?php $studentIndex = 0; ?>
         @foreach($students as $student)
             <tr id="studentListItem{{ $studentIndex }}"
+                class="studentListItem unalteredStudentRow"
                 data-index="{{ $studentIndex }}"
                 data-fName="{{ $student->getStudentFName() }}"
                 data-lName="{{ $student->getStudentLName() }}"

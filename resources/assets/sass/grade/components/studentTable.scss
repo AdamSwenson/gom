@@ -1,23 +1,48 @@
-//Used by 'grade_exam'. holds the student roster listing
- .table-fixed thead {
-   width: 97%;
- }
+#studentRoster {
+  //Used by 'grade_exam'. holds the student roster listing
+  .table-fixed thead {
+    width: 97%;
+  }
 
-.table-fixed tbody {
-  height: 230px;
-  overflow-y: auto;
-  width: 100%;
+  .table-fixed tbody {
+    height: 230px;
+    overflow-y: auto;
+    width: 100%;
+  }
+
+  .table-fixed thead, .table-fixed tbody, .table-fixed tr, .table-fixed td, .table-fixed th {
+    display: block;
+    border-collapse: collapse;
+  }
+
+  .table-fixed tbody td, .table-fixed thead > tr > th {
+    float: left;
+    cursor: pointer;
+  }
+
+  //A student row
+  .studentListItem{
+
+  }
 }
 
-.table-fixed thead, .table-fixed tbody, .table-fixed tr, .table-fixed td, .table-fixed th {
-  display: block;
-  border-collapse: collapse;
+.unalteredStudentRow {
+  background-color: white;
+  color: black;
 }
 
-.table-fixed tbody td, .table-fixed thead > tr > th {
-  float: left;
-  cursor: pointer;
+.activeStudentRow{
+  background-color: #337ab7;
+color: white;
 }
+
+.gradedStudentRow {
+  background-color: #5cb85c;
+  color: white;
+}
+
+
+
 // From in page css
 //<style>
 // .table-fixed thead {
