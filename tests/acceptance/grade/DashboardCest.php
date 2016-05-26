@@ -29,7 +29,8 @@ class DashboardCest
 
     /**
      * @param AcceptanceTester $I
-     * @group('grade')
+     * @group grade
+     * @group dashboard
      */
     public function logIn(AcceptanceTester $I)
     {
@@ -38,8 +39,10 @@ class DashboardCest
         $I->wait(1);
     }
 
-    /*
-     * @group('grade')
+    /**
+     * @param AcceptanceTester $I
+     * @group grade
+     * @group dashboard
      */
     public function checkIntact(AcceptanceTester $I)
     {
@@ -53,8 +56,9 @@ class DashboardCest
     }
 
     /**
-     * @param $I
-     * @group('grade')
+     * @param AcceptanceTester $I
+     * @group grade
+     * @group dashboard
      */
     public function checkInitialExamStatsValues($I)
     {
@@ -65,20 +69,22 @@ class DashboardCest
 
     /**
      * @param AcceptanceTester $I
-     * @group('grade')
+     * @group grade
+     * @group dashboard
      */
     public function checkInitialTimeStatsValues(AcceptanceTester $I)
     {
         $I->amGoingTo("check the values of the time stats");
         $initialTimeShort = '00:00';
         $initialTimeLong = '00:00:00';
-        DashboardArea::assertTimeStatsHasValues($I, $initialTimeShort, $initialTimeShort, $initialTimeLong, $initialTimeLong);
+        DashboardArea::assertTimeStatsHasValues($I, $initialTimeShort, $initialTimeShort, $initialTimeShort, $initialTimeShort);
     }
 
 
     /**
      * @param AcceptanceTester $I
-     * @group('grade')
+     * @group grade
+     * @group dashboard
      */
     public function clickStudent(AcceptanceTester $I)
     {
@@ -114,14 +120,16 @@ class DashboardCest
 
         $I->expect("the time counters to no longer have their initial values");
         $I->wait(1);
-        $initialTime = '00:00';
-        DashboardArea::assertTimeStatsHasValues($I, $initialTime, $initialTime, $initialTime, $initialTime);
+  //      $initialTime = DashboardArea::$initialTimeValue;
+        DashboardArea::assertInitialValuesPresent($I, true);
+//        DashboardArea::assertTimeStatsHasValues($I, $initialTime, $initialTime, $initialTime, $initialTime, true);
     }
 
 
     /**
      * @param AcceptanceTester $I
-     * @group('grade')
+     * @group grade
+     * @group dashboard
      */
     public function pauseTimer(AcceptanceTester $I)
     {
@@ -132,15 +140,15 @@ class DashboardCest
         $current = $I->grabTextFrom(DashboardArea::$currentExamTimeLocator);
         $remaining = $I->grabTextFrom(DashboardArea::$remainingExamsLocator);
 
-        //un-pause
-        $I->click(DashboardArea::$timerButtonLocator);
-        $I->wait(1);
-        DashboardArea::assertTimerButtonActive($I);
-        //let run again
-        $I->wait(2);
         //pause
         $I->click(DashboardArea::$timerButtonLocator);
+        $I->wait(1);
         DashboardArea::assertTimerButtonPaused($I);
+        //let run again
+        $I->wait(2);
+        //un-pause
+        $I->click(DashboardArea::$timerButtonLocator);
+        DashboardArea::assertTimerButtonActive($I);
 
 
 
@@ -150,9 +158,11 @@ class DashboardCest
         //todo test that doesn't do stuff if no student active
     }
 
+
     /**
      * @param AcceptanceTester $I
-     * @group('grade')
+     * @group grade
+     * @group dashboard
      */
     public function checkStats(AcceptanceTester $I)
     {

@@ -61,8 +61,8 @@ module.exports = {
      * also displays the "Save & Finish" button when remaining == 0
      */
     updateGradedRemainingCounter: function ( data ) {
-        var total = data.getNumberGraded();
-        var graded = data.getNumberGraded( );
+        var total = data.getTotalExams();
+        var graded = data.getNumberGraded();
 
         // if(typeof data.examGrades == 'undefined'){
         //     var total = 0;

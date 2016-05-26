@@ -16,6 +16,7 @@ class DashboardArea
      * public static $usernameField = '#username';
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
+    public static $initialTimeValue = '00:00';
 
     //timer button
     public static $timerButtonLocator = ['id' => 'btnTimer'];
@@ -121,9 +122,9 @@ class DashboardArea
         $I->seeElement(DashboardArea::$remainingExamsLocator);
     }
 
-    public static function assertInitialValuesPresent($I)
+    public static function assertInitialValuesPresent($I, $not=false)
     {
-
+        self::assertTimeStatsHasValues($I, self::$initialTimeValue, self::$initialTimeValue, self::$initialTimeValue, self::$initialTimeValue, $not);
     }
 
 
