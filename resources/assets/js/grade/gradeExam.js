@@ -3,18 +3,17 @@ window.onload = function () {
     window.$ = $;
     var jQuery = $;
     window.jQuery = jQuery;
-
-
+    
     require( 'bootstrap' );
 
     var common = require( '../common.js' );
     var bootbox = require( 'bootbox' );
 
-// //TODO figure out which typeahead to use
-// //var typeahead = require('../libraries/bootstrap3-typeahead.min.js');
-    var typeahead = require( '../libraries/typeahead.bundle.js' );
-
     var Slider = require( "../libraries/bootstrap-slider-modified.js" );
+
+// //TODO figure out which typeahead to use
+var typeahead = require('../libraries/bootstrap3-typeahead.min.js');
+    // var typeahead = require( '../libraries/typeahead.bundle.js' );
 
     var LetterGradeButton = require( './components/letterGradeButton.js' )();
     var Roster = require( './components/Roster.js' );
@@ -46,7 +45,7 @@ window.onload = function () {
         var oldScore = data.getElementScore( Roster.activeStudent, elementIndex );
         var score = slideEvt.value;
 
-        /* update the element's score visually and in elementScores[] */
+        /* ---------- update the element's score visually and in data.elementScores[] --------- */
 
         //store the new element score in the data object
         data.storeElementScore( Roster.activeStudent, elementIndex, score );
@@ -64,19 +63,19 @@ window.onload = function () {
             //Dear Adam, make sure you read the doc for storeCommentText before fucking with
             //anything in these lines
             data.storeCommentText( Roster.activeStudent, elementIndex, $elementComment.val() );
-            var commentText = data.getCommentText(Roster.activeStudent, elementIndex, SliderTools.getValence(score));
+            var commentText = data.getCommentText( Roster.activeStudent, elementIndex, SliderTools.getValence( score ) );
 
             //update display
             updateDisplayedComment( $elementComment, commentText );
 
             //send to the db
-            AjaxHandler.saveComment(data, Roster, elementId, score, commentText );
+            AjaxHandler.saveComment( data, Roster, elementId, score, commentText );
 
         } else {
             // Score is in the same valence region.
             // Jump straight to saving without changing the elementComment
             // Fear not. Changes directly to the comment text will be handled elsewhere.
-            AjaxHandler.createGradeRequest(data, 'element_id', elementId, score, null, Roster );
+            AjaxHandler.createGradeRequest( data, 'element_id', elementId, score, null, Roster );
         }
 
         // If using bell curve (standardScoring), element score affects
@@ -123,6 +122,9 @@ window.onload = function () {
      * update grades and save timers.
      *
      * @param me Context from bound input
+     * @param data
+     * @param Roster
+     * @param AjaxHandler
      */
     function handleQuestionScoreChange( me, data, Roster, AjaxHandler ) {
         var qNumber = $( me ).attr( 'data-number' );
@@ -133,8 +135,8 @@ window.onload = function () {
             score = maxScore;
             $( me ).val( maxScore );
         }
-        data.storeQuestionScore(Roster.activeStudent, questionIndex, score);
-        // data.questionScores[ Roster.activeStudent ][ qNumber - 1 ] = score;
+        data.storeQuestionScore( Roster.activeStudent, questionIndex, score );
+
         var questionAssId = $( me ).attr( 'data-question-assignment-id' );
 
         if ( score >= 0 ) {
@@ -162,39 +164,46 @@ window.onload = function () {
         Roster.activeStudent = $( row ).attr( "data-index" );
         Roster.setSelectedNameAndId();
         Roster.setActiveStudentBackgroundColor( data );
-
+        
         // load the timer area with new values
         Timer.loadTimer( data, Roster, Dashboard );
 
         // set question scores
         $( "[id^='questionScore']" ).each( function ( index ) {
-            var score = data.getQuestionScore(Roster.activeStudent, index );
+            var score = data.getQuestionScore( Roster.activeStudent, index );
             // var score = data.questionScores[ Roster.activeStudent ][ index ];
             $( this ).val( score );
         } );
 
         // set slider values, if any exist
+        var $sliders = $( 'input.slider' );
         if ( typeof $sliders != 'undefined' && $sliders ) {
             $sliders.each( function ( index, item ) {
-                var score = data.getElementScore(Roster.activeStudent, index);
-                // var score = data.elementScores[ Roster.activeStudent ][ index ];
-                $( item ).slider( 'setValue', score );
+                var score = data.getElementScore( Roster.activeStudent, index );
+                //avoid causing an error when slider gets null as a value
+                var modScore = score === null ? 0 : score;
+                $( item ).slider( 'setValue', modScore );
             } );
         }
 
         // set comments
         $( '[name^="commentQ"]' ).each( function ( index ) {
             // var thisComment = data.elementComments[ Roster.activeStudent ][ index ];
-          var elementScore = data.getElementScore(Roster.activeStudent, index);
+            var elementScore = data.getElementScore( Roster.activeStudent, index );
 
-            //TODO Add a test for the potential corner cases this creates
+            //TODO Add a test for the potential corner cases making the default null creates
 
-            // if NULL, disable comment text area until a slider is moved.
-            if ( elementScore  === null ) {
+            if ( elementScore === null ) {
+                // clear any text that might have been left over from another user
+                $( this ).val('');
+                // if NULL, disable comment text area until a slider is moved.
+                // this is so that the user doesn't enter custom text, move the slider,
+                // and then see their custom text irreversibly wiped out.
                 $( this ).prop( 'readonly', 'true' );
             } else {
-                var valence = SliderTools.getValence(elementScore);
-                var thisComment = data.getCommentText(Roster.activeStudent, index, valence);
+                // It has already been scored, so retrieve and set the comment text
+                var valence = SliderTools.getValence( elementScore );
+                var thisComment = data.getCommentText( Roster.activeStudent, index, valence );
                 $( this ).val( thisComment );
             }
         } );
@@ -212,14 +221,7 @@ window.onload = function () {
 
     /* -------------------------------------- Listeners ------------------------------------ */
 
-// set up typeahead [search] boxes for name and ID
-    $( '#activeStudentName' ).typeahead( {
-        source: SearchBox.studentNames
-    } );
 
-    $( '#activeStudentIdentifier' ).typeahead( {
-        source: SearchBox.studentIdents
-    } );
 
 //Dashboard listeners
     $( "#btnTimer" ).on( 'click', function () {
@@ -266,14 +268,14 @@ window.onload = function () {
     $( '[name^="comment"]' ).focusout( function () {
         if ( ! Roster.isActiveStudent() ) return;
         //grab element and its properties
-        var $element = $(this).parents( '[id^="element"]' );
+        var $element = $( this ).parents( '[id^="element"]' );
         var elementId = $element.attr( 'data-element-id' );
-        var commentText = $(this).val();
+        var commentText = $( this ).val();
 
         //TODO make sure that score being null doesn't overwrite actual score
 
         // AjaxHandler.updateAndSaveComment( $( this, data, Roster ) );
-        AjaxHandler.saveComment( data, Roster, elementId, null, commentText);
+        AjaxHandler.saveComment( data, Roster, elementId, null, commentText );
         Timer.resumeTimerIfPaused( data, Roster, Dashboard );
     } );
 
@@ -304,18 +306,66 @@ window.onload = function () {
     Timer.updateTimer( data, Roster, Dashboard );
     Dashboard.updateExamGrades( data );
 
+
     $( document ).ready( function () {
+
+
+        /**
+         * Utility to give each slider a unique id
+         * @returns {string}
+         * @constructor
+         */
+        function Counter() {
+            if ( ! Counter.i ) {
+                Counter.i = 0;
+            }
+            Counter.i ++;
+            return "Qs" + Counter.i;
+        };
+
         /* initialize Sliders with valenceCutoffs */
-        var $sliders = $( 'input.slider' ).slider( {
-            tooltip: 'show',
-            value: 0,
-            step: SliderTools.settings.sliderStep,
-            ticks: SliderTools.settings.valenceCutoffs,
-            ticks_labels: SliderTools.settings.valenceLabels,
-            ticks_position: SliderTools.settings.valenceLabels,
-            id:'TCO'
+        $.each( $( 'input.slider' ), function () {
+            $( this ).slider( {
+                tooltip: 'show',
+                value: 0,
+                step: SliderTools.settings.sliderStep,
+                ticks: SliderTools.settings.valenceCutoffs,
+                ticks_labels: SliderTools.settings.valenceLabels,
+                ticks_position: SliderTools.settings.valenceLabels,
+                id: Counter()
+            } );
         } );
 
+        var $sliders = $( 'input.slider' );
+        // .slider(
+        //     {
+        //     tooltip: 'show',
+        //     value: 0,
+        //     step: SliderTools.settings.sliderStep,
+        //     ticks: SliderTools.settings.valenceCutoffs,
+        //     ticks_labels: SliderTools.settings.valenceLabels,
+        //     ticks_position: SliderTools.settings.valenceLabels,
+        //     id:Counter()
+        // }
+        // );
+
+        // set up typeahead [search] boxes for name and ID
+        SearchBox.initialize();
+        $( '#activeStudentName' ).typeahead( {
+            source: SearchBox.studentNames
+        } );
+
+        $( '#activeStudentIdentifier' ).typeahead( {
+            source: SearchBox.studentIdents
+        } );
+        
+        $( "#activeStudentName" ).on( 'change', function () {
+            SearchBox.handleStudentNameSearch();
+        } );
+
+        $( "#activeStudentIdentifier" ).on( 'change', function () {
+            SearchBox.handleStudentIdentifierSearch();
+        } );
 
     } );
 };

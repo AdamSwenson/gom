@@ -466,6 +466,7 @@ class GradeController extends Controller
             $studentGrades[] = 'Letter grade';
         }
 
+
         return View::make('grade.grade_exam')->with([
                                                         'exam'                   => $exam,
                                                         'students'               => $students,

@@ -13,6 +13,13 @@
                     <input id="sliderQ{{ $qNumber }}E{{ $eNumber }}"
                            type="text"
                            class="slider" />
+                           {{--data-provide="slider"--}}
+                           {{--data-slider-ticks="[1, 2, 3]"--}}
+                           {{--data-slider-ticks-labels='["short", "medium", "long"]'--}}
+                           {{--data-slider-min="1"--}}
+                           {{--data-slider-max="3"--}}
+                           {{--data-slider-step="1"--}}
+                           {{--data-slider-value="3">--}}
                 </span>
         <!-- comment area -->
                 <span class="col-lg-7 commentContainer Q{{ $qNumber }}E{{ $eNumber }}">

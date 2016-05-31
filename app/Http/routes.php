@@ -33,24 +33,24 @@ Route::get('registrationRestrictions', 'RestrictedRegistrationController@showRes
 Route::post('registrationRestrictions', 'RestrictedRegistrationController@recordInterestToWaitlist');
 
 
-/* --------------------------------------------- Account ---------------------------------------------------------------*/
+/* --------------------------------------------- Account -------------------------------------------------------------*/
 Route::get('account', 'LandingController@loggedIn');
 
 
-/* --------------------------------------------- Help ------------------------------------------------------------------*/
+/* --------------------------------------------- Help ----------------------------------------------------------------*/
 Route::get('help', 'InfoController@showInstructions');
 Route::get('faq', 'InfoController@showFaq');
 Route::get('tutorials', 'InfoController@showTutorials');
 Route::get('gettingStarted', 'InfoController@showGettingStarted');
 
-/* --------------------------------------------- About -----------------------------------------------------------------*/
+/* --------------------------------------------- About ---------------------------------------------------------------*/
 Route::get('about', 'InfoController@showAbout');
 
-/* --------------------------------------------- Contact ---------------------------------------------------------------*/
+/* --------------------------------------------- Contact -------------------------------------------------------------*/
 Route::get('contact', 'InfoController@showContact');
 
 
-/* ----------------------------------------------- Exam set up  -------------------------------------------------------- */
+/* ----------------------------------------------- Exam set up  ----------------------------------------------------- */
 /* Select exam page */
 Route::get('exam/{exam}/clone','ExamController@cloneExam');
 Route::resource('exam', 'ExamController');
@@ -72,7 +72,7 @@ Route::get('exam/{exam}/student/edit', array('as' => 'editAllStudents', 'uses' =
 Route::resource('exam.student', 'StudentController');
 
 
-/* ------------------------------------------------ Grade exams ---------------------------------------------------------- */
+/* ------------------------------------------------ Grade exams ----------------------------------------------------- */
 //TODO Rework to be more coherent and restful
 Route::get('grade', 'GradeController@index'); // present list of exams to grade.
 Route::get('grade/exam/{exam}', 'GradeController@grade');  // begin grade the specified exam
@@ -82,7 +82,7 @@ Route::post('grade/exam/{exam}/assign', 'GradeController@recordAssignments'); //
 Route::post('grade/exam/{exam}', 'GradeController@recordScore'); // record a question or element score
 Route::delete('grade/exam/{exam}', 'GradeController@removeScore'); // delete a question or element score
 
-/* ----------------------------------------------- Reports --------------------------------------------------------------- */
+/* ----------------------------------------------- Reports ---------------------------------------------------------- */
 /* Reporting and analytics */
 Route::get('report', 'ReportController@showExams');
 Route::get('report/{exam}/gradeassign', array('uses' => 'ReportController@showGradeAssign'));
@@ -96,7 +96,7 @@ Route::post('report/{exam}/release', 'ReportController@releaseExam'); // release
 Route::post('report/{exam}/unrelease', 'ReportController@unreleaseExam'); // delete student access and set to unreleased
 
 
-/* ------------------------------------------------- Feedback ------------------------------------------------------------*/
+/* ------------------------------------------------- Feedback --------------------------------------------------------*/
 /* Creation */
 Route::get('feedback/make/{exam}', 'ReportController@createFeedback');
 
@@ -109,19 +109,15 @@ Route::get('feedback/login', 'PublicFeedbackController@showLogin');
 Route::get('feedback/view', 'PublicFeedbackController@showFeedback');
 
 
-
-/* ---------------------------------------------- Utilities -------------------------------------------------------------- */
+/* ---------------------------------------------- Utilities --------------------------------------------------------- */
 Route::get('backup/{exam}', 'UtilityController@exportExamScores');
-//Route::get('backup/{exam}', function($exam){
-//    $user = Auth::user();
-//    if($user->owns($exam))
-//    {
-//        $exporter = app()->make('ExportScores');
-//        $exporter->handle($exam);
-//    }
-//});
-
 Route::get('utilities/updateExamCounts', 'UtilityController@updateExamCounts');
+
+
+/* ---------------------------------------------- Testing ----------------------------------------------------------- */
+Route::get('testing/gradingSliders', 'TestController@gradingSlidersTest');
+
+
 
 //Route::get('test2', 'StudentController@devEditAll');
 //

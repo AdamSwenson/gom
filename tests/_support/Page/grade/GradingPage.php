@@ -104,6 +104,10 @@ class GradingPage
     public static function commentXPath($questionNumber, $subtask){
         return "//*[@id='commentQ{$questionNumber}E{$subtask}']";
     }
+
+    public static function commentFieldLocator($questionNumber, $subtask){
+        return ['id' => "commentQ{$questionNumber}E{$subtask}"];
+    }
     
     public static function pageHeadingText($term, $year, $examName){
        return <<<TAG
@@ -220,8 +224,8 @@ public static function verifyGradingPageIntact($I, $examId){
     $I->seeInTitle(self::$pageTitleText);
     $I->see(self::$pageSubHeadingText);
 
-    $I->seeElement(self::$studentsTableXPath);
-    $I->seeElement(self::$gradingStatsPanelXPath);
+    $I->seeElement(['xpath' => self::$studentsTableXPath]);
+    $I->seeElement(['xpath' => self::$gradingStatsPanelXPath]);
     //$I->see(self::$finishButtonText);
 
     //active student fields
@@ -261,21 +265,21 @@ public static function verifyGradingPageIntact($I, $examId){
     public static function assertQuestionPanelIntact($I, $questionNumber, $numElements){
         
         $I->expectTo("see that the letter grade button and question score field are present");
-        $I->seeElement(self::letterGradeButtonLabelXPath($questionNumber));
-        $I->seeElement(self::letterGradeButtonXPath($questionNumber));
+        $I->seeElement(['xpath' =>self::letterGradeButtonLabelXPath($questionNumber)]);
+        $I->seeElement(['xpath' =>self::letterGradeButtonXPath($questionNumber)]);
         $I->see(self::$letterGradeButtonText);
-        $I->seeElement(self::questionScoreFieldXPath($questionNumber));
+        $I->seeElement(['xpath' => self::questionScoreFieldXPath($questionNumber)]);
 
         $I->amGoingTo("Check that the element fields for question {$questionNumber} are displayed properly");
         for ( $j = 1; $j <= $numElements; $j++ )
         {
             $I->expectTo("see the div for element Q{$questionNumber}E{$j}");
-            $I->seeElement(self::elementAreaXPath($questionNumber, $j));
+            $I->seeElement(['xpath' => self::elementAreaXPath($questionNumber, $j)]);
             $I->expectTo("see the common part of the element name ");
             $I->see("Element #{$j}: ");
             //todo expected element nameself::
             $I->expectTo("see the comment area for Q{$questionNumber}E{$j}");
-            $I->seeElement(self::commentXPath($questionNumber, $j));
+            $I->seeElement(['xpath' => self::commentXPath($questionNumber, $j)]);
         }
 
         $I->amGoingTo("Check that the sliders for question {$questionNumber} are displayed properly");

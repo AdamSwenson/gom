@@ -121,10 +121,17 @@ module.exports = {
      * set background for the student roster row that is selected
      */
     setActiveStudentBackgroundColor: function ( data ) {
+        //if not null
         if ( this.activeStudent ) {
-            this.setStudentBackgroundColors(data); // reset prev. selected student to it's color (white or green)
-            var item = $( '#studentRoster' ).find( '#studentListItem' + this.activeStudent ); // set the activeStudent
+            var $roster = $( '#studentRoster' );
+
+            //remove active from all
+            $roster.find('[id^="studentListItem"]').removeClass('activeStudentRow');
+
+            //$( '#studentRoster' ).find( '#studentListItem' + this.activeStudent );
+            var item = $roster.find( '#studentListItem' + this.activeStudent ); // set the activeStudent
             this.setRowToActiveStudent(item);
+            this.setStudentBackgroundColors(data); // reset prev. selected student to it's color (white or green)
 //            this.setRosterBackgroundColor( item, this.activeStudentColor, this.alteredStudentTextColor );
         }
     },

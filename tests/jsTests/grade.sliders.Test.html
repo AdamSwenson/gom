@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>examsetup Scripts Test Suite</title>
+    <link rel="stylesheet" href="../unitTestHelpers/qunit-1.15.0.css" type="text/css" media="screen">
+    <script type="text/javascript" src="../unitTestHelpers/jquery-1.11.1.js"></script>
+    <script type="text/javascript" src="../unitTestHelpers/jquery-ui.js"></script>
+    <script type="text/javascript" src="../unitTestHelpers/jquery.tmpl.min.js"></script>
+    <script type="text/javascript" src="../unitTestHelpers/qunit-1.15.0.js"></script>
+    <script type="text/javascript" src="../unitTestHelpers/json2.js"></script>
+    <script type="text/javascript" src="../unitTestHelpers/jquery.mockjax.js"></script>
+    <script type="text/javascript" src="../unitTestHelpers/jquery.cookie.js"></script>
+    <script type="text/javascript" src="../unitTestHelpers/blanket.js" data-cover-flags="debug"></script>
+
+    <!--Tested scripts-->
+    <script type="text/javascript" src="../../js/grade-exam-package.js" data-cover></script>
+    <!--<script type="text/javascript" src="../../src/www/inc/js/examSetup.js" data-cover></script>-->
+    <!-- Your tests file goes here -->
+    <!--<script type="text/javascript" src="../js/examsetupTesting.js"></script>-->
+
+
+</head>
+<body>
+<h1 id="qunit-header">Unit tests for all scripts used on examcreate2.php</h1>
+
+<h2 id="qunit-banner"></h2>
+
+<div id="qunit-testrunner-toolbar"></div>
+<h2 id="qunit-userAgent"></h2>
+<ol id="qunit-tests"></ol>
+<div id="qunit-fixture">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Left column holds questions and sliders -->
+            <div id="questionAndSliderColumn" class="col-md-8 questionAndSliderColumn">
+
+                <h3 data-exam-id="2">
+                    <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                    Exam2Term, 1990 "TestExam#2 5QuestionsWElements User1"
+                </h3>
+
+                <h4 id="selectPrompt" style="display: none;">Select a student to begin grading</h4>
+
+                <div id="questionArea" class="startHidden" style="display: block;">
+                    <!-- Create one Question Tab for each question -->
+                    <ul class="nav nav-pills nav-justified">
+                        <li class="active" role="presentation">
+                            <a id="tabQuestion1" href="#panelQuestion1" title="Grade question 1" data-toggle="tab" aria-expanded="true">
+                                Q1</a>
+                        </li>
+                        <li class="" role="presentation">
+                            <a id="tabQuestion2" href="#panelQuestion2" title="Grade question 2" data-toggle="tab" aria-expanded="false">
+                                Q2</a>
+                        </li>
+                        <li class="" role="presentation">
+                            <a id="tabQuestion3" href="#panelQuestion3" title="Grade question 3" data-toggle="tab" aria-expanded="false">
+                                Q3</a>
+                        </li>
+                        <li class="" role="presentation">
+                            <a id="tabQuestion4" href="#panelQuestion4" title="Grade question 4" data-toggle="tab" aria-expanded="false">
+                                Q4</a>
+                        </li>
+                        <li class="" role="presentation">
+                            <a id="tabQuestion5" href="#panelQuestion5" title="Grade question 5" data-toggle="tab">
+                                Q5</a>
+                        </li>
+                    </ul>
+
+                    <!-- question panel -->
+                    <div id="questionPanel" class="panel panel-default questionPanel">
+                        <div class="panel-body">
+                            <div class="tab-content">
+                                <div id="panelQuestion1" data-question-number="1" class="tab-pane                                                                   fadein active in">
+                                    <div class="row">
+                                        <div class="col-xs-7">
+                                            <!-- question Name -->
+                                            <h4 id="questionName">Question #1:
+                                                "Exam2Question1"</h4>
+                                        </div>
+
+                                        <!-- question Score -->
+                                        <div class="col-xs-2">
+                                            <!-- Single button -->
+                                            <div id="letterGradeArea" class="btn-group">
+                                                <button id="letterGradeButton1" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <span id="letterGradeForQuestion1">Letter grade</span> <span class="caret"></span>
+                                                </button>
+
+                                                <ul id="letterGradeList" class="dropdown-menu letterGradeList">
+                                                    <li><a class="letterGrade question1 q1g98" data-letter-grade-button-id="letterGradeForQuestion1" data-target-id="questionScore1" data-display-value="A+" data-calc-value="98" href="#">A+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question1 q1g95" data-letter-grade-button-id="letterGradeForQuestion1" data-target-id="questionScore1" data-display-value="A" data-calc-value="95" href="#">A</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question1 q1g92" data-letter-grade-button-id="letterGradeForQuestion1" data-target-id="questionScore1" data-display-value="A-" data-calc-value="92" href="#">A-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question1 q1g88" data-letter-grade-button-id="letterGradeForQuestion1" data-target-id="questionScore1" data-display-value="B+" data-calc-value="88" href="#">B+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question1 q1g85" data-letter-grade-button-id="letterGradeForQuestion1" data-target-id="questionScore1" data-display-value="B" data-calc-value="85" href="#">B</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question1 q1g82" data-letter-grade-button-id="letterGradeForQuestion1" data-target-id="questionScore1" data-display-value="B-" data-calc-value="82" href="#">B-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question1 q1g78" data-letter-grade-button-id="letterGradeForQuestion1" data-target-id="questionScore1" data-display-value="C+" data-calc-value="78" href="#">C+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question1 q1g75" data-letter-grade-button-id="letterGradeForQuestion1" data-target-id="questionScore1" data-display-value="C" data-calc-value="75" href="#">C</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question1 q1g72" data-letter-grade-button-id="letterGradeForQuestion1" data-target-id="questionScore1" data-display-value="C-" data-calc-value="72" href="#">C-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question1 q1g68" data-letter-grade-button-id="letterGradeForQuestion1" data-target-id="questionScore1" data-display-value="D+" data-calc-value="68" href="#">D+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question1 q1g65" data-letter-grade-button-id="letterGradeForQuestion1" data-target-id="questionScore1" data-display-value="D" data-calc-value="65" href="#">D</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question1 q1g62" data-letter-grade-button-id="letterGradeForQuestion1" data-target-id="questionScore1" data-display-value="D-" data-calc-value="62" href="#">D-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question1 q1g55" data-letter-grade-button-id="letterGradeForQuestion1" data-target-id="questionScore1" data-display-value="F" data-calc-value="55" href="#">F</a>
+                                                    </li>
+                                                </ul>
+
+                                            </div>
+                                        </div>
+                                        <form class="form-horizontal" role="form">
+                                            <div class="form-group">
+                                                <label class="col-xs-1 control-label questionScoreLabel" for="questionScore1">
+                                                    Score:</label>
+
+                                                <div class="col-xs-1" style="padding: 0px;">
+                                                    <input id="questionScore1" class="form-control pull-right questionScore" type="number" min="0" max="100" data-number="1" data-question-assignment-id="6">
+                                                </div>
+                                                <div class="col-xs-1 control-label maxScore">
+                                                    <b>/ 100</b>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <!-- element area holds all sliders and comments for this question -->
+                                    <div class="list-group">
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element1" class="list-group-item elementPanel" data-element-index="0" data-element-id="26" data-comment-area-id="commentQ1E1">
+                                            <h5>Element #1: "Element26Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q1E1">
+                    <!-- score slider -->
+                    <label for="sliderQ1E1"></label>
+                    <div class="slider slider-horizontal" id="Qs1" style="margin-bottom: 24px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 82.5%;"></div><div class="slider-track-high" style="right: 0px; width: 17.5%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round in-selection" style="left: 32.5%;"></div><div class="slider-tick round in-selection" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 82.5%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 82.5%; margin-left: -20px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">8.25</div></div><div class="tooltip tooltip-min top" style="display: none;"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top" style="display: none;"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ1E1" type="text" class="slider" data-value="8.25" value="8.25" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q1E1">
+                    <textarea id="commentQ1E1" class="form-control" rows="4" name="commentQ1E1" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element2" class="list-group-item elementPanel" data-element-index="1" data-element-id="27" data-comment-area-id="commentQ1E2">
+                                            <h5>Element #2: "Element27Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q1E2">
+                    <!-- score slider -->
+                    <label for="sliderQ1E2"></label>
+                    <div class="slider slider-horizontal" id="Qs2" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top in" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top" style="display: none;"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top" style="display: none;"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ1E2" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q1E2">
+                    <textarea id="commentQ1E2" class="form-control" rows="4" name="commentQ1E2" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element3" class="list-group-item elementPanel" data-element-index="2" data-element-id="28" data-comment-area-id="commentQ1E3">
+                                            <h5>Element #3: "Element28Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q1E3">
+                    <!-- score slider -->
+                    <label for="sliderQ1E3"></label>
+                    <div class="slider slider-horizontal" id="Qs3" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ1E3" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q1E3">
+                    <textarea id="commentQ1E3" class="form-control" rows="4" name="commentQ1E3" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element4" class="list-group-item elementPanel" data-element-index="3" data-element-id="29" data-comment-area-id="commentQ1E4">
+                                            <h5>Element #4: "Element29Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q1E4">
+                    <!-- score slider -->
+                    <label for="sliderQ1E4"></label>
+                    <div class="slider slider-horizontal" id="Qs4" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ1E4" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q1E4">
+                    <textarea id="commentQ1E4" class="form-control" rows="4" name="commentQ1E4" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element5" class="list-group-item elementPanel" data-element-index="4" data-element-id="30" data-comment-area-id="commentQ1E5">
+                                            <h5>Element #5: "Element30Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q1E5">
+                    <!-- score slider -->
+                    <label for="sliderQ1E5"></label>
+                    <div class="slider slider-horizontal" id="Qs5" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ1E5" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q1E5">
+                    <textarea id="commentQ1E5" class="form-control" rows="4" name="commentQ1E5" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                                <div id="panelQuestion2" data-question-number="2" class="tab-pane                                                                   fade">
+                                    <div class="row">
+                                        <div class="col-xs-7">
+                                            <!-- question Name -->
+                                            <h4 id="questionName">Question #2:
+                                                "Exam2Question2"</h4>
+                                        </div>
+
+                                        <!-- question Score -->
+                                        <div class="col-xs-2">
+                                            <!-- Single button -->
+                                            <div id="letterGradeArea" class="btn-group">
+                                                <button id="letterGradeButton2" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <span id="letterGradeForQuestion2">Letter grade</span> <span class="caret"></span>
+                                                </button>
+
+                                                <ul id="letterGradeList" class="dropdown-menu letterGradeList">
+                                                    <li><a class="letterGrade question2 q2g98" data-letter-grade-button-id="letterGradeForQuestion2" data-target-id="questionScore2" data-display-value="A+" data-calc-value="98" href="#">A+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question2 q2g95" data-letter-grade-button-id="letterGradeForQuestion2" data-target-id="questionScore2" data-display-value="A" data-calc-value="95" href="#">A</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question2 q2g92" data-letter-grade-button-id="letterGradeForQuestion2" data-target-id="questionScore2" data-display-value="A-" data-calc-value="92" href="#">A-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question2 q2g88" data-letter-grade-button-id="letterGradeForQuestion2" data-target-id="questionScore2" data-display-value="B+" data-calc-value="88" href="#">B+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question2 q2g85" data-letter-grade-button-id="letterGradeForQuestion2" data-target-id="questionScore2" data-display-value="B" data-calc-value="85" href="#">B</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question2 q2g82" data-letter-grade-button-id="letterGradeForQuestion2" data-target-id="questionScore2" data-display-value="B-" data-calc-value="82" href="#">B-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question2 q2g78" data-letter-grade-button-id="letterGradeForQuestion2" data-target-id="questionScore2" data-display-value="C+" data-calc-value="78" href="#">C+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question2 q2g75" data-letter-grade-button-id="letterGradeForQuestion2" data-target-id="questionScore2" data-display-value="C" data-calc-value="75" href="#">C</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question2 q2g72" data-letter-grade-button-id="letterGradeForQuestion2" data-target-id="questionScore2" data-display-value="C-" data-calc-value="72" href="#">C-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question2 q2g68" data-letter-grade-button-id="letterGradeForQuestion2" data-target-id="questionScore2" data-display-value="D+" data-calc-value="68" href="#">D+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question2 q2g65" data-letter-grade-button-id="letterGradeForQuestion2" data-target-id="questionScore2" data-display-value="D" data-calc-value="65" href="#">D</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question2 q2g62" data-letter-grade-button-id="letterGradeForQuestion2" data-target-id="questionScore2" data-display-value="D-" data-calc-value="62" href="#">D-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question2 q2g55" data-letter-grade-button-id="letterGradeForQuestion2" data-target-id="questionScore2" data-display-value="F" data-calc-value="55" href="#">F</a>
+                                                    </li>
+                                                </ul>
+
+                                            </div>
+                                        </div>
+                                        <form class="form-horizontal" role="form">
+                                            <div class="form-group">
+                                                <label class="col-xs-1 control-label questionScoreLabel" for="questionScore2">
+                                                    Score:</label>
+
+                                                <div class="col-xs-1" style="padding: 0px;">
+                                                    <input id="questionScore2" class="form-control pull-right questionScore" type="number" min="0" max="100" data-number="2" data-question-assignment-id="7">
+                                                </div>
+                                                <div class="col-xs-1 control-label maxScore">
+                                                    <b>/ 100</b>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <!-- element area holds all sliders and comments for this question -->
+                                    <div class="list-group">
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element1" class="list-group-item elementPanel" data-element-index="5" data-element-id="31" data-comment-area-id="commentQ2E1">
+                                            <h5>Element #1: "Element31Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q2E1">
+                    <!-- score slider -->
+                    <label for="sliderQ2E1"></label>
+                    <div class="slider slider-horizontal" id="Qs6" style="margin-bottom: 24px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 27.5%;"></div><div class="slider-track-high" style="right: 0px; width: 72.5%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 27.5%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 27.5%; margin-left: -20px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">2.75</div></div><div class="tooltip tooltip-min top" style="display: none;"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top" style="display: none;"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ2E1" type="text" class="slider" data-value="2.75" value="2.75" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q2E1">
+                    <textarea id="commentQ2E1" class="form-control" rows="4" name="commentQ2E1" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element2" class="list-group-item elementPanel" data-element-index="6" data-element-id="32" data-comment-area-id="commentQ2E2">
+                                            <h5>Element #2: "Element32Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q2E2">
+                    <!-- score slider -->
+                    <label for="sliderQ2E2"></label>
+                    <div class="slider slider-horizontal" id="Qs7" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ2E2" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q2E2">
+                    <textarea id="commentQ2E2" class="form-control" rows="4" name="commentQ2E2" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element3" class="list-group-item elementPanel" data-element-index="7" data-element-id="33" data-comment-area-id="commentQ2E3">
+                                            <h5>Element #3: "Element33Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q2E3">
+                    <!-- score slider -->
+                    <label for="sliderQ2E3"></label>
+                    <div class="slider slider-horizontal" id="Qs8" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ2E3" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q2E3">
+                    <textarea id="commentQ2E3" class="form-control" rows="4" name="commentQ2E3" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element4" class="list-group-item elementPanel" data-element-index="8" data-element-id="34" data-comment-area-id="commentQ2E4">
+                                            <h5>Element #4: "Element34Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q2E4">
+                    <!-- score slider -->
+                    <label for="sliderQ2E4"></label>
+                    <div class="slider slider-horizontal" id="Qs9" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ2E4" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q2E4">
+                    <textarea id="commentQ2E4" class="form-control" rows="4" name="commentQ2E4" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element5" class="list-group-item elementPanel" data-element-index="9" data-element-id="35" data-comment-area-id="commentQ2E5">
+                                            <h5>Element #5: "Element35Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q2E5">
+                    <!-- score slider -->
+                    <label for="sliderQ2E5"></label>
+                    <div class="slider slider-horizontal" id="Qs10" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ2E5" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q2E5">
+                    <textarea id="commentQ2E5" class="form-control" rows="4" name="commentQ2E5" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                                <div id="panelQuestion3" data-question-number="3" class="tab-pane                                                                   fade">
+                                    <div class="row">
+                                        <div class="col-xs-7">
+                                            <!-- question Name -->
+                                            <h4 id="questionName">Question #3:
+                                                "Exam2Question3"</h4>
+                                        </div>
+
+                                        <!-- question Score -->
+                                        <div class="col-xs-2">
+                                            <!-- Single button -->
+                                            <div id="letterGradeArea" class="btn-group">
+                                                <button id="letterGradeButton3" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <span id="letterGradeForQuestion3">Letter grade</span> <span class="caret"></span>
+                                                </button>
+
+                                                <ul id="letterGradeList" class="dropdown-menu letterGradeList">
+                                                    <li><a class="letterGrade question3 q3g98" data-letter-grade-button-id="letterGradeForQuestion3" data-target-id="questionScore3" data-display-value="A+" data-calc-value="98" href="#">A+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question3 q3g95" data-letter-grade-button-id="letterGradeForQuestion3" data-target-id="questionScore3" data-display-value="A" data-calc-value="95" href="#">A</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question3 q3g92" data-letter-grade-button-id="letterGradeForQuestion3" data-target-id="questionScore3" data-display-value="A-" data-calc-value="92" href="#">A-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question3 q3g88" data-letter-grade-button-id="letterGradeForQuestion3" data-target-id="questionScore3" data-display-value="B+" data-calc-value="88" href="#">B+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question3 q3g85" data-letter-grade-button-id="letterGradeForQuestion3" data-target-id="questionScore3" data-display-value="B" data-calc-value="85" href="#">B</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question3 q3g82" data-letter-grade-button-id="letterGradeForQuestion3" data-target-id="questionScore3" data-display-value="B-" data-calc-value="82" href="#">B-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question3 q3g78" data-letter-grade-button-id="letterGradeForQuestion3" data-target-id="questionScore3" data-display-value="C+" data-calc-value="78" href="#">C+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question3 q3g75" data-letter-grade-button-id="letterGradeForQuestion3" data-target-id="questionScore3" data-display-value="C" data-calc-value="75" href="#">C</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question3 q3g72" data-letter-grade-button-id="letterGradeForQuestion3" data-target-id="questionScore3" data-display-value="C-" data-calc-value="72" href="#">C-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question3 q3g68" data-letter-grade-button-id="letterGradeForQuestion3" data-target-id="questionScore3" data-display-value="D+" data-calc-value="68" href="#">D+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question3 q3g65" data-letter-grade-button-id="letterGradeForQuestion3" data-target-id="questionScore3" data-display-value="D" data-calc-value="65" href="#">D</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question3 q3g62" data-letter-grade-button-id="letterGradeForQuestion3" data-target-id="questionScore3" data-display-value="D-" data-calc-value="62" href="#">D-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question3 q3g55" data-letter-grade-button-id="letterGradeForQuestion3" data-target-id="questionScore3" data-display-value="F" data-calc-value="55" href="#">F</a>
+                                                    </li>
+                                                </ul>
+
+                                            </div>
+                                        </div>
+                                        <form class="form-horizontal" role="form">
+                                            <div class="form-group">
+                                                <label class="col-xs-1 control-label questionScoreLabel" for="questionScore3">
+                                                    Score:</label>
+
+                                                <div class="col-xs-1" style="padding: 0px;">
+                                                    <input id="questionScore3" class="form-control pull-right questionScore" type="number" min="0" max="100" data-number="3" data-question-assignment-id="8">
+                                                </div>
+                                                <div class="col-xs-1 control-label maxScore">
+                                                    <b>/ 100</b>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <!-- element area holds all sliders and comments for this question -->
+                                    <div class="list-group">
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element1" class="list-group-item elementPanel" data-element-index="10" data-element-id="36" data-comment-area-id="commentQ3E1">
+                                            <h5>Element #1: "Element36Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q3E1">
+                    <!-- score slider -->
+                    <label for="sliderQ3E1"></label>
+                    <div class="slider slider-horizontal" id="Qs11" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ3E1" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q3E1">
+                    <textarea id="commentQ3E1" class="form-control" rows="4" name="commentQ3E1" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element2" class="list-group-item elementPanel" data-element-index="11" data-element-id="37" data-comment-area-id="commentQ3E2">
+                                            <h5>Element #2: "Element37Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q3E2">
+                    <!-- score slider -->
+                    <label for="sliderQ3E2"></label>
+                    <div class="slider slider-horizontal" id="Qs12" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ3E2" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q3E2">
+                    <textarea id="commentQ3E2" class="form-control" rows="4" name="commentQ3E2" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element3" class="list-group-item elementPanel" data-element-index="12" data-element-id="38" data-comment-area-id="commentQ3E3">
+                                            <h5>Element #3: "Element38Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q3E3">
+                    <!-- score slider -->
+                    <label for="sliderQ3E3"></label>
+                    <div class="slider slider-horizontal" id="Qs13" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ3E3" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q3E3">
+                    <textarea id="commentQ3E3" class="form-control" rows="4" name="commentQ3E3" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element4" class="list-group-item elementPanel" data-element-index="13" data-element-id="39" data-comment-area-id="commentQ3E4">
+                                            <h5>Element #4: "Element39Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q3E4">
+                    <!-- score slider -->
+                    <label for="sliderQ3E4"></label>
+                    <div class="slider slider-horizontal" id="Qs14" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ3E4" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q3E4">
+                    <textarea id="commentQ3E4" class="form-control" rows="4" name="commentQ3E4" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element5" class="list-group-item elementPanel" data-element-index="14" data-element-id="40" data-comment-area-id="commentQ3E5">
+                                            <h5>Element #5: "Element40Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q3E5">
+                    <!-- score slider -->
+                    <label for="sliderQ3E5"></label>
+                    <div class="slider slider-horizontal" id="Qs15" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ3E5" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q3E5">
+                    <textarea id="commentQ3E5" class="form-control" rows="4" name="commentQ3E5" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                                <div id="panelQuestion4" data-question-number="4" class="tab-pane                                                                   fade">
+                                    <div class="row">
+                                        <div class="col-xs-7">
+                                            <!-- question Name -->
+                                            <h4 id="questionName">Question #4:
+                                                "Exam2Question4"</h4>
+                                        </div>
+
+                                        <!-- question Score -->
+                                        <div class="col-xs-2">
+                                            <!-- Single button -->
+                                            <div id="letterGradeArea" class="btn-group">
+                                                <button id="letterGradeButton4" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <span id="letterGradeForQuestion4">Letter grade</span> <span class="caret"></span>
+                                                </button>
+
+                                                <ul id="letterGradeList" class="dropdown-menu letterGradeList">
+                                                    <li><a class="letterGrade question4 q4g98" data-letter-grade-button-id="letterGradeForQuestion4" data-target-id="questionScore4" data-display-value="A+" data-calc-value="98" href="#">A+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question4 q4g95" data-letter-grade-button-id="letterGradeForQuestion4" data-target-id="questionScore4" data-display-value="A" data-calc-value="95" href="#">A</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question4 q4g92" data-letter-grade-button-id="letterGradeForQuestion4" data-target-id="questionScore4" data-display-value="A-" data-calc-value="92" href="#">A-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question4 q4g88" data-letter-grade-button-id="letterGradeForQuestion4" data-target-id="questionScore4" data-display-value="B+" data-calc-value="88" href="#">B+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question4 q4g85" data-letter-grade-button-id="letterGradeForQuestion4" data-target-id="questionScore4" data-display-value="B" data-calc-value="85" href="#">B</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question4 q4g82" data-letter-grade-button-id="letterGradeForQuestion4" data-target-id="questionScore4" data-display-value="B-" data-calc-value="82" href="#">B-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question4 q4g78" data-letter-grade-button-id="letterGradeForQuestion4" data-target-id="questionScore4" data-display-value="C+" data-calc-value="78" href="#">C+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question4 q4g75" data-letter-grade-button-id="letterGradeForQuestion4" data-target-id="questionScore4" data-display-value="C" data-calc-value="75" href="#">C</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question4 q4g72" data-letter-grade-button-id="letterGradeForQuestion4" data-target-id="questionScore4" data-display-value="C-" data-calc-value="72" href="#">C-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question4 q4g68" data-letter-grade-button-id="letterGradeForQuestion4" data-target-id="questionScore4" data-display-value="D+" data-calc-value="68" href="#">D+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question4 q4g65" data-letter-grade-button-id="letterGradeForQuestion4" data-target-id="questionScore4" data-display-value="D" data-calc-value="65" href="#">D</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question4 q4g62" data-letter-grade-button-id="letterGradeForQuestion4" data-target-id="questionScore4" data-display-value="D-" data-calc-value="62" href="#">D-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question4 q4g55" data-letter-grade-button-id="letterGradeForQuestion4" data-target-id="questionScore4" data-display-value="F" data-calc-value="55" href="#">F</a>
+                                                    </li>
+                                                </ul>
+
+                                            </div>
+                                        </div>
+                                        <form class="form-horizontal" role="form">
+                                            <div class="form-group">
+                                                <label class="col-xs-1 control-label questionScoreLabel" for="questionScore4">
+                                                    Score:</label>
+
+                                                <div class="col-xs-1" style="padding: 0px;">
+                                                    <input id="questionScore4" class="form-control pull-right questionScore" type="number" min="0" max="100" data-number="4" data-question-assignment-id="9">
+                                                </div>
+                                                <div class="col-xs-1 control-label maxScore">
+                                                    <b>/ 100</b>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <!-- element area holds all sliders and comments for this question -->
+                                    <div class="list-group">
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element1" class="list-group-item elementPanel" data-element-index="15" data-element-id="41" data-comment-area-id="commentQ4E1">
+                                            <h5>Element #1: "Element41Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q4E1">
+                    <!-- score slider -->
+                    <label for="sliderQ4E1"></label>
+                    <div class="slider slider-horizontal" id="Qs16" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ4E1" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q4E1">
+                    <textarea id="commentQ4E1" class="form-control" rows="4" name="commentQ4E1" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element2" class="list-group-item elementPanel" data-element-index="16" data-element-id="42" data-comment-area-id="commentQ4E2">
+                                            <h5>Element #2: "Element42Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q4E2">
+                    <!-- score slider -->
+                    <label for="sliderQ4E2"></label>
+                    <div class="slider slider-horizontal" id="Qs17" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ4E2" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q4E2">
+                    <textarea id="commentQ4E2" class="form-control" rows="4" name="commentQ4E2" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element3" class="list-group-item elementPanel" data-element-index="17" data-element-id="43" data-comment-area-id="commentQ4E3">
+                                            <h5>Element #3: "Element43Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q4E3">
+                    <!-- score slider -->
+                    <label for="sliderQ4E3"></label>
+                    <div class="slider slider-horizontal" id="Qs18" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ4E3" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q4E3">
+                    <textarea id="commentQ4E3" class="form-control" rows="4" name="commentQ4E3" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element4" class="list-group-item elementPanel" data-element-index="18" data-element-id="44" data-comment-area-id="commentQ4E4">
+                                            <h5>Element #4: "Element44Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q4E4">
+                    <!-- score slider -->
+                    <label for="sliderQ4E4"></label>
+                    <div class="slider slider-horizontal" id="Qs19" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ4E4" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q4E4">
+                    <textarea id="commentQ4E4" class="form-control" rows="4" name="commentQ4E4" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element5" class="list-group-item elementPanel" data-element-index="19" data-element-id="45" data-comment-area-id="commentQ4E5">
+                                            <h5>Element #5: "Element45Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q4E5">
+                    <!-- score slider -->
+                    <label for="sliderQ4E5"></label>
+                    <div class="slider slider-horizontal" id="Qs20" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ4E5" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q4E5">
+                    <textarea id="commentQ4E5" class="form-control" rows="4" name="commentQ4E5" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                                <div id="panelQuestion5" data-question-number="5" class="tab-pane
+                                                                  fade
+                                                     ">
+                                    <div class="row">
+                                        <div class="col-xs-7">
+                                            <!-- question Name -->
+                                            <h4 id="questionName">Question #5:
+                                                "Exam2Question5"</h4>
+                                        </div>
+
+                                        <!-- question Score -->
+                                        <div class="col-xs-2">
+                                            <!-- Single button -->
+                                            <div id="letterGradeArea" class="btn-group">
+                                                <button id="letterGradeButton5" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <span id="letterGradeForQuestion5">Letter grade</span> <span class="caret"></span>
+                                                </button>
+
+                                                <ul id="letterGradeList" class="dropdown-menu letterGradeList">
+                                                    <li><a class="letterGrade question5 q5g98" data-letter-grade-button-id="letterGradeForQuestion5" data-target-id="questionScore5" data-display-value="A+" data-calc-value="98" href="#">A+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question5 q5g95" data-letter-grade-button-id="letterGradeForQuestion5" data-target-id="questionScore5" data-display-value="A" data-calc-value="95" href="#">A</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question5 q5g92" data-letter-grade-button-id="letterGradeForQuestion5" data-target-id="questionScore5" data-display-value="A-" data-calc-value="92" href="#">A-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question5 q5g88" data-letter-grade-button-id="letterGradeForQuestion5" data-target-id="questionScore5" data-display-value="B+" data-calc-value="88" href="#">B+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question5 q5g85" data-letter-grade-button-id="letterGradeForQuestion5" data-target-id="questionScore5" data-display-value="B" data-calc-value="85" href="#">B</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question5 q5g82" data-letter-grade-button-id="letterGradeForQuestion5" data-target-id="questionScore5" data-display-value="B-" data-calc-value="82" href="#">B-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question5 q5g78" data-letter-grade-button-id="letterGradeForQuestion5" data-target-id="questionScore5" data-display-value="C+" data-calc-value="78" href="#">C+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question5 q5g75" data-letter-grade-button-id="letterGradeForQuestion5" data-target-id="questionScore5" data-display-value="C" data-calc-value="75" href="#">C</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question5 q5g72" data-letter-grade-button-id="letterGradeForQuestion5" data-target-id="questionScore5" data-display-value="C-" data-calc-value="72" href="#">C-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question5 q5g68" data-letter-grade-button-id="letterGradeForQuestion5" data-target-id="questionScore5" data-display-value="D+" data-calc-value="68" href="#">D+</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question5 q5g65" data-letter-grade-button-id="letterGradeForQuestion5" data-target-id="questionScore5" data-display-value="D" data-calc-value="65" href="#">D</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question5 q5g62" data-letter-grade-button-id="letterGradeForQuestion5" data-target-id="questionScore5" data-display-value="D-" data-calc-value="62" href="#">D-</a>
+                                                    </li>
+                                                    <li><a class="letterGrade question5 q5g55" data-letter-grade-button-id="letterGradeForQuestion5" data-target-id="questionScore5" data-display-value="F" data-calc-value="55" href="#">F</a>
+                                                    </li>
+                                                </ul>
+
+                                            </div>
+                                        </div>
+                                        <form class="form-horizontal" role="form">
+                                            <div class="form-group">
+                                                <label class="col-xs-1 control-label questionScoreLabel" for="questionScore5">
+                                                    Score:</label>
+
+                                                <div class="col-xs-1" style="padding: 0px;">
+                                                    <input id="questionScore5" class="form-control pull-right questionScore" type="number" min="0" max="100" data-number="5" data-question-assignment-id="10">
+                                                </div>
+                                                <div class="col-xs-1 control-label maxScore">
+                                                    <b>/ 100</b>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <!-- element area holds all sliders and comments for this question -->
+                                    <div class="list-group">
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element1" class="list-group-item elementPanel" data-element-index="20" data-element-id="46" data-comment-area-id="commentQ5E1">
+                                            <h5>Element #1: "Element46Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q5E1">
+                    <!-- score slider -->
+                    <label for="sliderQ5E1"></label>
+                    <div class="slider slider-horizontal" id="Qs21" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ5E1" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q5E1">
+                    <textarea id="commentQ5E1" class="form-control" rows="4" name="commentQ5E1" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element2" class="list-group-item elementPanel" data-element-index="21" data-element-id="47" data-comment-area-id="commentQ5E2">
+                                            <h5>Element #2: "Element47Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q5E2">
+                    <!-- score slider -->
+                    <label for="sliderQ5E2"></label>
+                    <div class="slider slider-horizontal" id="Qs22" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ5E2" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q5E2">
+                    <textarea id="commentQ5E2" class="form-control" rows="4" name="commentQ5E2" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element3" class="list-group-item elementPanel" data-element-index="22" data-element-id="48" data-comment-area-id="commentQ5E3">
+                                            <h5>Element #3: "Element48Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q5E3">
+                    <!-- score slider -->
+                    <label for="sliderQ5E3"></label>
+                    <div class="slider slider-horizontal" id="Qs23" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ5E3" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q5E3">
+                    <textarea id="commentQ5E3" class="form-control" rows="4" name="commentQ5E3" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element4" class="list-group-item elementPanel" data-element-index="23" data-element-id="49" data-comment-area-id="commentQ5E4">
+                                            <h5>Element #4: "Element49Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q5E4">
+                    <!-- score slider -->
+                    <label for="sliderQ5E4"></label>
+                    <div class="slider slider-horizontal" id="Qs24" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ5E4" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q5E4">
+                    <textarea id="commentQ5E4" class="form-control" rows="4" name="commentQ5E4" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- template used by 'grade_exam' to host -->
+                                        <div id="element5" class="list-group-item elementPanel" data-element-index="24" data-element-id="50" data-comment-area-id="commentQ5E5">
+                                            <h5>Element #5: "Element50Name"</h5>
+                                            <div class="row">
+                <span class="col-lg-5 sliderContainer Q5E5">
+                    <!-- score slider -->
+                    <label for="sliderQ5E5"></label>
+                    <div class="slider slider-horizontal" id="Qs25" style="margin-bottom: 0px;"><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection tick-slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-track-high" style="right: 0px; width: 100%;"></div><div class="slider-tick round in-selection" style="left: 0%;"></div><div class="slider-tick round" style="left: 32.5%;"></div><div class="slider-tick round" style="left: 67.5%;"></div><div class="slider-tick round" style="left: 100%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="slider-tick-label-container" style="margin-left: -38.3333px;"><div class="slider-tick-label" style="width: 76.6667px;">Missing</div><div class="slider-tick-label" style="width: 76.6667px;">Poor</div><div class="slider-tick-label" style="width: 76.6667px;">Fair</div><div class="slider-tick-label" style="width: 76.6667px;">Excellent</div></div></div><input id="sliderQ5E5" type="text" class="slider" data-value="0" value="0" style="display: none;">
+                                                                                                                                                                                                             </span>
+                                                <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q5E5">
+                    <textarea id="commentQ5E5" class="form-control" rows="4" name="commentQ5E5" placeholder="No score for this element" readonly=""></textarea>
+                </span>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right column holds Roster and Time info -->
+            <div id="rosterAndDashboardColumn" class="col-md-4 rosterAndDashboardColumn">
+
+                <!-- student name and ID -->
+                <form class="form-horizontal">
+                    <div class="form-group activeStudentInput">
+                        <div id="activeStudentNameArea" class="col-xs-7">
+                            <label for="activeStudentName">
+                                <span class="sr-only">Click to hide student names</span>
+                                <span id="nameVisibilityControl" class="glyphicon glyphicon-pencil" title="Click to hide student names"> </span>
+                            </label>
+                            <span class="twitter-typeahead" style="position: relative; display: inline-block;"><input class="typeahead full-width tt-hint" type="text" readonly="" autocomplete="off" spellcheck="false" tabindex="-1" dir="ltr" style="position: absolute; top: 0px; left: 0px; border-color: transparent; box-shadow: none; opacity: 1; background: none 0% 0% / auto repeat scroll padding-box border-box rgb(255, 255, 255);"><input id="activeStudentName" class="typeahead full-width tt-input" type="text" placeholder="No Student Selected" autocomplete="off" spellcheck="false" dir="auto" style="position: relative; vertical-align: top; background-color: transparent;"><pre aria-hidden="true" style="position: absolute; visibility: hidden; white-space: pre; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 17.5px; font-style: normal; font-variant: normal; font-weight: 400; word-spacing: 0px; letter-spacing: 0px; text-indent: 0px; text-rendering: auto; text-transform: none;"></pre><div class="tt-menu" style="position: absolute; top: 100%; left: 0px; z-index: 100; display: none;"></div></span>
+                        </div>
+                        <div id="activeStudentIdentifierArea" class="col-xs-5">
+                            <label for="activeStudentIdentifier">ID</label>
+                            <span class="twitter-typeahead" style="position: relative; display: inline-block;"><input class="typeahead full-width tt-hint" type="text" readonly="" autocomplete="off" spellcheck="false" tabindex="-1" dir="ltr" style="position: absolute; top: 0px; left: 0px; border-color: transparent; box-shadow: none; opacity: 1; background: none 0% 0% / auto repeat scroll padding-box border-box rgb(255, 255, 255);"><input class="typeahead full-width tt-input" type="text" id="activeStudentIdentifier" placeholder="--" autocomplete="off" spellcheck="false" dir="auto" style="position: relative; vertical-align: top; background-color: transparent;"><pre aria-hidden="true" style="position: absolute; visibility: hidden; white-space: pre; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 17.5px; font-style: normal; font-variant: normal; font-weight: 400; word-spacing: 0px; letter-spacing: 0px; text-indent: 0px; text-rendering: auto; text-transform: none;"></pre><div class="tt-menu" style="position: absolute; top: 100%; left: 0px; z-index: 100; display: none;"></div></span>
+                        </div>
+                    </div>            </form>
+
+                <!-- graded / remaining counters -->
+                <p>Graded: <span id="graded">0</span> Remaining: <span id="remaining">5</span></p>
+
+                <!-- save & finish button -->
+                <a id="finishButton" class="btn btn-success col-lg-12 startHidden" href="http://localhost:8000/grade">
+                    <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save &amp; Finish
+                </a>
+
+                <!-- student table shows the student roster -->
+                <div class="panel panel-default">
+                    <table class="table table-fixed table-hover" id="studentRoster">
+                        <thead>
+                        <tr>
+                            <th class="col-xs-6" id="nameHeader" title="Sort by name">Name
+                            </th>
+                            <th class="col-xs-4" id="idHeader" title="Sort by ID">ID
+                            </th>
+                            <th class="col-xs-2" id="gradeHeader" title="Sort by grade">Grade
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody id="studentRosterBody">
+
+
+
+
+
+                        <tr id="studentListItem0" class="studentListItem" data-index="0" data-fname="firstNameOfExisting1" data-lname="lastNameOfExisting1" data-sid="1" data-student-identifier="">
+                            <td class="col-xs-6" id="studentName0">lastNameOfExisting1
+                                , firstNameOfExisting1</td>
+                            <td class="col-xs-4" id="studentIdentifier0">--</td>
+                            <td class="col-xs-2" id="examGrade0">--
+                            </td>
+                        </tr><tr id="studentListItem1" class="studentListItem activeStudentRow" data-index="1" data-fname="firstNameOfExisting2" data-lname="lastNameOfExisting2" data-sid="2" data-student-identifier="">
+                            <td class="col-xs-6" id="studentName1">lastNameOfExisting2
+                                , firstNameOfExisting2</td>
+                            <td class="col-xs-4" id="studentIdentifier1">--</td>
+                            <td class="col-xs-2" id="examGrade1">--
+                            </td>
+                        </tr><tr id="studentListItem2" class="studentListItem" data-index="2" data-fname="firstNameOfExisting3" data-lname="lastNameOfExisting3" data-sid="3" data-student-identifier="333333333">
+                            <td class="col-xs-6" id="studentName2">lastNameOfExisting3
+                                , firstNameOfExisting3</td>
+                            <td class="col-xs-4" id="studentIdentifier2">333333333</td>
+                            <td class="col-xs-2" id="examGrade2">--
+                            </td>
+                        </tr><tr id="studentListItem3" class="studentListItem unalteredStudentRow" data-index="3" data-fname="firstNameOfExisting4" data-lname="lastNameOfExisting4" data-sid="4" data-student-identifier="444444444">
+                            <td class="col-xs-6" id="studentName3">lastNameOfExisting4
+                                , firstNameOfExisting4</td>
+                            <td class="col-xs-4" id="studentIdentifier3">444444444</td>
+                            <td class="col-xs-2" id="examGrade3">--
+                            </td>
+                        </tr><tr id="studentListItem4" class="studentListItem unalteredStudentRow" data-index="4" data-fname="firstNameOfExisting5" data-lname="lastNameOfExisting5" data-sid="5" data-student-identifier="555555555">
+                            <td class="col-xs-6" id="studentName4">lastNameOfExisting5
+                                , firstNameOfExisting5</td>
+                            <td class="col-xs-4" id="studentIdentifier4">555555555</td>
+                            <td class="col-xs-2" id="examGrade4">--
+                            </td>
+                        </tr></tbody>
+                    </table>
+                </div>
+
+
+
+                <!-- statistics area holds time info -->
+                <!-- Used by 'grade_exam'. Displays the exam timers -->
+                <h4 class="row">
+    <span class="col-xs-7" style="vertical-align:middle">
+        <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+        Statistics
+    </span>
+    <span class="col-xs-5">
+        <a id="btnTimer" class="btn btn-success" title="Toggle timer">
+            <span id="btnTimerIcon" class="glyphicon glyphicon-play" aria-hidden="true"></span>
+            <span id="btnTimerLabel">Running</span>
+        </a>
+    </span>
+                </h4>
+
+                <div class="panel panel-default">
+
+                    <div id="gradingStatsPanel" class="panel-body">
+                        <span class="col-xs-6">Time This Exam</span>
+                        <span class="col-xs-6" id="thisExamTime">40:44</span>
+
+                        <span class="col-xs-6">Average Time</span>
+                        <span class="col-xs-6" id="avgTime">45:12</span>
+
+                        <span class="col-xs-6">Total Time</span>
+                        <span class="col-xs-6" id="totalTime">45:12</span>
+
+                        <span class="col-xs-6">Time Remaining</span>
+                        <span class="col-xs-6" id="timeRemaining">03:00:48</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br>
+
+    </div>
+
+
+</div>
+<div id="show"></div>
+</body>
+</html>
