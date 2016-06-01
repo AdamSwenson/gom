@@ -43,6 +43,11 @@ class LetterGradeButtonArea
         return ['id' => "letterGradeForQuestion{$questionNumber}"];
     }
 
+    /* ----------------------------- Actions ----------------- */
+    
+
+    /* ------------------------------ Assertions ------------- */
+
 public static function assertLetterGradeButtonVisible($I, $questionNumber){
     $I->amGoingTo("check that the letter grade button for question $questionNumber is visible");
     $I->seeElement(self::letterGradeButtonLabelLocator($questionNumber));

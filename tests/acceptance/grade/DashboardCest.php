@@ -21,22 +21,13 @@ class DashboardCest
 
     public function _before(AcceptanceTester $I)
     {
+        $I->test_login($I);
+        $I->amOnPage(GradingPage::route($this->examId));
+        $I->wait(1);
     }
 
     public function _after(AcceptanceTester $I)
     {
-    }
-
-    /**
-     * @param AcceptanceTester $I
-     * @group grade
-     * @group dashboard
-     */
-    public function logIn(AcceptanceTester $I)
-    {
-        $I->test_login($I);
-        $I->amOnPage(GradingPage::route($this->examId));
-        $I->wait(1);
     }
 
     /**
@@ -50,7 +41,7 @@ class DashboardCest
 //        $I->amGoingTo('dance');
 //        $I->waitForJS("return typeof $ == 'undefined';", 60);
         //whole page
-        GradingPage::verifyGradingPageIntact($I, $this->examId);
+       // GradingPage::verifyGradingPageIntact($I, $this->examId);
 
         DashboardArea::assertDashboardIntact($I);
     }
@@ -86,7 +77,7 @@ class DashboardCest
      * @group grade
      * @group dashboard
      */
-    public function clickStudent(AcceptanceTester $I)
+    public function seeDashboardChangesWhenSelectStudent(AcceptanceTester $I)
     {
 
         $examId = 2;
@@ -101,7 +92,6 @@ class DashboardCest
             $I->dontSee("Q{$i}");
             $I->dontSeeElement(GradingPage::questionPanelTabXPath($i));
         }
-
 
         $I->click(['css' => '#studentListItem0']);
         $I->wait(1);
@@ -120,9 +110,7 @@ class DashboardCest
 
         $I->expect("the time counters to no longer have their initial values");
         $I->wait(1);
-  //      $initialTime = DashboardArea::$initialTimeValue;
         DashboardArea::assertInitialValuesPresent($I, true);
-//        DashboardArea::assertTimeStatsHasValues($I, $initialTime, $initialTime, $initialTime, $initialTime, true);
     }
 
 
@@ -163,9 +151,34 @@ class DashboardCest
      * @param AcceptanceTester $I
      * @group grade
      * @group dashboard
+     * @incomplete
      */
     public function checkStats(AcceptanceTester $I)
     {
+    }
+
+    /**
+     * @param AcceptanceTester $I
+     * @group grade
+     * @group dashboard
+     * @group dev
+     */
+    public function checkThatNumberGradedUpdates(AcceptanceTester $I){
+        $I->expectTo("see that no exams have been graded");
+        DashboardArea::assertExamStatsHasValues($I, 0, $this->numberStudents);
+
+        $I->amGoingTo("enter a grade for one student so that will now be marked as graded");
+        GradingPage::clickStudentRow($I, $this->studentRowId);
+        $I->fillField(GradingPage::questionScoreFieldLocator(1), 92);
+        GradingPage::clickQuestionTab($I, 2);
+
+        $I->expectTo("see the number graded field updated ");
+        DashboardArea::assertExamStatsHasValues($I, 1, $this->numberStudents - 1);
+
+        $I->expectTo("see the number graded field has the new value when the page is reloaded ");
+        $I->reloadPage();
+        $I->wait(3);
+        DashboardArea::assertExamStatsHasValues($I, 1, $this->numberStudents - 1);
     }
 
 }

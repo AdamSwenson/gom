@@ -57,7 +57,6 @@ module.exports = {
             name = this.noActiveStudentString;
         }
         var id = $student.data( 'student-identifier' );
-        //$("#activeStudentName").text(name);
         $( "#activeStudentName" ).val( name );
         $( "#activeStudentIdentifier" ).val( id );
     },
@@ -100,24 +99,21 @@ module.exports = {
      *  active = blue
      */
     setStudentBackgroundColors: function ( data ) {
-        for ( var i = 0; i < data.examGrades.length; i ++ ) {
+        for ( var i = 0; i < Object.keys(data.examGrades).length; i ++ ) {
             var name = "#studentListItem" + i;
-            var item = $( '#studentRoster' ).find( name );
-            if ( this.activeStudent == i ) {
-                this.setRowToActiveStudent(item);
-//                this.setRosterBackgroundColor( item, this.activeStudentColor, this.alteredStudentTextColor )
-            } else if ( data.examGrades[ i ] >= 0 ) {
-                this.setRowToGraded(item);
-//                this.setRosterBackgroundColor( item, this.gradedStudentColor, this.alteredStudentTextColor );
+            var $item = $( '#studentRoster' ).find( name );
+            if ( this.activeStudent && this.activeStudent == i ) {
+                this.setRowToActiveStudent($item);
+            } else if ( data.isGraded(i) ) {
+                this.setRowToGraded($item);
             } else {
-                this.setRowToUnaltered()
-
-               // this.setRosterBackgroundColor( item, this.initialStudentColor, initialTextColor );
+                this.setRowToUnaltered($item)
             }
         }
     },
 
     /**
+     * DEPRECATED. Just use setStudentBackgroundColors
      * set background for the student roster row that is selected
      */
     setActiveStudentBackgroundColor: function ( data ) {
@@ -128,7 +124,6 @@ module.exports = {
             //remove active from all
             $roster.find('[id^="studentListItem"]').removeClass('activeStudentRow');
 
-            //$( '#studentRoster' ).find( '#studentListItem' + this.activeStudent );
             var item = $roster.find( '#studentListItem' + this.activeStudent ); // set the activeStudent
             this.setRowToActiveStudent(item);
             this.setStudentBackgroundColors(data); // reset prev. selected student to it's color (white or green)

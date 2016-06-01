@@ -217,7 +217,7 @@ TAG;
         $I->seeElement(['css' => "#panelQuestion{$questionNumber}"]);
     }
     
-    /* ----------------- Testing ---------- */
+    /* ----------------- Assertions ---------- */
 public static function verifyGradingPageIntact($I, $examId){
     $I->amGoingTo("Check that all fields and default text are present");
     $I->seeInCurrentUrl(self::route($examId));

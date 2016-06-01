@@ -136,6 +136,7 @@ var typeahead = require('../libraries/bootstrap3-typeahead.min.js');
             $( me ).val( maxScore );
         }
         data.storeQuestionScore( Roster.activeStudent, questionIndex, score );
+        data.updateExamGrade(Roster.activeStudent);
 
         var questionAssId = $( me ).attr( 'data-question-assignment-id' );
 
@@ -163,7 +164,8 @@ var typeahead = require('../libraries/bootstrap3-typeahead.min.js');
         // set the active student
         Roster.activeStudent = $( row ).attr( "data-index" );
         Roster.setSelectedNameAndId();
-        Roster.setActiveStudentBackgroundColor( data );
+        Roster.setStudentBackgroundColors(data);
+        // Roster.setActiveStudentBackgroundColor( data );
         
         // load the timer area with new values
         Timer.loadTimer( data, Roster, Dashboard );
@@ -171,7 +173,6 @@ var typeahead = require('../libraries/bootstrap3-typeahead.min.js');
         // set question scores
         $( "[id^='questionScore']" ).each( function ( index ) {
             var score = data.getQuestionScore( Roster.activeStudent, index );
-            // var score = data.questionScores[ Roster.activeStudent ][ index ];
             $( this ).val( score );
         } );
 
@@ -301,10 +302,11 @@ var typeahead = require('../libraries/bootstrap3-typeahead.min.js');
     } );
 
     /* ----------------- stuff to do at end of load --------------- */
-    updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
-    Roster.sortRosterBy( 'studentName' );
-    Timer.updateTimer( data, Roster, Dashboard );
-    Dashboard.updateExamGrades( data );
+    // updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
+    // Roster.sortRosterBy( 'studentName' );
+    // Timer.updateTimer( data, Roster, Dashboard );
+    // Dashboard.updateExamGrades( data );
+    //
 
 
     $( document ).ready( function () {
@@ -366,6 +368,11 @@ var typeahead = require('../libraries/bootstrap3-typeahead.min.js');
         $( "#activeStudentIdentifier" ).on( 'change', function () {
             SearchBox.handleStudentIdentifierSearch();
         } );
+
+        updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
+        Roster.sortRosterBy( 'studentName' );
+        Timer.updateTimer( data, Roster, Dashboard );
+        // Dashboard.updateExamGrades( data );
 
     } );
 };

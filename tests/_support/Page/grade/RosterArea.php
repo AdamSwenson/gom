@@ -82,7 +82,7 @@ class RosterArea
      * @return string
      */
     public static function expectedStudentName($rowNumber){
-        return "lastNameOfExisting{$rowNumber} , firstNameOfExisting{$rowNumber}";
+        return "lastNameOfExisting{$rowNumber}, firstNameOfExisting{$rowNumber}";
     }
 
     /**
@@ -114,10 +114,11 @@ class RosterArea
     {
         if ( $not )
         {
-            $I->dontSeeElement(self::studentRowLocator($rowIndex), ['class' => 'studentListItem ' . self::$gradedStudentRowFullClass]);
+            $I->expect("that row index $rowIndex is not marked graded");
+            $I->dontSeeElement(self::studentRowLocator($rowIndex), ['class' => self::$gradedStudentRowFullClass]);
         } else
         {
-            $I->seeElement(self::studentRowLocator($rowIndex), ['class' => 'studentListItem ' . self::$gradedStudentRowFullClass]);
+            $I->seeElement(self::studentRowLocator($rowIndex), ['class' => self::$gradedStudentRowFullClass]);
         }
 
     }

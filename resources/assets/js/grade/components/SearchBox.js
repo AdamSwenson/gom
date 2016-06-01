@@ -23,7 +23,7 @@ module.exports = {
             this.initialize();
             var nameToFind = $( '#activeStudentName' ).val().replace(/\s+/g, ' ');
             var i = this.studentNames.indexOf( nameToFind );
-            window.console.log('handlingNameSearch',nameToFind, i);
+       //     window.console.log('handlingNameSearch',nameToFind, i);
             //not sure if this needs to be added
             //$( "#activeStudentName" ).blur();
             if ( i >= 0 ) {
@@ -39,7 +39,7 @@ module.exports = {
             this.initialize();
             var idToFind = $( '#activeStudentIdentifier' ).val();
             var i = this.studentIdents.indexOf( idToFind );
-            window.console.log('handlingIdSearch', i);
+        //    window.console.log('handlingIdSearch', i);
             $( "#activeStudentIdentifier" ).blur();
             if ( i >= 0 ) {
                 $( '#studentListItem' + i ).triggerHandler( 'click' );
@@ -65,7 +65,7 @@ module.exports = {
                 me.studentIdents.push( $( this ).text() );
             } );
 
-            window.console.log( 'search box data initialized', this );
+//            window.console.log( 'search box data initialized', this );
         }
     
 

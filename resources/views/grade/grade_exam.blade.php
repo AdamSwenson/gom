@@ -163,6 +163,7 @@
                      */
                     storeQuestionScore : function(activeStudent, questionIndex, score){
                         this.questionScores[ activeStudent ][ questionIndex ] = score;
+
                     },
 
                     /**
@@ -207,12 +208,52 @@
 
 
                     /**
+                     * Updates the stored total exam score for the student
+                     * The first time it runs, it will set the total score to 0
+                     * if no questions have been graded.
+                     */
+                    updateExamGrade: function(activeStudent){
+                        var totalScore = null;
+                        for(var i=0; i <  Object.keys(this.questionScores[ activeStudent ]).length; i++){
+                            var v = this.questionScores[ activeStudent ][i];
+                            if(v != null){
+                                //at least one question score is non-null
+                                //so the total score should be at least 0
+                                //first we check whether the totalScore is still null
+                                //and set it to 0 if not
+                                if(totalScore === null){
+                                    totalScore = 0;
+                                }
+                                //now we can add the question values to it
+                                totalScore += v;
+                            }
+                        }
+                        if(totalScore != null && totalScore >= 0){
+                            this.examGrades[activeStudent] = totalScore;
+                        }
+                    },
+
+                    /**
+                     * Returns true if at least one question has received
+                     * a score for the student.
+                     */
+                    isGraded: function(activeStudent){
+                        this.updateExamGrade(activeStudent)
+                        if(this.examGrades[activeStudent] != "Letter grade" && this.examGrades[activeStudent] >= 0){
+                            return true;
+                        }
+                        return false;
+                    },
+
+
+                    /**
                      * Returns the number of exams that have been graded
                      */
                     getNumberGraded : function(){
                         var graded = 0;
                         if(typeof this.examGrades != 'undefined') {
-                            for ( var i = 0; i < this.examGrades.length; i ++ ) {
+                            for ( var i = 0; i < Object.keys(this.examGrades).length; i ++ ) {
+                                this.updateExamGrade(i);
                                 //this will be the string 'letter grade' if
                                 //no grade has been entered. Thus we check
                                 //whether it is a number 0 or greater

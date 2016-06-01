@@ -85,11 +85,24 @@ class RosterCest
      * @param AcceptanceTester $I
      * @group grade
      * @group rosterArea
-     * @incomplete
      */
     public function gradedStudentRowHighlighting(AcceptanceTester $I)
     {
-        
+        $I->amGoingTo('enter a question score for a previously ungraded student ');
+        RosterArea::assertRowIsMarkedGraded($I, $this->studentRowId, true );
+        GradingPage::clickStudentRow($I, $this->studentRowId);
+        $I->fillField(GradingPage::questionScoreFieldLocator(1), 92);
+
+        $I->amGoingTo("select another student");
+        GradingPage::clickStudentRow($I, $this->studentRowId + 1);
+
+        $I->expect("the student is now marked as graded");
+        RosterArea::assertRowIsMarkedGraded($I, $this->studentRowId);
+
+        $I->amGoingTo("reload the page to check that the graded student is still marked as graded");
+        $I->reloadPage();
+        $I->wait(2);
+        RosterArea::assertRowIsMarkedGraded($I, $this->studentRowId);
     }
 
     /**
