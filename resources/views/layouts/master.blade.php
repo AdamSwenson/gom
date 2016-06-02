@@ -42,7 +42,7 @@
     @endif
 
     <script type="text/javascript">
-        var routeRoot = '{{ url() }}';
+        var routeRoot = '{{ url('') }}';
         window.console.log( routeRoot );
         if ( typeof jQuery != 'undefined' ) {
             $.ajaxSetup( {

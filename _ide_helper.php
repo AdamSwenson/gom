@@ -796,7 +796,7 @@ namespace {
          */
         public static function bindShared($abstract, $closure){
             //Method inherited from \Illuminate\Container\Container            
-            \Illuminate\Foundation\Application::bindShared($abstract, $closure);
+            \Illuminate\Foundation\Application::bind($abstract, $closure, true);
         }
         
         /**
