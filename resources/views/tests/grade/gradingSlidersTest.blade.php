@@ -3,10 +3,12 @@ use App\Element;
 use App\Exam;
 use App\QuestionAssignment;
 use App\Student;
+use Illuminate\Support\Facades\Auth;
 
 $testedScriptPath = asset('js/grade-exam-package.js');
 $testingScriptPath = '';
-
+        $navTab = 'gradeNav';
+        Auth::loginUsingId(1);
 $exam = factory(Exam::class)->make();
 
 $students = factory(Student::class, 5)->make();
@@ -559,6 +561,7 @@ $studentGrades = array(
 @extends('tests.qunit');
 
 @section('fixture')
+    <link rel="stylesheet" href="{{ asset('css/testing/unitTestHelpers/qunit-1.15.0.css')}}" type="text/css" media="screen">
     <div id="questionArea"
          class="startHidden">
         <!-- Create one Question Tab for each question -->
@@ -612,5 +615,9 @@ $studentGrades = array(
 
 {{--<script type="text/javascript" src="../../js/grade-exam-package.js" data-cover></script>--}}
 <!--<script type="text/javascript" src="../../src/www/inc/js/examSetup.js" data-cover></script>-->
+<script>
+    var activeTab = 'gradeNav';
+</script>
+
 <!-- Your tests file goes here -->
-<!--<script type="text/javascript" src="../js/examsetupTesting.js"></script>-->
+{{--<script type="text/javascript" src="../js/examsetupTesting.js"></script>--}}

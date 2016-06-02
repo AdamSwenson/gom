@@ -307,7 +307,12 @@ window.onload = function () {
      then save score, text and time
      *  */
     $( 'input.slider' ).on( 'slideStop', function ( slideEvt ) {
-        handleElementSliderStopEvent( slideEvt, data, SliderTools, Roster, AjaxHandler, Dashboard );
+        SliderTools.handleElementSliderStopEvent( slideEvt, data, Roster, function(){
+            //Update dashboard and roster data displayed
+        updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
+        //Sigh. The user forgot to restart the timer. Do it for them
+        Timer.resumeTimerIfPaused( data, Roster, Dashboard );});
+        // handleElementSliderStopEvent( slideEvt, data, SliderTools, Roster, AjaxHandler, Dashboard );
     } );
 
 

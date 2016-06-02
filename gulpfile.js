@@ -130,6 +130,15 @@ elixir( function ( mix ) {
     mix.browserify(['libraries/jquery-1.11.3.min.js'], 'public/js/jquery.js');
 //    mix.browserify( 'reports/examControls.js', 'public/js/dev-exam-buttons.js' );
 
+    mix.browserify([
+            "libraries/unitTestHelpers/jquery-1.11.1.js",
+            "libraries/unitTestHelpers/jquery-ui.js",
+            "libraries/unitTestHelpers/jquery.tmpl.min.js",
+            "libraries/unitTestHelpers/qunit-1.15.0.js",
+            "libraries/unitTestHelpers/json2.js",
+            "libraries/unitTestHelpers/jquery.mockjax.js",
+            "libraries/unitTestHelpers/jquery.cookie.js"
+    ], 'public/js/testing/js-test-suite.js');
 
 //
 //     var gulpNSP = require('gulp-nsp');
