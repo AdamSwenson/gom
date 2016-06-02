@@ -11,7 +11,9 @@ require( 'bootstrap' );
 module.exports = {
 
     /**
-     * This manages the number graded and number of exams remaining fields
+     * Deprecated. Now handled by method in data object
+     *
+     *
      *
      * examGrades[] keeps a persistent total of the exam score for each student.
      * Exams without grades have a value of -1, because dealing with null and NaN
@@ -23,57 +25,39 @@ module.exports = {
      * @param data
      */
     updateExamGrades: function ( data ) {
-        for ( var i = 0; i < data.questionScores.length; i ++ ) {
-            var totalScore = null;
-            data.questionScores[ i ].forEach( function ( gradeEntry ) {
-                if ( gradeEntry !== null && gradeEntry >= 0 ) {
-                    if ( totalScore === null ) {
-                        totalScore = 0;
-                    }
-                    totalScore += parseFloat( gradeEntry );
-                }
-            } );
-            if ( totalScore != null ) {
-                data.examGrades[ i ] = totalScore.toPrecision( 3 );
-            }
-            else {
-                data.examGrades[ i ] = - 1;
-            }
-        }
+        // for ( var i = 0; i < data.questionScores.length; i ++ ) {
+        //     var totalScore = null;
+        //     data.questionScores[ i ].forEach( function ( gradeEntry ) {
+        //         if ( gradeEntry !== null && gradeEntry >= 0 ) {
+        //             if ( totalScore === null ) {
+        //                 totalScore = 0;
+        //             }
+        //             totalScore += parseFloat( gradeEntry );
+        //         }
+        //     } );
+        //     if ( totalScore != null ) {
+        //         data.examGrades[ i ] = totalScore.toPrecision( 3 );
+        //     }
+        //     else {
+        //         data.examGrades[ i ] = - 1;
+        //     }
+        // }
     },
 
-    // /**
-    //  * returns: # of exams graded
-    //  * @returns {number}
-    //  */
-    // examsGraded: function ( data ) {
-    //     var graded = 0;
-    //     if(typeof data.examGrades != 'undefined') {
-    //         for ( var i = 0; i < data.examGrades.length; i ++ ) {
-    //             if ( data.examGrades[ i ] >= 0 ) graded ++;
-    //         }
-    //     }
-    //     return graded;
-    // },
 
     /**
-     * update the "graded: xx remaining: xx" counters
+     * This manages the number graded and number of exams remaining fields.
+     * Updates the "graded: xx remaining: xx" counters
      * also displays the "Save & Finish" button when remaining == 0
      */
     updateGradedRemainingCounter: function ( data ) {
         var total = data.getTotalExams();
         var graded = data.getNumberGraded();
-
-        // if(typeof data.examGrades == 'undefined'){
-        //     var total = 0;
-        // }else{
-        //     var total = Object.keys(data.examGrades).length;
-        // }
-        // var graded = this.examsGraded( data );
         var remaining = total - graded;
-        window.console.log('updateGradedRemainingCounter', total, graded, remaining);
+
         $( "#graded" ).text( graded );
         $( "#remaining" ).text( remaining );
+
         //show finish button
         if ( remaining === 0 ) {
             $( '#finishButton' ).show();

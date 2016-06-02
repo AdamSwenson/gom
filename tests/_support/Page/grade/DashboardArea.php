@@ -35,7 +35,12 @@ class DashboardArea
     public static $remainingTimeLocator = ['id' => 'timeRemaining'];
     public static $currentExamTimeLocator = ['id' => 'thisExamTime'];
 
+    //save and finish button
+    public static $finishButtonLocator = ['id' => 'finishButton'];
+    public static $finishButtonText = 'Save & Finish';
 
+    
+    /* ------------------------------------ Assertions ------------------------------ */
     public static function assertTimerButtonPaused($I)
     {
         $I->expectTo("see the timer button in its paused state");
@@ -126,17 +131,5 @@ class DashboardArea
     {
         self::assertTimeStatsHasValues($I, self::$initialTimeValue, self::$initialTimeValue, self::$initialTimeValue, self::$initialTimeValue, $not);
     }
-
-
-    /**
-     * Basic route example for your current URL
-     * You can append any additional parameter to URL
-     * and use it in tests like: Page\Edit::route('/123-post');
-     */
-    public static function route($param)
-    {
-        return static::$URL . $param;
-    }
-
-
+    
 }

@@ -82,7 +82,7 @@ module.exports = {
      * set the "grade" column in the student roster, or "--" if exam is not graded
      */
     updateRosterGradeDisplay: function ( data ) {
-        for ( var i = 0; i < data.examGrades.length; i ++ ) {
+        for ( var i = 0; i < Object.keys(data.examGrades).length; i ++ ) {
             if ( data.examGrades[ i ] >= 0 ) {
                 $( '#examGrade' + i ).text( data.examGrades[ i ] );
             } else {

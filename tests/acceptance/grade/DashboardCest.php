@@ -3,6 +3,7 @@
 
 use Page\grade\DashboardArea;
 use Page\grade\GradingPage;
+use Page\grade\RosterArea;
 
 /**
  * Class DashboardCest
@@ -21,9 +22,11 @@ class DashboardCest
 
     public function _before(AcceptanceTester $I)
     {
-        $I->test_login($I);
-        $I->amOnPage(GradingPage::route($this->examId));
-        $I->wait(1);
+        GradingPage::navigateToGradingPage($I, $this->examId);
+
+//        $I->test_login($I);
+//        $I->amOnPage(GradingPage::route($this->examId));
+//        $I->wait(1);
     }
 
     public function _after(AcceptanceTester $I)
@@ -121,28 +124,37 @@ class DashboardCest
      */
     public function pauseTimer(AcceptanceTester $I)
     {
-        //student area should be showing in initial state
+        $I->expect("the timer to be running after I select a student");
+        GradingPage::clickStudentRow($I, 3);
         DashboardArea::assertTimerButtonActive($I);
 
         $total = $I->grabTextFrom(DashboardArea::$totalTimeLocator);
         $current = $I->grabTextFrom(DashboardArea::$currentExamTimeLocator);
-        $remaining = $I->grabTextFrom(DashboardArea::$remainingExamsLocator);
+        $remaining = $I->grabTextFrom(DashboardArea::$remainingTimeLocator);
 
         //pause
+        $I->amGoingTo("press the pause button on the timer");
         $I->click(DashboardArea::$timerButtonLocator);
         $I->wait(1);
         DashboardArea::assertTimerButtonPaused($I);
+
+        $I->amGoingTo("wait briefly then start the timer again");
         //let run again
         $I->wait(2);
         //un-pause
         $I->click(DashboardArea::$timerButtonLocator);
         DashboardArea::assertTimerButtonActive($I);
 
+        $I->amGoingTo("check that the times have increased");
+        $newTotal = $I->grabTextFrom(DashboardArea::$totalTimeLocator);
+        $newCurrent = $I->grabTextFrom(DashboardArea::$currentExamTimeLocator);
+        $newRemaining = $I->grabTextFrom(DashboardArea::$remainingTimeLocator);
 
+        $I->assertNotEquals($total, $newTotal);
+        $I->assertNotEquals($current, $newCurrent);
+        $I->assertNotEquals($remaining, $newRemaining);
 
-        //check timer says runningTimer: toggle
-        //on to off; off to on
-
+//        codecept_debug([$newTotal, $newRemaining, $newCurrent]);
         //todo test that doesn't do stuff if no student active
     }
 
@@ -161,7 +173,6 @@ class DashboardCest
      * @param AcceptanceTester $I
      * @group grade
      * @group dashboard
-     * @group dev
      */
     public function checkThatNumberGradedUpdates(AcceptanceTester $I){
         $I->expectTo("see that no exams have been graded");
@@ -179,6 +190,36 @@ class DashboardCest
         $I->reloadPage();
         $I->wait(3);
         DashboardArea::assertExamStatsHasValues($I, 1, $this->numberStudents - 1);
+    }
+
+    /**
+     * @param AcceptanceTester $I
+     * @group grade
+     * @group dashboard
+     * 
+     */
+    public function checkThatSaveAndFinishButtonAppears(AcceptanceTester $I){
+        $I->expect("that the finished button is not showing");
+        $I->dontSeeElement(DashboardArea::$finishButtonLocator);
+        $I->dontSee(DashboardArea::$finishButtonText, DashboardArea::$finishButtonLocator);
+
+        $I->amGoingTo("give each student a grade on one question and check that the finished button appears");
+        for($i=0; $i<$this->numberStudents; $i++){
+                $I->amGoingTo('enter a question score for a previously ungraded student ');
+                RosterArea::assertRowIsMarkedGraded($I, $i, true);
+                GradingPage::clickStudentRow($I, $i);
+                $I->fillField(GradingPage::questionScoreFieldLocator(1), 92);
+
+                $I->amGoingTo("select another student");
+                $next = $i == $this->numberStudents -1 ? 0 : $i + 1;
+                GradingPage::clickStudentRow($I, $next);
+
+            //$I->wait(2);
+        }
+
+        $I->expect("that the finished button is showing");
+        $I->seeElement(DashboardArea::$finishButtonLocator);
+        $I->see(DashboardArea::$finishButtonText, DashboardArea::$finishButtonLocator);
     }
 
 }

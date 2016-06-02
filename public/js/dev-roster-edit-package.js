@@ -3815,7 +3815,7 @@ return DataTable.Buttons;
 }));
 
 },{"datatables.net-bs":16,"datatables.net-buttons":18}],18:[function(require,module,exports){
-/*! Buttons for DataTables 1.2.0
+/*! Buttons for DataTables 1.2.1
  * ©2016 SpryMedia Ltd - datatables.net/license
  */
 
@@ -4008,8 +4008,8 @@ $.extend( Buttons.prototype, {
 		$('body').off( 'keyup.'+this.s.namespace );
 
 		// Individual button destroy (so they can remove their own events if
-		// needed
-		var buttons = this.s.buttons;
+		// needed). Take a copy as the array is modified by `remove`
+		var buttons = this.s.buttons.slice();
 		var i, ien;
 		
 		for ( i=0, ien=buttons.length ; i<ien ; i++ ) {
@@ -4933,7 +4933,7 @@ Buttons.defaults = {
  * @type {string}
  * @static
  */
-Buttons.version = '1.2.0';
+Buttons.version = '1.2.1';
 
 
 $.extend( _dtButtons, {

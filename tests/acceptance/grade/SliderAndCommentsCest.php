@@ -27,7 +27,7 @@ class SliderAndCommentsCest
     /**
      * @param AcceptanceTester $I
      * @group grade
-     * @group sliders
+     * @group comments
      */
     public function editComment(AcceptanceTester $I){
         $newText = Faker\Factory::create()->text();
@@ -53,34 +53,36 @@ class SliderAndCommentsCest
     /**
      * @param AcceptanceTester $I
      * @group grade
-     * @group sliders
+     * @group comments
      */
     public function switchStudentAndCommentChange(AcceptanceTester $I){
         $newText = Faker\Factory::create()->text();
         $I->executeJS($this->makeWritable);
-        $I->wait(5);
+        $I->wait(2);
+
         $I->amGoingTo("add text to the field");
         $I->fillField(GradingPage::commentFieldLocator(1, 1), $newText);
         $I->seeInField(GradingPage::commentFieldLocator(1,1), $newText);
 
-        $I->amGoingTo("select another student");
-        GradingPage::clickStudentRow($I, $this->studentRowId + 1);
-        $I->wait(5);
-        GradingPage::clickQuestionTab($I, $this->questionNumber + 1);
-        $I->wait(2);
+        $I->amGoingTo("select another student to ensure that new text doesn't carry over to different student");
+        $newId = $this->studentRowId + 1;
+        GradingPage::clickStudentRow($I, $newId);
+        $I->wait(4);
         GradingPage::clickQuestionTab($I, $this->questionNumber);
         $I->wait(2);
         $I->expectTo("see the comment field");
         $I->seeElement(GradingPage::commentFieldLocator(1, 1));
-        $I->expect("not to see the new text");
+
+        $I->expect("to not see the new text entered for the original student");
         $I->dontSeeInField(GradingPage::commentFieldLocator(1,1), $newText);
 
         $I->amGoingTo("go back to the first student");
         GradingPage::clickStudentRow($I, $this->studentRowId);
+        GradingPage::clickQuestionTab($I, $this->questionNumber);
 
         $I->expectTo("see the comment field");
         $I->seeElement(GradingPage::commentFieldLocator(1, 1));
-        $I->expectTo("see the previously entered text");
+        $I->expectTo("see the new text");
         $I->seeInField(GradingPage::commentFieldLocator(1,1), $newText);
     }
 

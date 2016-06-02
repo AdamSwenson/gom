@@ -145,6 +145,21 @@ window.onload = function () {
         }
     }
 
+    function handleCommentFieldChange(dthis, data, AjaxHandler, Dashboard, Roster, Timer) {
+        //grab element and its properties
+        var $element = $(dthis).parents('[id^="element"]');
+        var elementId = $element.attr('data-element-id');
+        var elementIndex = $element.attr('data-element-index');
+        var commentText = $(dthis).val();
+
+        data.storeCommentText(Roster.activeStudent, elementIndex, commentText);
+
+        //TODO make sure that score being null doesn't overwrite actual score
+
+        AjaxHandler.saveComment(data, Roster, elementId, null, commentText);
+        Timer.resumeTimerIfPaused(data, Roster, Dashboard);
+    }
+
     /**
      * A student is selected from the roster - DO LOTS OF STUFF
      * @param row
@@ -203,9 +218,21 @@ window.onload = function () {
                 var valence = SliderTools.getValence(elementScore);
                 var thisComment = data.getCommentText(Roster.activeStudent, index, valence);
                 $(this).val(thisComment);
+                //no need for it to remain read only
+                $(this).prop('readonly', '');
             }
         });
     }
+
+    /*
+     * The problem:
+     * Add custom text to an element.
+     * Switch to a different user.
+     * Switch back to the first user
+     * Go to the question where added text to element
+     * ----> shows stock text
+     * If reload page, will show custom text
+     * */
 
     /**
      * sums elements scores and sets question scores - will be
@@ -216,61 +243,25 @@ window.onload = function () {
 
     /* -------------------------------------- Listeners ------------------------------------ */
 
-    //Dashboard listeners
+    /* ------------------ Timer listeners --------- */
     $("#btnTimer").on('click', function () {
         Timer.toggleTimer(data, Roster, Dashboard);
     });
 
-    //Roster listeners
+    /* ------------------ Roster display and search listeners --------- */
     $("#nameVisibilityControl").on('click', function () {
         Roster.toggleNameVisibility();
     });
 
-    $("#activeStudentName").on('change', function () {
-        SearchBox.handleStudentNameSearch();
-    });
+    // $( "#activeStudentName" ).on( 'change', function () {
+    //     SearchBox.handleStudentNameSearch();
+    // } );
+    //
+    // $( "#activeStudentIdentifier" ).on( 'change', function () {
+    //     SearchBox.handleStudentIdentifierSearch();
+    // } );
 
-    $("#activeStudentIdentifier").on('change', function () {
-        SearchBox.handleStudentIdentifierSearch();
-    });
-
-    /**
-     * Listener for student selection
-     */
-    $("[id^='studentListItem']").on('click', function () {
-        onStudentSelect(this, data, Timer, Roster, AjaxHandler, Dashboard);
-    });
-
-    //Listeners for scores and other grade fields
-    /**
-     * Listener for changes to the question score field
-     */
-    $('[id^="questionScore"]').bind('change', function () {
-        // Handle question score inputs. When focus is lost, store values,
-        // update grades and save timers.
-        handleQuestionScoreChange(this, data, Roster, AjaxHandler);
-        updateStudentDashboardAndRosterAreas(data, Dashboard, Roster);
-        Timer.resumeTimerIfPaused(data, Roster, Dashboard);
-    });
-
-    /**
-     * Handle changes to the comment TextArea when focus is lost. Saves data and timers.
-     */
-    $('[name^="comment"]').focusout(function () {
-        if (!Roster.isActiveStudent()) return;
-        //grab element and its properties
-        var $element = $(this).parents('[id^="element"]');
-        var elementId = $element.attr('data-element-id');
-        var commentText = $(this).val();
-
-        //TODO make sure that score being null doesn't overwrite actual score
-
-        // AjaxHandler.updateAndSaveComment( $( this, data, Roster ) );
-        AjaxHandler.saveComment(data, Roster, elementId, null, commentText);
-        Timer.resumeTimerIfPaused(data, Roster, Dashboard);
-    });
-
-    // /* ------------------ table sorting listeners --------- */
+    /* ------------------ table sorting listeners --------- */
     $("#nameHeader").on('click', function () {
         Roster.sortRosterBy('studentName', data);
     });
@@ -279,6 +270,28 @@ window.onload = function () {
     });
     $("#gradeHeader").on('click', function () {
         Roster.sortRosterBy('examGrade', data);
+    });
+
+    /* ------------------ Student selection listeners --------- */
+    $("[id^='studentListItem']").on('click', function () {
+        onStudentSelect(this, data, Timer, Roster, AjaxHandler, Dashboard);
+    });
+
+    /* ------------------ Listeners for scores and other grade fields ------------------- */
+
+    /**  Listener for changes to the question score field */
+    $('[id^="questionScore"]').bind('change', function () {
+        // Handle question score inputs. When focus is lost, store values,
+        // update grades and save timers.
+        handleQuestionScoreChange(this, data, Roster, AjaxHandler);
+        updateStudentDashboardAndRosterAreas(data, Dashboard, Roster);
+        Timer.resumeTimerIfPaused(data, Roster, Dashboard);
+    });
+
+    /** Handle changes to the comment TextArea when focus is lost. Saves data and timers. */
+    $('[name^="comment"]').focusout(function () {
+        if (!Roster.isActiveStudent()) return;
+        handleCommentFieldChange(this, data, AjaxHandler, Dashboard, Roster, Timer);
     });
 
     /* ----------------- slider listeners --------------- */
@@ -290,15 +303,7 @@ window.onload = function () {
         handleElementSliderStopEvent(slideEvt, data, SliderTools, Roster, AjaxHandler, Dashboard);
     });
 
-    /* ----------------- stuff to do at end of load --------------- */
-    // updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
-    // Roster.sortRosterBy( 'studentName' );
-    // Timer.updateTimer( data, Roster, Dashboard );
-    // Dashboard.updateExamGrades( data );
-    //
-
     $(document).ready(function () {
-
         /**
          * Utility to give each slider a unique id
          * @returns {string}
@@ -326,17 +331,6 @@ window.onload = function () {
         });
 
         var $sliders = $('input.slider');
-        // .slider(
-        //     {
-        //     tooltip: 'show',
-        //     value: 0,
-        //     step: SliderTools.settings.sliderStep,
-        //     ticks: SliderTools.settings.valenceCutoffs,
-        //     ticks_labels: SliderTools.settings.valenceLabels,
-        //     ticks_position: SliderTools.settings.valenceLabels,
-        //     id:Counter()
-        // }
-        // );
 
         // set up typeahead [search] boxes for name and ID
         SearchBox.initialize();
@@ -356,10 +350,10 @@ window.onload = function () {
             SearchBox.handleStudentIdentifierSearch();
         });
 
+        /* ----------------- stuff to do at end of load --------------- */
         updateStudentDashboardAndRosterAreas(data, Dashboard, Roster);
         Roster.sortRosterBy('studentName');
         Timer.updateTimer(data, Roster, Dashboard);
-        // Dashboard.updateExamGrades( data );
     });
 };
 
@@ -13731,7 +13725,9 @@ require('bootstrap');
 module.exports = {
 
     /**
-     * This manages the number graded and number of exams remaining fields
+     * Deprecated. Now handled by method in data object
+     *
+     *
      *
      * examGrades[] keeps a persistent total of the exam score for each student.
      * Exams without grades have a value of -1, because dealing with null and NaN
@@ -13743,56 +13739,38 @@ module.exports = {
      * @param data
      */
     updateExamGrades: function updateExamGrades(data) {
-        for (var i = 0; i < data.questionScores.length; i++) {
-            var totalScore = null;
-            data.questionScores[i].forEach(function (gradeEntry) {
-                if (gradeEntry !== null && gradeEntry >= 0) {
-                    if (totalScore === null) {
-                        totalScore = 0;
-                    }
-                    totalScore += parseFloat(gradeEntry);
-                }
-            });
-            if (totalScore != null) {
-                data.examGrades[i] = totalScore.toPrecision(3);
-            } else {
-                data.examGrades[i] = -1;
-            }
-        }
+        // for ( var i = 0; i < data.questionScores.length; i ++ ) {
+        //     var totalScore = null;
+        //     data.questionScores[ i ].forEach( function ( gradeEntry ) {
+        //         if ( gradeEntry !== null && gradeEntry >= 0 ) {
+        //             if ( totalScore === null ) {
+        //                 totalScore = 0;
+        //             }
+        //             totalScore += parseFloat( gradeEntry );
+        //         }
+        //     } );
+        //     if ( totalScore != null ) {
+        //         data.examGrades[ i ] = totalScore.toPrecision( 3 );
+        //     }
+        //     else {
+        //         data.examGrades[ i ] = - 1;
+        //     }
+        // }
     },
 
-    // /**
-    //  * returns: # of exams graded
-    //  * @returns {number}
-    //  */
-    // examsGraded: function ( data ) {
-    //     var graded = 0;
-    //     if(typeof data.examGrades != 'undefined') {
-    //         for ( var i = 0; i < data.examGrades.length; i ++ ) {
-    //             if ( data.examGrades[ i ] >= 0 ) graded ++;
-    //         }
-    //     }
-    //     return graded;
-    // },
-
     /**
-     * update the "graded: xx remaining: xx" counters
+     * This manages the number graded and number of exams remaining fields.
+     * Updates the "graded: xx remaining: xx" counters
      * also displays the "Save & Finish" button when remaining == 0
      */
     updateGradedRemainingCounter: function updateGradedRemainingCounter(data) {
         var total = data.getTotalExams();
         var graded = data.getNumberGraded();
-
-        // if(typeof data.examGrades == 'undefined'){
-        //     var total = 0;
-        // }else{
-        //     var total = Object.keys(data.examGrades).length;
-        // }
-        // var graded = this.examsGraded( data );
         var remaining = total - graded;
-        window.console.log('updateGradedRemainingCounter', total, graded, remaining);
+
         $("#graded").text(graded);
         $("#remaining").text(remaining);
+
         //show finish button
         if (remaining === 0) {
             $('#finishButton').show();
@@ -13886,7 +13864,7 @@ module.exports = {
      * set the "grade" column in the student roster, or "--" if exam is not graded
      */
     updateRosterGradeDisplay: function updateRosterGradeDisplay(data) {
-        for (var i = 0; i < data.examGrades.length; i++) {
+        for (var i = 0; i < Object.keys(data.examGrades).length; i++) {
             if (data.examGrades[i] >= 0) {
                 $('#examGrade' + i).text(data.examGrades[i]);
             } else {
