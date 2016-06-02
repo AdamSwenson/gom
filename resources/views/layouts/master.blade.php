@@ -26,6 +26,7 @@
 @if(env('APP_ENV') == 'production')
     {{--@include('temp.warning_not_to_use_student_data')--}}
 @endif
+
 <div class="container-fluid">
     @include('flash::message')
     @include('errors.list')
@@ -53,20 +54,11 @@
         }
 
     </script>
-    {{--<script type="text/javascript">--}}
-      {{--if(typeof $ != 'undefined'){--}}
-        {{--$.ajaxSetup({--}}
-            {{--headers: {--}}
-                {{--'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')--}}
-            {{--}--}}
-        {{--});--}}
-      {{--}--}}
-    {{--</script>--}}
+
     @yield('jsArea')
     @if(env('APP_ENV') == 'production')
         @include('other.google_analytics_include')
     @endif
-    {{--<script type="text/javascript" src="{{ asset('js/commonScripts.js') }}"></script>--}}
 </div>
 </body>
 </html>
