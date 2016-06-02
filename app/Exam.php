@@ -28,14 +28,15 @@ class Exam extends BaseModel
     /** Maximum length in digits of the year field (used in sanitizing) */
     const MAX_YEAR_LENGTH = 4;
 
+    protected $guarded = ['user_id', 'id'];
 
-    protected $fillable = [
-        'term',
-        'name',
-        'year',
-        'released',
-        'previously_released',
-    ];
+//    protected $fillable = [
+//        'term',
+//        'name',
+//        'year',
+//        'released',
+//        'previously_released',
+//    ];
 
     protected $casts = [
         'term'                => 'string',
@@ -46,10 +47,10 @@ class Exam extends BaseModel
         'previously_released' => 'boolean',
     ];
 
-    public function __construct()
-    {
-        parent::boot();
-    }
+//    public function __construct()
+//    {
+//        parent::boot();
+//    }
 
 
 # -------------------------- Helpful methods

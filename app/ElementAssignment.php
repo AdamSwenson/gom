@@ -19,22 +19,22 @@ namespace App;
  *
  * @package App
  */
-class ElementAssignment extends BaseModel
+class ElementAssignment extends BaseModelNoUser
 {
 
     protected $fillable = [
-        'element_id'
+        'element_id', 'subtask'
     ];
 
     protected $casts = [
         'subtask' => 'integer'
     ];
 
-    public function __construct()
-    {
-//        parent::junctionBoot();
-//        parent::boot();
-    }
+//    public function __construct()
+//    {
+////        parent::junctionBoot();
+////        parent::boot();
+//    }
 
     /**
      * Returns the id of the element which this object associates with a question.

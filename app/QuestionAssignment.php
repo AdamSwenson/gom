@@ -13,7 +13,7 @@ namespace App;
  *
  * @package App
  */
-class QuestionAssignment extends BaseModel
+class QuestionAssignment extends BaseModelNoUser
 {
     protected $fillable = [
         'exam_id',
@@ -25,8 +25,13 @@ class QuestionAssignment extends BaseModel
       'questionNumber' => 'integer'
     ];
 
-    public function __construct()
-    {}
+//    /**
+//     * The constructor is necessary to override the base model global
+//     * scoping since this does not have a user_id field
+//     * QuestionAssignment constructor.
+//     */
+//    public function __construct()
+//    {}
 
     /**
      * Returns the name of the associated question object

@@ -33,10 +33,10 @@ class Question extends BaseModel
     ];
 
 
-    public function __construct()
-    {
-        parent::boot();
-    }
+//    public function __construct()
+//    {
+//        parent::boot();
+//    }
 
     /**
      * Sets the maximum score that can be entered for a question

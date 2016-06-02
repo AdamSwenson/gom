@@ -162,6 +162,7 @@ return [
          */
         App\Providers\StorageServiceProvider::class,
         App\Providers\UtilitiesServiceProvider::class,
+        //App\Providers\BaseModelProvider::class,
 
         /*
          * Development

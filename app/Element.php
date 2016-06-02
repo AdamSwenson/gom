@@ -15,10 +15,6 @@ class Element extends BaseModel
     /** Maximum length in utf-8 characters of the commentText field (used in sanitizing) */
     const MAX_COMMENT_LENGTH = 3000;
 
-    public function __construct()
-    {
-        parent::boot();
-    }
 
     protected $fillable = [
         'element_id',

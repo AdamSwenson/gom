@@ -27,7 +27,17 @@ use Illuminate\Support\Facades\DB;
  */
 class BaseModelNoUser extends Model
 {
-    
+    public function hasAttribute($attr)
+    {
+        return array_key_exists($attr, $this->attributes);
+    }
+
+    public function scopeLoggedIn($query)
+    {
+        return $query->where('user_id', \Auth::user()->id);
+    }
+
+
     /**
      * Get the [id] column value.
      *

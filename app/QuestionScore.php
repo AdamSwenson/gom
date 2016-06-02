@@ -13,18 +13,14 @@ use Illuminate\Support\Facades\DB;
  *
  * @package App
  */
-class QuestionScore extends BaseModel
+class QuestionScore extends BaseModelNoUser
 {
-    protected $fillable = [];
+    protected $fillable = ['question_assignment_id'];
 
     protected $casts = [
         'score' => 'float'
     ];
 
-    public function __construct()
-    {
-     //   parent::junctionBoot();
-    }
 
     #--------------------------------- queries
 

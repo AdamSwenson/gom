@@ -55,11 +55,11 @@ class Student extends BaseModel
         'email',
     ];
 
-
-    public function __construct()
-    {
-        parent::boot();
-    }
+//
+//    public function __construct()
+//    {
+//        parent::boot();
+//    }
 
 
     /**

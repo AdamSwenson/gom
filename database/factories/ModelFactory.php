@@ -12,39 +12,27 @@
 */
 use App\Exam;
 use App\Question;
+use App\Scopes\UserOnlyScope;
 use Faker\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 
 /*
- *
- *
- *
- *
- *
- *
- *
  * Note, almost none of this will never fucking work because BaseModel
  * somehow interferes with larvel's mass fucking assignment.
  *
- * I hate you laravel. So fucking much.
+ * Probably fixed: Problem was actually the models overriding the constructor for models
  *
- *
- *
- *
- *
- *
- *
- *
- * */
+ */
 
 $factory->define(App\User::class, function (Faker\Generator $faker)
 {
     return [
         'name' => $faker->name,
         'email' => $faker->email,
-        'password' => str_random(10),
+        'password' => bcrypt(str_random(10)),
         'remember_token' => str_random(10),
     ];
 });
@@ -52,7 +40,6 @@ $factory->define(App\User::class, function (Faker\Generator $faker)
 $factory->define(App\Exam::class, function (Faker\Generator $faker)
 {
     return [
-        'user_id' => 1,
         'term' => $faker->text,
         'name' => $faker->text,
         'year' => $faker->year,
@@ -60,69 +47,42 @@ $factory->define(App\Exam::class, function (Faker\Generator $faker)
         'locked' => 0
     ];
 });
-//
-//$factory->define(App\Exam::class, function (Faker\Generator $faker)
-//{
-//    return [
-//        'user_id' => 1,
-//        'term' => Factory::create()->text,
-//        'name' => Factory::create()->text,
-//        'year' => Factory::create()->year,
-//        'released' => 0,
-//        'locked' => 0
-//    ];
-//});
-
 
 
 $factory->define(App\Student::class, function (Faker\Generator $faker)
 {
-    //$faker2 = Factory::create();
-
-    return  ['user_id' => 1,
-        'student_identifier' => '345567888',
-        'last_name' => 'ssdfdfsdf',
-        'first_name' => 'ljsdlfjsldkfj',
-        'email' => 'jjsdlf@slkdfjld.com'
+    return [
+        'student_identifier' => $faker->randomNumber(9),
+        'last_name' => $faker->lastName,
+        'first_name' => $faker->firstName,
+        'email' => $faker->email
     ];
-//
-//    return [
-////        'id' => $faker->unique()->randomNumber(3),
-//        'user_id' => 1,
-//        'student_identifier' => $faker2->unique()->randomNumber(9),
-//        'last_name' => $faker2->lastName,
-//        'first_name' => $faker2->firstName,
-//        'email' => $faker2->optional()->email
-//    ];
+});
 
+$factory->defineAs(App\Student::class, 'no_email', function (Faker\Generator $faker) use ($factory) {
+    $student = $factory->raw(App\Student::class);
+    $student->email = null;
+    return $student;
 });
 
 
 $factory->define(App\Question::class, function (Faker\Generator $faker)
 {
-    $faker2 = Faker\Factory::create();
     $possibleMaxScores = [10, 25, 100, 200, 1000];
-    $name = $faker2->text(20);
-    $text = $faker2->text(200);
     return [
-        'questionName' => $name,
-        'questionText' => $text,
-        'max_score' => 200,
-        //'max_score' => $faker->randomElement($possibleMaxScores),
+        'questionName' => $faker->text(20),
+        'questionText' => $faker->text(200),
+        'max_score' => $faker->randomElement($possibleMaxScores),
         'created_at' => Carbon::now(),
         'updated_at' => Carbon::now()
     ];
 });
 
 $factory->define(App\Element::class, function(Faker\Generator $faker){
-    $name = $faker->text(20);
-    $display = $faker->text(200);
-    $text = $faker->paragraph();
-
     return [
-        'elementName' => $name,
-        'displayText' =>  $display,
-        'commentText' => $text
+        'elementName' => $faker->text(20),
+        'displayText' =>  $faker->text(200),
+        'commentText' => $faker->paragraph()
     ];
 });
 
@@ -130,8 +90,7 @@ $factory->define(App\Comment::class, function (Faker\Generator $faker)
 {
 
     return [
-        'element_id' => \App\Element::all()->random(),
-        //'user_id' => \App\User::all()->random(),
+        'element_id' => \App\Element::all()->random()->id,
         'valence' => $faker->randomElement(\App\Comment::$valences),
         'body' => $faker->text(200),
         'created_at' => $faker->dateTime(),
@@ -142,57 +101,59 @@ $factory->define(App\Comment::class, function (Faker\Generator $faker)
 
 $factory->define(App\QuestionAssignment::class, function (Faker\Generator $faker)
 {
+    $userId = 1;
+    Auth::logInUsingId($userId);
+    $questionId = App\Question::all()->random()->id;
+    $examId = App\Exam::all()->random()->id;
 
     return [
-        'question_id' => factory(Question::class)->create()->id,
-        'exam_id' => 1,
-        'user_id' => 1,
-        'question_number' => 1
+        'question_id' => $questionId,
+        'exam_id' => $examId,
+        'question_number' => $faker->randomDigitNotNull
         ];
-//            $exam = Exam::all()->random();
-//    $question = Question::all()->random();
-//    $questionAssignment = new QuestionAssignment();
-//    $questionAssignment->exam_id = $exam->id;
-//    $questionAssignment->question_id = $question->id;
-//    $questionAssignment->question_number = 10;
-//    return [
-////        'question_id' => Question::all()->random()->id,
-//        'question_id' => factory(Question::class)->create()->id,
-////        'exam_id' => factory(Exam::class)->create()->id,
-//        'exam_id' => 1,
-//        'user_id' => 1,
-//        'question_number' => $faker->randomNumber(1)
-//    ];
-});
-//
-//$factory->defineAs('App\QuestionAssignment', 'mock2', function (Faker\Generator $faker)
-//{
-//    $questionAssignment = \Mockery::mock('App\QuestionAssignment');
-//    $questionAssignment->shouldReceive('getQuestionAssignmentId')->andReturn(2);
-//    $questionAssignment->shouldReceive('getQuestionId')->andReturn(2);
-//    $questionAssignment->shouldReceive('getQuestionName')->andReturn('questionName2');
-//    $questionAssignment->shouldReceive('getQuestionNumber')->andReturn('2');
-//
-//    return $questionAssignment;
-//});
 
+});
+
+$factory->define(App\ElementAssignment::class, function (Faker\Generator $faker)
+{
+    $userId = 1;
+    Auth::logInUsingId($userId);
+    $questionId = App\Question::all()->random()->id;
+    $elementId = App\Element::all()->random()->id;
+    $examId = App\Exam::all()->random()->id;
+
+    return [
+        'question_id' => $questionId,
+        'element_id' => $elementId,
+        'exam_id' => $examId,
+        'subtask' => $faker->randomDigitNotNull
+    ];
+
+});
 
 $factory->define(App\QuestionScore::class, function (Faker\Generator $faker)
 {
+    $userId = 1;
+    Auth::logInUsingId($userId);
+    $assignmentId = App\QuestionAssignment::all()->random()->id;
+    $studentId = App\Student::all()->random()->id;
+
     return [
-        'id' => $faker->unique()->randomNumber(3),
-        'question_assignment_id' => $faker->randomNumber(3),
-        'student_id' => $faker->randomNumber(9),
+        'question_assignment_id' => $assignmentId,
+        'student_id' => $studentId,
         'score' => $faker->randomFloat(2)
     ];
 });
 
 $factory->define(App\ElementScore::class, function (Faker\Generator $faker)
 {
+    $userId = 1;
+    Auth::logInUsingId($userId);
+    $assignmentId = App\ElementAssignment::all()->random()->id;
+    $studentId = App\Student::all()->random()->id;
     return [
-        'id' => $faker->unique()->randomNumber(3),
-        'element_assignment_id' => $faker->randomNumber(3),
-        'student_id' => $faker->randomNumber(9),
+        'element_assignment_id' => $assignmentId,
+        'student_id' => $studentId,
         'score' => $faker->randomFloat(2)
     ];
 });

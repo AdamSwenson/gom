@@ -5,7 +5,7 @@ namespace App;
 
 use Illuminate\Support\Facades\DB;
 
-class ElementScore extends BaseModel
+class ElementScore extends BaseModelNoUser
 {
     protected $fillable = ['score', 'commentText'];
 
