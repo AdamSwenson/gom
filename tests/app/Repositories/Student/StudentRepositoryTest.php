@@ -51,11 +51,12 @@ class StudentRepositoryTest extends \ReseedingTestCase
     public function buildTestDataAndRequest($numberNew = 10, $numberOriginal = 0, $numberAltered = 0)
     {
         //Create new exam so have blank slate of students
-        $this->exam = new \App\Exam();
-        $this->exam->setYear($this->faker->year);
-        $this->exam->setTerm('Fall');
-        $this->exam->setName($this->faker->word);
-        $this->exam->save();
+        $this->exam = factory(Exam::class)->create();
+//        $this->exam = new \App\Exam();
+//        $this->exam->setYear($this->faker->year);
+//        $this->exam->setTerm('Fall');
+//        $this->exam->setName($this->faker->word);
+//        $this->exam->save();
         $students = Student::all();
 
         for ( $i = 1; $i <= $numberNew; $i++ )
