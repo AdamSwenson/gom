@@ -119,6 +119,8 @@ class StudentController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
+     * DEPRECATED?
+     *
      * @param Exam $exam
      * @param Student $student
      * @param StudentRequest $request

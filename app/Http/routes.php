@@ -76,7 +76,7 @@ Route::resource('exam.student', 'StudentController');
 //TODO Rework to be more coherent and restful
 Route::get('grade', 'GradeController@index'); // present list of exams to grade.
 Route::get('grade/exam/{exam}', 'GradeController@grade');  // begin grade the specified exam
-Route::get('grade/exam/{exam}/student/{student}', 'GradeController@grade');  // begin grade the specified exam
+//Route::get('grade/exam/{exam}/student/{student}', 'GradeController@grade');  // begin grade the specified exam
 Route::get('grade/exam/{exam}/assign', 'GradeController@assign'); // launch grade assigner
 Route::post('grade/exam/{exam}/assign', 'GradeController@recordAssignments'); // record grade assignments
 Route::post('grade/exam/{exam}', 'GradeController@recordScore'); // record a question or element score

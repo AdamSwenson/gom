@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddPreviouslyReleasedToExams extends Migration
+class NewIdFieldForFeedback extends Migration
 {
     /**
      * Run the migrations.
@@ -12,10 +12,12 @@ class AddPreviouslyReleasedToExams extends Migration
      */
     public function up()
     {
-        Schema::table('exams', function (Blueprint $table)
+        Schema::table('feedback', function (Blueprint $table)
         {
-            $table->boolean('previously_released')->default(false);
+            //add an id column
+            $table->increments('id');
         });
+        //
     }
 
     /**
@@ -25,10 +27,10 @@ class AddPreviouslyReleasedToExams extends Migration
      */
     public function down()
     {
-        Schema::table('exams', function (Blueprint $table)
+        Schema::table('feedback', function (Blueprint $table)
         {
-//            $table->dropIfExists('previously_released');
-//            $table->dropColumn('previously_released');
+//
+//            $table->dropIfExists('id');
         });
     }
 }

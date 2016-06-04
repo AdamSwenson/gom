@@ -14,20 +14,26 @@ use App\Http\Controllers\helpers\validation\StudentRecordValidator;
 use App\Http\Requests\StudentRequest;
 use App\Kumi;
 use App\Student;
+use App\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 
-class StudentRepositoryTest extends \ReseedingTestCase
+class StudentRepositoryTest extends \TestCase
 {
 
+    public $studentIds;
+    public $students;
+    public $kumi;
+    public $exam;
+    public $student;
     protected $object;
 
     public function setUp()
     {
         \Mockery::close();
         parent::setUp();
-        $this->prepareDatabase();
+//        $this->prepareDatabase();
         $this->object = new StudentRepository;
         $this->exam = Exam::all()->random();
         $this->student = Student::all()->random();
@@ -52,12 +58,9 @@ class StudentRepositoryTest extends \ReseedingTestCase
     {
         //Create new exam so have blank slate of students
         $this->exam = factory(Exam::class)->create();
-//        $this->exam = new \App\Exam();
-//        $this->exam->setYear($this->faker->year);
-//        $this->exam->setTerm('Fall');
-//        $this->exam->setName($this->faker->word);
-//        $this->exam->save();
-        $students = Student::all();
+
+        $students = factory(Student::class, $numberOriginal)->create();
+//        $students = Student::all();
 
         for ( $i = 1; $i <= $numberNew; $i++ )
         {
@@ -149,33 +152,79 @@ class StudentRepositoryTest extends \ReseedingTestCase
         return $request;
     }
 
+
+    public function setupExamWithStudents(){
+        $this->kumi = factory(Kumi::class)->create();
+        $this->exam = factory(Exam::class)->create();
+        $this->kumi->exams()->attach($this->exam);
+        //create students and put in expected order
+        $this->students = factory(Student::class, 5)->create();
+        $this->students = $this->students->sortBy('last_name');
+        $this->studentIds = [];
+        foreach ( $this->students as $item )
+        {
+            $this->kumi->students()->attach($item);
+            $this->studentIds[] = $item->id;
+        }
+        $this->kumi->push();
+    }
+
     /**
      * @covers \App\Repositories\Student\StudentRepository::load_students_by_exam
      */
     public function testLoad_students_by_exam()
     {
-        $kumi = Kumi::all()->random();
-        $kumi->exams()->attach($this->exam);
-        $kumi->students()->attach($this->student);
-        $kumi->push();
+        # prep
+        $this->setupExamWithStudents();
 
-        $result = $this->object->load_students_by_exam($this->exam->getId());
-        $this->assertNotEmpty($result);
-        foreach ( $result as $r )
+        # call
+        //case where loading from id
+        $result1 = $this->object->load_students_by_exam($this->exam->id);
+        //case where loading from object
+        $result2 = $this->object->load_students_by_exam($this->exam);
+
+        # check
+        $result1Ids = [];
+        $this->assertNotEmpty($result1);
+        $this->assertEquals(sizeof($this->studentIds), sizeof($result1), "Number of students as expected");
+        foreach ( $result1 as $r )
         {
+            $result1Ids[] = $r->id;
             $this->assertInstanceOf('\App\Student', $r, "returns a student object");
+            $this->assertTrue(in_array($r->id, $this->studentIds), "Student id is in the expected array");
+        }
+
+        $this->assertNotEmpty($result2);
+        $this->assertEquals(sizeof($this->studentIds), sizeof($result2), "Number of students as expected");
+        
+        $result2Ids = [];
+        foreach ( $result2 as $r )
+        {
+            $result2Ids[] = $r->id;
+            $this->assertInstanceOf('\App\Student', $r, "returns a student object");
+            $this->assertTrue(in_array($r->id, $this->studentIds), "Student id is in the expected array");
+        }
+
+        //Check sort order 
+        for($i=0; $i<sizeof($this->students); $i++){
+            $this->assertEquals($this->studentIds[$i], $result1Ids[$i]);
+            $this->assertEquals($this->studentIds[$i], $result2Ids[$i]);
         }
 
     }
 
     public function testCreate_student()
     {
+        #prep
         $lastName = $this->faker->lastName();
         $firstName = $this->faker->firstName();
         $studentId = $this->faker->randomNumber(9);
         $email = $this->faker->unique()->email();
 
+        #call
         $result = $this->object->create_student($lastName, $firstName, $studentId, $email);
+
+        #check
         $this->assertNotEmpty($result);
         $this->assertInstanceOf('\App\Student', $result, "returns a student object");
 
@@ -207,7 +256,6 @@ class StudentRepositoryTest extends \ReseedingTestCase
             'first_name'         => $firstName,
             'student_identifier' => $studentId,
         ]);
-//        $this->seeInDatabase('students', ['last_name' => $lastName, 'first_name' => $firstName, 'student_identifier' => Crypt::encrypt($studentId)]);
     }
 
     /**
@@ -215,27 +263,28 @@ class StudentRepositoryTest extends \ReseedingTestCase
      */
     public function create_student_who_already_exists_but_for_different_user()
     {
-        $userId = 2;
+        $student = Student::all()->random();
+        $user = factory(User::class)->create();
 
-        \Auth::loginUsingId($userId);
+        \Auth::loginUsingId($user->id);
 
         //call
         $result = $this->object->create_student(
-            $this->student->last_name,
-            $this->student->first_name,
-            $this->student->getStudentId(),
-            $this->student->getEmail());
+            $student->last_name,
+            $student->first_name,
+            $student->getStudentId(),
+            $student->getEmail());
 
         //check
         $this->assertNotEmpty($result);
         $this->assertInstanceOf('\App\Student', $result, "returns a student object");
         $this->seeInDatabase('students',
                              [
-                                 'last_name'  => $this->student->last_name,
-                                 'first_name' => $this->student->first_name,
+                                 'last_name'  => $student->last_name,
+                                 'first_name' => $student->first_name,
                                  //       'student_identifier' => $this->student->student_identifier, //encrypted ok
                                  //        'email' => $this->student->email,//encrypted version ok
-                                 'user_id'    => $userId,
+                                 'user_id'    => $user->id,
                              ]);
 
         //cleanup: log back in as normal
@@ -382,11 +431,11 @@ class StudentRepositoryTest extends \ReseedingTestCase
      */
     public function deleteStudentsNotOnRoster()
     {
+        $this->setupExamWithStudents();
 
         $indexToRemove = 1;
-        $initialNumberRecords = 10;
-        //TODO need to ensure that the exam already has a class full of students associated
-        $exam = Exam::find(2);
+        $initialNumberRecords = sizeof($this->students);
+        
         # prep
         $request = $this->buildTestDataAndRequest(0, $initialNumberRecords, 0);
         $recordToRemove = $this->expectedDbEntries[ $indexToRemove - 1 ]; //the expectedDbEntries array is 0-indexed whereas the row ids start with 1
@@ -402,7 +451,7 @@ class StudentRepositoryTest extends \ReseedingTestCase
 //        $this->assertEquals(9, count($r), "request contains proper number of records");
 
         # call
-        $result = $this->object->update_all($exam, $request);
+        $result = $this->object->update_all($this->exam, $request);
 
         # check
         $this->assertInstanceOf(Collection::class, $result, "returns collection");

@@ -9,6 +9,7 @@
 namespace App\Repositories\Feedback;
 
 
+use App\AccessKey;
 use App\Exam;
 use App\Feedback;
 use App\Repositories\Element\ICommentRepository;
@@ -104,11 +105,12 @@ class FeedbackBuilder implements IFeedbackBuilder
     public function buildFeedback($examId)
     {
         $this->exam = Exam::find($examId);
-        
+
         //Check whether the exam has been graded. 
         //If not, bailout before doing anything else
-        if( ! $this->exam->isGraded()){
-            
+        if ( ! $this->exam->isGraded() )
+        {
+
         }
 
         //Load statistical information
@@ -326,7 +328,13 @@ class FeedbackBuilder implements IFeedbackBuilder
      */
     public function storeFeedback($accessKey, $content, $gradeDisplay = null, $gradeCalc = null)
     {
-        $feedback = Feedback::firstOrNew(['access_key' => $accessKey]);
+        $feedback = Feedback::where('access_key', $accessKey)->first();
+        if ( ! $feedback )
+        {
+            $feedback = new Feedback();
+            $feedback->access_key = $accessKey;
+            $feedback->save();
+        }
         $feedback->content = $content;
         $feedback->grade_display = $gradeDisplay;
         $feedback->grade_calc = $gradeCalc;

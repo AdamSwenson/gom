@@ -63,6 +63,7 @@ class ExamControllerTest extends \TestCase
     {
         $mock = $this->createMock('App\Repositories\Exam\IExamRepository');
         $mock->shouldReceive('load_all_exams')
+            ->once()
             ->andReturn(Exam::all());
         $response = $this->action('GET', 'ExamController@index');
         $this->assertNotNull($response);
@@ -72,6 +73,7 @@ class ExamControllerTest extends \TestCase
     {
         $mock = $this->createMock('App\Repositories\Exam\IExamRepository');
         $mock->shouldReceive('load_all_exams')
+            ->once()
             ->andReturn(Exam::all());
 
         $response = $this->call('GET', '/setup');
@@ -129,7 +131,7 @@ class ExamControllerTest extends \TestCase
     {
         $mock = $this->createMock('App\Repositories\Exam\IExamRepository');
         $mock->shouldReceive('update_exam_object')
-           // ->with($this->exam, $this->examData['year'], $this->examData['term'], $this->examData['name'])
+            ->with($this->exam, $this->examData['examYear'], $this->examData['examTerm'], $this->examData['name'])
             ->once()
             ->andReturn($this->exam);
 
@@ -144,14 +146,18 @@ class ExamControllerTest extends \TestCase
     public function testDestroy()
     {
         $mock = $this->createMock('App\Repositories\Exam\IExamRepository');
-        $mock->shouldReceive('delete_exam_object')
-            ->with($this->exam);
+        $mock->shouldReceive('delete_exam')
+            ->with($this->exam)
+            ->once();
 
-        $response = $this->action('DELETE', 'ExamController@destroy', ['examId' => $this->exam->id]);
+//        $object = new ExamController();
+//        $response = $object->destroy($this->exam);
+        $response = $this->action('DELETE', 'ExamController@destroy', ['exam_id' => $this->exam->id] );
+//        $response = $this->call('DELETE', "/exam", ['exam' => $this->exam]);
+//        $response = $this->call('DELETE', "/exam/{$this->exam->id}");
         $this->assertNotNull($response);
 
-        //TODO Test for view
-    }
+        }
 
 
 }

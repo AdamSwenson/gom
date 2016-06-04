@@ -7,7 +7,7 @@
  */
 
 namespace App\Repositories\Exam;
-use App\classes\SecurityClasses\cleaning\CleanerFactory;
+//use App\classes\SecurityClasses\cleaning\CleanerFactory;
 use App\Exam;
 use App\Repositories\Element\ElementAssignmentRepository;
 use App\Repositories\Question\QuestionAssignmentRepository;
@@ -15,7 +15,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 
 
-class ExamRepositoryTest extends \ReseedingTestCase
+class ExamRepositoryTest extends \TestCase
 {
 //    use DatabaseTransactions;
 
@@ -46,11 +46,9 @@ class ExamRepositoryTest extends \ReseedingTestCase
 
     public function prepareDatabase()
     {
-        parent::prepareDatabase();
+//        parent::prepareDatabase();
         //random exam
         $this->exam = Exam::all()->random();
-
-
     }
 
     /**
@@ -73,12 +71,13 @@ class ExamRepositoryTest extends \ReseedingTestCase
      */
     public function testDelete_exam_from_exam_object()
     {
-        $this->prepareDatabase();
         //prep
-        $eid = $this->exam->id;
+        $exam = factory(Exam::class)->create();
+        $eid = $exam->id;
+        $this->seeInDatabase('exams', ['id' => $eid]);
 
         //call
-        $result = $this->object->delete_exam($this->exam);
+        $result = $this->object->delete_exam($exam);
 
         //check
         $this->assertTrue($result);
@@ -91,9 +90,10 @@ class ExamRepositoryTest extends \ReseedingTestCase
      */
     public function testDelete_exam_from_exam_id()
     {
-        $this->prepareDatabase();
         //prep
-        $eid = $this->exam->id;
+        $exam = factory(Exam::class)->create();
+        $eid = $exam->id;
+        $this->seeInDatabase('exams', ['id' => $eid]);
 
         //call
         $result = $this->object->delete_exam($eid);
@@ -137,7 +137,7 @@ class ExamRepositoryTest extends \ReseedingTestCase
 #----------------------------------------------------- save exam
     public function testSave_new_exam()
     {
-        $this->prepareDatabase();
+        #prep
         $examName = $this->faker->text(5);
         $term = $this->faker->text(5);
         $year = $this->faker->year();
@@ -149,20 +149,13 @@ class ExamRepositoryTest extends \ReseedingTestCase
         ];
         $db_count = DB::table('exams')->count();
 
+        #call
         $result = $this->object->save_new_exam($year, $term, $examName, $classId);
 
+        #check
         $this->assertInstanceOf('\App\Exam', $result);
-
         $this->assertTrue($db_count < DB::table('exams')->count());
         $this->seeInDatabase('exams', $data);
-
-//        $exam = Exam::find($result->id);
-//        $this->assertEquals($examName, $exam->name);
-//        $this->assertEquals($term, $exam->term);
-//        $this->assertEquals($year, $exam->year);
-//        $this->assertEquals(0, $exam->locked);
-//        $this->assertEquals(0, $exam->released);
-//        $this->assertEquals(self::$userid, $exam->user_id);
     }
 
 //    /**
@@ -243,11 +236,14 @@ class ExamRepositoryTest extends \ReseedingTestCase
 
     public function testLoad_exam()
     {
-        $this->prepareDatabase();
-
-        $exam = Exam::all()->random();
+        #prep
+        $exam = factory(Exam::class)->create();
         $eid = $exam->getId();
+
+        #call
         $result = $this->object->load_exam($eid);
+
+        #check
         $this->assertInstanceOf('\App\Exam', $result);
         $this->assertEquals($eid, $result->getId());
     }
@@ -273,32 +269,20 @@ class ExamRepositoryTest extends \ReseedingTestCase
 
     public function testClone_exam()
     {
-        //Prep
+        #prep
         //prepare source exam and database
-        $this->prepareDatabase();
-        $examToCloneId = 1;
+        $exam = factory(Exam::class)->create();
+        $examToCloneId = $exam->id;
         $questionAssignDao = new QuestionAssignmentRepository();
         $elementAssignDao = new ElementAssignmentRepository();
 
         $questionsToClone = $questionAssignDao->load_all_for_exam($examToCloneId);
         $elementsToClone = $elementAssignDao->load_by_exam($examToCloneId);
 
-//        //make target exam
-//        $target = new Exam();
-//        $target->id = 99;
-//        $target->term = 'testTerm';
-//        $target->year = 2100;
-//        $target->name = 'testName';
-//        $target->save();
-//
-//        //Check that both exams are ready
-//        $this->seeInDatabase('exams', ['id' => 99]);
-//        $this->seeInDatabase('exams', ['id' => 1]);
-
-        //Call
+        #call
         $newExam = $this->object->clone_exam($examToCloneId);
 
-        //Check
+        #check
         //make sure made new exam with expected naming scheme
         $clonedExam = Exam::where('id', $examToCloneId)->first();
         $expectedName = 'Clone of "' . $clonedExam->name . '"';

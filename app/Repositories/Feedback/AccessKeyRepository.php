@@ -79,11 +79,7 @@ class AccessKeyRepository implements IAccessKeyRepository
                 'studentName'       => $name,
                 'studentIdentifier' => $id,
             ];
-
-//            //access key doesn't automatically add user,
-//            //so do it manually
-//            $k->user()->associate(Auth::user());
-
+            
             $k->save();
 
             if ( $k )

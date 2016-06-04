@@ -182,13 +182,17 @@ class ExamController extends Controller
      */
     public function update(Exam $exam, ExamRequest $request)
     {
+
         //Check that user owns the exam
         $this->authorize('alter-object', $exam);
         try
         {
             $exam = $this->examDao->update_exam_object($exam, $request->input('examYear'), $request->input('examTerm'), $request->input('name'));
+            
             $this->dispatch(new UpdateAllStoredExamStats());
+            
             Flash::success(self::UPDATE_SUCCESS . $exam->getName());
+            
             $eid = $exam->getId();
             if ( $request->input('nextAction') == 'selectExam' )
             {

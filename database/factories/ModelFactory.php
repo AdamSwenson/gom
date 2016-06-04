@@ -52,7 +52,15 @@ $factory->define(App\Exam::class, function (Faker\Generator $faker)
     ];
 });
 
+$factory->define(App\Kumi::class, function (Faker\Generator $faker)
+{
+    return [
+        'year'     => $faker->year,
+        'nickname' => $faker->word,
+    ];
+});
 
+/* ---------------------------- Student --------------------------------- */
 $factory->define(App\Student::class, function (Faker\Generator $faker)
 {
     return [
@@ -71,6 +79,7 @@ $factory->defineAs(App\Student::class, 'no_email', function (Faker\Generator $fa
     return $student;
 });
 
+/* ----------------------------- Exam components -------------------------- */
 
 $factory->define(App\Question::class, function (Faker\Generator $faker)
 {
@@ -104,10 +113,24 @@ $factory->define(App\Comment::class, function (Faker\Generator $faker)
         'created_at' => $faker->dateTime(),
         'updated_at' => $faker->dateTime(),
     ];
-
 });
 
+
+/* ------------------- Question Assignment ---------------------------- */
+/** Makes a question assignment with brand new exam and question */
 $factory->define(App\QuestionAssignment::class, function (Faker\Generator $faker)
+{
+    $questionId = factory(App\Question::class)->create()->id;
+    $examId = factory(App\Exam::class)->create()->id;
+
+    return [
+        'question_id'     => $questionId,
+        'exam_id'         => $examId,
+        'question_number' => $faker->randomDigitNotNull,
+    ];
+});
+
+$factory->defineAs(App\QuestionAssignment::class, 'preexisting', function (Faker\Generator $faker) use ($factory)
 {
     $userId = 1;
     Auth::logInUsingId($userId);
@@ -119,9 +142,10 @@ $factory->define(App\QuestionAssignment::class, function (Faker\Generator $faker
         'exam_id'         => $examId,
         'question_number' => $faker->randomDigitNotNull,
     ];
-
 });
 
+
+/* ------------------- Element Assignment ---------------------------- */
 $factory->define(App\ElementAssignment::class, function (Faker\Generator $faker)
 {
     $userId = 1;
@@ -139,6 +163,7 @@ $factory->define(App\ElementAssignment::class, function (Faker\Generator $faker)
 
 });
 
+/* ------------------------------------- Scores ------------------------------*/
 $factory->define(App\QuestionScore::class, function (Faker\Generator $faker)
 {
     $userId = 1;
@@ -167,26 +192,28 @@ $factory->define(App\ElementScore::class, function (Faker\Generator $faker)
     ];
 });
 
-$factory->define(App\AccessKey::class, function (Faker\Generator $faker)
-{
-    $studentId = factory(Student::class)->create()->id;
-    $examId = factory(Exam::class)->create()->id;
-    return [
-        'access_key' => $faker->sha1,
-        'student_id' => $studentId,
-        'exam_id' => $examId
-    ];
-});
+/* ------------------------------------ Feedback ------------------------------ */
+//$factory->define(App\AccessKey::class, function (Faker\Generator $faker)
+//{
+//    $studentId = factory(Student::class)->create()->id;
+//    $examId = factory(Exam::class)->create()->id;
+//    return [
+//        'access_key' => $faker->sha1,
+//        'student_id' => $studentId,
+//        'exam_id' => $examId
+//    ];
+//});
 
 /** Makes an access key using brand new exam and student */
 $factory->define(App\AccessKey::class, function (Faker\Generator $faker)
 {
     $studentId = factory(Student::class)->create()->id;
     $examId = factory(Exam::class)->create()->id;
+
     return [
         'access_key' => $faker->sha1,
         'student_id' => $studentId,
-        'exam_id' => $examId
+        'exam_id'    => $examId,
     ];
 });
 
@@ -195,10 +222,11 @@ $factory->defineAs(App\AccessKey::class, 'preexisting', function (Faker\Generato
 {
     $studentId = Student::all()->random()->id;
     $examId = Exam::all()->random()->id;
+
     return [
         'access_key' => $faker->sha1,
         'student_id' => $studentId,
-        'exam_id' => $examId
+        'exam_id'    => $examId,
     ];
 });
 
@@ -243,11 +271,11 @@ $factory->define(App\Feedback::class, function (Faker\Generator $faker)
     }
 
     $g = $faker->randomElement(GradeFactory::$grades);
-
-    $accessKey = factory(AccessKey::class)->create()->access_key;
+    $accessKey = factory(App\AccessKey::class)->create();
+    $key = $accessKey->access_key;
 
     return [
-        'access_key'    => $accessKey,
+        'access_key'    => $key,
         'content'       => $content,
         'grade_calc'    => $g['calc_value'],
         'grade_display' => $g['display_value'],
@@ -258,6 +286,7 @@ $factory->define(App\Feedback::class, function (Faker\Generator $faker)
 $factory->defineAs(App\Feedback::class, 'preexisting', function (Faker\Generator $faker) use ($factory)
 {
     $feedback = $factory->raw(App\Feedback::class);
-    $accessKey = factory(AccessKey::class, 'preexisting')->create()->access_key;
+    $accessKey = factory(App\AccessKey::class, 'preexisting')->create()->access_key;
+
     return array_merge($feedback, ['access_key' => $accessKey]);
 });

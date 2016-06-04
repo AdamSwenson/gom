@@ -26,6 +26,7 @@ use Mockery\Mock;
 class FeedbackBuilderTest extends \TestCase
 {
 
+    public $exam;
     protected $object;
     protected $questionAssignmentRepository;
     protected $elementAssignmentRepository;
@@ -263,22 +264,24 @@ class FeedbackBuilderTest extends \TestCase
     /**
      * @test
      */
-    public function StoreFeedback_with_new_data()
+    public function StoreFeedback_where_new_data()
     {
-        $ak = AccessKey::all()->random();
-        Feedback::destroy($ak->access_key);
+        #prep
+        $key = factory(AccessKey::class)->create()->access_key;
+        $f = factory(Feedback::class)->make();
+        $newContent = $f->content;
+        $newGrade = $f->grade_display;
+        $newGradeCalc = $f->grade_calc;
 
-        $content = [
-            'item1' => $this->faker->text(1000),
-            'item2' => $this->faker->text(1000),
-            'item3' => $this->faker->text(1000),
-        ];
+        #call
+        $result = $this->object->storeFeedback($key, $newContent, $newGrade, $newGradeCalc);
 
-        $this->object->storeFeedback($ak->access_key, $content);
-        $this->seeInDatabase('feedback', [
-            'access_key' => $ak->access_key,
-            'content'    => json_encode($content),
-        ]);
+        #check
+        $this->assertTrue($result);
+        $t = Feedback::where('access_key', $key)->first();
+        $this->assertEquals($newContent, $t->content);
+        $this->assertEquals($newGrade, $t->grade_display);
+        $this->assertEquals($newGradeCalc, $t->grade_calc);
     }
 
     /**
@@ -286,33 +289,51 @@ class FeedbackBuilderTest extends \TestCase
      */
     public function StoreFeedback_where_updating_existing_record()
     {
-        //Prep
-        $testFeedback = Feedback::all()->random();
-        $accessKey = $testFeedback->access_key;
-        $existingContent = $testFeedback->content;
+        #prep
+        $existingFeedback = factory(Feedback::class)->create();
+        $oldContent = $existingFeedback->content; //accessing via method so get string rep of json
+        $key = $existingFeedback->access_key;
+        $id = $existingFeedback->id;
+        $newContent = factory(Feedback::class)->make()->content;//accessing via method so get string
 
-        //Call
-        $testContent = [
-            'item1' => $this->faker->text(100),
-            'item2' => $this->faker->text(100),
-            'item3' => $this->faker->text(100),
-        ];
-        $result = $this->object->storeFeedback($accessKey, $testContent);
+        #call
+        $result = $this->object->storeFeedback($key, $newContent);
 
-        //Check
-        $this->assertTrue($result, "update feedback returns boolean");
+        #check
+//        $this->assertInstanceOf(Feedback::class, $result, "returned expected object type");
+        $this->assertTrue($result);
+        $t = Feedback::where('access_key', $key)->first();
+        $this->assertEquals($newContent, $t->content);
+        $this->assertNotEquals($oldContent, $t->content);
+        $this->assertEquals($id, $t->id);
 
-        //New content written to db with same access key
-        $this->seeInDatabase('feedback', [
-            'access_key' => $accessKey,
-            'content'    => json_encode($testContent),
-        ]);
-
-        //Make sure that the old content has been replaced
-        $this->notSeeInDatabase('feedback', [
-            'access_key' => $accessKey,
-            'content'    => json_encode($existingContent),
-        ]);
+//        //Prep
+//        $testFeedback = Feedback::all()->random();
+//        $accessKey = $testFeedback->access_key;
+//        $existingContent = $testFeedback->content;
+//
+//        //Call
+//        $testContent = [
+//            'item1' => $this->faker->text(100),
+//            'item2' => $this->faker->text(100),
+//            'item3' => $this->faker->text(100),
+//        ];
+//        $result = $this->object->storeFeedback($accessKey, $testContent);
+//
+//        //Check
+//        $this->assertTrue($result, "update feedback returns boolean");
+//
+//        //New content written to db with same access key
+//        $this->seeInDatabase('feedback', [
+//            'access_key' => $accessKey,
+//            'content'    => json_encode($testContent),
+//        ]);
+//
+//        //Make sure that the old content has been replaced
+//        $this->notSeeInDatabase('feedback', [
+//            'access_key' => $accessKey,
+//            'content'    => json_encode($existingContent),
+//        ]);
     }
 
 }

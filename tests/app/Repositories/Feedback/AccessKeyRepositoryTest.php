@@ -19,6 +19,7 @@ use Illuminate\Support\Collection;
 class AccessKeyRepositoryTest extends \TestCase
 {
 
+    public $keyObject;
     protected $object;
     public $expiration_date;
     public $key;
@@ -29,10 +30,6 @@ class AccessKeyRepositoryTest extends \TestCase
     {
         parent::setUp();
         $this->object = new AccessKeyRepository;
-        $this->exam = Exam::all()->random();
-        $this->student = Student::all()->random();
-
-        $ak = AccessKey::where('exam_id', $this->exam->id)->where('student_id', $this->student->id)->delete();
     }
 
 
@@ -46,24 +43,16 @@ class AccessKeyRepositoryTest extends \TestCase
         //expiration date depending on parameter
         $this->expiration_date = ($expired ? Carbon::yesterday() : Carbon::tomorrow());
 
-        //Create access key
-        $a = AccessKey::where('exam_id', $this->exam->id)->where('student_id', $this->student->id)->first();
-        if (!is_null($a))
-        {
-            $a->delete();
-        }
-        $this->key = $this->faker->md5();
-        $ak = new AccessKey();
-        $ak->setExamId($this->exam->id);
-        $ak->setStudentId($this->student->id);
-        $ak->setKey($this->key);
-        $ak->setExpirationDate($this->expiration_date);
-        $ak->save();
+        //make an access key object with the specified expiration date
+        $this->keyObject = factory(AccessKey::class)->create(['access_expires' => $this->expiration_date]);
+        //store the key's properties in various fields
+        $this->key = $this->keyObject->access_key;
+        $this->exam = Exam::find($this->keyObject->exam_id);
+        $this->student = Student::find($this->keyObject->student_id);
 
         //Create feedback record
-        $f = Feedback::firstOrNew(['access_key' => $ak->access_key]);
-        $f->content = $this->faker->text(100);
-        $f->save();
+        factory(Feedback::class)->create(['access_key' => $this->key]);
+
     }
 
     public function testGetAccessKeyForStudent()
@@ -83,41 +72,47 @@ class AccessKeyRepositoryTest extends \TestCase
     public function testGetAccessKeysForExam()
     {
         //prep
-        $this->createAccessKeyRecordForTest();
+        $exam = factory(Exam::class)->create();
+        $key = factory(AccessKey::class, 5)->create(['exam_id' => $exam->id]);
+
+        $expectedKeys = [];
+        foreach ( $key as $k ){
+            $expectedKeys[] = $k->access_key;
+        }
 
         //call
-        $result = $this->object->getAccessKeysForExam($this->exam->id);
+        $result = $this->object->getAccessKeysForExam($exam->id);
 
         //check
         $this->assertNotNull($result);
         $this->assertInstanceOf('Illuminate\Support\Collection', $result);
+        foreach ( $result as $item ){
+            $this->assertTrue(in_array($item->access_key, $expectedKeys));
+        }
     }
 
 
     public function testCreateAccessKey()
     {
         //Prep
-        $ak = AccessKey::where('exam_id', $this->exam->id)
-            ->where('student_id', $this->student->id)
-            ->first();
-        if ($ak)
-        {
-            $ak->delete();
-        }
+        $exam = factory(Exam::class)->create();
+        $student = factory(Student::class)->create();
 
         //Call
-        $result = $this->object->createAccessKey($this->exam->id, $this->student->id);
+        $result = $this->object->createAccessKey($exam->id, $student->id);
 
         //Check
         $this->assertNotEmpty($result);
-        $this->seeInDatabase('access_keys', ['exam_id' => $this->exam->id, 'student_id' => $this->student->id]);
+        $this->seeInDatabase('access_keys', ['exam_id' => $exam->id, 'student_id' => $student->id]);
     }
 
 
     public function testRetrieveFeedback()
     {
-        $f = Feedback::all()->random();
-        $result = $this->object->retrieveFeedback($f->access_key);
+        $k = factory(AccessKey::class)->create();
+        $f = factory(Feedback::class)->create(['access_key' => $k->access_key]);
+        //$f = Feedback::all()->random();
+        $result = $this->object->retrieveFeedback($k->access_key);
 
         //check
         $this->assertInstanceOf('App\Feedback', $result);

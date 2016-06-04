@@ -46,12 +46,16 @@ class GradeControllerTest extends \TestCase
 
     public function testGrade()
     {
+        //prep
         $studentDao = $this->createMock('App\Repositories\Student\IStudentRepository');
         $studentDao->shouldReceive('load_students_by_exam')
             ->with($this->exam)
             ->andReturn(Student::all()->random(5));
 
-        $response = $this->action('GET', 'GradeController@grade', $this->exam);
+        //call
+        $response = $this->call('GET', '/grade/exam/' . $this->exam->id);
+
+        //check
         $this->assertNotEmpty($response);
     }
 

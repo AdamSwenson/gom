@@ -32,64 +32,66 @@ class ElementController extends Controller
      * @param IElementAssignmentRepository $assignmentDao
      * @param IQuestionAssignmentRepository $questionAssignmentDao
      */
-    public function __construct(IElementRepository $elementDao,
-                                IElementAssignmentRepository $assignmentDao,
-                                IQuestionAssignmentRepository $questionAssignmentDao)
-    {
+    public function __construct(){
+//    public function __construct(IElementRepository $elementDao,
+//                                IElementAssignmentRepository $assignmentDao,
+//                                IQuestionAssignmentRepository $questionAssignmentDao)
+//    {
         $this->middleware('auth');
-        $this->elementDao = $elementDao;
-        $this->assignmentDao = $assignmentDao;
-        $this->questionAssignmentDAO = $questionAssignmentDao;
+        $this->elementDao = app()->make(IElementRepository::class);
+        $this->assignmentDao = app()->make(IElementAssignmentRepository::class);
+        $this->questionAssignmentDAO = app()->make(IQuestionAssignmentRepository::class);
     }
+//
+//    /**
+//     * DEPRECATED
+//     * 
+//     * Display a listing of the resource.
+//     * @param ElementRequest $request
+//     * @return Response
+//     */
+//    public function index(ElementRequest $request)
+//    {
+//        if ( ! empty($questionId) )
+//        {
+//        } else
+//        {
+//            return Element::all();
+//        }
+//
+//        //for question number
+//        return $this->dao->load_element_assignments_by_question_number($request->input('exam_id'), $request->input('question_number'));
+//        // return ('List of elements for question id: '.$question);
+//    }
 
-    /**
-     * Display a listing of the resource.
-     * @param ElementRequest $request
-     * @return Response
-     */
-    public function index(ElementRequest $request)
-    {
-        if ( ! empty($questionId) )
-        {
-        } else
-        {
-            return Element::all();
-        }
-        //$element = $this->dao->loadElementById($elementId);
-        //return $element;
-        //for question number
-        return $this->dao->load_element_assignments_by_question_number($request->input('exam_id'), $request->input('question_number'));
-        // return ('List of elements for question id: '.$question);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param ElementRequest $request
-     * @return Response
-     */
-    public function store(ElementRequest $request)
-    {
-        //Check that user has permission to access the objects
-        $exam = Exam::findOrFail($request->input('examId'));
-        $this->authorize('access-object', $exam);
-
-        $elementName = $request->input('elementName');
-        $respGeneric = $request->input('respGeneric');
-        $element = $this->dao->createElement($elementName, '', $respGeneric);
-
-        if ( ! empty($element) )
-        {
-            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_ABSENT, $request->input('respAbsent'));
-            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_POOR, $request->input('respPoor'));
-            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_OK, $request->input('respFair'));
-            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_EXCELLENT, $request->input('respGood'));
-
-            $this->assignmentDao->record($request->input('examId'), $request->input('questionNumber'), $element->getId(), $request->input('subtask'));
-        }
-
-        return $element;
-    }
+//    /**
+//     * Store a newly created resource in storage.
+//     *
+//     * @param ElementRequest $request
+//     * @return Response
+//     */
+//    public function store(ElementRequest $request)
+//    {
+//        //Check that user has permission to access the objects
+//        $exam = Exam::findOrFail($request->input('examId'));
+//        $this->authorize('access-object', $exam);
+//
+//        $elementName = $request->input('elementName');
+//        $respGeneric = $request->input('respGeneric');
+//        $element = $this->dao->createElement($elementName, '', $respGeneric);
+//
+//        if ( ! empty($element) )
+//        {
+//            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_ABSENT, $request->input('respAbsent'));
+//            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_POOR, $request->input('respPoor'));
+//            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_OK, $request->input('respFair'));
+//            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_EXCELLENT, $request->input('respGood'));
+//
+//            $this->assignmentDao->record($request->input('examId'), $request->input('questionNumber'), $element->getId(), $request->input('subtask'));
+//        }
+//
+//        return $element;
+//    }
 
     /** Edit all elements associated with given question
      * @param Exam $exam

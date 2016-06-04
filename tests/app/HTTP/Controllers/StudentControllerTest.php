@@ -9,6 +9,7 @@
 namespace App\HTTP\Controllers;
 
 
+use App\Exam;
 use App\Http\Controllers\helpers\validation\StudentRecordValidator;
 use App\Http\Requests\StudentRequest;
 use App\Kumi;
@@ -18,7 +19,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Http\Request;
 use Mockery\Mock;
 
-class StudentControllerTest extends \ReseedingTestCase
+class StudentControllerTest extends \TestCase
 {
     use WithoutMiddleware;
 
@@ -36,11 +37,9 @@ class StudentControllerTest extends \ReseedingTestCase
     {
 //        \Mockery::close();
         parent::setUp();
-        $this->prepareDatabase();
+//        $this->prepareDatabase();
         $this->student = Student::all()->random();
-        // $this->dao = \Mockery::mock('\App\Repositories\Student\IStudentRepository');
-        //$this->app->instance('\App\Repositories\Student\IStudentRepository', $this->dao);
-//        $this->dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
+
          $this->object = new StudentController();
     }
 
@@ -58,7 +57,8 @@ class StudentControllerTest extends \ReseedingTestCase
 
     public function testIndex()
     {
-        $response = $this->action('GET', 'StudentController@index');
+        $data = ['examId' => factory(Exam::class)->create()->id];
+        $response = $this->action('GET', 'StudentController@index', $data);
         $this->assertNotNull($response);
     }
 
@@ -104,14 +104,34 @@ class StudentControllerTest extends \ReseedingTestCase
         $dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
 
         $dao->shouldReceive('load_student_by_id')->with($this->student)->andReturn($this->student);
-        $response = $this->action('GET', 'StudentController@show', $this->student);
+        $response = $this->action('GET', 'StudentController@show', [$this->exam, $this->student]);
         $this->assertNotNull($response);
     }
 
-//
+
 //    public function testEdit()
 //    {
-//        //
+//        $exam = factory(Exam::class)->create();
+//        $student = factory(Student::class)->create();
+//
+//        $kumi_repository_processor_mock = $this->createMock('App\Repositories\Student\IKumiRepository');
+//        $kumi_repository_processor_mock
+//            ->shouldReceive('load')
+//            ->with($exam->name, $exam->year)
+//            ->once()
+//            ->andReturn(Kumi::all()->random());
+//
+//        $dao = $this->createMock('App\Repositories\Student\IStudentRepository');
+//        $dao->shouldReceive('load_students_by_exam')
+//            ->with($exam->id)
+//            ->once()
+//            ->andReturn(Student::all());
+//
+//        $data = ['examId' => $exam->id, 'studentId' => $student->id];
+//
+//        $response = $this->action('POST', 'StudentController@edit', $data);
+//        $this->assertNotNull($response);
+//
 //    }
 //
 //
@@ -124,7 +144,7 @@ class StudentControllerTest extends \ReseedingTestCase
     {
         $dao = $this->createMock('\App\Repositories\Student\IStudentRepository');
         $dao->shouldReceive('delete_student_by_object')->with($this->student)->andReturn(true);
-        $response = $this->action('DELETE', 'StudentController@destroy', $this->student);
+        $response = $this->action('DELETE', 'StudentController@destroy', [$this->exam, $this->student]);
         $this->assertNotNull($response);
     }
 
