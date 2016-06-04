@@ -119,6 +119,7 @@ class AccessKeyRepositoryTest extends \TestCase
         $this->assertEquals($f->content, $result->content);
     }
 
+
     /**
      * @test
      * @expectedException \Exception

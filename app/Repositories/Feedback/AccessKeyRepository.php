@@ -15,6 +15,7 @@ use App\Feedback;
 use App\Repositories\Feedback\PseudoIDMaker;
 use App\Student;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -249,7 +250,15 @@ class AccessKeyRepository implements IAccessKeyRepository
     {
         if ( ! empty($this->validKey) )
         {
-            return Feedback::findOrFail($this->validKey);
+            //TODO do I need to throw an exception manually if it doesn't find?
+            $feedback = Feedback::where('access_key', $this->validKey)->first();;
+            if($feedback){
+return $feedback;
+            }
+            $e = new ModelNotFoundException();
+            $e->setModel(Feedback::class);
+            throw $e;
+
         }
 
         return null;
