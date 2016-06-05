@@ -58,16 +58,23 @@ class ElementAssignmentRepositoryTest extends \TestCase
 
     public function testLoad_elements()
     {
+        $numberElements = 5;
         //prep
-        $ea = ElementAssignment::all()->random();
-        $examId = $ea->exam_id;
-        $questionId = $ea->question_id;
-        $elementId = $ea->element_id;
-        $qAssign = QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->first();
-        $qNum = $qAssign->question_number;
+        $fixture = $this->makeElementAssignmentsForQuestion($numberElements);
+        $examId = $fixture['exam']->id;
+        $questionId = $fixture['question']->id;
+        $elementIds = $fixture['elementIds'];
+        $questionNumber = $fixture['questionNumber'];
+
+//        $ea = ElementAssignment::all()->random();
+//        $examId = $ea->exam_id;
+//        $questionId = $ea->question_id;
+//        $elementId = $ea->element_id;
+        //$qAssign = QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->first();
+        //$qNum = $qAssign->question_number;
 
         //call
-        $result = $this->object->load_elements($examId, $qNum);
+        $result = $this->object->load_elements($examId, $questionNumber);
 
         //check
         $this->assertTrue(is_array($result), "should return an array");

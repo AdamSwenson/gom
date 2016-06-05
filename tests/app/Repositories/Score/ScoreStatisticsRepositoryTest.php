@@ -18,6 +18,7 @@ use App\QuestionAssignment;
 use App\QuestionScore;
 use App\Student;
 use Carbon\Carbon;
+use Faker\Factory;
 use Illuminate\Support\Collection;
 
 class ScoreStatisticsRepositoryTest extends \TestCase
@@ -41,7 +42,46 @@ class ScoreStatisticsRepositoryTest extends \TestCase
 
     public function testLoadStats()
     {
-        $this->object->loadStats($this->exam);
+        $numberQuestions = 5;
+        $numberElements = 5;
+        $numberStudents = 5;
+
+        $fixture = $this->makeExamWAssignedQuestions($numberQuestions);
+        $exam = $fixture['exam'];
+        $questionIds = $fixture['questionIds'];
+        $questions = $fixture['questions'];
+        $students = factory(Student::class, $numberStudents)->create();
+
+        foreach ( $questions as $q )
+        {
+
+            $qAssign = QuestionAssignment::where('exam_id', $exam->id)->where('question_id', $q->id)->first();
+
+            foreach ( $students as $st )
+            {
+                $s = new QuestionScore();
+                $s->question_assignment_id = $qAssign->id;
+                $s->student_id = $st->id;
+                $s->score = Factory::create()->randomFloat(2, 0, 10);
+                $s->save();
+            }
+
+            $fixture2 = $this->makeElementAssignmentsForQuestion($numberElements, $exam, $q, $qAssign->question_number);
+
+            foreach ( $fixture2['elementAssignments'] as $ea )
+            {
+                foreach ( $students as $st )
+                {
+                    $es = new ElementScore();
+                    $es->element_assignment_id = $ea->id;
+                    $es->student_id = $st->id;
+                    $es->score = Factory::create()->randomFloat(2, 0, 10);
+                    $es->save();
+                }
+            }
+        }
+        
+        $this->object->loadStats($exam);
 
         //check
         $this->assertAttributeNotEmpty('questionAssignmentMeans', $this->object, 'question assignment means loaded');
@@ -53,7 +93,8 @@ class ScoreStatisticsRepositoryTest extends \TestCase
         $this->assertInstanceOf(Collection::class, $this->object->questionAssignmentStats, "Question assignment stats made into collection");
         $this->assertInstanceOf(Collection::class, $this->object->elementAssignmentStats, "Element assignment stats made into collection");
 
-        foreach($this->object->questionAssignmentStats as $qaId => $s){
+        foreach ( $this->object->questionAssignmentStats as $qaId => $s )
+        {
             $this->assertObjectHasAttribute('questionId', $s, "Has property for questionId");
             $this->assertObjectHasAttribute('questionAssignmentId', $s, "Has property for questionAssignmentId");
             $this->assertObjectHasAttribute('questionNumber', $s, "Has property for questionNumber");
@@ -65,7 +106,8 @@ class ScoreStatisticsRepositoryTest extends \TestCase
             $this->assertObjectHasAttribute('numberAnswers', $s, "Has property for numberAnswers");
         }
 
-        foreach($this->object->elementAssignmentStats as $qaId => $s){
+        foreach ( $this->object->elementAssignmentStats as $qaId => $s )
+        {
             $this->assertObjectHasAttribute('elementId', $s, "Has property for elementId");
             $this->assertObjectHasAttribute('elementAssignmentId', $s, "Has property for elementAssignmentId");
             $this->assertObjectHasAttribute('elementName', $s, "Has property for element name");
@@ -164,14 +206,15 @@ class ScoreStatisticsRepositoryTest extends \TestCase
         $this->assertNotEmpty($result, "Result contains values");
 
         $prior = null;
-        foreach($result as $r)
+        foreach ( $result as $r )
         {
             $this->assertArrayHasKey('dateTime', $r, "Returned array has dateTime key");
             $this->assertArrayHasKey('totalScore', $r, "Returned array has totalScore key");
             $this->assertArrayHasKey('seconds', $r, "Returned array has seconds key");
 
             $currentTime = Carbon::parse($r['dateTime']);
-            if(! is_null($prior)){
+            if ( ! is_null($prior) )
+            {
                 $this->assertTrue($currentTime->gte($prior), "This exam was graded after the exam in the previous element of the result");
             }
             $prior = $currentTime;
@@ -195,7 +238,8 @@ class ScoreStatisticsRepositoryTest extends \TestCase
         $questionAssignment->save();
 
         //make scores
-        foreach($scores as $s){
+        foreach ( $scores as $s )
+        {
             $q = new QuestionScore();
             $q->question_assignment_id = $questionAssignment->id;
             $q->student_id = factory(Student::class)->create()->id; //Student::all()->random()->id;
@@ -228,7 +272,8 @@ class ScoreStatisticsRepositoryTest extends \TestCase
         $questionAssignment->save();
 
         //make scores
-        foreach($scores as $s){
+        foreach ( $scores as $s )
+        {
             $q = new QuestionScore();
             $q->question_assignment_id = $questionAssignment->id;
             $q->student_id = factory(Student::class)->create()->id; //Student::all()->random()->id;
@@ -259,7 +304,8 @@ class ScoreStatisticsRepositoryTest extends \TestCase
         $elementAssignment->save();
 
         //make scores
-        foreach($scores as $s){
+        foreach ( $scores as $s )
+        {
             $q = new ElementScore();
             $q->element_assignment_id = $elementAssignment->id;
             $q->student_id = factory(Student::class)->create()->id; //Student::all()->random()->id;
@@ -290,7 +336,8 @@ class ScoreStatisticsRepositoryTest extends \TestCase
         $elementAssignment->save();
 
         //make scores
-        foreach($scores as $s){
+        foreach ( $scores as $s )
+        {
             $q = new ElementScore();
             $q->element_assignment_id = $elementAssignment->id;
             $q->student_id = factory(Student::class)->create()->id; //Student::all()->random()->id;
@@ -306,9 +353,11 @@ class ScoreStatisticsRepositoryTest extends \TestCase
     }
 
     /** @test */
-    public function getElementAssignmentQuartiles(){
+    public function getElementAssignmentQuartiles()
+    {
         $scores = [];
-        for($i=1; $i<=100; $i++){
+        for ( $i = 1; $i <= 100; $i++ )
+        {
             $scores[] = $i;
         }
         $expected25 = 26;
@@ -324,7 +373,8 @@ class ScoreStatisticsRepositoryTest extends \TestCase
         $elementAssignment->save();
 
         //make scores
-        foreach($scores as $s){
+        foreach ( $scores as $s )
+        {
             $q = new ElementScore();
             $q->element_assignment_id = $elementAssignment->id;
             $q->student_id = factory(Student::class)->create()->id; //Student::all()->random()->id;

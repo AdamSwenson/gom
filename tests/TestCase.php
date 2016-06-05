@@ -1,6 +1,8 @@
 <?php
 
 
+use App\Element;
+use App\ElementAssignment;
 use App\Exam;
 use App\Kumi;
 use App\Question;
@@ -20,7 +22,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
     /** @var  \Faker\Factory */
     public $faker;
-    
+
 
     public static $userid = 1;
 
@@ -86,6 +88,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         $qa->question_id = $question->id;
         $qa->question_number = $questionNumber;
         $qa->save();
+
         return $qa;
     }
 
@@ -93,24 +96,35 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      * @param $numberQuestions
      * @return array Keys: examId, questionIds (array)
      */
-    public function makeExamWAssignedQuestions($numberQuestions){
+    public function makeExamWAssignedQuestions($numberQuestions)
+    {
         $questionIds = [];
+        $questions = [];
         $exam = factory(Exam::class)->create();
-        for($i=1; $i<=$numberQuestions; $i++){
+        for ( $i = 1; $i <= $numberQuestions; $i++ )
+        {
             $question = factory(Question::class)->create();
             $question->setQuestionNumber($exam->id, $i);
+            $questions[] = $question;
             $questionIds[] = $question->id;
         }
 
         return [
             'questionIds' => $questionIds,
-            'examId' => $exam->id,
-            'exam' => $exam
+            'questions' => $questions,
+            'examId'      => $exam->id,
+            'exam'        => $exam,
         ];
     }
 
-    public function setupExamWithStudents()
+    public function setupExamWithStudents($exam=false, $kumi=false)
     {
+//        if(!$exam){
+//            $this->exam = factory(Exam::class)->create();
+//        }
+//        if(!$kumi){
+//            $this->kumi = factory(Kumi::class)->create();
+//        }
         $this->kumi = factory(Kumi::class)->create();
         $this->exam = factory(Exam::class)->create();
         $this->kumi->exams()->attach($this->exam);
@@ -124,6 +138,57 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
             $this->studentIds[] = $item->id;
         }
         $this->kumi->push();
+    }
+
+
+    /**
+     * Returns:
+     * 'question' => $question,
+     * 'elements' => $elements,
+     * 'elementIds' => $elementIds Array of integers
+     * 'questionNumber' => $questionNumber
+     * @param $numberElements
+     * @return array
+     */
+    public function makeElementAssignmentsForQuestion($numberElements, $exam=false, $question=false, $questionNumber=false)
+    {
+        if(! $exam){
+            $exam = factory(Exam::class)->create();
+        }
+        if(! $question){
+            $question = factory(Question::class)->create();
+        }
+        if(! $questionNumber){
+            $questionNumber = Faker\Factory::create()->randomDigitNotNull;
+            $this->makeQuestionAssignment($exam, $question, $questionNumber);
+
+        }
+
+        $elements = [];
+        $elementIds = [];
+        $elementAssignments = [];
+        for ( $i = 1; $i <= $numberElements; $i++ )
+        {
+            $e = factory(Element::class)->create();
+            $ea = new ElementAssignment();
+            $ea->exam()->associate($exam);
+            $ea->question()->associate($question);
+            $ea->element()->associate($e);
+            $ea->subtask = $i;
+            $ea->save();
+
+            $elements[] = $e;
+            $elementIds[] = $e->id;
+        }
+
+        return [
+            'exam'       => $exam,
+            'question'   => $question,
+            'elements'   => $elements,
+            'elementIds' => $elementIds,
+            'elementAssignments' => $elementAssignments,
+            'questionNumber' => $questionNumber
+        ];
     }
 
 
@@ -143,8 +208,6 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 //        }
 //        $this->kumi->push();
 //    }
-
-
 
 
 //    protected $nestedViewData = array();
