@@ -77,6 +77,22 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
 
 
+//
+//    public function setupExamWithStudents(){
+//        $this->kumi = factory(Kumi::class)->create();
+//        $this->exam = factory(Exam::class)->create();
+//        $this->kumi->exams()->attach($this->exam);
+//        //create students and put in expected order
+//        $this->students = factory(Student::class, 5)->create();
+//        $this->students = $this->students->sortBy('last_name');
+//        $this->studentIds = [];
+//        foreach ( $dthis->students as $item )
+//        {
+//            $this->kumi->students()->attach($item);
+//            $this->studentIds[] = $item->id;
+//        }
+//        $this->kumi->push();
+//    }
 
 
 

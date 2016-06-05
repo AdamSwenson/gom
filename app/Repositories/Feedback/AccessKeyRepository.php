@@ -80,7 +80,7 @@ class AccessKeyRepository implements IAccessKeyRepository
                 'studentName'       => $name,
                 'studentIdentifier' => $id,
             ];
-            
+
             $k->save();
 
             if ( $k )
@@ -252,13 +252,13 @@ class AccessKeyRepository implements IAccessKeyRepository
         {
             //TODO do I need to throw an exception manually if it doesn't find?
             $feedback = Feedback::where('access_key', $this->validKey)->first();;
-            if($feedback){
-return $feedback;
+            if ( $feedback )
+            {
+                return $feedback;
             }
             $e = new ModelNotFoundException();
             $e->setModel(Feedback::class);
             throw $e;
-
         }
 
         return null;

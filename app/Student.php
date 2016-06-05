@@ -55,12 +55,6 @@ class Student extends BaseModel
         'email',
     ];
 
-//
-//    public function __construct()
-//    {
-//        parent::boot();
-//    }
-
 
     /**
      * Returns the concatenated first name  and last name

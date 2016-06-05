@@ -28,6 +28,10 @@ class StudentRepositoryTest extends \TestCase
     public $exam;
     public $student;
     protected $object;
+    public $testData = [];
+    public $expectedDbEntries = [];
+    public $request;
+    public $row;
 
     public function setUp()
     {
@@ -37,6 +41,7 @@ class StudentRepositoryTest extends \TestCase
         $this->object = new StudentRepository;
         $this->exam = Exam::all()->random();
         $this->student = Student::all()->random();
+        $this->row = 1;
     }
 
     public function tearDown()
@@ -56,25 +61,29 @@ class StudentRepositoryTest extends \TestCase
      */
     public function buildTestDataAndRequest($numberNew = 10, $numberOriginal = 0, $numberAltered = 0)
     {
+        //Make enough preexisting students to cover the needs for unaltered and altered
+        $numberPreexisting = $numberOriginal + $numberAltered;
         //Create new exam so have blank slate of students
         $this->exam = factory(Exam::class)->create();
+        $students = factory(Student::class, $numberPreexisting)->create();
 
-        $students = factory(Student::class, $numberOriginal)->create();
-//        $students = Student::all();
+        $row = 1; //fieldnames contain this row number
 
         for ( $i = 1; $i <= $numberNew; $i++ )
         {
-            $studentIdentifier = $this->faker->numberBetween(1111111, 9999999);
-            $firstName = $this->faker->firstName;
-            $lastName = $this->faker->lastName;
-            $email = $this->faker->email;
+            //make new records using factory to ensure have correct values (not saving them to db)
+            $s = factory(Student::class)->make();
+            $studentIdentifier = $s->student_identifier;
+            $firstName = $s->first_name;
+            $lastName = $s->last_name;
+            $email = $s->email;
 
             $this->testData[] = [
-                "id$i"                => 0,
-                "studentIdentifier$i" => $studentIdentifier,
-                "lastName$i"          => $lastName,
-                "firstName$i"         => $firstName,
-                "email$i"             => $email,
+                "id$row"                => 0,
+                "studentIdentifier$row" => $studentIdentifier,
+                "lastName$row"          => $lastName,
+                "firstName$row"         => $firstName,
+                "email$row"             => $email,
             ];
 
             $this->expectedDbEntries[] = [
@@ -83,8 +92,10 @@ class StudentRepositoryTest extends \TestCase
                 'first_name'         => $firstName,
                 'email'              => $email,
             ];
+            $row++;
         }
 
+        //Populate with preexisting student records and save them
         if ( $numberOriginal > 0 )
         {
             for ( $i = 1; $i <= $numberOriginal; $i++ )
@@ -94,11 +105,11 @@ class StudentRepositoryTest extends \TestCase
                 $identifier = $student->getStudentId() ? $student->getStudentId() : '';
 
                 $this->testData[] = [
-                    "id$i"                => $student->getId(),
-                    "studentIdentifier$i" => $identifier,
-                    "lastName$i"          => $student->last_name,
-                    "firstName$i"         => $student->first_name,
-                    "email$i"             => $student->getEmail(),
+                    "id$row"                => $student->getId(),
+                    "studentIdentifier$row" => $identifier,
+                    "lastName$row"          => $student->last_name,
+                    "firstName$row"         => $student->first_name,
+                    "email$row"             => $student->getEmail(),
                 ];
 
                 $this->expectedDbEntries[] = [
@@ -108,6 +119,8 @@ class StudentRepositoryTest extends \TestCase
                     //   "student_identifier" => $identifier,
                     //   "email" => $student->getEmail()
                 ];
+
+                $row++;
             }
         }
 
@@ -115,27 +128,39 @@ class StudentRepositoryTest extends \TestCase
         {
             //doing this so that won't have a student from both the
             //original and altered arrays
-            $student = $students->pop();
-            $studentIdentifier = $this->faker->numberBetween(1111111, 9999999);
-            $firstName = $this->faker->firstName;
-            $lastName = $this->faker->lastName;
-            $email = $this->faker->email;
+            for ( $i = 1; $i <= $numberOriginal; $i++ )
+            {
+                $student = $students->pop();
 
-            $this->testData[] = [
-                "id$i"                => $student->getId(),
-                "studentIdentifier$i" => $studentIdentifier,
-                "lastName$i"          => $lastName,
-                "firstName$i"         => $firstName,
-                "email$i"             => $email,
-            ];
+                //make new records using factory to ensure have correct values (not saving them to db)
+                $s = factory(Student::class)->make();
+                $studentIdentifier = $s->student_identifier;
+                $firstName = $s->first_name;
+                $lastName = $s->last_name;
+                $email = $s->email;
 
-            $this->expectedDbEntries[] = [
-                'id'         => $student->getId(),
-                //'student_identifier' => $studentIdentifier,
-                'last_name'  => $lastName,
-                'first_name' => $firstName,
-                //  'email' => $email
-            ];
+//                $studentIdentifier = $this->faker->numberBetween(1111111, 9999999);
+//                $firstName = $this->faker->firstName;
+//                $lastName = $this->faker->lastName;
+//                $email = $this->faker->email;
+
+                $this->testData[] = [
+                    "id$row"                => $student->getId(),
+                    "studentIdentifier$row" => $studentIdentifier,
+                    "lastName$row"          => $lastName,
+                    "firstName$row"         => $firstName,
+                    "email$row"             => $email,
+                ];
+
+                $this->expectedDbEntries[] = [
+                    'id'         => $student->getId(),
+                    //'student_identifier' => $studentIdentifier,
+                    'last_name'  => $lastName,
+                    'first_name' => $firstName,
+                    //  'email' => $email
+                ];
+                $row++;
+            }
 
         }
 
@@ -153,7 +178,39 @@ class StudentRepositoryTest extends \TestCase
     }
 
 
-    public function setupExamWithStudents(){
+    public function addToRequest($student)
+    {
+        if ( empty($this->request) )
+        {
+            //Create the request
+            $this->request = new StudentRequest();
+            //make sure row is reset
+            $this->row = 1;
+        }
+        $studentIdentifier = $student->student_identifier;
+        $firstName = $student->first_name;
+        $lastName = $student->last_name;
+        $email = $student->email;
+
+        $this->request["id{$this->row}"] = 0;
+        $this->request["studentIdentifier{$this->row}"] = $studentIdentifier;
+        $this->request["lastName{$this->row}"] = $lastName;
+        $this->request["firstName{$this->row}"] = $firstName;
+        $this->request["email{$this->row}"] = $email;
+
+
+        $this->expectedDbEntries[] = [
+            'student_identifier' => $studentIdentifier,
+            'last_name'          => $lastName,
+            'first_name'         => $firstName,
+            'email'              => $email,
+        ];
+
+        $this->row++;
+    }
+
+    public function setupExamWithStudents()
+    {
         $this->kumi = factory(Kumi::class)->create();
         $this->exam = factory(Exam::class)->create();
         $this->kumi->exams()->attach($this->exam);
@@ -196,7 +253,7 @@ class StudentRepositoryTest extends \TestCase
 
         $this->assertNotEmpty($result2);
         $this->assertEquals(sizeof($this->studentIds), sizeof($result2), "Number of students as expected");
-        
+
         $result2Ids = [];
         foreach ( $result2 as $r )
         {
@@ -206,9 +263,10 @@ class StudentRepositoryTest extends \TestCase
         }
 
         //Check sort order 
-        for($i=0; $i<sizeof($this->students); $i++){
-            $this->assertEquals($this->studentIds[$i], $result1Ids[$i]);
-            $this->assertEquals($this->studentIds[$i], $result2Ids[$i]);
+        for ( $i = 0; $i < sizeof($this->students); $i++ )
+        {
+            $this->assertEquals($this->studentIds[ $i ], $result1Ids[ $i ]);
+            $this->assertEquals($this->studentIds[ $i ], $result2Ids[ $i ]);
         }
 
     }
@@ -431,36 +489,54 @@ class StudentRepositoryTest extends \TestCase
      */
     public function deleteStudentsNotOnRoster()
     {
+        # prep
         $this->setupExamWithStudents();
-
+        $numberToRemove = 1;
         $indexToRemove = 1;
         $initialNumberRecords = sizeof($this->students);
-        
-        # prep
-        $request = $this->buildTestDataAndRequest(0, $initialNumberRecords, 0);
-        $recordToRemove = $this->expectedDbEntries[ $indexToRemove - 1 ]; //the expectedDbEntries array is 0-indexed whereas the row ids start with 1
-        unset($this->expectedDbEntries[ $indexToRemove - 1 ]);
-        unset($request[ 'id' . $indexToRemove ]);
-        unset($request[ 'lastName' . $indexToRemove ]);
-        unset($request[ 'firstName' . $indexToRemove ]);
-        unset($request[ 'studentIdentifier' . $indexToRemove ]);
-        unset($request[ 'email' . $indexToRemove ]);
+        $recordsInQuery = $initialNumberRecords - $numberToRemove;
+
+        $expectedDeletedIds = [];
+
+        for ( $i = 0; $i < $initialNumberRecords; $i++ )
+        {
+            if ( $i < $recordsInQuery )
+            {
+                $this->addToRequest($this->students[ $i ]);
+            } else
+            {
+                $expectedDeletedIds[] = $this->students[ $i ]->id;
+            }
+
+        }
+
+//
+//        $request = $this->buildTestDataAndRequest(0, $initialNumberRecords, 0);
+//        $recordToRemove = $this->expectedDbEntries[ $indexToRemove - 1 ]; //the expectedDbEntries array is 0-indexed whereas the row ids start with 1
+//        unset($this->expectedDbEntries[ $indexToRemove - 1 ]);
+//        unset($request[ 'id' . $indexToRemove ]);
+//        unset($request[ 'lastName' . $indexToRemove ]);
+//        unset($request[ 'firstName' . $indexToRemove ]);
+//        unset($request[ 'studentIdentifier' . $indexToRemove ]);
+//        unset($request[ 'email' . $indexToRemove ]);
 
         //make sure that removed record
 //        $r = $request->all();
 //        $this->assertEquals(9, count($r), "request contains proper number of records");
 
         # call
-        $result = $this->object->update_all($this->exam, $request);
+        $result = $this->object->update_all($this->exam, $this->request);
 
         # check
         $this->assertInstanceOf(Collection::class, $result, "returns collection");
-        $this->assertEquals(0, $result->count(), "no invalid records so should be empty");
-        $this->notSeeInDatabase('students', $recordToRemove);
+
+        foreach($expectedDeletedIds as $id){
+            $this->notSeeInDatabase('students', ['id' => $id]);
+        }
 
         foreach ( $this->expectedDbEntries as $data )
         {
-            $this->seeInDatabase('students', $data, "non deleted student still in db");
+            $this->seeInDatabase('students', $data);
         }
     }
 
@@ -584,6 +660,9 @@ class StudentRepositoryTest extends \TestCase
      */
     public function updateAllMixedHappyPath()
     {
+        //All preexisting records are being updated.
+        //Also 10 new records are being added
+
         #prep
         $request = $this->buildTestDataAndRequest(10, 10, 10);
 
@@ -596,6 +675,34 @@ class StudentRepositoryTest extends \TestCase
         {
             $this->seeInDatabase('students', $data);
         }
+    }
+
+    /* ------------------------------ Bug squishing -------------- */
+
+    /**
+     * This is based on a bug (GOM-189)
+     * @test
+     */
+    public function bug_deleteAllStudentsWhenIncomingRosterIsEmpty()
+    {
+        $this->setupExamWithStudents();
+
+        #prep
+//        $exam = Exam::find(1);
+//        $existingStudents = $exam->getAllAssociatedStudents();
+        //make sure there are students associated with the exam
+        $this->assertTrue(count($this->students) > 0, "At least one student associated with exam");
+        $emptyRequest = new StudentRequest();
+
+        #call
+        $this->object->update_all($this->exam, $emptyRequest);
+
+        foreach ( $this->students as $s )
+        {
+            $this->assertTrue($s->id > 0, "stored student retains valid id (despite being removed from db");
+            $this->dontSeeInDatabase('students', ['id' => $s->id]);
+        }
+
     }
 
 
