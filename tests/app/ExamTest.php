@@ -121,8 +121,10 @@ class ExamTest extends \TestCase
      */
     public function isGraded()
     {
-        $exam = Exam::find(1);
-        $this->assertEquals(true, $exam->isGraded(), "is in fact graded");
+        $qs = factory(QuestionScore::class)->create();
+        $qa = QuestionAssignment::find($qs->question_assignment_id);
+        $exam1 =  Exam::find($qa->exam_id);
+        $this->assertEquals(true, $exam1->isGraded(), "is in fact graded");
 
         $exam2 = factory(Exam::class)->create();
         $this->assertEquals(false, $exam2->isGraded(), "is not in fact graded");

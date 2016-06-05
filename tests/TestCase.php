@@ -2,6 +2,7 @@
 
 
 use App\Exam;
+use App\QuestionAssignment;
 use App\User;
 
 class TestCase extends Illuminate\Foundation\Testing\TestCase
@@ -75,6 +76,15 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         \Mockery::close();
     }
 
+    public function makeQuestionAssignment($exam, $question, $questionNumber)
+    {
+        $qa = new QuestionAssignment();
+        $qa->exam_id = $exam->id;
+        $qa->question_id = $question->id;
+        $qa->question_number = $questionNumber;
+        $qa->save();
+        return $qa;
+    }
 
 
 //

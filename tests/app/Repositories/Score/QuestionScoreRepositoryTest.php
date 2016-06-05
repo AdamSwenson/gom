@@ -10,10 +10,11 @@ namespace App\Repositories\Score;
 
 
 use App\Exam;
+use App\Question;
 use App\QuestionAssignment;
 use App\QuestionScore;
 
-class QuestionScoreRepositoryTest extends \ReseedingTestCase
+class QuestionScoreRepositoryTest extends \TestCase
 {
     static public $examId = 1;
     protected $object;
@@ -34,18 +35,30 @@ class QuestionScoreRepositoryTest extends \ReseedingTestCase
     public function testLoad_for_student_on_exam()
     {
         //prep
+        $numQuestions = 3;
         $studentId = $this->questionScore->student_id;
-        $qa = QuestionAssignment::find($this->questionScore->question_assignment_id);
-        $examId = $qa->exam_id;
-        $questionAssignments = QuestionAssignment::where('exam_id', $examId)->get();
+        $exam = factory(Exam::class)->create();
+        $questionAssignments = [];
         $questionAssignmentIds = [];
-        foreach ($questionAssignments as $q)
-        {
-            $questionAssignmentIds[] = $q->id;
+
+        for($i=1; $i<=$numQuestions; $i++){
+            $question = factory(Question::class)->create();
+            $qa = $this->makeQuestionAssignment($exam, $question, $i);
+        $questionAssignments[] = $qa;
+            $questionAssignmentIds[] = $qa->id;
         }
+//
+//        $qa = QuestionAssignment::find($this->questionScore->question_assignment_id);
+//        $examId = $qa->exam_id;
+//        $questionAssignments = QuestionAssignment::where('exam_id', $examId)->get();
+//        $questionAssignmentIds = [];
+//        foreach ($questionAssignments as $q)
+//        {
+//            $questionAssignmentIds[] = $q->id;
+//        }
 
         //call
-        $result = $this->object->load_for_student_on_exam($examId, $studentId);
+        $result = $this->object->load_for_student_on_exam($exam->id, $studentId);
 
         //check
         foreach ($result as $r)
@@ -105,7 +118,7 @@ class QuestionScoreRepositoryTest extends \ReseedingTestCase
         $result = $this->object->load_all_for_exam($this->exam->id);
         //check
         $this->assertTrue(is_array($result), "Returned an array");
-        $this->assertNotEmpty($result, "Result is not empty");
+
         foreach ($this->assignments as $assignment)
         {
             $this->assertArrayHasKey($assignment->question_number, $result, "Result array has question number key");
