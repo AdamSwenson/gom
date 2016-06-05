@@ -2,7 +2,10 @@
 
 
 use App\Exam;
+use App\Kumi;
+use App\Question;
 use App\QuestionAssignment;
+use App\Student;
 use App\User;
 
 class TestCase extends Illuminate\Foundation\Testing\TestCase
@@ -84,6 +87,43 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         $qa->question_number = $questionNumber;
         $qa->save();
         return $qa;
+    }
+
+    /**
+     * @param $numberQuestions
+     * @return array Keys: examId, questionIds (array)
+     */
+    public function makeExamWAssignedQuestions($numberQuestions){
+        $questionIds = [];
+        $exam = factory(Exam::class)->create();
+        for($i=1; $i<=$numberQuestions; $i++){
+            $question = factory(Question::class)->create();
+            $question->setQuestionNumber($exam->id, $i);
+            $questionIds[] = $question->id;
+        }
+
+        return [
+            'questionIds' => $questionIds,
+            'examId' => $exam->id,
+            'exam' => $exam
+        ];
+    }
+
+    public function setupExamWithStudents()
+    {
+        $this->kumi = factory(Kumi::class)->create();
+        $this->exam = factory(Exam::class)->create();
+        $this->kumi->exams()->attach($this->exam);
+        //create students and put in expected order
+        $this->students = factory(Student::class, 5)->create();
+        $this->students = $this->students->sortBy('last_name');
+        $this->studentIds = [];
+        foreach ( $this->students as $item )
+        {
+            $this->kumi->students()->attach($item);
+            $this->studentIds[] = $item->id;
+        }
+        $this->kumi->push();
     }
 
 

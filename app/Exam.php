@@ -307,7 +307,21 @@ MYSQL;
      */
     public function questions()
     {
-        return $this->hasManyThrough('App\Question', 'App\QuestionAssignment', 'exam_id', 'id');
+        return $this->belongsToMany('App\Question', 'question_assignments')->withPivot('question_number')->withTimestamps();
+        
+        
+        /*The third argument is the name of the foreign key on the intermediate model,
+        the fourth argument is the name of the foreign key on the final model, and 
+        the fifth argument is the local key:*/
+
+        /*return $this->hasManyThrough('App\Question', 'App\QuestionAssignment', 'a', 'b', 'c');
+         * select `questions`.*, `question_assignments`.`a`
+         * from `questions` inner join `question_assignments` on `question_assignments`.`id` = `questions`.`b`
+         * where `question_assignments`.`a` is null and `user_id` = 1)
+        */
+
+//        return $this->hasManyThrough('App\Question', 'App\QuestionAssignment', 'exam_id', 'id', 'question_id');
+//        return $this->hasManyThrough('App\Question', 'App\QuestionAssignment', 'exam_id', 'id', 'question_id');
     }
 
     /**

@@ -162,10 +162,11 @@ class ExamTest extends \TestCase
      */
     public function isGradableGivesTrueWithQuestionsAndStudents(){
         #prep
-        $exam = Exam::find(1);
+        $this->setupExamWithStudents();
+        $this->makeQuestionAssignment($this->exam, factory(Question::class)->create(), 2);
 
         #call and test
-        $this->assertEquals(true, $exam->isGradable());
+        $this->assertEquals(true, $this->exam->isGradable());
     }
 
     /**
@@ -350,12 +351,23 @@ class ExamTest extends \TestCase
 
     public function testQuestions()
     {
-        $questions = $this->exam->questions;
+        #prep
+        $numQuestions = 5;
+
+        $r = $this->makeExamWAssignedQuestions($numQuestions);
+        $exam = $r['exam'];
+        $questionIds = $r['questionIds'];
+
+        #call
+        $questions = $exam->questionAssignments;
         $this->assertTrue(! is_null($questions), "Returned something");
         $this->assertTrue(count($questions) >0, "At least one question returned");
-        foreach ($questions as $r)
+        $this->assertEquals(count($questionIds), count($questions), "Correct number of questions returned");
+        foreach ($exam->questions as $q)
         {
-            $this->assertInstanceOf('App\Question', $r, "Object returned was a question model");
+            $this->assertInstanceOf('App\Question', $q, "Object returned was a question model");
+            $qid = $q->id; //easier to see in debug
+            $this->assertTrue(in_array($qid, $questionIds), "Question in the expected list");
         }
     }
 
