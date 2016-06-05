@@ -478,6 +478,7 @@ class StudentRepositoryTest extends \TestCase
 
     public function testLoad_students_by_class()
     {
+        $this->markTestIncomplete();
         //    $kumiId);
     }
 
@@ -510,20 +511,6 @@ class StudentRepositoryTest extends \TestCase
 
         }
 
-//
-//        $request = $this->buildTestDataAndRequest(0, $initialNumberRecords, 0);
-//        $recordToRemove = $this->expectedDbEntries[ $indexToRemove - 1 ]; //the expectedDbEntries array is 0-indexed whereas the row ids start with 1
-//        unset($this->expectedDbEntries[ $indexToRemove - 1 ]);
-//        unset($request[ 'id' . $indexToRemove ]);
-//        unset($request[ 'lastName' . $indexToRemove ]);
-//        unset($request[ 'firstName' . $indexToRemove ]);
-//        unset($request[ 'studentIdentifier' . $indexToRemove ]);
-//        unset($request[ 'email' . $indexToRemove ]);
-
-        //make sure that removed record
-//        $r = $request->all();
-//        $this->assertEquals(9, count($r), "request contains proper number of records");
-
         # call
         $result = $this->object->update_all($this->exam, $this->request);
 
@@ -546,7 +533,7 @@ class StudentRepositoryTest extends \TestCase
      */
     public function existingStudentMadeInvalidNotDeleted()
     {
-
+        $this->markTestIncomplete();
 
         //check
         //assert: the record of the student was not deleted
@@ -559,7 +546,7 @@ class StudentRepositoryTest extends \TestCase
      */
     public function newStudentWasInvalid()
     {
-
+        $this->markTestIncomplete();
 
         //assert: not written to database
         //assert : returned allStudents array has the bad record with a 'failed' field

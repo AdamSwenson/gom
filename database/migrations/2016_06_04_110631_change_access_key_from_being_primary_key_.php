@@ -14,7 +14,7 @@ class ChangeAccessKeyFromBeingPrimaryKey extends Migration
     {
         Schema::table('feedback', function (Blueprint $table)
         {
-            $table->dropPrimary('access_key');
+            $table->dropPrimary(['access_key']);
             //make access_key unique and an index
             $table->unique('access_key');
 
@@ -31,7 +31,7 @@ class ChangeAccessKeyFromBeingPrimaryKey extends Migration
     {
         Schema::table('feedback', function (Blueprint $table)
         {
-            $table->dropPrimary('access_key');
+            $table->dropPrimary(['access_key']);
         });
     }
 }

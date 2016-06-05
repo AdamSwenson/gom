@@ -30,7 +30,7 @@ class NewIdFieldForFeedback extends Migration
         Schema::table('feedback', function (Blueprint $table)
         {
 //
-//            $table->dropIfExists('id');
+            $table->dropIfExists('id');
         });
     }
 }
