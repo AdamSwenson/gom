@@ -8,6 +8,8 @@
 
 namespace App;
 
+use Faker\Factory;
+
 
 /**
  * @property mixed score
@@ -17,15 +19,29 @@ class QuestionScoreTest extends \TestCase
 
     public $questionAssign;
     public $student;
+    public $exam;//populated by setup call
+    public $students;//populated by setup call
     protected $object;
 
     public function setUp()
     {
         parent::setUp();
         $this->object = new QuestionScore;
-        $this->questionAssign = QuestionAssignment::all()->random();
-        $this->student = Student::all()->random();
-        $this->score = QuestionScore::all()->random();
+//        $fixture1 = $this->makeExamWAssignedQuestions(3);
+//        $fixture2 = $this->setupExamWithStudents($fixture1['exam']);
+//        //exam and students are now stored in
+//        $this->questionAssign = $fixture1['questions'][0] QuestionAssignment::where('exam_id', $fixture1['exam'])->where('question_id', $fixture1['questions'][0]->id)->first();
+//        $this->student = $this->students[0];
+//
+//        $this->score = new QuestionScore();
+//        $this->score->question_assignment_id = $this->questionAssign->id;
+//        $this->score->student_id = $this->student->id;
+//        $this->score->score = \Faker\Factory::create()->randomFloat(2, 0, 100);
+//        $this->score->save();
+//
+        $this->score = factory(QuestionScore::class)->create();
+        $this->questionAssign = QuestionAssignment::find($this->score->question_assignment_id);
+        $this->student = Student::find($this->score->student_id);
     }
 
     public function testScopeStudent()

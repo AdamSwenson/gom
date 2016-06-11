@@ -18,7 +18,7 @@ modules:
         - \Helper\Acceptance
 
 groups:
-  report: tests/acceptance/report/
+  report: tests/acceptance/report/reportGroup
   grade: tests/acceptance/grade/gradeGroup
 
 #extensions:

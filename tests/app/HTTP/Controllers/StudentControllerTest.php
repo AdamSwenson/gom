@@ -161,18 +161,23 @@ class StudentControllerTest extends \TestCase
     public function buildTestDataAndRequest($numberNew=10, $numberOriginal=0, $numberAltered=0)
     {
         //Create new exam so have blank slate of students
-        $this->exam = new \App\Exam();
-        $this->exam->setYear($this->faker->year);
-        $this->exam->setTerm('Fall');
-        $this->exam->setName($this->faker->word);
-        $this->exam->save();
+        $this->exam = factory(Exam::class)->create();
+//        $this->exam->setYear($this->faker->year);
+//        $this->exam->setTerm('Fall');
+//        $this->exam->setName($this->faker->word);
+//        $this->exam->save();
 
         for($i=1; $i<=$numberNew; $i++)
         {
-            $studentIdentifier = $this->faker->numberBetween(1111111, 9999999);
-            $firstName = $this->faker->firstName;
-            $lastName = $this->faker->lastName;
-            $email = $this->faker->email;
+            $student = factory(Student::class)->make();
+            $studentIdentifier = $student->student_identifier;
+            $firstName = $student->first_name;
+            $lastName = $student->last_name;
+            $email = $student->email;
+//            $studentIdentifier = $this->faker->numberBetween(1111111, 9999999);
+//            $firstName = $this->faker->firstName;
+//            $lastName = $this->faker->lastName;
+//            $email = $this->faker->email;
 
             $this->testData[] = [
                 "id$i" => 0,

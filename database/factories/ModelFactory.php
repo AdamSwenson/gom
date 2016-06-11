@@ -168,15 +168,30 @@ $factory->define(App\QuestionScore::class, function (Faker\Generator $faker)
 {
     $userId = 1;
     Auth::logInUsingId($userId);
+    $assignmentId = factory(App\QuestionAssignment::class)->create()->id;
+    $studentId = factory(App\Student::class)->create()->id;
+
+    return [
+        'question_assignment_id' => $assignmentId,
+        'student_id'             => $studentId,
+        'score'                  => $faker->randomFloat(2, 0, 100),
+    ];
+});
+
+$factory->defineAs(App\QuestionScore::class, 'preexisting', function (Faker\Generator $faker) use ($factory)
+{
+    $userId = 1;
+    Auth::logInUsingId($userId);
     $assignmentId = App\QuestionAssignment::all()->random()->id;
     $studentId = App\Student::all()->random()->id;
 
     return [
         'question_assignment_id' => $assignmentId,
         'student_id'             => $studentId,
-        'score'                  => $faker->randomFloat(2),
+        'score'                  => $faker->randomFloat(2, 0, 100),
     ];
 });
+
 
 $factory->define(App\ElementScore::class, function (Faker\Generator $faker)
 {

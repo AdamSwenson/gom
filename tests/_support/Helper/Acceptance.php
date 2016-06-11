@@ -30,6 +30,10 @@ class Acceptance extends \Codeception\Module
         return self::$examWithNoQuestionsId;
     }
 
+    public function startLaravel(){
+        $this->runShellCommand('APP_ENV=codeceptWorld php artisan serve');
+    }
+
 
 //    /**
 //     * Returns the locator for a standard bootbox confirmation

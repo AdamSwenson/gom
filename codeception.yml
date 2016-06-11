@@ -18,6 +18,7 @@ extensions:
         - Group\Setup
         - Group\Grade
         - Codeception\Extension\Phantoman
+        - Codeception\Extension\Cli
     config:
         Codeception\Extension\Logger:
           - max_files: 200
