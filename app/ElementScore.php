@@ -8,13 +8,7 @@ use Illuminate\Support\Facades\DB;
 class ElementScore extends BaseModelNoUser
 {
     protected $fillable = ['score', 'commentText'];
-
-//    public function __construct()
-//    {
-////        parent::junctionBoot();
-//    }
-
-
+    
     /**
      * Records or updates the score for a student on a particular question.
      * Returns itself to allow for easy chaining with recordCommentText

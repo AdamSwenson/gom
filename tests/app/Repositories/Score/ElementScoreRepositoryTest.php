@@ -111,16 +111,15 @@ public function testRecordCommentText()
 
     public function testUpdateNew()
     {
-//        $es = $this->elementScore;
-        $elementAssignmentId = $this->elementAssign->id;
+        #prep
+        $elementAssignmentId = factory(ElementAssignment::class)->create()->id;
         $studentId = factory(Student::class)->create()->id;
         $score = $this->faker->randomFloat(2,0,10);
 
-//        $es->delete();
-//        $this->notSeeInDatabase('element_scores', ['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId]);
-
+        #call
         $result = $this->object->update($elementAssignmentId, $studentId, $score);
-//
+
+        #check
         $this->assertNotEmpty($result);
 //        $this->assertInstanceOf('App\ElementScore', $result);
 //        $this->assertEquals($elementAssignmentId, $result->element_assignment_id);

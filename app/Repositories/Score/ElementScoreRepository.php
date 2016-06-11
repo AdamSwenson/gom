@@ -235,16 +235,16 @@ MYSQL;
      **/
     public function update($elementAssignmentId, $studentId, $score)
     {
-        $this->score_object = new ElementScore();
-        $this->score_object->element_assignment_id = $elementAssignmentId;
-        $this->score_object->student_id = $studentId;
+        $this->score_object = ElementScore::where('element_assignment_id', $elementAssignmentId)->where('student_id', $studentId)->first();
+        if(empty($this->score_object)){
+            $this->score_object = new ElementScore();
+            $this->score_object->element_assignment_id = $elementAssignmentId;
+            $this->score_object->student_id = $studentId;
+            $this->score_object->save();
+        }
+
         $this->score_object->recordScore($score);
 
-//        $this->score_object = ElementScore::updateOrCreate(['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId], ['score' => $score]);
-//
-//        $this->load($elementAssignmentId, $studentId);
-//        $this->score_object->score = $score;
-//        $this->score_object->update();
         return $this->score_object;
     }
 

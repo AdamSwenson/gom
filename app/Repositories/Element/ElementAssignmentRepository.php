@@ -174,7 +174,17 @@ MYSQL;
     public function record($examId, $questionId, $elementId, $subtask)
     {
         $element = Element::findOrFail($elementId);
-        return $element->setAsQuestionTask($examId, $questionId, $subtask);
+
+        //Create a new element assignment object and populate it with the new assignment
+        $newAssign = new ElementAssignment();
+        $newAssign->question_id = $questionId;
+        $newAssign->exam_id = $examId;
+        $newAssign->subtask = $subtask;
+        $newAssign->element_id = $element->id;
+        //Save it
+        $newAssign->save();
+
+        return $element;
     }
 
 
