@@ -81,6 +81,15 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         \Mockery::close();
     }
 
+    /**
+     * Makes a question assignment with the specified items.
+     * Returns the questionAssignment model
+     *
+     * @param $exam
+     * @param $question
+     * @param $questionNumber
+     * @return QuestionAssignment
+     */
     public function makeQuestionAssignment($exam, $question, $questionNumber)
     {
         $qa = new QuestionAssignment();
@@ -93,6 +102,13 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
     }
 
     /**
+     * Creates an exam with the specified number of questions assigned.
+     * Returns the fixture as an array containing:
+     *      'questionIds' => $questionIds,
+     *      'questions'   => $questions,
+     *      'examId'      => $exam->id,
+     *      'exam'        => $exam,
+     *
      * @param $numberQuestions
      * @return array Keys: examId, questionIds (array)
      */
@@ -117,22 +133,43 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         ];
     }
 
-    public function setupExamWithStudents($exam = false, $kumi = false, $numberStudents=5)
+    /**
+     * Creates an exam with one kumi, populated with students
+     * Returns the fixture as an array containing:
+     *      'exam'       => $exam,
+     *      'kumi'       => $kumi,
+     *      'students'   => $students,
+     *      'studentIds' => $studentIds,
+     *
+     * Also sets the following properties of the test case object:
+     *      $this->exam = $exam;
+     *      $this->kumi = $kumi;
+     *      $this->students = $students;
+     *
+     * @param bool $exam
+     * @param bool $kumi
+     * @param int $numberStudents
+     * @return array
+     */
+    public function setupExamWithStudents($exam = false, $kumi = false, $numberStudents = 5)
     {
+        $studentIds = [];
+
         if ( ! $exam )
         {
-            $this->exam = factory(Exam::class)->create();
+            $exam = factory(Exam::class)->create();
         }
         if ( ! $kumi )
         {
-            $this->kumi = factory(Kumi::class)->create();
+            $kumi = factory(Kumi::class)->create();
         }
 
-        $studentIds = [];
+        if ( ! count($kumi->exams) > 0 )
+        {
+            //add the kumi to the exam if not associated
+            $kumi->exams()->attach($exam);
+        }
 
-        $kumi = factory(Kumi::class)->create();
-        $exam = factory(Exam::class)->create();
-        $kumi->exams()->attach($exam);
         //create students and put in expected order
         $students = factory(Student::class, $numberStudents)->create();
         $students = $students->sortBy('last_name');
@@ -142,7 +179,11 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
             $kumi->students()->attach($item);
             $studentIds[] = $item->id;
         }
-        $this->kumi->push();
+        $kumi->push();
+
+        $this->exam = $exam;
+        $this->kumi = $kumi;
+        $this->students = $students;
 
         return [
             'exam'       => $exam,
@@ -154,16 +195,26 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
 
     /**
-     * Returns:
-     * 'question' => $question,
-     * 'elements' => $elements,
-     * 'elementIds' => $elementIds Array of integers
-     * 'questionNumber' => $questionNumber
+     * Returns the fixture as an array containing:
+     *      'question' => $question,
+     *      'elements' => $elements,
+     *      'elementIds' => $elementIds Array of integers
+     *      'questionNumber' => $questionNumber
+     *      'elementAssignments' => $elementAssignments,
+     *      'questionNumber'     => $questionNumber,
+     *
      * @param $numberElements
+     * @param bool $exam
+     * @param bool $question
+     * @param bool $questionNumber
      * @return array
      */
     public function makeElementAssignmentsForQuestion($numberElements, $exam = false, $question = false, $questionNumber = false)
     {
+        $elements = [];
+        $elementIds = [];
+        $elementAssignments = [];
+
         if ( ! $exam )
         {
             $exam = factory(Exam::class)->create();
@@ -178,10 +229,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
             $this->makeQuestionAssignment($exam, $question, $questionNumber);
 
         }
-
-        $elements = [];
-        $elementIds = [];
-        $elementAssignments = [];
+        
         for ( $i = 1; $i <= $numberElements; $i++ )
         {
             $e = factory(Element::class)->create();

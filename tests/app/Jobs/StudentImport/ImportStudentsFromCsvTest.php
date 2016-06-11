@@ -80,20 +80,20 @@ class ImportStudentsFromCsvTest extends \TestCase
         }
     }
 
-    /**
-     * @covers \App\Jobs\StudentImport\ImportStudentsFromCsv::process_file
-     */
-    public function testProcess_file_invalid()
-    {
-        $this->markTestIncomplete();
-//
-//        foreach (self::$invalid_files as $f) {
-////            $this->request->filenames = array($f);
-//            $this->assertFalse($this->object->process_file($f));
-////            $this->request->filenames = array($f);
-////            $this->assertFalse($this->object->process_file($this->request));
-//            $this->assertEquals(0, count($this->object->students));
-//            $this->assertNotEmpty($this->object->file_error);
-//        }
-    }
+//    /**
+//     * @covers \App\Jobs\StudentImport\ImportStudentsFromCsv::process_file
+//     */
+//    public function testProcess_file_invalid()
+//    {
+////        $this->markTestIncomplete();
+////
+////        foreach (self::$invalid_files as $f) {
+//////            $this->request->filenames = array($f);
+////            $this->assertFalse($this->object->process_file($f));
+//////            $this->request->filenames = array($f);
+//////            $this->assertFalse($this->object->process_file($this->request));
+////            $this->assertEquals(0, count($this->object->students));
+////            $this->assertNotEmpty($this->object->file_error);
+////        }
+//    }
 }

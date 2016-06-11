@@ -209,22 +209,22 @@ class StudentRepositoryTest extends \TestCase
         $this->row++;
     }
 
-    public function setupExamWithStudents()
-    {
-        $this->kumi = factory(Kumi::class)->create();
-        $this->exam = factory(Exam::class)->create();
-        $this->kumi->exams()->attach($this->exam);
-        //create students and put in expected order
-        $this->students = factory(Student::class, 5)->create();
-        $this->students = $this->students->sortBy('last_name');
-        $this->studentIds = [];
-        foreach ( $this->students as $item )
-        {
-            $this->kumi->students()->attach($item);
-            $this->studentIds[] = $item->id;
-        }
-        $this->kumi->push();
-    }
+//    public function setupExamWithStudents()
+//    {
+//        $this->kumi = factory(Kumi::class)->create();
+//        $this->exam = factory(Exam::class)->create();
+//        $this->kumi->exams()->attach($this->exam);
+//        //create students and put in expected order
+//        $this->students = factory(Student::class, 5)->create();
+//        $this->students = $this->students->sortBy('last_name');
+//        $this->studentIds = [];
+//        foreach ( $this->students as $item )
+//        {
+//            $this->kumi->students()->attach($item);
+//            $this->studentIds[] = $item->id;
+//        }
+//        $this->kumi->push();
+//    }
 
     /**
      * @covers \App\Repositories\Student\StudentRepository::load_students_by_exam
@@ -232,41 +232,43 @@ class StudentRepositoryTest extends \TestCase
     public function testLoad_students_by_exam()
     {
         # prep
-        $this->setupExamWithStudents();
+        $fixture = $this->setupExamWithStudents();
 
         # call
         //case where loading from id
-        $result1 = $this->object->load_students_by_exam($this->exam->id);
+        $result1 = $this->object->load_students_by_exam($fixture['exam']->id);
         //case where loading from object
-        $result2 = $this->object->load_students_by_exam($this->exam);
+        $result2 = $this->object->load_students_by_exam($fixture['exam']);
 
         # check
+        //check results of loading by id
         $result1Ids = [];
         $this->assertNotEmpty($result1);
-        $this->assertEquals(sizeof($this->studentIds), sizeof($result1), "Number of students as expected");
+        $this->assertEquals(sizeof($fixture['studentIds']), sizeof($result1), "Number of students as expected");
         foreach ( $result1 as $r )
         {
             $result1Ids[] = $r->id;
             $this->assertInstanceOf('\App\Student', $r, "returns a student object");
-            $this->assertTrue(in_array($r->id, $this->studentIds), "Student id is in the expected array");
+            $this->assertTrue(in_array($r->id, $fixture['studentIds']), "Student id is in the expected array");
         }
 
         $this->assertNotEmpty($result2);
-        $this->assertEquals(sizeof($this->studentIds), sizeof($result2), "Number of students as expected");
+        $this->assertEquals(sizeof($fixture['studentIds']), sizeof($result2), "Number of students as expected");
 
+        //check results of loading from exam
         $result2Ids = [];
         foreach ( $result2 as $r )
         {
             $result2Ids[] = $r->id;
             $this->assertInstanceOf('\App\Student', $r, "returns a student object");
-            $this->assertTrue(in_array($r->id, $this->studentIds), "Student id is in the expected array");
+            $this->assertTrue(in_array($r->id, $fixture['studentIds']), "Student id is in the expected array");
         }
 
         //Check sort order 
         for ( $i = 0; $i < sizeof($this->students); $i++ )
         {
-            $this->assertEquals($this->studentIds[ $i ], $result1Ids[ $i ]);
-            $this->assertEquals($this->studentIds[ $i ], $result2Ids[ $i ]);
+            $this->assertEquals($fixture['studentIds'][ $i ], $result1Ids[ $i ]);
+            $this->assertEquals($fixture['studentIds'][ $i ], $result2Ids[ $i ]);
         }
 
     }
@@ -478,8 +480,18 @@ class StudentRepositoryTest extends \TestCase
 
     public function testLoad_students_by_class()
     {
-        $this->markTestIncomplete();
-        //    $kumiId);
+        $fixture = $this->setupExamWithStudents();
+        #call
+        $result = $this->object->load_students_by_class($fixture['kumi']->id);
+
+        #check
+        $this->assertInstanceOf(Collection::class, $result, "returns a collection");
+        $this->assertEquals(count($fixture['studentIds']), count($result), "expected number of students returned");
+        foreach ( $result as $r )
+        {
+            $this->assertInstanceOf(Student::class, $r, "Student object");
+            $this->assertTrue(in_array($r->id, $fixture['studentIds']), "Student is expected");
+        }
     }
 
 
@@ -517,7 +529,8 @@ class StudentRepositoryTest extends \TestCase
         # check
         $this->assertInstanceOf(Collection::class, $result, "returns collection");
 
-        foreach($expectedDeletedIds as $id){
+        foreach ( $expectedDeletedIds as $id )
+        {
             $this->notSeeInDatabase('students', ['id' => $id]);
         }
 

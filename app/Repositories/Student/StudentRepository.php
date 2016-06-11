@@ -11,6 +11,7 @@ namespace App\Repositories\Student;
 
 use App\Exam;
 use App\Http\Requests\StudentRequest;
+use App\Kumi;
 use App\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -409,6 +410,8 @@ class StudentRepository implements IStudentRepository
      */
     public function load_students_by_class($kumiId)
     {
+        $kumi = Kumi::findOrFail($kumiId);
+        return $kumi->students;
     }
 
     /**

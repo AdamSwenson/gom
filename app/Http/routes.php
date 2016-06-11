@@ -51,7 +51,7 @@ Route::get('contact', 'InfoController@showContact');
 
 
 /* ----------------------------------------------- Exam set up  ----------------------------------------------------- */
-/* Select exam page */
+/* Routes for exam */
 Route::get('exam/{exam}/clone','ExamController@cloneExam');
 Route::resource('exam', 'ExamController');
 

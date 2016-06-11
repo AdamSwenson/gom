@@ -8,18 +8,18 @@
 
 namespace App;
 
-
-class QuestionUpdateDoesNotDeleteStudentScores extends \TestCase
+class QuestionUpdateDoesNotDeleteStudentScoresCest
 {
-//    public static $examId = 1;
-//    protected $object;
-//    protected $assignments;
-//    protected $exam;
-//    protected $scores;
-//
-//    public function setUp()
-//    {
-//        parent::setUp();
+
+    public static $examId = 1;
+    protected $object;
+    protected $assignments;
+    protected $exam;
+    protected $scores;
+
+
+    public function _before(FunctionalTester $I)
+    {
 //        $this->exam = Exam::find(self::$examId);
 //        $this->assignments = QuestionAssignment::where('exam_id', self::$examId)->get();
 //        $this->scores = [];
@@ -31,15 +31,16 @@ class QuestionUpdateDoesNotDeleteStudentScores extends \TestCase
 //                $this->scores[] = $score;
 //            }
 //        }
-//    }
-//
-//    /**
-//     * @test
-//     */
-//    public function check()
-//    {
-//        $this->assertTrue(true);
-//    }
-//
 
+    }
+
+    public function _after(FunctionalTester $I)
+    {
+    }
+
+    // tests
+    public function tryToTest(FunctionalTester $I)
+    {
+
+    }
 }

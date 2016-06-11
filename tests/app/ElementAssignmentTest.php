@@ -18,8 +18,8 @@ class ElementAssignmentTest extends \TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->object = new ElementAssignment();
-        $this->assignment = ElementAssignment::all()->random();
+        $this->object = factory(ElementAssignment::class)->make();
+        $this->assignment = $this->object;
     }
 
     public function testSetSubtask()
@@ -50,7 +50,7 @@ class ElementAssignmentTest extends \TestCase
 
 
     public function testScopeOnExam()
-    {   $eid = $this->assignment->exam_id;
+    {   $eid = $this->object->exam_id;
         $result = ElementAssignment::onExam($eid);//$a['exam_id']);
         $this->assertNotEmpty($result);
         foreach($result as $r){
@@ -104,13 +104,13 @@ class ElementAssignmentTest extends \TestCase
         $this->assertInstanceOf('App\Element', $this->assignment->element);
     }
 
-    public function testElementScores()
-    {
-        foreach($this->assignment->elementScores as $e)
-        {
-            $this->assertInstanceOf('App\ElementScore', $e);
-        }
-    }
+//    public function testElementScores()
+//    {
+//        foreach($this->assignment->elementScores as $e)
+//        {
+//            $this->assertInstanceOf('App\ElementScore', $e);
+//        }
+//    }
 
     public function testQuestion()
     {

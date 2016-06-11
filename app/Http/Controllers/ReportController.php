@@ -89,7 +89,6 @@ class ReportController extends Controller
         IQuestionScoreRepository $questionScoreRepository,
         IElementScoreRepository $elementScoreRepository,
         ICommentRepository $commentRepository,
-        IStudentRepository $studentRepository,
         IScoreStatisticsRepository $scoreStatisticsRepository
     )
     {

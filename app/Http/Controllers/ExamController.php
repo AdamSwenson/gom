@@ -182,7 +182,6 @@ class ExamController extends Controller
      */
     public function update(Exam $exam, ExamRequest $request)
     {
-
         //Check that user owns the exam
         $this->authorize('alter-object', $exam);
         try

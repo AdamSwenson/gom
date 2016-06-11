@@ -6,7 +6,7 @@
  * Time: 11:06 AM
  */
 
-namespace HTTP\Controllers;
+namespace App\Http\Controllers;
 
 use App\Element;
 use App\Exam;
@@ -28,28 +28,28 @@ use Page\ElementEditPage;
 
 class ElementControllerTest extends \TestCase
 {
-//    use WithoutMiddleware;
-//
-//    public $element;
-//    public $elementDaoMock;
-//    public $assignmentDaoMock;
-//    protected $object;
-//
-//    public function setUp()
-//    {
-//        parent::setUp();
-//        $this->elementDaoMock = $this->createMock('\App\Repositories\Element\IElementRepository');
-//
-//        $this->assignmentDaoMock = $this->createMock('\App\Repositories\Element\IElementAssignmentRepository');
-//        $this->element = Element::all()->random();
-//
-////        $this->object = new ElementController;
-//    }
-//
-//    public function tearDown()
-//    {
-//        parent::tearDown();
-//    }
+    use WithoutMiddleware;
+
+    public $element;
+    public $elementDaoMock;
+    public $assignmentDaoMock;
+    protected $object;
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->elementDaoMock = $this->createMock('\App\Repositories\Element\IElementRepository');
+
+        $this->assignmentDaoMock = $this->createMock('\App\Repositories\Element\IElementAssignmentRepository');
+        $this->element = Element::all()->random();
+
+//        $this->object = new ElementController;
+    }
+
+    public function tearDown()
+    {
+        parent::tearDown();
+    }
 
 //    public function testIndex()
 //    {
@@ -75,13 +75,11 @@ class ElementControllerTest extends \TestCase
 //
 //    }
 
-//
+
 //    public function testStore()
 //    {
-//
 //        $element = new Element();
 //        $element->id = $this->faker->randomNumber(4);
-//
 //
 //
 //        $data = [
@@ -136,100 +134,100 @@ class ElementControllerTest extends \TestCase
 //        $response = $this->action('POST', 'ElementController@create', $data);
 //        $this->assertNotNull($response);
 //    }
-//
 
-//    public function testEditAll()
-//    {
-//        $qnum = 3;
-//
-//        $qa = factory(QuestionAssignment::class)->create();
-//        $exam = Exam::find($qa->exam_id);
-//        $question = Question::find($qa->question_id);
-//
-//        $qa2 = factory(QuestionAssignment::class)->create();
-//
-//        $assignmentDao = $this->createMock(IQuestionAssignmentRepository::class);
-//        $assignmentDao->shouldReceive('load_all_for_exam')
-//            ->with($exam->id)
-//            ->once()
-//            ->andReturn([$qa, $qa2]);
-//        $assignmentDao->shouldReceive('loadQuestionNumberById')
-//            ->with($exam->id, $question->id)
-//            ->once()
-//            ->andReturn($qnum);
-//
-//        $elementAssignmentDaoMock = $this->createMock(IElementAssignmentRepository::class);
-//        $elementAssignmentDaoMock->shouldReceive('load_elements')
-//            ->with($exam->id, $qnum)
-//            ->once()
-//            ->andReturn(Element::all()->take(5));
-//
-//        $object = new ElementController;
-//        $response = $object->editAll($exam, $question);
-//        $this->assertNotNull($response);
-//    }
-//
-//    public function buildIncomingArray($number)
-//    {
-//        return [
-//            "elementName{$number}" => $this->faker->text(),
-//            "elementId{$number}"   => $this->faker->randomNumber(),
-//            "elementText{$number}" => $this->faker->text(),
-//            "e{$number}valence0"   => $this->faker->text(),
-//            "e{$number}valence1"   => $this->faker->text(),
-//            "e{$number}valence2"   => $this->faker->text(),
-//            "e{$number}valence3"   => $this->faker->text(),
-//        ];
-//    }
-//
-//
-//    public function testUpdateAll()
-//    {
-//        $exam = factory(Exam::class)->create();
-//        $question = factory(Question::class)->create();
-//
-//        $request = new ElementRequest();
-//        $request['nextAction'] = 'editQuestions';
-//
-//        $this->assignmentDaoMock->shouldReceive('updateAll')
-//            ->with($exam, $question, $request)
-//            ->once();
-//
-//        $object = new ElementController;
-//        $response = $object->updateAll($exam, $question, $request);
-//        $this->assertNotNull($response);
-//    }
 
-//
-//    public function testUpdateAllExistingElement() //$exam, $question, ElementRequest $request)
-//    {
-//        $elementId = 2;
-//        $element = new Element();
-//        $element->id = $elementId;
-//        $examId = 1;
-//        $questionId = 1;
-//
-//        $data = $this->buildIncomingArray(2);
-//        $data['examId'] = $examId;
-//        $data['questionId'] = $questionId;
-//
-//        $this->elementDaoMock->shouldReceive('editElement')
-//            ->with([$data['elementName2'], '', $data['elementText2']])
-//            ->andReturn($element);
-//
-//        $this->assignmentDaoMock->shouldReceive('record')->with($examId, $questionId, $elementId, 1);
-//
-//        $response = $this->action('POST', 'ElementController@updateAll', $data);
-//        $this->assertNotNull($response);
-//
+    public function testEditAll()
+    {
+        $qnum = 3;
+
+        $qa = factory(QuestionAssignment::class)->create();
+        $exam = Exam::find($qa->exam_id);
+        $question = Question::find($qa->question_id);
+
+        $qa2 = factory(QuestionAssignment::class)->create();
+
+        $assignmentDao = $this->createMock(IQuestionAssignmentRepository::class);
+        $assignmentDao->shouldReceive('load_all_for_exam')
+            ->with($exam->id)
+            ->once()
+            ->andReturn([$qa, $qa2]);
+        $assignmentDao->shouldReceive('loadQuestionNumberById')
+            ->with($exam->id, $question->id)
+            ->once()
+            ->andReturn($qnum);
+
+        $elementAssignmentDaoMock = $this->createMock(IElementAssignmentRepository::class);
+        $elementAssignmentDaoMock->shouldReceive('load_elements')
+            ->with($exam->id, $qnum)
+            ->once()
+            ->andReturn(Element::all()->take(5));
+
+        $object = new ElementController;
+        $response = $object->editAll($exam, $question);
+        $this->assertNotNull($response);
+    }
+
+    public function buildIncomingArray($number)
+    {
+        return [
+            "elementName{$number}" => $this->faker->text(),
+            "elementId{$number}"   => $this->faker->randomNumber(),
+            "elementText{$number}" => $this->faker->text(),
+            "e{$number}valence0"   => $this->faker->text(),
+            "e{$number}valence1"   => $this->faker->text(),
+            "e{$number}valence2"   => $this->faker->text(),
+            "e{$number}valence3"   => $this->faker->text(),
+        ];
+    }
+
+
+    public function testUpdateAll()
+    {
+        $exam = factory(Exam::class)->create();
+        $question = factory(Question::class)->create();
+
+        $request = new ElementRequest();
+        $request['nextAction'] = 'editQuestions';
+
+        $this->assignmentDaoMock->shouldReceive('updateAll')
+            ->with($exam, $question, $request)
+            ->once();
+
+        $object = new ElementController;
+        $response = $object->updateAll($exam, $question, $request);
+        $this->assertNotNull($response);
+    }
+
+
+    public function testUpdateAllExistingElement() //$exam, $question, ElementRequest $request)
+    {
+        $elementId = 2;
+        $element = new Element();
+        $element->id = $elementId;
+        $examId = 1;
+        $questionId = 1;
+
+        $data = $this->buildIncomingArray(2);
+        $data['examId'] = $examId;
+        $data['questionId'] = $questionId;
+
+        $this->elementDaoMock->shouldReceive('editElement')
+            ->with([$data['elementName2'], '', $data['elementText2']])
+            ->andReturn($element);
+
+        $this->assignmentDaoMock->shouldReceive('record')->with($examId, $questionId, $elementId, 1);
+
+        $response = $this->action('POST', 'ElementController@updateAll', $data);
+        $this->assertNotNull($response);
+
 
 //        $data = [
 //            $this->buildIncomingArray(1), $this->buildIncomingArray(2)
 //        ];
 //
-//        $this->assignmentDaoMock->shouldReceive('record')
+//        $this->assignmentDaoMock->shouldReceive('record');
 //        $this->markTestIncomplete();
-//    }
+    }
 
 //    public function testDestroy()
 //    {

@@ -203,7 +203,6 @@ class ScoreStatisticsRepositoryTest extends \TestCase
 
         //check
         $this->assertInstanceOf(Collection::class, $result, "Received a collection");
-        $this->assertNotEmpty($result, "Result contains values");
 
         $prior = null;
         foreach ( $result as $r )
