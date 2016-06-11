@@ -2,7 +2,11 @@
 
 use Page\RosterEditPage;
 
-$scenario->group(['roster', 'setup']);
+
+//@group setup
+//@group roster
+
+//$scenario->group(['roster', 'setup']);
 
 
 $I = new AcceptanceTester($scenario);

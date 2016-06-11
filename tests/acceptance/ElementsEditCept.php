@@ -1,5 +1,9 @@
 <?php
-$scenario->group(['setup', 'element']);
+
+//@group setup
+//@group element
+
+//$scenario->group(['setup', 'element']);
 
 
 $I = new AcceptanceTester($scenario);

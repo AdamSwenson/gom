@@ -3,7 +3,11 @@ use Page\ElementEditPage;
 use Page\ExamEditPage;
 use Page\RosterEditPage;
 
-$scenario->group(['roster', 'setup']);
+
+//@group setup
+//@group roster
+
+//$scenario->group(['roster', 'setup']);
 
 //new row index (the index of the row that gets added when press add student)
 $newRowIdx = 7;

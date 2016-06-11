@@ -2,8 +2,10 @@
 use App\Element;
 use Page\ElementEditPage;
 
+//@group setup
+//@group element
 
-$scenario->group(['setup', 'element']);
+//$scenario->group(['setup', 'element']);
 
 $Faker = Faker\Factory::create();
 

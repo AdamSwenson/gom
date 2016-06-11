@@ -2,7 +2,11 @@
 use Page\BootboxModals;
 use Page\QuestionEditPage;
 
-$scenario->group(['setup', 'question']);
+
+//@group setup
+//@group question
+
+//$scenario->group(['setup', 'question']);
 
 $deletedQuestionNumber = 4;
 //this is the number of the question which moves up

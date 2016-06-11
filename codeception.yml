@@ -17,12 +17,17 @@ extensions:
         - Codeception\Extension\Logger
         - Group\Setup
         - Group\Grade
+        - Codeception\Extension\Phantoman
     config:
         Codeception\Extension\Logger:
-          - max_files: 20
+          - max_files: 200
 
         Codeception\Extension\Recorder:
           - delete_successful: true
+
+        Codeception\Extension\Phantoman:
+          path: '/usr/local/bin/phantomjs'
+          suites: ['acceptance', 'functional']
 
 modules:
     config:

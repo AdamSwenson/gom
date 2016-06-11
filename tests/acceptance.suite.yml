@@ -17,6 +17,10 @@ modules:
 
         - \Helper\Acceptance
 
+groups:
+  report: tests/acceptance/report/
+  grade: tests/acceptance/grade/gradeGroup
+
 #extensions:
 #    enabled: [Codeception\Extension\Logger, Codeception\Extension\Recorder]
 #    config:

@@ -2,7 +2,11 @@
 use Page\ElementEditPage;
 use Page\QuestionEditPage;
 
-$scenario->group(['setup', 'question']);
+
+//@group setup
+//@group question
+
+//$scenario->group(['setup', 'question']);
 
 $examId = 2;
 $examName = "TestExam#2 5QuestionsWElements User1";

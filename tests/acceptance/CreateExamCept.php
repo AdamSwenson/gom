@@ -2,7 +2,11 @@
 
 use Page\ExamEditPage;
 
-$scenario->group('setup');
+
+//@group setup
+//@group exam
+
+//$scenario->group('setup');
 
 $testExamName = "testExamName";
 

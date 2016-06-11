@@ -1,7 +1,11 @@
 <?php
 use Page\SetupExamSelectPage;
 
-$scenario->group('setup');
+
+//@group setup
+//@group exam
+
+//$scenario->group('setup');
 
 
 $examIdsWhichShouldSee = [1, 2, 4, 5, 6];

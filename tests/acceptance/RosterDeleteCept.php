@@ -1,7 +1,10 @@
 <?php
 use Page\RosterEditPage;
 
-$scenario->group(['roster', 'setup']);
+//@group setup
+//@group roster
+
+//$scenario->group(['roster', 'setup']);
 
 $students = RosterEditPage::students1Through5();
 
