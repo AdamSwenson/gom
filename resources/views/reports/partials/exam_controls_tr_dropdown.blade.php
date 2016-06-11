@@ -17,7 +17,7 @@
 
         <exam-buttons-dropdown
              exam-id="{{ $exam->id }}"
-             base-url="{!! url() !!}"></exam-buttons-dropdown>
+             base-url="{!! url('') !!}"></exam-buttons-dropdown>
     </td>
 
 

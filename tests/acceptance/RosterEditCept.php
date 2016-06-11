@@ -3,6 +3,8 @@ use Page\ElementEditPage;
 use Page\ExamEditPage;
 use Page\RosterEditPage;
 
+$scenario->group(['roster', 'setup']);
+
 //new row index (the index of the row that gets added when press add student)
 $newRowIdx = 7;
 
@@ -18,7 +20,7 @@ $editedStudentFirstName = 'new_student3first';
 $editedStudentEmail = 'new_student3@email.com';
 
 
-$scenario->group(['roster', 'setup']);
+
 $I = new AcceptanceTester($scenario);
 
 $I->wantTo('Visit the roster edit page which already contains students, then make edits and see them in the database');

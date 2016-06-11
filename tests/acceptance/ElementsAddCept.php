@@ -1,9 +1,12 @@
 <?php
 use App\Element;
 use Page\ElementEditPage;
+
+
+$scenario->group(['setup', 'element']);
+
 $Faker = Faker\Factory::create();
 
-$scenario->group('element');
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Add elements to a question which does not already have them');
 

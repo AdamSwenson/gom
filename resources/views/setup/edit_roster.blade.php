@@ -112,7 +112,7 @@
     <script type="text/javascript">
         //The tab to be set as active
         var activeTab = 'navSetup';
-        var baseUrl = '{{ url() }}'; //duplicates the rootRoute set in master
+        var baseUrl = '{{ url('') }}'; //duplicates the rootRoute set in master
         var maxRow = '{{ $maxRow or 0 }}';
     </script>
 

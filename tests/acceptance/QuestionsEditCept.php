@@ -2,6 +2,8 @@
 use Page\ElementEditPage;
 use Page\QuestionEditPage;
 
+$scenario->group(['setup', 'question']);
+
 $examId = 2;
 $examName = "TestExam#2 5QuestionsWElements User1";
 //The number of questions on the exam
@@ -19,7 +21,7 @@ $swappedQuestionNumbers = [1, 3];
 //This will be used to check that we are properly redirected.
 $firstQuestionId = 6;
 
-$scenario->group('question');
+
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Edit existing questions');
 $I->test_login($I);

@@ -2,6 +2,8 @@
 
 use Page\ExamEditPage;
 
+$scenario->group('setup');
+
 $testExamName = "testExamName";
 
 $I = new AcceptanceTester($scenario);

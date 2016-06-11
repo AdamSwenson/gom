@@ -2,6 +2,8 @@
 use Page\BootboxModals;
 use Page\QuestionEditPage;
 
+$scenario->group(['setup', 'question']);
+
 $deletedQuestionNumber = 4;
 //this is the number of the question which moves up
 $replacedDeletedQuestionNumber = 5;
@@ -13,7 +15,7 @@ $numQuestions = 5;
 //the id of question 1, for building the redirection route
 $firstQuestionId = 6;
 
-$scenario->group('question');
+
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Delete questions and see them removed in the db');
 $I->test_login($I);

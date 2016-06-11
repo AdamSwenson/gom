@@ -1,6 +1,9 @@
 <?php
 use Page\SetupExamSelectPage;
 
+$scenario->group('setup');
+
+
 $examIdsWhichShouldSee = [1, 2, 4, 5, 6];
 $examIdsWhichShouldNotSee = [3]; //belongs to user 2
 

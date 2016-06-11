@@ -162,11 +162,12 @@ class ExamTest extends \TestCase
      */
     public function isGradableGivesTrueWithQuestionsAndStudents(){
         #prep
-        $this->setupExamWithStudents();
-        $this->makeQuestionAssignment($this->exam, factory(Question::class)->create(), 2);
+        $fixture = $this->setupExamWithStudents();
+        $exam = $fixture['exam'];
+        $this->makeQuestionAssignment($exam, factory(Question::class)->create(), 2);
 
         #call and test
-        $this->assertEquals(true, $this->exam->isGradable());
+        $this->assertEquals(true, $exam->isGradable());
     }
 
     /**
@@ -317,7 +318,8 @@ class ExamTest extends \TestCase
 
     public function testElements()
     {
-        $elements = $this->exam->elements;
+        $fixture = $this->makeElementAssignmentsForQuestion(3);
+        $elements = $fixture['exam']->elements;
         $this->assertTrue(! is_null($elements), "Returned something");
         $this->assertTrue(count($elements) >0, "At least one thing returned");
         foreach ($elements as $r)
@@ -329,7 +331,10 @@ class ExamTest extends \TestCase
 
     public function testElementAssignments()
     {
-        $elementAssignments = $this->exam->elementAssignments;
+        $fixture = $this->makeElementAssignmentsForQuestion(3);
+        $exam = $fixture['exam'];
+        $elements = $exam->elements;
+        $elementAssignments = $exam->elementAssignments;
         $this->assertTrue(! is_null($elementAssignments), "Returned something");
         $this->assertTrue(count($elementAssignments) >0, "At least one thing returned");
         foreach ($elementAssignments as $r)

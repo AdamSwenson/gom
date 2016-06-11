@@ -2,8 +2,12 @@
 use Page\LoginPage;
 use Page\SetupExamSelectPage;
 
+$scenario->group('login');
+
+
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Login to the site');
+
 
 
 // logging in

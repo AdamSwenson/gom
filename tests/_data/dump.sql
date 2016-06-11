@@ -753,22 +753,19 @@ CREATE TABLE `failed_jobs` (
 DROP TABLE IF EXISTS `feedback`;
 
 CREATE TABLE `feedback` (
-  `access_key`    VARCHAR(255)
-                  COLLATE utf8_unicode_ci      NOT NULL,
-  `content`       TEXT COLLATE utf8_unicode_ci NOT NULL,
-  `created_at`    TIMESTAMP                    NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `updated_at`    TIMESTAMP                    NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `grade_display` TEXT COLLATE utf8_unicode_ci,
-  `grade_calc`    TEXT COLLATE utf8_unicode_ci,
-  PRIMARY KEY (`access_key`),
+  `access_key` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `content` json NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `grade_display` text COLLATE utf8_unicode_ci,
+  `grade_calc` text COLLATE utf8_unicode_ci,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `feedback_access_key_unique` (`access_key`),
   KEY `feedback_access_key_index` (`access_key`),
-  CONSTRAINT `feedback_access_key_foreign` FOREIGN KEY (`access_key`) REFERENCES `access_keys` (`access_key`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci;
+  CONSTRAINT `feedback_access_key_foreign` FOREIGN KEY (`access_key`) REFERENCES `access_keys` (`access_key`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=158 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 INSERT INTO `feedback` (`access_key`, `content`, `created_at`, `updated_at`, `grade_display`, `grade_calc`)
 VALUES

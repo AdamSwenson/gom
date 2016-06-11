@@ -8,6 +8,7 @@ $examIdToFollow = 1;
 $numberOfExams = 5;
 $examIdsToSkip = [3]; //belongs to another user
 
+$scenario->group('report');
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Inspect the /report page and make sure the navigation functions work correctly. (Releasing and locking are handled in separate file)');
 $I->test_login($I);

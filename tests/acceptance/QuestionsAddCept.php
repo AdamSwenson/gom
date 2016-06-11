@@ -1,6 +1,9 @@
 <?php
 use Page\QuestionEditPage;
 
+
+$scenario->group(['setup', 'question']);
+
 $examId = 5;
 $examName= "TestExam#5 NoQuestions User1";
 
@@ -9,7 +12,7 @@ $numQuestions = QuestionEditPage::$defaultNumberOfQuestions;
 
 //TODO Do we want to test the case where we skip a question to check for unexpected behavior if the user leaves a question blank?
 
-$scenario->group('question');
+
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Add questions to an exam which has no questions');
 $I->test_login($I);

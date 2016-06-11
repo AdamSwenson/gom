@@ -1,9 +1,11 @@
 <?php
 use Page\RosterEditPage;
 
+$scenario->group(['roster', 'setup']);
+
 $students = RosterEditPage::students1Through5();
 
-$scenario->group(['roster', 'setup']);
+
 $I = new AcceptanceTester($scenario);
 $I->wantTo("Delete a roster and see that all students on it were removed from all tables");
 //Log in
