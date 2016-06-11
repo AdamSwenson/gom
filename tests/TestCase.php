@@ -162,13 +162,15 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         if ( ! $kumi )
         {
             $kumi = factory(Kumi::class)->create();
-        }
-
-        if ( ! count($kumi->exams) > 0 )
-        {
             //add the kumi to the exam if not associated
             $kumi->exams()->attach($exam);
         }
+
+//        if ( ! count($kumi->exams) > 0 )
+//        {
+//            //add the kumi to the exam if not associated
+//            $kumi->exams()->attach($exam);
+//        }
 
         //create students and put in expected order
         $students = factory(Student::class, $numberStudents)->create();
@@ -242,6 +244,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
             $elements[] = $e;
             $elementIds[] = $e->id;
+            $elementAssignments[] = $ea;
         }
 
         return [

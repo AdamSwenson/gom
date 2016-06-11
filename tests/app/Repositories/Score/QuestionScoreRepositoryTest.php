@@ -17,6 +17,7 @@ use App\QuestionScore;
 class QuestionScoreRepositoryTest extends \TestCase
 {
     static public $examId = 1;
+    public $questionAssignment;
     protected $object;
     protected $questionScore;
     protected $exam;
@@ -27,16 +28,20 @@ class QuestionScoreRepositoryTest extends \TestCase
         parent::setUp();
         \Auth::loginUsingId(self::$userid);
         $this->object = new QuestionScoreRepository;
-        $this->questionScore = QuestionScore::all()->random();
-        $this->exam = Exam::find(self::$examId);
-        $this->assignments = QuestionAssignment::where('exam_id', self::$examId)->get();
+        $this->questionScore = factory(QuestionScore::class)->create();
+        $this->questionAssignment = QuestionAssignment::find($this->questionScore->question_assignment_id);
+        $this->exam = Exam::find($this->questionAssignment->exam_id);
+
+//        $this->exam = Exam::find(self::$examId);
+        $this->assignments = [$this->questionAssignment];
     }
 
     public function testLoad_for_student_on_exam()
     {
         //prep
         $numQuestions = 3;
-        $studentId = $this->questionScore->student_id;
+        $questionScore = factory(QuestionScore::class)->create();
+        $studentId = $questionScore->student_id;
         $exam = factory(Exam::class)->create();
         $questionAssignments = [];
         $questionAssignmentIds = [];
@@ -44,7 +49,7 @@ class QuestionScoreRepositoryTest extends \TestCase
         for($i=1; $i<=$numQuestions; $i++){
             $question = factory(Question::class)->create();
             $qa = $this->makeQuestionAssignment($exam, $question, $i);
-        $questionAssignments[] = $qa;
+            $questionAssignments[] = $qa;
             $questionAssignmentIds[] = $qa->id;
         }
 //
@@ -116,6 +121,7 @@ class QuestionScoreRepositoryTest extends \TestCase
     {
         //call
         $result = $this->object->load_all_for_exam($this->exam->id);
+
         //check
         $this->assertTrue(is_array($result), "Returned an array");
 
@@ -133,7 +139,7 @@ class QuestionScoreRepositoryTest extends \TestCase
     public function testLoad()
     {
         //prep
-        $es = QuestionScore::all()->random();
+        $es = factory(QuestionScore::class)->create();
         $score = $es->score;
         $questionAssignmentId = $es->question_assignment_id;
         $studentId = $es->student_id;
@@ -151,7 +157,7 @@ class QuestionScoreRepositoryTest extends \TestCase
 
     public function testUpdateNew()
     {
-        $es = QuestionScore::all()->random();
+        $es = factory(QuestionScore::class)->create();
         $questionAssignmentId = $es->question_assignment_id;
         $studentId = $es->student_id;
         $score = $this->faker->randomFloat(2, 0, 10);
@@ -178,7 +184,7 @@ class QuestionScoreRepositoryTest extends \TestCase
 
     public function testUpdatePreexisting()
     {
-        $es = QuestionScore::all()->random();
+        $es = factory(QuestionScore::class)->create();
         $questionAssignmentId = $es->question_assignment_id;
         $studentId = $es->student_id;
         $score = $this->faker->randomFloat(2, 0, 10);
@@ -200,15 +206,15 @@ class QuestionScoreRepositoryTest extends \TestCase
 
     public function testDeleteScore()
     {
-        //prep
-        $qs = QuestionScore::all()->random();
+        #prep
+        $qs = factory(QuestionScore::class)->create();
         $questionAssignmentId = $qs->question_assignment_id;
         $studentId = $qs->student_id;
 
-        //call
+        #call
         $result = $this->object->deleteScore($questionAssignmentId, $studentId);
 
-        //check
+        #check
         $this->assertTrue($result, "returns as expected");
         $this->notSeeInDatabase('question_scores', [
             'question_assignment_id' => $questionAssignmentId,

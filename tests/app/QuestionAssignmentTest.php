@@ -12,13 +12,14 @@ namespace App;
 class QuestionAssignmentTest extends \TestCase
 {
 
+    public $assignment;
     protected $object;
 
     public function setUp()
     {
         parent::setUp();
         $this->object = new QuestionAssignment;
-        $this->assignment = QuestionAssignment::all()->random();
+        $this->assignment = factory(QuestionAssignment::class)->make();
     }
 
     public function testGetQuestionName()

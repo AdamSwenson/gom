@@ -11,10 +11,15 @@ namespace App\Repositories\Score;
 
 use App\ElementAssignment;
 use App\ElementScore;
+use App\Exam;
+use App\Student;
 
 class ElementScoreRepositoryTest extends \TestCase
 {
 
+    public $fixture;
+    public $exam;
+    public $elementScore;
     protected $object;
     protected $elementAssign;
 
@@ -22,8 +27,13 @@ class ElementScoreRepositoryTest extends \TestCase
     {
         parent::setUp();
         $this->object = new ElementScoreRepository;
-        $this->elementAssign = ElementAssignment::all()->random();
-        $this->elementScore = ElementScore::all()->random();
+
+
+//        $this->fixture = $this->makeElementAssignmentsForQuestion(2);
+        $this->elementScore = factory(ElementScore::class)->create();
+        $this->elementAssign = ElementAssignment::find($this->elementScore->element_assignment_id);
+        $this->exam = Exam::find($this->elementAssign->exam_id);
+//        $this->elementScore = factory(ElementScore::class)->create(['element_id' => $this->elementAssign->id]);
     }
 
 
@@ -63,13 +73,13 @@ class ElementScoreRepositoryTest extends \TestCase
 public function testRecordCommentText()
 {
     //prep
-    $es = ElementScore::all()->random();
+    $es = $this->elementScore;
     $elementAssignmentId = $es->element_assignment_id;
     $studentId = $es->student_id;
     $text = $this->faker->text();
 
-    $es->delete();
-    $this->notSeeInDatabase('element_scores', ['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId]);
+//    $es->delete();
+//    $this->notSeeInDatabase('element_scores', ['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId]);
 
     //call
     $this->object->recordCommentText($elementAssignmentId, $studentId, $text);
@@ -83,7 +93,7 @@ public function testRecordCommentText()
     public function testLoad_for_student_on_exam()
     {
         //Prep
-        $es = ElementScore::all()->random();
+        $es = $this->elementScore;
         $studentId = $es->student_id;
         $ea = ElementAssignment::find($es->element_assignment_id);
         $examId = $ea->exam_id;
@@ -101,13 +111,13 @@ public function testRecordCommentText()
 
     public function testUpdateNew()
     {
-        $es = ElementScore::all()->random();
-        $elementAssignmentId = $es->element_assignment_id;
-        $studentId = $es->student_id;
+//        $es = $this->elementScore;
+        $elementAssignmentId = $this->elementAssign->id;
+        $studentId = factory(Student::class)->create()->id;
         $score = $this->faker->randomFloat(2,0,10);
 
-        $es->delete();
-        $this->notSeeInDatabase('element_scores', ['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId]);
+//        $es->delete();
+//        $this->notSeeInDatabase('element_scores', ['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId]);
 
         $result = $this->object->update($elementAssignmentId, $studentId, $score);
 //
@@ -128,7 +138,7 @@ public function testRecordCommentText()
 
     public function testUpdatePreexisting()
     {
-        $es = ElementScore::all()->random();
+        $es = $this->elementScore;
         $elementAssignmentId = $es->element_assignment_id;
         $studentId = $es->student_id;
         $score = $this->faker->randomFloat(2,0,10);
@@ -147,7 +157,7 @@ public function testRecordCommentText()
     public function testDeleteScore()
     {
         //prep
-        $es = ElementScore::all()->random();
+        $es = $this->elementScore;
         $elementAssignmentId = $es->element_assignment_id;
         $studentId = $es->student_id;
 

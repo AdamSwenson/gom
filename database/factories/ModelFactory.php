@@ -150,6 +150,21 @@ $factory->define(App\ElementAssignment::class, function (Faker\Generator $faker)
 {
     $userId = 1;
     Auth::logInUsingId($userId);
+    $questionId = factory(App\Question::class)->create()->id;
+    $elementId = factory(App\Element::class)->create()->id;
+    $examId = factory(App\Exam::class)->create()->id;
+
+    return [
+        'question_id' => $questionId,
+        'element_id'  => $elementId,
+        'exam_id'     => $examId,
+        'subtask'     => $faker->randomDigitNotNull,
+    ];
+});
+$factory->defineAs(App\ElementAssignment::class, 'preexisting', function (Faker\Generator $faker) use ($factory)
+{
+    $userId = 1;
+    Auth::logInUsingId($userId);
     $questionId = App\Question::all()->random()->id;
     $elementId = App\Element::all()->random()->id;
     $examId = App\Exam::all()->random()->id;
@@ -197,6 +212,20 @@ $factory->define(App\ElementScore::class, function (Faker\Generator $faker)
 {
     $userId = 1;
     Auth::logInUsingId($userId);
+    $assignmentId = factory(App\ElementAssignment::class)->create()->id;
+    $studentId = factory(App\Student::class)->create()->id;
+
+    return [
+        'element_assignment_id' => $assignmentId,
+        'student_id'            => $studentId,
+        'score'                 => $faker->randomFloat(2),
+        'comment_text' => $faker->paragraph
+    ];
+});
+$factory->defineAs(App\ElementScore::class, 'preexisting', function (Faker\Generator $faker) use ($factory)
+{
+    $userId = 1;
+    Auth::logInUsingId($userId);
     $assignmentId = App\ElementAssignment::all()->random()->id;
     $studentId = App\Student::all()->random()->id;
 
@@ -206,6 +235,7 @@ $factory->define(App\ElementScore::class, function (Faker\Generator $faker)
         'score'                 => $faker->randomFloat(2),
     ];
 });
+
 
 /* ------------------------------------ Feedback ------------------------------ */
 //$factory->define(App\AccessKey::class, function (Faker\Generator $faker)

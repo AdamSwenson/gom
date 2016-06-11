@@ -14,11 +14,12 @@ class Feedback extends Migration
     {
         Schema::create('feedback', function (Blueprint $table)
         {
-            $table->string('access_key')->index();
+            $table->increments('id');
+            $table->string('access_key')->unique()->index();
             $table->json('content');
             $table->timestamps();
 
-            $table->primary('access_key');
+//            $table->primary('access_key');
 
             $table->foreign('access_key')
                 ->references('access_key')

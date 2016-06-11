@@ -42,15 +42,16 @@ class ElementAssignmentRepositoryTest extends \TestCase
         //create new element to assign so won't get false failures for multiple assignments of element to same question
         $element = factory('App\Element')->create();
         $subtask = 100;
+        $questionAssignment = factory(QuestionAssignment::class)->create();
 
         //call
-        $result = $this->object->record($this->questionAssignment->exam_id, $this->question->id, $element->id, $subtask);
+        $result = $this->object->record($questionAssignment->exam_id, $questionAssignment->question_id, $element->id, $subtask);
 
         //check
         $this->assertInstanceOf('\App\Element', $result);
         $this->seeInDatabase('element_assignments',
             [
-                'question_id' => $this->question->id,
+                'question_id' => $questionAssignment->question_id,
                 'element_id' => $element->id,
                 'subtask' => $subtask
             ]);
@@ -66,40 +67,27 @@ class ElementAssignmentRepositoryTest extends \TestCase
         $elementIds = $fixture['elementIds'];
         $questionNumber = $fixture['questionNumber'];
 
-//        $ea = ElementAssignment::all()->random();
-//        $examId = $ea->exam_id;
-//        $questionId = $ea->question_id;
-//        $elementId = $ea->element_id;
-        //$qAssign = QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->first();
-        //$qNum = $qAssign->question_number;
-
         //call
         $result = $this->object->load_elements($examId, $questionNumber);
 
         //check
         $this->assertTrue(is_array($result), "should return an array");
-//        $this->assertInstanceOf('Illuminate\Support\Collection', $result, "should return a laravel collection ");
+        $this->assertEquals(sizeof($elementIds), sizeof($result), "expected number of items returned");
         foreach ($result as $r)
         {
             $this->assertInstanceOf('\App\Element', $r, "object is instance of element model");
+            $this->assertTrue(in_array($r->id, $elementIds), "id in expected array");
         }
-//
-//
-//        $qAssign = QuestionAssignment::all()->random(1);
-//
-//        $result = $this->object->load_elements($qAssign->exam_id, $qAssign->question_number);
-////        $this->assertAttributeNotEmpty('assignments', $this->object, "assignments load");
-//      //  $this->assertNotEmpty($result);
 
     }
 
     public function testLoad_element_assignments_by_question_number()
     {
         //prep
-        $ea = ElementAssignment::all()->random();
-        $examId = $ea->exam_id;
-        $questionId = $ea->question_id;
-        $elementId = $ea->element_id;
+        $fixture = $this->makeElementAssignmentsForQuestion(5);
+        $examId = $fixture['exam']->id;
+        $questionId = $fixture['question']->id;
+//        $elementId = $fixture['elementIds'][0];
         $qAssign = QuestionAssignment::where('exam_id', $examId)->where('question_id', $questionId)->first();
         $qNum = $qAssign->question_number;
 
@@ -107,11 +95,14 @@ class ElementAssignmentRepositoryTest extends \TestCase
         $result = $this->object->load_element_assignments_by_question_number($examId, $qNum);
 
         //check
-//        $this->assertTrue(is_array($result), "should return an array");
         $this->assertInstanceOf('Illuminate\Support\Collection', $result, "should return a laravel collection ");
+//        $this->assertTrue(is_array($result), "should return an array");
+
+//        $this->assertInstanceOf('Illuminate\Support\Collection', $result, "should return a laravel collection ");
         foreach ($result as $r)
         {
             $this->assertInstanceOf('App\ElementAssignment', $r);
+            $this->assertTrue(in_array($r->element_id, $fixture['elementIds']), "id in expected array");
         }
 
     }

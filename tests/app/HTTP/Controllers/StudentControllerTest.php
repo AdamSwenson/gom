@@ -162,14 +162,10 @@ class StudentControllerTest extends \TestCase
     {
         //Create new exam so have blank slate of students
         $this->exam = factory(Exam::class)->create();
-//        $this->exam->setYear($this->faker->year);
-//        $this->exam->setTerm('Fall');
-//        $this->exam->setName($this->faker->word);
-//        $this->exam->save();
 
         for($i=1; $i<=$numberNew; $i++)
         {
-            $student = factory(Student::class)->make();
+            $student = factory(Student::class)->make(); //not creating. just want proper values
             $studentIdentifier = $student->student_identifier;
             $firstName = $student->first_name;
             $lastName = $student->last_name;
@@ -198,7 +194,7 @@ class StudentControllerTest extends \TestCase
         {
             for($i=1; $i<= $numberOriginal; $i++)
             {
-                $student = Student::all()->random();
+                $student = factory(Student::class)->create();
 
                 $identifier = $student->getStudentId() ? $student->getStudentId() : '';
 
@@ -222,11 +218,11 @@ class StudentControllerTest extends \TestCase
 
         if( $numberAltered > 0 )
         {
-            $student = Student::all()->random();
-            $studentIdentifier = $this->faker->numberBetween(1111111, 9999999);
-            $firstName = $this->faker->firstName;
-            $lastName = $this->faker->lastName;
-            $email = $this->faker->email;
+            $student = factory(Student::class)->create(); 
+            $studentIdentifier = $student->student_identifier;
+            $firstName = $student->first_name;
+            $lastName = $student->last_name;
+            $email = $student->email;
 
             $this->testData[] = [
                 "id$i" => $student->getId(),

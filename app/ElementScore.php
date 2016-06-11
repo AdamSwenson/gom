@@ -9,10 +9,10 @@ class ElementScore extends BaseModelNoUser
 {
     protected $fillable = ['score', 'commentText'];
 
-    public function __construct()
-    {
-//        parent::junctionBoot();
-    }
+//    public function __construct()
+//    {
+////        parent::junctionBoot();
+//    }
 
 
     /**
