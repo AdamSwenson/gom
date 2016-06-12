@@ -45,7 +45,7 @@ class AcceptanceTester extends \Codeception\Actor
      */
     function test_login($I, $customEmail = null, $customPassword = null)
     {
-       // $this->start_artisan();
+        $this->start_artisan();
         if(is_null($customEmail) && is_null($customPassword)){
             // If no custom credentials have been entered, then can
             // safely log in using snapshot if it exists.
