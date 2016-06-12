@@ -175,6 +175,19 @@ class ReportIndexPage
         return static::$URL . $param;
     }
 
+    /* ----------------------------------- Tools -------------------------- */
+    public static function navigateToReportIndexPage($I){
+        $I->test_login($I);
+        $I->amOnPage(self::$URL);
+        $I->waitForElementVisible(['css' => '#examControlsPage']);
+
+        $I->amGoingTo("Check that the page title and url are correct");
+        $I->seeInCurrentUrl(self::$URL);
+        $I->seeInTitle(self::$pageTitleText);
+        $I->see(self::$pageSubHeadingText);
+    }
+
+
     /* ----------------------------------- Tests -------------------------- */
     /**
      * @param $I

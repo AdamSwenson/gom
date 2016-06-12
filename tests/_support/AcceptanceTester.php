@@ -56,13 +56,14 @@ class AcceptanceTester extends \Codeception\Actor
             }
         }
 
-        $name = ! is_null($customEmail) ? $customEmail : $this->loginEmail;
+        $email = ! is_null($customEmail) ? $customEmail : $this->loginEmail;
         $password = ! is_null($customPassword) ? $customPassword : $this->loginPassword;
 
         // log in
         $I->amOnPage($this->loginPageRoute);
-        $I->fillField(['id' => 'email'], $this->loginEmail);
-        $I->fillField('//*[@id="password"]', $this->loginPassword);
+        $I->waitForElementVisible(['id' => 'email']);
+        $I->fillField(['id' => 'email'], $email);
+        $I->fillField('//*[@id="password"]', $password);
         $I->click('#login');
 
         if(is_null($customEmail) && is_null($customPassword))

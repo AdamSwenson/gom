@@ -5,7 +5,7 @@
          backupStaticAttributes="false"
          bootstrap="bootstrap/autoload.php"
          cacheTokens="false"
-         colors="false"
+         colors="true"
          convertErrorsToExceptions="false"
          convertNoticesToExceptions="false"
          convertWarningsToExceptions="false"
