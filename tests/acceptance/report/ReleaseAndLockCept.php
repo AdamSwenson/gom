@@ -15,6 +15,7 @@ $cannotReleaseExamId = 2;//will not be able to be released
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Make sure that the /report page behaves correctly for releasing and locking an exam. (Other /report actions are handled separately)');
 $I->test_login($I);
+$I->wait(5);
 $I->amOnPage(ReportIndexPage::$URL);
 $I->wait(2);
 

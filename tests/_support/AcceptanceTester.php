@@ -30,7 +30,7 @@ class AcceptanceTester extends \Codeception\Actor
 
     function start_artisan()
     {
-        $this->runShellCommand('APP_ENV=codeceptWorld php artisan serve');
+      //  $this->runShellCommand('APP_ENV=codeceptWorld php artisan serve');
         //  shell_exec('APP_ENV=codeceptWorld php artisan serve');
     }
 
@@ -45,7 +45,7 @@ class AcceptanceTester extends \Codeception\Actor
      */
     function test_login($I, $customEmail = null, $customPassword = null)
     {
-        $this->start_artisan();
+       // $this->start_artisan();
         if(is_null($customEmail) && is_null($customPassword)){
             // If no custom credentials have been entered, then can
             // safely log in using snapshot if it exists.
