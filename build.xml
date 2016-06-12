@@ -39,7 +39,7 @@
     </target>
 
     <target name="codeceptionAcceptance" description="Run codeception tests">
-        <exec executable="${basedir}/vendor/bin/codecept run acceptance">
+        <exec executable="${toolsdir}codecept run acceptance">
             <arg value="--html"/>
             <arg value="--xml"/>
             <arg value="--coverage-html"/>
