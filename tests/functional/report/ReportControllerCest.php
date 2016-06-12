@@ -14,5 +14,6 @@ class ReportControllerCest
     // tests
     public function tryToTest(FunctionalTester $I)
     {
+//        $this->expectsJobs(App\Jobs\PurchasePodcast::class);
     }
 }

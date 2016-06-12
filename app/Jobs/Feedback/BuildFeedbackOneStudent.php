@@ -8,6 +8,7 @@
 
 namespace App\Jobs\Feedback;
 
+use App\Events\FeedbackCompilationCompleteEvent;
 use App\Events\FeedbackCompilationFailureEvent;
 use App\Exam;
 use App\Jobs\Job;
@@ -81,7 +82,7 @@ class BuildFeedbackOneStudent extends Job implements SelfHandling, ShouldQueue
 
         //this solves error in feedback compilation caused by
         //inconsistent argument types
-        $this->feedbackBuilder->recompileFeedbackForStudent($exam->id, $student);
+        $feedback = $this->feedbackBuilder->recompileFeedbackForStudent($exam->id, $student);
 
         if ( ! empty($feedback) )
         {

@@ -101,5 +101,8 @@ class StorageServiceProvider extends ServiceProvider
 
         $this->app->bind('App\Repositories\Utilities\IBackupFlagRepository', 'App\Repositories\Utilities\BackupFlagRepository');
 
+
+        $this->app->bind('App\Repositories\Utilities\IMailSender', 'App\Repositories\Utilities\MailSender');
+
     }
 }

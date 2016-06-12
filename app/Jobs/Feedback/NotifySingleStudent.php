@@ -8,6 +8,7 @@
 
 namespace App\Jobs\Feedback;
 
+use App\Events\StudentNotificationCompleteEvent;
 use App\Exam;
 use App\Jobs\Job;
 use App\Student;
@@ -80,5 +81,8 @@ class NotifySingleStudent extends Job implements SelfHandling, ShouldQueue
 
         //Do the sending
         $this->helper->sendEmailToStudent($exam, $student);
+
+        //Signal that the emails have been sent (or, more correctly, been pushed to mailgun)
+        event(new StudentNotificationCompleteEvent());
     }
 }

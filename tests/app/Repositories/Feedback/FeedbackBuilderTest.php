@@ -336,4 +336,64 @@ class FeedbackBuilderTest extends \TestCase
 //        ]);
     }
 
+    /** @test */
+    public function setExamGetsId(){
+        #prep
+        $exam = factory(Exam::class)->create();
+        $this->assertAttributeEmpty('exam', $this->object, "no exam present");
+
+        #call
+        $this->object->setExam($exam->id);
+
+        #check
+        $this->assertAttributeInstanceOf(Exam::class, 'exam', $this->object, "exam present");
+        $this->assertEquals($exam->id, $this->object->exam->id, "loaded exam has correct id");
+    }
+
+    /** @test */
+    public function setExamGetsObject(){
+        #prep
+        $exam = factory(Exam::class)->create();
+        $this->assertAttributeEmpty('exam', $this->object, "no exam present");
+
+        #call
+        $this->object->setExam($exam);
+
+        #check
+        $this->assertAttributeInstanceOf(Exam::class, 'exam', $this->object, "exam present");
+        $this->assertEquals($exam->id, $this->object->exam->id, "loaded exam has correct id");
+    }
+
+    /** @test */
+    public function setStudentGetsId(){
+        #prep
+        $student = factory(Student::class)->create();
+        $this->assertAttributeEmpty('student', $this->object, "no student present");
+
+        #call
+        $result = $this->object->setStudent($student->id);
+
+        #check
+        $this->assertAttributeInstanceOf(Student::class, 'student', $this->object, "student present");
+        $this->assertEquals($student->id, $this->object->student->id, "loaded student has correct id");
+        $this->assertInstanceOf(Student::class, $result, "student object returned");
+        $this->assertEquals($student->id, $result->id, "returned object has correct id");
+    }
+
+    /** @test */
+    public function setStudentGetsObject(){
+        #prep
+        $student = factory(Student::class)->create();
+        $this->assertAttributeEmpty('student', $this->object, "no student present");
+
+        #call
+        $result = $this->object->setStudent($student);
+
+        #check
+        $this->assertAttributeInstanceOf(Student::class, 'student', $this->object, "student present");
+        $this->assertEquals($student->id, $this->object->student->id, "loaded student has correct id");
+        $this->assertInstanceOf(Student::class, $result, "student object returned");
+        $this->assertEquals($student->id, $result->id, "returned object has correct id");
+    }
+
 }

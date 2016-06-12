@@ -26,9 +26,9 @@ class QuestionAssignmentRepositoryTest extends \TestCase
     {
         parent::setUp();
         $this->object = new QuestionAssignmentRepository();
-        $this->question = Question::all()->random();
-        $this->exam = Exam::all()->random();
-        $this->assignment = QuestionAssignment::all()->random();
+        $this->question = factory(Question::class)->create();
+        $this->exam = factory(Exam::class)->create();
+        $this->assignment = $this->makeQuestionAssignment($this->exam, $this->question, 2);
     }
 
 public function tearDown()

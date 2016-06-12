@@ -3,6 +3,7 @@
 namespace App\Jobs\Feedback;
 
 use App\Events\FeedbackCompilationCompleteEvent;
+use App\Events\FeedbackCompilationFailureEvent;
 use App\Exam;
 use App\Jobs\Job;
 use Illuminate\Queue\SerializesModels;
@@ -71,7 +72,11 @@ class BuildFeedbackAllStudents extends Job implements SelfHandling, ShouldQueue
             //once done, fire the notification that ready for distribution
             event(new FeedbackCompilationCompleteEvent($exam));
         }
-        //TODO Error handling in case fails
+        else
+        {
+            //Error handling in case fails
+            event(new FeedbackCompilationFailureEvent($exam));
+        }
     }
 
 

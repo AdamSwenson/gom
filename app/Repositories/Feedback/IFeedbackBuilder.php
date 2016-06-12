@@ -25,9 +25,11 @@ interface IFeedbackBuilder
      *
      * This is the other main publicly called method
      *
+     * Both parameters can be objects or the id
+     *
      * @param integer $examId
-     * @param Student $student
+     * @param Student|integer $student
      * @return array
      */
-    public function recompileFeedbackForStudent($examId, Student $student);
+    public function recompileFeedbackForStudent($examId, $student);
 }

@@ -9,6 +9,7 @@
 namespace App\Jobs\Feedback;
 
 use App\Exam;
+use App\Repositories\Utilities\IMailSender;
 use App\Student;
 use Illuminate\Support\Facades\Auth;
 
@@ -38,25 +39,14 @@ class NotifyStudentsHelper implements INotifyStudentsHelper
     /** @var  array Holds the students who should receive emails */
     protected $students;
 
+    protected $mailer;
+
 
     public function __construct()
     {
         $this->accessKeyRepository = app()->make('App\Repositories\Feedback\IAccessKeyRepository');
         $this->studentRepository = app()->make('App\Repositories\Student\IStudentRepository');
-    }
-
-    /**
-     * Sends a notification email with link to feedback to all students whose exams
-     * have been graded. Uses database flags to determine which version of the email to send.
-     *
-     * @param Exam $exam
-     */
-    public function sendEmailToAllGradedStudents(Exam $exam)
-    {
-        //TODO check whether already sent, if not
-        $initial = true;
-
-        $this->sendEmailToEveryone($exam, $initial);
+        $this->mailer = app()->make(IMailSender::class);
     }
 
     /**
@@ -107,16 +97,19 @@ class NotifyStudentsHelper implements INotifyStudentsHelper
 
 
     /**
-     * Updates the db flags to show that the student has had the email sent.
-     * Adds entry to the mail log
+     * Sends a notification email with link to feedback to all students whose exams
+     * have been graded. Uses database flags to determine which version of the email to send.
      *
      * @param Exam $exam
-     * @param Student $student
      */
-    public function logSent(Exam $exam, Student $student)
+    public function sendEmailToAllGradedStudents(Exam $exam)
     {
-        // TODO: Set up mail logging
+        //TODO check whether already sent, if not
+        $initial = true;
+
+        $this->sendEmailToEveryone($exam, $initial);
     }
+
 
     /**
      * Constructs the link that the student will click to access feedback
@@ -172,10 +165,11 @@ class NotifyStudentsHelper implements INotifyStudentsHelper
      */
     protected function send($to_address, $to_name, $data, $emailView, $subject)
     {
-        \Mail::send($emailView, $data, function ($message) use ($to_address, $to_name, $subject)
-        {
-            $message->to($to_address, $to_name)->subject($subject);
-        });
+        $this->mailer->send($to_address, $to_name, $data, $emailView, $subject);
+//        \Mail::send($emailView, $data, function ($message) use ($to_address, $to_name, $subject)
+//        {
+//            $message->to($to_address, $to_name)->subject($subject);
+//        });
     }
 
     /**
@@ -189,16 +183,16 @@ class NotifyStudentsHelper implements INotifyStudentsHelper
      */
     public function buildPdf(Exam $exam, Student $student)
     {
-
-        $key = $this->accessKeyRepository->getAccessKeyForStudent($exam->id, $student->id);
-
-        $fb = $this->accessKeyRepository->retrieveFeedback($key);
-
-        $data = $fb->content;
-
-        $pdf = \PDF::loadView('feedback.feedback', $data);
-
-        return $pdf;
+//
+//        $key = $this->accessKeyRepository->getAccessKeyForStudent($exam->id, $student->id);
+//
+//        $fb = $this->accessKeyRepository->retrieveFeedback($key);
+//
+//        $data = $fb->content;
+//
+//  //      $pdf = \PDF::loadView('feedback.feedback', $data);
+//
+//        return $pdf;
 //        Mail::send($emailView, $data, function($message) use($pdf)
 //        {
 //            $message->from('us@example.com', 'Your Name');
