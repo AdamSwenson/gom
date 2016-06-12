@@ -49,7 +49,7 @@
     <script type="text/javascript">
         var activeTab = 'navReport';
 //        var activeTab = '';
-        var baseUrl = '{!! url() !!}';
+        var baseUrl = '{!! url('') !!}';
     </script>
     <script type="text/javascript" src="{{ asset('js/report-exam-controls-package.js') }}"></script>
 @endsection

@@ -1,12 +1,15 @@
 <?php
 use App\Exam;
 
-
+//@group report
 $I = new AcceptanceTester($scenario);
 $I->wantTo('See all exams belonging to the user on the reports page' );
 
 
 $I->test_login($I);
+
+
+
 //\Illuminate\Support\Facades\Auth::loginUsingId(1);
 
 ////$I->disableMiddleware();

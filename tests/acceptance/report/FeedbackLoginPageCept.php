@@ -15,7 +15,7 @@ FeedbackLoginPage::verifyPageIntact($I);
 $I->amGoingTo("Check that a valid access key directs to the feedback page");
     $I->fillField(['id' => FeedbackLoginPage::$accessKeyFieldId], $accessKey);
     $I->click(['id' => FeedbackLoginPage::$submitButtonId]);
-    $I->seeInCurrentUrl(FeedbackLoginPage::$URL);
+    $I->seeInCurrentUrl("/feedback?accessKey={$accessKey}");
     $I->see($accessKey);
     $I->dontSee(FeedbackLoginPage::$submitButtonText);
 

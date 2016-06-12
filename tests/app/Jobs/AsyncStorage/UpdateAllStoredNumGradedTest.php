@@ -21,7 +21,7 @@ class UpdateAllStoredNumGradedTest extends \TestCase
     }
 
     /** @test */
-    public function handle(){
+    public function test_handle(){
         $this->expectsJobs(UpdateStoredNumGraded::class);
         $this->object->handle();
     }

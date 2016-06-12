@@ -1,7 +1,10 @@
 <?php
 use Page\report\FeedbackPage;
 
-$scenario->group(['report', 'feedback']);
+//@group report
+//@group feedback
+
+//$scenario->group(['report', 'feedback']);
 
 $accessKey = "634b0f6bb2e56e46da6ab48d284d08b101ec1aa168cd715a9a0e570f5947135b";
 $numQuestions = 5;

@@ -2,13 +2,16 @@
 use Page\BootboxModals;
 use Page\report\ReportIndexPage;
 
+//@group report
+//@group feedback
+
 $numberOfExams = 5;
 $examIdsToSkip = [3]; //belongs to another user
 
 $toReleaseExamId = 1; //has graded students
 $cannotReleaseExamId = 2;//will not be able to be released
 
-$scenario->group(['report', 'feedback']);
+//$scenario->group(['report', 'feedback']);
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Make sure that the /report page behaves correctly for releasing and locking an exam. (Other /report actions are handled separately)');
 $I->test_login($I);
