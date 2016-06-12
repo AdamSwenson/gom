@@ -335,3 +335,18 @@ $factory->defineAs(App\Feedback::class, 'preexisting', function (Faker\Generator
 
     return array_merge($feedback, ['access_key' => $accessKey]);
 });
+
+
+/* ---------------------------------- Stats -------------------------------- */
+$factory->define(App\GradingTime::class, function (Faker\Generator $faker){
+    $examId = factory(App\Exam::class)->create()->id;
+    $studentId = factory(App\Student::class)->create()->id;
+    $seconds = $faker->randomFloat(2, 0, 1000);
+    
+    return [
+        'exam_id' => $examId,
+        'student_id' => $studentId,
+        'seconds' => $seconds
+    ];
+});
+

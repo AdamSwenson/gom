@@ -43,6 +43,7 @@ class NotifyTeamOfNewSignup extends Job implements SelfHandling, ShouldQueue
 
     public function handle()
     {
+        \Log::info("New user by the name of {$this->user->name} signed up");
         Mail::raw("new user {$this->user->name} signed up", function ($message){
             $message->to('gradeomatic@gmail.com', 'devteam')->subject('new registration');
         });

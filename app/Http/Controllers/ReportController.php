@@ -60,10 +60,8 @@ class ReportController extends Controller
     protected $studentRepository;
     /** @var IExamRepository */
     protected $examDao;
-    /**
-     * @var IScoreStatisticsRepository
-     */
-    private $scoreStatisticsRepository;
+    /** @var IScoreStatisticsRepository */
+    protected $scoreStatisticsRepository;
 
     /**
      * @param IAccessKeyRepository $accessKeyRepository
@@ -176,8 +174,6 @@ class ReportController extends Controller
         if ( ! $exam->isReleased() )
         {
             $exam->releaseExam();
-//            $exam->setReleased(true);
-//            $exam->save();
         }
         $job = (new NotifyAllStudents($exam))->onQueue('emails');
         $this->dispatch($job);
@@ -222,6 +218,7 @@ class ReportController extends Controller
         $questionScores = [];
         $numberOfQuestions = count($this->questionAssignmentRepository->load_all_for_exam($exam->getId()));
 
+        //TODO Fix this so it doesn't assume that the questions will always be numbered 1-n
         if ( $numberOfQuestions > 0 )
         {
             for ( $i = 1; $i <= $numberOfQuestions; $i++ )

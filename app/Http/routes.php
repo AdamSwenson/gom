@@ -87,7 +87,12 @@ Route::delete('grade/exam/{exam}', 'GradeController@removeScore'); // delete a q
 Route::get('report', 'ReportController@showExams');
 Route::get('report/{exam}/gradeassign', array('uses' => 'ReportController@showGradeAssign'));
 Route::get('report/{exam}/students', 'ReportController@showStudents'); // shows student controls for the exam
+
+//feedback display
 Route::get('report/{exam}/students/{student}', 'ReportController@showStudentFeedback'); // show feedback for the student
+Route::get('report/{exam}/feedback/all', 'ReportController@showFeedbackForAllStudentsOnExam');
+
+//tool routes
 Route::get('report/{exam}/analytics','ReportController@showAnalytics');
 Route::get('report/{exam}/qualitycontrol', 'ReportController@showQualityControl');
 
