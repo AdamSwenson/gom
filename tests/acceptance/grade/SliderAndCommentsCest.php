@@ -55,7 +55,8 @@ class SliderAndCommentsCest
      * @group grade
      * @group comments
      */
-    public function switchStudentAndCommentChange(AcceptanceTester $I){
+    public function switchStudentAndCommentChange(AcceptanceTester $I, $scenario){
+        $scenario->incomplete();
         $newText = Faker\Factory::create()->text();
         $I->executeJS($this->makeWritable);
         $I->wait(2);
@@ -92,7 +93,8 @@ class SliderAndCommentsCest
      * @group grade
      * @group sliders
      */
-    public function checkBehavior(AcceptanceTester $I){
+    public function checkBehavior(AcceptanceTester $I, $scenario){
+        $scenario->incomplete();
         $r = $I->executeJS( "$('#Qs1').trigger('slideStop');" );
         codecept_debug($r);
         $handle = ['css' => "#element1 > div > span.col-lg-5.sliderContainer.Q1E1 > div > div.slider-track > div.slider-tick.round.in-selection"];
@@ -108,8 +110,9 @@ class SliderAndCommentsCest
      * @group grade
      * @group sliders
      */
-    public function moveSliders(AcceptanceTester $I)
+    public function moveSliders(AcceptanceTester $I, $scenario)
     {
+        $scenario->incomplete();
         $I->wantTo('Manipulate the sliders and comment area and see the expected changes');
 $I->wait(5);
         $I->expectTo("see the slider elements on the page");

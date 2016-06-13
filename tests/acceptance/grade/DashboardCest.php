@@ -40,12 +40,6 @@ class DashboardCest
      */
     public function checkIntact(AcceptanceTester $I)
     {
-//        $I->waitForJS("return typeof jQuery != 'undefined';", 60);
-//        $I->amGoingTo('dance');
-//        $I->waitForJS("return typeof $ == 'undefined';", 60);
-        //whole page
-       // GradingPage::verifyGradingPageIntact($I, $this->examId);
-
         DashboardArea::assertDashboardIntact($I);
     }
 
@@ -135,16 +129,17 @@ class DashboardCest
         //pause
         $I->amGoingTo("press the pause button on the timer");
         $I->click(DashboardArea::$timerButtonLocator);
-        $I->wait(1);
+        $I->wait(2);
         DashboardArea::assertTimerButtonPaused($I);
 
         $I->amGoingTo("wait briefly then start the timer again");
-        //let run again
-        $I->wait(2);
+
+
         //un-pause
         $I->click(DashboardArea::$timerButtonLocator);
         DashboardArea::assertTimerButtonActive($I);
-
+        //let run again
+        $I->wait(10);
         $I->amGoingTo("check that the times have increased");
         $newTotal = $I->grabTextFrom(DashboardArea::$totalTimeLocator);
         $newCurrent = $I->grabTextFrom(DashboardArea::$currentExamTimeLocator);
@@ -198,7 +193,10 @@ class DashboardCest
      * @group dashboard
      * 
      */
-    public function checkThatSaveAndFinishButtonAppears(AcceptanceTester $I){
+    public function checkThatSaveAndFinishButtonAppears(AcceptanceTester $I, $scenario){
+        $scenario->incomplete();
+
+        
         $I->expect("that the finished button is not showing");
         $I->dontSeeElement(DashboardArea::$finishButtonLocator);
         $I->dontSee(DashboardArea::$finishButtonText, DashboardArea::$finishButtonLocator);
@@ -208,7 +206,9 @@ class DashboardCest
                 $I->amGoingTo('enter a question score for a previously ungraded student ');
                 RosterArea::assertRowIsMarkedGraded($I, $i, true);
                 GradingPage::clickStudentRow($I, $i);
+            GradingPage::clickQuestionTab($I, 1);
                 $I->fillField(GradingPage::questionScoreFieldLocator(1), 92);
+            GradingPage::clickQuestionTab($I, 3);
 
                 $I->amGoingTo("select another student");
                 $next = $i == $this->numberStudents -1 ? 0 : $i + 1;
