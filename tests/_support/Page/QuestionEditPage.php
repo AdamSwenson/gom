@@ -151,6 +151,15 @@ public static function questionPanelId($questionNumber){
         return static::$URL . $param;
     }
 
+    /* ------------------------------------ utilities ------------------ */
+    public static function navigateToPage($I, $examId)
+    {
+        $I->test_login($I);
+        $I->amOnPage("exam/{$examId}/question/edit");
+        $I->waitForElement(['id' => 'scriptBox']);
+
+    }
+
     /* ------------------------------------------ tests ----------------------------- */
 
     /**
