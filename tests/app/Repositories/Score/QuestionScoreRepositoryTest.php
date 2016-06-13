@@ -175,19 +175,20 @@ class QuestionScoreRepositoryTest extends \TestCase
         $this->assertEquals($questionAssignmentId, $result->question_assignment_id);
         $this->assertEquals($studentId, $result->student_id);
         $this->assertEquals($score, $result->score);
-        $this->seeInDatabase('question_scores', [
-            'question_assignment_id' => $questionAssignmentId,
-            'student_id' => $studentId,
-            'score' => $score,
-        ]);
+        $retrieved = QuestionScore::where('question_assignment_id', $questionAssignmentId)->where('student_id', $studentId)->first();
+        $this->assertNotNull($retrieved);
+        $this->assertEquals($score, $retrieved->score, 0.001);
     }
 
     public function testUpdatePreexisting()
     {
-        $es = factory(QuestionScore::class)->create();
-        $questionAssignmentId = $es->question_assignment_id;
-        $studentId = $es->student_id;
-        $score = $this->faker->randomFloat(2, 0, 10);
+        $questionAssignmentId = $this->questionAssignment->id;
+        $studentId = $this->questionScore->student_id;
+        $score = $this->questionScore->score;
+//        $es = factory(QuestionScore::class)->create();
+//        $questionAssignmentId = $es->question_assignment_id;
+//        $studentId = $es->student_id;
+//        $score = $this->faker->randomFloat(2, 0, 10);
 
         $result = $this->object->update($questionAssignmentId, $studentId, $score);
 

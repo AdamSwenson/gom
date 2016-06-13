@@ -28,8 +28,6 @@ class ElementScoreRepositoryTest extends \TestCase
         parent::setUp();
         $this->object = new ElementScoreRepository;
 
-
-//        $this->fixture = $this->makeElementAssignmentsForQuestion(2);
         $this->elementScore = factory(ElementScore::class)->create();
         $this->elementAssign = ElementAssignment::find($this->elementScore->element_assignment_id);
         $this->exam = Exam::find($this->elementAssign->exam_id);
@@ -109,11 +107,11 @@ public function testRecordCommentText()
     }
 
 
-    public function testUpdateNew()
+    public function testUpdateWhereNew()
     {
         #prep
-        $elementAssignmentId = factory(ElementAssignment::class)->create()->id;
-        $studentId = factory(Student::class)->create()->id;
+        $elementAssignmentId = $this->elementAssign->id;
+        $studentId = $this->elementScore->student_id; 
         $score = $this->faker->randomFloat(2,0,10);
 
         #call
@@ -135,7 +133,7 @@ public function testRecordCommentText()
 //        $this->markTestIncomplete();
     }
 
-    public function testUpdatePreexisting()
+    public function testUpdateWherePreexisting()
     {
         $es = $this->elementScore;
         $elementAssignmentId = $es->element_assignment_id;
