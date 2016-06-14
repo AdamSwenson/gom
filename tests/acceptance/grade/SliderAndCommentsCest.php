@@ -57,6 +57,7 @@ class SliderAndCommentsCest
      */
     public function switchStudentAndCommentChange(AcceptanceTester $I, $scenario){
         $scenario->incomplete();
+        
         $newText = Faker\Factory::create()->text();
         $I->executeJS($this->makeWritable);
         $I->wait(2);
