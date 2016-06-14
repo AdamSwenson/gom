@@ -11,25 +11,43 @@
 
             <div class="form-group ">
                 <label for="name">Name</label>
-                <input class="form-control" type="text" name="name" id="name" value="{{ old('name') }}"
+                <input class="form-control"
+                       type="text"
+                       name="name"
+                       id="name"
+                       value="{{ old('name') }}"
                        placeholder="Username">
             </div>
             <div class="form-group ">
                 <label for="email">Email</label>
-                <input class="form-control" type="email" name="email" id="email" value="{{ old('email') }}"
+                <input class="form-control"
+                       type="email"
+                       name="email"
+                       id="email"
+                       value="{{ old('email') }}"
                        placeholder="Enter email">
             </div>
             <div class="form-group">
                 <label for="pwd">Password</label>
-                <input class="form-control" type="password" name="password" id="pwd" placeholder="Enter password">
+                <input class="form-control"
+                       type="password"
+                       name="password"
+                       id="pwd"
+                       placeholder="Enter password">
             </div>
             <div class="form-group">
                 <label for="pwd_conf">Confirm Password</label>
-                <input class="form-control" type="password" name="password_confirmation" id="pwd_conf"
+                <input class="form-control"
+                       type="password"
+                       name="password_confirmation"
+                       id="pwd_conf"
                        placeholder="Confirm password">
             </div>
 
-            <input class="btn btn-primary" value="Create Account" type="submit">
+            <input id="submit"
+                    class="btn btn-primary"
+                   value="Create Account"
+                   type="submit">
         </form>
         <div class="col-xs-3"></div>
     </div>
