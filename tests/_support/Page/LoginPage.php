@@ -22,6 +22,12 @@ class LoginPage
 
     public static $loginButton = '#login';
 
+    public static $rememberCheckLocator = ['id' => 'remember'];
+
+    public static $pageHeadingText = "Login";
+    public static $pageTitleText = "Login | gradeomatic";
+    
+    
     /**
      * Basic route example for your current URL
      * You can append any additional parameter to URL
@@ -32,5 +38,22 @@ class LoginPage
         return static::$URL.$param;
     }
 
+    public static function assertPageIntact($I){
+     
+            $I->amGoingTo("Visit the login page");
+
+            $I->expectTo("see the various elements of the lgoin page");
+            $I->seeElement(LoginPage::$emailField);
+            $I->seeElement(LoginPage::$passwordField);
+            $I->seeElement(LoginPage::$loginButton);
+
+            $I->see(LoginPage::$pageHeadingText);
+            $I->seeInTitle(LoginPage::$pageTitleText);
+            $I->seeInCurrentUrl(LoginPage::$URL);
+
+            $I->seeElement(['id' => 'remember']);
+            $I->see("Remember me");
+            $I->seeLink("Forgot Password", url('') . "/password/email");
+    }
 
 }

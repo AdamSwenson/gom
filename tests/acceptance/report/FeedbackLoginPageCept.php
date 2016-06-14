@@ -1,9 +1,13 @@
 <?php
 use Page\report\FeedbackLoginPage;
+
+//@group feedback
+//@group report
+
 $accessKey = "634b0f6bb2e56e46da6ab48d284d08b101ec1aa168cd715a9a0e570f5947135b";
 $invalidAccessKey = "tacos";
 
-$scenario->group(['feedback', 'report']);
+
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Check that the login functions for students to see their feedback are working properly');
 
