@@ -261,9 +261,12 @@ class StudentControllerTest extends \TestCase
     {
         $numberStudents = 10;
         #Prep
-        $kumi = Kumi::all()->random();
-        $exam = $kumi->exams()->first();
+        $kumi = factory(Kumi::class)->create();
+        $exam = factory(Exam::class)->create();
+        $kumi->exams()->attach($exam);
+        $kumi->save();
         $this->object->exam = $exam;
+
         //push row numbers into validRecords array
         $validator = new StudentRecordValidator();
         for($i=1; $i<=$numberStudents; $i++)
@@ -274,11 +277,6 @@ class StudentControllerTest extends \TestCase
 
         //Build a request
         $request = $this->buildTestDataAndRequest($numberStudents);
-
-//        foreach($this->testData as $k => $v)
-//        {
-//            $request[$k] = $v;
-//        }
 
         #Call
         $this->object->updateAll($exam, $request);
@@ -301,10 +299,7 @@ class StudentControllerTest extends \TestCase
         $studentDao->shouldReceive('update_all')
             ->with([$this->exam, $request])
             ->andReturn(Student::all()->take(10));
-
-
     }
-
 
 
     /**

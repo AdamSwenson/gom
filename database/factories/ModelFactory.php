@@ -59,6 +59,12 @@ $factory->define(App\Kumi::class, function (Faker\Generator $faker)
         'nickname' => $faker->word,
     ];
 });
+$factory->defineAs(App\Kumi::class, 'with_exam', function (Faker\Generator $faker) use ($factory){
+    return [
+        'year'     => $faker->year,
+        'nickname' => $faker->word,
+    ];
+});
 
 /* ---------------------------- Student --------------------------------- */
 $factory->define(App\Student::class, function (Faker\Generator $faker)
@@ -71,13 +77,6 @@ $factory->define(App\Student::class, function (Faker\Generator $faker)
     ];
 });
 
-$factory->defineAs(App\Student::class, 'no_email', function (Faker\Generator $faker) use ($factory)
-{
-    $student = $factory->raw(App\Student::class);
-    $student->email = null;
-
-    return $student;
-});
 
 /* ----------------------------- Exam components -------------------------- */
 

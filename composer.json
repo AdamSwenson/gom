@@ -35,8 +35,8 @@
         "barryvdh/laravel-debugbar": "^2.1",
         "site5/phantoman": "^1.1",
         "jakoch/phantomjs-installer": "^2.1",
-        "dflydev/markdown": "^1.0",
-        "erusev/parsedown": "^1.6"
+        "erusev/parsedown": "^1.6",
+        "dflydev/markdown": "^1.0"
     },
     "autoload": {
         "classmap": [
