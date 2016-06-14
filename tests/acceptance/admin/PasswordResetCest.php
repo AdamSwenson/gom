@@ -28,4 +28,22 @@ class PasswordResetCest
         $I->seeElement(PasswordResetPage::$submitButtonLocator);
         $I->seeInField(PasswordResetPage::$submitButtonLocator, PasswordResetPage::$submitButtonText);
     }
+
+    public function submitRequestValidEmail(AcceptanceTester $I)
+    {
+        $I->fillField(PasswordResetPage::$emailFieldLocator, "test2@gradeomatic.net");
+        $I->click(PasswordResetPage::$submitButtonLocator);
+
+    }
+
+    public function submitRequestInvalidEmail(AcceptanceTester $I){
+        $I->amGoingTo("enter an invalid email address and submit the form");
+        $I->fillField(PasswordResetPage::$emailFieldLocator, 'taco@taco.net');
+        $I->click(PasswordResetPage::$submitButtonLocator);
+        $I->wait(2);
+        $I->expectTo("see the error message");
+        $I->see("We can't find a user with that e-mail address.");
+
+    }
+
 }
