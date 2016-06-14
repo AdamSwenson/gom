@@ -22,6 +22,7 @@ class LoginPageCest
      */
     public function checkLogInPageIntact(AcceptanceTester $I)
     {
+        $I->amOnPage('/auth/logout');
         LoginPage::assertPageIntact($I);
     }
 

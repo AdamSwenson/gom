@@ -7,6 +7,7 @@ class PasswordResetCest
 {
     public function _before(AcceptanceTester $I)
     {
+        $I->amOnPage('/auth/logout');
         $I->amOnPage(PasswordResetPage::$URL);
     }
 
@@ -33,7 +34,7 @@ class PasswordResetCest
     {
         $I->fillField(PasswordResetPage::$emailFieldLocator, "test2@gradeomatic.net");
         $I->click(PasswordResetPage::$submitButtonLocator);
-
+//TODO fix and get valid case working
     }
 
     public function submitRequestInvalidEmail(AcceptanceTester $I){
