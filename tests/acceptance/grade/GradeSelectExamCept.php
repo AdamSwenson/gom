@@ -2,6 +2,10 @@
 use Page\BootboxModals;
 use Page\grade\GradeSelectExamPage;
 
+//@group grade
+//@group index
+
+
 $examWithNoQuestionsId = 5;
 $examWithQuestionsButNoStudentsId = 6;
 $examIdsWhichShouldSee = [1, 2, 4, 5, 6];
@@ -10,7 +14,7 @@ $examIdsWhichShouldNotSee = [3]; //belongs to user 2
 //TODO Add (standardized) grading data to the tests
 $examWithStudents = 1;
 
-$scenario->group(['grade', 'index']);
+
 $I = new AcceptanceTester($scenario);
 $I->wantTo('Open the exam selection page for grading and check that everything works');
 
