@@ -18,10 +18,10 @@
             <h3>Reset Password</h3>
 
             <div class="form-group ">
-                <input class="form-control" type="email" name="email" placeholder="Enter email">
+                <input id="email" class="form-control" type="email" name="email" placeholder="Enter email">
             </div>
 
-            <input class="btn btn-primary" value="Send Email" type="submit">
+            <input id="submit" class="btn btn-primary" value="Send Email" type="submit">
         </form>
         <div class="col-xs-3"></div>
     </div>

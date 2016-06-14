@@ -23,22 +23,7 @@ class LoginPageCest
     public function checkLogInPageIntact(AcceptanceTester $I)
     {
         LoginPage::assertPageIntact($I);
-
-//        $I->amGoingTo("Visit the login page");
-//
-//        $I->expectTo("see the various elements of the lgoin page");
-//        $I->seeElement(LoginPage::$emailField);
-//        $I->seeElement(LoginPage::$passwordField);
-//        $I->seeElement(LoginPage::$loginButton);
-//
-//        $I->see(LoginPage::$pageHeadingText);
-//        $I->seeInTitle(LoginPage::$pageTitleText);
-//        $I->seeInCurrentUrl(LoginPage::$URL);
-//
-//        $I->seeElement(['id' => 'remember']);
-//        $I->see("Remember me", LoginPage::$rememberCheckLocator);
-//        $I->seeLink("Forgot Password", url('') . "/password/email");
-}
+    }
 
 
     /**
