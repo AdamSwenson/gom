@@ -12,16 +12,13 @@ class PasswordResetPage
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
 
-public static $emailFieldLocator = ['id' => 'email'];
+    public static $emailFieldLocator = ['id' => 'email'];
 
     public static $pageTitleText = 'Reset Password | gradeomatic';
     public static $pageHeadingText = 'Reset Password';
 
     public static $submitButtonLocator = ['id' => 'submit'];
     public static $submitButtonText = 'Send Email';
-
-
-
 
 
     /**
@@ -31,10 +28,8 @@ public static $emailFieldLocator = ['id' => 'email'];
      */
     public static function route($param)
     {
-        return static::$URL.$param;
+        return static::$URL . $param;
     }
-
-
 
 
     /**

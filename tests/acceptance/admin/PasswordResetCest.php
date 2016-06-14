@@ -2,6 +2,7 @@
 
 
 use Page\admin\PasswordResetPage;
+use Page\SetupExamSelectPage;
 
 class PasswordResetCest
 {
@@ -34,7 +35,11 @@ class PasswordResetCest
     {
         $I->fillField(PasswordResetPage::$emailFieldLocator, "test2@gradeomatic.net");
         $I->click(PasswordResetPage::$submitButtonLocator);
-//TODO fix and get valid case working
+
+        $I->expectTo("not see the error message");
+        $I->wait(3);
+        $I->dontSee("We can't find a user with that e-mail address.");
+        
     }
 
     public function submitRequestInvalidEmail(AcceptanceTester $I){

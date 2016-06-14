@@ -1061,12 +1061,12 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `password_resets`;
 
 CREATE TABLE `password_resets` (
-  `emails`     VARCHAR(255)
+  `email`     VARCHAR(255)
                COLLATE utf8_unicode_ci NOT NULL,
   `token`      VARCHAR(255)
                COLLATE utf8_unicode_ci NOT NULL,
   `created_at` TIMESTAMP               NOT NULL DEFAULT '0000-00-00 00:00:00',
-  KEY `password_resets_emails_index` (`emails`),
+  KEY `password_resets_emails_index` (`email`),
   KEY `password_resets_token_index` (`token`)
 )
   ENGINE = InnoDB
