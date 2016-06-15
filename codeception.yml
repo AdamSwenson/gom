@@ -42,4 +42,5 @@ modules:
             password: 'testpass4'
             dump: tests/_data/dump.sql
             populate: true,
-            cleanup: true
+            cleanup: true,
+            reconnect: true
