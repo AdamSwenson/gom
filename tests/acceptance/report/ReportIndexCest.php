@@ -17,6 +17,7 @@ class ReportIndexCest
     public function _before(AcceptanceTester $I)
     {
         ReportIndexPage::navigateToReportIndexPage($I);
+        $I->wait(5);
 //        $I->wantTo('Inspect the /report page and make sure the navigation functions work correctly. (Releasing and locking are handled in separate file)');
     }
 
