@@ -38,14 +38,17 @@
         </exec>
     </target>
 
-    <target name="codeceptionAcceptance" description="Run codeception tests">
-        <!--<exec executable="${toolsdir}codecept">-->
+    <target name="codeceptionAcceptance"
+            depends="prepare"
+            description="Run codeception tests">
+        <exec executable="./vendor/bin/codecept run tests/acceptance/grade">
+            <!--${toolsdir}codecept-->
             <!--<arg value="run"/>-->
             <!--<arg value="acceptance"/>-->
             <!--<arg value="&#45;&#45;html"/>-->
             <!--<arg value="&#45;&#45;xml"/>-->
             <!--<arg value="&#45;&#45;coverage-html"/>-->
-        <!--</exec>-->
+        </exec>
     </target>
 
     <target name="clean"
