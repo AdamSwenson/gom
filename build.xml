@@ -42,12 +42,7 @@
             depends="prepare"
             description="Run codeception tests">
         <exec executable="${toolsdir}codecept">
-            <!--${toolsdir}codecept-->
-            <arg value="run"/>
-            <!--<arg value="acceptance"/>-->
-            <!--<arg value="&#45;&#45;html"/>-->
-            <!--<arg value="&#45;&#45;xml"/>-->
-            <!--<arg value="&#45;&#45;coverage-html"/>-->
+            <arg value="run" />
         </exec>
     </target>
 
