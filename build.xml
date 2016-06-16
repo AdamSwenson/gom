@@ -41,9 +41,9 @@
     <target name="codeceptionAcceptance"
             depends="prepare"
             description="Run codeception tests">
-        <exec executable="./vendor/bin/codecept run tests/acceptance/grade">
+        <exec executable="${toolsdir}codecept">
             <!--${toolsdir}codecept-->
-            <!--<arg value="run"/>-->
+            <arg value="run"/>
             <!--<arg value="acceptance"/>-->
             <!--<arg value="&#45;&#45;html"/>-->
             <!--<arg value="&#45;&#45;xml"/>-->
