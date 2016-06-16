@@ -41,7 +41,11 @@
     <target name="codeceptionAcceptance"
             depends="prepare"
             description="Run codeception tests">
-        <exec executable="APP_ENV=codeceptWorld php artisan serve" />
+        <exec executable="APP_ENV=codeceptWorld">
+         <arg value="php"/>
+        <arg value="artisan"/>
+        <arg value="serve"/>
+        </exec>
         <exec executable="${basedir}/vendor/bin/codecept">
             <arg value="run" />
             <arg value="acceptance" />
