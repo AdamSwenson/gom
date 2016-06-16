@@ -86,18 +86,25 @@ public static function valenceTextPath($subtask, $valence){
 }
 
 
+    public static function expectedRedirectRoute($examId, $questionId)
+    {
+        return "/exam/{$examId}/question/{$questionId}/element/edit";
 
-
+}
 
 
     /**
      * Basic route example for your current URL
      * You can append any additional parameter to URL
      * and use it in tests like: Page\Edit::route('/123-post');
+     * @param $examId
+     * @param $questionId
+     * @return string
      */
-    public static function route($param)
+    public static function route($examId, $questionId)
     {
-        return static::$URL.$param;
+        return "/exam/{$examId}/question/{$questionId}/element/edit";
+
     }
 
     /* ------------------------- tests ----------------------------- */
