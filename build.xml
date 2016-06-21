@@ -8,7 +8,7 @@
 
 
     <target name="build"
-         depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpunit,codeceptionAcceptance,phpdox"
+         depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpunit,codeceptSetup,codeceptGrade,codeceptReport,codeceptAdmin,phpdox"
          description=""/>
 
     <target name="build-parallel"
@@ -38,19 +38,55 @@
         </exec>
     </target>
 
-    <target name="codeceptionAcceptance"
+    <target name="codeceptSetup"
             depends="prepare"
-            description="Run codeception tests">
-
-
-        <!--<exec dir="${basedir}" executable="bash" failonerror="false">-->
-            <!--&lt;!&ndash;<arg value="APP_ENV=codeceptWorld php artisan serve"/>&ndash;&gt;-->
-        <!--</exec>-->
-
+            description="Run codeception tests for setup">
         <exec executable="${basedir}/vendor/bin/codecept">
             <env key="APP_ENV" value="codeceptWorld"/>
             <arg value="run" />
-            <arg value="acceptance" />
+            <arg value="tests/acceptance/setup" />
+            <arg value="--html" />
+            <arg value="--colors" />
+            <arg value="--xml" />
+            <arg value="--coverage-html" />
+        </exec>
+    </target>
+
+    <target name="codeceptGrade"
+            depends="prepare"
+            description="Run codeception tests for grading">
+        <exec executable="${basedir}/vendor/bin/codecept">
+            <env key="APP_ENV" value="codeceptWorld"/>
+            <arg value="run" />
+            <arg value="tests/acceptance/grade"/>
+            <arg value="--html" />
+            <arg value="--colors" />
+            <arg value="--xml" />
+            <arg value="--coverage-html" />
+        </exec>
+    </target>
+
+    <target name="codeceptReport"
+            depends="prepare"
+            description="Run codeception tests for reporting">
+        <exec executable="${basedir}/vendor/bin/codecept">
+            <env key="APP_ENV" value="codeceptWorld"/>
+            <arg value="run" />
+            <arg value="tests/acceptance/report" />
+            <arg value="--html" />
+            <arg value="--colors" />
+            <arg value="--xml" />
+            <arg value="--coverage-html" />
+        </exec>
+    </target>
+
+    <target name="codeceptAdmin"
+            depends="prepare"
+            description="Run codeception tests for admin">
+        <exec executable="${basedir}/vendor/bin/codecept">
+            <env key="APP_ENV" value="codeceptWorld"/>
+            <arg value="run" />
+            <arg value="tests/acceptance/admin" />
             <arg value="--html" />
             <arg value="--colors" />
             <arg value="--xml" />
