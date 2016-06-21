@@ -8,8 +8,12 @@
 
 
     <target name="build"
-         depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpdox,phpunit,codeceptAccept,phpcb"
+         depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpdox,phpunit,phpcb"
          description=""/>
+
+    <!--<target name="build"-->
+            <!--depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpdox,phpunit,codeceptAccept,phpcb"-->
+            <!--description=""/>-->
 
     <!--<target name="build-parallel"-->
          <!--depends="prepare,lint,tools-parallel,phpunit,codeceptSetup,codeceptGrade,codeceptReport,codeceptAdmin,phpcb"-->
@@ -152,7 +156,7 @@
     </target>
 
     <target name="phpcb" description="Aggregate tool output with PHP_CodeBrowser">
-        <exec executable="${basedir}phpcb">
+        <exec executable="${toolsdir}phpcb">
             <arg value="--log" />
             <arg path="${basedir}/build/logs" />
             <arg value="--ignore" />
