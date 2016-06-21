@@ -5,10 +5,28 @@ namespace App;
 /**
  * Class Kumi
  * Japanese for 'class' as in 'I want this exam to be associated with three classes'.
+ * 
  * Because if you go around calling something 'class' in methods which take
  * strings as arguments, bad things can happen.
  *
  * @package App
+ * @property integer $id
+ * @property integer $user_id
+ * @property integer $year
+ * @property string $nickname
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Student[] $students
+ * @property-read \App\User $user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Exam[] $exams
+ * @method static \Illuminate\Database\Query\Builder|\App\Kumi whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Kumi whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Kumi whereYear($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Kumi whereNickname($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Kumi whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Kumi whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\BaseModel loggedIn()
+ * @mixin \Eloquent
  */
 class Kumi extends BaseModel
 {

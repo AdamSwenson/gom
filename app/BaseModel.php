@@ -10,6 +10,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * App\BaseModel
+ *
+ * @method static \Illuminate\Database\Query\Builder|\App\BaseModel loggedIn()
+ * @mixin \Eloquent
+ */
 class BaseModel extends Model
 {
 

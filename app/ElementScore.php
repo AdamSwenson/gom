@@ -5,6 +5,33 @@ namespace App;
 
 use Illuminate\Support\Facades\DB;
 
+/**
+ * App\ElementScore
+ *
+ * @property integer $id
+ * @property integer $element_assignment_id
+ * @property integer $student_id
+ * @property float $score
+ * @property string $comment_text
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \App\User $user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Student[] $students
+ * @property-read \App\ElementAssignment $elementAssignment
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Element[] $element
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementScore whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementScore whereElementAssignmentId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementScore whereStudentId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementScore whereScore($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementScore whereCommentText($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementScore whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementScore whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementScore onStudent($studentId)
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementScore onElementAssignment($elementAssignmentId)
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementScore onStudentElementAssignment($studentId, $elementAssignmentId)
+ * @method static \Illuminate\Database\Query\Builder|\App\BaseModelNoUser loggedIn()
+ * @mixin \Eloquent
+ */
 class ElementScore extends BaseModelNoUser
 {
     protected $fillable = ['score', 'commentText'];

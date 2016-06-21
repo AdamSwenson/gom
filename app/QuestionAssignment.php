@@ -4,7 +4,7 @@ namespace App;
 
 /**
  * Class QuestionAssignment
- *
+ * 
  * This has the following attributes:
  *      id: integer
  *      exam_id: integer        The id of the exam to which the question is assigned
@@ -12,6 +12,26 @@ namespace App;
  *      questionNumber: integer The number of the question on the exam (i.e., the order of the question)
  *
  * @package App
+ * @property integer $id
+ * @property integer $exam_id
+ * @property integer $question_id
+ * @property integer $question_number
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Exam[] $exam
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Question[] $question
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\QuestionScore[] $questionScores
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionAssignment whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionAssignment whereExamId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionAssignment whereQuestionId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionAssignment whereQuestionNumber($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionAssignment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionAssignment whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionAssignment onExam($examId)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionAssignment onQuestionId($questionId)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionAssignment questionNumber($questionNumber)
+ * @method static \Illuminate\Database\Query\Builder|\App\BaseModelNoUser loggedIn()
+ * @mixin \Eloquent
  */
 class QuestionAssignment extends BaseModelNoUser
 {

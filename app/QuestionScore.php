@@ -12,6 +12,29 @@ use Illuminate\Support\Facades\DB;
  * with a student and holds the score that the student achieved for the question.
  *
  * @package App
+ * @property integer $id
+ * @property integer $question_assignment_id
+ * @property integer $student_id
+ * @property float $score
+ * @property boolean $is_custom
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Exam[] $exam
+ * @property-read \App\QuestionAssignment $questionAssignment
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Question[] $question
+ * @property-read \App\Student $student
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionScore whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionScore whereQuestionAssignmentId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionScore whereStudentId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionScore whereScore($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionScore whereIsCustom($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionScore whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionScore whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionScore onStudent($studentId)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionScore onQuestionAssignment($questionAssignmentId)
+ * @method static \Illuminate\Database\Query\Builder|\App\QuestionScore onStudentAndQuestionAssignment($studentId, $questionAssignmentId)
+ * @method static \Illuminate\Database\Query\Builder|\App\BaseModelNoUser loggedIn()
+ * @mixin \Eloquent
  */
 class QuestionScore extends BaseModelNoUser
 {

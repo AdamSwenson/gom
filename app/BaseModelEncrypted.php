@@ -14,7 +14,10 @@ use Illuminate\Support\Facades\Crypt;
  * This is the usual base for eloquent models with the addition
  * of an array $encryptedAttributes which are encrypted and decrypted
  * upon access.
+ *
  * @package App
+ * @method static \Illuminate\Database\Query\Builder|\App\BaseModel loggedIn()
+ * @mixin \Eloquent
  */
 class BaseModelEncrypted extends BaseModel
 {

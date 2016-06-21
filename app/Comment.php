@@ -4,16 +4,35 @@ namespace App;
 
 /**
  * Class Comment
- *
+ * 
  * These are the atoms of feedback given to the user. They are created
  * from the base text in the element. But once they exist, they are edited on their own.
- *
+ * 
  * Note: I'm not sure why I thought I needed a junction table to do this,
  * but I did. Thus this is treated as a many-many relationship. If that isn't
  * necessary, this can be refactored to just have the element_id as a field in
  * the comments table.
  *
  * @package App
+ * @property integer $id
+ * @property integer $user_id
+ * @property integer $element_id
+ * @property string $valence
+ * @property string $body
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \App\User $user
+ * @property-read \App\Element $element
+ * @method static \Illuminate\Database\Query\Builder|\App\Comment whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Comment whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Comment whereElementId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Comment whereValence($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Comment whereBody($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Comment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Comment whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Comment onValence($valence)
+ * @method static \Illuminate\Database\Query\Builder|\App\BaseModel loggedIn()
+ * @mixin \Eloquent
  */
 class Comment extends BaseModel
 {

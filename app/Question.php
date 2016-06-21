@@ -5,6 +5,30 @@ namespace App;
 
 use Illuminate\Support\Facades\DB;
 
+/**
+ * App\Question
+ *
+ * @property integer $id
+ * @property integer $user_id
+ * @property string $questionName
+ * @property string $questionText
+ * @property float $max_score
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Exam[] $exam
+ * @property-read \App\User $user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Exam[] $questionAssignments
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\QuestionScore[] $scores
+ * @method static \Illuminate\Database\Query\Builder|\App\Question whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Question whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Question whereQuestionName($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Question whereQuestionText($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Question whereMaxScore($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Question whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Question whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\BaseModel loggedIn()
+ * @mixin \Eloquent
+ */
 class Question extends BaseModel
 {
     /** Maximum length in utf-8 characters of the name field (used in sanitizing) */

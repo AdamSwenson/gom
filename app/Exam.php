@@ -14,6 +14,39 @@ use Illuminate\Support\Facades\DB;
  * send a different email which informs them that their previous access code is invalid.
  *
  * @package App
+ * @property integer $id
+ * @property integer $user_id
+ * @property string $term
+ * @property integer $year
+ * @property string $name
+ * @property boolean $locked
+ * @property boolean $released
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property boolean $previously_released
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Kumi[] $classes
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Element[] $elementAssignments
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Element[] $elements
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Question[] $questions
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Question[] $questionAssignments
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\QuestionScore[] $questionScores
+ * @property-read \App\User $user
+ * @method static \Illuminate\Database\Query\Builder|\App\Exam whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Exam whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Exam whereTerm($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Exam whereYear($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Exam whereName($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Exam whereLocked($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Exam whereReleased($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Exam whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Exam whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Exam wherePreviouslyReleased($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Exam onClasses($kumiId)
+ * @method static \Illuminate\Database\Query\Builder|\App\Exam unlocked()
+ * @method static \Illuminate\Database\Query\Builder|\App\Exam unreleased()
+ * @method static \Illuminate\Database\Query\Builder|\App\Exam released()
+ * @method static \Illuminate\Database\Query\Builder|\App\BaseModel loggedIn()
+ * @mixin \Eloquent
  */
 class Exam extends BaseModel
 {

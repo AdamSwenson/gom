@@ -8,21 +8,41 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Class Student
- *
+ * 
  * A student who will take an exam.
- *
+ * 
  * Each student can take an exam exactly once.
- *
+ * 
  * The sid property is a unique string (usually, but not necessarily, an integer provided by the user, it is not the
  * same as the id.
- *
+ * 
  * Here is a list keys that are available in the attributes array (08/04/15)
  *     'id' , 'user_id' , 'student_identifier' , 'first_name' , 'last_name' , 'email' , 'created_at' , 'updated_at' ,
- *
+ * 
  *  'pivot'  which contains:
  *        '_id' , 'student_id' , 'created_at' , 'updated_at'
  *
  * @package App
+ * @property integer $id
+ * @property integer $user_id
+ * @property string $last_name
+ * @property string $first_name
+ * @property string $student_identifier
+ * @property string $email
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Kumi[] $kumis
+ * @property-read \App\User $user
+ * @method static \Illuminate\Database\Query\Builder|\App\Student whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Student whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Student whereLastName($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Student whereFirstName($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Student whereStudentIdentifier($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Student whereEmail($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Student whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Student whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\BaseModel loggedIn()
+ * @mixin \Eloquent
  */
 class Student extends BaseModel
 {

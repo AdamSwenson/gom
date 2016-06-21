@@ -8,14 +8,34 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * This is a representation of the criterion for assigning a single
  * grade on an exam based on total score
- *
+ * 
  * It has the attributes:
  *  exam_id: integer
  *  user_id: integer
  *  min_score: float The cut off for applying the grade
  *  grade: App\Grade Model representing the grade
  *  grade_id: integer Id of grade (this value is stored in the db
+ *
  * @package App
+ * @property integer $id
+ * @property integer $user_id
+ * @property integer $exam_id
+ * @property integer $grade_id
+ * @property float $min_score
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read mixed $grade
+ * @property-read \App\Exam $exam
+ * @property-read \App\User $user
+ * @method static \Illuminate\Database\Query\Builder|\App\GradeAssignment whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\GradeAssignment whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\GradeAssignment whereExamId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\GradeAssignment whereGradeId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\GradeAssignment whereMinScore($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\GradeAssignment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\GradeAssignment whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\BaseModel loggedIn()
+ * @mixin \Eloquent
  */
 class GradeAssignment extends BaseModel
 {

@@ -4,13 +4,13 @@ namespace App;
 
 /**
  * Class ElementAssignment
- *
+ * 
  * This holds an exam, an element, a questionAssignment (which maps a question to
  * a questionNumber on the exam), and a subtask (which determines the order of
  * elements for the question).
- *
+ * 
  * The corresponding table ('element_assignments') has the following fields, and so this has the following attributes
- *
+ * 
  * id: integer
  * exam_id: integer
  * question_id: integer
@@ -18,6 +18,28 @@ namespace App;
  * subtask: integer
  *
  * @package App
+ * @property integer $id
+ * @property integer $exam_id
+ * @property integer $question_id
+ * @property integer $element_id
+ * @property integer $subtask
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \App\User $user
+ * @property-read \App\Exam $exam
+ * @property-read \App\Element $element
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\ElementScore[] $elementScores
+ * @property-read \App\Question $question
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementAssignment whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementAssignment whereExamId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementAssignment whereQuestionId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementAssignment whereElementId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementAssignment whereSubtask($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementAssignment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementAssignment whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\ElementAssignment onExam($examId)
+ * @method static \Illuminate\Database\Query\Builder|\App\BaseModelNoUser loggedIn()
+ * @mixin \Eloquent
  */
 class ElementAssignment extends BaseModelNoUser
 {

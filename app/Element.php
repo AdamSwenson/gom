@@ -4,6 +4,31 @@ namespace App;
 
 use Illuminate\Support\Facades\DB;
 
+/**
+ * App\Element
+ *
+ * @property integer $id
+ * @property integer $user_id
+ * @property string $elementName
+ * @property string $displayText
+ * @property string $commentText
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \App\User $user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Question[] $questions
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Exam[] $exams
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\ElementScore[] $scores
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Comment[] $comments
+ * @method static \Illuminate\Database\Query\Builder|\App\Element whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Element whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Element whereElementName($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Element whereDisplayText($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Element whereCommentText($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Element whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Element whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\BaseModel loggedIn()
+ * @mixin \Eloquent
+ */
 class Element extends BaseModel
 {
     /** Maximum length in utf-8 characters of the elementName field (used in sanitizing) */
