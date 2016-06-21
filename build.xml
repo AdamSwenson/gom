@@ -8,7 +8,7 @@
 
 
     <target name="build"
-         depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpdox"
+         depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpdox,phpunit,codeceptAccept,phpcb"
          description=""/>
 
     <!--<target name="build-parallel"-->
@@ -16,7 +16,7 @@
          <!--description=""/>-->
 
     <target name="build-parallel"
-            depends="prepare,lint,tools-parallel,phpunit,codeceptAccept,phpcb"
+            depends="prepare,lint,tools-parallel"
             description=""/>
 
 
