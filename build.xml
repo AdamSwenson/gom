@@ -8,12 +8,17 @@
 
 
     <target name="build"
-         depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpunit,codeceptSetup,codeceptGrade,codeceptReport,codeceptAdmin,phpdox"
+         depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpdox"
          description=""/>
 
+    <!--<target name="build-parallel"-->
+         <!--depends="prepare,lint,tools-parallel,phpunit,codeceptSetup,codeceptGrade,codeceptReport,codeceptAdmin,phpcb"-->
+         <!--description=""/>-->
+
     <target name="build-parallel"
-         depends="prepare,lint,tools-parallel,phpunit,phpdox"
-         description=""/>
+            depends="prepare,lint,tools-parallel,phpunit,codeceptAccept,phpcb"
+            description=""/>
+
 
     <target name="tools-parallel" description="Run tools in parallel">
         <parallel threadCount="2">
@@ -35,6 +40,20 @@
             <arg value="--no-progress" />
 
             <env key="SYMFONY_ENV" value="test"/>
+        </exec>
+    </target>
+
+    <target name="codeceptAccept"
+            depends="prepare"
+            description="Run codeception acceptance tests">
+        <exec executable="${basedir}/vendor/bin/codecept">
+            <env key="APP_ENV" value="codeceptWorld"/>
+            <arg value="run" />
+            <arg value="acceptance" />
+            <arg value="--html" />
+            <arg value="--colors" />
+            <arg value="--xml" />
+            <arg value="--coverage-html" />
         </exec>
     </target>
 
@@ -130,6 +149,19 @@
                 <modified />
             </fileset>
         </apply>
+    </target>
+
+    <target name="phpcb" description="Aggregate tool output with PHP_CodeBrowser">
+        <exec executable="phpcb">
+            <arg value="--log" />
+            <arg path="${basedir}/build/logs" />
+            <arg value="--ignore" />
+            <arg path="${basedir}/tests" />
+            <arg value="--source" />
+            <arg path="${basedir}" />
+            <arg value="--output" />
+            <arg path="${basedir}/build/code-browser" />
+        </exec>
     </target>
 
     <target name="phploc"

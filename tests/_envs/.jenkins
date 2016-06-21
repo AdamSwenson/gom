@@ -1,0 +1,13 @@
+APP_ENV=codeceptWorld
+APP_DEBUG=true
+APP_KEY=GuIXJ85kZMDHyeHpeTbqjqyRMXbM5u9l
+
+LOG_TYPE=single
+
+DB_HOST=localhost
+DB_DATABASE=gom_testing
+DB_USERNAME=testuser4
+DB_PASSWORD=testpass4
+
+
+

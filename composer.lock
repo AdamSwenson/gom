@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "95a882bccdc7aa879aabf9c83b909e17",
-    "content-hash": "15579bc6eda93e230eb3cc3de4358dcb",
+    "hash": "0f7e08db4f0bf1c230a3ba8a2429e59f",
+    "content-hash": "31001a1859714554177ff4d5f16a2aea",
     "packages": [
         {
             "name": "backup-manager/backup-manager",
@@ -1085,16 +1085,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.2.38",
+            "version": "v5.2.39",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "e211a37eab49a124996ad9150f9e1bdfb52aa048"
+                "reference": "c2a77050269b4e03bd9a735a9f24e573a7598b8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/e211a37eab49a124996ad9150f9e1bdfb52aa048",
-                "reference": "e211a37eab49a124996ad9150f9e1bdfb52aa048",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/c2a77050269b4e03bd9a735a9f24e573a7598b8a",
+                "reference": "c2a77050269b4e03bd9a735a9f24e573a7598b8a",
                 "shasum": ""
             },
             "require": {
@@ -1210,7 +1210,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2016-06-14 01:20:40"
+            "time": "2016-06-17 19:25:12"
         },
         {
             "name": "laravelcollective/html",
@@ -3280,66 +3280,6 @@
             "time": "2015-11-26 23:23:25"
         },
         {
-            "name": "dflydev/markdown",
-            "version": "v1.0.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/dflydev/dflydev-markdown.git",
-                "reference": "6baed9b50f29c980795b6656d43722aadb126f7e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/dflydev/dflydev-markdown/zipball/6baed9b50f29c980795b6656d43722aadb126f7e",
-                "reference": "6baed9b50f29c980795b6656d43722aadb126f7e",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "dflydev\\markdown": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Dragonfly Development Inc.",
-                    "email": "info@dflydev.com",
-                    "homepage": "http://dflydev.com"
-                },
-                {
-                    "name": "Beau Simensen",
-                    "email": "beau@dflydev.com",
-                    "homepage": "http://beausimensen.com"
-                },
-                {
-                    "name": "Michel Fortin",
-                    "homepage": "http://michelf.com"
-                },
-                {
-                    "name": "John Gruber",
-                    "homepage": "http://daringfireball.net"
-                }
-            ],
-            "description": "PHP Markdown & Extra",
-            "homepage": "http://github.com/dflydev/dflydev-markdown",
-            "keywords": [
-                "markdown"
-            ],
-            "abandoned": "michelf/php-markdown",
-            "time": "2013-09-23 12:00:18"
-        },
-        {
             "name": "doctrine/instantiator",
             "version": "1.0.5",
             "source": {
@@ -3767,6 +3707,107 @@
                 "debugbar"
             ],
             "time": "2016-01-22 12:22:23"
+        },
+        {
+            "name": "mayflower/php-codebrowser",
+            "version": "1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mayflower/PHP_CodeBrowser.git",
+                "reference": "b44cb1867211b3eb9efe8bb61a57fe782c84831f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mayflower/PHP_CodeBrowser/zipball/b44cb1867211b3eb9efe8bb61a57fe782c84831f",
+                "reference": "b44cb1867211b3eb9efe8bb61a57fe782c84831f",
+                "shasum": ""
+            },
+            "require": {
+                "monolog/monolog": "~1.7",
+                "phpunit/php-file-iterator": "~1.3",
+                "symfony/console": "~2.1|~3.0"
+            },
+            "require-dev": {
+                "phploc/phploc": "*",
+                "phpmd/phpmd": "1.5.*",
+                "phpunit/phpunit": "3.7.*",
+                "sebastian/phpcpd": "*",
+                "squizlabs/php_codesniffer": "1.*"
+            },
+            "bin": [
+                "bin/phpcb"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PHPCodeBrowser\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Robin Gloster",
+                    "email": "robin.gloster@mayflower.de",
+                    "role": "developer"
+                }
+            ],
+            "description": "A code browser that augments the code with information from various QA tools.",
+            "homepage": "https://github.com/Mayflower/PHP_CodeBrowser",
+            "time": "2016-01-14 12:43:42"
+        },
+        {
+            "name": "michelf/php-markdown",
+            "version": "1.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/michelf/php-markdown.git",
+                "reference": "156e56ee036505ec637d761ee62dc425d807183c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/michelf/php-markdown/zipball/156e56ee036505ec637d761ee62dc425d807183c",
+                "reference": "156e56ee036505ec637d761ee62dc425d807183c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-lib": "1.4.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Michelf": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Michel Fortin",
+                    "email": "michel.fortin@michelf.ca",
+                    "homepage": "https://michelf.ca/",
+                    "role": "Developer"
+                },
+                {
+                    "name": "John Gruber",
+                    "homepage": "https://daringfireball.net/"
+                }
+            ],
+            "description": "PHP Markdown",
+            "homepage": "https://michelf.ca/projects/php-markdown/",
+            "keywords": [
+                "markdown"
+            ],
+            "time": "2015-12-24 01:37:31"
         },
         {
             "name": "mockery/mockery",
@@ -4825,16 +4866,16 @@
         },
         {
             "name": "sebastian/exporter",
-            "version": "1.2.1",
+            "version": "1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/exporter.git",
-                "reference": "7ae5513327cb536431847bcc0c10edba2701064e"
+                "reference": "42c4c2eec485ee3e159ec9884f95b431287edde4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/exporter/zipball/7ae5513327cb536431847bcc0c10edba2701064e",
-                "reference": "7ae5513327cb536431847bcc0c10edba2701064e",
+                "url": "https://api.github.com/repos/sebastianbergmann/exporter/zipball/42c4c2eec485ee3e159ec9884f95b431287edde4",
+                "reference": "42c4c2eec485ee3e159ec9884f95b431287edde4",
                 "shasum": ""
             },
             "require": {
@@ -4842,12 +4883,13 @@
                 "sebastian/recursion-context": "~1.0"
             },
             "require-dev": {
+                "ext-mbstring": "*",
                 "phpunit/phpunit": "~4.4"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.2.x-dev"
+                    "dev-master": "1.3.x-dev"
                 }
             },
             "autoload": {
@@ -4887,7 +4929,7 @@
                 "export",
                 "exporter"
             ],
-            "time": "2015-06-21 07:55:53"
+            "time": "2016-06-17 09:04:28"
         },
         {
             "name": "sebastian/global-state",
