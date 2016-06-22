@@ -8,9 +8,13 @@
 
 
     <target name="build"
-            depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpdox,phpunit,phpcb"
+            depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpunit,phpcb"
             description=""/>
 
+
+    <!--<target name="build"-->
+            <!--depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpdox,phpunit,phpcb"-->
+            <!--description=""/>-->
     <!--<target name="build"-->
     <!--depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpdox,phpunit,codeceptAccept,phpcb"-->
     <!--description=""/>-->
