@@ -162,6 +162,7 @@
                    --output ${basedir}/build/code-browser/
                    --source ${basedir}" />
     </exec>
+    </target>
 
     <!--<target name="phpcb" description="Aggregate tool output with PHP_CodeBrowser">-->
         <!--<exec executable="${toolsdir}phpcb">-->
