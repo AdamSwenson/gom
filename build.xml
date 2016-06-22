@@ -8,7 +8,7 @@
 
 
     <target name="build"
-            depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpunit,phpcb"
+            depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpunit,codeceptAccept,phpcb"
             description=""/>
 
 
