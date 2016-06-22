@@ -155,18 +155,26 @@
         </apply>
     </target>
 
-    <target name="phpcb" description="Aggregate tool output with PHP_CodeBrowser">
-        <exec executable="${toolsdir}phpcb">
-            <arg value="--log" />
-            <arg path="${basedir}/build/logs" />
-            <arg value="--ignore" />
-            <arg path="${basedir}/tests" />
-            <arg value="--source" />
-            <arg path="${basedir}" />
-            <arg value="--output" />
-            <arg path="${basedir}/build/code-browser" />
-        </exec>
-    </target>
+    <target name="phpcb">
+    <exec executable="${toolsdir}phpcb">
+        <arg line="--log ${basedir}/build/logs/
+                    --ignore ${basedir}/tests/
+                   --output ${basedir}/build/code-browser/
+                   --source ${basedir}" />
+    </exec>
+
+    <!--<target name="phpcb" description="Aggregate tool output with PHP_CodeBrowser">-->
+        <!--<exec executable="${toolsdir}phpcb">-->
+            <!--<arg value="&#45;&#45;log" />-->
+            <!--<arg path="${basedir}/build/logs" />-->
+            <!--<arg value="&#45;&#45;ignore" />-->
+            <!--<arg path="${basedir}/tests" />-->
+            <!--<arg value="&#45;&#45;source" />-->
+            <!--<arg path="${basedir}" />-->
+            <!--<arg value="&#45;&#45;output" />-->
+            <!--<arg path="${basedir}/build/code-browser" />-->
+        <!--</exec>-->
+    <!--</target>-->
 
     <target name="phploc"
          description="Measure project size using PHPLOC and print human readable output. Intended for usage on the command line.">
