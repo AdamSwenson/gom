@@ -6,23 +6,11 @@
     <!-- Uncomment the following when the tools are in ${basedir}/vendor/bin -->
     <property name="toolsdir" value="${basedir}/vendor/bin/"/>
 
-
+<!--phpdox not included because confilict in dependencies-->
     <target name="build"
             depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpunit,codeceptAccept,phpcb"
             description=""/>
-
-
-    <!--<target name="build"-->
-            <!--depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpdox,phpunit,phpcb"-->
-            <!--description=""/>-->
-    <!--<target name="build"-->
-    <!--depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpdox,phpunit,codeceptAccept,phpcb"-->
-    <!--description=""/>-->
-
-    <!--<target name="build-parallel"-->
-    <!--depends="prepare,lint,tools-parallel,phpunit,codeceptSetup,codeceptGrade,codeceptReport,codeceptAdmin,phpcb"-->
-    <!--description=""/>-->
-
+    
     <target name="build-parallel"
             depends="prepare,lint,tools-parallel"
             description=""/>

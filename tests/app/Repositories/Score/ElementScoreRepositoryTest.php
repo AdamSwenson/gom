@@ -123,12 +123,15 @@ public function testRecordCommentText()
 //        $this->assertEquals($elementAssignmentId, $result->element_assignment_id);
 //        $this->assertEquals($studentId, $result->student_id);
 //        $this->assertEquals($score, $result->score);
-        $this->seeInDatabase('element_scores',
-                             [
-                                 'element_assignment_id' => $elementAssignmentId,
-                                 'student_id' => $studentId,
-                                 'score' => $score
-                             ]);
+        $inDb = ElementScore::where('element_assignment_id', $elementAssignmentId)->where('student_id', $studentId)->first();
+        $this->assertInstanceOf(ElementScore::class, $inDb);
+        $this->assertEquals($score, $inDb->score, 'expected score in db', 0.001);
+//        $this->seeInDatabase('element_scores',
+//                             [
+//                                 'element_assignment_id' => $elementAssignmentId,
+//                                 'student_id' => $studentId,
+//                                 'score' => $score
+//                             ]);
 
 //        $this->markTestIncomplete();
     }
