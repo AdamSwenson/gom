@@ -37,7 +37,8 @@
         "jakoch/phantomjs-installer": "^2.1",
         "erusev/parsedown": "^1.6",
         "michelf/php-markdown": "*",
-        "mayflower/php-codebrowser": "^1.1"
+        "mayflower/php-codebrowser": "^1.1",
+        "phploc/phploc": "^3.0"
     },
     "autoload": {
         "classmap": [
