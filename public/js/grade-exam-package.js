@@ -298,7 +298,6 @@ window.onload = function () {
             //Sigh. The user forgot to restart the timer. Do it for them
             Timer.resumeTimerIfPaused(data, Roster, Dashboard);
         });
-        // handleElementSliderStopEvent( slideEvt, data, SliderTools, Roster, AjaxHandler, Dashboard );
     });
 
     $(document).ready(function () {
@@ -14121,12 +14120,11 @@ module.exports = {
     },
 
     /**
-         * Called when an element slider stops movement. Updates element
-         * score and text (if necessary), then saves score, text and time
-         * @param slideEvt
-         */
+     * Called when an element slider stops movement. Updates element
+     * score and text (if necessary), then saves score, text and time
+     * @param slideEvt
+     */
     handleElementSliderStopEvent: function handleElementSliderStopEvent(slideEvt, data, Roster, callback) {
-
         //grab the info related to elements
         var $element = $(slideEvt.target).closest('[id^="element"]');
         var $parent = $element.parents('[id^="element"]');
@@ -14143,6 +14141,8 @@ module.exports = {
 
         //store the new element score in the data object
         data.storeElementScore(Roster.activeStudent, elementIndex, score);
+
+        window.console.log('same', oldScore, score, this.isSameValence(oldScore, score));
 
         /**
          * update comment text and save to DB.

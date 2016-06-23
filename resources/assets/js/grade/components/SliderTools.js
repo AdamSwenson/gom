@@ -2,7 +2,7 @@
  * Created by adam on 5/15/16.
  */
 
-var $ = require('jquery');
+var $ = require( 'jquery' );
 window.$ = $;
 var jQuery = $;
 window.jQuery = jQuery;
@@ -50,12 +50,12 @@ module.exports = {
      * @param newScore
      * @returns {boolean}
      */
-    isSameValence: function( oldScore, newScore){
+    isSameValence: function ( oldScore, newScore ) {
         //if there was no old score, return false
-        if(typeof oldScore == 'undefined' || oldScore == null){
+        if ( typeof oldScore == 'undefined' || oldScore == null ) {
             return false;
         }
-        if( this.getValence( newScore ) != this.getValence( oldScore )){
+        if ( this.getValence( newScore ) != this.getValence( oldScore ) ) {
             return false;
         }
         return true;
@@ -67,79 +67,78 @@ module.exports = {
      * @param $comment
      * @param commentText
      */
-    updateDisplayedComment : function ( $comment, commentText ) {
-    //make writable
-    $comment.removeAttr( 'readonly' );
+    updateDisplayedComment: function ( $comment, commentText ) {
+        //make writable
+        $comment.removeAttr( 'readonly' );
 
-    //set text
-    $comment.val( commentText );
-},
+        //set text
+        $comment.val( commentText );
+    },
 
 
-/**
+    /**
      * Called when an element slider stops movement. Updates element
      * score and text (if necessary), then saves score, text and time
      * @param slideEvt
      */
-    handleElementSliderStopEvent : function ( slideEvt, data, Roster, callback ) {
+    handleElementSliderStopEvent: function ( slideEvt, data, Roster, callback ) {
+        //grab the info related to elements
+        var $element = $( slideEvt.target ).closest( '[id^="element"]' );
+        var $parent = $element.parents( '[id^="element"]' );
+        var commentAreaId = $element.attr( 'data-comment-area-id' );
+        var $elementComment = $( '#' + commentAreaId );
+        var elementIndex = $element.attr( 'data-element-index' ); //the subtask number of the element
+        var elementId = $element.attr( 'data-element-id' ); //the DB's id for the element
 
+        //grab scores
+        var oldScore = data.getElementScore( Roster.activeStudent, elementIndex );
+        var score = slideEvt.value;
 
-    //grab the info related to elements
-    var $element = $( slideEvt.target ).closest( '[id^="element"]' );
-    var $parent = $element.parents( '[id^="element"]' );
-    var commentAreaId = $element.attr( 'data-comment-area-id' );
-    var $elementComment = $( '#' + commentAreaId );
-    var elementIndex = $element.attr( 'data-element-index' ); //the subtask number of the element
-    var elementId = $element.attr( 'data-element-id' ); //the DB's id for the element
+        /* ---------- update the element's score visually and in data.elementScores[] --------- */
 
-    //grab scores
-    var oldScore = data.getElementScore( Roster.activeStudent, elementIndex );
-    var score = slideEvt.value;
+        //store the new element score in the data object
+        data.storeElementScore( Roster.activeStudent, elementIndex, score );
 
-    /* ---------- update the element's score visually and in data.elementScores[] --------- */
+        window.console.log('same', oldScore, score, this.isSameValence( oldScore, score ));
 
-    //store the new element score in the data object
-    data.storeElementScore( Roster.activeStudent, elementIndex, score );
+        /**
+         * update comment text and save to DB.
+         * Only replace text if the score has changed valence regions
+         */
+        if ( ! this.isSameValence( oldScore, score ) ) {
+            //Score is in a new valence region.
+            //So let's plug in the appropriate comment text and save to DB
 
+            //Store comment text in data object
+            //Dear Adam, make sure you read the doc for storeCommentText before fucking with
+            //anything in these lines
+            data.storeCommentText( Roster.activeStudent, elementIndex, $elementComment.val() );
+            var commentText = data.getCommentText( Roster.activeStudent, elementIndex, this.getValence( score ) );
 
-    /**
-     * update comment text and save to DB.
-     * Only replace text if the score has changed valence regions
-     */
-    if ( ! this.isSameValence( oldScore, score ) ) {
-        //Score is in a new valence region.
-        //So let's plug in the appropriate comment text and save to DB
+            //update display
+            this.updateDisplayedComment( $elementComment, commentText );
 
-        //Store comment text in data object
-        //Dear Adam, make sure you read the doc for storeCommentText before fucking with
-        //anything in these lines
-        data.storeCommentText( Roster.activeStudent, elementIndex, $elementComment.val() );
-        var commentText = data.getCommentText( Roster.activeStudent, elementIndex, this.getValence( score ) );
+            //send to the db
+            AjaxHandler.saveComment( data, Roster, elementId, score, commentText );
 
-        //update display
-        this.updateDisplayedComment( $elementComment, commentText );
+        } else {
+            // Score is in the same valence region.
+            // Jump straight to saving without changing the elementComment
+            // Fear not. Changes directly to the comment text will be handled elsewhere.
+            AjaxHandler.createGradeRequest( data, 'element_id', elementId, score, null, Roster );
+        }
 
-        //send to the db
-        AjaxHandler.saveComment( data, Roster, elementId, score, commentText );
+        // If using bell curve (standardScoring), element score affects
+        // the total question score, so update
+        if ( Roster.standardScoring ) {
+            //  updateStandardScores();
+        }
 
-    } else {
-        // Score is in the same valence region.
-        // Jump straight to saving without changing the elementComment
-        // Fear not. Changes directly to the comment text will be handled elsewhere.
-        AjaxHandler.createGradeRequest( data, 'element_id', elementId, score, null, Roster );
+        callback();
+        // //Update dashboard and roster data displayed
+        // updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
+        // //Sigh. The user forgot to restart the timer. Do it for them
+        // Timer.resumeTimerIfPaused( data, Roster, Dashboard );
     }
-
-    // If using bell curve (standardScoring), element score affects
-    // the total question score, so update
-    if ( Roster.standardScoring ) {
-      //  updateStandardScores();
-    }
-
-    callback();
-    // //Update dashboard and roster data displayed
-    // updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
-    // //Sigh. The user forgot to restart the timer. Do it for them
-    // Timer.resumeTimerIfPaused( data, Roster, Dashboard );
-}
 
 };

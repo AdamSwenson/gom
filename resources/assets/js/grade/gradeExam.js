@@ -304,7 +304,6 @@ window.onload = function () {
             //Sigh. The user forgot to restart the timer. Do it for them
             Timer.resumeTimerIfPaused( data, Roster, Dashboard );
         });
-        // handleElementSliderStopEvent( slideEvt, data, SliderTools, Roster, AjaxHandler, Dashboard );
     } );
 
 

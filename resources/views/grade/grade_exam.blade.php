@@ -93,6 +93,7 @@
                     elementScores: JSON.parse( '{!! $studentElementScores !!}' ),
                     questionScores: JSON.parse( '{!! $studentQuestionScores !!}' ),
                     examGradingTimes: JSON.parse( '{!!  $examGradingTimes !!}' ),
+                    valences: [0, 1, 2, 3],
 
                     /**
                      * examGrades[] keeps a persistent total of the exam score for each student.
@@ -158,7 +159,29 @@
                         if ( comment == "" ) {
                             return this.stockComments[ elementIndex ][ valence ];
                         }
-
+                        //now for the fun part. If the user had previously moved the
+                        //slider, elementComments will have a stock text value.
+                        //We don't want to wipe out the stored value if it was customized.
+                        //But if they didn't customize the text (i.e., if there is
+                        //just a stock text value set), then we do want to switch to
+                        //the stock text corresponding to the new slider value.
+                        //So we first check whether the existing comment is custom
+                        var isCustom = true;
+                        var i = 0;
+                        //loop through the stock comments and look for a match
+                        while(isCustom && i <= this.valences.length){
+                            var stock = this.stockComments[ elementIndex ][ i ];
+                            if(stock == comment){
+                                isCustom = false;
+                            }
+                            i++;
+                        }
+                        //If it turns out that the previous comment was stock, then return the
+                        //new stock comment corresponding to the valence
+                        if(! isCustom){
+                            return this.stockComments[elementIndex][valence];
+                        }
+                        //If it was custom, return the same text
                         return comment;
                     },
 
