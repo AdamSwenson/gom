@@ -29,8 +29,7 @@ class ElementControllerCest
 
     public function _before(FunctionalTester $I)
     {
-        k('\App\Repositories\Element\IElementRepository');
-
+        
         $this->assignmentDaoMock = $this->createMock('\App\Repositories\Element\IElementAssignmentRepository');
         $this->element = Element::all()->random();
     }
@@ -188,7 +187,15 @@ class ElementControllerCest
         $this->assertNotNull($response);
     }
 
-
+/*_token:7eJvSALTO6lXLMHP1q03nVeVHv8OhoEBghrj67KJ
+elementName1:q1e1
+elementText1:q1e1
+e1valence0:                            m
+e1valence1:q1e1 p
+e1valence2:q1e1 f
+e1valence3:q1e1 e
+elementId1:0
+nextAction:editStudents*/
     public function testUpdateAllExistingElement(FunctionalTester $I) //$exam, $question, ElementRequest $request)
     {
         $elementId = 2;

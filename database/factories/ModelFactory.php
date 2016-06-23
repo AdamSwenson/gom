@@ -44,7 +44,7 @@ $factory->define(App\User::class, function (Faker\Generator $faker)
 $factory->define(App\Exam::class, function (Faker\Generator $faker)
 {
     return [
-        'term'     => $faker->text,
+        'term'     => $faker->word,
         'name'     => $faker->text,
         'year'     => $faker->year,
         'released' => 0,

@@ -23,8 +23,7 @@
                     <div id="e{{ $counter }}area0" class="tab-pane fade in active">
                         <textarea class="form-control" rows="5" name="e{{ $counter }}valence0"
                                   placeholder="Write a response if the element is missing."
-                        >{{ isset($e->comments[0]) && isset($e->comments[0]->body) ? $e->comments[0]->body : ''  }}
-                            </textarea>
+                        >@if(isset($e->comments[0]) && isset($e->comments[0]->body)){{$e->comments[0]->body}}@endif</textarea>
                     </div>
                     <div id="e{{ $counter }}area1" class="tab-pane fade">
                         <textarea class="form-control" rows="5" name="e{{ $counter }}valence1"

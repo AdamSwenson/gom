@@ -14,7 +14,7 @@ var Sortable = require('sortablejs');
 // var Sortable = require('../utilities/Sortable.js');
 var common = require( '../common.js' );
 
-
+(function(){
 $("#prev-question" ).on('click', function(){
     submitForm(backNavTarget);
 });
@@ -177,3 +177,4 @@ $( "#addElement" ).on('click', function () {
             bootbox.alert( 'A question can have no elements, however, students will not ' +
                 'receive written feedback' );
     }
+})();
