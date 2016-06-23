@@ -84,7 +84,13 @@ class ElementsAddCest
         {
             $I->fillField(ElementEditPage::elementNameXPath($i), $testData[ $i ]['name']);
             $I->fillField(ElementEditPage::elementTextXPath($i), $testData[ $i ]['text']);
-            //TODO open modal and fill in comments
+
+
+            //open modal and fill in comments
+            $I->click(['id' => "btnCustomizeResponse$i"]);
+            $I->waitForElementVisible(['id' => "e{$i}area0"]);
+//            $I->seeInField(['name' => "e{$i}valence0"], $testData[ $i ]['text']);
+            #btnCustomizeResponse1
         }
     }
 
