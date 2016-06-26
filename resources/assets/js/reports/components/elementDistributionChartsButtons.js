@@ -10,9 +10,9 @@ module.exports = {
         'element-key',
         'element-name'
     ],
-
-    data: function () {
-    },
+    //
+    // data: function () {
+    // },
 
     computed: {
 
