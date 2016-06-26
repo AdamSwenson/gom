@@ -28,7 +28,7 @@ class NotifyStudentsHelper implements INotifyStudentsHelper
     const SECOND_EMAIL_VIEW = 'emails.studentNotification.additional';
 
     /** The route to which the link in the email will direct  */
-    const FEEDBACK_PAGE_LINK = 'http://www.gradeomatic.net/feedback';
+    const FEEDBACK_PAGE_LINK = 'https://www.gradeomatic.net/feedback';
 
     /** @var  \App\Repositories\Feedback\IAccessKeyRepository */
     protected $accessKeyRepository;
