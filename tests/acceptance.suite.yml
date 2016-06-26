@@ -17,14 +17,16 @@ modules:
 
         - \Helper\Acceptance
 
+        - Laravel5:
+            part: ORM
+            environment_file: .env.testing
+
+
+
 groups:
   report: tests/acceptance/report/reportGroup
   grade: tests/acceptance/grade/gradeGroup
 
-#
-#        - Laravel5:
-#            part: ORM
-#            cleanup: false
 
 #extensions:
 #    enabled: [Codeception\Extension\Logger, Codeception\Extension\Recorder]
