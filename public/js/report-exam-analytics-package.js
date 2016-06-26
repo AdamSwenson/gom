@@ -38950,8 +38950,9 @@ module.exports = {
     template: require('../templates/element-distribution-charts-buttons.template.html'),
 
     props: ['element-key', 'element-name'],
-
-    data: function data() {},
+    //
+    // data: function () {
+    // },
 
     computed: {},
 
