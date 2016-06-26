@@ -39135,7 +39135,9 @@ module.exports = (function () {
             render: $.fn.dataTable.render.number(',', '.', 3)
         }, { data: 'maxScore' }, { data: 'minScore' }, { data: 'numberAnswers' }, { data: 'action' }],
         searching: false,
-        lengthMenu: [5, 10, 25, 50, 75, 100]
+        paging: false,
+        scrollY: 400
+        //        lengthMenu: [ 5, 10, 25, 50, 75, 100 ]
     });
 })();
 
