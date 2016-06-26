@@ -39135,7 +39135,9 @@ module.exports = (function () {
             render: $.fn.dataTable.render.number(',', '.', 3)
         }, { data: 'maxScore' }, { data: 'minScore' }, { data: 'numberAnswers' }, { data: 'action' }],
         searching: false,
-        lengthMenu: [5, 10, 25, 50, 75, 100]
+        paging: false,
+        scrollY: 400
+        //        lengthMenu: [ 5, 10, 25, 50, 75, 100 ]
     });
 })();
 
@@ -39389,27 +39391,28 @@ module.exports = function () {
 };
 
 },{"./components/elementDistributionChartsButtons.js":22,"bootstrap":3,"jquery":18,"vue":20}],26:[function(require,module,exports){
-module.exports = '<div class="pull-left"><button v-on:click="showElementHistogram" class="btn btn-primary btn-xs elementHistButton ">Histogram</button> </div> <div><button v-on:click="showElementBoxplot" class="btn btn-primary btn-xs elementBoxplotButton ">Boxplot</button> </div>';
+module.exports = '<div class="elementChartButtons">\n    <div class="pull-left">\n        <button v-on:click="showElementHistogram" class="btn btn-primary btn-xs elementHistButton ">Histogram</button>\n    </div>\n    <div class="pull-left">\n        <button v-on:click="showElementBoxplot" class="btn btn-primary btn-xs elementBoxplotButton ">Boxplot</button>\n    </div>\n</div>';
 },{}],27:[function(require,module,exports){
 /**
  * Created by adam on 3/23/16.
  */
 
-"use strict";
+'use strict';
 
 var $ = require('jquery');
 
 /**
- * Automatically hide non-important flash message
+ * Load the Jira issue collector
  */
 module.exports = function () {
 
-    $.ajax({
-        url: "http://45.79.99.151:8080/s/ef44af2e6d014d37d98d906837ad6da6-T/en_US74vpon/64022/3/1.4.26/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=6447b52e",
-        type: "get",
-        cache: true,
-        dataType: "script"
-    });
+  // $.ajax( {
+  //     url: "https://45.79.99.151:8080/s/ef44af2e6d014d37d98d906837ad6da6-T/en_US74vpon/64022/3/1.4.26/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=6447b52e",
+  //     type: "get",
+  //     cache: true,
+  //     dataType: "script"
+  // } );
+
 };
 
 },{"jquery":18}],28:[function(require,module,exports){
