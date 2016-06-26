@@ -39389,7 +39389,7 @@ module.exports = function () {
 };
 
 },{"./components/elementDistributionChartsButtons.js":22,"bootstrap":3,"jquery":18,"vue":20}],26:[function(require,module,exports){
-module.exports = '<div class="pull-left"><button v-on:click="showElementHistogram" class="btn btn-primary btn-xs elementHistButton ">Histogram</button> </div> <div><button v-on:click="showElementBoxplot" class="btn btn-primary btn-xs elementBoxplotButton ">Boxplot</button> </div>';
+module.exports = '<div class="elementChartButtons">\n    <div class="pull-left">\n        <button v-on:click="showElementHistogram" class="btn btn-primary btn-xs elementHistButton ">Histogram</button>\n    </div>\n    <div class="pull-left">\n        <button v-on:click="showElementBoxplot" class="btn btn-primary btn-xs elementBoxplotButton ">Boxplot</button>\n    </div>\n</div>';
 },{}],27:[function(require,module,exports){
 /**
  * Created by adam on 3/23/16.
