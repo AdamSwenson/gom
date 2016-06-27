@@ -57,7 +57,7 @@ module.exports = {
                     this.storage.data.addRows( this.$parent.questionScores[ this.dataKey ] );
                     break;
                 default:
-                    window.console.log('error loading data');
+                    window.console.log( 'error loading data' );
             }
         },
 
@@ -68,7 +68,7 @@ module.exports = {
                 hAxis: { title: 'Score' },
 //                legend: { position: 'top' },
             };
-return this.data;
+            return this.data;
 //            var chart = new google.visualization.Histogram( document.getElementById( this.el ) );
 //            chart.draw( this.data, options );
 
@@ -76,7 +76,7 @@ return this.data;
     },
 
     directives: {
-        chart: function(){
+        chart: function () {
             var options = {
                 //title: this.chartTitle,
                 vAxis: { title: 'Number with score' },
@@ -86,11 +86,11 @@ return this.data;
             var chart = new google.visualization.Histogram( document.getElementById( this.el ) );
             chart.draw( this.data, options );
 
-            window.console.log('dir');
+            window.console.log( 'dir' );
         }
     },
 
-    ready: function(){
+    ready: function () {
 //this.prepareData();
 
         //this.plotChart();

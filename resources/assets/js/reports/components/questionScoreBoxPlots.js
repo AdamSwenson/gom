@@ -55,35 +55,40 @@ module.exports = {
     drawBoxPlots: function() {
         var me = this;
         var boxPlotData = [];
-        me.questionDataSets.forEach( function ( dataSet, i ) {
-            // Create and populate the data table. Column 6: median, Column 7: mean.
-            boxPlotData.push( [ 'Question ' + (i + 1), dataSet.min, dataSet.second, dataSet.third, dataSet.max, dataSet.median,
-                dataSet.mean ] );
-        } );
+        // try {
+            me.questionDataSets.forEach( function ( dataSet, i ) {
+                // Create and populate the data table. Column 6: median, Column 7: mean.
+                boxPlotData.push( [ 'Question ' + (i + 1), dataSet.min, dataSet.second, dataSet.third, dataSet.max, dataSet.median,
+                    dataSet.mean ] );
+            } );
 
-        var data = google.visualization.arrayToDataTable( boxPlotData, true );
+            var data = google.visualization.arrayToDataTable( boxPlotData, true );
 
-        // Create and draw the visualization.
-        var chart = new google.visualization.ComboChart( document.getElementById( 'questionScoreBoxplot' ) );
-        chart.draw( data, {
-            title: 'Box Plot of Question Scores with Quartiles and Means',
-            width: 800,
-            height: 500,
-            vAxis: { title: "Score" },
-            hAxis: { title: "Question Number" },
-            legend: {
-                position: 'top'
-                //textStyle: {
-                //    color: 'black',
-                //    fontSize: 16
-                //}
-            },
-            series: {
-                0: { type: "candlesticks", labelInLegend: 'Q2-Q3' },
-                1: { type: "line", labelInLegend: 'median', pointSize: 10, lineWidth: 0 },
-                2: { type: "line", labelInLegend: 'mean', pointSize: 10, lineWidth: 0, color: 'black' }
-            }
-        } );
+            // Create and draw the visualization.
+            var chart = new google.visualization.ComboChart( document.getElementById( 'questionScoreBoxplot' ) );
+            chart.draw( data, {
+                title: 'Box Plot of Question Scores with Quartiles and Means',
+                width: 800,
+                height: 500,
+                vAxis: { title: "Score" },
+                hAxis: { title: "Question Number" },
+                legend: {
+                    position: 'top'
+                    //textStyle: {
+                    //    color: 'black',
+                    //    fontSize: 16
+                    //}
+                },
+                series: {
+                    0: { type: "candlesticks", labelInLegend: 'Q2-Q3' },
+                    1: { type: "line", labelInLegend: 'median', pointSize: 10, lineWidth: 0 },
+                    2: { type: "line", labelInLegend: 'mean', pointSize: 10, lineWidth: 0, color: 'black' }
+                }
+            } );
+        // }catch(e){
+        //     window.console.log(e);
+        //
+        // }
     },
 
     howToReadBoxPlot: function() {

@@ -43,7 +43,8 @@
             <div class="col-lg-1"></div>
             <div class="chart col-lg-10">
                 <div id="questionScoreBoxplot"></div>
-                <p style="width: 800px; text-align: center;"><a onclick="howToReadBoxPlot();">How to read this chart</a></p>
+                <p style="width: 800px; text-align: center;"><a onclick="howToReadBoxPlot();">How to read this chart</a>
+                </p>
             </div>
             <div class="col-lg-1">
 
@@ -77,8 +78,13 @@
             </div>
             <div class="col-lg-1"></div>
         </div>
-
-        <div id="elementChartArea" class="row"></div>
+        <div class="row">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-10">
+                <div id="elementChartArea" class="row"></div>
+            </div>
+        </div>
+        <div class="col-lg-1"></div>
     </div>
 
 @endsection
@@ -88,26 +94,26 @@
     @include('layouts.js.js_google_charts_include')
     <script type="text/javascript">
 
-        google.load("visualization", "1", {packages: ["corechart"]});
+        google.load( "visualization", "1", { packages: [ "corechart" ] } );
 
         var activeTab = 'navReport';
 
-        var questionScores = JSON.parse('{!! $questionScores !!}');
-        var questionScoresByQNumber = JSON.parse('{!! $questionScoresByQNumber !!}');
-        var questionStats = JSON.parse('{!! $questionStats !!}');
-        var elementStats = JSON.parse('{!! $elementStats !!}');
-        var elementScoresByQENumber = JSON.parse('{!! $elementScoresByQENumber !!}')
+        var questionScores = JSON.parse( '{!! $questionScores !!}' );
+        var questionScoresByQNumber = JSON.parse( '{!! $questionScoresByQNumber !!}' );
+        var questionStats = JSON.parse( '{!! $questionStats !!}' );
+        var elementStats = JSON.parse( '{!! $elementStats !!}' );
+        var elementScoresByQENumber = JSON.parse( '{!! $elementScoresByQENumber !!}' )
 
         //        var questionScoresTable = new google.visualization.DataTable();
         //        questionScoresTable.addColumn( 'score' );
         //        questionScoresTable.addRows( questionScores );
         ////
 
-        console.log('questionStats', questionStats);
-        console.log('elementStats', elementStats);
-        console.log('questionScores', questionScores);
-        console.log('questionScoresByQNum', questionScoresByQNumber);
-        console.log('elementScoresByQENum', elementScoresByQENumber);
+        console.log( 'questionStats', questionStats );
+        console.log( 'elementStats', elementStats );
+        console.log( 'questionScores', questionScores );
+        console.log( 'questionScoresByQNum', questionScoresByQNumber );
+        console.log( 'elementScoresByQENum', elementScoresByQENumber );
     </script>
     <script type="text/javascript" src="{{ asset('js/report-exam-analytics-package.js') }}"></script>
 
