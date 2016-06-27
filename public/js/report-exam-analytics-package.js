@@ -39243,7 +39243,8 @@ module.exports = function () {
                             }
                         } else {
                             //there are no scores defined for the element
-                            elementScoresTable.addRow([elementScoresByQENumber[key][0]]);
+                            // elementScoresTable.addRow( [ elementScoresByQENumber[ key ][ 0 ] ] );
+
                         }
 
                         this.storage.elementScoreTables[key] = elementScoresTable;
