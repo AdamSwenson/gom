@@ -57,14 +57,14 @@
                             <a
                                     id="gradeExam{{$examId}}"
                                     data-href="{{ url('grade/exam/'.$examId) }}"
-                                    class="gradeButton btn btn-primary"
+                                    class="gradeButton btn btn-primary {{ ! $exam->isGradable() ? 'disabled' : '' }}"
                                     title="Grade exam"
                             >
                                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Grade</a>
                             <a
                                     id="assignExam{{$examId}}"
                                     data-href="{{ url('grade/exam/'.$examId.'/assign') }}"
-                                    class="assignButton btn btn-primary"
+                                    class="assignButton btn btn-primary {{ ! $exam->isGradable() ? 'disabled' : '' }}"
                                     title="Assign letter grades"
                             >
                                 <span class="glyphicon glyphicon-signal" aria-hidden="true"></span> Assign</a>
