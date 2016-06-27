@@ -43,11 +43,11 @@
             <div class="col-lg-1"></div>
             <div class="chart col-lg-10">
                 <div id="questionScoreBoxplot"></div>
-                <p style="width: 800px; text-align: center;"><a onclick="howToReadBoxPlot();">How to read this chart</a>
+                {{--<p style="width: 800px; text-align: center;"><a onclick="howToReadBoxPlot();">How to read this chart</a>--}}
                 </p>
             </div>
             <div class="col-lg-1">
-
+                <p><a id="boxplotHowTo">How to read this chart</a>
             </div>
         </div>
 
@@ -103,11 +103,6 @@
         var questionStats = JSON.parse( '{!! $questionStats !!}' );
         var elementStats = JSON.parse( '{!! $elementStats !!}' );
         var elementScoresByQENumber = JSON.parse( '{!! $elementScoresByQENumber !!}' )
-
-        //        var questionScoresTable = new google.visualization.DataTable();
-        //        questionScoresTable.addColumn( 'score' );
-        //        questionScoresTable.addRows( questionScores );
-        ////
 
         console.log( 'questionStats', questionStats );
         console.log( 'elementStats', elementStats );

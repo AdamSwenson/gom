@@ -92,10 +92,10 @@ module.exports = {
     },
 
     howToReadBoxPlot: function() {
-        showMessage( '<p style="text-align: justify;">How to Read - Box Plot', 'In this graph, each set of question scores is represented by a box with lines. ' +
-            'The bottom line indicates the lowest quartile (25%) of scores, while the box ' +
-            'displays the second and third quartiles (25%-75%). The top line shows the range of the top ' +
-            '25% of scores. Additional dots show the mean and median score for the question.</p>' );
+        this.showMessage( '<p>How to Read - Box Plot</p>', '<p>In this graph, each set of question scores is represented by a box with lines. </p>' +
+            '<p>The tip of the line extending from the bottom indicates the lowest quartile (25%) of scores, while the top and bottom of the box represent ' +
+            'the second and third quartiles (25%-75%).</p> <p>The tip of the line extending from the top indicates the top ' +
+            '25% of scores.</p> <p>The dots show the mean and median score for the question.</p>' );
     },
 
     showMessage: function( title, msg ) {
