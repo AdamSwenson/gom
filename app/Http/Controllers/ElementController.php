@@ -13,6 +13,7 @@ use App\Repositories\Question\IQuestionAssignmentRepository;
 
 use App\Http\Requests;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Laracasts\Flash\Flash;
 
 class ElementController extends Controller
@@ -64,34 +65,34 @@ class ElementController extends Controller
 //        // return ('List of elements for question id: '.$question);
 //    }
 
-//    /**
-//     * Store a newly created resource in storage.
-//     *
-//     * @param ElementRequest $request
-//     * @return Response
-//     */
-//    public function store(ElementRequest $request)
-//    {
-//        //Check that user has permission to access the objects
-//        $exam = Exam::findOrFail($request->input('examId'));
-//        $this->authorize('access-object', $exam);
-//
-//        $elementName = $request->input('elementName');
-//        $respGeneric = $request->input('respGeneric');
-//        $element = $this->dao->createElement($elementName, '', $respGeneric);
-//
-//        if ( ! empty($element) )
-//        {
-//            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_ABSENT, $request->input('respAbsent'));
-//            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_POOR, $request->input('respPoor'));
-//            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_OK, $request->input('respFair'));
-//            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_EXCELLENT, $request->input('respGood'));
-//
-//            $this->assignmentDao->record($request->input('examId'), $request->input('questionNumber'), $element->getId(), $request->input('subtask'));
-//        }
-//
-//        return $element;
-//    }
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param ElementRequest $request
+     * @return Response
+     */
+    public function store(ElementRequest $request)
+    {
+        //Check that user has permission to access the objects
+        $exam = Exam::findOrFail($request->input('examId'));
+        $this->authorize('access-object', $exam);
+
+        $elementName = $request->input('elementName');
+        $respGeneric = $request->input('respGeneric');
+        $element = $this->dao->createElement($elementName, '', $respGeneric);
+
+        if ( ! empty($element) )
+        {
+            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_ABSENT, $request->input('respAbsent'));
+            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_POOR, $request->input('respPoor'));
+            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_OK, $request->input('respFair'));
+            $this->dao->addValencedContent($element->getId(), Comment::VALENCE_EXCELLENT, $request->input('respGood'));
+
+            $this->assignmentDao->record($request->input('examId'), $request->input('questionNumber'), $element->getId(), $request->input('subtask'));
+        }
+
+        return $element;
+    }
 
     /** Edit all elements associated with given question
      * @param Exam $exam
@@ -202,8 +203,9 @@ class ElementController extends Controller
             }
         } catch ( \Exception $e )
         {
+            Log::error($e);
             Flash::error("There was a problem saving your edits. Please try again");
-            return back();
+            return back()->withInput();
         }
     }
 
