@@ -39027,6 +39027,7 @@ module.exports = {
     drawBoxPlots: function drawBoxPlots() {
         var me = this;
         var boxPlotData = [];
+        // try {
         me.questionDataSets.forEach(function (dataSet, i) {
             // Create and populate the data table. Column 6: median, Column 7: mean.
             boxPlotData.push(['Question ' + (i + 1), dataSet.min, dataSet.second, dataSet.third, dataSet.max, dataSet.median, dataSet.mean]);
@@ -39055,6 +39056,10 @@ module.exports = {
                 2: { type: "line", labelInLegend: 'mean', pointSize: 10, lineWidth: 0, color: 'black' }
             }
         });
+        // }catch(e){
+        //     window.console.log(e);
+        //
+        // }
     },
 
     howToReadBoxPlot: function howToReadBoxPlot() {
@@ -39153,6 +39158,7 @@ window.$ = $;
 require('bootstrap');
 
 var Vue = require('vue');
+var bootbox = require('bootbox');
 
 //dev
 Vue.config.debug = true;
@@ -39167,6 +39173,7 @@ module.exports = function () {
         },
 
         data: {
+            chartErrorMessage: "<p>We were unable to create a chart for this item. There probably wasn't enough data.</p> <p>If that's not the case, please report it as a possible bug.</p>",
             storage: {
                 elementScoreTables: [],
                 questionScores: []
@@ -39218,7 +39225,7 @@ module.exports = function () {
                 //{
                 //    return this.storage.elementScoreTables;
                 //}
-
+                //TODO Number of questions and elements should be either dynamically determined or loaded from server
                 var numQuestions = 5;
                 var numElements = 5;
 
@@ -39230,8 +39237,13 @@ module.exports = function () {
                         elementScoresTable.addColumn('number', 'score');
 
                         var key = 'Q' + i + 'E' + j;
-                        for (var k = 0; elementScoresByQENumber[key].length > k; k++) {
-                            elementScoresTable.addRow([elementScoresByQENumber[key][k]]);
+                        if (typeof elementScoresByQENumber[key] != 'undefined') {
+                            for (var k = 0; elementScoresByQENumber[key].length > k; k++) {
+                                elementScoresTable.addRow([elementScoresByQENumber[key][k]]);
+                            }
+                        } else {
+                            //there are no scores defined for the element
+                            elementScoresTable.addRow([elementScoresByQENumber[key][0]]);
                         }
 
                         this.storage.elementScoreTables[key] = elementScoresTable;
@@ -39243,27 +39255,31 @@ module.exports = function () {
 
         methods: {
             drawElementHistogram: function drawElementHistogram(key, elementName) {
-                var options = {
-                    title: key + ' ' + elementName,
-                    vAxis: { title: '# students with score' },
-                    hAxis: { title: 'Score' },
-                    legend: { position: 'top' }
-                };
+                try {
+                    var options = {
+                        title: key + ' ' + elementName,
+                        vAxis: { title: '# students with score' },
+                        hAxis: { title: 'Score' },
+                        legend: { position: 'top' }
+                    };
 
-                //push div onto page
-                var targetDiv = "<div id='elementHistWrapper" + key + "' class='elementChartWrapperDiv  col-lg-4 col-md-6 col-sm-12'>" + "<p class='text-right'>" + "<span class='glyphicon glyphicon-remove chartRemove'></span><span class='sr-only'>Remove</span>" + "</p>" + "<div id='elementHist" + key + "'></div>" + "</div>";
+                    //push div onto page
+                    var targetDiv = "<div id='elementHistWrapper" + key + "' class='elementChartWrapperDiv  col-lg-4 col-md-6 col-sm-12'>" + "<p class='text-right'>" + "<span class='glyphicon glyphicon-remove chartRemove'></span><span class='sr-only'>Remove</span>" + "</p>" + "<div id='elementHist" + key + "'></div>" + "</div>";
 
-                //add div and chart if doesn't already exist
-                if (!$("#elementHistWrapper" + key).length) {
-                    $("#elementChartArea").append(targetDiv);
-                    var chart = new google.visualization.Histogram(document.getElementById("elementHist" + key));
-                    chart.draw(this.elementScoreTables[key], options);
+                    //add div and chart if doesn't already exist
+                    if (!$("#elementHistWrapper" + key).length) {
+                        $("#elementChartArea").append(targetDiv);
+                        var chart = new google.visualization.Histogram(document.getElementById("elementHist" + key));
+                        chart.draw(this.elementScoreTables[key], options);
+                    }
+
+                    //bind a listener to remove it
+                    $('.chartRemove').on('click', function () {
+                        $(this).parent().parent().remove();
+                    });
+                } catch (e) {
+                    bootbox.alert(this.chartErrorMessage);
                 }
-
-                //bind a listener to remove it
-                $('.chartRemove').on('click', function () {
-                    $(this).parent().parent().remove();
-                });
             },
 
             /**
@@ -39318,43 +39334,49 @@ module.exports = function () {
              * @param elementName
              */
             drawElementBoxplot: function drawElementBoxplot(key, elementName) {
+                try {
+                    var dataSet = this.calculateBoxplotData(key);
 
-                var dataSet = this.calculateBoxplotData(key);
+                    //Put into expected format
+                    var boxPlotData = [];
+                    boxPlotData.push([elementName, dataSet.min, dataSet.second, dataSet.third, dataSet.max, dataSet.median, dataSet.mean]);
 
-                //Put into expected format
-                var boxPlotData = [];
-                boxPlotData.push([elementName, dataSet.min, dataSet.second, dataSet.third, dataSet.max, dataSet.median, dataSet.mean]);
+                    var data = google.visualization.arrayToDataTable(boxPlotData, true);
 
-                var data = google.visualization.arrayToDataTable(boxPlotData, true);
+                    //push div onto page
+                    var targetDiv = "<div id='elementBoxWrapper" + key + "' class='elementChartWrapperDiv col-lg-3 col-md-6 col-sm-12'>" + "<p class='chartClose text-right'>" + "<span class='glyphicon glyphicon-remove chartRemove'></span><span class='sr-only'>Remove</span>" + "</p>" + "<div id='elementBox" + key + "'></div>" + "</div>";
 
-                //push div onto page
-                var targetDiv = "<div id='elementBoxWrapper" + key + "' class='elementChartWrapperDiv col-lg-3 col-md-6 col-sm-12'>" + "<p class='chartClose text-right'>" + "<span class='glyphicon glyphicon-remove chartRemove'></span><span class='sr-only'>Remove</span>" + "</p>" + "<div id='elementBox" + key + "'></div>" + "</div>";
+                    //add div and chart if doesn't already exist
+                    if (!$("#elementBoxWrapper" + key).length) {
+                        $("#elementChartArea").append(targetDiv);
 
-                //add div and chart if doesn't already exist
-                if (!$("#elementBoxWrapper" + key).length) {
-                    $("#elementChartArea").append(targetDiv);
-
-                    // Create and draw the visualization.
-                    var chart = new google.visualization.ComboChart(document.getElementById("elementBox" + key));
-                    chart.draw(data, {
-                        title: key + ' ' + elementName,
-                        vAxis: { title: "Score" },
-                        //hAxis: {title: elementName},
-                        legend: {
-                            position: 'top'
-                            //textStyle: {
-                            //    color: 'black',
-                            //    fontSize: 14
-                            //}
-                        },
-                        series: {
-                            0: { type: "candlesticks", labelInLegend: 'Q2-Q3' },
-                            1: { type: "line", labelInLegend: 'median', pointSize: 10, lineWidth: 0 },
-                            2: { type: "line", labelInLegend: 'mean', pointSize: 10, lineWidth: 0, color: 'black' }
-                        }
+                        // Create and draw the visualization.
+                        var chart = new google.visualization.ComboChart(document.getElementById("elementBox" + key));
+                        chart.draw(data, {
+                            title: key + ' ' + elementName,
+                            vAxis: { title: "Score" },
+                            //hAxis: {title: elementName},
+                            legend: {
+                                position: 'top'
+                                //textStyle: {
+                                //    color: 'black',
+                                //    fontSize: 14
+                                //}
+                            },
+                            series: {
+                                0: { type: "candlesticks", labelInLegend: 'Q2-Q3' },
+                                1: { type: "line", labelInLegend: 'median', pointSize: 10, lineWidth: 0 },
+                                2: { type: "line", labelInLegend: 'mean', pointSize: 10, lineWidth: 0, color: 'black' }
+                            }
+                        });
+                    }
+                    //bind a listener to remove it
+                    $('.chartRemove').on('click', function () {
+                        $(this).parent().parent().remove();
                     });
+                } catch (e) {
+                    bootbox.alert(this.chartErrorMessage);
                 }
-                //}
             }
         },
 
@@ -39390,7 +39412,7 @@ module.exports = function () {
     });
 };
 
-},{"./components/elementDistributionChartsButtons.js":22,"bootstrap":3,"jquery":18,"vue":20}],26:[function(require,module,exports){
+},{"./components/elementDistributionChartsButtons.js":22,"bootbox":2,"bootstrap":3,"jquery":18,"vue":20}],26:[function(require,module,exports){
 module.exports = '<div class="elementChartButtons">\n    <div class="pull-left">\n        <button v-on:click="showElementHistogram" class="btn btn-primary btn-xs elementHistButton ">Histogram</button>\n    </div>\n    <div class="pull-left">\n        <button v-on:click="showElementBoxplot" class="btn btn-primary btn-xs elementBoxplotButton ">Boxplot</button>\n    </div>\n</div>';
 },{}],27:[function(require,module,exports){
 /**

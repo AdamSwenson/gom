@@ -184,7 +184,7 @@ public static function questionPanelId($questionNumber){
      * @param $questionNumber
      * @param bool $not
      */
-    public function checkQuestionFieldsPresent($I, $questionNumber, $not = false)
+    public static function checkQuestionFieldsPresent($I, $questionNumber, $not = false)
     {
         if ( $not )
         {
