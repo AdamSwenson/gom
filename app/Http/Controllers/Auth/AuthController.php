@@ -54,7 +54,6 @@ class AuthController extends Controller
      */
     protected function validator(array $data)
     {
-        //TODO this duplicates the language in authRequest
         $rules = [
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
