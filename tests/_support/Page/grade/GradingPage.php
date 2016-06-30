@@ -20,9 +20,10 @@ class GradingPage
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
 
+    #common
     public static $pageTitleText = "Grade Exam | gradeomatic";
     public static $pageSubHeadingText = "Select a student to begin grading";
-
+public static $mainBodyLocator = ['id' => 'gradeExamPage'];
 
     public static $questionPanelLocator =  ['id' => 'questionPanel'];
 
@@ -171,7 +172,7 @@ TAG;
     public static function navigateToGradingPage($I, $examId){
         $I->test_login($I);
         $I->amOnPage(self::route($examId));
-        $I->waitForElementVisible(self::$rosterAndDashboardColumnLocator);
+        $I->waitForElementVisible(self::$mainBodyLocator);
 
         $I->amGoingTo("Check that the page title and url are correct");
         $I->seeInCurrentUrl(self::route($examId));
