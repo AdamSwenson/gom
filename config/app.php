@@ -222,9 +222,6 @@ return [
 
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
-//        'Form'      => Illuminate\Html\FormFacade::class,
-//        'HTML'      => Illuminate\Html\HtmlFacade::class,
-//        'PDF'       => Barryvdh\DomPDF\Facade::class,
         'Flash'     => Laracasts\Flash\Flash::class,
 
     ],
