@@ -6,6 +6,8 @@ class QualityControlPage
     // include url of current page
     public static $URL = '';
 
+    public static $mainBodyLocator = 'qualityControlPage';
+
     public static function URL($examId){
         return "report/{$examId}/qualitycontrol";
     }

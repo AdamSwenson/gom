@@ -6,6 +6,8 @@ class StudentControlsPage
     // include url of current page
     public static $URL = '';
 
+    public static $mainBodyLocator = ['id' => 'studentControlsPage'];
+    
     /**
      * Basic route example for your current URL
      * You can append any additional parameter to URL

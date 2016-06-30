@@ -69,18 +69,23 @@ class Element extends BaseModel
     public function setAsQuestionTask($examId, $questionId, $subtask)
     {
         /*
+         * Should not be hitting these two because will be handled by handle-impure
+         * method in repository.
+         * [Maybe those functions should be moved to be internal to the model. Don't want
+         * this to be called in an impure case]
+         *
         Check to see if the element is already assigned on the exam.
         If so, remove it so that there will only be one of an element per exam.
         */
-        $preExisting = ElementAssignment::where('exam_id', $examId)->where('element_id', $this->attributes['id'])->first();
-        if(! is_null($preExisting)) $preExisting->delete();
-
-        /*
-        Check to see if another element is assigned here
-        If it is, delete the existing assignment.
-        */
-        $e = ElementAssignment::where('exam_id', $examId)->where('question_id', $questionId)->where('subtask', $subtask)->first();
-        if(! is_null($e)) $e->delete();
+//        $preExisting = ElementAssignment::where('exam_id', $examId)->where('element_id', $this->attributes['id'])->first();
+//        if(! is_null($preExisting)) $preExisting->delete();
+//
+//        /*
+//        Check to see if another element is assigned here
+//        If it is, delete the existing assignment.
+//        */
+//        $e = ElementAssignment::where('exam_id', $examId)->where('question_id', $questionId)->where('subtask', $subtask)->first();
+//        if(! is_null($e)) $e->delete();
 
         //Create a new element assignment object and populate it with the new assignment
         $newAssign = new ElementAssignment();

@@ -129,6 +129,9 @@ elixir( function ( mix ) {
 
     mix.browserify(['libraries/jquery-1.11.3.min.js'], 'public/js/jquery.js');
 //    mix.browserify( 'reports/examControls.js', 'public/js/dev-exam-buttons.js' );
+    
+    /* --------------------- Admin ---------------------- */
+    mix.browserify(['admin/restrictedRegistration.js'], 'public/js/restricted-registration-package.js');
 
     // mix.browserify([
     //         "libraries/unitTestHelpers/jquery-1.11.1.js",

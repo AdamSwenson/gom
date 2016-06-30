@@ -11,7 +11,7 @@
  */ ?>
 <div class="row">
     <div class="col-xs-3"></div>
-    <form role="form" method="POST" action="{{url('/auth/login')}}" accept-charset="UTF-8" class="col-xs-6">
+    <form role="form" id="loginForm" method="POST" action="{{url('/auth/login')}}" accept-charset="UTF-8" class="col-xs-6">
         {!! csrf_field() !!}
         <h3 class="text-left">Login</h3>
 

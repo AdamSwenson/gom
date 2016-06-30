@@ -11,12 +11,14 @@ class ReportIndexPage
      * public static $usernameField = '#username';
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
+    public static $mainBodyLocator = ['css' => '#examControlsPage'];
     public static $pageTitleText = "Reports | gradeomatic";
     public static $pageHeadingText = "Post-Grading Tasks";
     public static $pageSubHeadingText = "Release grades to students or view data about an exam";
 
     public static $releaseToggleOnText = "Hide exam from students";
     public static $releaseToggleOffText = "Release exam to students";
+    
 
     /* ------------ Analytics ---------- */
     public static $analyticsText = "Analytics";
@@ -180,11 +182,6 @@ class ReportIndexPage
         $I->test_login($I);
         $I->amOnPage(self::$URL);
         $I->waitForElementVisible(['css' => '#examControlsPage']);
-
-        $I->amGoingTo("Check that the page title and url are correct");
-        $I->seeInCurrentUrl(self::$URL);
-        $I->seeInTitle(self::$pageTitleText);
-        $I->see(self::$pageSubHeadingText);
     }
 
 
@@ -196,6 +193,12 @@ class ReportIndexPage
      */
     public static function verifyPageIntact($I, $numberOfExams, $examIdsToSkip)
     {
+
+        $I->amGoingTo("Check that the page title and url are correct");
+        $I->seeInCurrentUrl(self::$URL);
+        $I->seeInTitle(self::$pageTitleText);
+        $I->see(self::$pageSubHeadingText);
+
         $I->expectTo("see the standard page text components");
         $I->seeInTitle(self::$pageTitleText);
         $I->see(self::$pageHeadingText);

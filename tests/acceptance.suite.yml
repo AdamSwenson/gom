@@ -11,7 +11,11 @@ modules:
             url: 'http://localhost:8000'
             window_size: maximize
             browser: phantomjs
+            restart: false
+
         - Db
+
+        - Cli
 
         - Asserts
 
@@ -21,7 +25,8 @@ modules:
             part: ORM
             environment_file: .env.testing
 
-
+extensions:
+    enabled: [Group\Report]
 
 groups:
   report: tests/acceptance/report/reportGroup

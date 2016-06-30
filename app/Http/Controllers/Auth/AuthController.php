@@ -54,11 +54,18 @@ class AuthController extends Controller
      */
     protected function validator(array $data)
     {
-        return Validator::make($data, [
+        //TODO this duplicates the language in authRequest
+        $rules = [
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|confirmed|min:6',
-        ]);
+        ];
+
+        $messages = [
+            'email.required' => 'Your email is required',
+        ];
+
+        return Validator::make($data, $rules, $messages);
     }
 
     /**
@@ -69,6 +76,7 @@ class AuthController extends Controller
      */
     protected function create(array $data)
     {
+
         $user = User::create([
                                 'name' => $data['name'],
                                 'email' => $data['email'],

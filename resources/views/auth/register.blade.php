@@ -3,7 +3,7 @@
 @section('description', 'Sign up for gradeomatic')
 
 @section('body')
-    <div class="row">
+    <div id="registrationPage" class="row mainBodyLocator">
         <div class="col-xs-3"></div>
         <form role="form" method="POST" action="{{url('auth/register')}}" accept-charset="UTF-8" class="col-xs-6">
             {!! csrf_field() !!}
@@ -45,7 +45,7 @@
             </div>
 
             <input id="submit"
-                    class="btn btn-primary"
+                   class="btn btn-primary"
                    value="Create Account"
                    type="submit">
         </form>

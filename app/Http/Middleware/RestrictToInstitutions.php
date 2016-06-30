@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Exceptions\UnpermittedDomainException;
+use App\Http\Requests\AuthRequest;
 use Closure;
 use Illuminate\Support\Facades\Storage;
 
@@ -28,7 +29,7 @@ class RestrictToInstitutions
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $request
      * @param  \Closure $next
      * @return mixed
      */

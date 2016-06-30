@@ -8,7 +8,7 @@ class LoginPageCest
 
     public function _before(AcceptanceTester $I)
     {
-        $I->amOnPage(LoginPage::$URL);
+        LoginPage::navigateToPage($I);
     }
 
     public function _after(AcceptanceTester $I)
@@ -22,7 +22,6 @@ class LoginPageCest
      */
     public function checkLogInPageIntact(AcceptanceTester $I)
     {
-        $I->amOnPage('/auth/logout');
         LoginPage::assertPageIntact($I);
     }
 
@@ -32,7 +31,7 @@ class LoginPageCest
      * @group login
      * @param AcceptanceTester $I
      */
-    public function logIn(AcceptanceTester $I)
+    public function logInHappyPath(AcceptanceTester $I)
     {
         $I->amGoingTo("Attempt to login ");
         $I->fillField(LoginPage::$emailField, LoginPage::$testAccountEmail);
@@ -44,5 +43,35 @@ class LoginPageCest
         $I->seeInTitle(SetupExamSelectPage::$pageTitleText);
     }
 
+    /**
+     * @group admin
+     * @group login
+     * @param AcceptanceTester $I
+     */
+    public function logInInvalidEmail(AcceptanceTester $I, $scenario)
+    {
+        $scenario->incomplete();
+    }
 
+    /**
+     * @group admin
+     * @group login
+     * @param AcceptanceTester $I
+     */
+    public function logInInvalidPassword(AcceptanceTester $I, $scenario)
+    {
+        $scenario->incomplete();
+    }
+
+
+    /**
+     * @group admin
+     * @group login
+     * @param AcceptanceTester $I
+     * @param $scenario
+     */
+    public function followForgottenEmailLink(AcceptanceTester $I, $scenario)
+    {
+
+    }
 }

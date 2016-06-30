@@ -23,6 +23,7 @@ class AcceptanceTester extends \Codeception\Actor
     public $loginPageRoute = '/auth/login';
     public $loginEmail = 'test2@gradeomatic.net';
     public $loginPassword = 'testtest';
+    public $logoutRoute = '/auth/logout';
 
     /**
      * Define custom actions here
@@ -30,8 +31,20 @@ class AcceptanceTester extends \Codeception\Actor
 
     function start_artisan()
     {
-      //  $this->runShellCommand('APP_ENV=codeceptWorld php artisan serve');
+       // $this->runShellCommand('APP_ENV=codeceptWorld php artisan up');
         //  shell_exec('APP_ENV=codeceptWorld php artisan serve');
+    }
+    
+    function stop_artisan()
+    {
+        
+        codecept_debug($this->runShellCommand('APP_ENV=codeceptWorld php artisan down'));
+        codecept_debug('closed artisan');
+        //  shell_exec('APP_ENV=codeceptWorld php artisan serve');
+    }
+
+    function log_out(){
+        $this->amOnPage($this->logoutRoute);
     }
 
     /**
@@ -50,7 +63,7 @@ class AcceptanceTester extends \Codeception\Actor
             // If no custom credentials have been entered, then can
             // safely log in using snapshot if it exists.
             // if snapshot exists - skip login
-            if ( $I->loadSessionSnapshot('login') )
+            if ( $this->loadSessionSnapshot('login') )
             {
                 return;
             }
@@ -60,20 +73,22 @@ class AcceptanceTester extends \Codeception\Actor
         $password = ! is_null($customPassword) ? $customPassword : $this->loginPassword;
 
         // log in
-        $I->amOnPage($this->loginPageRoute);
-        $I->waitForElementVisible(['id' => 'email']);
-        $I->fillField(['id' => 'email'], $email);
-        $I->fillField('//*[@id="password"]', $password);
-        $I->click('#login');
+        $this->amOnPage($this->loginPageRoute);
+        $this->waitForElementVisible(['id' => 'email']);
+
+        $this->fillField(['id' => 'email'], $email);
+        $this->fillField(['id' => "password"], $password);
+//        $I->fillField('//*[@id="password"]', $password);
+        $this->click(['id' => 'login']);
 
         if(is_null($customEmail) && is_null($customPassword))
         {
             //Don't want to save the snapshot if the login info
             //was custom.
             // save snapshot
-            $I->saveSessionSnapshot('login');
+            $this->saveSessionSnapshot('login');
         }
-        $I->wait(2);
+        $this->wait(2);
     }
 
     /**

@@ -7,6 +7,7 @@
 @endsection
 
 @section('body')
+    <div id="studentControlsPage">
     <h3 id="examTitle"
         data-exam-id="{{ $exam->getId() }}">
         <span class="glyphicon glyphicon-user" aria-hidden="true"> </span> Student Controls:
@@ -66,6 +67,7 @@
         @endif
         </tbody>
     </table>
+    </div>
 @endsection
 
 @section('jsArea')

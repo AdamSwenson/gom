@@ -12,11 +12,14 @@ class PasswordResetPage
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
 
-    public static $emailFieldLocator = ['id' => 'email'];
-
+    //common
+    public static $mainBodyLocator = ['id' => 'resetPassPage'];
     public static $pageTitleText = 'Reset Password | gradeomatic';
     public static $pageHeadingText = 'Reset Password';
 
+
+    //fields
+    public static $emailFieldLocator = ['id' => 'email'];
     public static $submitButtonLocator = ['id' => 'submit'];
     public static $submitButtonText = 'Send Email';
 
@@ -31,15 +34,26 @@ class PasswordResetPage
         return static::$URL . $param;
     }
 
+    /* --------------------------------- Utilities ------------------- */
+    public static function navigateToPage($I){
+        $I->amOnPage('/auth/logout');
+        $I->amOnPage(self::$URL);
+        $I->waitForElementVisible(self::$mainBodyLocator);
+    }
 
-    /**
-     * @var \AcceptanceTester;
-     */
-    protected $acceptanceTester;
-
-    public function __construct(\AcceptanceTester $I)
+    /* ----------------------------- Assertions ------------------------ */
+    public static function assertPageIntact($I)
     {
-        $this->acceptanceTester = $I;
+        $I->expectTo('see major page level elements');
+        $I->seeInTitle(self::$pageTitleText);
+        $I->see(self::$pageHeadingText);
+        $I->seeInCurrentUrl(self::$URL);
+
+        $I->expectTo('see main form fields');
+        $I->seeElement(self::$emailFieldLocator);
+        $I->seeElement(self::$submitButtonLocator);
+        $I->seeInField(self::$submitButtonLocator, self::$submitButtonText);
+
     }
 
 }

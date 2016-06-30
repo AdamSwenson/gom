@@ -1,4 +1,12 @@
 actor: Tester
+coverage:
+    enabled: true
+    include:
+        - app/*
+    exclude:
+        - app/Http/routes.php
+        - app/Http/Kernel.php
+
 paths:
     tests: tests
     log: tests/_output
@@ -27,8 +35,13 @@ extensions:
           - delete_successful: true
 
         Codeception\Extension\Phantoman:
-          path: '/usr/local/bin/phantomjs'
-          suites: ['acceptance', 'functional']
+          - path: '/usr/local/bin/phantomjs'
+          - suites: ['acceptance', 'functional']
+          - webSecurityEnabled: false
+          - ignoreSslErrors: true
+          - outputEncoding: 'utf8'
+          - localToRemoteUrlAccessEnabled: true
+          - printDebugMessages: true
 
 modules:
     enabled:
