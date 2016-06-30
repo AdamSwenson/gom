@@ -29,7 +29,8 @@ class AccountCreatePage
     public static $mismatchMessage = "The password confirmation does not match.";
     public static $usernameMessage = "The name field is required";
     public static $passwordMissingMessage = "The password field is required";
-    public static $emailMissingMessage = "The email field is required";
+    public static $emailMissingMessage = "Your email is required";
+    public static $emailInvalidMessage = "Please enter a valid email address";
     //Your email is required
 
     public static function assertPageIntact($I)

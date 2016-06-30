@@ -36,6 +36,13 @@ class LoginPage
     public static $loginButton = '#login';
     public static $loginButtonLocator = ['id' => 'login'];
 
+    public static $forgotPasswordLinkLocator = ['id' => 'forgotPasswordLink'];
+    public static $forgotPasswordLinkText = "Forgot Password";
+
+    #messages
+    public static $missingPasswordMessage = "The password field is required.";
+    public static $missingEmailMessage = "The email field is required";
+    public static $credentialErrorMessage = "These credentials do not match our records.";
 
     /**
      * Basic route example for your current URL
@@ -60,21 +67,23 @@ class LoginPage
     /* ---------------------------------- Assertions ------------------------------- */
     public static function assertPageIntact($I)
     {
-
         $I->expectTo('see the title and page level elements');
-            $I->see(LoginPage::$pageHeadingText);
-            $I->seeInTitle(LoginPage::$pageTitleText);
-            $I->seeInCurrentUrl(LoginPage::$URL);
+        $I->see(LoginPage::$pageHeadingText);
+        $I->seeInTitle(LoginPage::$pageTitleText);
+        $I->seeInCurrentUrl(LoginPage::$URL);
 
-            $I->expectTo("see the various fields of the login page");
-            $I->seeElement(self::$emailFieldLocator);
-            $I->seeElement(self::$passwordFieldLocator);
-            $I->seeElement(self::$loginButtonLocator);
+        $I->expectTo("see the main fields of the login page");
+        $I->seeElement(self::$emailFieldLocator);
+        $I->seeElement(self::$passwordFieldLocator);
+        $I->seeElement(self::$loginButtonLocator);
 
-            $I->seeElement(['id' => 'remember']);
-            $I->see("Remember me");
-            $I->seeLink("Forgot Password", self::$forgotPasswordUrl);
-//            $I->seeLink("Forgot Password", url('') . "/password/email");
+        $I->expectTo('see the remember me checkbox');
+        $I->seeElement(['id' => 'remember']);
+        $I->see("Remember me");
+
+        $I->expectTo('see the forgot password link');
+        $I->seeElement(self::$forgotPasswordLinkLocator);
+        $I->seeLink(self::$forgotPasswordLinkText, self::$forgotPasswordUrl);
     }
 
 }

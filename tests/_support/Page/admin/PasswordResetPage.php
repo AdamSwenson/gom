@@ -23,6 +23,8 @@ class PasswordResetPage
     public static $submitButtonLocator = ['id' => 'submit'];
     public static $submitButtonText = 'Send Email';
 
+    #messages
+    public static $emailErrorMessage = "We can't find a user with that e-mail address.";
 
     /**
      * Basic route example for your current URL

@@ -63,6 +63,7 @@ class AuthController extends Controller
 
         $messages = [
             'email.required' => 'Your email is required',
+            'email.email' => 'Please enter a valid email address',
         ];
 
         return Validator::make($data, $rules, $messages);

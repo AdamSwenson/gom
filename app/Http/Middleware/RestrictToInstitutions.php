@@ -6,6 +6,7 @@ use App\Exceptions\UnpermittedDomainException;
 use App\Http\Requests\AuthRequest;
 use Closure;
 use Illuminate\Support\Facades\Storage;
+use Validator;
 
 /**
  * This prevents sign up attempts from succeeding if the person enters an
@@ -26,6 +27,8 @@ class RestrictToInstitutions
     /** @var array Institutions which are okay */
     public static $permittedDomains = [];
 
+    protected $validator;
+
     /**
      * Handle an incoming request.
      *
@@ -42,6 +45,14 @@ class RestrictToInstitutions
 
         //Only apply to post requests
         if(! $request->isMethod('post')){ return $next($request); }
+
+        //Make sure the request contains a valid email,
+        //otherwise pass it on so that the main validator can handle it
+        $this->validate($request);
+        if(isset($this->validator) && $this->validator->fails())
+        {
+            return $next($request);
+        }
 
         try
         {
@@ -67,6 +78,37 @@ class RestrictToInstitutions
             //If any of the conditions failed, redirect
             return $this->refuseRequest($request);
         }
+    }
+
+    /**
+     * Get a validator for an incoming registration request.
+     * This duplicates what the authController does.
+     *
+     * This is necessary because this middleware runs before the authController
+     * validation. There is no sense rewriting the controller logic, since eventually
+     * this middleware step will be removed.
+     *
+     * The problem that this addresses is that, without it: If the email address is invalid,
+     * this middleware will interpret the address as a restricted institution and send the
+     * user to that informational page. That could be confusing if they were from the acceptable
+     * institutions and just mistyped.
+     *
+     * Thus this is responsible for sending them back to the account creation page if the email address is wonky.
+     *
+     * @param  $request
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function validate($request)
+    {
+        $rules = [
+            'email' => 'required|email|max:255|unique:users'
+        ];
+
+        $messages = [
+        ];
+
+        $this->validator = Validator::make($request->all(), $rules, $messages);
+        
     }
 
 

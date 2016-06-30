@@ -36,7 +36,7 @@
 
             <div class="col-xs-4 verticallyAligned">
                 <span class="">
-                    <a href={{url('password/email')}}>Forgot Password</a>
+                    <a id="forgotPasswordLink" href={{url('password/email')}}>Forgot Password</a>
                     </span>
             </div>
         </div>

@@ -17,6 +17,7 @@ PasswordResetPage::navigateToPage($I);
 
     /**
      * @group admin
+     * @group reset_password
      * @param AcceptanceTester $I
      */
     public function assertPageIntact(AcceptanceTester $I)
@@ -26,6 +27,7 @@ PasswordResetPage::navigateToPage($I);
 
     /**
      * @group admin
+     * @group reset_password
      * @param AcceptanceTester $I
      */
     public function submitRequestValidEmail(AcceptanceTester $I)
@@ -41,6 +43,7 @@ PasswordResetPage::navigateToPage($I);
 
     /**
      * @group admin
+     * @group reset_password
      * @param AcceptanceTester $I
      */
     public function submitRequestValidEmailNoExistingAccount(AcceptanceTester $I){
@@ -55,6 +58,7 @@ PasswordResetPage::navigateToPage($I);
 
     /**
      * @group admin
+     * @group reset_password
      * @param AcceptanceTester $I
      */
     public function submitRequestInvalidEmail(AcceptanceTester $I){

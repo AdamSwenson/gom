@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Http\Request;
 
 class PasswordController extends Controller
 {
@@ -31,6 +32,31 @@ class PasswordController extends Controller
     {
         $this->middleware('guest');
     }
+    /**
+     * Validate the request of sending reset link.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     */
+    protected function validateSendResetLinkEmail(Request $request)
+    {
+        $this->validate($request, ['email' => 'required|email'], ['email' => "We can't find a user with that e-mail address."]);
+
+
+    }
+
+//
+//    /**
+//     * Get the password reset validation messages.
+//     *
+//     * @return array
+//     */
+//    protected function getResetValidationMessages()
+//    {
+//        return [
+//            'email' => "We can't find a user with that e-mail address."
+//        ];
+//    }
 
 
 }

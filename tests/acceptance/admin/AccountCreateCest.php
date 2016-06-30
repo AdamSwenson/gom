@@ -121,7 +121,7 @@ class AccountCreateCest
 
         $I->expect("to see the error message for email missing");
         $I->wait(3);
-        $I->see(AccountCreatePage::$emailMissingMessage);
+        $I->see(AccountCreatePage::$emailInvalidMessage);
     }
 
     /**
@@ -140,9 +140,9 @@ class AccountCreateCest
 
         $I->amGoingTo("submit the form");
         $I->click(AccountCreatePage::$submitButtonLocator);
+        $I->wait(3);
 
         $I->expect("to see the error message for username");
-        $I->wait(3);
         $I->see(AccountCreatePage::$usernameMessage);
     }
 
@@ -163,11 +163,10 @@ class AccountCreateCest
 
         $I->amGoingTo("submit the form");
         $I->click(AccountCreatePage::$submitButtonLocator);
-
         $I->wait(3);
 
+        $I->expectTo("see the error message for bad confirmation ");
         $I->see("The password confirmation does not match.");
-
     }
 
 
@@ -182,14 +181,14 @@ class AccountCreateCest
         $I->fillField(AccountCreatePage::$userNameLocator, $this->faker->username);
         $I->fillField(AccountCreatePage::$emailLocator, $this->validEmail);
         $password1 = $this->faker->password;
-//        $I->fillField(AccountCreatePage::$passwordLocator, $password1);
+
         $I->fillField(AccountCreatePage::$confirmPasswordLocator, $password1);
 
         $I->amGoingTo("submit the form");
         $I->click(AccountCreatePage::$submitButtonLocator);
-
         $I->wait(3);
 
+        $I->expectTo("see the error message for missing credentials");
         $I->see(AccountCreatePage::$passwordMissingMessage);
 
     }
@@ -207,15 +206,13 @@ class AccountCreateCest
         $I->fillField(AccountCreatePage::$emailLocator, $this->validEmail);
         $password1 = $this->faker->password;
         $I->fillField(AccountCreatePage::$passwordLocator, $password1);
-//        $I->fillField(AccountCreatePage::$confirmPasswordLocator, $password1);
 
         $I->amGoingTo("submit the form");
         $I->click(AccountCreatePage::$submitButtonLocator);
-
         $I->wait(3);
 
+        $I->expectTo("see the error message for bad credentials");
         $I->see(AccountCreatePage::$mismatchMessage);
-
     }
 
 }
