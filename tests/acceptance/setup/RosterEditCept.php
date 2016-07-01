@@ -1,6 +1,6 @@
 <?php
 use Page\ElementEditPage;
-use Page\ExamEditPage;
+use Page\setup\ExamEditPage;
 use Page\RosterEditPage;
 
 

@@ -12414,13 +12414,13 @@ module.exports = function () {
 'use strict';
 
 var $ = require('jquery');
-
+var delayTime = 5000;
 /**
  * Automatically hide non-important flash message
  */
 module.exports = function () {
   //Automatically hide non-important flash message
-  $('div.alert').not('alert-important').delay(2000).slideUp(300);
+  $('div.alert').not('alert-important').delay(delayTime).slideUp(300);
 };
 
 },{"jquery":15}],20:[function(require,module,exports){

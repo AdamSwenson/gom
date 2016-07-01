@@ -7,76 +7,80 @@
 @section('description', 'Create, edit, clone or delete an exam')
 
 @section('cssLinks')
-<link rel="stylesheet" href="{{ asset('css/select-exam-package.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/select-exam-package.css') }}">
 @endsection
 
 @section('body')
-    <nav>
-        <ul class="pager">
-            <li class="next">
-                <a id="forwardNavButton"
-                   href="{{ url('exam/create') }}"
-                   title="Create new exam">Create New Exam
-                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
-            </li>
-        </ul>
-    </nav>
-    <h2><span class="glyphicon glyphicon-list" aria-hidden="true"></span> Exam Setup</h2>
-    <h4>Create, edit and delete exams</h4>
-    <table class="table">
-        <thead>
-        <tr>
-            <th class="col-lg-1">Term</th>
-            <th class="col-lg-6" style="min-width: 200px;">Name</th>
-            <th class="col-lg-1">Questions</th>
-            <th class="col-lg-1">Students</th>
-            <th class="col-lg-3" style="width: 260px; min-width: 260px;"></th>
-        </tr>
-        </thead>
-        <tbody>
-        @if ( sizeof($exams) > 0 )
-            @foreach($exams as $exam)
-                <tr id="examRow{{ $exam->getId() }}">
-                    <td style="vertical-align:middle; width: 10%;">
-                        {{ $exam->getTerm() }} {{ $exam->getYear() }}</td>
-                    <td style="vertical-align:middle">
-                        {{ $exam->getName() }}</td>
-                    <td style="vertical-align: middle">{{ $numberOfQuestions[$exam->getId()] or '0' }}</td>
-                    <td style="vertical-align: middle">{{ $numberOfStudents[$exam->getId()] or '0' }}</td>
-                    <!-- edit / clone / delete buttons -->
-                    <td style="text-align:right;">
-                        <a class="editExam btn btn-info"
-                           href="{{ url('exam/'.$exam->getId().'/edit') }}"
-                           title="Edit Exam">
-                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-                            Edit
-                        </a>
-                        <a class="cloneExam btn btn-default"
-                           href="{{ url('exam/'.$exam->getId().'/clone') }}"
-                           title="Clone Exam">
-                            <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> Clone
-                        </a>
-                        <a class="deleteExam btn btn-danger"
-                           data-exam-id="{{ $exam->getId() }}"
-                           title="Delete Exam">
-                            <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
-                            Delete
-                        </a>
-                    </td>
-                </tr>
-            @endforeach
-        @else
+    <div id="setupSelectExamPage" class="mainBodyLocator">
+        <nav>
+            <ul class="pager">
+                <li class="next">
+                    <a id="forwardNavButton"
+                       href="{{ url('exam/create') }}"
+                       title="Create new exam">Create New Exam
+                        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+                </li>
+            </ul>
+        </nav>
+        <h2><span class="glyphicon glyphicon-list" aria-hidden="true"></span> Exam Setup</h2>
+        <h4>Create, edit and delete exams</h4>
+        <table class="table">
+            <thead>
             <tr>
-                <td></td>
-                <td><i>No Exams Found</i></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <th class="col-lg-1">Term</th>
+                <th class="col-lg-6" style="min-width: 200px;">Name</th>
+                <th class="col-lg-1">Questions</th>
+                <th class="col-lg-1">Students</th>
+                <th class="col-lg-3" style="width: 260px; min-width: 260px;"></th>
             </tr>
-        @endif
-        </tbody>
-    </table>
-
+            </thead>
+            <tbody>
+            @if ( sizeof($exams) > 0 )
+                @foreach($exams as $exam)
+                    <tr id="examRow{{ $exam->getId() }}">
+                        <td style="vertical-align:middle; width: 10%;">
+                            {{ $exam->getTerm() }} {{ $exam->getYear() }}</td>
+                        <td style="vertical-align:middle">
+                            {{ $exam->getName() }}</td>
+                        <td style="vertical-align: middle">{{ $numberOfQuestions[$exam->getId()] or '0' }}</td>
+                        <td style="vertical-align: middle">{{ $numberOfStudents[$exam->getId()] or '0' }}</td>
+                        <!-- edit / clone / delete buttons -->
+                        <td style="text-align:right;">
+                            <a id="editExamButton{{$exam->getId()}}"
+                               class="editExam btn btn-info"
+                               href="{{ url('exam/'.$exam->getId().'/edit') }}"
+                               title="Edit Exam">
+                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                Edit
+                            </a>
+                            <a id="cloneExamButton{{$exam->getId()}}"
+                               class="cloneExam btn btn-default"
+                               href="{{ url('exam/'.$exam->getId().'/clone') }}"
+                               title="Clone Exam">
+                                <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> Clone
+                            </a>
+                            <a id="deleteExamButton{{$exam->getId()}}"
+                               class="deleteExam btn btn-danger"
+                               data-exam-id="{{ $exam->getId() }}"
+                               title="Delete Exam">
+                                <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                @endforeach
+            @else
+                <tr>
+                    <td></td>
+                    <td><i>No Exams Found</i></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            @endif
+            </tbody>
+        </table>
+    </div>
 @endsection
 
 

@@ -1,6 +1,6 @@
 <?php
 
-use Page\ExamEditPage;
+use Page\setup\ExamEditPage;
 
 
 //@group setup

@@ -1,5 +1,5 @@
 <?php
-namespace Page;
+namespace Page\setup;
 
 class SetupExamSelectPage
 {
@@ -11,8 +11,9 @@ class SetupExamSelectPage
      * public static $usernameField = '#username';
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
+    #common
+    public static $mainBodyLocator = ['id' => 'setupSelectExamPage'];
     public static $pageTitleText = 'Setup exam';
-
     public static $pageHeadingText = 'Exam Setup';
     public static $pageHeadingSubText = 'Create, edit and delete exams';
 
@@ -31,10 +32,28 @@ class SetupExamSelectPage
     public static $forwardNavButtonText = "Create New Exam";
     public static $forwardNavButton = "#forwardNavButton";
 
-    public static $deleteExamCancelButtonXPath = "/html/body/div[5]/div/div/div[3]/button[1]";
-public static $deleteExamConfirmButtonXPath = "/html/body/div[5]/div/div/div[3]/button[2]";
+    #confirm modal
+    public static $confirmModalLocator = ['class' => 'confirmationModal'];
+    public static $deleteConfirmButtonLocator = ['css' => 'button.btn.confirmDelete.btn-danger.btn-sm'];
+    public static $deleteCancelButtonLocator = ['css' => 'button.btn.cancelDelete.btn-default.btn-sm'];
+    public static $deleteExamConfirmTextLocator = ['id' => 'confirmationModalText'];
     public static $deleteExamConfirmationText ="Warning: This will delete all associated students, scores, questions and elements. Do you wish to proceed?";
 
+
+    /**
+     * @var string
+     * @deprecated
+     */
+    public static $deleteExamCancelButtonXPath = "/html/body/div[5]/div/div/div[3]/button[1]";
+    /**
+     * @var string
+     * @deprecated
+     */
+    public static $deleteExamConfirmButtonXPath = "/html/body/div[5]/div/div/div[3]/button[2]";
+
+    #messages from server
+    public static $deleteExamSuccessMessage = "You have successfully deleted an exam.";
+    public static $cloneExamSuccessMessage = "You successfully cloned the exam.";
 
     public static function forwardNavButtonTarget(){
         $routeBase = "http://localhost:8000";
@@ -74,6 +93,20 @@ public static $deleteExamConfirmButtonXPath = "/html/body/div[5]/div/div/div[3]/
         return "examRow{$examId}";
     }
 
+    public static function cloneButtonLocator($examId){
+        return ['id' => "cloneExamButton{$examId}"];
+    }
+
+    public static function deleteButtonLocator($examId){
+        return ['id' => "deleteExamButton{$examId}"];
+//        return "//*[@id='examRow{$examId}']/td[5]/a[3]";
+    }
+
+    public static function editButtonLocator($examId){
+        return ['id' => "editExamButton{$examId}"];
+    }
+
+
     public static function cloneButtonXPath($examId){
         return "//*[@id='examRow{$examId}']/td[5]/a[2]";
     }
@@ -95,6 +128,14 @@ public static $deleteExamConfirmButtonXPath = "/html/body/div[5]/div/div/div[3]/
     {
         return static::$URL . $param;
     }
+    
+    /* -------------------------- Tools --------------- */
+    public static function navigateToPage($I){
+        $I->test_login($I);
+        $I->amOnPage(self::$URL);
+        $I->waitForElementVisible(self::$mainBodyLocator);
+
+    }
 
     /* ------------------------------------------- tests ----------------------------- */
     /**
@@ -103,20 +144,23 @@ public static $deleteExamConfirmButtonXPath = "/html/body/div[5]/div/div/div[3]/
      * @param $id
      */
     public static function checkExamRowPresent($I, $id){
-        $I->amGoingTo("Check that see exam term and title");
+        $I->expectTo("exam term and title");
         $I->see(self::examTerm($id));
         $I->see(self::partialExamName($id));
 
-        $I->amGoingTo("Check that see correct edit button");
+        $I->expectTo("Check that see correct edit button");
         $I->seeLink(self::$editButtonText, 'http://localhost:8000' . self::editButtonTargetRoute($id));
-        $I->seeElement(self::editButtonXPath($id));
+        $I->seeElement(self::editButtonLocator($id));
+//        $I->seeElement(self::editButtonXPath($id));
 
-        $I->amGoingTo("Check that see correct clone button");
+        $I->expectTo("see correct clone button");
         $I->seeLink(self::$cloneButtonText, 'http://localhost:8000' . self::cloneButtonTargetRoute($id));
-        $I->seeElement(self::cloneButtonXPath($id));
+        $I->seeElement(self::cloneButtonLocator($id));
+//        $I->seeElement(self::cloneButtonXPath($id));
 
-        $I->amGoingTo("Check that see correct delete button");
-        $I->seeElement(self::deleteButtonXPath($id));
+        $I->expectTo("see correct delete button");
+        $I->seeElement(self::deleteButtonLocator($id));
+//        $I->seeElement(self::deleteButtonXPath($id));
     }
 
     /**

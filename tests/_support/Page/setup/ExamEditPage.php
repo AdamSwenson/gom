@@ -1,5 +1,5 @@
 <?php
-namespace Page;
+namespace Page\setup;
 
 class ExamEditPage
 {
@@ -11,12 +11,16 @@ class ExamEditPage
      * public static $usernameField = '#username';
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
-public static $examNameField = 'name';
-    public static $termSelectId = 'term';
-    public static $yearSelectId = '';
 
+    #common
+    public static $mainBodyLocator = ['id' => 'editExam'];
     public static $pageHeadingText = 'Create Exam';
     public static $pageTitleText = 'Create Exam | gradeomatic';
+
+
+    public static $examNameField = 'name';
+    public static $termSelectId = 'term';
+    public static $yearSelectId = '';
 
     public static $forwardNavButton = "#forwardNavButton";
 
@@ -27,7 +31,7 @@ public static $examNameField = 'name';
      */
     public static function route($param)
     {
-        return static::$URL.$param;
+        return static::$URL . $param;
     }
 
 

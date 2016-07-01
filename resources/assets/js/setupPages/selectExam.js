@@ -17,6 +17,7 @@ $(".deleteExam").on('click', function(){
 
 function showConfirmation(examId) {
     bootbox.dialog({
+        className: 'confirmationModal',
         message: '<p id="confirmationModalText"><span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span> ' +
         "Warning: This will delete all associated students, scores, questions and elements. " +
         "<br/>Do you wish to proceed?</p>",
