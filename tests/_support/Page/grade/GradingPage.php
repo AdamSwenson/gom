@@ -23,7 +23,7 @@ class GradingPage
     #common
     public static $pageTitleText = "Grade Exam | gradeomatic";
     public static $pageSubHeadingText = "Select a student to begin grading";
-public static $mainBodyLocator = ['id' => 'gradeExamPage'];
+    public static $mainBodyLocator = ['id' => 'gradeExamPage'];
 
     public static $questionPanelLocator =  ['id' => 'questionPanel'];
 

@@ -8,6 +8,7 @@
 @endsection
 
 @section('body')
+    <div id="gradeAssignPage" class="mainBodyLocator">
     <h3><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> Assign Grades: {{ $exam->getTerm() }}
         {{ $exam->getYear() }} "{{ $exam->getName() }}"</h3>
     <h4>Enter the minimum exam grade for each letter assignment. Blank grades will not be used.</h4>
@@ -52,7 +53,7 @@
             <div id="scoreChart" style="width: 450px; height: 220px;"></div>
         </div>
     </div>
-
+    </div>
 @endsection
 
 
