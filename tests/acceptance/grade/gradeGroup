@@ -1,6 +1,6 @@
 DashboardCest.php
 GradeExamsCest.php
-GradeSelectExamCept.php
+GradeSelectExamCest.php
 LetterGradeButtonCest.php
 RosterCest.php
 SliderAndCommentsCest.php

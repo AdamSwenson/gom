@@ -14,9 +14,12 @@ class GradeSelectExamPage
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
 
+    #common
+    public static $mainBodyLocator = ['id' => "gradeSelectExamPage"];
     public static $pageHeadingText = "Grade Exam";
     public static $pageSubHeadingText = "Select an exam to grade";
     public static $pageTitleText = 'Grade Exam | gradeomatic';
+
 
     public static $gradeButtonClass = "gradeButton";
     public static $assignButtonClass = "assignButton";
@@ -168,11 +171,11 @@ class GradeSelectExamPage
         $I->seeElement(self::numberQuestionsCellLocator($examId));
 
         $I->amGoingTo("Check that see correct grade button for exam #{$examId}");
-        $I->seeLink(self::$gradeButtonText, self::gradeButtonTargetRoute($examId));
+        //$I->seeLink(self::$gradeButtonText, self::gradeButtonTargetRoute($examId, true));
         $I->seeElement(self::gradeButtonXPath($examId));
 
         $I->amGoingTo("Check that see correct assign button for exam #{$examId}");
-        $I->seeLink(self::$assignButtonText, self::assignButtonTargetRoute($examId));
+        //$I->seeLink(self::$assignButtonText, self::assignButtonTargetRoute($examId, true));
         $I->seeElement(self::assignButtonXPath($examId));
 
     }
