@@ -42071,6 +42071,7 @@ module.exports = {
             if ($roster.length == 0) return;
 
             bootbox.dialog({
+                className: "confirmationModal",
                 message: "Warning: This will remove all students from the current roster, including their grades and feedback.",
                 title: "Delete Roster",
                 buttons: {
@@ -42485,6 +42486,7 @@ module.exports = {
             }
             var me = this;
             bootbox.dialog({
+                className: 'confirmationModal',
                 message: '<span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span> ' + 'Warning: this will delete the student, including their feedback and scores.',
                 title: "Delete Student",
                 buttons: {

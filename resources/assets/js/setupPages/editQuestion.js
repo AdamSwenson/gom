@@ -87,6 +87,7 @@ function handleDelete(evt, editableList){
     var el = editableList.closest( evt.item );
 
     bootbox.dialog( {
+        className: 'confirmationModal',
         message: "<p class='questionDeleteWarning' id='questionDeleteWarning'> <span class='glyphicon glyphicon-warning-sign'></span>" +
         " Warning: This will permanently delete all elements and scores associated with the question </p>",
         title: "Delete Question",
@@ -110,37 +111,41 @@ function handleDelete(evt, editableList){
 
 }
 
-(function(){
+try {
+
+// (function(){
 // Sortable is the lib for drag and drop questions
 // create an editable list and set up some filters to handle callbacks
-$(document).ready(function () {
+// $(document).ready(function () {
 
-        localStorage.clear();
-        var qList = document.getElementById( 'questionList' );
-        var editableList = Sortable.create( qList, {
-            filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
-            animation: 150,
-            handle: '.handle',  // Drag handle selector within list items
-            ghostClass: "sortable-ghost", // Class name for the drop placeholder
+    localStorage.clear();
+    var qList = document.getElementById( 'questionList' );
+    var editableList = Sortable.create( qList, {
+        filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
+        animation: 150,
+        handle: '.handle',  // Drag handle selector within list items
+        ghostClass: "sortable-ghost", // Class name for the drop placeholder
 
-            onFilter: function ( evt ) {
-                handleDelete(evt, editableList);
+        onFilter: function ( evt ) {
+            handleDelete( evt, editableList );
+        },
+        store: {
+            // store the ordering to localStorage
+            get: function ( sortable ) {
+                var order = localStorage.getItem( sortable.options.group );
+                //window.console.log(localStorage.getItem(sortable.options.group));
+                return order ? order.split( '|' ) : [];
             },
-            store: {
-                // store the ordering to localStorage
-                get: function ( sortable ) {
-                    var order = localStorage.getItem( sortable.options.group );
-                    //window.console.log(localStorage.getItem(sortable.options.group));
-                    return order ? order.split( '|' ) : [];
-                },
-                set: function ( sortable ) {
-                    var order = sortable.toArray();
-                    localStorage.setItem( sortable.options.group, order.join( '|' ) );
-                    updateNumbers();
-                }
+            set: function ( sortable ) {
+                var order = sortable.toArray();
+                localStorage.setItem( sortable.options.group, order.join( '|' ) );
+                updateNumbers();
             }
-        } );
-
+        }
+    } );
+}catch (e){
+    window.console.log(e);
+}
     // $(".js-remove").on('click', function(){
     //
     //     var el = $(this);
@@ -174,8 +179,8 @@ $(document).ready(function () {
     //     });
     // });
 
-});
-})();
+// });
+// })();
 // update all "questionItem" ids. These define the ordering when saved to the DB.
         function updateNumbers() {
             $( '#questionForm' ).find( "[id^='questionItem']" ).each( function ( index, el ) {
@@ -201,6 +206,10 @@ $(document).ready(function () {
             // return number of questions currently in the questionList
             return $( "[id^='questionItem']" ).length;
         }
+//
+// $(document).ready(function () {
+//    $(".mainBodyLocator").append("<div id='loadComplete'></div>");
+// });
 
 //        return false;
 //     }

@@ -1,5 +1,5 @@
 <?php
-use Page\RosterEditPage;
+use Page\setup\RosterEditPage;
 
 //@group setup
 //@group roster

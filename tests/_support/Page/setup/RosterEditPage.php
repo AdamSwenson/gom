@@ -1,5 +1,5 @@
 <?php
-namespace Page;
+namespace Page\setup;
 
 class RosterEditPage
 {
@@ -11,16 +11,30 @@ class RosterEditPage
      * public static $usernameField = '#username';
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
+    #common
+    public static $mainBodyLocator = ['id' => 'rosterEditPage'];
+    public static $pageTitleText = 'Edit Roster | gradeomatic';
 
+    
     public static $importRosterButton = '#fileInput';
+    /** @var string @deprecated */
     public static $addStudentButton = '#addStudent';
+    public static $addStudentButtonLocator = ['id' => 'addStudent'];
     public static $deleteRosterButton = '#deleteRoster';
     public static $postDeleteMessageCloseButton = '/html/body/div[3]/div/div/div[2]/button';
     //.postDeleteMessageCloseButton';
 
 
     //warning modals
+    public static $deleteConfirmationModalLocator = ['class' => 'confirmationModal'];
+    public static $deleteConfirmButtonLocator = ['css' => "button.btn.btn-danger.btn-sm.deleteConfirmButton"];
+    public static $deleteCancelButtonLocator = ['css' => "button.btn.btn-sm.cancelButton"];
+
+    public static $importHelpModalLocator = ['class' => 'importHelpModal'];
+
+    /** @var string @deprecated */
     public static $rosterDeleteModalCancelButton = '.cancelRosterDelete';
+    /** @var string @deprecated */
     public static $rosterDeleteModalConfirmButton = '.confirmRosterDelete';
 
     public static $deleteStudentWarningModalText = "Warning: this will delete the student, including their feedback and scores.";
@@ -31,12 +45,13 @@ class RosterEditPage
     public static $forwardNavButton = '#forwardNavButton';
     public static $forwardNavText = 'Save & Finish';
     public static $backNavButton = '#backNavButton';
+//    public static $forwardNavLocator = ['id'=> "forwardNavButton"];
+    public static $forwardNavLocator = ['xpath'=> '//*[@id="forwardNavButton"]/div'];
     public static $forwardNavXPath = '//*[@id="forwardNavButton"]/div';
     public static $backNavText = 'Edit Elements';
     public static $backNavXPath = '//*[@id="backNavButton"]/div';
 
     //other page features
-    public static $pageTitleText = 'Edit Roster | gradeomatic';
 
     /**
      * Basic route example for your current URL
@@ -85,6 +100,14 @@ class RosterEditPage
         }
 
         return $out;
+    }
+    
+    /* --------------------------------- tools ----------------------- */
+    public static function navigateToPage($I, $examId){
+        $I->test_login($I);
+        # Go to page
+        $I->amOnPage("/exam/{$examId}/student/edit");
+        $I->waitForElementVisible(self::$mainBodyLocator);
     }
 
     /* ---------------------------------- tests --------------------- */
