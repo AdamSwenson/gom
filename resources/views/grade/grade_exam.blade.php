@@ -10,7 +10,7 @@
 @endsection
 
 @section('body')
-    <div class="row">
+    <div id="gradeExamPage" class="row mainBodyLocator">
         <!-- Left column holds questions and sliders -->
         <div id="questionAndSliderColumn"
              class="col-md-8 questionAndSliderColumn">
@@ -88,11 +88,11 @@
                 ?>
 
         var data = {
-                    stockComments: JSON.parse( '{!! $stockComments !!}' ),
-                    elementComments: JSON.parse( '{!! $studentElementComments !!}' ),
-                    elementScores: JSON.parse( '{!! $studentElementScores !!}' ),
-                    questionScores: JSON.parse( '{!! $studentQuestionScores !!}' ),
-                    examGradingTimes: JSON.parse( '{!!  $examGradingTimes !!}' ),
+                    stockComments: {!! $stockComments !!},
+                    elementComments: {!! $studentElementComments !!},
+                    elementScores: {!! $studentElementScores !!},
+                    questionScores: {!! $studentQuestionScores !!},
+                    examGradingTimes: {!!  $examGradingTimes !!},
                     valences: [0, 1, 2, 3],
 
                     /**
@@ -103,8 +103,9 @@
                      * only used here as a shorthand to store and quickly find information about
                      * the exam state.
                      */
-                     examGrades: JSON.parse( '{!! $studentGrades !!}' ),
+                     examGrades: {!! $studentGrades !!},
                      numQuestions: '{{  count( $questionAssignments ) }}',
+                    
                      /**
                      * Stores a student's score on a particular element
                      * @param activeStudent
