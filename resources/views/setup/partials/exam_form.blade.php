@@ -19,27 +19,37 @@
                         class="glyphicon glyphicon-menu-down"></span></button>
             <ul class="dropdown-menu" id="termList" role="menu" style="cursor:pointer;">
                 @foreach($terms as $term)
-                    <li><a>{{ $term }}</a></li>
+                    <li><a class="termItem">{{ $term }}</a></li>
                 @endforeach
             </ul>
         </div>
         <!-- year selector -->
-        <input name="examYear" type="hidden" id="hiddenYear" value="{{ isset($exam) ? $exam->getYear() : '' }}"/>
+        <input name="examYear"
+               type="hidden"
+               id="hiddenYear"
+               value="{{ isset($exam) ? $exam->getYear() : '' }}"/>
 
         <div class="btn-group btn-group">
-            <button class="btn btn-primary dropdown-toggle" id="year" title="Choose Exam Year"
+            <button class="btn btn-primary dropdown-toggle"
+                    id="year"
+                    title="Choose Exam Year"
                     data-toggle="dropdown">{{ isset($exam) ? $exam->getYear() : 'Year' }}
                 <span class="glyphicon glyphicon-menu-down"></span></button>
-            <ul class="dropdown-menu" id="yearList" role="menu" style="cursor:pointer;">
+            <ul class="dropdown-menu"
+                id="yearList"
+                role="menu"
+                style="cursor:pointer;">
                 @foreach($years as $year)
-                    <li><a>{{ $year }}</a></li>
+                    <li><a class="yearItem">{{ $year }}</a></li>
                 @endforeach
             </ul>
         </div>
         <p>
         <?php isset($exam) ? $examId = $exam->getId() : $examId = 0; ?>
         <div style="display: {{ isset($exam) ? 'visible' : 'none' }}">
-            <a href="{{ url('exam/'.$examId.'/student/edit') }}" class="btn btn-info" title="Edit Student Roster"
+            <a href="{{ url('exam/'.$examId.'/student/edit') }}"
+               class="btn btn-info"
+               title="Edit Student Roster"
                style="cursor:pointer;"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
                  Edit Student Roster</a>
         </div>

@@ -88,50 +88,61 @@ elixir( function ( mix ) {
     //Include in development
     mix.browserify( [ 'utilities/vueDebug.js' ], 'public/js/debug.js' );
 
-    mix.browserify( [
-            //'https://code.jquery.com/jquery-2.2.0.js',
-            //'https://code.jquery.com/ui/1.11.3/jquery-ui.js',
-            //'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js',
-            'interactiveHome/home.js' ],
-        'public/js/home-package.js' );
+    // mix.browserify( [
+    //         //'https://code.jquery.com/jquery-2.2.0.js',
+    //         //'https://code.jquery.com/ui/1.11.3/jquery-ui.js',
+    //         //'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js',
+    //         'interactiveHome/home.js' ],
+    //     'public/js/home-package.js' );
 
     //Normally this stuff will be integrated with another package. This is just for pages
     //which have no other js.
     mix.browserify( 'common.js', 'public/js/common-package.js' );
 
-    //AsyncStorage pages
+
+    /* --------------------- Setup ---------------------- */
     mix.browserify( 'setupPages/examForm.js', 'public/js/exam-setup-package.js' );
     mix.browserify( 'setupPages/editElement.js', 'public/js/element-edit-package.js' );
     mix.browserify( 'setupPages/editQuestion.js', 'public/js/question-edit-package.js' );
+//this is basically dead. using dev-roster now
     mix.browserify( 'setupPages/editRoster.js', 'public/js/roster-edit-package.js' );
     mix.browserify( 'setupPages/selectExam.js', 'public/js/exam-select-package.js' );
+    mix.browserify('setupPages/DEVeditRoster.js', 'public/js/dev-roster-edit-package.js');
 
-    //Report pages
+
+    /* --------------------- Reports ---------------------- */
     mix.browserify( 'reports/examAnalytics.js', 'public/js/report-exam-analytics-package.js' );
     mix.browserify( 'reports/examControls.js', 'public/js/report-exam-controls-package.js' );
     mix.browserify( 'reports/studentControls.js', 'public/js/report-student-controls-package.js' );
     mix.browserify( 'reports/qualityControl.js', 'public/js/report-quality-control-package.js' );
 
-    //Grading pages
+    /* --------------------- Grading ---------------------- */
     mix.browserify( 'grade/gradeAssign.js', 'public/js/grade-assign-package.js' );
     mix.browserify( [ 'grade/gradeExam.js' ], 'public/js/grade-exam-package.js' );
     mix.browserify( 'grade/examSelect.js', 'public/js/grade-exam-select-package.js' );
 
-    //Feedback pages
+
+    /* --------------------- Feedback ---------------------- */
     mix.browserify( 'feedback/feedbackLogin.js', 'public/js/feedback-login-package.js' );
     mix.browserify( 'feedback/feedbackCharts.js', 'public/js/feedback-package.js' );
+
 
     //help
     mix.browserify( 'help/help.js', 'public/js/help-package.js' );
 
     //testing
-    mix.browserify('setupPages/DEVeditRoster.js', 'public/js/dev-roster-edit-package.js');
-
     mix.browserify(['libraries/jquery-1.11.3.min.js'], 'public/js/jquery.js');
-//    mix.browserify( 'reports/examControls.js', 'public/js/dev-exam-buttons.js' );
+
     
     /* --------------------- Admin ---------------------- */
     mix.browserify(['admin/restrictedRegistration.js'], 'public/js/restricted-registration-package.js');
+
+    //
+    // elixir(function(mix) {
+    //     mix.browserSync({
+    //         proxy: "localhost:8000"
+    //     });
+    // });
 
     // mix.browserify([
     //         "libraries/unitTestHelpers/jquery-1.11.1.js",

@@ -7,7 +7,7 @@
 @endsection
 
 @section('body')
-    <div id="createExam">
+    <div id="editExamPage" class="mainBodyLocator">
 
         <form id="examForm" method="POST" action="{{url('exam')}}"
               accept-charset="UTF-8" role="form">
@@ -26,7 +26,7 @@
 
 
                     {{--<a onclick="submitForm('editQuestions')" id="saveExam" style="cursor:pointer;">--}}
-                        {{--Add / Edit Questions <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>--}}
+                    {{--Add / Edit Questions <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>--}}
                     {{--</a>--}}
                 </li>
             </ul>
