@@ -93,11 +93,6 @@
                     elementScores: {!! $studentElementScores !!},
                     questionScores: {!! $studentQuestionScores !!},
                     examGradingTimes: {!!  $examGradingTimes !!},
-                    {{--stockComments: JSON.parse( '{!! $stockComments !!}' ),--}}
-                    {{--elementComments: JSON.parse( '{!! $studentElementComments !!}' ),--}}
-                    {{--elementScores: JSON.parse( '{!! $studentElementScores !!}' ),--}}
-                    {{--questionScores: JSON.parse( '{!! $studentQuestionScores !!}' ),--}}
-                    {{--examGradingTimes: JSON.parse( '{!!  $examGradingTimes !!}' ),--}}
                     valences: [0, 1, 2, 3],
 
                     /**
@@ -110,6 +105,7 @@
                      */
                      examGrades: {!! $studentGrades !!},
                      numQuestions: '{{  count( $questionAssignments ) }}',
+                    
                      /**
                      * Stores a student's score on a particular element
                      * @param activeStudent
