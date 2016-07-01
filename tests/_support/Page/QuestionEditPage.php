@@ -28,24 +28,30 @@ class QuestionEditPage
     public static $moveButtonClass = "handle";
     /** @var string The class all the delete buttons share */
     public static $deleteButtonClass = "js-remove";
+    /** @var string @deprecated */
     public static $addQuestionButtonId = "#addQuestion";
-
+    public static $addQuestionButtonLocator = ['id' => 'addQuestion'];
 
     //Navigation
-    /** @var string Id of the forward navigation button */
+    /** @var string Id of the forward navigation button @deprecated */
     public static $forwardNavButton = "#forwardNavButton";
+    /** @var string Id of the forward navigation button */
+    public static $forwardNavButtonLocator = ['id' => "forwardNavButton"];
     /** @var string Text displayed on the button to the user */
-    public static $forwardNavButtonText = "";
-    /** @var string Id of the back navigation button */
+    public static $forwardNavButtonText = "Add / Edit Elements";
+
+    /** @var string Id of the back navigation button @deprecated */
     public static $backNavButton = "#backNavButton";
+    /** @var string Id of the back navigation button */
+    public static $backNavButtonLocator = ['id' => "backNavButton"];
     /** @var string Text displayed on the back button to the user */
-    public static $backNavButtonText = "";
+    public static $backNavButtonText = "Edit Exam";
 
     #confirmation modal
     public static $confirmationModalLocator = ['class' => 'confirmationModal'];
     public static $deleteConfirmationTextId = "questionDeleteWarning";
     public static $deleteConfirmationModalText = "Warning: This will permanently delete all elements and scores associated with the question";
-//    public static $deleteConfirmationModalText = "<span class='glyphicon glyphicon-warning-sign'></span> Warning: This will permanently delete all elements and scores associated with the question";
+
     public static $deleteConfirmButtonLocator = ['css' => 'button.btn.btn-danger.btn-sm.confirmQuestionDelete'];
     public static $deleteCancelButtonLocator = ['css' => '.button.btn.btn-danger.btn-sm.cancelQuestionDelete'];
 
@@ -237,14 +243,19 @@ public static function questionPanelId($questionNumber){
     public static function verifyQuestionEditPageIntact($I, $examId, $examName, $numberQuestions)
     {
         $I->amGoingTo("Check that everything is displayed properly");
+        $I->expectTo('see page level items');
         $I->seeInCurrentUrl("exam/{$examId}/question/edit");
         $I->seeInTitle(self::$pageTitleText);
         $I->see($examName);
-        $I->seeElement(self::$addQuestionButtonId);
-        //correct navs
-        $I->seeElement(self::$forwardNavButton);
-        $I->seeElement(self::$backNavButton);
-        //fields present
+        $I->seeElement(self::$addQuestionButtonLocator);
+
+        $I->expectTo('see the correct nav buttons');
+        $I->seeElement(self::$forwardNavButtonLocator);
+        $I->see(self::$forwardNavButtonText);
+        $I->seeElement(self::$backNavButtonLocator);
+        $I->see(self::$backNavButtonText);
+
+        $I->expectTo('see the form fields for each of the expected questions');
         for ( $i = 1; $i <= $numberQuestions; $i++ )
         {
             self::checkQuestionFieldsPresent($I, $i);
@@ -257,15 +268,18 @@ public static function questionPanelId($questionNumber){
         for ( $i = 1; $i <= $numberQuestions; $i++ )
         {
             $v = self::getQuestionFieldsInitialValues($examId, $i);
-            //question name
-            $I->seeElement(self::questionNameXPath($i));
-            $I->seeInField(self::questionNameXPath($i), $v['questionName']);
-            //question text
-            $I->seeElement(self::questionTextXPath($i));
-            $I->seeInField(self::questionTextXPath($i), $v['questionText']);
-            //max score
-            $I->seeElement(self::maxScoreXPath($i));
-            $I->seeInField(self::maxScoreXPath($i), $v['maxScore']);
+
+            $I->expectTo('see the question namefields');
+            $I->seeElement(['xpath' => self::questionNameXPath($i)]);
+            $I->seeInField(['xpath' => self::questionNameXPath($i)], $v['questionName']);
+
+            $I->expectTo('see the question text fields');
+            $I->seeElement(['xpath' => self::questionTextXPath($i)]);
+            $I->seeInField(['xpath' => self::questionTextXPath($i)], $v['questionText']);
+
+            $I->expectTo('see the max score fields');
+            $I->seeElement(['xpath' => self::maxScoreXPath($i)]);
+            $I->seeInField(['xpath' => self::maxScoreXPath($i)], $v['maxScore']);
         }
     }
 

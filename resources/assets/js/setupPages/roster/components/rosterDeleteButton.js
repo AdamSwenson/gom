@@ -48,7 +48,7 @@ module.exports = {
                             } );
                             bootbox.alert( {
                                 message: "Removal of students will not be complete until you click 'Save and Finish'. ",
-                                className: "postDeleteMessageCloseButton"
+                                className: "postDeleteMessage"
                             } );
                         }
                     }

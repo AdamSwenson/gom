@@ -1,6 +1,8 @@
 <?php
 namespace Page\admin;
 
+use Illuminate\Support\Facades\Auth;
+
 class PasswordResetPage
 {
     // include url of current page
@@ -38,7 +40,10 @@ class PasswordResetPage
 
     /* --------------------------------- Utilities ------------------- */
     public static function navigateToPage($I){
-        $I->amOnPage('/auth/logout');
+        if(Auth::check()){
+            $I->amOnPage('/auth/logout');
+        }
+
         $I->amOnPage(self::$URL);
         $I->waitForElementVisible(self::$mainBodyLocator);
     }

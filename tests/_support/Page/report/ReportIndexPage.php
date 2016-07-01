@@ -11,7 +11,7 @@ class ReportIndexPage
      * public static $usernameField = '#username';
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
-    public static $mainBodyLocator = ['css' => '#examControlsPage'];
+    public static $mainBodyLocator = ['id' => 'examControlsPage'];
     public static $pageTitleText = "Reports | gradeomatic";
     public static $pageHeadingText = "Post-Grading Tasks";
     public static $pageSubHeadingText = "Release grades to students or view data about an exam";
@@ -181,7 +181,7 @@ class ReportIndexPage
     public static function navigateToReportIndexPage($I){
         $I->test_login($I);
         $I->amOnPage(self::$URL);
-        $I->waitForElementVisible(['css' => '#examControlsPage']);
+        $I->waitForElementVisible(self::$mainBodyLocator);
     }
 
 

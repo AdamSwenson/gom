@@ -15,40 +15,74 @@ class RosterEditPage
     public static $mainBodyLocator = ['id' => 'rosterEditPage'];
     public static $pageTitleText = 'Edit Roster | gradeomatic';
 
-    
+
+    # buttons
     public static $importRosterButton = '#fileInput';
-    /** @var string @deprecated */
+
+    /** @var string
+     * @deprecated */
     public static $addStudentButton = '#addStudent';
     public static $addStudentButtonLocator = ['id' => 'addStudent'];
+
+    /** @var string
+     * @deprecated
+     */
     public static $deleteRosterButton = '#deleteRoster';
-    public static $postDeleteMessageCloseButton = '/html/body/div[3]/div/div/div[2]/button';
-    //.postDeleteMessageCloseButton';
+    public static $deleteRosterButtonLocator = ['id' => 'deleteRoster'];
 
 
     //warning modals
+    # Student delete
     public static $deleteConfirmationModalLocator = ['class' => 'confirmationModal'];
     public static $deleteConfirmButtonLocator = ['css' => "button.btn.btn-danger.btn-sm.deleteConfirmButton"];
     public static $deleteCancelButtonLocator = ['css' => "button.btn.btn-sm.cancelButton"];
+    public static $deleteStudentWarningModalText = "Warning: this will delete the student, including their feedback and scores.";
 
+    # Import roster
     public static $importHelpModalLocator = ['class' => 'importHelpModal'];
 
-    /** @var string @deprecated */
-    public static $rosterDeleteModalCancelButton = '.cancelRosterDelete';
-    /** @var string @deprecated */
-    public static $rosterDeleteModalConfirmButton = '.confirmRosterDelete';
 
-    public static $deleteStudentWarningModalText = "Warning: this will delete the student, including their feedback and scores.";
+    # Roster delete
+    /** @var string
+     * @deprecated
+     */
+    public static $rosterDeleteModalCancelButton = '.cancelRosterDelete';
+    public static $rosterDeleteCancelButtonLocator = ['css' => 'button.btn.btn-sm.cancelRosterDelete'];
+
+    /** @var string
+     * @deprecated
+     */
+    public static $rosterDeleteModalConfirmButton = '.confirmRosterDelete';
+    public static $rosterDeleteConfirmButtonLocator = ['css' => 'button.btn.btn-danger.btn-sm.confirmRosterDelete'];
     public static $deleteRosterWarningModalText = "Warning: This will remove all students from the current roster, including their grades and feedback.";
+
+    public static $postDeleteModalLocator = ['class' => 'postDeleteMessage'];
     public static $postDeleteMessage = "Removal of students will not be complete until you click 'Save and Finish'.";
 
-    //nav buttons
+    public static $postDeleteMessageCloseButtonLocator = ['css' => 'div.modal-footer > button']; 
+//        ['xpath' => '/html/body/div[3]/div/div/div[2]/button'];
+
+
+    #nav buttons
+    /** @var string
+     * @deprecated
+     */
     public static $forwardNavButton = '#forwardNavButton';
     public static $forwardNavText = 'Save & Finish';
-    public static $backNavButton = '#backNavButton';
-//    public static $forwardNavLocator = ['id'=> "forwardNavButton"];
-    public static $forwardNavLocator = ['xpath'=> '//*[@id="forwardNavButton"]/div'];
+    public static $forwardNavLocator = ['xpath' => '//*[@id="forwardNavButton"]/div'];
+    /** @var string
+     * @deprecated
+     */
     public static $forwardNavXPath = '//*[@id="forwardNavButton"]/div';
+    /** @var string
+     * @deprecated
+     */
+    public static $backNavButton = '#backNavButton';
+    public static $backNavLocator = ['xpath' => '//*[@id="backNavButton"]/div'];
     public static $backNavText = 'Edit Elements';
+    /** @var string
+     * @deprecated
+     */
     public static $backNavXPath = '//*[@id="backNavButton"]/div';
 
     //other page features
@@ -101,9 +135,10 @@ class RosterEditPage
 
         return $out;
     }
-    
+
     /* --------------------------------- tools ----------------------- */
-    public static function navigateToPage($I, $examId){
+    public static function navigateToPage($I, $examId)
+    {
         $I->test_login($I);
         # Go to page
         $I->amOnPage("/exam/{$examId}/student/edit");
@@ -124,7 +159,8 @@ class RosterEditPage
         $I->see(self::$backNavText, RosterEditPage::$backNavXPath);
     }
 
-    public static function verifyInitialValuesPresent($I){
+    public static function verifyInitialValuesPresent($I)
+    {
         //expected students
         $students = RosterEditPage::students1Through5();
         for ( $i = 1; $i <= count($students); $i++ )

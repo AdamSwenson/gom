@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Support\Facades\Auth;
 
 
 /**
@@ -31,20 +32,22 @@ class AcceptanceTester extends \Codeception\Actor
 
     function start_artisan()
     {
-       // $this->runShellCommand('APP_ENV=codeceptWorld php artisan up');
+        // $this->runShellCommand('APP_ENV=codeceptWorld php artisan up');
         //  shell_exec('APP_ENV=codeceptWorld php artisan serve');
     }
-    
+
     function stop_artisan()
     {
-        
+
         codecept_debug($this->runShellCommand('APP_ENV=codeceptWorld php artisan down'));
         codecept_debug('closed artisan');
         //  shell_exec('APP_ENV=codeceptWorld php artisan serve');
     }
 
-    function log_out(){
+    function log_out()
+    {
         $this->amOnPage($this->logoutRoute);
+        $this->waitForElementVisible(['id' => 'homePage']);
     }
 
     /**
@@ -58,14 +61,20 @@ class AcceptanceTester extends \Codeception\Actor
      */
     function test_login($I, $customEmail = null, $customPassword = null)
     {
-       // $this->start_artisan();
-        if(is_null($customEmail) && is_null($customPassword)){
+        if ( Auth::check() )
+        {
+            $this->log_out();
+        }
+
+        // $this->start_artisan();
+        if ( is_null($customEmail) && is_null($customPassword) )
+        {
             // If no custom credentials have been entered, then can
             // safely log in using snapshot if it exists.
             // if snapshot exists - skip login
             if ( $this->loadSessionSnapshot('login') )
             {
-                return;
+                //       return;
             }
         }
 
@@ -81,7 +90,7 @@ class AcceptanceTester extends \Codeception\Actor
 //        $I->fillField('//*[@id="password"]', $password);
         $this->click(['id' => 'login']);
 
-        if(is_null($customEmail) && is_null($customPassword))
+        if ( is_null($customEmail) && is_null($customPassword) )
         {
             //Don't want to save the snapshot if the login info
             //was custom.

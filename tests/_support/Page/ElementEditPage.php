@@ -11,6 +11,8 @@ class ElementEditPage
      * public static $usernameField = '#username';
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
+    #common
+    public static $mainBodyLocator = ['id' => 'elementEditPage'];
 
     public static $addElementButtonXPath = '//*[@id="addElement"]';
 
