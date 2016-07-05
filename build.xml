@@ -5,10 +5,10 @@
 
     <!-- Uncomment the following when the tools are in ${basedir}/vendor/bin -->
     <property name="toolsdir" value="${basedir}/vendor/bin/"/>
-
+<!--removed phpcb-->
 <!--phpdox not included because confilict in dependencies-->
     <target name="build"
-            depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpunit,codeceptAccept,phpcb"
+            depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpunit,codeceptAccept"
             description=""/>
     
     <target name="build-parallel"

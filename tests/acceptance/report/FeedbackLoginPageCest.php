@@ -33,7 +33,6 @@ class FeedbackLoginPageCest
     }
 
     /**
-     * @group curr_dev
      * @group feedback
      * @group report
      * @param AcceptanceTester $I
