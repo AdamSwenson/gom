@@ -1,6 +1,5 @@
 ReportIndexCest.php
 ReleaseAndLockCest.php
-ReportsSelectionPageCept.php
 FeedbackLoginPageCest.php
-StudentFeedbackCept.php
+StudentFeedbackCest.php
 AnalyticsPageCest.php
