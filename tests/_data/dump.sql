@@ -724,7 +724,9 @@ VALUES
   (3, 2, 'Exam3Term', 1990, 'TestExam#3 5QuestionsWElements User2', 0, 0, NOW(), NOW(), 0),
   (4, 1, 'Exam4Term', 1990, 'TestExam#4 5QuestionsWElements User1', 0, 0, NOW(), NOW(), 0),
   (5, 1, 'Exam5Term', 1990, 'TestExam#5 NoQuestions User1', 0, 0, NOW(), NOW(), 0),
-  (6, 1, 'Exam6Term', 1990, 'TestExam#6 5QuestionsNoElements User1', 0, 0, NOW(), NOW(), 0);
+  (6, 1, 'Exam6Term', 1990, 'TestExam#6 5QuestionsNoElements User1', 0, 0, NOW(), NOW(), 0),
+  (7, 1, 'Exam7Term', 1990, 'TestExam#7 NoQuestionsNoElements Released User1', 0, 1, NOW(), NOW(), 0),
+  (8, 1, 'Exam8Term', 1990, 'TestExam#8 NoQuestionsNoElements PrevReleased User1', 0, 0, NOW(), NOW(), 1);
 
 /*!40000 ALTER TABLE `exams`
   ENABLE KEYS */;
@@ -1128,7 +1130,9 @@ VALUES
   (22, 6, 2, 2, NOW(), NOW()),
   (23, 6, 3, 3, NOW(), NOW()),
   (24, 6, 4, 4, NOW(), NOW()),
-  (25, 6, 5, 5, NOW(), NOW());
+  (25, 6, 5, 5, NOW(), NOW()),
+  (26, 7, 1, 1, NOW(), NOW()),
+  (27, 8, 1, 1, NOW(), NOW());
 
 /*!40000 ALTER TABLE `question_assignments`
   ENABLE KEYS */;
@@ -1192,7 +1196,9 @@ VALUES
   (22, 5, 2, 10.01, 0, NOW(), NOW()),
   (23, 5, 3, 76.48, 0, NOW(), NOW()),
   (24, 5, 4, 94.83, 0, NOW(), NOW()),
-  (25, 5, 5, 6.29, 0, NOW(), NOW());
+  (25, 5, 5, 6.29, 0, NOW(), NOW()),
+  (26, 26, 5, 6.29, 0, NOW(), NOW()),
+  (27, 27, 5, 6.29, 0, NOW(), NOW());
 
 /*!40000 ALTER TABLE `question_scores`
   ENABLE KEYS */;

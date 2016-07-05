@@ -29,7 +29,6 @@ class QuestionEditCest
     }
 
     /**
-     * @group curr_dev
      * @group setup
      * @group question
      * @param AcceptanceTester $I

@@ -18,7 +18,7 @@ class ReportIndexPage
 
     public static $releaseToggleOnText = "Hide exam from students";
     public static $releaseToggleOffText = "Release exam to students";
-    
+
 
     /* ------------ Analytics ---------- */
     public static $analyticsText = "Analytics";
@@ -142,10 +142,19 @@ class ReportIndexPage
 //        return ['css' => 'body > div.bootbox.modal.fade.bootbox-confirm.in > div > div > div.modal-footer > button.btn.btn-default'];
 //    }
 
+    /** @var array Shared by all confirmation modals */
+    public static $confirmationModalLocator = ['class' => 'confirmationModal'];
+
+    public static $releaseConfirmButtonLocator = ['css' => 'button.btn.btn-sm.btn-danger.confirmRelease'];
+    public static $releaseCancelButtonLocator = ['css' => 'button.btn.btn-sm.cancelRelease'];
+    public static $hideConfirmButtonLocator = ['css' => 'button.btn.btn-sm.btn-danger.confirmHide'];
+
+
+//Classes for the message text
     public static $modalTextClass = "confirmText";
-    public static $releaseTextClass = "releaseConfirm";
-    public static $reReleaseTextClass = "reReleaseConfirm";
-    public static $hideTextClass = "hideConfirm";
+    public static $releaseTextClass = "releaseConfirmText";
+    public static $reReleaseTextClass = "reReleaseConfirmText";
+    public static $hideTextClass = "hideConfirmText";
 
     public static $successTextClass = "successText";
     public static $releaseSuccessTextClass = "releaseSuccess";

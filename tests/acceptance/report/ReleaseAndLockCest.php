@@ -11,17 +11,22 @@ class ReleaseAndLockCest
     public $toReleaseExamId = 1; //has graded students
     public $cannotReleaseExamId = 2;//will not be able to be released
 
+    public $toHideExamId = 7;
+    public $toReReleaseExamId = 8;
 
     public function _before(AcceptanceTester $I)
     {
+//        $this->toHideExamId = $I->haveRecord('exams', ['user_id' => 1, 'term' => 'dfljdfljdf',
+//                                           'year' => 2015, 'released' => 1]);
+
         $I->wantTo("Make sure that the /report page behaves correctly for releasing and locking an exam. (Other /report actions are handled separately)");
         ReportIndexPage::navigateToReportIndexPage($I);
     }
 
     /**
-     * @group curr_dev
      * @group report
      * @group feedback
+     * @group exam_release
      * @param AcceptanceTester $I
      */
     public function checkIntact(AcceptanceTester $I)
@@ -31,9 +36,9 @@ class ReleaseAndLockCest
 
 
     /**
-     * @group curr_dev
      * @group report
      * @group feedback
+     * @group exam_release
      * @param AcceptanceTester $I
      */
     public function checkSomeNotReleased(AcceptanceTester $I)
@@ -52,45 +57,60 @@ class ReleaseAndLockCest
     }
 
     /**
-     * @group curr_dev
      * @group report
      * @group feedback
+     * @group exam_release
      * @param AcceptanceTester $I
      */
     public function clickReleaseAndCancel(AcceptanceTester $I)
     {
         $I->wantTo("Click the release button, see the confirm modal, click cancel, and see that nothing changed");
+
         $I->amGoingTo("Click the release button and check that see confirmation message");
+
         $I->click(ReportIndexPage::releaseToggleLocator($this->toReleaseExamId));
-        BootboxModals::waitForBootboxModal($I, true);
-        $I->seeElement(['css' => '.modal-content .modal-body .' . ReportIndexPage::$releaseTextClass]);
+        $I->waitForElementVisible(ReportIndexPage::$confirmationModalLocator);
+
+        $I->expectTo("see the modal components");
+        $I->seeElement(ReportIndexPage::$releaseConfirmButtonLocator);
+        $I->seeElement(ReportIndexPage::$releaseCancelButtonLocator);
+
+        $I->expectTo("see the correct confirmation message (by checking the class of the text)");
+        $I->seeElement(['css' => '.' . ReportIndexPage::$releaseTextClass]);
 
         $I->amGoingTo("click the cancel button in the modal and see the modal disappear");
-        $I->click(BootboxModals::bootboxCancelButtonLocator());
-        BootboxModals::waitForBootboxModal($I, true, true);
-
+        $I->click(ReportIndexPage::$releaseCancelButtonLocator);
+        $I->waitForElementNotVisible(ReportIndexPage::$confirmationModalLocator);
+        
         $I->expectTo("see that nothing has changed");
         ReportIndexPage::checkExamReleased($I, $this->toReleaseExamId);
 
     }
 
     /**
-     * @group curr_dev
      * @group report
      * @group feedback
+     * @group exam_release
      * @param AcceptanceTester $I
      */
     public function releaseExam(AcceptanceTester $I)
     {
         $I->wantTo("release an exam and see the expected messages and page changes");
+
         $I->amGoingTo("Click the release button and check that see confirmation message");
         $I->click(ReportIndexPage::releaseToggleLocator($this->toReleaseExamId));
-        BootboxModals::waitForBootboxModal($I, true);
+        $I->waitForElementVisible(ReportIndexPage::$confirmationModalLocator);
+
+        $I->expectTo("see the modal components");
+        $I->seeElement(ReportIndexPage::$releaseConfirmButtonLocator);
+        $I->seeElement(ReportIndexPage::$releaseCancelButtonLocator);
+
+        $I->expectTo("see the correct confirmation message (by checking the class of the text)");
         $I->seeElement(['css' => '.' . ReportIndexPage::$releaseTextClass]);
 
         $I->amGoingTo("click the confirm button in the modal and see the modal disappear");
-        $I->click(BootboxModals::bootboxConfirmButtonLocator());
-        $I->waitForElementNotVisible('/html/body/div[7]/div/div/div[1]/div/p[1]');
+        $I->click(ReportIndexPage::$releaseConfirmButtonLocator);
+        $I->waitForElementNotVisible(ReportIndexPage::$confirmationModalLocator);
 
         $I->expectTo("see the success message in a modal once the ajax call has completed");
         BootboxModals::waitForBootboxModal($I);
@@ -102,90 +122,83 @@ class ReleaseAndLockCest
         $I->click(BootboxModals::bootboxAlertOkButtonLocator());
         BootboxModals::waitForBootboxModal($I, true, true);
 
-        $I->expectTo("see that the toggle for exam {$this->toReleaseExamId} has changed state");
+        $I->expectTo("see that the toggle for the exam has changed state");
         ReportIndexPage::checkExamReleased($I, $this->toReleaseExamId, true);
 
     }
 
     /**
-     * @group curr_dev
      * @group report
      * @group feedback
+     * @group exam_release
      * @param AcceptanceTester $I
      */
     public function hideExam(AcceptanceTester $I)
     {
         $I->wantTo("hide the exam which I just released and verify that it is no longer released");
 
-        //make sure exam is released
-        Auth::loginUsingId(1);
-        $exam = Exam::find($this->toReleaseExamId);
-        $exam->released = 1;
-        $exam->save();
-        codecept_debug($exam);
-        ReportIndexPage::navigateToReportIndexPage($I);
+        $I->amOnPage(ReportIndexPage::$URL);
+        $I->waitForElementVisible(ReportIndexPage::$mainBodyLocator);
 
         $I->amGoingTo("Click the release button and check that see confirmation message");
-        $I->click(ReportIndexPage::releaseToggleLocator($this->toReleaseExamId));
-        BootboxModals::waitForBootboxModal($I, true);
-//verify correct message
+        $I->click(ReportIndexPage::releaseToggleLocator($this->toHideExamId));
+        $I->waitForElementVisible(ReportIndexPage::$confirmationModalLocator);
+
+        $I->expectTo("see the correct confirmation message (by checking the class of the text)");
         $I->seeElement(['css' => '.' . ReportIndexPage::$hideTextClass]);
 
         $I->amGoingTo("click the confirm button in the modal and see the modal disappear");
-        $I->click(BootboxModals::bootboxConfirmButtonLocator());
-        $I->waitForElementNotVisible('/html/body/div[7]/div/div/div[1]/div/p[1]');
-        $I->wait(3);
+        $I->click(ReportIndexPage::$hideConfirmButtonLocator);
+        $I->waitForElementNotVisible(ReportIndexPage::$confirmationModalLocator);
 
         $I->expectTo("see the success message in a modal once the ajax call has completed");
         BootboxModals::waitForBootboxModal($I);
         $I->seeElement(BootboxModals::bootboxAlertOkButtonLocator());
         $I->seeElement(['css' => '.' . ReportIndexPage::$hideSuccessTextClass]);
-//    $I->see(ReportIndexPage::$hideSuccessText);
 
         $I->expect("the success message to disappear when I click ok in the alert");
         $I->click(BootboxModals::bootboxAlertOkButtonLocator());
         BootboxModals::waitForBootboxModal($I, true, true);
 
-        $I->expectTo("see that the toggle for exam {$this->toReleaseExamId} has back to the unreleased state");
-        ReportIndexPage::checkExamReleased($I, $this->toReleaseExamId);
-
+        $I->expectTo("see that the toggle for exam is back to the unreleased state");
+        ReportIndexPage::checkExamReleased($I, $this->toHideExamId);
 
     }
 
     /**
-     * @group curr_dev
      * @group report
      * @group feedback
+     * @group exam_release
      * @param AcceptanceTester $I
      */
     public function reReleaseExam(AcceptanceTester $I)
     {
         $I->wantTo("re-release the exam which I just released and verify that get the appropriate message");
         $I->amGoingTo("Click the release button and check that see confirmation message");
-        $I->click(ReportIndexPage::releaseToggleLocator($this->toReleaseExamId));
-        BootboxModals::waitForBootboxModal($I, true);
-        $I->wait(3);
-//verify correct message
+        $I->click(ReportIndexPage::releaseToggleLocator($this->toReReleaseExamId));
+        $I->waitForElementVisible(ReportIndexPage::$confirmationModalLocator);
+
+        $I->expectTo("see the correct confirmation message");
         $I->seeElement(['css' => '.' . ReportIndexPage::$reReleaseTextClass]);
 
         $I->amGoingTo("click the confirm button in the modal and see the modal disappear");
-        $I->click(BootboxModals::bootboxConfirmButtonLocator());
-        $I->waitForElementNotVisible('/html/body/div[7]/div/div/div[1]/div/p[1]');
-        $I->wait(3);
+        $I->click(ReportIndexPage::$releaseConfirmButtonLocator);
+         $I->waitForElementNotVisible(ReportIndexPage::$confirmationModalLocator);
 
         $I->expectTo("see the success message in a modal once the ajax call has completed");
         BootboxModals::waitForBootboxModal($I);
         $I->wait(2);
         $I->seeElement(BootboxModals::bootboxAlertOkButtonLocator());
-//verify correct message
+
+        $I->expectTo("see the expected message");
         $I->seeElement(['css' => '.' . ReportIndexPage::$releaseSuccessTextClass]);
 
         $I->expect("the success message to disappear when I click ok in the alert");
         $I->click(BootboxModals::bootboxAlertOkButtonLocator());
         BootboxModals::waitForBootboxModal($I, true, true);
 
-        $I->expectTo("see that the toggle for exam {$this->toReleaseExamId} has back to the unreleased state");
-        ReportIndexPage::checkExamReleased($I, $this->toReleaseExamId);
+        $I->expectTo("see that the toggle for exam is back to the unreleased state");
+        ReportIndexPage::checkExamReleased($I, $this->toReReleaseExamId);
 
     }
 

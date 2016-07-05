@@ -23729,7 +23729,8 @@ module.exports = {
                  * server.
                  */
                 isReleased: null,
-                previouslyReleased: null
+                previouslyReleased: null,
+                ignoreToggle: false
             },
             onStateText: "<span class='glyphicon glyphicon-lock' aria-hidden='true'></span> Hide exam from students",
             offStateText: "<span class='glyphicon glyphicon-envelope' aria-hidden='true'></span> Release exam to students",
@@ -23739,12 +23740,12 @@ module.exports = {
             offStyle: "primary",
             confirmMessages: {
                 release: {
-                    initial: "<p class='confirmText releaseConfirm'>Releasing this exam will e-mail all students their grades and personalized feedback.</p> <p class='confirmText releaseConfirm'>Do you wish to continue?</p>",
+                    initial: "<p class='confirmText releaseConfirmText'>Releasing this exam will e-mail all students their grades and personalized feedback.</p> <p class='confirmText releaseConfirmText'>Do you wish to continue?</p>",
 
-                    reRelease: "<p class='confirmText reReleaseConfirm'>Re-releasing this exam sends all students an additional message informing them that exam grades or comments may have changed.</p><p class='confirmText reReleaseConfirm'> Do you wish to continue?</p>"
+                    reRelease: "<p class='confirmText reReleaseConfirmText'>Re-releasing this exam sends all students an additional message informing them that exam grades or comments may have changed.</p><p class='confirmText reReleaseConfirmText'> Do you wish to continue?</p>"
                 },
                 hide: {
-                    initial: "<p class='confirmText hideConfirm'>Removing access will prevent students from viewing feedback on the exam.</p> <p class='confirmText hideConfirm'> Access can be restored by releasing the exam again.</p>"
+                    initial: "<p class='confirmText hideConfirmText'>Removing access will prevent students from viewing feedback on the exam.</p> <p class='confirmText hideConfirmText'> Access can be restored by releasing the exam again.</p>"
                 }
             },
             successMessages: {
@@ -23807,26 +23808,73 @@ module.exports = {
             var me = this;
             var confirmMsg = this.priorRelease == true ? this.confirmMessages.release.reRelease : this.confirmMessages.release.initial;
 
-            bootbox.confirm(confirmMsg, function (result) {
-                window.console.log('confirmRelease', result);
-                if (result) {
-                    me.sendReleaseExamEvent();
-                } else {
-                    me.handleCanceledRelease();
+            // bootbox.confirm( confirmMsg, function ( result ) {
+            //     window.console.log( 'confirmRelease', result );
+            //     if ( result ) {
+            //         me.sendReleaseExamEvent();
+            //     } else {
+            //         me.handleCanceledRelease();
+            //     }
+            // } );
+
+            bootbox.dialog({
+                className: "confirmationModal",
+                message: confirmMsg,
+                title: "Confirm releasing exam",
+                buttons: {
+                    success: {
+                        label: 'Cancel',
+                        className: "btn-sm cancelRelease",
+                        callback: function callback() {
+                            me.handleCanceledRelease();
+                        }
+                    },
+                    danger: {
+                        label: '<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Confirm',
+                        className: "btn-sm btn-danger confirmRelease",
+                        callback: function callback() {
+                            me.sendReleaseExamEvent();
+                        }
+
+                    }
                 }
             });
+            // }
         },
 
         confirmHide: function confirmHide() {
             var me = this;
-            bootbox.confirm(this.confirmMessages.hide.initial, function (result) {
-                window.console.log('confirmHide', result);
-                if (result) {
-                    me.sendHideExamEvent();
-                } else {
-                    me.handleCanceledHide();
+
+            bootbox.dialog({
+                className: "confirmationModal",
+                message: this.confirmMessages.hide.initial,
+                title: "Confirm hiding exam",
+                buttons: {
+                    success: {
+                        label: 'Cancel',
+                        className: "btn-sm cancelHide",
+                        callback: function callback() {
+                            me.handleCanceledHide();
+                        }
+                    },
+                    danger: {
+                        label: '<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Confirm',
+                        className: "btn-danger btn-sm confirmHide",
+                        callback: function callback() {
+                            me.sendHideExamEvent();
+                        }
+                    }
                 }
             });
+            //
+            // bootbox.confirm( this.confirmMessages.hide.initial, function ( result ) {
+            //     window.console.log( 'confirmHide', result );
+            //     if ( result ) {
+            //         me.sendHideExamEvent();
+            //     } else {
+            //         me.handleCanceledHide();
+            //     }
+            // } );
         },
 
         /**
@@ -23835,38 +23883,49 @@ module.exports = {
          * @returns {*}
          */
         handleExamReleaseToggle: function handleExamReleaseToggle() {
+            if (this.storage.ignoreToggle) {
+                return true;
+            }
+
             var isChecked = $("#" + this.toggleId).prop('checked');
             if (isChecked) {
                 //request is to release exam
                 return this.confirmRelease();
             }
-            //the box was checked, now it is not. This gets a bit tricky, though....
+            //the box was checked, now it is not.
+            //Things now get a bit tricky....
             switch (this.storage.isReleased) {
                 case true:
-                    //isReleased only gets set to true in two cases:
-                    // (1) if the exam was released when the page was loaded; or
-                    // (2) if the ajax request to release was successful.
-                    // In either case, the exam is marked released in the database.
-                    // So, we know that the request is to hide the exam.
+                    /*
+                     isReleased only gets set to true in two cases:
+                     (1) if the exam was released when the page was loaded; or
+                     (2) if the ajax request to release was successful.
+                     In either case, the exam is marked released in the database.
+                     So, we know that the request is to hide the exam.
+                     */
                     return this.confirmHide();
                     break;
+
                 case false:
-                    //We're here because of a toggle event. Toggle events occur when
-                    //a user clicks, or when the state is programmatically changed.
-                    //The latter can occur in two ways:
-                    //(B1) The user canceled the release request; or
-                    //(B2) The release request failed on the server's side.
-                    //(B3) The user canceled the hide request; or
-                    //(B4) The hide request failed on the server side.
-                    //isReleased is false only if
-                    //(A1) it was set onload because the prop released was undefined.
-                    //(A2) a successful hide request happened.
-                    //Thus neither B1 nor B2 requires any confirmation action.
+                    /*
+                     We're here because of a toggle event. Toggle events occur when
+                     a user clicks, or when the state is programmatically changed.
+                     The programmatic changes can occur in several ways:
+                     (B1) The user canceled the release request; or
+                     (B2) The release request failed on the server's side.
+                     (B3) The user canceled the hide request; or
+                     (B4) The hide request failed on the server side.
+                     isReleased is false only if
+                     (A1) it was set onload because the prop released was undefined.
+                     (A2) a successful hide request happened.
+                     Thus neither B1 nor B2 requires any confirmation action.
+                     */
                     return false;
                     break;
                 default:
+                    //includes original state (null)
                     return false;
-                //includes original state (null)
+
             }
         },
 
@@ -23878,7 +23937,9 @@ module.exports = {
             //is still in the checked state. If we don't
             //reset it, it will think that the exam has
             //already been released. So, let's reset it
+            this.storage.ignoreToggle = true;
             $("#" + this.toggleId).bootstrapToggle('off');
+            this.storage.ignoreToggle = false;
         },
 
         handleCanceledHide: function handleCanceledHide() {
@@ -23886,7 +23947,9 @@ module.exports = {
             //is still in the unchecked state. If we don't
             //reset it, it will think that the exam has
             //been released. So, let's reset it
+            this.storage.ignoreToggle = true;
             $("#" + this.toggleId).bootstrapToggle('on');
+            this.storage.ignoreToggle = false;
         },
 
         /**
@@ -23953,18 +24016,21 @@ module.exports = {
             }
             return true;
         },
+
         'exam-release-error': function examReleaseError(examId) {
             if (examId == this.examId) {
                 this.handleErrorOnRelease();
             }
             return true;
         },
+
         'exam-hide-success': function examHideSuccess(examId) {
             if (examId == this.examId) {
                 this.handleSuccessfulHide();
             }
             return true;
         },
+
         'exam-hide-error': function examHideError(examId) {
             if (examId == this.examId) {
                 this.handleErrorOnHide();
