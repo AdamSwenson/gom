@@ -75,19 +75,40 @@ class GradeSelectExamPage
         return "gradeExam{$examId}";
     }
 
+    /**
+     * @deprecated
+     * @param $examId
+     * @return string
+     */
     public static function gradeButtonXPath($examId)
     {
         return "//*[@id='gradeExam{$examId}']";
     }
+
+    public static function gradeButtonLocator($examId)
+    {
+        return ["id" => "gradeExam{$examId}"];
+    }
+
 
     public static function assignButtonId($examId)
     {
         return "assignExam{$examId}";
     }
 
+    /**
+     * @deprecated
+     * @param $examId
+     * @return string
+     */
     public static function assignButtonXPath($examId)
     {
         return "//*[@id='assignExam{$examId}']";
+    }
+
+    public static function assignButtonLocator($examId)
+    {
+        return ['id' => "assignExam{$examId}"];
     }
 
     /**
@@ -121,6 +142,13 @@ class GradeSelectExamPage
         return static::$URL . $param;
     }
     /* --------------------------------- helpers ---------------------- */
+
+    public static function navigateToPage($I){
+        $I->test_login($I);
+        $I->amOnPage(self::$URL);
+        $I->waitForElementVisible(self::$mainBodyLocator);
+    }
+
 
     /**
      * The redis based storage does not make it certain that there will
@@ -172,11 +200,11 @@ class GradeSelectExamPage
 
         $I->amGoingTo("Check that see correct grade button for exam #{$examId}");
         //$I->seeLink(self::$gradeButtonText, self::gradeButtonTargetRoute($examId, true));
-        $I->seeElement(self::gradeButtonXPath($examId));
+        $I->seeElement(self::gradeButtonLocator($examId));
 
         $I->amGoingTo("Check that see correct assign button for exam #{$examId}");
         //$I->seeLink(self::$assignButtonText, self::assignButtonTargetRoute($examId, true));
-        $I->seeElement(self::assignButtonXPath($examId));
+        $I->seeElement(self::assignButtonLocator($examId));
 
     }
 
@@ -208,11 +236,11 @@ class GradeSelectExamPage
 
                 $I->amGoingTo("Check that do not see exam #{$id}'s grade button");
                 $I->dontSeeLink(self::$gradeButtonText,self::gradeButtonTargetRoute($id, true));
-                $I->dontSeeElement(self::gradeButtonXPath($id));
+                $I->dontSeeElement(self::gradeButtonLocator($id));
 
-                $I->amGoingTo("Check that do not see exam #{$id} assign button");
+                $I->expect("not to see exam #{$id} assign button");
                 $I->dontSeeLink(self::$assignButtonText, self::assignButtonTargetRoute($id, true));
-                $I->dontSeeElement(self::assignButtonXPath($id));
+                $I->dontSeeElement(self::assignButtonLocator($id));
             }
         }
     }

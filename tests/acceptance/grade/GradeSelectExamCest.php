@@ -68,7 +68,7 @@ class GradeSelectExamCest
     {
         $I->wantTo("Check that I am redirected to the grading page for exam #{$this->examWithStudents}");
         $I->amGoingTo("Click the grade button for an exam with students ");
-        $I->click(GradeSelectExamPage::gradeButtonXPath($this->examWithStudents));
+        $I->click(GradeSelectExamPage::gradeButtonLocator($this->examWithStudents));
 
         $I->expectTo("be on the grading page for exam {$this->examWithStudents}");
         $I->waitForElementVisible(GradingPage::$mainBodyLocator);
@@ -84,7 +84,7 @@ class GradeSelectExamCest
     {
         $I->wantTo("Click the assign button for an exam with students and make sure I am properly redirected");
         $I->amGoingTo("Click the assign button for an exam with students ");
-        $I->click(GradeSelectExamPage::assignButtonXPath($this->examWithStudents));
+        $I->click(GradeSelectExamPage::assignButtonLocator($this->examWithStudents));
 
         $I->expectTo("be on the assignment page for exam {$this->examWithStudents}");
         $I->waitForElementVisible(GradeAssignPage::$mainBodyLocator);

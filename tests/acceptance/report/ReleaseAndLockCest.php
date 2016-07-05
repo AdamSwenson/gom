@@ -1,17 +1,15 @@
 <?php
+use App\Exam;
 use Page\BootboxModals;
 use Page\report\ReportIndexPage;
 
 class ReleaseAndLockCest
 {
-public $numberOfExams = 5;
-public 
-    $examIdsToSkip = [3]; //belongs to another user
+    public $numberOfExams = 5;
+    public $examIdsToSkip = [3]; //belongs to another user
 
-    
-public $toReleaseExamId = 1; //has graded students
-public 
-    $cannotReleaseExamId = 2;//will not be able to be released
+    public $toReleaseExamId = 1; //has graded students
+    public $cannotReleaseExamId = 2;//will not be able to be released
 
 
     public function _before(AcceptanceTester $I)
@@ -28,7 +26,7 @@ public
      */
     public function checkIntact(AcceptanceTester $I)
     {
-        ReportIndexPage::verifyPageIntact($I, $this->numberOfExams, $this->examIdsToSkip);        
+        ReportIndexPage::verifyPageIntact($I, $this->numberOfExams, $this->examIdsToSkip);
     }
 
 
@@ -41,16 +39,16 @@ public
     public function checkSomeNotReleased(AcceptanceTester $I)
     {
         $I->amGoingTo("Check that all exams are not released");
-        for ($i = 1;
-             $i <= $this->numberOfExams;
-             $i++)
+        for ( $i = 1;
+              $i <= $this->numberOfExams;
+              $i++ )
         {
-            if (! in_array($i, $this->examIdsToSkip))
+            if ( ! in_array($i, $this->examIdsToSkip) )
             {
                 ReportIndexPage::checkExamReleased($I, $i);
             }
         }
-        
+
     }
 
     /**
@@ -73,8 +71,8 @@ public
 
         $I->expectTo("see that nothing has changed");
         ReportIndexPage::checkExamReleased($I, $this->toReleaseExamId);
-        
-}
+
+    }
 
     /**
      * @group curr_dev
@@ -106,7 +104,7 @@ public
 
         $I->expectTo("see that the toggle for exam {$this->toReleaseExamId} has changed state");
         ReportIndexPage::checkExamReleased($I, $this->toReleaseExamId, true);
-        
+
     }
 
     /**
@@ -118,6 +116,15 @@ public
     public function hideExam(AcceptanceTester $I)
     {
         $I->wantTo("hide the exam which I just released and verify that it is no longer released");
+
+        //make sure exam is released
+        Auth::loginUsingId(1);
+        $exam = Exam::find($this->toReleaseExamId);
+        $exam->released = 1;
+        $exam->save();
+        codecept_debug($exam);
+        ReportIndexPage::navigateToReportIndexPage($I);
+
         $I->amGoingTo("Click the release button and check that see confirmation message");
         $I->click(ReportIndexPage::releaseToggleLocator($this->toReleaseExamId));
         BootboxModals::waitForBootboxModal($I, true);

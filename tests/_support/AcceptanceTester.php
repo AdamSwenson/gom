@@ -72,10 +72,10 @@ class AcceptanceTester extends \Codeception\Actor
             // If no custom credentials have been entered, then can
             // safely log in using snapshot if it exists.
             // if snapshot exists - skip login
-            if ( $this->loadSessionSnapshot('login') )
-            {
-                //       return;
-            }
+//            if ( $this->loadSessionSnapshot('login') )
+//            {
+//                //       return;
+//            }
         }
 
         $email = ! is_null($customEmail) ? $customEmail : $this->loginEmail;
