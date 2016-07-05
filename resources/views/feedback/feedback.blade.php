@@ -22,7 +22,7 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
 ?>
 
 
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -62,7 +62,8 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
     @endif
 @endif
 
-<div class="container-fluid">
+<div id="studentFeedbackPage" class="container-fluid mainBodyLocator">
+
     @foreach($dataAll as $data)
         <?php $accessKey = $data['accessKey']; ?>
         @include('feedback.partials.student_info')
@@ -77,13 +78,14 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
 
         <div class="pageEnd"></div>
     @endforeach
+
 </div>
 
 
 <div class="jsArea">
     <script type="text/javascript">
-        var studentData = JSON.parse('{!! $encodedStudentData !!}');
-        window.console.log(studentData);
+        var studentData = JSON.parse( '{!! $encodedStudentData !!}' );
+        window.console.log( studentData );
         var activeTab = '';
     </script>
     <script type="text/javascript" src="{{ asset('js/feedback-package.js') }}"></script>

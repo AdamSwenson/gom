@@ -9,6 +9,7 @@
 @endsection
 
 @section('body')
+    <div id="studentFeedback" class="mainBodyLocator">
     <h3>
         <div class="row">
             <div class="col-md-3">
@@ -53,7 +54,7 @@
         <div id="elementCharts"></div>
     </div>
 
-
+    </div>
 @endsection
 
 @section('jsArea')

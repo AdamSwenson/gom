@@ -1,5 +1,6 @@
 <?php
 use Page\report\FeedbackLoginPage;
+use Page\report\FeedbackPage;
 
 
 class FeedbackLoginPageCest
@@ -32,6 +33,7 @@ class FeedbackLoginPageCest
     }
 
     /**
+     * @group curr_dev
      * @group feedback
      * @group report
      * @param AcceptanceTester $I
@@ -41,8 +43,10 @@ class FeedbackLoginPageCest
         $I->amGoingTo("Check that a valid access key directs to the feedback page");
         $I->fillField(['id' => FeedbackLoginPage::$accessKeyFieldId], $this->accessKey);
         $I->click(['id' => FeedbackLoginPage::$submitButtonId]);
-        $I->seeInCurrentUrl("/feedback?accessKey={$this->accessKey}");
+
+        $I->waitForElementVisible(FeedbackPage::$mainBodyLocator);
         $I->see($this->accessKey);
+        
         $I->dontSee(FeedbackLoginPage::$submitButtonText);
 
     }
