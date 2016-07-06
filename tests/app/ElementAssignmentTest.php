@@ -18,7 +18,7 @@ class ElementAssignmentTest extends \TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->object = factory(ElementAssignment::class)->make();
+        $this->object = factory(ElementAssignment::class)->create();
         $this->assignment = $this->object;
     }
 
@@ -33,7 +33,7 @@ class ElementAssignmentTest extends \TestCase
     {
         $v = $this->faker->randomDigit();
         $this->object->subtask = $v;
-       // $this->assertNotEmpty($this->object->getSubtask());
+        // $this->assertNotEmpty($this->object->getSubtask());
         $this->assertEquals($v, $this->object->getSubtask());
 
     }
@@ -50,20 +50,14 @@ class ElementAssignmentTest extends \TestCase
 
 
     public function testScopeOnExam()
-    {   $eid = $this->object->exam_id;
+    {
+        $eid = $this->object->exam_id;
         $result = ElementAssignment::onExam($eid);//$a['exam_id']);
         $this->assertNotEmpty($result);
-        foreach($result as $r){
+        foreach ( $result as $r )
+        {
             $this->assertInstanceOf('App\Exam', $r);
         }
-//        $qa = QuestionAssignment::find($this->assignment->question_assignment_id);
-//        $eid = $qa->exam_id;
-//        //$a = $this->assignment->toArray();
-//        $result = ElementAssignment::onExam($eid);//$a['exam_id']);
-//        $this->assertNotEmpty($result);
-//        foreach($result as $r){
-//            $this->assertInstanceOf('App\Exam', $r);
-//        }
 
     }
 
@@ -83,7 +77,7 @@ class ElementAssignmentTest extends \TestCase
 # -------------- Foreign key associations
 //    public function testUser()
 //    {
-//        $this->assertInstanceOf('App\User', $this->assignment->user);
+//        $this->assertInstanceOf(User::class, $this->assignment->user);
 //    }
 
 //    public function testComments()
@@ -104,18 +98,29 @@ class ElementAssignmentTest extends \TestCase
         $this->assertInstanceOf('App\Element', $this->assignment->element);
     }
 
-//    public function testElementScores()
-//    {
-//        foreach($this->assignment->elementScores as $e)
-//        {
-//            $this->assertInstanceOf('App\ElementScore', $e);
-//        }
-//    }
+    public function testElementScores()
+    {
+        #prep
+        $elementScore = factory(ElementScore::class)->create();
+
+        $ea = ElementAssignment::find($elementScore->element_assignment_id);
+
+        #call
+        $result = $ea->elementScores;
+
+        #check
+        $this->assertNotNull($result, "something returned");
+
+        foreach ( $result as $item )
+        {
+            $this->assertInstanceOf(ElementScore::class, $item, "object is an element score");
+        }
+    }
 
     public function testQuestion()
     {
         $this->assertInstanceOf('App\Question', $this->assignment->question);
-     }
+    }
 
 //    public function testQuestionAssignment()
 //    {
@@ -124,5 +129,48 @@ class ElementAssignmentTest extends \TestCase
 //    }
 
 
+    /* -------------------------------- Getters -------------------------------- */
+
+
+    public function testGetElementId()
+    {
+        #prep
+        $ea = factory(ElementAssignment::class)->create();
+        $eid = $ea->element->id;
+
+        #call
+        $result = $ea->getElementId();
+
+        #check
+        $this->assertEquals($eid, $result, "matches expected id");
+    }
+
+
+    public function testGetElementAssignmentId()
+    {
+        #prep
+        $ea = factory(ElementAssignment::class)->create();
+        $eaid = $ea->id;
+
+        #call
+        $result = $ea->getElementAssignmentId();
+
+        #check
+        $this->assertEquals($eaid, $result, "matches expected id");
+    }
+
+
+    public function getElementName()
+    {
+        #prep
+        $ea = factory(ElementAssignment::class)->create();
+        $name = $ea->element->name;
+
+        #call
+        $result = $ea->getElementName();
+
+        #check
+        $this->assertEquals($name, $result, "matches expected name");
+    }
 
 }
