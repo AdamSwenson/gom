@@ -38,14 +38,15 @@ class ElementAssignmentTest extends \TestCase
 
     }
 
-//    public function testGetQuestionNumber()
-//    {
-//
-////        $v = $this->faker->randomDigit();
-////        $this->object->question_number = $v;
-//        $this->assertNotEmpty($this->assignment->getQuestionNumber());
-////        $this->assertEquals($v, $this->assignment->getQuestionNumber());
-//    }
+    public function testGetQuestionNumber()
+    {
+        $fixture = $this->makeElementAssignmentsForQuestion(1);
+        $elAssignId = $fixture['elementAssignments'][0]->id;
+        $elAssign = ElementAssignment::find($elAssignId);
+
+        #check
+        $this->assertEquals($fixture['questionNumber'], $elAssign->getQuestionNumber());
+    }
 #--------------- Queries
 
 

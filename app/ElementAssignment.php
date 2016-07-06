@@ -105,8 +105,6 @@ class ElementAssignment extends BaseModelNoUser
             ->where('question_id', $this->attributes['question_id'])
             ->first();
         return $qa->question_number;
-
-        //return $this->questionAssignment->question_number;
     }
 #--------------- Queries
 
