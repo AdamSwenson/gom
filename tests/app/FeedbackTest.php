@@ -26,10 +26,16 @@ class FeedbackTest extends \TestCase
      */
     public function getQuestionNumbers()
     {
-        $f = Feedback::all()->random();
-        $this->assertTrue(! is_null($f), "Object returned");
-        $this->assertInstanceOf(Feedback::class, $f, "Feedback object returned");
+        #prep
+        $f = factory(Feedback::class)->create();
+//        $f = Feedback::all()->random();
+//        $this->assertTrue(! is_null($f), "Object returned");
+//        $this->assertInstanceOf(Feedback::class, $f, "Feedback object returned");
+
+        #call
         $r = $f->getQuestionNumbers();
+
+        #check
         $this->assertTrue(is_array($r), "Array returned");
         $this->assertNotEmpty($r, "The returned array is non empty");
         foreach($r as $a){
