@@ -37,7 +37,6 @@ class StudentRepositoryTest extends \TestCase
     {
         \Mockery::close();
         parent::setUp();
-//        $this->prepareDatabase();
         $this->object = new StudentRepository;
         $this->exam = Exam::all()->random();
         $this->student = Student::all()->random();
@@ -444,11 +443,14 @@ class StudentRepositoryTest extends \TestCase
         $this->assertEmpty(Student::find($sid));
     }
 
-
+    /**
+     * todo this fails
+     */
     public function testDelete_student_by_sid()
     {
         #prep
-        $student = Student::whereNotNull('student_identifier')->first();
+        $student = factory(Student::class)->create();
+        //$student = Student::whereNotNull('student_identifier')->first();
         $sid = $student->student_identifier;
         //check has a sid
         $this->assertTrue($sid > 0);
