@@ -7,11 +7,9 @@
     <property name="toolsdir" value="${basedir}/vendor/bin/"/>
 <!--removed phpcb-->
 <!--phpdox not included because confilict in dependencies-->
-    <!--<target name="build"-->
-            <!--depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpunit,codeceptAccept"-->
-            <!--description=""/>-->
+
     <target name="build"
-            depends="composer,prepare,lint,phpunit,codeceptAccept"
+            depends="composer,prepare,lint,phpunit,codeceptAccept,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci"
             description=""/>
     
     <target name="build-parallel"
@@ -52,7 +50,7 @@
             <arg value="--html"/>
             <arg value="--colors"/>
             <arg value="--xml"/>
-            <!--<arg value="&#45;&#45;coverage-html"/>-->
+            <arg value="--coverage-html"/>
         </exec>
     </target>
 
