@@ -50,7 +50,7 @@
             <arg value="--html"/>
             <arg value="--colors"/>
             <arg value="--xml"/>
-            <arg value="--coverage-html"/>
+            <!--<arg value="&#45;&#45;coverage-html"/>-->
         </exec>
     </target>
 
