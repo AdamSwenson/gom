@@ -7,7 +7,7 @@
 @endsection
 
 @section('body')
-    <div id="studentControlsPage">
+    <div id="studentControlsPage" class="mainBodyLocator">
     <h3 id="examTitle"
         data-exam-id="{{ $exam->getId() }}">
         <span class="glyphicon glyphicon-user" aria-hidden="true"> </span> Student Controls:
