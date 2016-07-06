@@ -28,10 +28,10 @@ class ElementScoreRepositoryTest extends \TestCase
         parent::setUp();
         $this->object = new ElementScoreRepository;
 
+        //A fresh score, element assignment, and exam for every test!
         $this->elementScore = factory(ElementScore::class)->create();
         $this->elementAssign = ElementAssignment::find($this->elementScore->element_assignment_id);
         $this->exam = Exam::find($this->elementAssign->exam_id);
-//        $this->elementScore = factory(ElementScore::class)->create(['element_id' => $this->elementAssign->id]);
     }
 
 
@@ -44,16 +44,11 @@ class ElementScoreRepositoryTest extends \TestCase
 
         $this->assertNotEmpty($result);
         $this->assertInstanceOf('App\ElementScore', $result);
-        $this->assertEquals($assignId, $result->element_assignment_id);
-        $this->assertEquals($studentId, $result->student_id);
+        $this->assertEquals($assignId, $result->element_assignment_id, "has correct assignment id");
+        $this->assertEquals($studentId, $result->student_id, "has correct student id");
 
         $this->assertAttributeInstanceOf('App\ElementScore', 'score_object', $this->object);
 
-//        $this->markTestIncomplete();
-//        $elementAssignmentId, $studentId
-//        $this->score_object = ElementScore::onStudentElementAssignment($studentId, $elementAssignmentId)->first();
-
-//        return $this->score_object;
     }
 
 //
@@ -68,24 +63,25 @@ class ElementScoreRepositoryTest extends \TestCase
 //    }
 
 
-public function testRecordCommentText()
-{
-    //prep
-    $es = $this->elementScore;
-    $elementAssignmentId = $es->element_assignment_id;
-    $studentId = $es->student_id;
-    $text = $this->faker->text();
+    public function testRecordCommentText()
+    {
+        #prep
+        $es = $this->elementScore;
+        $elementAssignmentId = $es->element_assignment_id;
+        $studentId = $es->student_id;
+        $text = $this->faker->text();
 
-//    $es->delete();
-//    $this->notSeeInDatabase('element_scores', ['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId]);
+        #call
+        $this->object->recordCommentText($elementAssignmentId, $studentId, $text);
 
-    //call
-    $this->object->recordCommentText($elementAssignmentId, $studentId, $text);
+        #check
+        $this->seeInDatabase('element_scores', [
+            'element_assignment_id' => $elementAssignmentId,
+            'student_id'            => $studentId,
+            'comment_text'          => $text,
+        ]);
 
-    //result
-    $this->seeInDatabase('element_scores', ['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId, 'comment_text' => $text]);
-
-}
+    }
 
 
     public function testLoad_for_student_on_exam()
@@ -100,7 +96,7 @@ public function testRecordCommentText()
         $result = $this->object->load_for_student_on_exam($examId, $studentId);
 
         //Check
-        foreach($result as $r)
+        foreach ( $result as $r )
         {
             $this->assertEquals($studentId, $r->student_id);
         }
@@ -111,46 +107,46 @@ public function testRecordCommentText()
     {
         #prep
         $elementAssignmentId = $this->elementAssign->id;
-        $studentId = $this->elementScore->student_id; 
-        $score = $this->faker->randomFloat(2,0,10);
+        $studentId = $this->elementScore->student_id;
+        $score = $this->faker->randomFloat(2, 0, 10);
 
         #call
         $result = $this->object->update($elementAssignmentId, $studentId, $score);
 
         #check
         $this->assertNotEmpty($result);
-//        $this->assertInstanceOf('App\ElementScore', $result);
-//        $this->assertEquals($elementAssignmentId, $result->element_assignment_id);
-//        $this->assertEquals($studentId, $result->student_id);
-//        $this->assertEquals($score, $result->score);
+        //load from db to check (the float score messes up the assertions for
+        //looking in db)
         $inDb = ElementScore::where('element_assignment_id', $elementAssignmentId)->where('student_id', $studentId)->first();
         $this->assertInstanceOf(ElementScore::class, $inDb);
-        $this->assertEquals($score, $inDb->score, 'expected score in db', 0.001);
-//        $this->seeInDatabase('element_scores',
-//                             [
-//                                 'element_assignment_id' => $elementAssignmentId,
-//                                 'student_id' => $studentId,
-//                                 'score' => $score
-//                             ]);
+        $this->assertEquals($score, $inDb->score, 'expected score found in db', 0.001);
 
-//        $this->markTestIncomplete();
     }
 
+    /**
+     * Todo fails
+     */
     public function testUpdateWherePreexisting()
     {
+        #prep
         $es = $this->elementScore;
         $elementAssignmentId = $es->element_assignment_id;
         $studentId = $es->student_id;
-        $score = $this->faker->randomFloat(2,0,10);
+        $score = $this->faker->randomFloat(2, 0, 10);
 
+        #call
         $result = $this->object->update($elementAssignmentId, $studentId, $score);
 
+        #check
         $this->assertNotEmpty($result);
-//        $this->assertInstanceOf('App\ElementScore', $result);
-//        $this->assertEquals($elementAssignmentId, $result->element_assignment_id);
-//        $this->assertEquals($studentId, $result->student_id);
-//        $this->assertEquals($score, $result->score);
-        $this->seeInDatabase('element_scores', ['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId, 'score' => $score]);
+        //load from db to check (the float score messes up the assertions for
+        //looking in db)
+        $inDb = ElementScore::where('element_assignment_id', $elementAssignmentId)
+            ->where('student_id', $studentId)
+            ->first();
+        $this->assertInstanceOf(ElementScore::class, $inDb, "returned an element score object");
+        $this->assertEquals($score, $inDb->score, 'expected score found in db', 0.001);
+
     }
 
 
@@ -166,7 +162,10 @@ public function testRecordCommentText()
 
         //check
         $this->assertTrue($result, "returns as expected");
-        $this->notSeeInDatabase('element_scores', ['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId]);
+        $this->notSeeInDatabase('element_scores', [
+            'element_assignment_id' => $elementAssignmentId,
+            'student_id'            => $studentId,
+        ]);
     }
 
 
