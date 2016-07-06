@@ -38,8 +38,13 @@ class StudentRepositoryTest extends \TestCase
         \Mockery::close();
         parent::setUp();
         $this->object = new StudentRepository;
-        $this->exam = Exam::all()->random();
-        $this->student = Student::all()->random();
+        $this->exam = factory(Exam::class)->create();
+        //this way will match on all attributes, including 'was_recently_created'
+        $student = factory(Student::class)->create();
+        $sid = $student->id;
+        $this->student = Student::find($sid);
+//        $this->exam = Exam::all()->random();
+//        $this->student = Student::all()->random();
         $this->row = 1;
     }
 
