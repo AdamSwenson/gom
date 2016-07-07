@@ -6,7 +6,7 @@
  * Time: 6:38 PM
  */
 
-namespace App\HTTP\Controllers;
+namespace App\HTTP\Controllers\Report;
 
 
 use App\AccessKey;

@@ -79,7 +79,7 @@ class PublicFeedbackController extends Controller
 
             return View::make(self::FEEDBACK_DISPLAY_VIEW)
                 ->with(['data' =>  $data]);
-//            return view(self::FEEDBACK_DISPLAY_VIEW, compact('data'));
+
         } catch (\Exception $e)
         {
             Log::warning("Error retrieving feedback " . $e, ['accessKey' => $accessKey]);

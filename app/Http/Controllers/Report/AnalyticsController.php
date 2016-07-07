@@ -123,22 +123,22 @@ class AnalyticsController extends Controller
         $questionScoresByQNumber = $this->questionScoreRepository->load_all_for_exam($exam->id);
         $elementScoresByQENumber = $this->elementScoreRepository->load_all_for_exam($exam->id);
 
-        return view('reports.exam_analytics')->with([
-                                                        'exam'                    => $exam,
-                                                        'students'                => $students,
-                                                        'questionScores'          => json_encode($questionScores),
-                                                        'questionScoresByQNumber' => json_encode($questionScoresByQNumber),
-                                                        'questionStats'           => $this->scoreStatisticsRepository->questionAssignmentStats->toJson(),
-                                                        'elementStats'            => $this->scoreStatisticsRepository->elementAssignmentStats->toJson(),
-                                                        'elementScoresByQENumber' => json_encode($elementScoresByQENumber),
-                                                    ]);
+        return view('reports.exam_analytics')
+            ->with([
+                       'exam'                    => $exam,
+                       'students'                => $students,
+                       'questionScores'          => json_encode($questionScores),
+                       'questionScoresByQNumber' => json_encode($questionScoresByQNumber),
+                       'questionStats'           => $this->scoreStatisticsRepository->questionAssignmentStats->toJson(),
+                       'elementStats'            => $this->scoreStatisticsRepository->elementAssignmentStats->toJson(),
+                       'elementScoresByQENumber' => json_encode($elementScoresByQENumber),
+                   ]);
     }
 
     function standardDeviation($array)
     {
         // square root of sum of squares divided by N-1
-        return sqrt(array_sum(array_map(function ($x, $mean)
-                    {
+        return sqrt(array_sum(array_map(function ($x, $mean){
                         return pow($x - $mean, 2);
                     }, $array, array_fill(0, count($array),
                         (array_sum($array) / count($array))))) / (count($array) - 1));
