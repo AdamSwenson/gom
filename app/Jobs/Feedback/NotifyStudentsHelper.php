@@ -9,9 +9,13 @@
 namespace App\Jobs\Feedback;
 
 use App\Exam;
+use App\Repositories\Feedback\IAccessKeyRepository;
+use App\Repositories\Student\IStudentRepository;
 use App\Repositories\Utilities\IMailSender;
 use App\Student;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Mockery\CountValidator\Exception;
 
 /**
  * Does all the work (loads access key, constructs feedback link, looks up email addresses,
@@ -44,8 +48,8 @@ class NotifyStudentsHelper implements INotifyStudentsHelper
 
     public function __construct()
     {
-        $this->accessKeyRepository = app()->make('App\Repositories\Feedback\IAccessKeyRepository');
-        $this->studentRepository = app()->make('App\Repositories\Student\IStudentRepository');
+        $this->accessKeyRepository = app()->make(IAccessKeyRepository::class);
+        $this->studentRepository = app()->make(IStudentRepository::class);
         $this->mailer = app()->make(IMailSender::class);
     }
 
@@ -55,27 +59,38 @@ class NotifyStudentsHelper implements INotifyStudentsHelper
      * @param Exam $exam
      * @param Student $student
      * @param bool|true $initial Whether to send the initial email
+     * @return bool
      */
-    public function sendEmailToStudent(Exam $exam, Student $student, $initial=true)
+    public function sendEmailToStudent(Exam $exam, Student $student, $initial = true)
     {
-        $accessKey = $this->loadAccessKey($exam, $student);
-        if( ! empty($accessKey) )
+        try{
+            $accessKey = $this->loadAccessKey($exam, $student);
+            if ( ! empty($accessKey) )
+            {
+                $data = [
+                    'studentName'  => $student->getFullName(),
+                    'examName'     => $exam->getName(),
+                    'feedbackLink' => $this->buildLink($accessKey),
+                    'siteLink'     => self::FEEDBACK_PAGE_LINK . '/login',
+                    'accessKey'    => $accessKey,
+                ];
+
+                //Pick which email to send
+                $view = $initial ? self::INITIAL_EMAIL_VIEW : self::SECOND_EMAIL_VIEW;
+
+                //Handle the send
+                $this->send($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam));
+
+                return true;
+            }
+        } catch ( Exception $e )
         {
-            $data =[
-                'studentName' => $student->getFullName(),
-                'examName' => $exam->getName(),
-                'feedbackLink' => $this->buildLink($accessKey),
-                'siteLink' => self::FEEDBACK_PAGE_LINK . '/login',
-                'accessKey' => $accessKey
-            ];
+//Log failure
+            Log::info("Error sending email to student " . $e);
 
-            //Pick which email to send
-            $view = $initial ? self::INITIAL_EMAIL_VIEW : self::SECOND_EMAIL_VIEW;
-
-            //Handle the send
-            $this->send($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam));
+            //TODO Error handling if an access key hasn't already been set
         }
-        //TODO Error handling if an access key hasn't already been set
+
     }
 
 
@@ -86,10 +101,10 @@ class NotifyStudentsHelper implements INotifyStudentsHelper
      * @param Exam $exam
      * @param bool $initial Whether to use the initial email template
      */
-    protected function sendEmailToEveryone(Exam $exam, $initial=true)
+    protected function sendEmailToEveryone(Exam $exam, $initial = true)
     {
         $this->students = $this->studentRepository->load_students_by_exam($exam);
-        foreach($this->students as $student)
+        foreach ( $this->students as $student )
         {
             $this->sendEmailToStudent($exam, $student, $initial);
         }
@@ -143,14 +158,15 @@ class NotifyStudentsHelper implements INotifyStudentsHelper
      */
     public function loadAccessKey(Exam $exam, Student $student)
     {
-        if(!empty($student->getEmail()))
+        if ( ! empty($student->getEmail()) )
         {
             $key = $this->accessKeyRepository->getAccessKeyForStudent($exam->id, $student->id);
-            if($key)
+            if ( $key )
             {
                 return $key;
             }
         }
+
         return false;
     }
 

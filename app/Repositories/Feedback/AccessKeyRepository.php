@@ -161,7 +161,9 @@ class AccessKeyRepository implements IAccessKeyRepository
      */
     public function getAccessKeyForStudent($examId, $studentId)
     {
-        $key = AccessKey::where('exam_id', $examId)->where('student_id', $studentId)->first();
+        $key = AccessKey::where('exam_id', $examId)
+            ->where('student_id', $studentId)
+            ->first();
         if ( ! empty($key) )
         {
             return $key->getKey();

@@ -543,7 +543,7 @@ class GradeController extends Controller
             // A released exam will have its compiled feedback updated  for this student
             if ( $exam->getReleased() )
             {
-                $reportController = app()->make('App\Http\Controllers\ReportController');
+                $reportController = app()->make('App\Http\Controllers\Report\ReportController');
                 $reportController->updateFeedbackForStudent($exam, $studentId);
             }
 

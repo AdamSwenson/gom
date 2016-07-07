@@ -57,6 +57,18 @@ class Feedback extends BaseModelNoUser
         return $this->attributes['access_key'];
     }
 
+    /**
+     * Alias for access key so that if someone
+     * tries to access accessKey (which was an earlier property)
+     * they will still get what they expect.
+     * @return array
+     */
+    public function getAccessKeyAttribute()
+    {
+        return $this->attributes['access_key'];
+    }
+
+
     public function setAccessKey($accessKey)
     {
         $this->attributes['access_key'] = $accessKey;

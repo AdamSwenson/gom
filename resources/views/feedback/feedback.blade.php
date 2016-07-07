@@ -18,11 +18,11 @@ foreach ( $dataAll as $data )
     $r[ $data['accessKey'] ] = $data;
 }
 $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
-//var_dump($encodedStudentData);
+var_dump($encodedStudentData);
 ?>
 
 
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -84,7 +84,8 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
 
 <div class="jsArea">
     <script type="text/javascript">
-        var studentData = JSON.parse( '{!! $encodedStudentData !!}' );
+        var studentData = {!! $encodedStudentData !!};
+        {{--var studentData = JSON.parse( '{!! $encodedStudentData !!}' );--}}
         window.console.log( studentData );
         var activeTab = '';
     </script>

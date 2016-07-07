@@ -3,11 +3,7 @@ namespace Page\report;
 
 class StudentControlsPage
 {
-    // include url of current page
-    public static $URL = '';
 
-
-    
     /**
      * Basic route example for your current URL
      * You can append any additional parameter to URL
@@ -35,4 +31,9 @@ class StudentControlsPage
     public static $controlRowClassName = "studentControlRow";
 
 
+    public static function navigateToPage($I, $examId){
+        $I->test_login($I);
+        $I->amOnPage(self::URL($examId));
+        $I->waitForElementVisible(self::$mainBodyLocator);
+    }
 }
