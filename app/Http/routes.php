@@ -94,11 +94,8 @@ Route::get('report', 'Report\ReportController@index');
 Route::get('report/{exam}/analytics','Report\AnalyticsController@index');
 // Quality control tools
 Route::get('report/{exam}/qualitycontrol', 'Report\QualityControlController@index');
-
-//Route::get('report/{exam}/gradeassign', array('uses' => 'ReportController@showGradeAssign'));
-
 // shows student controls for the exam
-Route::get('report/{exam}/students', 'Report\ReportController@showStudents');
+Route::get('report/{exam}/students', 'Report\ReportController@showStudentControls');
 
 
 /* Feedback */
@@ -123,11 +120,11 @@ Route::get('feedback/make/{exam}', 'Report\ReportController@createFeedback');
 
 /* Public access (i.e., student arriving) */
 // If arrived via link in email to student
-Route::get('feedback', 'PublicFeedbackController@showFeedback');
+Route::get('feedback', 'Report\PublicFeedbackController@showFeedback');
 // If arrived via feedback login page
-Route::post('feedback/login', 'PublicFeedbackController@showFeedback');
-Route::get('feedback/login', 'PublicFeedbackController@showLogin');
-Route::get('feedback/view', 'PublicFeedbackController@showFeedback');
+Route::post('feedback/login', 'Report\PublicFeedbackController@showFeedback');
+Route::get('feedback/login', 'Report\PublicFeedbackController@showLogin');
+Route::get('feedback/view', 'Report\PublicFeedbackController@showFeedback');
 
 
 /* ---------------------------------------------- Utilities --------------------------------------------------------- */

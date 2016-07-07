@@ -11,9 +11,9 @@
                 <dd><span id="studentIdentifier">{{ $data['studentIdentifier'] }}</span></dd>
             @endif
 
-            @if( null !== $data->grade())
+            @if( isset($data['grade']))
                 <dt>Grade</dt>
-                <dd><span id="letterGrade">{{ $data->grade() }}</span></dd>
+                <dd><span id="letterGrade">{{ $data['grade'] }}</span></dd>
             @endif
 
             @if(isset($data['accessKey']))

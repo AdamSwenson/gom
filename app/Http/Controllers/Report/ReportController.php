@@ -116,6 +116,45 @@ class ReportController extends Controller
     }
 
     /**
+     * Displays the student_controls page to review feedback and send emails
+     * @param Exam $exam
+     * @return $this
+     */
+    public function showStudentControls(Exam $exam)
+    {
+        //Check that user owns the exam
+        $this->authorize('access-object', $exam);
+
+        // compile feedback for all students
+        $examId = $exam->getId();
+
+        // this will return a Collection, potentially empty
+        $students = $this->studentRepository->load_students_by_exam($exam->getId());
+
+        //Check to make sure students are present
+        if ( ! is_null($students) && count($students) > 0 )
+        {
+            //If the exam has not ben released, generate them all
+            if ( ! $exam->isReleased() )
+            {
+                $this->feedbackBuilder->buildFeedback($examId);
+            }
+
+            //TODO Why the fuck is this redone?
+            foreach ( $students as $student )
+            {
+                $this->feedbackBuilder->recompileFeedbackForStudent($examId, $student);
+            }
+        } else
+        {
+            //Set an error message
+        }
+
+        return view('reports.student_controls')->with(['exam' => $exam, 'students' => $students]);
+    }
+
+
+    /**
      * Re-compiles the feedback for a particular student.
      *
      * This is mainly used if the exam has already been released and the teacher goes back and edits
@@ -215,43 +254,6 @@ class ReportController extends Controller
     }
 
 
-    /**
-     * Displays the student_controls page to review feedback and send emails
-     * @param Exam $exam
-     * @return $this
-     */
-    public function showStudents(Exam $exam)
-    {
-        //Check that user owns the exam
-        $this->authorize('access-object', $exam);
-
-        // compile feedback for all students
-        $examId = $exam->getId();
-
-        // this will return a Collection, potentially empty
-        $students = $this->studentRepository->load_students_by_exam($exam->getId());
-
-        //Check to make sure students are present
-        if ( ! is_null($students) && count($students) > 0 )
-        {
-            //If the exam has not ben released, generate them all
-            if ( ! $exam->isReleased() )
-            {
-                $this->feedbackBuilder->buildFeedback($examId);
-            }
-
-            //TODO Why the fuck is this redone?
-            foreach ( $students as $student )
-            {
-                $this->feedbackBuilder->recompileFeedbackForStudent($examId, $student);
-            }
-        } else
-        {
-            //Set an error message
-        }
-
-        return view('reports.student_controls')->with(['exam' => $exam, 'students' => $students]);
-    }
 
     /**
      * Show feedback for the selected student
@@ -266,11 +268,16 @@ class ReportController extends Controller
         $this->authorize('access-object', $student);
 
         $accessKey = $this->accessKeyDao->getAccessKeyForStudent($exam->getId(), $student->getId());
-        $data = $this->accessKeyDao->retrieveFeedback($accessKey);
-
-        //Push student info into the feedback object
-        $data->studentName = $student->getFullName();
-        $data->studentIdentifier = $student->getStudentIdentifierAttribute();
+        $fb = $this->accessKeyDao->retrieveFeedback($accessKey);
+        
+        //build the expected object (nb, this has to parallel what's done in publicFeedbackController)
+        $data = [];
+        $data['content'] = $fb->content; //stored as array so should cast to array
+        //add the access key to the content array so can just return that.
+        $data['accessKey'] = $accessKey;
+        $data['studentName'] = $student->getFullName();
+        $data['studentIdentifier'] = $student->getStudentId();
+        $data['grade'] = $fb->grade();
 
         $showNav = true;
 
@@ -281,7 +288,6 @@ class ReportController extends Controller
                        'data'    => $data,
                        'showNav' => $showNav,
                    ]);
-//        return view('reports.student_feedback')->with(['exam' => $exam, 'student' => $student, 'data' => $data]);
     }
 
     /**
@@ -304,16 +310,31 @@ class ReportController extends Controller
         foreach ( $students as $student )
         {
             $accessKey = $this->accessKeyDao->getAccessKeyForStudent($exam->getId(), $student->getId());
+            $fb = $this->accessKeyDao->retrieveFeedback($accessKey);
 
-            $data = $this->accessKeyDao->retrieveFeedback($accessKey);
+            //build the expected object (nb, this has to parallel what's done in publicFeedbackController)
+            $data = [];
+            $data['content'] = $fb->content; //stored as array so should cast to array
+            //add the access key to the content array so can just return that.
+            $data['accessKey'] = $accessKey;
+            $data['studentName'] = $student->getFullName();
+            $data['studentIdentifier'] = $student->getStudentId();
+            $data['grade'] = $fb->grade();
 
-            //Push student info into the feedback object
-            $data->name = $student->getFullName();
-            $data->student_id = $student->getStudentIdentifierAttribute();
 
+//            $accessKey = $this->accessKeyDao->getAccessKeyForStudent($exam->getId(), $student->getId());
+//
+//            $data = $this->accessKeyDao->retrieveFeedback($accessKey);
+//
+//            //Push student info into the feedback object
+//            //Push student info into the feedback object
+//            $data->studentName = $student->getFullName();
+//            $data->studentIdentifier = $student->getStudentIdentifierAttribute();
+            
             //Add to data array
             $dataAll[] = $data;
         }
+        $showNav = true;
 
         return view('feedback.feedback')->with(['exam' => $exam, 'student' => $student, 'dataAll' => $dataAll]);
     }

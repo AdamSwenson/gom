@@ -15,8 +15,8 @@ foreach ( $dataAll as $data )
 {
 //    $r[ 'accessKey' ] = $data->content;
 //    $r[ $data->getAccessKey() ] = $data->content;
-//    $r[ $data['accessKey'] ] = $data;
-    $r[ $data->getAccessKey() ] = $data;
+    $r[ $data['accessKey'] ] = $data;
+//    $r[ $data->getAccessKey() ] = $data;
 }
 $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
 ?>

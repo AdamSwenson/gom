@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Report;
 
 use App\Http\Requests\StudentAccessRequest;
 use App\Repositories\Feedback\FeedbackBuilder;
@@ -67,6 +67,8 @@ class PublicFeedbackController extends Controller
 
             $info = $this->accessKeyRepository->getStudentInfo($accessKey);
 
+
+            //build the expected object (nb, this has to parallel what's done in ReportController)
             $data = [];
             $data['content'] = $fb->content; //stored as array so should cast to array
             //add the access key to the content array so can just return that.
