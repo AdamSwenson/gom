@@ -42,6 +42,7 @@ class Feedback extends BaseModelNoUser
 
         return $r;
     }
+    
 
     /**
      * Getter for the calculated value of the grade

@@ -15,10 +15,10 @@ foreach ( $dataAll as $data )
 {
 //    $r[ 'accessKey' ] = $data->content;
 //    $r[ $data->getAccessKey() ] = $data->content;
-    $r[ $data['accessKey'] ] = $data;
+//    $r[ $data['accessKey'] ] = $data;
+    $r[ $data->getAccessKey() ] = $data;
 }
 $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
-var_dump($encodedStudentData);
 ?>
 
 
@@ -67,7 +67,6 @@ var_dump($encodedStudentData);
     @foreach($dataAll as $data)
         <?php $accessKey = $data['accessKey']; ?>
         @include('feedback.partials.student_info')
-
         @include('feedback.partials.overall_chart')
 
         <div id="questionResultsHere">

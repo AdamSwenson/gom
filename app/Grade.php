@@ -29,13 +29,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Grade extends Model
 {
-
-//    public function save()
-//    {
-//        throw new Exception('Grades should not be altered');
-//    }
-
-
     protected $displayValue;
     protected $calcValue;
     protected $gradeId;

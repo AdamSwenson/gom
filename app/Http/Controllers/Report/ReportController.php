@@ -111,6 +111,7 @@ class ReportController extends Controller
     public function index()
     {
         $exams = $this->examDao->load_all_exams();
+
         return view('reports.exam_controls', ['exams' => $exams]);
     }
 
@@ -214,8 +215,6 @@ class ReportController extends Controller
     }
 
 
-
-
     /**
      * Displays the student_controls page to review feedback and send emails
      * @param Exam $exam
@@ -246,9 +245,9 @@ class ReportController extends Controller
             {
                 $this->feedbackBuilder->recompileFeedbackForStudent($examId, $student);
             }
-        }else{
+        } else
+        {
             //Set an error message
-            
         }
 
         return view('reports.student_controls')->with(['exam' => $exam, 'students' => $students]);
@@ -270,17 +269,18 @@ class ReportController extends Controller
         $data = $this->accessKeyDao->retrieveFeedback($accessKey);
 
         //Push student info into the feedback object
-        $data->name = $student->getFullName();
-        $data->student_id = $student->getStudentIdentifierAttribute();
+        $data->studentName = $student->getFullName();
+        $data->studentIdentifier = $student->getStudentIdentifierAttribute();
 
         $showNav = true;
 
-        return view('feedback.feedback')->with([
-                                                   'exam'    => $exam,
-                                                   'student' => $student,
-                                                   'data'    => $data,
-                                                   'showNav' => $showNav,
-                                               ]);
+        return view('feedback.feedback')
+            ->with([
+                       'exam'    => $exam,
+                       'student' => $student,
+                       'data'    => $data,
+                       'showNav' => $showNav,
+                   ]);
 //        return view('reports.student_feedback')->with(['exam' => $exam, 'student' => $student, 'data' => $data]);
     }
 

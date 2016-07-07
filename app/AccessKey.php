@@ -104,7 +104,7 @@ class AccessKey extends BaseModelNoUser
     #------------------------------------------ queries
     public function scopeOnExam($query, $examId)
     {
-        return $query->whereExamId($examId);
+        return $query->where('exam_id', $examId);
     }
 
     #------------------------------------------ foreign keys
