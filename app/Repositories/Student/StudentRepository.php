@@ -106,6 +106,7 @@ class StudentRepository implements IStudentRepository
                     }
                 } else
                 {
+                    //it was a new record
                     $this->allStudents[] = [
                         'failed'             => 'invalidRecord',
                         'last_name'          => $request->input('lastName' . $i),

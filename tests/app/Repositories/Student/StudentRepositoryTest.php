@@ -39,12 +39,12 @@ class StudentRepositoryTest extends \TestCase
         parent::setUp();
         $this->object = new StudentRepository;
         $this->exam = factory(Exam::class)->create();
+
         //this way will match on all attributes, including 'was_recently_created'
         $student = factory(Student::class)->create();
         $sid = $student->id;
         $this->student = Student::find($sid);
-//        $this->exam = Exam::all()->random();
-//        $this->student = Student::all()->random();
+
         $this->row = 1;
     }
 
@@ -69,7 +69,13 @@ class StudentRepositoryTest extends \TestCase
         $numberPreexisting = $numberOriginal + $numberAltered;
         //Create new exam so have blank slate of students
         $this->exam = factory(Exam::class)->create();
-        $students = factory(Student::class, $numberPreexisting)->create();
+        $this->kumi = factory(Kumi::class)->create();
+        $this->exam->classes()->save($this->kumi);
+
+        $students = factory(Student::class, $numberPreexisting)->create()->each(function ($s)
+        {
+            $s->kumis()->save($this->kumi);
+        });
 
         $row = 1; //fieldnames contain this row number
 
@@ -142,11 +148,6 @@ class StudentRepositoryTest extends \TestCase
                 $firstName = $s->first_name;
                 $lastName = $s->last_name;
                 $email = $s->email;
-
-//                $studentIdentifier = $this->faker->numberBetween(1111111, 9999999);
-//                $firstName = $this->faker->firstName;
-//                $lastName = $this->faker->lastName;
-//                $email = $this->faker->email;
 
                 $this->testData[] = [
                     "id$row"                => $student->getId(),
@@ -319,6 +320,7 @@ class StudentRepositoryTest extends \TestCase
             'last_name'          => $lastName,
             'first_name'         => $firstName,
             'student_identifier' => $studentId,
+            'email'              => null,
         ]);
     }
 
@@ -442,15 +444,17 @@ class StudentRepositoryTest extends \TestCase
 
     public function testDelete_student_by_id()
     {
+        #prep
         $sid = $this->student->id;
+
+        #call
         $this->assertEquals(1, $this->object->delete_student_by_id($sid));
 
+        #check
         $this->assertEmpty(Student::find($sid));
     }
 
-    /**
-     * todo this fails
-     */
+
     public function testDelete_student_by_sid()
     {
         #prep
@@ -502,12 +506,44 @@ class StudentRepositoryTest extends \TestCase
     }
 
 
+    /**
+     * @test
+     */
+    public function updateStudentsInDatabaseHappyPath()
+    {
+        $numberStudents = 10;
+        #Prep
+        $kumi = Kumi::all()->random();
+        $exam = $kumi->exams()->first();
+        $this->object->exam = $exam;
+        //push row numbers into validRecords array
+        $validator = new StudentRecordValidator();
+        for ( $i = 1; $i <= $numberStudents; $i++ )
+        {
+            $validator->validRecords[] = $i;
+        }
+        $this->object->studentValidator = $validator;
+
+        //Build a request
+        $request = $this->buildTestDataAndRequest($numberStudents);
+
+        #Call
+        $this->object->updateStudentsInDatabase($request, $kumi);
+
+        #Check
+        foreach ( $this->expectedDbEntries as $data )
+        {
+            $this->seeInDatabase('students', $data);
+        }
+
+    }
+
     /* ---------------------------------------------------------- Update All tests--------------------------*/
 
     /**
      * @test
      */
-    public function deleteStudentsNotOnRoster()
+    public function updateAll_deleteStudentsNotOnRoster()
     {
         # prep
         $this->setupExamWithStudents();
@@ -546,65 +582,7 @@ class StudentRepositoryTest extends \TestCase
             $this->seeInDatabase('students', $data);
         }
     }
-
-
-    /**
-     * @test
-     */
-    public function existingStudentMadeInvalidNotDeleted()
-    {
-        $this->markTestIncomplete();
-
-        //check
-        //assert: the record of the student was not deleted
-        //assert: the record was not updated with the invalid info
-        //assert: the returned allStudents array had a 'failed' field for the bad record
-    }
-
-    /**
-     *
-     */
-    public function newStudentWasInvalid()
-    {
-        $this->markTestIncomplete();
-
-        //assert: not written to database
-        //assert : returned allStudents array has the bad record with a 'failed' field
-    }
-
-    /**
-     * @test
-     */
-    public function updateStudentsInDatabaseHappyPath()
-    {
-        $numberStudents = 10;
-        #Prep
-        $kumi = Kumi::all()->random();
-        $exam = $kumi->exams()->first();
-        $this->object->exam = $exam;
-        //push row numbers into validRecords array
-        $validator = new StudentRecordValidator();
-        for ( $i = 1; $i <= $numberStudents; $i++ )
-        {
-            $validator->validRecords[] = $i;
-        }
-        $this->object->studentValidator = $validator;
-
-        //Build a request
-        $request = $this->buildTestDataAndRequest($numberStudents);
-
-        #Call
-        $this->object->updateStudentsInDatabase($request, $kumi);
-
-        #Check
-        foreach ( $this->expectedDbEntries as $data )
-        {
-            $this->seeInDatabase('students', $data);
-        }
-
-    }
-
-
+    
     /**
      * @test
      */
@@ -682,6 +660,99 @@ class StudentRepositoryTest extends \TestCase
         {
             $this->seeInDatabase('students', $data);
         }
+    }
+
+
+    /**
+     * @test
+     */
+    public function updateAll_existingStudentMadeInvalidNotDeleted()
+    {
+        # prep
+        $row = 1;
+        $numRecords = 10;
+        $request = $this->buildTestDataAndRequest(0, $numRecords); //10 preexisting students; no new
+        $recordId = $request[ "id" . $row ];
+        $originalEmail = $request[ "email" . $row ];
+        $request[ "email" . $row ] = "taco"; //make an invalid email
+
+        $response = $this->object->update_all($this->exam, $request);
+
+        #Check
+        $this->assertNotNull($response);
+        //assert: the record of the student was not deleted
+        //assert: the record was not updated with the invalid info
+        $this->seeInDatabase('students', ['id' => $recordId, 'email' => $originalEmail]);
+
+        //assert: the returned allStudents array had a 'failed' field for the bad record
+        $c = 0;
+        foreach ( $response as $row )
+        {
+            if ( $row['id'] == $recordId )
+            {
+                $this->assertArrayHasKey('failed', $row, "expected key inserted into array");
+                $this->assertEquals('invalidRecord', $row['failed'], "inserted key has expected value");
+            } else
+            {
+                $this->assertArrayNotHasKey('failed', $row, "other row doesn't have failure key");
+            }
+            $c++;
+
+        }
+        $this->assertEquals($numRecords, $c, "expected number of records were processed");
+
+    }
+
+    /**
+     *
+     */
+    public function updateAll_newStudentWasInvalid()
+    {
+        # prep
+        $row = 1;
+        $numRecords = 10;
+        $request = $this->buildTestDataAndRequest(5); //5 new; no preexisting students
+        $recordId = $request[ "id" . $row ];
+        $originalEmail = $request[ "email" . $row ];
+        $originalFName = $request[ "firstName" . $row ];
+        $originalLName = $request[ "lastName" . $row ];
+        $originalIdentifier = $request[ "studentIdentifier" . $row ];
+        $request[ "email" . $row ] = "taco"; //make an invalid email
+
+        $response = $this->object->update_all($this->exam, $request);
+
+        #Check
+        $this->assertNotNull($response);
+
+        //assert: not written to database
+        //assert : returned allStudents array has the bad record with a 'failed' field
+        $this->notSeeInDatabase('students', [
+            'first_name'         => $originalFName,
+            'last_name'          => $originalLName,
+            'student_identifier' => $originalIdentifier,
+            'email'              => $originalEmail,
+        ]);
+
+        //assert: the returned allStudents array had a 'failed' field for the bad record
+        $c = 0;
+        foreach ( $response as $row )
+        {
+            if ( $row['id'] == $recordId )
+            {
+                $this->assertArrayHasKey('failed', $row, "expected key inserted into array");
+                $this->assertEquals('invalidRecord', $row['failed'], "inserted key has expected value");
+            } else
+            {
+                $this->assertArrayNotHasKey('failed', $row, "other row doesn't have failure key");
+            }
+            $c++;
+
+        }
+        $this->assertEquals($numRecords, $c, "expected number of records were processed");
+
+
+        $this->markTestIncomplete();
+
     }
 
     /* ------------------------------ Bug squishing -------------- */
