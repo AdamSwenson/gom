@@ -29,7 +29,9 @@ class AccessKey extends BaseModelNoUser
 
     protected $casts = [
         'accessKey' => 'string',
-        'student_info' => 'array'
+        'student_info' => 'array',
+        'access_expires' => 'date',
+        'email_sent' => 'boolean'
     ];
 
     public function getKey()
@@ -64,10 +66,11 @@ class AccessKey extends BaseModelNoUser
 
     /**
      * Returns the date the student's access to feedback expires
+     * @return null|static|Carbon
      */
     public function getExpirationDate()
     {
-        return Carbon::parse($this->attributes['access_expires']);
+        return isset($this->attributes['access_expires']) ? Carbon::parse($this->attributes['access_expires']) : null;
     }
 
     /**
@@ -87,7 +90,7 @@ class AccessKey extends BaseModelNoUser
      */
     public function getEmailSent()
     {
-        return $this->attributes['email_sent'];
+        return isset($this->attributes['email_sent']) ? $this->attributes['email_sent'] : false;
     }
 
     /**

@@ -2,7 +2,6 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 
 class Feedback extends BaseModelNoUser
 {
@@ -38,9 +37,7 @@ class Feedback extends BaseModelNoUser
      */
     public function grade()
     {
-        $r = $this->attributes['grade_display'] ? $this->attributes['grade_display'] : self::NO_GRADE;
-
-        return $r;
+        return $this->attributes['grade_display'] ? $this->attributes['grade_display'] : self::NO_GRADE;
     }
     
 
