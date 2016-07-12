@@ -120,6 +120,7 @@ elixir( function ( mix ) {
     mix.browserify( 'grade/gradeAssign.js', 'public/js/grade-assign-package.js' );
     mix.browserify( [ 'grade/gradeExam.js' ], 'public/js/grade-exam-package.js' );
     mix.browserify( 'grade/examSelect.js', 'public/js/grade-exam-select-package.js' );
+    mix.scripts('grade/components/Data.js', 'public/js/grade-exam-data.js');
 
 
     /* --------------------- Feedback ---------------------- */
@@ -144,15 +145,15 @@ elixir( function ( mix ) {
     //     });
     // });
 
-    // mix.browserify([
-    //         "libraries/unitTestHelpers/jquery-1.11.1.js",
-    //         "libraries/unitTestHelpers/jquery-ui.js",
-    //         "libraries/unitTestHelpers/jquery.tmpl.min.js",
-    //         "libraries/unitTestHelpers/qunit-1.15.0.js",
-    //         "libraries/unitTestHelpers/json2.js",
-    //         "libraries/unitTestHelpers/jquery.mockjax.js",
-    //         "libraries/unitTestHelpers/jquery.cookie.js"
-    // ], 'public/js/testing/js-test-suite.js');
+    mix.scripts([
+            "libraries/unitTestHelpers/jquery-1.11.1.js",
+            "libraries/unitTestHelpers/jquery-ui.js",
+            "libraries/unitTestHelpers/jquery.tmpl.min.js",
+            "libraries/unitTestHelpers/qunit-1.15.0.js",
+            "libraries/unitTestHelpers/json2.js",
+            "libraries/unitTestHelpers/jquery.mockjax.js",
+            "libraries/unitTestHelpers/jquery.cookie.js"
+    ], 'public/js/testing/js-test-suite.js');
 
 //
 //     var gulpNSP = require('gulp-nsp');

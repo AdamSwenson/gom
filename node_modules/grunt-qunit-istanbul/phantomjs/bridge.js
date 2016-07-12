@@ -2,12 +2,18 @@
  * grunt-contrib-qunit
  * http://gruntjs.com/
  *
- * Copyright (c) 2013 "Cowboy" Ben Alman, contributors
+ * Copyright (c) 2015 "Cowboy" Ben Alman, contributors
  * Licensed under the MIT license.
  */
 
-/*global QUnit:true, alert:true, window:true*/
-(function () {
+/*global QUnit:true, alert:true*/
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+    require(['qunit'], factory);
+  } else {
+    factory(QUnit);
+  }
+}(function(QUnit) {
   'use strict';
 
   // Don't re-order tests.
@@ -25,9 +31,15 @@
   QUnit.log(function(obj) {
     // What is this I don’t even
     if (obj.message === '[object Object], undefined:undefined') { return; }
+
     // Parse some stuff before sending it.
-    var actual = QUnit.jsDump.parse(obj.actual);
-    var expected = QUnit.jsDump.parse(obj.expected);
+    var actual, expected;
+    if (!obj.result) {
+      // Dumping large objects can be very slow, and the dump isn't used for
+      // passing tests, so only dump if the test failed.
+      actual = QUnit.jsDump.parse(obj.actual);
+      expected = QUnit.jsDump.parse(obj.expected);
+    }
     // Send it.
     sendMessage('qunit.log', obj.result, actual, expected, obj.message, obj.source);
   });
@@ -59,4 +71,4 @@
     }
     sendMessage('qunit.done', obj.failed, obj.passed, obj.total, obj.runtime);
   });
-}());
+}));

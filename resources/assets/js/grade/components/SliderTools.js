@@ -27,7 +27,7 @@ module.exports = {
      * @param score
      * @returns {number}
      */
-    getValence: function ( score ) {
+    updateValence: function ( score ) {
         var valence = 0;
         var me = this;
 

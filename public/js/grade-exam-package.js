@@ -64,7 +64,7 @@ window.onload = function () {
     //         //Dear Adam, make sure you read the doc for storeCommentText before fucking with
     //         //anything in these lines
     //         data.storeCommentText( Roster.activeStudent, elementIndex, $elementComment.val() );
-    //         var commentText = data.getCommentText( Roster.activeStudent, elementIndex, SliderTools.getValence( score ) );
+    //         var commentText = data.getCommentText( Roster.activeStudent, elementIndex, SliderTools.updateValence( score ) );
     //
     //         //update display
     //         updateDisplayedComment( $elementComment, commentText );
@@ -217,7 +217,7 @@ window.onload = function () {
                 $(this).prop('readonly', 'true');
             } else {
                 // It has already been scored, so retrieve and set the comment text
-                var valence = SliderTools.getValence(elementScore);
+                var valence = SliderTools.updateValence(elementScore);
                 var thisComment = data.getCommentText(Roster.activeStudent, index, valence);
                 $(this).val(thisComment);
                 //no need for it to remain read only
@@ -14072,7 +14072,7 @@ module.exports = {
      * @param score
      * @returns {number}
      */
-    getValence: function getValence(score) {
+    updateValence: function getValence( score) {
         var valence = 0;
         var me = this;
 
