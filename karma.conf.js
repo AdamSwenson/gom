@@ -5,20 +5,23 @@ module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
+    // basePath: '/Users/adam/Dropbox/gom3',
     basePath: '',
-
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['qunit', 'requirejs'],
+    frameworks: ['browserify', 'jasmine', 'vue-component'],
 
 
     // list of files / patterns to load in the browser
     files: [
-      {pattern: 'resources/js/**/*.js', included: false}
+        'resources/assets/js/grade/components/Data.js',
+        'tests/spec/grade/*.spec.js',
+      {pattern: 'tests/spec/fixtures/*.fixture.html', included: false},
+      {pattern: 'node_modules/karma-jasmine-html-reporter/src/css/jasmine.css'},
+      {pattern: 'node_modules/karma-jasmine-html-reporter/src/lib/html.jasmine.reporter.js'},
+      {pattern: 'node_modules/karma-jasmine-html-reporter/src/lib/adapter.js'},
     ],
-
-
     // list of files to exclude
     exclude: [
     ],
@@ -27,14 +30,27 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+      'node_modules/jasmine-core': ['browserify'],
+      'tests/spec/**/*.js': [ 'browserify' ],
+      'resources/assets/js/grade/components/elementInput.js': [ 'browserify' ],
+    },
+
+    browserify: {
+      debug: true,
+      transform: [ 'stringify', 'vueify' ],
     },
 
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
-
+     //reporters: ['spec'],
+    // reporters: ['spec', 'progress'],
+    // reporters: ['kjhtml'],
+    // reporters: [ 'jasmine-spec-runner'],
+    // jasmineSpecRunnerReporter: {
+    //   jasmineCoreDir: 'jasmine-core'
+    // },
 
     // web server port
     port: 9876,
@@ -46,17 +62,17 @@ module.exports = function(config) {
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_INFO,
+    logLevel: config.LOG_DEBUG,
 
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: false,
+    autoWatch: true,
 
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome', 'Firefox', 'PhantomJS', 'IE'],
-
+    browsers: ['Chrome'],
+    // browsers: ['Chrome', 'Firefox', 'PhantomJS', 'IE'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
@@ -64,6 +80,19 @@ module.exports = function(config) {
 
     // Concurrency level
     // how many browser should be started simultaneous
-    concurrency: Infinity
+    concurrency: Infinity,
+
+    // browserify: {
+    //   debug: true,
+    //   // transform: [ 'brfs' ],
+    //   configure: function(bundle) {
+    //     bundle.on('prebundle', function() {
+    //       // bundle.external('foobar');
+    //     });
+    //   }
+    // },
+
+    //plugins: ['karma-spec-reporter'],
+
   })
 }

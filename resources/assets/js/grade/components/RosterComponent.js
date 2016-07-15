@@ -15,23 +15,48 @@ module.exports = {
 
     data: function () {
         return {    
-            activeStudent: null,
-            activeStudentTime: null,
-
-            standardScoring: false,
+            store: store,
 
             sortAsc: true,
+
+            /**
+             * Whether to show student names
+             * false is blind grading.
+             */
             studentNamesVisible: true,
-            nameHiddenString: "Name Hidden", // text to show when student names are invisible
-            noActiveStudentString: "No Student Selected",
-            activeStudentColor: '#337ab7',
-            alteredStudentTextColor: 'white',
-            gradedStudentColor: '#5cb85c',
-            initialStudentColor: 'white',
-            initialTextColor : 'black',};
+
+            activeStudentTime: null,
+            standardScoring: false,
+
+            settings : {
+                nameHiddenString: "Name Hidden", // text to show when student names are invisible
+                noActiveStudentString: "No Student Selected",
+                activeStudentColor: '#337ab7',
+                alteredStudentTextColor: 'white',
+                gradedStudentColor: '#5cb85c',
+                initialStudentColor: 'white',
+                initialTextColor : 'black',
+            },
+
+            // standardScoring: false,
+            //
+            // sortAsc: true,
+            // studentNamesVisible: true,
+            // nameHiddenString: "Name Hidden", // text to show when student names are invisible
+            // noActiveStudentString: "No Student Selected",
+            // activeStudentColor: '#337ab7',
+            // alteredStudentTextColor: 'white',
+            // gradedStudentColor: '#5cb85c',
+            // initialStudentColor: 'white',
+            // initialTextColor : 'black',
+        };
     },
 
-    computed: {},
+    computed: {
+        activeStudent : function(){
+            return this.store.activeStudent;
+        }
+    },
 
     methods: {
 
@@ -64,13 +89,13 @@ module.exports = {
         setSelectedNameAndId: function () {
             var $student = $( '#studentListItem' + this.activeStudent );
             // only show names if set to visible
-            var name = this.nameHiddenString;
+            var name = this.settings.nameHiddenString;
             if ( this.studentNamesVisible ) {
                 name = $student.attr( 'data-lName' ) + ", " + $student.attr( 'data-fName' );
             }
             // if no student has been selected, always display noActiveStudentString
             if ( ! this.activeStudent ) {
-                name = this.noActiveStudentString;
+                name = this.settings.noActiveStudentString;
             }
             var id = $student.data( 'student-identifier' );
             $( "#activeStudentName" ).val( name );

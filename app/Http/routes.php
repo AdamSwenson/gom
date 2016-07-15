@@ -136,3 +136,4 @@ Route::get('utilities/updateExamCounts', 'UtilityController@updateExamCounts');
 
 /* ---------------------------------------------- Testing ----------------------------------------------------------- */
 Route::get('testing/gradingSliders', 'TestController@gradingSlidersTest');
+Route::get('dev/newgrading', 'TestController@newGrading');

@@ -4,10 +4,13 @@
 
 
 /**
+ * TODO Rename this or the instance as store so will be easier to use with vue data
  * Main data storage object for grading page
  * @constructor
  */
 function Data() {
+    this.activeStudent = null,
+        
     this.elementScores = null,
     this.elementComments = null,
 

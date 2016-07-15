@@ -1,11 +1,10 @@
-<!-- template used by 'grade_exam' to host -->
 <div id="element{{ elementNumber }}"
      class="list-group-item elementPanel"
      data-element-index="{{ elementIndex }}"
      data-element-id="{{ elementId }}"
-     data-comment-area-id="{{ commentAreaId  }}"
->
-    <h5>{{ elementTitle }}</h5>
+     data-comment-area-id="{{ commentAreaId  }}">
+
+    <h5 class="elementTitle">{{ elementTitle }}</h5>
     <div class="row">
                 <span class="col-lg-5 sliderContainer Q{{ questionNumber }}E{{ elementNumber }}">
                     <!-- score slider -->
@@ -22,8 +21,8 @@
                               rows="4"
                               name="{{ commentAreaId  }}"
                               placeholder="No score for this element"
-                    >{{ commentText }}</textarea>
+                              v-model="commentText"
+                    ></textarea>
                 </span>
     </div>
 </div>
-

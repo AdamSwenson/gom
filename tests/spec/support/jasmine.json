@@ -1,6 +1,8 @@
 {
-  "spec_dir": "tests/spec",
+  "spec_dir": "../grade",
   "spec_files": [
+    "/grade/elementInput.spec.js",
+    "../**/*.[sS]pec.js",
     "**/*[sS]pec.js"
   ],
   "helpers": [

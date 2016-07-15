@@ -1,17 +1,18 @@
 /**
  * Created by adam on 7/11/16.
  */
-
+//
 var $ = require( 'jquery' );
 window.$ = $;
 var jQuery = $;
 window.jQuery = jQuery;
 
-var Slider = require( "../libraries/bootstrap-slider-modified.js" );
+var template = require( "../templates/element-input.template.html" );
+var Slider = require( "../../libraries/bootstrap-slider-modified.js" );
 
 module.exports = {
 
-    template: require( '../templates/element-input.template.html' ),
+    template: template,
 
     props: [
         'elementNumber',
@@ -26,26 +27,15 @@ module.exports = {
         return {
 
             /**
-             * The data repository store by everyone
+             * The data repository store shared by everyone
              */
             store: store,
-
-            // /**
-            //  * The current value of the text area
-            //  */
-            // commentText: '',
-            //
-            // /**
-            //  * The current valence of the slider position
-            //  */
-            // currentValence: false,
 
             /**
              * Whether the current comment text is customized (as opposed to stock).
              * When this is true, moving the slider should not change the text.
              */
             isCustom: false,
-
 
             settings: {
                 sliderStep: 0.25,
@@ -57,24 +47,18 @@ module.exports = {
     },
 
     computed: {
-
-        //grab the info related to elements
-//         var $element = $( slideEvt.target ).closest( '[id^="element"]' );
-// var $parent = $element.parents( '[id^="element"]' );
-// var commentAreaId = $element.attr( 'data-comment-area-id' );
-// var $elementComment = $( '#' + commentAreaId );
-// var elementIndex = $element.attr( 'data-element-index' ); //the subtask number of the element
-// var elementId = $element.attr( 'data-element-id' ); //the DB's id for the element
-
         /**
          * The current value of the text area
          */
         commentText: {
+            cache: false,
             get: function () {
-                this.store.getCommentText( this.activeStudent, this.elementIndex, this.currentValence );
+               return this.store.getCommentText( this.activeStudent, this.elementIndex, this.getValence( this.elementScore ) );
             },
             set: function ( text ) {
                 this.store.storeCommentText( this.activeStudent, this.elementIndex, text );
+                //send to the db
+                this.notifyStoreCommentText();
             }
         },
 
@@ -82,11 +66,13 @@ module.exports = {
          * The current value of the slider
          */
         elementScore: {
+            cache: false,
             get: function () {
-                this.store.getElementScore( this.store.activeStudent, index )
+                return this.store.getElementScore( this.store.activeStudent, this.elementIndex )
             },
-            set: function () {
-
+            set: function ( score ) {
+                this.store.storeElementScore( this.store.activeStudent, this.elementIndex, score )
+                this.notifyStoreElementScore()
             }
         },
 
@@ -125,6 +111,7 @@ module.exports = {
          * @returns {*|jQuery|HTMLElement}
          */
         commentSelector: function () {
+            // return document.getElementById(this.commentAreaId);
             return $( '#' + this.commentAreaId );
         },
 
@@ -142,14 +129,14 @@ module.exports = {
          */
         sliderId: function () {
             return "sliderQ" + this.questionNumber + "E" + this.elementNumber;
-        }
-        ,
+        },
 
         /**
          * Returns the jQuery selector for the slider element
          * @returns {*|jQuery|HTMLElement}
          */
         sliderSelector: function () {
+            // return document.getElementById(this.sliderId);
             return $( '#' + this.sliderId );
         }
 
@@ -157,24 +144,6 @@ module.exports = {
     },
 
     methods: {
-
-        // /* ------------------ store data manipulation -------------------------- */
-        // updateStoredCommentText: function () {
-        //     this.store.storeCommentText( this.activeStudent, this.elementIndex, this.commentText );
-        // },
-        //
-        // retrieveStoredCommentText: function () {
-        //     this.commentText = this.store.getCommentText( this.activeStudent, this.elementIndex, this.currentValence );
-        // },
-        //
-        // updateStoredElementScore: function () {
-        // },
-        //
-        // retrieveStoredElementScore: function () {
-        //     var elementScore = this.store.getElementScore( this.store.activeStudent, index );
-        // }
-        //
-
 
         /* ------------------ Display manipulation ------------------------------ */
         /**
@@ -190,15 +159,17 @@ module.exports = {
          * Allow user to enter text into comment area
          */
         enableCommentArea: function () {
-            this.commentSelector.removeAttr( 'readonly' );
-            this.commentSelector.prop( 'readonly', '' );
+            this.commentSelector.removeAttribute( 'readonly' );
+            // this.commentSelector.removeAttr( 'readonly' );
+            // this.commentSelector.prop( 'readonly', '' );
         },
 
         /**
          * Prevent user from entering text into comment area
          */
         disableCommentArea: function () {
-            this.commentSelector.prop( 'readonly', 'true' );
+            this.commentSelector.setAttribute( 'readonly', 'true' );
+            // this.commentSelector.prop( 'readonly', 'true' );
         },
 
         /**
@@ -214,7 +185,7 @@ module.exports = {
 
             if ( this.elementScore === null ) {
                 // clear any text that might have been left over from another user
-                this.emptyCommentArea();
+                // this.emptyCommentArea();
                 // if NULL, disable comment text area until a slider is moved.
                 // this is so that the user doesn't enter custom text, move the slider,
                 // and then see their custom text irreversibly wiped out.
@@ -278,19 +249,6 @@ module.exports = {
         },
 
 
-        // /**
-        //  * Changes the text of the displayed comment
-        //  * @param $comment
-        //  * @param commentText
-        //  */
-        // updateDisplayedComment: function ( $comment, commentText ) {
-        //     //make writable
-        //     $comment.removeAttr( 'readonly' );
-        //
-        //     //set text
-        //     $comment.val( commentText );
-        // },
-
         /**
          * Called when an element slider stops movement. Updates element
          * score and text (if necessary), then saves score, text and time
@@ -299,63 +257,54 @@ module.exports = {
          * @param Roster
          * @param callback
          */
-        handleElementSliderStopEvent: function ( slideEvt, data, Roster, callback ) {
+        handleElementSliderStopEvent: function ( slideEvt, callback ) {
+            //grab scores
+            var oldScore = this.store.getElementScore( this.activeStudent, this.elementIndex );
+            //store the new element score in the data object
+            this.elementScore = slideEvt.value;
+
+            /**
+             * update comment text and save to DB.
+             * Only replace text if the score has changed valence regions
+             */
+            if ( ! this.isSameValence( oldScore, this.elementScore ) ) {
+                //Score is in a new valence region.
+                //So let's plug in the appropriate comment text and save to DB
+
+                //Store comment text in data object
+                //Dear Adam, make sure you read the doc for storeCommentText before fucking with
+                //anything in these lines
+                //this.commentText = this.commentSelector.val();
+                this.commentText = this.store.getCommentText( this.activeStudent, this.elementIndex, this.getValence( this.elementScore ) );
+
+                //update display
+                // this.updateDisplayedComment( $elementComment, commentText );
 
 
-            //on slide
-            // this.storeData();
-            // this.updateContent();
-            this.notifyChange();
+                // AjaxHandler.saveComment( data, Roster, elementId, score, commentText );
 
-            //
-            // //grab scores
-            // var oldScore = data.getElementScore( Roster.activeStudent, elementIndex );
-            // var score = slideEvt.value;
-            //
-            // /* ---------- update the element's score visually and in data.elementScores[] --------- */
-            //
-            // //store the new element score in the data object
-            // data.storeElementScore( Roster.activeStudent, elementIndex, score );
-            //
-            //
-            // /**
-            //  * update comment text and save to DB.
-            //  * Only replace text if the score has changed valence regions
-            //  */
-            // if ( ! this.isSameValence( oldScore, score ) ) {
-            //     //Score is in a new valence region.
-            //     //So let's plug in the appropriate comment text and save to DB
-            //
-            //     //Store comment text in data object
-            //     //Dear Adam, make sure you read the doc for storeCommentText before fucking with
-            //     //anything in these lines
-            //     data.storeCommentText( Roster.activeStudent, elementIndex, $elementComment.val() );
-            //     var commentText = data.getCommentText( Roster.activeStudent, elementIndex, this.updateValence( score ) );
-            //
-            //     //update display
-            //     this.updateDisplayedComment( $elementComment, commentText );
-            //
-            //     //send to the db
-            //     AjaxHandler.saveComment( data, Roster, elementId, score, commentText );
-            //
-            // } else {
-            //     // Score is in the same valence region.
-            //     // Jump straight to saving without changing the elementComment
-            //     // Fear not. Changes directly to the comment text will be handled elsewhere.
-            //     AjaxHandler.createGradeRequest( data, 'element_id', elementId, score, null, Roster );
-            // }
-            //
-            // // If using bell curve (standardScoring), element score affects
-            // // the total question score, so update
+            } else {
+                // Score is in the same valence region.
+                // Jump straight to saving without changing the elementComment
+                // Fear not. Changes directly to the comment text will be handled elsewhere.
+                // this.notifyStoreElementScore();
+//                AjaxHandler.createGradeRequest( data, 'element_id', elementId, score, null, Roster );
+            }
+
+            // If using bell curve (standardScoring), element score affects
+            // the total question score, so update
             // if ( Roster.standardScoring ) {
             //     //  updateStandardScores();
             // }
-            //
-            // callback();
-            // // //Update dashboard and roster data displayed
-            // // updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
-            // // //Sigh. The user forgot to restart the timer. Do it for them
-            // // Timer.resumeTimerIfPaused( data, Roster, Dashboard );
+
+            if ( typeof callback != 'undefined' ) {
+                return callback();
+            }
+
+            // //Update dashboard and roster data displayed
+            // updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
+            // //Sigh. The user forgot to restart the timer. Do it for them
+            // Timer.resumeTimerIfPaused( data, Roster, Dashboard );
         },
 
         /* --------------------- Notifications to observers ---------------------- */
@@ -365,22 +314,22 @@ module.exports = {
          * we just need to tell the observer which element needs updating.
          */
         notifyStoreElementScore: function () {
-            this.$dispatch('store-element-score-request', this.elementIndex );
+            this.$dispatch( 'store-element-score-request', { elementIndex: this.elementIndex } );
         },
 
         /**
          * Requests that the db be updated with comment text
          */
         notifyStoreCommentText: function () {
-            this.$dispatch( 'store-comment-text-request', this.elementIndex);
+            this.$dispatch( 'store-comment-text-request', { elementIndex: this.elementIndex } );
         },
 
         /**
          * Requests that the grading timer be started, if paused
          */
         notifyStartTimer: function () {
-            this.$dispatch('start-timer-request', this.elementIndex);
-        
+            this.$dispatch( 'start-timer-request', this.elementIndex );
+
         },
 
         /**
@@ -388,7 +337,7 @@ module.exports = {
          * @param slideEvent
          */
         notifySlideEvent: function ( slideEvent ) {
-            this.$dispatch('element-slider-stop-event', this.elementIndex);
+            this.$dispatch( 'element-slider-stop-event', this.elementIndex );
         }
 
 
@@ -408,21 +357,18 @@ module.exports = {
                 //update the comment text
             }
         }
-    }
-    ,
-
-    directives: {}
-    ,
+    },
 
     ready: function () {
-        //initialize slider
-        $( this.el ).slider( {
+        var me = this;
+        // initialize slider
+        $( '#' + this.sliderId ).slider( {
             tooltip: 'show',
             value: this.elementScore,
             step: this.settings.sliderStep,
             ticks: this.settings.valenceCutoffs,
             ticks_labels: this.settings.valenceLabels,
-            ticks_position: this.settings.valenceLabels,
+            ticks_position: this.settings.valenceLabels
             // id: Counter()
         } );
 
@@ -432,14 +378,15 @@ module.exports = {
          then save score, text and time
          *  */
         this.sliderSelector.on( 'slideStop', function ( slideEvt ) {
-            this.notifySlideEvent();
+            me.handleElementSliderStopEvent( slideEvt );
+            me.notifySlideEvent();
             // this.handleElementSliderStopEvent( slideEvt, data, Roster, function () {
             //     //Update dashboard and roster data displayed
             //     updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
-                //Sigh. The user forgot to restart the timer. Do it for them
-                //Timer.resumeTimerIfPaused( data, Roster, Dashboard );
-            } );
-
-        }
+            //Sigh. The user forgot to restart the timer. Do it for them
+            //Timer.resumeTimerIfPaused( data, Roster, Dashboard );
+        } );
+        // window.console.log('store', this.store);
+        window.console.log('input ready', 'elementIndex', this.elementIndex);
     }
-;
+};

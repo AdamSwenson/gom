@@ -144,7 +144,7 @@ elixir( function ( mix ) {
     //         proxy: "localhost:8000"
     //     });
     // });
-
+/* ------------------------- Dev and testing -------------------------- */
     mix.scripts([
             "libraries/unitTestHelpers/jquery-1.11.1.js",
             "libraries/unitTestHelpers/jquery-ui.js",
@@ -155,6 +155,8 @@ elixir( function ( mix ) {
             "libraries/unitTestHelpers/jquery.cookie.js"
     ], 'public/js/testing/js-test-suite.js');
 
+
+    mix.browserify('grade/gradeVue.js', 'public/js/dev/grade-vue.js');
 //
 //     var gulpNSP = require('gulp-nsp');
 //
