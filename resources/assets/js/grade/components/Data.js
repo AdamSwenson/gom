@@ -9,34 +9,53 @@
  * @constructor
  */
 function Data() {
+    /**
+     * The index of the student currently being graded
+     */
     this.activeStudent = null,
-        
-    this.elementScores = null,
-    this.elementComments = null,
+        this.activeStudentTime = null,
 
-    /**
-     * examGrades[] keeps a persistent total of the exam score for each student.
-     * Exams without grades have a value of -1, because dealing with null and NaN
-     * is unpredictable across js and PHP.
-     * This shouldn't be an issue, as the DB has no notion of exam grades, they're
-     * only used here as a shorthand to store and quickly find information about
-     * the exam state.
-     */
-    this.examGrades = null,
+        this.standardScoring = false,
 
-    this.examGradingTimes = null,
-    this.numQuestions = null,
-    this.questionScores = null,
-    this.stockComments = null,
 
-    this.valences = [ 0, 1, 2, 3 ],
+        /**
+         * Boolean of whether the student names are hidden.
+         * true means that student names are hidden.
+         */
+        this.isBlind = false,
 
-    /**
-     * 
-     */
-    this.loadStockComments = function ( stockComments ) {
-        this.stockComments = stockComments;
-    }
+        this.elementScores = null,
+        this.elementComments = null,
+
+        /**
+         * examGrades[] keeps a persistent total of the exam score for each student.
+         * Exams without grades have a value of -1, because dealing with null and NaN
+         * is unpredictable across js and PHP.
+         * This shouldn't be an issue, as the DB has no notion of exam grades, they're
+         * only used here as a shorthand to store and quickly find information about
+         * the exam state.
+         */
+        this.examGrades = null,
+
+        this.examGradingTimes = null,
+
+        /**
+         * Integer count of questions on the exam
+         */
+        this.numQuestions = null,
+        this.questionScores = null,
+
+
+        this.stockComments = null,
+
+        this.valences = [ 0, 1, 2, 3 ],
+
+        /**
+         *
+         */
+        this.loadStockComments = function ( stockComments ) {
+            this.stockComments = stockComments;
+        }
 
     this.loadElementComments = function ( studentElementComments ) {
         this.elementComments = studentElementComments;

@@ -16,12 +16,21 @@ var testedComponent = require( "../../../resources/assets/js/grade/components/el
 
 require( '../../../resources/assets/js/grade/components/Data.js' );
 
+//helpers
+var Helper = require('./helpers/vueTestingHelpers.js');
+
 // var kvc = require('karma-vue-component');
 require( 'jasmine-jquery' );
 
 jasmine.getFixtures().fixturesPath = 'base/tests/spec/fixtures';
 
-describe( "Slider and comment integration", function () {
+describe('Include helpers', function () {
+    it('should have foo defined', function () {
+        expect(typeof Helper.foo).toBe('function')
+    })
+})
+
+describe( "tests", function () {
     var fixture;
     var $fixture;
 

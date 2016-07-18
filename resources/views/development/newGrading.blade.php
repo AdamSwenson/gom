@@ -14,7 +14,8 @@ $maxQuestionScores =
                 2 => (float) 100,
         ];
 $allElements = [];
-for ($i=0; $i<$numElements; $i++){
+for ( $i = 0; $i < $numElements; $i++ )
+{
     $allElements[] = factory(App\Element::class)->create();
 }
 
@@ -102,21 +103,58 @@ $eNumber = 1;
 $elementIndex = 1;
 
 
-
 ?>
 
 @extends('layouts.master')
 @section('otherCss')
     <link href="{{ asset('css/grade-package.css') }}" rel="stylesheet" type="text/css">
-    @endsection
+@endsection
 
 @section('body')
     <div id="gradeExamPage">
-        <element-input :element-number="1"
-                       :element-index="1"
-                       element-id="1"
-                       element-name="testname"
-                       :question-number="1"></element-input>
+        <div class="row currentStudent">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <current-student-area></current-student-area>
+            </div>
+            <div class="col-lg-2"></div>
+        </div>
+
+
+        <div class="row elementInput">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <element-input :element-number="1"
+                               :element-index="1"
+                               element-id="1"
+                               element-name="testname"
+                               :question-number="1"></element-input>
+            </div>
+            <div class="col-lg-2"></div>
+        </div>
+
+        <div class="row studentRoster">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <table>
+                    <tr is="student-list-item"
+                        :student-index="0"
+                        first-name="Jill"
+                        last-name="Jillenson"
+                        student-identifier="123456789"
+                        student-id="1"
+                    ></tr>
+                    <tr is="student-list-item"
+                        :student-index="1"
+                        first-name="Sue"
+                        last-name="Suenson"
+                        student-identifier="0123456789"
+                        student-id="2"
+                    ></tr>
+                </table>
+            </div>
+            <div class="col-lg-2"></div>
+        </div>
     </div>
 @endsection
 
@@ -126,7 +164,7 @@ $elementIndex = 1;
     <script>
         var activeTab = 'gradeNav';
         var store = new Data();
-store.activeStudent = 0;
+        store.activeStudent = 0;
         store.loadStockComments({!! $stockComments !!});
         store.loadElementComments( {!! $studentElementComments !!});
         store.loadElementScores({!! $studentElementScores !!});

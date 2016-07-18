@@ -19,7 +19,9 @@ new Vue( {
     el: '#gradeExamPage',
 
     components: {
-        'element-input': require('./components/elementInput.js')
+        'element-input': require('./components/elementInput.js'),
+        'current-student-area': require('./components/currentStudentArea.js'),
+        'student-list-item': require('./components/studentListItem')
     },
 
 
@@ -83,8 +85,9 @@ new Vue( {
     },
 
     events: {
-        'student-select-event': function(studentId){
+        'student-select-event': function(obj){
             window.console.log('gradeVue', 'student-select-event');
+        this.$broadcast('student-select-event', obj);
         },
 
         /**

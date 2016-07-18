@@ -5,7 +5,6 @@ module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    // basePath: '/Users/adam/Dropbox/gom3',
     basePath: '',
 
     // frameworks to use
@@ -22,10 +21,10 @@ module.exports = function(config) {
       {pattern: 'node_modules/karma-jasmine-html-reporter/src/lib/html.jasmine.reporter.js'},
       {pattern: 'node_modules/karma-jasmine-html-reporter/src/lib/adapter.js'},
     ],
+
     // list of files to exclude
     exclude: [
     ],
-
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
@@ -44,13 +43,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-     //reporters: ['spec'],
-    // reporters: ['spec', 'progress'],
-    // reporters: ['kjhtml'],
-    // reporters: [ 'jasmine-spec-runner'],
-    // jasmineSpecRunnerReporter: {
-    //   jasmineCoreDir: 'jasmine-core'
-    // },
+     //reporters: ['progress'],
 
     // web server port
     port: 9876,

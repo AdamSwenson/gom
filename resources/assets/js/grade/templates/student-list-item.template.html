@@ -1,6 +1,8 @@
 
-        <tr id="studentListItem{{ studentIndex }}"
-            class="studentListItem unalteredStudentRow"
+        <tr id="{{ rowIdString }}"
+            class="studentListItem "
+            v-on:click="handleRowClick"
+            v-bind:class="{ 'unalteredStudentRow': isUnaltered, 'activeStudentRow': isActiveStudent, 'gradedStudentRow': isGraded }"
             data-index="{{ studentIndex }}"
             data-fName="{{ firstName }}"
             data-lName="{{ lastName }}"
