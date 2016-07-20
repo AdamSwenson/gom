@@ -356,6 +356,9 @@ module.exports = {
             if ( elementIndex == this.elementIndex ) {
                 //update the comment text
             }
+            //return true just in case someone else is listening and
+            //needs to hear the event
+            return true;
         }
     },
 
@@ -387,6 +390,6 @@ module.exports = {
             //Timer.resumeTimerIfPaused( data, Roster, Dashboard );
         } );
         // window.console.log('store', this.store);
-        window.console.log('input ready', 'elementIndex', this.elementIndex);
+        // window.console.log('input ready', 'elementIndex', this.elementIndex);
     }
 };

@@ -1,0 +1,56 @@
+{
+  "elementComments": {
+    "0":{
+      "0":"",
+      "1":"",
+      "2":""
+    },
+    "1":{
+      "0":"",
+      "1":"",
+      "2":""
+    }
+  },
+  "stockComments": {
+    "0":{
+      "0":"e0 missing",
+      "1":"e0 poor",
+      "2":"e0 fair",
+      "3":"e0 excellent"
+    },
+    "1":{
+      "0":"e1 missing",
+      "1":"e1 poor",
+      "2":"e1 fair",
+      "3":"e1 excellent"
+    }
+  },
+  "examGradingTimes": {
+    "0":0,
+    "1":0
+  },
+  "elementScores": {
+    "0":{
+      "0":null,
+      "1":null
+    },
+    "1":{
+      "0":null,
+      "1":null
+    }
+  },
+  "questionScores": {
+    "0":{
+      "0":null,
+      "1":null
+    },
+    "1":{
+      "0":null,
+      "1":null
+    }
+  },
+  "examGrades": {
+    "0":"Letter grade",
+    "1":"Letter grade"
+  }
+}

@@ -9,13 +9,14 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['browserify', 'jasmine', 'vue-component'],
+    frameworks: ['browserify', 'jasmine', 'sinon', 'vue-component'],
 
 
     // list of files / patterns to load in the browser
     files: [
         'resources/assets/js/grade/components/Data.js',
-        'tests/spec/grade/*.spec.js',
+        'tests/spec/tests/*.spec.js',
+        {pattern: 'tests/spec/helpers/*.helper.js', included: false},
       {pattern: 'tests/spec/fixtures/*.fixture.html', included: false},
       {pattern: 'node_modules/karma-jasmine-html-reporter/src/css/jasmine.css'},
       {pattern: 'node_modules/karma-jasmine-html-reporter/src/lib/html.jasmine.reporter.js'},

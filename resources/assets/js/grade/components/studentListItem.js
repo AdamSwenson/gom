@@ -24,15 +24,9 @@ module.exports = {
              */
             store: store,
 
-            // rowColor: {
-            //     'unalteredStudentRow': this.isUnaltered,
-            //     'activeStudentRow': this.isActiveStudent,
-            //     'gradedStudentRow': this.isGraded
-            // },
-
             sortAsc: true,
 
-            studentNamesVisible: true,
+//            studentNamesVisible: true,
 
             defaults: {
                 examGradePlaceholder: '--',
@@ -68,10 +62,10 @@ module.exports = {
         isGraded: function () {
             var grade = this.store.examGrades[ this.studentIndex ];
             if ( (grade != 'undefined') && (grade != '') && ( grade >= 0 ) ) {
-                window.console.log( 'isGraded', true );
+                // window.console.log( 'isGraded', true );
                 return true;
             }
-            window.console.log( 'isGraded', false );
+            // window.console.log( 'isGraded', false );
             return false;
         },
 
@@ -81,10 +75,10 @@ module.exports = {
          */
         isActiveStudent: function () {
             if ( (typeof this.store.activeStudent != 'undefined') && (this.store.activeStudent != null)  && (this.store.activeStudent == this.studentIndex) ) {
-                window.console.log( 'isActive', true );
+                // window.console.log( 'isActive', true );
                 return true;
             }
-            window.console.log( 'isActive', false );
+            // window.console.log( 'isActive', false );
             return false;
 
         },
@@ -96,10 +90,10 @@ module.exports = {
         isUnaltered: function () {
 
             if ( (! this.isActiveStudent) && (! this.isGraded) ) {
-                window.console.log( 'isUnaltered', true );
+                // window.console.log( 'isUnaltered', true );
                 return true;
             }
-            window.console.log( 'isUnaltered', false );
+            // window.console.log( 'isUnaltered', false );
             return false;
         },
 
@@ -112,7 +106,7 @@ module.exports = {
                 return this.store.examGrades[ this.studentIndex ];
             }
             // the student has no grade (val of -1)
-            return this.examGradePlaceholder;
+            return this.defaults.examGradePlaceholder;
         },
 
         /**
@@ -125,7 +119,7 @@ module.exports = {
                 return this.studentIdentifier;
             }
             else {
-                return this.studentPlaceholder;
+                return this.defaults.studentPlaceholder;
             }
         },
 
@@ -143,101 +137,86 @@ module.exports = {
          * dispatches appropriate notifications
          */
         setAsActiveStudent: function () {
-
             this.store.activeStudent = this.studentIndex;
             this.notifyStudentSelectEvent();
-
-            // var $student = $( '#studentListItem' + this.activeStudent );
-            // // only show names if set to visible
-            // var name = this.nameHiddenString;
-            // if ( this.studentNamesVisible ) {
-            //     name = $student.attr( 'data-lName' ) + ", " + $student.attr( 'data-fName' );
-            // }
-            // // if no student has been selected, always display noActiveStudentString
-            // if ( ! this.activeStudent ) {
-            //     name = this.noActiveStudentString;
-            // }
-            // var id = $student.data( 'student-identifier' );
-            // $( "#activeStudentName" ).val( name );
-            // $( "#activeStudentIdentifier" ).val( id );
         },
 
-        /**
-         * Change the styling of this student row to
-         * indicate that this student is currently being
-         * graded.
-         */
-        representAsActiveStudent: function () {
-            $( this.el )
-                .removeClass( 'gradedStudentRow' )
-                .removeClass( 'unalteredStudentRow' )
-                .addClass( 'activeStudentRow' );
-        },
-
-        /**
-         * Removes the styling which indicated that this student is
-         * currently being graded.
-         */
-        removeActiveStudentRepresentation: function () {
-        },
+        // /**
+        //  * Change the styling of this student row to
+        //  * indicate that this student is currently being
+        //  * graded.
+        //  */
+        // representAsActiveStudent: function () {
+        //     $( this.el )
+        //         .removeClass( 'gradedStudentRow' )
+        //         .removeClass( 'unalteredStudentRow' )
+        //         .addClass( 'activeStudentRow' );
+        // },
+        //
+        // /**
+        //  * Removes the styling which indicated that this student is
+        //  * currently being graded.
+        //  */
+        // removeActiveStudentRepresentation: function () {
+        // },
+        //
+        // /**
+        //  * Adds styling to indicate that this student has been graded.
+        //  */
+        // representAsGraded: function () {
+        //     $( this.el )
+        //         .removeClass( 'activeStudentRow' )
+        //         .removeClass( 'unalteredStudentRow' )
+        //         .addClass( 'gradedStudentRow' );
+        // },
 
         /**
-         * Adds styling to indicate that this student has been graded.
-         */
-        representAsGraded: function () {
-            $( this.el )
-                .removeClass( 'activeStudentRow' )
-                .removeClass( 'unalteredStudentRow' )
-                .addClass( 'gradedStudentRow' );
-        },
-
-        /**
-         * Removes the styling which indicates that this student has been graded.
-         */
-        representAsNotGraded: function () {
-        },
-        /**
-         * set background colors in the student roster
-         *  graded = green
-         *  ungraded = white
-         *  active = blue
-         */
-        setStudentBackgroundColors: function ( data ) {
-            for ( var i = 0; i < Object.keys( data.examGrades ).length; i ++ ) {
-                var name = "#studentListItem" + i;
-                var $item = $( '#studentRoster' ).find( name );
-                if ( this.activeStudent && this.activeStudent == i ) {
-                    this.setRowToActiveStudent( $item );
-                } else if ( data.isGraded( i ) ) {
-                    this.setRowToGraded( $item );
-                } else {
-                    this.setRowToUnaltered( $item )
-                }
-            }
-        },
-
-        setRowToUnaltered: function ( item ) {
-            $( item )
-                .removeClass( 'activeStudentRow' )
-                .removeClass( 'gradedStudentRow' )
-                .addClass( 'unalteredStudentRow' );
-        },
-
-        /**
-         * set color for a student roster row
-         * @param item
-         * @param backColor
-         * @param textColor
-         */
-        setRosterBackgroundColor: function ( item, backColor, textColor ) {
-            $( item ).find( '[class^="col"]' ).css( 'background-color', backColor );
-            $( item ).css( 'color', textColor );
-        },
+        //  * Removes the styling which indicates that this student has been graded.
+        //  */
+        // representAsNotGraded: function () {
+        // },
+        // /**
+        //  * set background colors in the student roster
+        //  *  graded = green
+        //  *  ungraded = white
+        //  *  active = blue
+        //  */
+        // setStudentBackgroundColors: function ( data ) {
+        //     for ( var i = 0; i < Object.keys( data.examGrades ).length; i ++ ) {
+        //         var name = "#studentListItem" + i;
+        //         var $item = $( '#studentRoster' ).find( name );
+        //         if ( this.activeStudent && this.activeStudent == i ) {
+        //             this.setRowToActiveStudent( $item );
+        //         } else if ( data.isGraded( i ) ) {
+        //             this.setRowToGraded( $item );
+        //         } else {
+        //             this.setRowToUnaltered( $item )
+        //         }
+        //     }
+        // },
+        //
+        // setRowToUnaltered: function ( item ) {
+        //     $( item )
+        //         .removeClass( 'activeStudentRow' )
+        //         .removeClass( 'gradedStudentRow' )
+        //         .addClass( 'unalteredStudentRow' );
+        // },
+        //
+        // /**
+        //  * set color for a student roster row
+        //  * @param item
+        //  * @param backColor
+        //  * @param textColor
+        //  */
+        // setRosterBackgroundColor: function ( item, backColor, textColor ) {
+        //     $( item ).find( '[class^="col"]' ).css( 'background-color', backColor );
+        //     $( item ).css( 'color', textColor );
+        // },
 
 
         /* ------------------------ Notifications and events --------------------- */
         handleRowClick: function(){
-            window.console.log('studentListItem', 'click', this.studentIndex);
+           // window.console.log('studentListItem', 'click', this.studentIndex);
             this.setAsActiveStudent();
         },
         /**
@@ -246,12 +225,10 @@ module.exports = {
          * so we need to send them to whomever is going to display them.
          */
         notifyStudentSelectEvent: function () {
-
             var toSend = {};
             toSend.studentName = this.studentName;
             toSend.studentIdentifier = this.studentIdentifier;
             this.$dispatch( 'student-select-event', toSend );
-            this.$broadcast( 'student-select-event', toSend );
         }
 
     },
@@ -259,6 +236,6 @@ module.exports = {
     directives: {},
 
     ready: function () {
-        window.console.log('studentListItem', 'ready', this.studentIndex);
+        // window.console.log('studentListItem', 'ready', this.studentIndex);
     }
 };

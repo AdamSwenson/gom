@@ -2,17 +2,25 @@
 $navTab = 'gradeNav';
 Auth::loginUsingId(1);
 $exam = factory(\App\Exam::class)->make();
-
+$letterGrades = App\Repositories\Grade\GradeFactory::$grades;
 $students = factory(\App\Student::class, 5)->make();
 $questionAssignments = \App\QuestionAssignment::where('exam_id', 2)->get();
 $elements = factory(\App\Element::class, 5)->create();
 $numElements = 5;
 
+$grades = [];
+foreach ( $letterGrades as $g )
+{
+    $grades[] = ['displayValue' => $g['display_value'], 'calcValue' => $g['calc_value']];
+}
+
 $maxQuestionScores =
         [
+                0 => (float) 100,
                 1 => (float) 100,
                 2 => (float) 100,
         ];
+
 $allElements = [];
 for ( $i = 0; $i < $numElements; $i++ )
 {
@@ -97,11 +105,12 @@ $studentQuestionScores = json_encode($studentQuestionScores, JSON_FORCE_OBJECT);
 $examGradingTimes = json_encode($examGradingTimes, JSON_FORCE_OBJECT);
 $studentGrades = json_encode($studentGrades, JSON_FORCE_OBJECT);
 $numQuestions = count($questionAssignments);
+$grades = json_encode($grades, JSON_FORCE_OBJECT);
+$maxQuestionScores = json_encode($maxQuestionScores, JSON_FORCE_OBJECT);
 
 $qNumber = 1;
 $eNumber = 1;
 $elementIndex = 1;
-
 
 ?>
 
@@ -155,11 +164,51 @@ $elementIndex = 1;
             </div>
             <div class="col-lg-2"></div>
         </div>
+
+
+        <div class="row questionScore">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <question-score
+                        v-ref:test-object
+                        :question-index="0"
+                        question-number="1"></question-score>
+            </div>
+            <div class="col-lg-2"></div>
+        </div>
+
+        <div class="row letterGrade">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <letter-grade-button
+                        :question-index="0"
+                        question-number="1"
+                        :grades="{{ $grades }}"></letter-grade-button>
+            </div>
+            <div class="col-lg-2"></div>
+        </div>
+
+        <div class="row dashboard">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <dashboard-timer></dashboard-timer>
+            </div>
+            <div class="col-lg-2"></div>
+        </div>
+
+        <div class="row dashboard">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <dashboard-counts></dashboard-counts>
+            </div>
+            <div class="col-lg-2"></div>
+        </div>
+
     </div>
 @endsection
 
 @section('jsArea')
-    <script src="{{asset('js/data.js')}}"></script>
+    <script src="{{asset('js/grade-exam-data.js')}}"></script>
 
     <script>
         var activeTab = 'gradeNav';
@@ -172,6 +221,8 @@ $elementIndex = 1;
         store.loadGradingTimes( {!!  $examGradingTimes !!} );
         store.loadExamGrades({!! $studentGrades !!} );
         store.loadNumberQuestions({!! $numQuestions !!});
+        store.maxQuestionScores = {!! $maxQuestionScores !!};
+        //        {0: {'calcValue': 'A', 'displayValue': 96 }, 1: {'calcValue': 'B', 'displayValue': 85}}
     </script>
 
     <script src="{{ asset('js/dev/grade-vue.js') }}"></script>

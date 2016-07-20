@@ -22,8 +22,12 @@ new Vue({
 
     components: {
         'element-input': require('./components/elementInput.js'),
-        'current-student-area': require('./components/currentStudentArea.js'),
-        'student-list-item': require('./components/studentListItem')
+        'current-student-area': require('./components/currentStudentArea.component.js'),
+        'student-list-item': require('./components/studentListItem'),
+        'letter-grade-button': require('./components/letterGradeButton.component.js'),
+        'question-score': require('./components/questionScore.component'),
+        'dashboard-timer': require('./components/dashboard.timer.component'),
+        'dashboard-counts': require('./components/dashboard.counts.component')
     },
 
     data: {},
@@ -86,6 +90,39 @@ new Vue({
     },
 
     events: {
+        /**
+         * Handles anything not done by the elementInput when a slider stops moving
+         */
+        'element-slider-stop-event': function elementSliderStopEvent() {
+            window.console.log('gradeVue', 'element-slider-stop-event');
+            // this.handleElementSliderStopEvent( slideEvt, data, Roster, function () {
+            //     //Update dashboard and roster data displayed
+            //     updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
+            //Sigh. The user forgot to restart the timer. Do it for them
+            //Timer.resumeTimerIfPaused( data, Roster, Dashboard );
+        },
+
+        'letter-grade-selected': function letterGradeSelected(obj) {
+            window.console.log('gradeVue', 'letter-grade-selected', obj);
+            this.$broadcast('letter-grade-selected', obj);
+        },
+
+        /**
+         * Lets anyone who might be interested know that the visibility of
+         * student names has been toggled.
+         */
+        'name-visibility-toggled': function nameVisibilityToggled() {
+            window.console.log('gradeVue', 'name-visibility-toggled');
+        },
+
+        /**
+         * Catches the event fired upon student selection.
+         * The object accompanying the event should have the properties:
+         * obj.studentName
+         * obj.studentIdentifier
+         *
+         * @param obj
+         */
         'student-select-event': function studentSelectEvent(obj) {
             window.console.log('gradeVue', 'student-select-event');
             this.$broadcast('student-select-event', obj);
@@ -93,16 +130,32 @@ new Vue({
 
         /**
          * Handles the request to store comment text on the server
+         * Accompanying object should contain:
+         *      obj.elementIndex: Index of the element whose score needs updating
          */
         'store-comment-text-request': function storeCommentTextRequest(obj) {
-            window.console.log('gradeVue', 'store-comment-text-request', obj.elementIndex);
+            var elementIndex = obj.elementIndex;
+            window.console.log('gradeVue', 'store-comment-text-request', obj);
         },
 
         /**
          * Handles the request to store element score on the server
+         * Accompanying object should contain:
+         *      obj.elementIndex: Index of the element whose score needs updating
          */
         'store-element-score-request': function storeElementScoreRequest(obj) {
-            window.console.log('gradeVue', 'store-element-score-request', obj.elementIndex);
+            var elementIndex = obj.elementIndex;
+            window.console.log('gradeVue', 'store-element-score-request', obj);
+        },
+
+        /**
+         * Handles the request to store question score on the server
+         * Accompanying object should contain:
+         *      obj.questionIndex: Index of the question whose score needs updating
+         * @param obj
+         */
+        'store-question-score-request': function storeQuestionScoreRequest(obj) {
+            window.console.log('gradeVue', 'store-question-score-request', obj);
         },
 
         /**
@@ -120,16 +173,18 @@ new Vue({
         },
 
         /**
-         * Handles anything not done by the elementInput when a slider stops moving
+         * Handles notification that the timer has started
          */
-        'element-slider-stop-event': function elementSliderStopEvent() {
-            window.console.log('gradeVue', 'element-slider-stop-event');
-            // this.handleElementSliderStopEvent( slideEvt, data, Roster, function () {
-            //     //Update dashboard and roster data displayed
-            //     updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
-            //Sigh. The user forgot to restart the timer. Do it for them
-            //Timer.resumeTimerIfPaused( data, Roster, Dashboard );
+        'timer-start-event': function timerStartEvent() {
+            window.console.log('gradeVue', 'caught timer-start-event');
+        },
+        /**
+         * Handles notification that the timer has stopped
+         */
+        'timer-stop-event': function timerStopEvent() {
+            window.console.log('gradeVue', 'caught timer-stop-event');
         }
+
     },
 
     directives: {},
@@ -144,7 +199,7 @@ new Vue({
     }
 });
 
-},{"./components/currentStudentArea.js":18,"./components/elementInput.js":19,"./components/studentListItem":20,"bootstrap":2,"jquery":15,"vue":17}],2:[function(require,module,exports){
+},{"./components/currentStudentArea.component.js":18,"./components/dashboard.counts.component":19,"./components/dashboard.timer.component":20,"./components/elementInput.js":21,"./components/letterGradeButton.component.js":22,"./components/questionScore.component":23,"./components/studentListItem":24,"bootstrap":2,"jquery":15,"vue":17}],2:[function(require,module,exports){
 // This file is autogenerated via the `commonjs` Grunt task. You can require() this file in a CommonJS environment.
 require('../../js/transition.js')
 require('../../js/alert.js')
@@ -22491,8 +22546,14 @@ module.exports = {
              */
             store: store,
 
+            /**
+             * The name of the student currently being graded
+             */
             studentName: '',
 
+            /**
+             * The identifier of the student currently being graded
+             */
             studentIdentifier: ''
         };
     },
@@ -22508,7 +22569,9 @@ module.exports = {
          * Dispatches a notification that the visibility of names
          * has changed
          */
-        notifyToggleNameVisibility: function notifyToggleNameVisibility() {},
+        notifyToggleNameVisibility: function notifyToggleNameVisibility() {
+            this.$dispatch('name-visibility-toggled');
+        },
 
         /**
          * When the pencil icon is selected, toggle visibility of roster names and selected name area
@@ -22522,16 +22585,347 @@ module.exports = {
 
     events: {
         'student-select-event': function studentSelectEvent(obj) {
-            window.console.log("~~~~~~~~~~~~~~~~~~~~~~~~%%%%%%%%%%%%%%%%%%%%%%%%%%%% wooo hooooo");
+            window.console.log('currentStudentArea', 'caught student-select-event', obj);
             this.studentName = obj.studentName;
             this.studentIdentifier = obj.studentIdentifier;
+
+            //return true just in case someone else is listening and
+            //needs to hear the event
+            return true;
         }
     },
 
     directives: {}
 };
 
-},{"../templates/current-student-area.template.html":21}],19:[function(require,module,exports){
+},{"../templates/current-student-area.template.html":25}],19:[function(require,module,exports){
+/**
+ * Created by adam on 7/19/16.
+ */
+//var $ = require('jquery');
+//window.$ = $;
+
+'use strict';
+
+module.exports = {
+
+    template: require('../templates/dashboard.counts.template.html'),
+
+    props: [
+    /** The url that the user should be redirected to
+     * when they click the save and finish button*/
+    'finishedLink'],
+
+    data: function data() {
+        return {
+            store: store,
+
+            finishButtonHidden: true
+        };
+    },
+
+    computed: {
+
+        /* --------------- # exams ------------- */
+        /**
+         * Number of exams already graded
+         */
+        gradedExams: function gradedExams() {
+            var numGraded = this.store.getNumberGraded();
+            if (numGraded) {
+                return numGraded;
+            }
+            return '';
+            //            return this.store.getNumberGraded();
+        },
+
+        /**
+         * Total number of exams to be graded
+         * @returns {number|Number}
+         */
+        totalExams: function totalExams() {
+            return this.store.getTotalExams();
+        },
+
+        /**
+         * Number of exams remaining to be graded
+         */
+        remainingExams: function remainingExams() {
+            if (typeof this.totalExams == Number && typeof this.gradedExams == Number) {
+                var remaining = this.totalExams - this.gradedExams;
+                if (remaining === 0) {
+                    this.showFinishButton();
+                }
+                return remaining;
+            }
+            return '';
+        }
+
+    },
+
+    methods: {
+        showFinishButton: function showFinishButton() {
+            this.finishButtonHidden = false;
+        }
+
+    },
+
+    directives: {}
+};
+
+},{"../templates/dashboard.counts.template.html":26}],20:[function(require,module,exports){
+/**
+ * Created by adam on 7/19/16.
+ */
+//var $ = require('jquery');
+//window.$ = $;
+
+'use strict';
+
+module.exports = {
+
+    template: require('../templates/dashboard.timer.template.html'),
+
+    props: [],
+
+    data: function data() {
+        return {
+            store: store,
+
+            /** Start in paused state */
+            paused: true,
+
+            /** Holds the actual timer object once created */
+            timer: 0,
+
+            defaults: {
+                button: {
+                    label: {
+                        paused: 'Paused',
+                        running: 'Running'
+                    },
+                    icon: {
+                        paused: 'glyphicon glyphicon-pause',
+                        running: 'glyphicon glyphicon-play'
+                    },
+                    styling: {
+                        paused: 'btn btn-warning',
+                        running: 'btn btn-success'
+                    }
+                }
+            }
+        };
+    },
+
+    computed: {
+        /* --------------- button ------------- */
+        buttonLabel: function buttonLabel() {
+            if (!this.paused) {
+                return this.defaults.button.label.running;
+            }
+            return this.defaults.button.label.paused;
+        },
+
+        buttonIcon: function buttonIcon() {
+            if (!this.paused) {
+                return this.defaults.button.icon.running;
+            }
+            return this.defaults.button.icon.paused;
+        },
+
+        buttonStyling: function buttonStyling() {
+            if (!this.paused) {
+                return this.defaults.button.styling.running;
+            }
+            return this.defaults.button.styling.paused;
+        },
+
+        /* --------------- time ------------- */
+        /**
+         * The average time spent grading.
+         * Returns in seconds
+         * @returns Number
+         */
+        averageTime: function averageTime() {
+            //avoid dividing by 0
+            var storedNum = this.store.getNumberGraded();
+            var numGraded = storedNum == 0 ? 1 : storedNum;
+            var avgTime = this.totalTime / numGraded;
+            return avgTime;
+        },
+
+        /**
+         * The average time spent grading.
+         * Returns in format HH:MM:SS or MM:SS (if short enough)
+         * @returns string
+         */
+        averageTimeDisplay: function averageTimeDisplay() {
+            return this.convertSecondsToHHMMSS(this.averageTime);
+        },
+
+        /**
+         * The time elapsed for the exam presently being graded.
+         * Returns in seconds
+         * @returns Number
+         */
+        currentExamTime: function currentExamTime() {
+            return this.store.getStudentGradingTime(this.store.activeStudent);
+        },
+
+        /**
+         * The time elapsed for the exam presently being graded.
+         * Returns in format HH:MM:SS or MM:SS (if short enough)
+         * @returns string
+         */
+        currentExamTimeDisplay: function currentExamTimeDisplay() {
+            return this.convertSecondsToHHMMSS(this.currentExamTime);
+        },
+
+        /**
+         * The total time spent grading
+         * Returns in seconds
+         * @returns Number
+         */
+        totalTime: function totalTime() {
+            var totalTime = 0;
+            $.each(this.store.examGradingTimes, function (index, value) {
+                totalTime += value;
+            });
+            return totalTime;
+        },
+
+        /**
+         * The total time spent grading
+         * Returns in format: HH:MM:SS
+         * @returns string
+         */
+        totalTimeDisplay: function totalTimeDisplay() {
+            return this.convertSecondsToHHMMSS(this.totalTime);
+        },
+
+        /**
+         * Returns estimated time remaining in seconds
+         * TODO Strip outliers to make more accurate
+         * @returns Number
+         */
+        remainingTime: function remainingTime() {
+            var numberExams = this.store.getTotalExams();
+            var estTime = this.averageTime * numberExams;
+            var timeRemaining = estTime - this.totalTime;
+            return timeRemaining;
+        },
+
+        /**
+         * Returns estimated time remaining formatted for display
+         * Returns in format: HH:MM:SS
+         * @returns string
+         */
+        remainingTimeDisplay: function remainingTimeDisplay() {
+            return this.convertSecondsToHHMMSS(this.remainingTime);
+        }
+
+    },
+
+    methods: {
+
+        /**
+         * Handles everything that needs to be done
+         * on timer start
+         */
+        startTimer: function startTimer() {
+            this.loadTimer();
+            this.notifyTimerStart();
+        },
+
+        /**
+         * Handles everything that needs to be done
+         * on timer stop
+         */
+        stopTimer: function stopTimer() {
+            clearInterval(this.timer);
+            this.paused = true;
+            this.notifyTimerStop();
+        },
+
+        /**
+         * Load timer for the active student and sets state to running
+         * @param data
+         * @param Roster
+         */
+        loadTimer: function loadTimer() {
+            //if no student is active, don't start
+            if (!this.store.isActive()) return;
+
+            clearInterval(this.timer);
+
+            //change state
+            this.paused = false;
+
+            // set a new timer to fire every second. Update examGradingTimes[]
+            this.timer = setInterval(function () {
+                this.store.increaseActiveStudentGradingTime(1);
+            }, 1000);
+        },
+
+        /**
+         * Toggle timer between running and paused state.
+         * This is bound to the timer button
+         */
+        toggleTimer: function toggleTimer() {
+            if (!this.store.isActive()) return;
+            this.paused = !this.paused;
+            if (this.paused) {
+                this.stopTimer();
+                // clearInterval( this.timer );
+            } else {
+                    this.startTimer();
+                }
+        },
+
+        convertSecondsToHHMMSS: function convertSecondsToHHMMSS(seconds) {
+            if (isNaN(seconds)) return "00:00:00";
+            var date = new Date(null);
+            date.setSeconds(seconds);
+            if (seconds < 3600) return date.toISOString().substr(14, 5);else return date.toISOString().substr(11, 8);
+        },
+
+        /* ---------------------- Events and notifications ---------------- */
+        /**
+         * Lets anyone interested know that the timer has started
+         */
+        notifyTimerStart: function notifyTimerStart() {
+            this.$dispatch('timer-start-event');
+        },
+
+        /**
+         * Lets anyone interested know that the timer has stopped
+         */
+        notifyTimerStop: function notifyTimerStop() {
+            this.$dispatch('timer-stop-event');
+        }
+    },
+
+    events: {
+        /**
+         * Handles request to start the timer
+         */
+        'start-timer-request': function startTimerRequest() {
+            window.console.log('dashboard.timer', 'caught start-timer-request');
+            this.startTimer();
+        },
+
+        /**
+         * Handles request to start the timer
+         */
+        'stop-timer-request': function stopTimerRequest() {
+            window.console.log('dashboard.timer', 'caught stop-timer-request');
+            this.stopTimer();
+        }
+    }
+
+};
+
+},{"../templates/dashboard.timer.template.html":27}],21:[function(require,module,exports){
 /**
  * Created by adam on 7/11/16.
  */
@@ -22873,9 +23267,12 @@ module.exports = {
          * @param activeStudent
          */
         'student-select-event': function studentSelectEvent(elementIndex, activeStudent) {
-            if (elementIndex == this.elementIndex) {
-                //update the comment text
-            }
+            if (elementIndex == this.elementIndex) {}
+            //update the comment text
+
+            //return true just in case someone else is listening and
+            //needs to hear the event
+            return true;
         }
     },
 
@@ -22907,11 +23304,297 @@ module.exports = {
             //Timer.resumeTimerIfPaused( data, Roster, Dashboard );
         });
         // window.console.log('store', this.store);
-        window.console.log('input ready', 'elementIndex', this.elementIndex);
+        // window.console.log('input ready', 'elementIndex', this.elementIndex);
     }
 };
 
-},{"../../libraries/bootstrap-slider-modified.js":24,"../templates/element-input.template.html":22,"jquery":15}],20:[function(require,module,exports){
+},{"../../libraries/bootstrap-slider-modified.js":32,"../templates/element-input.template.html":28,"jquery":15}],22:[function(require,module,exports){
+/**
+ * Created by adam on 7/18/16.
+ */
+
+'use strict';
+
+var $ = require('jquery');
+window.$ = $;
+var jQuery = $;
+window.jQuery = jQuery;
+
+require('bootstrap');
+
+module.exports = {
+
+    template: require('../templates/letter-grade-button.template.html'),
+
+    props: ['questionIndex', 'questionNumber',
+    //json of grades with keys displayValue and calcValue
+    'grades'],
+
+    data: function data() {
+        return {
+            /**
+             * The data repository store shared by everyone
+             */
+            store: store,
+
+            defaults: {
+                displayedGrade: 'Letter grade',
+                gradeValue: null
+            },
+
+            storage: {
+                currentGradeDisplay: null,
+                currentGradeValue: null
+            }
+
+        };
+    },
+
+    computed: {
+
+        /**
+         * The value displayed on the button
+         * @returns {*}
+         */
+        displayedGrade: {
+            get: function get() {
+                if (this.storage.currentGradeDisplay) {
+                    return this.storage.currentGradeDisplay;
+                }
+                return this.defaults.displayedGrade;
+            },
+            set: function set(val) {
+                this.storage.currentGradeDisplay = val;
+            }
+        },
+
+        //The value of the letter grade used in calculation
+        gradeValue: {
+            get: function get() {
+                if (this.storage.currentGradeValue != null) {
+                    return this.storage.currentGradeValue;
+                }
+                return this.defaults.gradeValue;
+            },
+            set: function set(val) {
+                this.storage.currentGradeValue = val;
+            }
+        },
+
+        maxScore: function maxScore() {
+            return this.store.maxQuestionScores[this.questionIndex];
+            // return Number(this.store.maxQuestionScores[this.questionIndex]);
+        },
+
+        score: function score() {
+            // window.console.log('score', this.gradeValue, this.maxScore);
+            return this.calcGrade(this.gradeValue, this.maxScore);
+        },
+
+        scoreString: function scoreString() {
+            return this.score.toFixed(2);
+        },
+        targetId: function targetId() {
+            return "questionScore" + this.questionNumber;
+        }
+
+    },
+
+    methods: {
+
+        calcGrade: function calcGrade(gradeValue, maxScore) {
+            gradeValue = Number(gradeValue);
+            maxScore = Number(maxScore);
+            return gradeValue * .01 * maxScore;
+        },
+
+        /**
+         * Updates score by clicking on letter grade.
+         * Also displays tooltip explaining the calculation to the user
+         *
+         * Decided not to update the button text at this time because
+         * would have to store the value both locally and on the server.
+         *
+         * @param dthis The this context of the event handler
+         */
+        handleLetterGradeClick: function handleLetterGradeClick(index) {
+            window.console.log('letter grade clicked', index);
+
+            //The value of the letter grade selected
+            this.gradeValue = this.grades[index].calcValue;
+
+            //The letter grade
+            this.displayedGrade = this.grades[index].displayValue;
+
+            this.notifyLetterGradeSelection();
+
+            //Display tooltip explaining the calculation
+            this.showGradePopOver(this.targetId, this.displayedGrade, this.gradeValue, this.maxScore);
+        },
+
+        /**
+         * Creates a tooltip over the score box explaining the calculation done
+         * by selecting the letter grade for the question. The tooltip should
+         * automatically disappear upon clicking elsewhere on the page.
+         * @param targetId String id of the score div to attach to
+         * @param letterGrade String representation of the grade (e.g., 'A')
+         * @param integerGrade Integer Value of the grade as an integer between 0 and 100
+         * @param maxScore Integer Maximum score possible on the question
+         */
+        showGradePopOver: function showGradePopOver(targetId, letterGrade, integerGrade, maxScore) {
+            //What the tooltip will attach to
+            var $target = $('#' + targetId);
+
+            //The decimal to be used in the displayed calculation message
+            var floatGrade = Number(integerGrade * 0.01).toFixed(2);
+
+            //The resulting total to be displayed in the calculation message
+            var total = this.scoreString; //Number( floatGrade * maxScore ).toFixed( 2 );
+
+            //The message to display
+            var message = "<p class='gradeToolTip'>" + letterGrade + " = " + integerGrade + "%<br/>" + maxScore + " * " + floatGrade + " = " + total + "</p>";
+
+            //Make sure any previously attached tooltip is gone
+            $target.tooltip('destroy');
+
+            //Add a tooltip to the body and show it
+            //Note: attached to body so won't float away on screen resize
+            $target.tooltip({
+                animation: true,
+                container: 'body',
+                html: true,
+                trigger: 'manual',
+                title: message
+            }).tooltip('show');
+
+            //Wait briefly for the tooltip to initialize and display
+            setTimeout(function () {
+                //Attach a handler to the body to destroy the tooltip when the user clicks elsewhere.
+                $('body').on('click.tt', function () {
+                    $target.tooltip('destroy');
+                    //Then remove the event handler so other tooltips will fire
+                    $('body').off('click.tt');
+                });
+            }, 10);
+        },
+
+        /* --------------------- Notifications and events ---------------------------- */
+        notifyLetterGradeSelection: function notifyLetterGradeSelection() {
+            var obj = {};
+            obj.questionIndex = this.questionIndex;
+            obj.questionNumber = this.questionNumber;
+            obj.score = this.score;
+            this.$dispatch('letter-grade-selected', obj);
+        }
+    },
+
+    directives: {},
+    ready: function ready() {
+        // window.console.log('ready', this.grades);
+    }
+
+};
+
+},{"../templates/letter-grade-button.template.html":29,"bootstrap":2,"jquery":15}],23:[function(require,module,exports){
+/**
+ * Created by adam on 7/18/16.
+ */
+//var $ = require('jquery');
+//window.$ = $;
+
+'use strict';
+
+module.exports = {
+
+    template: require('../templates/question-score.template.html'),
+
+    props: ['questionIndex', 'questionNumber'],
+
+    data: function data() {
+        return {
+            /**
+             * The data repository store shared by everyone
+             */
+            store: store
+        };
+    },
+
+    computed: {
+        /**
+         * The string id of the question score field for this question.
+         * Does not contain '#'
+         * @returns {string}
+         */
+        scoreFieldIdString: function scoreFieldIdString() {
+            return "questionScore" + this.questionNumber;
+        },
+
+        /**
+         * The string id of the max score field for
+         * this question.
+         * Does not contain '#'
+         * @returns {string}
+         */
+        maxScoreFieldIdString: function maxScoreFieldIdString() {
+            return "maxScore" + this.questionNumber;
+        },
+
+        /**
+         * The maximum possible score for this question
+         * @returns {*}
+         */
+        maxScore: function maxScore() {
+            return this.store.maxQuestionScores[this.questionIndex];
+        },
+
+        /**
+         * The student's score for this question
+         *
+         */
+        questionScore: {
+            get: function get() {
+                return this.store.getQuestionScore(this.store.activeStudent, this.questionIndex);
+            },
+            /**
+             * Update the score in the shared data object and send
+             * a request for someone else to record it to the server.
+             * @param score
+             */
+            set: function set(score) {
+                this.store.storeQuestionScore(this.store.activeStudent, this.questionIndex, score);
+                this.notifyRecordScore();
+            }
+        }
+    },
+
+    methods: {
+        /**
+         * Tells someone else that the score has changed and should be
+         * recorded in the db
+         */
+        notifyRecordScore: function notifyRecordScore() {
+            var obj = {};
+            obj.questionIndex = this.questionIndex;
+            this.$dispatch('store-question-score-request', obj);
+        }
+    },
+
+    events: {
+        'letter-grade-selected': function letterGradeSelected(obj) {
+            window.console.log('questionScore', 'caught letter-grade-selected', obj);
+            if (typeof obj.questionIndex != 'undefined' && obj.questionIndex == this.questionIndex) {
+                if (typeof obj.score != 'undefined') {
+                    this.questionScore = obj.score;
+                }
+            }
+            //in case anyone else is listening
+            return true;
+        }
+    }
+
+};
+
+},{"../templates/question-score.template.html":30}],24:[function(require,module,exports){
 /**
  * Created by adam on 7/11/16.
  */
@@ -22934,15 +23617,9 @@ module.exports = {
              */
             store: store,
 
-            // rowColor: {
-            //     'unalteredStudentRow': this.isUnaltered,
-            //     'activeStudentRow': this.isActiveStudent,
-            //     'gradedStudentRow': this.isGraded
-            // },
-
             sortAsc: true,
 
-            studentNamesVisible: true,
+            //            studentNamesVisible: true,
 
             defaults: {
                 examGradePlaceholder: '--',
@@ -22978,10 +23655,10 @@ module.exports = {
         isGraded: function isGraded() {
             var grade = this.store.examGrades[this.studentIndex];
             if (grade != 'undefined' && grade != '' && grade >= 0) {
-                window.console.log('isGraded', true);
+                // window.console.log( 'isGraded', true );
                 return true;
             }
-            window.console.log('isGraded', false);
+            // window.console.log( 'isGraded', false );
             return false;
         },
 
@@ -22991,10 +23668,10 @@ module.exports = {
          */
         isActiveStudent: function isActiveStudent() {
             if (typeof this.store.activeStudent != 'undefined' && this.store.activeStudent != null && this.store.activeStudent == this.studentIndex) {
-                window.console.log('isActive', true);
+                // window.console.log( 'isActive', true );
                 return true;
             }
-            window.console.log('isActive', false);
+            // window.console.log( 'isActive', false );
             return false;
         },
 
@@ -23005,10 +23682,10 @@ module.exports = {
         isUnaltered: function isUnaltered() {
 
             if (!this.isActiveStudent && !this.isGraded) {
-                window.console.log('isUnaltered', true);
+                // window.console.log( 'isUnaltered', true );
                 return true;
             }
-            window.console.log('isUnaltered', false);
+            // window.console.log( 'isUnaltered', false );
             return false;
         },
 
@@ -23021,7 +23698,7 @@ module.exports = {
                 return this.store.examGrades[this.studentIndex];
             }
             // the student has no grade (val of -1)
-            return this.examGradePlaceholder;
+            return this.defaults.examGradePlaceholder;
         },
 
         /**
@@ -23033,7 +23710,7 @@ module.exports = {
             if (this.studentIdentifier != 'undefined' && this.studentIdentifier != '') {
                 return this.studentIdentifier;
             } else {
-                return this.studentPlaceholder;
+                return this.defaults.studentPlaceholder;
             }
         },
 
@@ -23051,89 +23728,85 @@ module.exports = {
          * dispatches appropriate notifications
          */
         setAsActiveStudent: function setAsActiveStudent() {
-
             this.store.activeStudent = this.studentIndex;
             this.notifyStudentSelectEvent();
-
-            // var $student = $( '#studentListItem' + this.activeStudent );
-            // // only show names if set to visible
-            // var name = this.nameHiddenString;
-            // if ( this.studentNamesVisible ) {
-            //     name = $student.attr( 'data-lName' ) + ", " + $student.attr( 'data-fName' );
-            // }
-            // // if no student has been selected, always display noActiveStudentString
-            // if ( ! this.activeStudent ) {
-            //     name = this.noActiveStudentString;
-            // }
-            // var id = $student.data( 'student-identifier' );
-            // $( "#activeStudentName" ).val( name );
-            // $( "#activeStudentIdentifier" ).val( id );
         },
 
-        /**
-         * Change the styling of this student row to
-         * indicate that this student is currently being
-         * graded.
-         */
-        representAsActiveStudent: function representAsActiveStudent() {
-            $(this.el).removeClass('gradedStudentRow').removeClass('unalteredStudentRow').addClass('activeStudentRow');
-        },
+        // /**
+        //  * Change the styling of this student row to
+        //  * indicate that this student is currently being
+        //  * graded.
+        //  */
+        // representAsActiveStudent: function () {
+        //     $( this.el )
+        //         .removeClass( 'gradedStudentRow' )
+        //         .removeClass( 'unalteredStudentRow' )
+        //         .addClass( 'activeStudentRow' );
+        // },
+        //
+        // /**
+        //  * Removes the styling which indicated that this student is
+        //  * currently being graded.
+        //  */
+        // removeActiveStudentRepresentation: function () {
+        // },
+        //
+        // /**
+        //  * Adds styling to indicate that this student has been graded.
+        //  */
+        // representAsGraded: function () {
+        //     $( this.el )
+        //         .removeClass( 'activeStudentRow' )
+        //         .removeClass( 'unalteredStudentRow' )
+        //         .addClass( 'gradedStudentRow' );
+        // },
 
         /**
-         * Removes the styling which indicated that this student is
-         * currently being graded.
-         */
-        removeActiveStudentRepresentation: function removeActiveStudentRepresentation() {},
-
-        /**
-         * Adds styling to indicate that this student has been graded.
-         */
-        representAsGraded: function representAsGraded() {
-            $(this.el).removeClass('activeStudentRow').removeClass('unalteredStudentRow').addClass('gradedStudentRow');
-        },
-
-        /**
-         * Removes the styling which indicates that this student has been graded.
-         */
-        representAsNotGraded: function representAsNotGraded() {},
-        /**
-         * set background colors in the student roster
-         *  graded = green
-         *  ungraded = white
-         *  active = blue
-         */
-        setStudentBackgroundColors: function setStudentBackgroundColors(data) {
-            for (var i = 0; i < Object.keys(data.examGrades).length; i++) {
-                var name = "#studentListItem" + i;
-                var $item = $('#studentRoster').find(name);
-                if (this.activeStudent && this.activeStudent == i) {
-                    this.setRowToActiveStudent($item);
-                } else if (data.isGraded(i)) {
-                    this.setRowToGraded($item);
-                } else {
-                    this.setRowToUnaltered($item);
-                }
-            }
-        },
-
-        setRowToUnaltered: function setRowToUnaltered(item) {
-            $(item).removeClass('activeStudentRow').removeClass('gradedStudentRow').addClass('unalteredStudentRow');
-        },
-
-        /**
-         * set color for a student roster row
-         * @param item
-         * @param backColor
-         * @param textColor
-         */
-        setRosterBackgroundColor: function setRosterBackgroundColor(item, backColor, textColor) {
-            $(item).find('[class^="col"]').css('background-color', backColor);
-            $(item).css('color', textColor);
-        },
+        //  * Removes the styling which indicates that this student has been graded.
+        //  */
+        // representAsNotGraded: function () {
+        // },
+        // /**
+        //  * set background colors in the student roster
+        //  *  graded = green
+        //  *  ungraded = white
+        //  *  active = blue
+        //  */
+        // setStudentBackgroundColors: function ( data ) {
+        //     for ( var i = 0; i < Object.keys( data.examGrades ).length; i ++ ) {
+        //         var name = "#studentListItem" + i;
+        //         var $item = $( '#studentRoster' ).find( name );
+        //         if ( this.activeStudent && this.activeStudent == i ) {
+        //             this.setRowToActiveStudent( $item );
+        //         } else if ( data.isGraded( i ) ) {
+        //             this.setRowToGraded( $item );
+        //         } else {
+        //             this.setRowToUnaltered( $item )
+        //         }
+        //     }
+        // },
+        //
+        // setRowToUnaltered: function ( item ) {
+        //     $( item )
+        //         .removeClass( 'activeStudentRow' )
+        //         .removeClass( 'gradedStudentRow' )
+        //         .addClass( 'unalteredStudentRow' );
+        // },
+        //
+        // /**
+        //  * set color for a student roster row
+        //  * @param item
+        //  * @param backColor
+        //  * @param textColor
+        //  */
+        // setRosterBackgroundColor: function ( item, backColor, textColor ) {
+        //     $( item ).find( '[class^="col"]' ).css( 'background-color', backColor );
+        //     $( item ).css( 'color', textColor );
+        // },
 
         /* ------------------------ Notifications and events --------------------- */
         handleRowClick: function handleRowClick() {
-            window.console.log('studentListItem', 'click', this.studentIndex);
+            // window.console.log('studentListItem', 'click', this.studentIndex);
             this.setAsActiveStudent();
         },
         /**
@@ -23142,12 +23815,10 @@ module.exports = {
          * so we need to send them to whomever is going to display them.
          */
         notifyStudentSelectEvent: function notifyStudentSelectEvent() {
-
             var toSend = {};
             toSend.studentName = this.studentName;
             toSend.studentIdentifier = this.studentIdentifier;
             this.$dispatch('student-select-event', toSend);
-            this.$broadcast('student-select-event', toSend);
         }
 
     },
@@ -23155,17 +23826,25 @@ module.exports = {
     directives: {},
 
     ready: function ready() {
-        window.console.log('studentListItem', 'ready', this.studentIndex);
+        // window.console.log('studentListItem', 'ready', this.studentIndex);
     }
 };
 
-},{"../templates/student-list-item.template.html":23}],21:[function(require,module,exports){
+},{"../templates/student-list-item.template.html":31}],25:[function(require,module,exports){
 module.exports = '<div class="form-group activeStudentInput">\n    <div id="activeStudentNameArea"\n         class="col-xs-7">\n        <label for="activeStudentName">\n            <span class="sr-only">Click to hide student names</span>\n            <span id="nameVisibilityControl"\n                  class="glyphicon glyphicon-pencil"\n                  title="Click to hide student names"\n                  v-on:click="toggleNameVisibility":\n            > </span>\n        </label>\n        <input id="activeStudentName"\n               class="typeahead full-width"\n               type="text"\n               placeholder="No Student Selected"\n        v-model="studentName">\n    </div>\n    <div id="activeStudentIdentifierArea"\n         class="col-xs-5">\n        <label for="activeStudentIdentifier">ID</label>\n        <input class="typeahead full-width"\n               type="text"\n               id="activeStudentIdentifier"\n               placeholder="--"\n        v-model="studentIdentifier">\n    </div>\n</div>';
-},{}],22:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
+module.exports = '<div id="dashboardCounts">\n<!-- graded / remaining counters -->\n<p>Graded: <span id="graded">{{ gradedExams }}</span> Remaining: <span id="remaining">{{ remainingExams }}</span></p>\n\n<!-- save & finish button -->\n<a id="finishButton"\n   class="btn btn-success col-lg-12 startHidden"\n   v-bind:class="[finishButtonHidden ? display:none : \'\']"\n   href="{{ finishedLink }}">\n    <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish\n</a>\n</div>';
+},{}],27:[function(require,module,exports){
+module.exports = '<div id="dashboard">\n    <h4 class="row">\n    <span class="col-xs-7 dashboard-header">\n            <!--<span class="col-xs-7 dashboard-header" style="vertical-align:middle">-->\n        <span class="glyphicon glyphicon-time"\n              aria-hidden="true"></span> Statistics\n    </span>\n\n        <span class="col-xs-5">\n        <a id="btnTimer"\n           v-bind:class="buttonStyling"\n           title="Toggle timer"\n           v-on:click="toggleTimer">\n            <span id="btnTimerIcon"\n                  v-bind:class="buttonIcon"\n                  aria-hidden="true"></span>\n            <span id="btnTimerLabel">{{buttonLabel}}</span>\n        </a>\n    </span>\n    </h4>\n\n    <div class="panel panel-default">\n\n        <div id="gradingStatsPanel" class="panel-body">\n            <span class="col-xs-6">Time This Exam</span>\n            <span class="col-xs-6" id="thisExamTime">{{ currentExamTimeDisplay }}</span>\n\n            <span class="col-xs-6">Average Time</span>\n            <span class="col-xs-6" id="avgTime">{{ averageTimeDisplay }}</span>\n\n            <span class="col-xs-6">Total Time</span>\n            <span class="col-xs-6" id="totalTime">{{ totalTimeDisplay }}</span>\n\n            <span class="col-xs-6">Time Remaining</span>\n            <span class="col-xs-6" id="timeRemaining">{{ remainingTimeDisplay }}</span>\n        </div>\n    </div>\n</div>';
+},{}],28:[function(require,module,exports){
 module.exports = '<div id="element{{ elementNumber }}"\n     class="list-group-item elementPanel"\n     data-element-index="{{ elementIndex }}"\n     data-element-id="{{ elementId }}"\n     data-comment-area-id="{{ commentAreaId  }}">\n\n    <h5 class="elementTitle">{{ elementTitle }}</h5>\n    <div class="row">\n                <span class="col-lg-5 sliderContainer Q{{ questionNumber }}E{{ elementNumber }}">\n                    <!-- score slider -->\n                    <label for="{{ sliderId }}"></label>\n                    <input id="{{ sliderId }}"\n                           type="text"\n                           class="slider"/>\n                </span>\n\n        <!-- comment area -->\n                <span class="col-lg-7 commentContainer Q{{ questionNumber }}E{{ elementNumber }}">\n                    <textarea id="{{ commentAreaId  }}"\n                              class="form-control"\n                              rows="4"\n                              name="{{ commentAreaId  }}"\n                              placeholder="No score for this element"\n                              v-model="commentText"\n                    ></textarea>\n                </span>\n    </div>\n</div>\n';
-},{}],23:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
+module.exports = '<!-- Single button -->\n<div id="letterGradeArea"\n     class="btn-group">\n    <button id="letterGradeButton{{questionNumber}}"\n            type="button"\n            class="btn btn-default dropdown-toggle"\n            data-toggle="dropdown"\n            aria-haspopup="true"\n            aria-expanded="false">\n        <span id="letterGradeForQuestion{{ questionNumber }}">{{ displayedGrade }}</span> <span class="caret"></span>\n    </button>\n\n    <ul id="letterGradeList"\n        class="dropdown-menu letterGradeList">\n        <template v-for="grade in grades">\n            <li class="gradeListItem" v-on:click="handleLetterGradeClick($index)">{{ grade.displayValue }}</li>\n        </template>\n    </ul>\n\n</div>\n';
+},{}],30:[function(require,module,exports){
+module.exports = '\n    <form class="form-horizontal" role="form">\n        <div class="form-group">\n            <label class="col-xs-1 control-label questionScoreLabel"\n                   for="{{ scoreFieldIdString }}">Score:</label>\n\n            <div class="col-xs-1" style="padding: 0px;">\n                <input id="{{ scoreFieldIdString }}"\n                       v-model="questionScore"\n                       class="form-control pull-right questionScore"\n                       type="number"\n                       min="0"\n                       max="{{ maxScore }}"\n                />\n            </div>\n            <div class="col-xs-1 control-label maxScore">\n                <b>/ <span id="{{ maxScoreFieldIdString}}">{{ maxScore }}</span> </b>\n            </div>\n        </div>\n    </form>\n';
+},{}],31:[function(require,module,exports){
 module.exports = '\n        <tr id="{{ rowIdString }}"\n            class="studentListItem "\n            v-on:click="handleRowClick"\n            v-bind:class="{ \'unalteredStudentRow\': isUnaltered, \'activeStudentRow\': isActiveStudent, \'gradedStudentRow\': isGraded }"\n            data-index="{{ studentIndex }}"\n            data-fName="{{ firstName }}"\n            data-lName="{{ lastName }}"\n            data-sid="{{ studentId }}"\n            data-student-identifier="{{ studentIdentifier }}">\n            <td class="col-xs-6"\n                id="studentName{{ studentIndex }}">{{ studentName }}</td>\n            <td class="col-xs-4"\n                id="studentIdentifier{{ studentIndex }}">{{ studentIdentifierDisplay }}</td>\n            <td class="col-xs-2"\n                id="examGrade{{ studentIndex }}">{{ examGrade }}</td>\n        </tr>\n';
-},{}],24:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 /*! =========================================================
  * bootstrap-slider.js
  *

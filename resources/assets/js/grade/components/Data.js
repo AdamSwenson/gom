@@ -9,71 +9,116 @@
  * @constructor
  */
 function Data() {
+
+    /* ------------------------- Properties --------------------- */
     /**
      * The index of the student currently being graded
      */
-    this.activeStudent = null,
-        this.activeStudentTime = null,
+    this.activeStudent = null;
 
-        this.standardScoring = false,
+    /** The time spent grading the current student */
+    this.activeStudentTime = null;
+
+    this.standardScoring = false;
+
+    /** Integer count of questions on the exam */
+    this.numQuestions = null;
+
+    /**
+     * Boolean of whether the student names are hidden.
+     * true means that student names are hidden.
+     */
+    this.isBlind = false;
+
+    this.valences = [ 0, 1, 2, 3 ];
+
+    /* ----------------------------- Objects/ arrays ------------------------ */
+    /**
+     * Format:
+     *      {
+     *          studentIndex : { elementIndex : elementScore},
+     *          ...
+     *      }
+     * @type {null}
+     */
+    this.elementScores = {};
+
+    this.elementComments = {};
+
+    /**
+     * examGrades[] keeps a persistent total of the exam score for each student.
+     * Exams without grades have a value of -1, because dealing with null and NaN
+     * is unpredictable across js and PHP.
+     * This shouldn't be an issue, as the DB has no notion of exam grades, they're
+     * only used here as a shorthand to store and quickly find information about
+     * the exam state.
+     */
+    this.examGrades = {};
+
+    /**
+     * Format:
+     *     {
+     *          studentIndex : gradingTime,
+     *          ...
+     *     }
+     *
+     * @type {null}
+     */
+    this.examGradingTimes = {};
+
+    /**
+     * Object containing empty slots and actual scores for each
+     * student on the exam. Structure of items:
+     *      {studentIndex : {questionIndex: score}]
+     * Use getters and setters to access
+     */
+    this.questionScores = {};
+
+    /**
+     * Json of the maximum possible scores for each question.
+     * Keys are questionIndexes
+     * Format:
+     *      {
+     *          questionIndex : maxScore,
+     *          ...
+     *      }
+     */
+    this.maxQuestionScores = {};
+
+    this.stockComments = {};
 
 
-        /**
-         * Boolean of whether the student names are hidden.
-         * true means that student names are hidden.
-         */
-        this.isBlind = false,
-
-        this.elementScores = null,
-        this.elementComments = null,
-
-        /**
-         * examGrades[] keeps a persistent total of the exam score for each student.
-         * Exams without grades have a value of -1, because dealing with null and NaN
-         * is unpredictable across js and PHP.
-         * This shouldn't be an issue, as the DB has no notion of exam grades, they're
-         * only used here as a shorthand to store and quickly find information about
-         * the exam state.
-         */
-        this.examGrades = null,
-
-        this.examGradingTimes = null,
-
-        /**
-         * Integer count of questions on the exam
-         */
-        this.numQuestions = null,
-        this.questionScores = null,
-
-
-        this.stockComments = null,
-
-        this.valences = [ 0, 1, 2, 3 ],
-
-        /**
-         *
-         */
-        this.loadStockComments = function ( stockComments ) {
-            this.stockComments = stockComments;
-        }
+    /* -------------------------------- Initialization ------------------------ */
+    /**
+     * Takes a json from the server of the stock comments and stores it internally.
+     */
+    this.loadStockComments = function ( stockComments ) {
+        this.stockComments = stockComments;
+    };
 
     this.loadElementComments = function ( studentElementComments ) {
         this.elementComments = studentElementComments;
-    }
+    };
+
     this.loadElementScores = function ( studentElementScores ) {
         this.elementScores = studentElementScores;
-    }
+    };
+
+    this.loadMaxQuestionScores = function ( maxScores ) {
+        this.maxQuestionScores = maxScores;
+    };
+
     this.loadExamGrades = function ( studentGrades ) {
         this.examGrades = studentGrades;
-    }
+    };
 
     this.loadNumberQuestions = function ( numberQuestions ) {
         this.numQuestions = numberQuestions;
-    }
+    };
 
     this.loadQuestionScores = function ( studentQuestionScores ) {
         this.questionScores = studentQuestionScores;
-    }
+    };
 
     /**
      * Sets the grading time data from the server
@@ -81,9 +126,48 @@ function Data() {
      */
     this.loadGradingTimes = function ( examGradingTimes ) {
         this.examGradingTimes = examGradingTimes;
-    }
+    };
 
 
+    /* ------------------ Grading time ------------------- */
+
+    /**
+     * Original: data.examGradingTimes[ Roster.activeStudent ]
+     * @param activeStudent
+     * @returns {*}
+     */
+    this.getStudentGradingTime = function ( activeStudent ) {
+        return this.examGradingTimes[ activeStudent ];
+    };
+
+    /**
+     * Stores a new time for the student.
+     * Overwrites any existing value.
+     * Original: data.examGradingTimes[ Roster.activeStudent ];
+     */
+    this.storeStudentGradingTime = function ( activeStudent, activeStudentTime ) {
+        this.examGradingTimes[ activeStudent ] = activeStudentTime;
+    };
+
+    /**
+     * Increases the stored time for a student by the specified
+     * amount.
+     * Original: data.examGradingTimes[ Roster.activeStudent ];
+     */
+    this.increaseStudentGradingTime = function ( activeStudent, timeToAdd ) {
+        this.examGradingTimes[ activeStudent ] += timeToAdd;
+    };
+
+    /**
+     * Increases the stored time for the student currently being graded by the specified
+     * amount.
+     * Original: data.examGradingTimes[ Roster.activeStudent ];
+     */
+    this.increaseActiveStudentGradingTime = function ( timeToAdd ) {
+        this.examGradingTimes[ this.activeStudent ] += timeToAdd;
+    };
+
+    /* ------------------ Element scores  ------------ */
     /**
      * Stores a student's score on a particular element
      * @param activeStudent
@@ -92,7 +176,7 @@ function Data() {
      */
     this.storeElementScore = function ( activeStudent, elementIndex, score ) {
         this.elementScores[ activeStudent ][ elementIndex ] = score;
-    }
+    };
 
     /**
      * Retrieves element score for a student
@@ -103,9 +187,9 @@ function Data() {
      */
     this.getElementScore = function ( activeStudent, elementIndex ) {
         return this.elementScores[ activeStudent ][ elementIndex ];
-    }
+    };
 
-
+    /* ------------------ Comments  ------------ */
     /**
      * Store the comment text for an element.
      *
@@ -121,8 +205,7 @@ function Data() {
      */
     this.storeCommentText = function ( activeStudent, elementIndex, commentText ) {
         this.elementComments[ activeStudent ][ elementIndex ] = commentText;
-    }
-
+    };
 
     /**
      * Retrieve comment text for a student.
@@ -162,9 +245,10 @@ function Data() {
         }
         //If it was custom, return the same text
         return comment;
-    }
+    };
 
 
+    /* ------------------ Question scores and Exam grades ------------ */
     /**
      * Saves a question score for the student
      * Original: data.questionScores[ Roster.activeStudent ][ qNumber - 1 ] = score;
@@ -174,8 +258,7 @@ function Data() {
      */
     this.storeQuestionScore = function ( activeStudent, questionIndex, score ) {
         this.questionScores[ activeStudent ][ questionIndex ] = score;
-
-    }
+    };
 
     /**
      * Returns student score for question
@@ -185,86 +268,91 @@ function Data() {
      */
     this.getQuestionScore = function ( activeStudent, questionIndex ) {
         return this.questionScores[ activeStudent ][ questionIndex ];
-    }
-
-
-    /**
-     * Stores a new time for the student.
-     * Overwrites any existing value.
-     * Original: data.examGradingTimes[ Roster.activeStudent ];
-     */
-    this.storeStudentGradingTime = function ( activeStudent, activeStudentTime ) {
-        this.examGradingTimes[ activeStudent ] = activeStudentTime;
-    }
+    };
 
     /**
-     * Increases the stored time for a student by the specified
-     * amount.
-     * Original: data.examGradingTimes[ Roster.activeStudent ];
-     */
-    this.increaseStudentGradingTime = function ( activeStudent, timeToAdd ) {
-        this.examGradingTimes[ activeStudent ] += timeToAdd;
-    }
-
-
-    /**
-     * Original: data.examGradingTimes[ Roster.activeStudent ]
+     * Convenience function for getting the current student's score for question
+     * Old way: data.questionScores[ Roster.activeStudent ][ index ];
      * @param activeStudent
-     * @returns {*}
+     * @param questionIndex
      */
-    this.getStudentGradingTime = function ( activeStudent ) {
-        return this.examGradingTimes[ activeStudent ];
-    }
+    this.getQuestionScoreForActiveStudent = function ( questionIndex ) {
+        if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set "
 
+        return this.getQuestionScore( this.activeStudent, questionIndex );
+    };
 
     /**
      * Updates the stored total exam score for the student
      * The first time it runs, it will set the total score to 0
      * if no questions have been graded.
-     *
-     * Previous version:
-     *
-     *
-     for ( var i = 0; i < data.questionScores.length; i ++ ) {
-                    var totalScore = null;
-                    data.questionScores[ i ].forEach( function ( gradeEntry ) {
-                        if ( gradeEntry !== null && gradeEntry >= 0 ) {
-                            if ( totalScore === null ) {
-                                totalScore = 0;
-                            }
-                            totalScore += parseFloat( gradeEntry );
-                        }
-                    } );
-                    if ( totalScore != null ) {
-                        data.examGrades[ i ] = totalScore.toPrecision( 3 );
-                    }
-                    else {
-                        data.examGrades[ i ] = - 1;
-                    }
-                     */
+     **/
     this.updateExamGrade = function ( activeStudent ) {
         var totalScore = null;
-        for ( var i = 0; i < Object.keys( this.questionScores[ activeStudent ] ).length; i ++ ) {
-            var v = this.questionScores[ activeStudent ][ i ];
-            if ( v != null ) {
-                //at least one question score is non-null
-                //so the total score should be at least 0
-                //first we check whether the totalScore is still null
-                //and set it to 0 if not
-                if ( totalScore === null ) {
-                    totalScore = 0;
+        // try {
+        // this.checkValid( 'questionScores' );
+        if ( Object.keys( this.questionScores ).length > 0 ) {
+            for ( var i = 0; i < Object.keys( this.questionScores[ activeStudent ] ).length; i ++ ) {
+                var v = this.questionScores[ activeStudent ][ i ];
+                if ( v != null ) {
+                    //at least one question score is non-null
+                    //so the total score should be at least 0
+                    //first we check whether the totalScore is still null
+                    //and set it to 0 if not
+                    if ( totalScore === null ) {
+                        totalScore = 0;
+                    }
+                    //now we can add the question values to it
+                    totalScore += parseFloat( v );
                 }
-                //now we can add the question values to it
-                totalScore += parseFloat( v );
+            }
+            if ( totalScore != null && totalScore >= 0 ) {
+                //push the total score into exam grades as a string
+                this.examGrades[ activeStudent ] = totalScore.toPrecision( 3 );
+            } else {
+                //replace 'letter grade' with -1
+                this.examGrades[ activeStudent ] = - 1;
             }
         }
-        if ( totalScore != null && totalScore >= 0 ) {
-            this.examGrades[ activeStudent ] = totalScore.toPrecision( 3 );
-        } else {
-            this.examGrades[ activeStudent ] = - 1;
-        }
-    }
+        // } catch ( err ) {
+        //     window.console.log( err );
+        // }
+    };
 
+
+//   Previous version:
+//
+//     for ( var i = 0; i < data.questionScores.length; i ++ ) {
+//         var totalScore = null;
+//         data.questionScores[ i ].forEach( function ( gradeEntry ) {
+//             if ( gradeEntry !== null && gradeEntry >= 0 ) {
+//                 if ( totalScore === null ) {
+//                     totalScore = 0;
+//                 }
+//                 totalScore += parseFloat( gradeEntry );
+//             }
+//             *    } );
+//     *     if ( totalScore != null ) {
+//         *          data.examGrades[ i ] = totalScore.toPrecision( 3 );
+//         *       }
+//     *        else {
+//         *             data.examGrades[ i ] = - 1;
+//         *          }
+
+
+    /**
+     * Saves the trouble of other methods having to figure out whether a student
+     * is set as active student (which can run into trouble if, for example, the
+     * active student has index 0 and the consuming method interprets this as false).
+     */
+    this.isActive = function () {
+        if ( typeof this.activeStudent == 'undefined' ) return false;
+        if ( this.activeStudent === null ) return false;
+        if ( this.activeStudent >= 0 ) {
+            return true;
+        }
+        return false;
+    };
 
     /**
      * Returns true if at least one question has received
@@ -276,25 +364,39 @@ function Data() {
             return true;
         }
         return false;
-    }
+    };
 
 
     /**
-     * Returns the number of exams that have been graded
+     * Returns the number of exams that have been graded.
+     * NB, before counting them it first goes through and makes
+     * sure that each examGrade is set to the sum of graded questions
+     * for that exam.
      */
     this.getNumberGraded = function () {
         var graded = 0;
-        if ( typeof this.examGrades != 'undefined' ) {
+        // try {
+        //     this.checkValid( 'examGrades' );
+
+        if ( Object.keys( this.examGrades ).length > 0 ) {
+            //Loop through each exam (via studentIndex as key)
             for ( var i = 0; i < Object.keys( this.examGrades ).length; i ++ ) {
+                //Make sure the stored exam total score is up to date
                 this.updateExamGrade( i );
                 //this will be the string 'letter grade' if
                 //no grade has been entered. Thus we check
                 //whether it is a number 0 or greater
+                //if it is graded, increment the number graded
                 if ( this.examGrades[ i ] >= 0 ) graded ++;
             }
         }
+        // } catch ( err ) {
+        //     window.console.log( err );
+        // }finally{
         return graded;
-    }
+        // }
+
+    };
 
     /**
      * Returns the total number of exams
@@ -304,13 +406,43 @@ function Data() {
      * @returns {number|Number}
      */
     this.getTotalExams = function () {
-        if ( typeof this.examGrades == 'undefined' ) {
-            var total = 0;
-        } else {
-            var total = Object.keys( this.examGrades ).length;
+        let total = 0;
+        if ( Object.keys( this.examGrades ).length > 0 ) {
+            total = Object.keys( this.examGrades ).length;
         }
 
-        return total;
-    }
+        //
+        // // try {
+        //     if(this.checkValid( 'examGrades' )) {
+        //         total = Object.keys( this.examGrades ).length;
+        //     }
+        //
+        // } catch ( err ) {
+        //     window.console.log( err );
+        // }
 
-}
+        return total;
+    };
+
+    /* ------------ Utilities --------------*/
+
+    /**
+     * Checks to make sure that a property has had its
+     * values loaded before trying to do stuff with it
+     *
+     * @param propertyName
+     */
+    this.checkValid = function ( propertyName ) {
+        if ( typeof this[ propertyName ] != 'undefined' ) {
+            throw propertyName + " is undefined";
+        }
+        if ( this[ propertyName ] == null ) {
+            throw propertyName + " is null";
+        }
+        if ( this[ propertyName ] == {} ) {
+            throw propertyName + " was empty. Probably because it wasn't initialized";
+        }
+
+        return true;
+    };
+};

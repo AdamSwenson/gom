@@ -1,0 +1,12 @@
+<div id="dashboardCounts">
+<!-- graded / remaining counters -->
+<p>Graded: <span id="graded">{{ gradedExams }}</span> Remaining: <span id="remaining">{{ remainingExams }}</span></p>
+
+<!-- save & finish button -->
+<a id="finishButton"
+   class="btn btn-success col-lg-12 startHidden"
+   v-bind:class="[finishButtonHidden ? display:none : '']"
+   href="{{ finishedLink }}">
+    <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish
+</a>
+</div>

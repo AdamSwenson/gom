@@ -272,6 +272,9 @@
   background-color: #5cb85c;
   color: white; }
 
+#dashboard .dashboard-header {
+  vertical-align: middle; }
+
 .btn {
   border-radius: 2px; }
 
