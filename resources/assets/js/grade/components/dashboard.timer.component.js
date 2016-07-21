@@ -158,6 +158,9 @@ module.exports = {
          */
         startTimer: function () {
             this.loadTimer();
+            //we don't need to request that the time be saved
+            //the parent will do that automatically on being
+            //notified that the timer has started.
             this.notifyTimerStart();
         },
 
@@ -168,6 +171,9 @@ module.exports = {
         stopTimer: function () {
             clearInterval( this.timer );
             this.paused = true;
+            //we don't need to request that the time be saved
+            //the parent will do that automatically on being
+            //notified that the timer has stopped.
             this.notifyTimerStop();
         },
 
@@ -188,6 +194,8 @@ module.exports = {
             // set a new timer to fire every second. Update examGradingTimes[]
             this.timer = setInterval( function () {
                 this.store.increaseActiveStudentGradingTime( 1 );
+                //ask for the time to be saved
+                this.requestTimerSave();
             }, 1000 );
         },
 
@@ -228,6 +236,13 @@ module.exports = {
         notifyTimerStop: function () {
             this.$dispatch( 'timer-stop-event' )
         },
+
+        /**
+         * Requests that the parent save the time to the db
+         */
+        requestTimerSave: function(){
+            this.$dispatch('time-save-request');
+        }
     },
 
     events: {

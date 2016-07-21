@@ -11,11 +11,13 @@ var jQuery = $;
 window.jQuery = jQuery;
 
 require('bootstrap');
+var bootbox = require('bootbox');
 
 var Vue = require('vue');
-
 //dev
 Vue.config.debug = true;
+
+var ajaxTools = require('./components/ajax.tools.js');
 
 new Vue({
     el: '#gradeExamPage',
@@ -30,63 +32,79 @@ new Vue({
         'dashboard-counts': require('./components/dashboard.counts.component')
     },
 
-    data: {},
+    data: {
+        store: store,
+
+        ajaxTools: ajaxTools
+
+    },
 
     computed: {},
 
     methods: {
 
-        //     saveElementComment: function(){
-        //
-        //         //grab scores
-        //         var oldScore = data.getElementScore( Roster.activeStudent, elementIndex );
-        //         var score = slideEvt.value;
-        //
-        //         /* ---------- update the element's score visually and in data.elementScores[] --------- */
-        //
-        //         //store the new element score in the data object
-        //         data.storeElementScore( Roster.activeStudent, elementIndex, score );
-        //
-        //
-        //         /**
-        //          * update comment text and save to DB.
-        //          * Only replace text if the score has changed valence regions
-        //          */
-        //         if ( ! this.isSameValence( oldScore, score ) ) {
-        //             //Score is in a new valence region.
-        //             //So let's plug in the appropriate comment text and save to DB
-        //
-        //             //Store comment text in data object
-        //             //Dear Adam, make sure you read the doc for storeCommentText before fucking with
-        //             //anything in these lines
-        //             data.storeCommentText( Roster.activeStudent, elementIndex, $elementComment.val() );
-        //             var commentText = data.getCommentText( Roster.activeStudent, elementIndex, this.updateValence( score ) );
-        //
-        //             //update display
-        //             this.updateDisplayedComment( $elementComment, commentText );
-        //
-        //             //send to the db
-        //             AjaxHandler.saveComment( data, Roster, elementId, score, commentText );
-        //
-        //         } else {
-        //             // Score is in the same valence region.
-        //             // Jump straight to saving without changing the elementComment
-        //             // Fear not. Changes directly to the comment text will be handled elsewhere.
-        //             AjaxHandler.createGradeRequest( data, 'element_id', elementId, score, null, Roster );
-        //         }
-        //
-        //         // If using bell curve (standardScoring), element score affects
-        //         // the total question score, so update
-        //         if ( Roster.standardScoring ) {
-        //             //  updateStandardScores();
-        //         }
-        //
-        //         callback();
-        //         // //Update dashboard and roster data displayed
-        //         // updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
-        //         // //Sigh. The user forgot to restart the timer. Do it for them
-        //         // Timer.resumeTime
-        //     }
+        /**
+         * Saves a comment (and score if present) to the database
+         * @param elementId Database id of the element
+         * @param commentText Text of the comment to save
+         * @param score Associated score to save (can be left null)
+         * @returns boolean
+         */
+        saveCommentWithTime: function saveCommentWithTime(elementId, commentText, score) {
+            var me = this;
+
+            var studentId = this.store.getActiveStudentId();
+            var examId = this.store.getExamId();
+            var time = this.store.getActiveStudentGradingTime();
+
+            var request = new this.ajaxTools.requests.commentRequest(studentId, elementId, commentText, score, time);
+
+            return this.ajaxTools.sendRequest(examId, request);
+        },
+
+        /**
+         * Records grading time to the db
+         */
+        saveTime: function saveTime() {
+            var studentId = this.store.getActiveStudentId();
+            var examId = this.store.getExamId();
+            var time = this.store.getActiveStudentGradingTime();
+
+            var request = new this.ajaxTools.requests.timeRequest(studentId, time);
+            return this.ajaxTools.sendRequest(examId, request);
+        },
+
+        /**
+         * Save a question or element score (along with grading time) to the server
+         * @param studentId
+         * @param gradeRequest
+         * @param store
+         */
+        saveScoreWithTime: function saveScoreWithTime(dataType, dataId, score) {
+            var me = this;
+
+            var studentId = this.store.getActiveStudentId();
+            var examId = this.store.getExamId();
+            var time = this.store.getActiveStudentGradingTime();
+
+            var request = this.ajaxTools.createGradeRequestObject(studentId, dataType, dataId, score, null, time);
+
+            return this.ajaxTools.sendRequest(examId, request);
+        },
+
+        /**
+         * Sends a request to delete a score from the database
+         * @param questionAssignmentId
+         * @returns boolean
+         */
+        deleteScore: function deleteScore(questionAssignmentId) {
+            var me = this;
+
+            var studentId = this.store.getActiveStudentId();
+            var examId = this.store.getExamId();
+
+            return this.ajaxTools.deleteScoreRequest(examId, studentId, questionAssignmentId);
+        }
     },
 
     events: {
@@ -177,12 +195,22 @@ new Vue({
          */
         'timer-start-event': function timerStartEvent() {
             window.console.log('gradeVue', 'caught timer-start-event');
+            this.saveTime();
         },
         /**
          * Handles notification that the timer has stopped
          */
         'timer-stop-event': function timerStopEvent() {
             window.console.log('gradeVue', 'caught timer-stop-event');
+            this.saveTime();
+        },
+
+        /**
+         * Handles the request to save the time to the db
+         */
+        'time-save-request': function timeSaveRequest() {
+            window.console.log('gradeVue', 'caught time-save-request');
+            this.saveTime();
         }
 
     },
@@ -199,7 +227,994 @@ new Vue({
     }
 });
 
-},{"./components/currentStudentArea.component.js":18,"./components/dashboard.counts.component":19,"./components/dashboard.timer.component":20,"./components/elementInput.js":21,"./components/letterGradeButton.component.js":22,"./components/questionScore.component":23,"./components/studentListItem":24,"bootstrap":2,"jquery":15,"vue":17}],2:[function(require,module,exports){
+},{"./components/ajax.tools.js":19,"./components/currentStudentArea.component.js":20,"./components/dashboard.counts.component":21,"./components/dashboard.timer.component":22,"./components/elementInput.js":23,"./components/letterGradeButton.component.js":24,"./components/questionScore.component":25,"./components/studentListItem":26,"bootbox":2,"bootstrap":3,"jquery":16,"vue":18}],2:[function(require,module,exports){
+/**
+ * bootbox.js [v4.4.0]
+ *
+ * http://bootboxjs.com/license.txt
+ */
+
+// @see https://github.com/makeusabrew/bootbox/issues/180
+// @see https://github.com/makeusabrew/bootbox/issues/186
+(function (root, factory) {
+
+  "use strict";
+  if (typeof define === "function" && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(["jquery"], factory);
+  } else if (typeof exports === "object") {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory(require("jquery"));
+  } else {
+    // Browser globals (root is window)
+    root.bootbox = factory(root.jQuery);
+  }
+
+}(this, function init($, undefined) {
+
+  "use strict";
+
+  // the base DOM structure needed to create a modal
+  var templates = {
+    dialog:
+      "<div class='bootbox modal' tabindex='-1' role='dialog'>" +
+        "<div class='modal-dialog'>" +
+          "<div class='modal-content'>" +
+            "<div class='modal-body'><div class='bootbox-body'></div></div>" +
+          "</div>" +
+        "</div>" +
+      "</div>",
+    header:
+      "<div class='modal-header'>" +
+        "<h4 class='modal-title'></h4>" +
+      "</div>",
+    footer:
+      "<div class='modal-footer'></div>",
+    closeButton:
+      "<button type='button' class='bootbox-close-button close' data-dismiss='modal' aria-hidden='true'>&times;</button>",
+    form:
+      "<form class='bootbox-form'></form>",
+    inputs: {
+      text:
+        "<input class='bootbox-input bootbox-input-text form-control' autocomplete=off type=text />",
+      textarea:
+        "<textarea class='bootbox-input bootbox-input-textarea form-control'></textarea>",
+      email:
+        "<input class='bootbox-input bootbox-input-email form-control' autocomplete='off' type='email' />",
+      select:
+        "<select class='bootbox-input bootbox-input-select form-control'></select>",
+      checkbox:
+        "<div class='checkbox'><label><input class='bootbox-input bootbox-input-checkbox' type='checkbox' /></label></div>",
+      date:
+        "<input class='bootbox-input bootbox-input-date form-control' autocomplete=off type='date' />",
+      time:
+        "<input class='bootbox-input bootbox-input-time form-control' autocomplete=off type='time' />",
+      number:
+        "<input class='bootbox-input bootbox-input-number form-control' autocomplete=off type='number' />",
+      password:
+        "<input class='bootbox-input bootbox-input-password form-control' autocomplete='off' type='password' />"
+    }
+  };
+
+  var defaults = {
+    // default language
+    locale: "en",
+    // show backdrop or not. Default to static so user has to interact with dialog
+    backdrop: "static",
+    // animate the modal in/out
+    animate: true,
+    // additional class string applied to the top level dialog
+    className: null,
+    // whether or not to include a close button
+    closeButton: true,
+    // show the dialog immediately by default
+    show: true,
+    // dialog container
+    container: "body"
+  };
+
+  // our public object; augmented after our private API
+  var exports = {};
+
+  /**
+   * @private
+   */
+  function _t(key) {
+    var locale = locales[defaults.locale];
+    return locale ? locale[key] : locales.en[key];
+  }
+
+  function processCallback(e, dialog, callback) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    // by default we assume a callback will get rid of the dialog,
+    // although it is given the opportunity to override this
+
+    // so, if the callback can be invoked and it *explicitly returns false*
+    // then we'll set a flag to keep the dialog active...
+    var preserveDialog = $.isFunction(callback) && callback.call(dialog, e) === false;
+
+    // ... otherwise we'll bin it
+    if (!preserveDialog) {
+      dialog.modal("hide");
+    }
+  }
+
+  function getKeyLength(obj) {
+    // @TODO defer to Object.keys(x).length if available?
+    var k, t = 0;
+    for (k in obj) {
+      t ++;
+    }
+    return t;
+  }
+
+  function each(collection, iterator) {
+    var index = 0;
+    $.each(collection, function(key, value) {
+      iterator(key, value, index++);
+    });
+  }
+
+  function sanitize(options) {
+    var buttons;
+    var total;
+
+    if (typeof options !== "object") {
+      throw new Error("Please supply an object of options");
+    }
+
+    if (!options.message) {
+      throw new Error("Please specify a message");
+    }
+
+    // make sure any supplied options take precedence over defaults
+    options = $.extend({}, defaults, options);
+
+    if (!options.buttons) {
+      options.buttons = {};
+    }
+
+    buttons = options.buttons;
+
+    total = getKeyLength(buttons);
+
+    each(buttons, function(key, button, index) {
+
+      if ($.isFunction(button)) {
+        // short form, assume value is our callback. Since button
+        // isn't an object it isn't a reference either so re-assign it
+        button = buttons[key] = {
+          callback: button
+        };
+      }
+
+      // before any further checks make sure by now button is the correct type
+      if ($.type(button) !== "object") {
+        throw new Error("button with key " + key + " must be an object");
+      }
+
+      if (!button.label) {
+        // the lack of an explicit label means we'll assume the key is good enough
+        button.label = key;
+      }
+
+      if (!button.className) {
+        if (total <= 2 && index === total-1) {
+          // always add a primary to the main option in a two-button dialog
+          button.className = "btn-primary";
+        } else {
+          button.className = "btn-default";
+        }
+      }
+    });
+
+    return options;
+  }
+
+  /**
+   * map a flexible set of arguments into a single returned object
+   * if args.length is already one just return it, otherwise
+   * use the properties argument to map the unnamed args to
+   * object properties
+   * so in the latter case:
+   * mapArguments(["foo", $.noop], ["message", "callback"])
+   * -> { message: "foo", callback: $.noop }
+   */
+  function mapArguments(args, properties) {
+    var argn = args.length;
+    var options = {};
+
+    if (argn < 1 || argn > 2) {
+      throw new Error("Invalid argument length");
+    }
+
+    if (argn === 2 || typeof args[0] === "string") {
+      options[properties[0]] = args[0];
+      options[properties[1]] = args[1];
+    } else {
+      options = args[0];
+    }
+
+    return options;
+  }
+
+  /**
+   * merge a set of default dialog options with user supplied arguments
+   */
+  function mergeArguments(defaults, args, properties) {
+    return $.extend(
+      // deep merge
+      true,
+      // ensure the target is an empty, unreferenced object
+      {},
+      // the base options object for this type of dialog (often just buttons)
+      defaults,
+      // args could be an object or array; if it's an array properties will
+      // map it to a proper options object
+      mapArguments(
+        args,
+        properties
+      )
+    );
+  }
+
+  /**
+   * this entry-level method makes heavy use of composition to take a simple
+   * range of inputs and return valid options suitable for passing to bootbox.dialog
+   */
+  function mergeDialogOptions(className, labels, properties, args) {
+    //  build up a base set of dialog properties
+    var baseOptions = {
+      className: "bootbox-" + className,
+      buttons: createLabels.apply(null, labels)
+    };
+
+    // ensure the buttons properties generated, *after* merging
+    // with user args are still valid against the supplied labels
+    return validateButtons(
+      // merge the generated base properties with user supplied arguments
+      mergeArguments(
+        baseOptions,
+        args,
+        // if args.length > 1, properties specify how each arg maps to an object key
+        properties
+      ),
+      labels
+    );
+  }
+
+  /**
+   * from a given list of arguments return a suitable object of button labels
+   * all this does is normalise the given labels and translate them where possible
+   * e.g. "ok", "confirm" -> { ok: "OK, cancel: "Annuleren" }
+   */
+  function createLabels() {
+    var buttons = {};
+
+    for (var i = 0, j = arguments.length; i < j; i++) {
+      var argument = arguments[i];
+      var key = argument.toLowerCase();
+      var value = argument.toUpperCase();
+
+      buttons[key] = {
+        label: _t(value)
+      };
+    }
+
+    return buttons;
+  }
+
+  function validateButtons(options, buttons) {
+    var allowedButtons = {};
+    each(buttons, function(key, value) {
+      allowedButtons[value] = true;
+    });
+
+    each(options.buttons, function(key) {
+      if (allowedButtons[key] === undefined) {
+        throw new Error("button key " + key + " is not allowed (options are " + buttons.join("\n") + ")");
+      }
+    });
+
+    return options;
+  }
+
+  exports.alert = function() {
+    var options;
+
+    options = mergeDialogOptions("alert", ["ok"], ["message", "callback"], arguments);
+
+    if (options.callback && !$.isFunction(options.callback)) {
+      throw new Error("alert requires callback property to be a function when provided");
+    }
+
+    /**
+     * overrides
+     */
+    options.buttons.ok.callback = options.onEscape = function() {
+      if ($.isFunction(options.callback)) {
+        return options.callback.call(this);
+      }
+      return true;
+    };
+
+    return exports.dialog(options);
+  };
+
+  exports.confirm = function() {
+    var options;
+
+    options = mergeDialogOptions("confirm", ["cancel", "confirm"], ["message", "callback"], arguments);
+
+    /**
+     * overrides; undo anything the user tried to set they shouldn't have
+     */
+    options.buttons.cancel.callback = options.onEscape = function() {
+      return options.callback.call(this, false);
+    };
+
+    options.buttons.confirm.callback = function() {
+      return options.callback.call(this, true);
+    };
+
+    // confirm specific validation
+    if (!$.isFunction(options.callback)) {
+      throw new Error("confirm requires a callback");
+    }
+
+    return exports.dialog(options);
+  };
+
+  exports.prompt = function() {
+    var options;
+    var defaults;
+    var dialog;
+    var form;
+    var input;
+    var shouldShow;
+    var inputOptions;
+
+    // we have to create our form first otherwise
+    // its value is undefined when gearing up our options
+    // @TODO this could be solved by allowing message to
+    // be a function instead...
+    form = $(templates.form);
+
+    // prompt defaults are more complex than others in that
+    // users can override more defaults
+    // @TODO I don't like that prompt has to do a lot of heavy
+    // lifting which mergeDialogOptions can *almost* support already
+    // just because of 'value' and 'inputType' - can we refactor?
+    defaults = {
+      className: "bootbox-prompt",
+      buttons: createLabels("cancel", "confirm"),
+      value: "",
+      inputType: "text"
+    };
+
+    options = validateButtons(
+      mergeArguments(defaults, arguments, ["title", "callback"]),
+      ["cancel", "confirm"]
+    );
+
+    // capture the user's show value; we always set this to false before
+    // spawning the dialog to give us a chance to attach some handlers to
+    // it, but we need to make sure we respect a preference not to show it
+    shouldShow = (options.show === undefined) ? true : options.show;
+
+    /**
+     * overrides; undo anything the user tried to set they shouldn't have
+     */
+    options.message = form;
+
+    options.buttons.cancel.callback = options.onEscape = function() {
+      return options.callback.call(this, null);
+    };
+
+    options.buttons.confirm.callback = function() {
+      var value;
+
+      switch (options.inputType) {
+        case "text":
+        case "textarea":
+        case "email":
+        case "select":
+        case "date":
+        case "time":
+        case "number":
+        case "password":
+          value = input.val();
+          break;
+
+        case "checkbox":
+          var checkedItems = input.find("input:checked");
+
+          // we assume that checkboxes are always multiple,
+          // hence we default to an empty array
+          value = [];
+
+          each(checkedItems, function(_, item) {
+            value.push($(item).val());
+          });
+          break;
+      }
+
+      return options.callback.call(this, value);
+    };
+
+    options.show = false;
+
+    // prompt specific validation
+    if (!options.title) {
+      throw new Error("prompt requires a title");
+    }
+
+    if (!$.isFunction(options.callback)) {
+      throw new Error("prompt requires a callback");
+    }
+
+    if (!templates.inputs[options.inputType]) {
+      throw new Error("invalid prompt type");
+    }
+
+    // create the input based on the supplied type
+    input = $(templates.inputs[options.inputType]);
+
+    switch (options.inputType) {
+      case "text":
+      case "textarea":
+      case "email":
+      case "date":
+      case "time":
+      case "number":
+      case "password":
+        input.val(options.value);
+        break;
+
+      case "select":
+        var groups = {};
+        inputOptions = options.inputOptions || [];
+
+        if (!$.isArray(inputOptions)) {
+          throw new Error("Please pass an array of input options");
+        }
+
+        if (!inputOptions.length) {
+          throw new Error("prompt with select requires options");
+        }
+
+        each(inputOptions, function(_, option) {
+
+          // assume the element to attach to is the input...
+          var elem = input;
+
+          if (option.value === undefined || option.text === undefined) {
+            throw new Error("given options in wrong format");
+          }
+
+          // ... but override that element if this option sits in a group
+
+          if (option.group) {
+            // initialise group if necessary
+            if (!groups[option.group]) {
+              groups[option.group] = $("<optgroup/>").attr("label", option.group);
+            }
+
+            elem = groups[option.group];
+          }
+
+          elem.append("<option value='" + option.value + "'>" + option.text + "</option>");
+        });
+
+        each(groups, function(_, group) {
+          input.append(group);
+        });
+
+        // safe to set a select's value as per a normal input
+        input.val(options.value);
+        break;
+
+      case "checkbox":
+        var values   = $.isArray(options.value) ? options.value : [options.value];
+        inputOptions = options.inputOptions || [];
+
+        if (!inputOptions.length) {
+          throw new Error("prompt with checkbox requires options");
+        }
+
+        if (!inputOptions[0].value || !inputOptions[0].text) {
+          throw new Error("given options in wrong format");
+        }
+
+        // checkboxes have to nest within a containing element, so
+        // they break the rules a bit and we end up re-assigning
+        // our 'input' element to this container instead
+        input = $("<div/>");
+
+        each(inputOptions, function(_, option) {
+          var checkbox = $(templates.inputs[options.inputType]);
+
+          checkbox.find("input").attr("value", option.value);
+          checkbox.find("label").append(option.text);
+
+          // we've ensured values is an array so we can always iterate over it
+          each(values, function(_, value) {
+            if (value === option.value) {
+              checkbox.find("input").prop("checked", true);
+            }
+          });
+
+          input.append(checkbox);
+        });
+        break;
+    }
+
+    // @TODO provide an attributes option instead
+    // and simply map that as keys: vals
+    if (options.placeholder) {
+      input.attr("placeholder", options.placeholder);
+    }
+
+    if (options.pattern) {
+      input.attr("pattern", options.pattern);
+    }
+
+    if (options.maxlength) {
+      input.attr("maxlength", options.maxlength);
+    }
+
+    // now place it in our form
+    form.append(input);
+
+    form.on("submit", function(e) {
+      e.preventDefault();
+      // Fix for SammyJS (or similar JS routing library) hijacking the form post.
+      e.stopPropagation();
+      // @TODO can we actually click *the* button object instead?
+      // e.g. buttons.confirm.click() or similar
+      dialog.find(".btn-primary").click();
+    });
+
+    dialog = exports.dialog(options);
+
+    // clear the existing handler focusing the submit button...
+    dialog.off("shown.bs.modal");
+
+    // ...and replace it with one focusing our input, if possible
+    dialog.on("shown.bs.modal", function() {
+      // need the closure here since input isn't
+      // an object otherwise
+      input.focus();
+    });
+
+    if (shouldShow === true) {
+      dialog.modal("show");
+    }
+
+    return dialog;
+  };
+
+  exports.dialog = function(options) {
+    options = sanitize(options);
+
+    var dialog = $(templates.dialog);
+    var innerDialog = dialog.find(".modal-dialog");
+    var body = dialog.find(".modal-body");
+    var buttons = options.buttons;
+    var buttonStr = "";
+    var callbacks = {
+      onEscape: options.onEscape
+    };
+
+    if ($.fn.modal === undefined) {
+      throw new Error(
+        "$.fn.modal is not defined; please double check you have included " +
+        "the Bootstrap JavaScript library. See http://getbootstrap.com/javascript/ " +
+        "for more details."
+      );
+    }
+
+    each(buttons, function(key, button) {
+
+      // @TODO I don't like this string appending to itself; bit dirty. Needs reworking
+      // can we just build up button elements instead? slower but neater. Then button
+      // can just become a template too
+      buttonStr += "<button data-bb-handler='" + key + "' type='button' class='btn " + button.className + "'>" + button.label + "</button>";
+      callbacks[key] = button.callback;
+    });
+
+    body.find(".bootbox-body").html(options.message);
+
+    if (options.animate === true) {
+      dialog.addClass("fade");
+    }
+
+    if (options.className) {
+      dialog.addClass(options.className);
+    }
+
+    if (options.size === "large") {
+      innerDialog.addClass("modal-lg");
+    } else if (options.size === "small") {
+      innerDialog.addClass("modal-sm");
+    }
+
+    if (options.title) {
+      body.before(templates.header);
+    }
+
+    if (options.closeButton) {
+      var closeButton = $(templates.closeButton);
+
+      if (options.title) {
+        dialog.find(".modal-header").prepend(closeButton);
+      } else {
+        closeButton.css("margin-top", "-10px").prependTo(body);
+      }
+    }
+
+    if (options.title) {
+      dialog.find(".modal-title").html(options.title);
+    }
+
+    if (buttonStr.length) {
+      body.after(templates.footer);
+      dialog.find(".modal-footer").html(buttonStr);
+    }
+
+
+    /**
+     * Bootstrap event listeners; used handle extra
+     * setup & teardown required after the underlying
+     * modal has performed certain actions
+     */
+
+    dialog.on("hidden.bs.modal", function(e) {
+      // ensure we don't accidentally intercept hidden events triggered
+      // by children of the current dialog. We shouldn't anymore now BS
+      // namespaces its events; but still worth doing
+      if (e.target === this) {
+        dialog.remove();
+      }
+    });
+
+    /*
+    dialog.on("show.bs.modal", function() {
+      // sadly this doesn't work; show is called *just* before
+      // the backdrop is added so we'd need a setTimeout hack or
+      // otherwise... leaving in as would be nice
+      if (options.backdrop) {
+        dialog.next(".modal-backdrop").addClass("bootbox-backdrop");
+      }
+    });
+    */
+
+    dialog.on("shown.bs.modal", function() {
+      dialog.find(".btn-primary:first").focus();
+    });
+
+    /**
+     * Bootbox event listeners; experimental and may not last
+     * just an attempt to decouple some behaviours from their
+     * respective triggers
+     */
+
+    if (options.backdrop !== "static") {
+      // A boolean true/false according to the Bootstrap docs
+      // should show a dialog the user can dismiss by clicking on
+      // the background.
+      // We always only ever pass static/false to the actual
+      // $.modal function because with `true` we can't trap
+      // this event (the .modal-backdrop swallows it)
+      // However, we still want to sort of respect true
+      // and invoke the escape mechanism instead
+      dialog.on("click.dismiss.bs.modal", function(e) {
+        // @NOTE: the target varies in >= 3.3.x releases since the modal backdrop
+        // moved *inside* the outer dialog rather than *alongside* it
+        if (dialog.children(".modal-backdrop").length) {
+          e.currentTarget = dialog.children(".modal-backdrop").get(0);
+        }
+
+        if (e.target !== e.currentTarget) {
+          return;
+        }
+
+        dialog.trigger("escape.close.bb");
+      });
+    }
+
+    dialog.on("escape.close.bb", function(e) {
+      if (callbacks.onEscape) {
+        processCallback(e, dialog, callbacks.onEscape);
+      }
+    });
+
+    /**
+     * Standard jQuery event listeners; used to handle user
+     * interaction with our dialog
+     */
+
+    dialog.on("click", ".modal-footer button", function(e) {
+      var callbackKey = $(this).data("bb-handler");
+
+      processCallback(e, dialog, callbacks[callbackKey]);
+    });
+
+    dialog.on("click", ".bootbox-close-button", function(e) {
+      // onEscape might be falsy but that's fine; the fact is
+      // if the user has managed to click the close button we
+      // have to close the dialog, callback or not
+      processCallback(e, dialog, callbacks.onEscape);
+    });
+
+    dialog.on("keyup", function(e) {
+      if (e.which === 27) {
+        dialog.trigger("escape.close.bb");
+      }
+    });
+
+    // the remainder of this method simply deals with adding our
+    // dialogent to the DOM, augmenting it with Bootstrap's modal
+    // functionality and then giving the resulting object back
+    // to our caller
+
+    $(options.container).append(dialog);
+
+    dialog.modal({
+      backdrop: options.backdrop ? "static": false,
+      keyboard: false,
+      show: false
+    });
+
+    if (options.show) {
+      dialog.modal("show");
+    }
+
+    // @TODO should we return the raw element here or should
+    // we wrap it in an object on which we can expose some neater
+    // methods, e.g. var d = bootbox.alert(); d.hide(); instead
+    // of d.modal("hide");
+
+   /*
+    function BBDialog(elem) {
+      this.elem = elem;
+    }
+
+    BBDialog.prototype = {
+      hide: function() {
+        return this.elem.modal("hide");
+      },
+      show: function() {
+        return this.elem.modal("show");
+      }
+    };
+    */
+
+    return dialog;
+
+  };
+
+  exports.setDefaults = function() {
+    var values = {};
+
+    if (arguments.length === 2) {
+      // allow passing of single key/value...
+      values[arguments[0]] = arguments[1];
+    } else {
+      // ... and as an object too
+      values = arguments[0];
+    }
+
+    $.extend(defaults, values);
+  };
+
+  exports.hideAll = function() {
+    $(".bootbox").modal("hide");
+
+    return exports;
+  };
+
+
+  /**
+   * standard locales. Please add more according to ISO 639-1 standard. Multiple language variants are
+   * unlikely to be required. If this gets too large it can be split out into separate JS files.
+   */
+  var locales = {
+    bg_BG : {
+      OK      : "Ок",
+      CANCEL  : "Отказ",
+      CONFIRM : "Потвърждавам"
+    },
+    br : {
+      OK      : "OK",
+      CANCEL  : "Cancelar",
+      CONFIRM : "Sim"
+    },
+    cs : {
+      OK      : "OK",
+      CANCEL  : "Zrušit",
+      CONFIRM : "Potvrdit"
+    },
+    da : {
+      OK      : "OK",
+      CANCEL  : "Annuller",
+      CONFIRM : "Accepter"
+    },
+    de : {
+      OK      : "OK",
+      CANCEL  : "Abbrechen",
+      CONFIRM : "Akzeptieren"
+    },
+    el : {
+      OK      : "Εντάξει",
+      CANCEL  : "Ακύρωση",
+      CONFIRM : "Επιβεβαίωση"
+    },
+    en : {
+      OK      : "OK",
+      CANCEL  : "Cancel",
+      CONFIRM : "OK"
+    },
+    es : {
+      OK      : "OK",
+      CANCEL  : "Cancelar",
+      CONFIRM : "Aceptar"
+    },
+    et : {
+      OK      : "OK",
+      CANCEL  : "Katkesta",
+      CONFIRM : "OK"
+    },
+    fa : {
+      OK      : "قبول",
+      CANCEL  : "لغو",
+      CONFIRM : "تایید"
+    },
+    fi : {
+      OK      : "OK",
+      CANCEL  : "Peruuta",
+      CONFIRM : "OK"
+    },
+    fr : {
+      OK      : "OK",
+      CANCEL  : "Annuler",
+      CONFIRM : "D'accord"
+    },
+    he : {
+      OK      : "אישור",
+      CANCEL  : "ביטול",
+      CONFIRM : "אישור"
+    },
+    hu : {
+      OK      : "OK",
+      CANCEL  : "Mégsem",
+      CONFIRM : "Megerősít"
+    },
+    hr : {
+      OK      : "OK",
+      CANCEL  : "Odustani",
+      CONFIRM : "Potvrdi"
+    },
+    id : {
+      OK      : "OK",
+      CANCEL  : "Batal",
+      CONFIRM : "OK"
+    },
+    it : {
+      OK      : "OK",
+      CANCEL  : "Annulla",
+      CONFIRM : "Conferma"
+    },
+    ja : {
+      OK      : "OK",
+      CANCEL  : "キャンセル",
+      CONFIRM : "確認"
+    },
+    lt : {
+      OK      : "Gerai",
+      CANCEL  : "Atšaukti",
+      CONFIRM : "Patvirtinti"
+    },
+    lv : {
+      OK      : "Labi",
+      CANCEL  : "Atcelt",
+      CONFIRM : "Apstiprināt"
+    },
+    nl : {
+      OK      : "OK",
+      CANCEL  : "Annuleren",
+      CONFIRM : "Accepteren"
+    },
+    no : {
+      OK      : "OK",
+      CANCEL  : "Avbryt",
+      CONFIRM : "OK"
+    },
+    pl : {
+      OK      : "OK",
+      CANCEL  : "Anuluj",
+      CONFIRM : "Potwierdź"
+    },
+    pt : {
+      OK      : "OK",
+      CANCEL  : "Cancelar",
+      CONFIRM : "Confirmar"
+    },
+    ru : {
+      OK      : "OK",
+      CANCEL  : "Отмена",
+      CONFIRM : "Применить"
+    },
+    sq : {
+      OK : "OK",
+      CANCEL : "Anulo",
+      CONFIRM : "Prano"
+    },
+    sv : {
+      OK      : "OK",
+      CANCEL  : "Avbryt",
+      CONFIRM : "OK"
+    },
+    th : {
+      OK      : "ตกลง",
+      CANCEL  : "ยกเลิก",
+      CONFIRM : "ยืนยัน"
+    },
+    tr : {
+      OK      : "Tamam",
+      CANCEL  : "İptal",
+      CONFIRM : "Onayla"
+    },
+    zh_CN : {
+      OK      : "OK",
+      CANCEL  : "取消",
+      CONFIRM : "确认"
+    },
+    zh_TW : {
+      OK      : "OK",
+      CANCEL  : "取消",
+      CONFIRM : "確認"
+    }
+  };
+
+  exports.addLocale = function(name, values) {
+    $.each(["OK", "CANCEL", "CONFIRM"], function(_, v) {
+      if (!values[v]) {
+        throw new Error("Please supply a translation for '" + v + "'");
+      }
+    });
+
+    locales[name] = {
+      OK: values.OK,
+      CANCEL: values.CANCEL,
+      CONFIRM: values.CONFIRM
+    };
+
+    return exports;
+  };
+
+  exports.removeLocale = function(name) {
+    delete locales[name];
+
+    return exports;
+  };
+
+  exports.setLocale = function(name) {
+    return exports.setDefaults("locale", name);
+  };
+
+  exports.init = function(_$) {
+    return init(_$ || $);
+  };
+
+  return exports;
+}));
+
+},{"jquery":16}],3:[function(require,module,exports){
 // This file is autogenerated via the `commonjs` Grunt task. You can require() this file in a CommonJS environment.
 require('../../js/transition.js')
 require('../../js/alert.js')
@@ -213,7 +1228,7 @@ require('../../js/popover.js')
 require('../../js/scrollspy.js')
 require('../../js/tab.js')
 require('../../js/affix.js')
-},{"../../js/affix.js":3,"../../js/alert.js":4,"../../js/button.js":5,"../../js/carousel.js":6,"../../js/collapse.js":7,"../../js/dropdown.js":8,"../../js/modal.js":9,"../../js/popover.js":10,"../../js/scrollspy.js":11,"../../js/tab.js":12,"../../js/tooltip.js":13,"../../js/transition.js":14}],3:[function(require,module,exports){
+},{"../../js/affix.js":4,"../../js/alert.js":5,"../../js/button.js":6,"../../js/carousel.js":7,"../../js/collapse.js":8,"../../js/dropdown.js":9,"../../js/modal.js":10,"../../js/popover.js":11,"../../js/scrollspy.js":12,"../../js/tab.js":13,"../../js/tooltip.js":14,"../../js/transition.js":15}],4:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: affix.js v3.3.6
  * http://getbootstrap.com/javascript/#affix
@@ -377,7 +1392,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: alert.js v3.3.6
  * http://getbootstrap.com/javascript/#alerts
@@ -473,7 +1488,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: button.js v3.3.6
  * http://getbootstrap.com/javascript/#buttons
@@ -595,7 +1610,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: carousel.js v3.3.6
  * http://getbootstrap.com/javascript/#carousel
@@ -834,7 +1849,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: collapse.js v3.3.6
  * http://getbootstrap.com/javascript/#collapse
@@ -1047,7 +2062,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: dropdown.js v3.3.6
  * http://getbootstrap.com/javascript/#dropdowns
@@ -1214,7 +2229,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: modal.js v3.3.6
  * http://getbootstrap.com/javascript/#modals
@@ -1553,7 +2568,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: popover.js v3.3.6
  * http://getbootstrap.com/javascript/#popovers
@@ -1663,7 +2678,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: scrollspy.js v3.3.6
  * http://getbootstrap.com/javascript/#scrollspy
@@ -1837,7 +2852,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: tab.js v3.3.6
  * http://getbootstrap.com/javascript/#tabs
@@ -1994,7 +3009,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: tooltip.js v3.3.6
  * http://getbootstrap.com/javascript/#tooltip
@@ -2510,7 +3525,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: transition.js v3.3.6
  * http://getbootstrap.com/javascript/#transitions
@@ -2571,7 +3586,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.2.4
  * http://jquery.com/
@@ -12387,7 +13402,7 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -12447,7 +13462,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 (function (process,global){
 /*!
  * Vue.js v1.0.26
@@ -22524,7 +23539,231 @@ setTimeout(function () {
 
 module.exports = Vue;
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":16}],18:[function(require,module,exports){
+},{"_process":17}],19:[function(require,module,exports){
+/**
+ * Created by adam on 5/15/16.
+ */
+'use strict';
+
+var $ = require('jquery');
+window.$ = $;
+var jQuery = $;
+window.jQuery = jQuery;
+
+var bootbox = require('bootbox');
+require('bootstrap');
+
+/**
+ * Responsible for all ajax server interactions.
+ * Also handles user notifications in the event of server errors.
+ */
+module.exports = {
+
+    /**
+     * All messages which may be displayed to the
+     * user in alerts or modals
+     * @type {{}}
+     */
+    messages: {
+        serverErrorTitle: "Error",
+        serverErrorText: "<p class='errorText errorMessage'>Sorry, there was a problem saving this exam! <br /> Please try again.</p>",
+
+        serverTimeoutTitle: 'No Response From Server',
+        serverTimeoutText: "<p class='errorText timeoutMessage'>There was no response from the server. Either the server is down <br/> or you may be experiencing connection issues.</p>"
+    },
+
+    requests: {
+
+        /**
+         * Request to update a comment
+         * @param studentId
+         * @param elementId
+         * @param commentText
+         * @param score
+         */
+        commentRequest: function commentRequest(studentId, elementId, commentText, score, time) {
+            this.comment_text = commentText;
+            this.element_id = elementId;
+            this.student_id = studentId;
+            if (score) {
+                this.score = score;
+            }
+
+            if (time) {
+                this.time = time;
+            }
+        },
+
+        /**
+         * Request to update the score of an element without updating the comment
+         * @param studentId
+         * @param elementId
+         * @param score
+         * @param time
+         */
+        elementScoreRequest: function elementScoreRequest(studentId, elementId, score, time) {
+            this.element_id = elementId;
+            this.student_id = studentId;
+            this.score = score;
+
+            if (time) {
+                this.time = time;
+            }
+        },
+
+        /**
+         * Request for updating a question score
+         * @param studentId
+         * @param questionAssignmentId
+         * @param score
+         */
+        questionScoreRequest: function questionScoreRequest(studentId, questionAssignmentId, score, time) {
+            this.question_assignment_id = questionAssignmentId;
+            this.student_id = studentId;
+            this.score = score;
+
+            if (time) {
+                this.time = time;
+            }
+        },
+
+        /**
+         * Request to update only the time
+         * @param studentId
+         * @param time
+         */
+        timeRequest: function timeRequest(studentId, time) {
+            this.student_id = studentId;
+            this.time = time;
+        }
+
+    },
+
+    /**
+     * Creates a key/value array GradeRequest with the expected fields to upload.
+     * Requests will only include non-null scores and comments
+     *
+     * Params:
+     * @param studentId: The id of the student in the database
+     * @param dataType: the field name for thing to be modified. Acceptable values include: 'element_id'
+     * @param dataId: question or element ID to receive the update
+     * @param score: the score for the question or element
+     * @param comment: text of the comment to update. Null unless modifying an element comment.
+     * @returns Object
+     */
+    createGradeRequestObject: function createGradeRequestObject(studentId, dataType, dataId, score, comment, time) {
+        var gradeRequest = {};
+
+        gradeRequest.student_id = studentId;
+
+        gradeRequest[dataType] = dataId;
+
+        if (score !== null) {
+            gradeRequest.score = score;
+        }
+        if (comment !== null) {
+            gradeRequest.comment_text = comment;
+        }
+
+        if (time !== null) {
+            gradeRequest.time = time;
+        }
+
+        return gradeRequest;
+    },
+
+    // createTimeRequestObject: function ( studentId, time ) {
+    //     let timeRequest = {};
+    //     timeRequest.student_id = studentId;
+    //     timeRequest.time = time;
+    //
+    //     return timeRequest;
+    // },
+
+    /**
+     * Pass request to server.
+     * Not for use with deletion requests
+     * @param request
+     */
+    sendRequest: function sendRequest(examId, request) {
+        var wasSuccessful = false;
+        var me = this;
+
+        if (typeof examId != 'undefined' && typeof request != 'undefined' && examId !== null && request !== null) {
+            $.ajax({
+                url: examId,
+                data: request,
+                type: 'POST',
+                success: function success() {
+                    wasSuccessful = true;
+                },
+                error: function error() {
+                    me.showWarningMessage(me.messages.serverErrorTitle, me.messages.serverErrorText);
+                },
+                timeout: function timeout() {
+                    me.showWarningMessage(me.messages.serverTimeoutTitle, me.messages.serverTimeoutText);
+                }
+            });
+        }
+
+        return wasSuccessful;
+    },
+
+    /**
+     * Sends a request to delete a score
+     * @param examId
+     * @param studentId
+     * @param questionAssId
+     */
+    deleteScoreRequest: function deleteScoreRequest(examId, studentId, questionAssId) {
+        var me = this;
+        var wasSuccessful = false;
+
+        var gradeRequest = {};
+        gradeRequest['question_assignment_id'] = questionAssId;
+        gradeRequest['student_id'] = studentId;
+
+        $.ajax({
+            url: examId,
+            data: gradeRequest,
+            type: 'DELETE',
+            success: function success() {
+                wasSuccessful = true;
+            },
+            error: function error() {
+                me.showWarningMessage(me.messages.serverErrorTitle, me.messages.serverErrorText);
+            },
+            timeout: function timeout() {
+                me.showWarningMessage(me.messages.serverTimeoutTitle, me.messages.serverTimeoutText);
+            }
+        });
+
+        return wasSuccessful;
+    },
+
+    /**
+     * Displays a bootstrap warning modal
+     * @param title
+     * @param msg
+     */
+    showWarningMessage: function showWarningMessage(title, msg) {
+        msg = '<span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span> ' + msg;
+        bootbox.dialog({
+            message: msg,
+            title: title,
+            buttons: {
+                'default': {
+                    label: 'Cancel',
+                    className: "btn btn-sm btn-primary",
+                    callback: function callback() {}
+                }
+            }
+        });
+    }
+
+};
+
+},{"bootbox":2,"bootstrap":3,"jquery":16}],20:[function(require,module,exports){
 /**
  * Created by adam on 7/16/16.
  */
@@ -22598,7 +23837,7 @@ module.exports = {
     directives: {}
 };
 
-},{"../templates/current-student-area.template.html":25}],19:[function(require,module,exports){
+},{"../templates/current-student-area.template.html":27}],21:[function(require,module,exports){
 /**
  * Created by adam on 7/19/16.
  */
@@ -22673,7 +23912,7 @@ module.exports = {
     directives: {}
 };
 
-},{"../templates/dashboard.counts.template.html":26}],20:[function(require,module,exports){
+},{"../templates/dashboard.counts.template.html":28}],22:[function(require,module,exports){
 /**
  * Created by adam on 7/19/16.
  */
@@ -22834,6 +24073,9 @@ module.exports = {
          */
         startTimer: function startTimer() {
             this.loadTimer();
+            //we don't need to request that the time be saved
+            //the parent will do that automatically on being
+            //notified that the timer has started.
             this.notifyTimerStart();
         },
 
@@ -22844,6 +24086,9 @@ module.exports = {
         stopTimer: function stopTimer() {
             clearInterval(this.timer);
             this.paused = true;
+            //we don't need to request that the time be saved
+            //the parent will do that automatically on being
+            //notified that the timer has stopped.
             this.notifyTimerStop();
         },
 
@@ -22864,6 +24109,8 @@ module.exports = {
             // set a new timer to fire every second. Update examGradingTimes[]
             this.timer = setInterval(function () {
                 this.store.increaseActiveStudentGradingTime(1);
+                //ask for the time to be saved
+                this.requestTimerSave();
             }, 1000);
         },
 
@@ -22902,6 +24149,13 @@ module.exports = {
          */
         notifyTimerStop: function notifyTimerStop() {
             this.$dispatch('timer-stop-event');
+        },
+
+        /**
+         * Requests that the parent save the time to the db
+         */
+        requestTimerSave: function requestTimerSave() {
+            this.$dispatch('time-save-request');
         }
     },
 
@@ -22925,7 +24179,7 @@ module.exports = {
 
 };
 
-},{"../templates/dashboard.timer.template.html":27}],21:[function(require,module,exports){
+},{"../templates/dashboard.timer.template.html":29}],23:[function(require,module,exports){
 /**
  * Created by adam on 7/11/16.
  */
@@ -23308,7 +24562,7 @@ module.exports = {
     }
 };
 
-},{"../../libraries/bootstrap-slider-modified.js":32,"../templates/element-input.template.html":28,"jquery":15}],22:[function(require,module,exports){
+},{"../../libraries/bootstrap-slider-modified.js":34,"../templates/element-input.template.html":30,"jquery":16}],24:[function(require,module,exports){
 /**
  * Created by adam on 7/18/16.
  */
@@ -23495,7 +24749,7 @@ module.exports = {
 
 };
 
-},{"../templates/letter-grade-button.template.html":29,"bootstrap":2,"jquery":15}],23:[function(require,module,exports){
+},{"../templates/letter-grade-button.template.html":31,"bootstrap":3,"jquery":16}],25:[function(require,module,exports){
 /**
  * Created by adam on 7/18/16.
  */
@@ -23594,7 +24848,7 @@ module.exports = {
 
 };
 
-},{"../templates/question-score.template.html":30}],24:[function(require,module,exports){
+},{"../templates/question-score.template.html":32}],26:[function(require,module,exports){
 /**
  * Created by adam on 7/11/16.
  */
@@ -23830,21 +25084,21 @@ module.exports = {
     }
 };
 
-},{"../templates/student-list-item.template.html":31}],25:[function(require,module,exports){
+},{"../templates/student-list-item.template.html":33}],27:[function(require,module,exports){
 module.exports = '<div class="form-group activeStudentInput">\n    <div id="activeStudentNameArea"\n         class="col-xs-7">\n        <label for="activeStudentName">\n            <span class="sr-only">Click to hide student names</span>\n            <span id="nameVisibilityControl"\n                  class="glyphicon glyphicon-pencil"\n                  title="Click to hide student names"\n                  v-on:click="toggleNameVisibility":\n            > </span>\n        </label>\n        <input id="activeStudentName"\n               class="typeahead full-width"\n               type="text"\n               placeholder="No Student Selected"\n        v-model="studentName">\n    </div>\n    <div id="activeStudentIdentifierArea"\n         class="col-xs-5">\n        <label for="activeStudentIdentifier">ID</label>\n        <input class="typeahead full-width"\n               type="text"\n               id="activeStudentIdentifier"\n               placeholder="--"\n        v-model="studentIdentifier">\n    </div>\n</div>';
-},{}],26:[function(require,module,exports){
-module.exports = '<div id="dashboardCounts">\n<!-- graded / remaining counters -->\n<p>Graded: <span id="graded">{{ gradedExams }}</span> Remaining: <span id="remaining">{{ remainingExams }}</span></p>\n\n<!-- save & finish button -->\n<a id="finishButton"\n   class="btn btn-success col-lg-12 startHidden"\n   v-bind:class="[finishButtonHidden ? display:none : \'\']"\n   href="{{ finishedLink }}">\n    <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish\n</a>\n</div>';
-},{}],27:[function(require,module,exports){
-module.exports = '<div id="dashboard">\n    <h4 class="row">\n    <span class="col-xs-7 dashboard-header">\n            <!--<span class="col-xs-7 dashboard-header" style="vertical-align:middle">-->\n        <span class="glyphicon glyphicon-time"\n              aria-hidden="true"></span> Statistics\n    </span>\n\n        <span class="col-xs-5">\n        <a id="btnTimer"\n           v-bind:class="buttonStyling"\n           title="Toggle timer"\n           v-on:click="toggleTimer">\n            <span id="btnTimerIcon"\n                  v-bind:class="buttonIcon"\n                  aria-hidden="true"></span>\n            <span id="btnTimerLabel">{{buttonLabel}}</span>\n        </a>\n    </span>\n    </h4>\n\n    <div class="panel panel-default">\n\n        <div id="gradingStatsPanel" class="panel-body">\n            <span class="col-xs-6">Time This Exam</span>\n            <span class="col-xs-6" id="thisExamTime">{{ currentExamTimeDisplay }}</span>\n\n            <span class="col-xs-6">Average Time</span>\n            <span class="col-xs-6" id="avgTime">{{ averageTimeDisplay }}</span>\n\n            <span class="col-xs-6">Total Time</span>\n            <span class="col-xs-6" id="totalTime">{{ totalTimeDisplay }}</span>\n\n            <span class="col-xs-6">Time Remaining</span>\n            <span class="col-xs-6" id="timeRemaining">{{ remainingTimeDisplay }}</span>\n        </div>\n    </div>\n</div>';
 },{}],28:[function(require,module,exports){
-module.exports = '<div id="element{{ elementNumber }}"\n     class="list-group-item elementPanel"\n     data-element-index="{{ elementIndex }}"\n     data-element-id="{{ elementId }}"\n     data-comment-area-id="{{ commentAreaId  }}">\n\n    <h5 class="elementTitle">{{ elementTitle }}</h5>\n    <div class="row">\n                <span class="col-lg-5 sliderContainer Q{{ questionNumber }}E{{ elementNumber }}">\n                    <!-- score slider -->\n                    <label for="{{ sliderId }}"></label>\n                    <input id="{{ sliderId }}"\n                           type="text"\n                           class="slider"/>\n                </span>\n\n        <!-- comment area -->\n                <span class="col-lg-7 commentContainer Q{{ questionNumber }}E{{ elementNumber }}">\n                    <textarea id="{{ commentAreaId  }}"\n                              class="form-control"\n                              rows="4"\n                              name="{{ commentAreaId  }}"\n                              placeholder="No score for this element"\n                              v-model="commentText"\n                    ></textarea>\n                </span>\n    </div>\n</div>\n';
+module.exports = '<div id="dashboardCounts">\n<!-- graded / remaining counters -->\n<p>Graded: <span id="graded">{{ gradedExams }}</span> Remaining: <span id="remaining">{{ remainingExams }}</span></p>\n\n<!-- save & finish button -->\n<a id="finishButton"\n   class="btn btn-success col-lg-12 startHidden"\n   v-bind:class="[finishButtonHidden ? display:none : \'\']"\n   href="{{ finishedLink }}">\n    <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish\n</a>\n</div>';
 },{}],29:[function(require,module,exports){
-module.exports = '<!-- Single button -->\n<div id="letterGradeArea"\n     class="btn-group">\n    <button id="letterGradeButton{{questionNumber}}"\n            type="button"\n            class="btn btn-default dropdown-toggle"\n            data-toggle="dropdown"\n            aria-haspopup="true"\n            aria-expanded="false">\n        <span id="letterGradeForQuestion{{ questionNumber }}">{{ displayedGrade }}</span> <span class="caret"></span>\n    </button>\n\n    <ul id="letterGradeList"\n        class="dropdown-menu letterGradeList">\n        <template v-for="grade in grades">\n            <li class="gradeListItem" v-on:click="handleLetterGradeClick($index)">{{ grade.displayValue }}</li>\n        </template>\n    </ul>\n\n</div>\n';
+module.exports = '<div id="dashboard">\n    <h4 class="row">\n    <span class="col-xs-7 dashboard-header">\n            <!--<span class="col-xs-7 dashboard-header" style="vertical-align:middle">-->\n        <span class="glyphicon glyphicon-time"\n              aria-hidden="true"></span> Statistics\n    </span>\n\n        <span class="col-xs-5">\n        <a id="btnTimer"\n           v-bind:class="buttonStyling"\n           title="Toggle timer"\n           v-on:click="toggleTimer">\n            <span id="btnTimerIcon"\n                  v-bind:class="buttonIcon"\n                  aria-hidden="true"></span>\n            <span id="btnTimerLabel">{{buttonLabel}}</span>\n        </a>\n    </span>\n    </h4>\n\n    <div class="panel panel-default">\n\n        <div id="gradingStatsPanel" class="panel-body">\n            <span class="col-xs-6">Time This Exam</span>\n            <span class="col-xs-6" id="thisExamTime">{{ currentExamTimeDisplay }}</span>\n\n            <span class="col-xs-6">Average Time</span>\n            <span class="col-xs-6" id="avgTime">{{ averageTimeDisplay }}</span>\n\n            <span class="col-xs-6">Total Time</span>\n            <span class="col-xs-6" id="totalTime">{{ totalTimeDisplay }}</span>\n\n            <span class="col-xs-6">Time Remaining</span>\n            <span class="col-xs-6" id="timeRemaining">{{ remainingTimeDisplay }}</span>\n        </div>\n    </div>\n</div>';
 },{}],30:[function(require,module,exports){
-module.exports = '\n    <form class="form-horizontal" role="form">\n        <div class="form-group">\n            <label class="col-xs-1 control-label questionScoreLabel"\n                   for="{{ scoreFieldIdString }}">Score:</label>\n\n            <div class="col-xs-1" style="padding: 0px;">\n                <input id="{{ scoreFieldIdString }}"\n                       v-model="questionScore"\n                       class="form-control pull-right questionScore"\n                       type="number"\n                       min="0"\n                       max="{{ maxScore }}"\n                />\n            </div>\n            <div class="col-xs-1 control-label maxScore">\n                <b>/ <span id="{{ maxScoreFieldIdString}}">{{ maxScore }}</span> </b>\n            </div>\n        </div>\n    </form>\n';
+module.exports = '<div id="element{{ elementNumber }}"\n     class="list-group-item elementPanel"\n     data-element-index="{{ elementIndex }}"\n     data-element-id="{{ elementId }}"\n     data-comment-area-id="{{ commentAreaId  }}">\n\n    <h5 class="elementTitle">{{ elementTitle }}</h5>\n    <div class="row">\n                <span class="col-lg-5 sliderContainer Q{{ questionNumber }}E{{ elementNumber }}">\n                    <!-- score slider -->\n                    <label for="{{ sliderId }}"></label>\n                    <input id="{{ sliderId }}"\n                           type="text"\n                           class="slider"/>\n                </span>\n\n        <!-- comment area -->\n                <span class="col-lg-7 commentContainer Q{{ questionNumber }}E{{ elementNumber }}">\n                    <textarea id="{{ commentAreaId  }}"\n                              class="form-control"\n                              rows="4"\n                              name="{{ commentAreaId  }}"\n                              placeholder="No score for this element"\n                              v-model="commentText"\n                    ></textarea>\n                </span>\n    </div>\n</div>\n';
 },{}],31:[function(require,module,exports){
-module.exports = '\n        <tr id="{{ rowIdString }}"\n            class="studentListItem "\n            v-on:click="handleRowClick"\n            v-bind:class="{ \'unalteredStudentRow\': isUnaltered, \'activeStudentRow\': isActiveStudent, \'gradedStudentRow\': isGraded }"\n            data-index="{{ studentIndex }}"\n            data-fName="{{ firstName }}"\n            data-lName="{{ lastName }}"\n            data-sid="{{ studentId }}"\n            data-student-identifier="{{ studentIdentifier }}">\n            <td class="col-xs-6"\n                id="studentName{{ studentIndex }}">{{ studentName }}</td>\n            <td class="col-xs-4"\n                id="studentIdentifier{{ studentIndex }}">{{ studentIdentifierDisplay }}</td>\n            <td class="col-xs-2"\n                id="examGrade{{ studentIndex }}">{{ examGrade }}</td>\n        </tr>\n';
+module.exports = '<!-- Single button -->\n<div id="letterGradeArea"\n     class="btn-group">\n    <button id="letterGradeButton{{questionNumber}}"\n            type="button"\n            class="btn btn-default dropdown-toggle"\n            data-toggle="dropdown"\n            aria-haspopup="true"\n            aria-expanded="false">\n        <span id="letterGradeForQuestion{{ questionNumber }}">{{ displayedGrade }}</span> <span class="caret"></span>\n    </button>\n\n    <ul id="letterGradeList"\n        class="dropdown-menu letterGradeList">\n        <template v-for="grade in grades">\n            <li class="gradeListItem" v-on:click="handleLetterGradeClick($index)">{{ grade.displayValue }}</li>\n        </template>\n    </ul>\n\n</div>\n';
 },{}],32:[function(require,module,exports){
+module.exports = '\n    <form class="form-horizontal" role="form">\n        <div class="form-group">\n            <label class="col-xs-1 control-label questionScoreLabel"\n                   for="{{ scoreFieldIdString }}">Score:</label>\n\n            <div class="col-xs-1" style="padding: 0px;">\n                <input id="{{ scoreFieldIdString }}"\n                       v-model="questionScore"\n                       class="form-control pull-right questionScore"\n                       type="number"\n                       min="0"\n                       max="{{ maxScore }}"\n                />\n            </div>\n            <div class="col-xs-1 control-label maxScore">\n                <b>/ <span id="{{ maxScoreFieldIdString}}">{{ maxScore }}</span> </b>\n            </div>\n        </div>\n    </form>\n';
+},{}],33:[function(require,module,exports){
+module.exports = '\n        <tr id="{{ rowIdString }}"\n            class="studentListItem "\n            v-on:click="handleRowClick"\n            v-bind:class="{ \'unalteredStudentRow\': isUnaltered, \'activeStudentRow\': isActiveStudent, \'gradedStudentRow\': isGraded }"\n            data-index="{{ studentIndex }}"\n            data-fName="{{ firstName }}"\n            data-lName="{{ lastName }}"\n            data-sid="{{ studentId }}"\n            data-student-identifier="{{ studentIdentifier }}">\n            <td class="col-xs-6"\n                id="studentName{{ studentIndex }}">{{ studentName }}</td>\n            <td class="col-xs-4"\n                id="studentIdentifier{{ studentIndex }}">{{ studentIdentifierDisplay }}</td>\n            <td class="col-xs-2"\n                id="examGrade{{ studentIndex }}">{{ examGrade }}</td>\n        </tr>\n';
+},{}],34:[function(require,module,exports){
 /*! =========================================================
  * bootstrap-slider.js
  *
@@ -25342,4 +26596,4 @@ module.exports = '\n        <tr id="{{ rowIdString }}"\n            class="stude
  * MIT license
  */
 
-},{"jquery":15}]},{},[1]);
+},{"jquery":16}]},{},[1]);

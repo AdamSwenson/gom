@@ -8,12 +8,14 @@ var jQuery = $;
 window.jQuery = jQuery;
 
 require( 'bootstrap' );
+var bootbox = require( 'bootbox' );
 
 var Vue = require( 'vue' );
-
 //dev
 Vue.config.debug = true;
 
+
+var ajaxTools = require('./components/ajax.tools.js');
 
 new Vue( {
     el: '#gradeExamPage',
@@ -24,68 +26,84 @@ new Vue( {
         'student-list-item': require( './components/studentListItem' ),
         'letter-grade-button': require( './components/letterGradeButton.component.js' ),
         'question-score': require( './components/questionScore.component' ),
-        'dashboard-timer': require('./components/dashboard.timer.component'),
-        'dashboard-counts': require('./components/dashboard.counts.component')
+        'dashboard-timer': require( './components/dashboard.timer.component' ),
+        'dashboard-counts': require( './components/dashboard.counts.component' )
     },
 
 
-    data: {},
+    data: {
+        store: store,
+
+        ajaxTools: ajaxTools,
+
+    },
 
     computed: {},
 
     methods: {
 
-        //     saveElementComment: function(){
-        //
-        //         //grab scores
-        //         var oldScore = data.getElementScore( Roster.activeStudent, elementIndex );
-        //         var score = slideEvt.value;
-        //
-        //         /* ---------- update the element's score visually and in data.elementScores[] --------- */
-        //
-        //         //store the new element score in the data object
-        //         data.storeElementScore( Roster.activeStudent, elementIndex, score );
-        //
-        //
-        //         /**
-        //          * update comment text and save to DB.
-        //          * Only replace text if the score has changed valence regions
-        //          */
-        //         if ( ! this.isSameValence( oldScore, score ) ) {
-        //             //Score is in a new valence region.
-        //             //So let's plug in the appropriate comment text and save to DB
-        //
-        //             //Store comment text in data object
-        //             //Dear Adam, make sure you read the doc for storeCommentText before fucking with
-        //             //anything in these lines
-        //             data.storeCommentText( Roster.activeStudent, elementIndex, $elementComment.val() );
-        //             var commentText = data.getCommentText( Roster.activeStudent, elementIndex, this.updateValence( score ) );
-        //
-        //             //update display
-        //             this.updateDisplayedComment( $elementComment, commentText );
-        //
-        //             //send to the db
-        //             AjaxHandler.saveComment( data, Roster, elementId, score, commentText );
-        //
-        //         } else {
-        //             // Score is in the same valence region.
-        //             // Jump straight to saving without changing the elementComment
-        //             // Fear not. Changes directly to the comment text will be handled elsewhere.
-        //             AjaxHandler.createGradeRequest( data, 'element_id', elementId, score, null, Roster );
-        //         }
-        //
-        //         // If using bell curve (standardScoring), element score affects
-        //         // the total question score, so update
-        //         if ( Roster.standardScoring ) {
-        //             //  updateStandardScores();
-        //         }
-        //
-        //         callback();
-        //         // //Update dashboard and roster data displayed
-        //         // updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
-        //         // //Sigh. The user forgot to restart the timer. Do it for them
-        //         // Timer.resumeTime
-        //     }
+        /**
+         * Saves a comment (and score if present) to the database
+         * @param elementId Database id of the element
+         * @param commentText Text of the comment to save
+         * @param score Associated score to save (can be left null)
+         * @returns boolean
+         */
+        saveCommentWithTime: function ( elementId, commentText, score ) {
+            var me = this;
+
+            let studentId = this.store.getActiveStudentId();
+            let examId = this.store.getExamId();
+            let time = this.store.getActiveStudentGradingTime();
+
+            let request = new this.ajaxTools.requests.commentRequest(studentId, elementId, commentText, score, time);
+
+            return this.ajaxTools.sendRequest(examId, request);
+        },
+
+        /**
+         * Records grading time to the db
+         */
+        saveTime: function(){
+            let studentId = this.store.getActiveStudentId();
+            let examId = this.store.getExamId();
+            let time = this.store.getActiveStudentGradingTime();
+
+            let request = new this.ajaxTools.requests.timeRequest(studentId, time);
+            return this.ajaxTools.sendRequest(examId, request);
+        },
+
+        /**
+         * Save a question or element score (along with grading time) to the server
+         * @param studentId
+         * @param gradeRequest
+         * @param store
+         */
+        saveScoreWithTime: function ( dataType, dataId, score) {
+            var me = this;
+
+            let studentId = this.store.getActiveStudentId();
+            let examId = this.store.getExamId();
+            let time = this.store.getActiveStudentGradingTime();
+
+            let request = this.ajaxTools.createGradeRequestObject(studentId, dataType, dataId, score, null, time);
+
+            return this.ajaxTools.sendRequest(examId, request);
+        },
+
+        /**
+         * Sends a request to delete a score from the database
+         * @param questionAssignmentId
+         * @returns boolean
+         */
+        deleteScore: function(questionAssignmentId){
+            var me = this;
+
+            let studentId = this.store.getActiveStudentId();
+            let examId = this.store.getExamId();
+
+            return this.ajaxTools.deleteScoreRequest(examId, studentId, questionAssignmentId);
+        }
     },
 
     events: {
@@ -175,14 +193,24 @@ new Vue( {
          * Handles notification that the timer has started
          */
         'timer-start-event': function () {
-            window.console.log('gradeVue', 'caught timer-start-event');
+            window.console.log( 'gradeVue', 'caught timer-start-event' );
+            this.saveTime();
         },
         /**
          * Handles notification that the timer has stopped
          */
         'timer-stop-event': function () {
-            window.console.log('gradeVue', 'caught timer-stop-event');
+            window.console.log( 'gradeVue', 'caught timer-stop-event' );
+            this.saveTime();
         },
+
+        /**
+         * Handles the request to save the time to the db
+         */
+        'time-save-request': function(){
+            window.console.log( 'gradeVue', 'caught time-save-request' );
+            this.saveTime();
+        }
 
     },
 

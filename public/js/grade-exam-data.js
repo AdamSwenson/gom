@@ -11,18 +11,27 @@
 function Data() {
 
     /* ------------------------- Properties --------------------- */
+    //creating in scope of constructor to make private and
+    //only accessible via getters and setters
+    var examId = null;
+
+    /** The db id of the student currently being graded */
+    var activeStudentId = null;
+
     /**
      * The index of the student currently being graded
      */
-    this.activeStudent = null;
+    var activeStudent = null;
+
+    /** Integer count of questions on the exam */
+    var numQuestions = null;
+
 
     /** The time spent grading the current student */
     this.activeStudentTime = null;
 
     this.standardScoring = false;
 
-    /** Integer count of questions on the exam */
-    this.numQuestions = null;
 
     /**
      * Boolean of whether the student names are hidden.
@@ -72,20 +81,16 @@ function Data() {
      *      {studentIndex : {questionIndex: score}]
      * Use getters and setters to access
      */
-    this.questionScores = {};
+    var questionScores = {};
 
     /**
      * Json of the maximum possible scores for each question.
      * Keys are questionIndexes
-     * Format:
-     *      {
-     *          questionIndex : maxScore,
-     *          ...
-     *      }
+     * Format: { questionIndex : maxScore, ... }
      */
-    this.maxQuestionScores = {};
+    var maxQuestionScores = {};
 
-    this.stockComments = {};
+    var stockComments = {};
 
 
     /* -------------------------------- Initialization ------------------------ */
@@ -93,7 +98,7 @@ function Data() {
      * Takes a json from the server of the stock comments and stores it internally.
      */
     this.loadStockComments = function ( stockComments ) {
-        this.stockComments = stockComments;
+        stockComments = stockComments;
     };
 
     this.loadElementComments = function ( studentElementComments ) {
@@ -105,7 +110,7 @@ function Data() {
     };
 
     this.loadMaxQuestionScores = function ( maxScores ) {
-        this.maxQuestionScores = maxScores;
+        maxQuestionScores = maxScores;
     };
 
     this.loadExamGrades = function ( studentGrades ) {
@@ -116,9 +121,6 @@ function Data() {
         this.numQuestions = numberQuestions;
     };
 
-    this.loadQuestionScores = function ( studentQuestionScores ) {
-        this.questionScores = studentQuestionScores;
-    };
 
     /**
      * Sets the grading time data from the server
@@ -128,7 +130,27 @@ function Data() {
         this.examGradingTimes = examGradingTimes;
     };
 
+    /* ------------------ Active student ------------------- */
+    this.setActiveStudent = function ( studentIndex, studentId ) {
+        activeStudent = studentIndex;
+        activeStudentId = studentId;
+    };
 
+    this.getActiveStudentId = function () {
+        return activeStudentId;
+    };
+
+    this.getActiveStudentIndex = function(){
+      return activeStudent;
+    };
+
+    /* ------------------ Getters and setters for other simple properties ------------------- */
+    this.getExamId = function () {
+        return examId;
+    };
+    this.setExamId = function ( examId ) {
+        examId = examId;
+    };
     /* ------------------ Grading time ------------------- */
 
     /**
@@ -139,6 +161,18 @@ function Data() {
     this.getStudentGradingTime = function ( activeStudent ) {
         return this.examGradingTimes[ activeStudent ];
     };
+
+    /**
+     * Convenience method for getting the grading time of the student presently
+     * being graded
+     * @returns {*}
+     */
+    this.getActiveStudentGradingTime = function () {
+        if ( ! this.isActive() ) throw "ERROR: getActiveStudentGradingTime | No active student set ";
+
+        return this.getStudentGradingTime( this.activeStudent );
+    };
+
 
     /**
      * Stores a new time for the student.
@@ -219,7 +253,7 @@ function Data() {
     this.getCommentText = function ( activeStudent, elementIndex, valence ) {
         var comment = this.elementComments[ activeStudent ][ elementIndex ];
         if ( comment == "" ) {
-            return this.stockComments[ elementIndex ][ valence ];
+            return stockComments[ elementIndex ][ valence ];
         }
         //now for the fun part. If the user had previously moved the
         //slider, elementComments will have a stock text value.
@@ -250,6 +284,14 @@ function Data() {
 
     /* ------------------ Question scores and Exam grades ------------ */
     /**
+     * Loads a json object of question scores.
+     * @param studentQuestionScores
+     */
+    this.loadQuestionScores = function ( studentQuestionScores ) {
+        questionScores = studentQuestionScores;
+    };
+
+    /**
      * Saves a question score for the student
      * Original: data.questionScores[ Roster.activeStudent ][ qNumber - 1 ] = score;
      * @param activeStudent
@@ -257,7 +299,7 @@ function Data() {
      * @param score
      */
     this.storeQuestionScore = function ( activeStudent, questionIndex, score ) {
-        this.questionScores[ activeStudent ][ questionIndex ] = score;
+        questionScores[ activeStudent ][ questionIndex ] = score;
     };
 
     /**
@@ -267,7 +309,7 @@ function Data() {
      * @param questionIndex
      */
     this.getQuestionScore = function ( activeStudent, questionIndex ) {
-        return this.questionScores[ activeStudent ][ questionIndex ];
+        return questionScores[ activeStudent ][ questionIndex ];
     };
 
     /**
@@ -277,8 +319,7 @@ function Data() {
      * @param questionIndex
      */
     this.getQuestionScoreForActiveStudent = function ( questionIndex ) {
-        if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set "
-
+        if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set ";
         return this.getQuestionScore( this.activeStudent, questionIndex );
     };
 
@@ -291,9 +332,9 @@ function Data() {
         var totalScore = null;
         // try {
         // this.checkValid( 'questionScores' );
-        if ( Object.keys( this.questionScores ).length > 0 ) {
-            for ( var i = 0; i < Object.keys( this.questionScores[ activeStudent ] ).length; i ++ ) {
-                var v = this.questionScores[ activeStudent ][ i ];
+        if ( Object.keys( questionScores ).length > 0 ) {
+            for ( var i = 0; i < Object.keys( questionScores[ activeStudent ] ).length; i ++ ) {
+                var v = questionScores[ activeStudent ][ i ];
                 if ( v != null ) {
                     //at least one question score is non-null
                     //so the total score should be at least 0
@@ -406,22 +447,16 @@ function Data() {
      * @returns {number|Number}
      */
     this.getTotalExams = function () {
-        let total = 0;
+        //memoize
+        // if(this.getTotalExams.total && this.getTotalExams.total >= 0) return this.getTotalExams.total;
+
+        //initialize
+        this.getTotalExams.total = 0;
         if ( Object.keys( this.examGrades ).length > 0 ) {
-            total = Object.keys( this.examGrades ).length;
+            this.getTotalExams.total = Object.keys( this.examGrades ).length;
         }
 
-        //
-        // // try {
-        //     if(this.checkValid( 'examGrades' )) {
-        //         total = Object.keys( this.examGrades ).length;
-        //     }
-        //
-        // } catch ( err ) {
-        //     window.console.log( err );
-        // }
-
-        return total;
+        return this.getTotalExams.total;
     };
 
     /* ------------ Utilities --------------*/
