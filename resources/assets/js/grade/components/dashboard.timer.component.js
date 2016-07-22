@@ -111,11 +111,12 @@ module.exports = {
          * @returns Number
          */
         totalTime: function () {
-            var totalTime = 0;
-            $.each( this.store.examGradingTimes, function ( index, value ) {
-                totalTime += value;
-            } );
-            return totalTime;
+return this.store.getTotalGradingTime();
+            // var totalTime = 0;
+            // $.each( this.store.examGradingTimes, function ( index, value ) {
+            //     totalTime += value;
+            // } );
+            // return totalTime;
         },
 
         /**
@@ -183,6 +184,8 @@ module.exports = {
          * @param Roster
          */
         loadTimer: function () {
+            var me = this;
+
             //if no student is active, don't start
             if ( ! this.store.isActive() ) return;
 
@@ -193,9 +196,9 @@ module.exports = {
 
             // set a new timer to fire every second. Update examGradingTimes[]
             this.timer = setInterval( function () {
-                this.store.increaseActiveStudentGradingTime( 1 );
+                me.store.increaseActiveStudentGradingTime( 1 );
                 //ask for the time to be saved
-                this.requestTimerSave();
+                me.requestTimerSave();
             }, 1000 );
         },
 

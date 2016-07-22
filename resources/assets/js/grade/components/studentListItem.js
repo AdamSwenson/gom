@@ -60,7 +60,7 @@ module.exports = {
          * The gradedStudentRow class is bound to this.
          */
         isGraded: function () {
-            var grade = this.store.examGrades[ this.studentIndex ];
+            var grade = this.store.getExamGrade(this.studentIndex );
             if ( (grade != 'undefined') && (grade != '') && ( grade >= 0 ) ) {
                 // window.console.log( 'isGraded', true );
                 return true;
@@ -74,8 +74,8 @@ module.exports = {
          * The activeStudentRow class is bound to this.
          */
         isActiveStudent: function () {
-            if ( (typeof this.store.activeStudent != 'undefined') && (this.store.activeStudent != null)  && (this.store.activeStudent == this.studentIndex) ) {
-                // window.console.log( 'isActive', true );
+            if ( this.store.getActiveStudentIndex() == this.studentIndex ) {
+                 // window.console.log( 'isActive', this.studentIndex, true );
                 return true;
             }
             // window.console.log( 'isActive', false );
@@ -103,7 +103,7 @@ module.exports = {
          */
         examGrade: function () {
             if ( this.isGraded ) {
-                return this.store.examGrades[ this.studentIndex ];
+                return this.store.getExamGrade( this.studentIndex );
             }
             // the student has no grade (val of -1)
             return this.defaults.examGradePlaceholder;
@@ -137,81 +137,9 @@ module.exports = {
          * dispatches appropriate notifications
          */
         setAsActiveStudent: function () {
-            this.store.activeStudent = this.studentIndex;
+            this.store.setActiveStudent(this.studentIndex, this.studentId);
             this.notifyStudentSelectEvent();
         },
-
-        // /**
-        //  * Change the styling of this student row to
-        //  * indicate that this student is currently being
-        //  * graded.
-        //  */
-        // representAsActiveStudent: function () {
-        //     $( this.el )
-        //         .removeClass( 'gradedStudentRow' )
-        //         .removeClass( 'unalteredStudentRow' )
-        //         .addClass( 'activeStudentRow' );
-        // },
-        //
-        // /**
-        //  * Removes the styling which indicated that this student is
-        //  * currently being graded.
-        //  */
-        // removeActiveStudentRepresentation: function () {
-        // },
-        //
-        // /**
-        //  * Adds styling to indicate that this student has been graded.
-        //  */
-        // representAsGraded: function () {
-        //     $( this.el )
-        //         .removeClass( 'activeStudentRow' )
-        //         .removeClass( 'unalteredStudentRow' )
-        //         .addClass( 'gradedStudentRow' );
-        // },
-
-        /**
-        //  * Removes the styling which indicates that this student has been graded.
-        //  */
-        // representAsNotGraded: function () {
-        // },
-        // /**
-        //  * set background colors in the student roster
-        //  *  graded = green
-        //  *  ungraded = white
-        //  *  active = blue
-        //  */
-        // setStudentBackgroundColors: function ( data ) {
-        //     for ( var i = 0; i < Object.keys( data.examGrades ).length; i ++ ) {
-        //         var name = "#studentListItem" + i;
-        //         var $item = $( '#studentRoster' ).find( name );
-        //         if ( this.activeStudent && this.activeStudent == i ) {
-        //             this.setRowToActiveStudent( $item );
-        //         } else if ( data.isGraded( i ) ) {
-        //             this.setRowToGraded( $item );
-        //         } else {
-        //             this.setRowToUnaltered( $item )
-        //         }
-        //     }
-        // },
-        //
-        // setRowToUnaltered: function ( item ) {
-        //     $( item )
-        //         .removeClass( 'activeStudentRow' )
-        //         .removeClass( 'gradedStudentRow' )
-        //         .addClass( 'unalteredStudentRow' );
-        // },
-        //
-        // /**
-        //  * set color for a student roster row
-        //  * @param item
-        //  * @param backColor
-        //  * @param textColor
-        //  */
-        // setRosterBackgroundColor: function ( item, backColor, textColor ) {
-        //     $( item ).find( '[class^="col"]' ).css( 'background-color', backColor );
-        //     $( item ).css( 'color', textColor );
-        // },
 
 
         /* ------------------------ Notifications and events --------------------- */

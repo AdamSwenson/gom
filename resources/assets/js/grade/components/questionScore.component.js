@@ -56,7 +56,7 @@ module.exports = {
          */
         questionScore: {
             get: function () {
-                return this.store.getQuestionScore( this.store.activeStudent, this.questionIndex );
+                return this.store.getQuestionScoreForActiveStudent( this.questionIndex );
             },
             /**
              * Update the score in the shared data object and send
@@ -64,7 +64,7 @@ module.exports = {
              * @param score
              */
             set: function ( score ) {
-                this.store.storeQuestionScore( this.store.activeStudent, this.questionIndex, score );
+                this.store.storeQuestionScoreForActiveStudent(this.questionIndex, score );
                 this.notifyRecordScore();
             }
         }

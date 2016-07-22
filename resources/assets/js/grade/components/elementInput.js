@@ -53,10 +53,10 @@ module.exports = {
         commentText: {
             cache: false,
             get: function () {
-               return this.store.getCommentText( this.activeStudent, this.elementIndex, this.getValence( this.elementScore ) );
+               return this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
             },
             set: function ( text ) {
-                this.store.storeCommentText( this.activeStudent, this.elementIndex, text );
+                this.store.storeCommentTextForActiveStudent(this.elementIndex, text );
                 //send to the db
                 this.notifyStoreCommentText();
             }
@@ -68,10 +68,10 @@ module.exports = {
         elementScore: {
             cache: false,
             get: function () {
-                return this.store.getElementScore( this.store.activeStudent, this.elementIndex )
+                return this.store.getElementScoreForActiveStudent( this.elementIndex )
             },
             set: function ( score ) {
-                this.store.storeElementScore( this.store.activeStudent, this.elementIndex, score )
+                this.store.storeElementScoreForActiveStudent( this.elementIndex, score )
                 this.notifyStoreElementScore()
             }
         },
@@ -94,7 +94,7 @@ module.exports = {
          * @returns {module.exports.computed.activeStudent|null|*}
          */
         activeStudent: function () {
-            return this.store.activeStudent;
+            return this.store.getActiveStudentIndex();
         },
 
 
@@ -259,7 +259,7 @@ module.exports = {
          */
         handleElementSliderStopEvent: function ( slideEvt, callback ) {
             //grab scores
-            var oldScore = this.store.getElementScore( this.activeStudent, this.elementIndex );
+            var oldScore = this.store.getElementScoreForActiveStudent( this.elementIndex );
             //store the new element score in the data object
             this.elementScore = slideEvt.value;
 
@@ -275,7 +275,7 @@ module.exports = {
                 //Dear Adam, make sure you read the doc for storeCommentText before fucking with
                 //anything in these lines
                 //this.commentText = this.commentSelector.val();
-                this.commentText = this.store.getCommentText( this.activeStudent, this.elementIndex, this.getValence( this.elementScore ) );
+                this.commentText = this.store.getCommentTextForActiveStudent(  this.elementIndex, this.getValence( this.elementScore ) );
 
                 //update display
                 // this.updateDisplayedComment( $elementComment, commentText );

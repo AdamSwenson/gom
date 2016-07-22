@@ -33,7 +33,7 @@ describe( "dashboard-timer tests | ", function () {
 
     beforeEach( function () {
         var store = new Data();
-        store.activeStudent = 0;
+        store.setActiveStudent(0);
         store.examGradingTimes = {
             0: 0,
             1: 0,
@@ -54,6 +54,11 @@ describe( "dashboard-timer tests | ", function () {
         this.$icon = $( "#btnTimerIcon" );
 
     } );
+    afterEach(function(){
+        //prevent timer from running after test
+        let component = Helper.getComponent( this );
+        clearInterval(component.timer);
+    });
 
     describe( "Intact | ", function () {
         it( "page elements present", function () {
@@ -66,29 +71,29 @@ describe( "dashboard-timer tests | ", function () {
     } );
 
     describe( "unit | ", function () {
-        describe("convertSecondsToHHMMSS | ", function(){
+        describe( "convertSecondsToHHMMSS | ", function () {
             it( "< 60 seconds ", function () {
                 let component = Helper.getComponent( this );
-                expect(component.convertSecondsToHHMMSS(55)).toBe("00:55");
+                expect( component.convertSecondsToHHMMSS( 55 ) ).toBe( "00:55" );
             } );
 
             it( "> 60 seconds & < 60 min ", function () {
                 let component = Helper.getComponent( this );
-                expect(component.convertSecondsToHHMMSS(100)).toBe("01:40");
+                expect( component.convertSecondsToHHMMSS( 100 ) ).toBe( "01:40" );
             } );
 
             it( "> 60 min ", function () {
                 let component = Helper.getComponent( this );
-                expect(component.convertSecondsToHHMMSS(3700)).toBe("01:01:40");
+                expect( component.convertSecondsToHHMMSS( 3700 ) ).toBe( "01:01:40" );
             } );
 
             it( "empty", function () {
                 let component = Helper.getComponent( this );
-                expect(component.convertSecondsToHHMMSS(NaN)).toBe("00:00:00");
+                expect( component.convertSecondsToHHMMSS( NaN ) ).toBe( "00:00:00" );
                 //not exactly sure why does this. but it is expected behavior
-                expect(component.convertSecondsToHHMMSS(null)).toBe("00:00");
+                expect( component.convertSecondsToHHMMSS( null ) ).toBe( "00:00" );
             } );
-        });
+        } );
 
         describe( "toggleTimer | ", function () {
             it( "paused to running ", function () {
@@ -194,68 +199,90 @@ describe( "dashboard-timer tests | ", function () {
 
     describe( "Time values | ", function () {
 
-        describe( "Remaining time", function () {
+        describe( "Current time", function () {
+
             beforeEach( function () {
-                //prep
-                store.examGradingTimes = {
-                    0: 65,
-                    1: 0,
-                };
+                this.testTime = 65;
+                this.formattedTime = "01:05";
+
+                let d = new Data();
+                let st = sinon.stub( d, 'getStudentGradingTime' );
+                st.returns( this.testTime );
+
+                window.store = d;
+
+                //prep the page
+                this.$fixture = loadFixtures( fixture );
+                this.vm = Helper.loadVueComponent( testedComponent, 'dashboard-timer' );
+
             } );
 
             it( "currentExamTime ", function () {
                 let component = Helper.getComponent( this );
                 //check
-                expect( component.currentExamTime ).toBe( 65 );
+                expect( component.currentExamTime ).toBe( this.testTime );
             } );
 
             it( "currentExamTimeDisplay", function () {
                 let component = Helper.getComponent( this );
                 //check
-                expect( component.currentExamTimeDisplay ).toBe( "01:05" );
+                expect( component.currentExamTimeDisplay ).toBe( this.formattedTime );
             } );
         } );
 
         describe( "Average exam time | ", function () {
             beforeEach( function () {
-                //prep
-                store.examGradingTimes = {
-                    0: 125,
-                    1: 75,
-                    2: 125,
-                    3: 75,
-                    4: 0
-                }; //total 400
-                //it updates the examGrades from questionScores. If this isn't present, it freaks out
-                store.questionScores = { 0: { 0: 44 }, 1: { 0: 55 }, 2: { 0: 66 }, 3: { 0: 22 }, 4: { 0: null } };
-                store.examGrades = { 0: 44, 1: 55, 2: 66, 3: 22, 4: 'Letter grade' }; //4 graded; 1 ungraded
+                this.totalTime = 400;
+                this.numberGraded = 4;
+
+                this.expectedAverage = this.totalTime / this.numberGraded;
+                this.expectedFormatted = "01:40";
+
+                let d = new Data();
+                let st = sinon.stub( d, 'getNumberGraded' ).returns( this.numberGraded );
+                let st2 = sinon.stub( d, 'getTotalGradingTime' ).returns( 400 );
+
+                window.store = d;
+
+                //prep the page
+                this.$fixture = loadFixtures( fixture );
+                this.vm = Helper.loadVueComponent( testedComponent, 'dashboard-timer' );
+
             } );
             it( "averageTime", function () {
                 //TODO check corner case where no exams graded
                 let component = Helper.getComponent( this );
                 //check
-                expect( component.averageTime ).toBe( 100 ); //should be 100 seconds
+                expect( component.averageTime ).toBe( 100 );
+                // expect( component.averageTime ).toBe( this.expectedAverage ); //should be 100 seconds
             } );
 
             it( "averageTimeDisplay", function () {
                 let component = Helper.getComponent( this );
                 //check
-                expect( component.averageTimeDisplay ).toBe( "01:40" ); //should be 100 seconds
+                expect( component.averageTimeDisplay ).toBe( this.expectedFormatted ); //should be 100 seconds
             } );
         } );
 
         describe( "Total time | ", function () {
+            var testVal;
             beforeEach( function () {
-                //prep
-                store.examGradingTimes = {
-                    0: 100,
-                    1: 50,
-                };
+                testVal = 150;
+
+                let d = new Data();
+                let st2 = sinon.stub( d, 'getTotalGradingTime' ).returns( testVal );
+
+                window.store = d;
+
+                //prep the page
+                this.$fixture = loadFixtures( fixture );
+                this.vm = Helper.loadVueComponent( testedComponent, 'dashboard-timer' );
+
             } );
             it( "totalTime ", function () {
                 let component = Helper.getComponent( this );
                 //check
-                expect( component.totalTime ).toBe( 150 ); //should be 150 seconds
+                expect( component.totalTime ).toBe( testVal ); //should be 150 seconds
             } );
 
             it( "totalTimeDisplay", function () {
@@ -266,18 +293,22 @@ describe( "dashboard-timer tests | ", function () {
         } );
 
         describe( "Remaining time", function () {
+            var testTotal, numGraded, numExams;
             beforeEach( function () {
-                //prep
-                store.examGradingTimes = {
-                    0: 125,
-                    1: 75,
-                    2: 125,
-                    3: 75,
-                    4: 0
-                }; //total 400
-                //it updates the examGrades from questionScores. If this isn't present, it freaks out
-                store.questionScores = { 0: { 0: 44 }, 1: { 0: 55 }, 2: { 0: 66 }, 3: { 0: 22 }, 4: { 0: null } };
-                store.examGrades = { 0: 44, 1: 55, 2: 66, 3: 22, 4: 'Letter grade' }; //4 graded; 1 ungraded
+                testTotal = 400;
+                numGraded = 4;
+                numExams = 5;
+
+                let d = new Data();
+                let st = sinon.stub( d, 'getNumberGraded' ).returns( numGraded);
+                let st2 = sinon.stub( d, 'getTotalGradingTime' ).returns( testTotal );
+                let st3 = sinon.stub(d, 'getTotalExams').returns(numExams);
+
+                window.store = d;
+
+                //prep the page
+                this.$fixture = loadFixtures( fixture );
+                this.vm = Helper.loadVueComponent( testedComponent, 'dashboard-timer' );
             } );
 
             it( "Remaining time ", function () {
@@ -326,6 +357,9 @@ describe( "dashboard-timer tests | ", function () {
 
 
     describe( "Events | Inbound | ", function () {
+        beforeEach( function () {
+        } );
+
         it( "Starts on request ", function () {
             //prep
             let component = Helper.getComponent( this );
@@ -335,7 +369,6 @@ describe( "dashboard-timer tests | ", function () {
             this.vm.$broadcast( 'start-timer-request' );
 
             //check
-            window.console.log( component );
             expect( component.paused ).toBe( false );
         } );
 
@@ -343,6 +376,7 @@ describe( "dashboard-timer tests | ", function () {
             //prep
             let component = Helper.getComponent( this );
             component.paused = false;
+
             expect( component.paused ).toBe( false );
 
             //call

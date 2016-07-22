@@ -27,7 +27,6 @@ Vue.config.debug = true;
 var testedComponent = require( "../../../resources/assets/js/grade/components/questionScore.component.js" );
 var fixture = 'questionScore.fixture.html';
 
-
 //Dependencies
 require( '../../../resources/assets/js/grade/components/Data.js' );
 
@@ -58,9 +57,9 @@ describe( "QuestionScoreComponent tests | ", function () {
         this.maxScore = 100;
 
         var store = new Data();
-        store.activeStudent = 0;
-        store.maxQuestionScores = { 0: this.maxScore, 1: 52 };
-        store.questionScores = { 0: { 0: null, 1: null }, 1: { 0: null, 1: null } }
+        store.setActiveStudent( 0 );
+        store.loadMaxQuestionScores( { 0: this.maxScore, 1: 52 } );
+        store.loadQuestionScores( { 0: { 0: null, 1: null }, 1: { 0: null, 1: null } } );
         window.store = store;
 
         //prep the page
@@ -75,12 +74,12 @@ describe( "QuestionScoreComponent tests | ", function () {
 
     describe( "Integrity check | ", function () {
 
-        it( "checks that the data store is valid and accessible", function () {
+        it( "data store ", function () {
             expect( store ).not.toBeUndefined();
-            expect( store.activeStudent ).toBe( 0 );
+            expect( store.getActiveStudent() ).toBe( 0 );
         } );
 
-        it( "check that the component displays as expected ", function () {
+        it( "component displays", function () {
             //score field present
             expect( this.$questionScore ).toExist();
             //max score present
@@ -92,11 +91,11 @@ describe( "QuestionScoreComponent tests | ", function () {
     describe( "Pre-existing score | ", function () {
         beforeEach( function () {
             this.testScore = 34;
-            store.questionScores = { 0: { 0: this.testScore, 1: null }, 1: { 0: null, 1: null } }
+            store.loadQuestionScores( { 0: { 0: this.testScore, 1: null }, 1: { 0: null, 1: null } } );
         } );
 
         it( "component has the pre-existing score set", function () {
-            expect( store.questionScores[ 0 ][ 0 ] ).toBe( this.testScore );
+            expect( store.getQuestionScore( 0, 0 ) ).toBe( this.testScore );
             //Helper.assertValueIs(this, 'questionScore', this.testScore);
         } );
 
@@ -109,20 +108,17 @@ describe( "QuestionScoreComponent tests | ", function () {
         beforeEach( function () {
             this.prevScore = 39;
             this.newScore = 56;
-            store.questionScores = { 0: { 0: this.prevScore, 1: null }, 1: { 0: null, 1: null } }
+            store.loadQuestionScores( { 0: { 0: this.prevScore, 1: null }, 1: { 0: null, 1: null } } );
             // Vue.nextTick( function () {
             // } );
         } );
 
-        it( "updates the score in the shared store", function (  ) {
-            this.$fixture = loadFixtures( fixture );
-            let vm = Helper.loadVueComponent( testedComponent, 'question-score' );
-            window.console.log( vm );
-            let component = vm.$refs.testObject;
+        it( "stored score updates", function () {
+            let component = Helper.getComponent(this);
             var me = this;
 
             //prep ---make sure has initial value
-            expect( store.questionScores[ 0 ][ 0 ] ).toBe( this.prevScore );
+           expect( store.getQuestionScore(0,0) ).toBe( this.prevScore );
             var event = jQuery.Event( "blur" );
 
             //call
@@ -133,8 +129,8 @@ describe( "QuestionScoreComponent tests | ", function () {
             // $( '#questionScore' + questionNumber ).val( this.newScore );
 
             //check
-            expect( store.questionScores[ 0 ][ 0 ] ).toBe( me.newScore );
-            Helper.assertValueIs( me, 'questionScore', me.newScore );
+            expect( store.getQuestionScore( 0, 0 ) ).toBe( me.newScore );
+            //Helper.assertValueIs( me, 'questionScore', me.newScore );
 
         } );
 

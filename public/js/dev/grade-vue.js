@@ -24026,11 +24026,12 @@ module.exports = {
          * @returns Number
          */
         totalTime: function totalTime() {
-            var totalTime = 0;
-            $.each(this.store.examGradingTimes, function (index, value) {
-                totalTime += value;
-            });
-            return totalTime;
+            return this.store.getTotalGradingTime();
+            // var totalTime = 0;
+            // $.each( this.store.examGradingTimes, function ( index, value ) {
+            //     totalTime += value;
+            // } );
+            // return totalTime;
         },
 
         /**
@@ -24098,6 +24099,8 @@ module.exports = {
          * @param Roster
          */
         loadTimer: function loadTimer() {
+            var me = this;
+
             //if no student is active, don't start
             if (!this.store.isActive()) return;
 
@@ -24108,9 +24111,9 @@ module.exports = {
 
             // set a new timer to fire every second. Update examGradingTimes[]
             this.timer = setInterval(function () {
-                this.store.increaseActiveStudentGradingTime(1);
+                me.store.increaseActiveStudentGradingTime(1);
                 //ask for the time to be saved
-                this.requestTimerSave();
+                me.requestTimerSave();
             }, 1000);
         },
 
@@ -24230,10 +24233,10 @@ module.exports = {
         commentText: {
             cache: false,
             get: function get() {
-                return this.store.getCommentText(this.activeStudent, this.elementIndex, this.getValence(this.elementScore));
+                return this.store.getCommentTextForActiveStudent(this.elementIndex, this.getValence(this.elementScore));
             },
             set: function set(text) {
-                this.store.storeCommentText(this.activeStudent, this.elementIndex, text);
+                this.store.storeCommentTextForActiveStudent(this.elementIndex, text);
                 //send to the db
                 this.notifyStoreCommentText();
             }
@@ -24245,10 +24248,10 @@ module.exports = {
         elementScore: {
             cache: false,
             get: function get() {
-                return this.store.getElementScore(this.store.activeStudent, this.elementIndex);
+                return this.store.getElementScoreForActiveStudent(this.elementIndex);
             },
             set: function set(score) {
-                this.store.storeElementScore(this.store.activeStudent, this.elementIndex, score);
+                this.store.storeElementScoreForActiveStudent(this.elementIndex, score);
                 this.notifyStoreElementScore();
             }
         },
@@ -24271,7 +24274,7 @@ module.exports = {
          * @returns {module.exports.computed.activeStudent|null|*}
          */
         activeStudent: function activeStudent() {
-            return this.store.activeStudent;
+            return this.store.getActiveStudentIndex();
         },
 
         /**
@@ -24432,7 +24435,7 @@ module.exports = {
          */
         handleElementSliderStopEvent: function handleElementSliderStopEvent(slideEvt, callback) {
             //grab scores
-            var oldScore = this.store.getElementScore(this.activeStudent, this.elementIndex);
+            var oldScore = this.store.getElementScoreForActiveStudent(this.elementIndex);
             //store the new element score in the data object
             this.elementScore = slideEvt.value;
 
@@ -24448,7 +24451,7 @@ module.exports = {
                 //Dear Adam, make sure you read the doc for storeCommentText before fucking with
                 //anything in these lines
                 //this.commentText = this.commentSelector.val();
-                this.commentText = this.store.getCommentText(this.activeStudent, this.elementIndex, this.getValence(this.elementScore));
+                this.commentText = this.store.getCommentTextForActiveStudent(this.elementIndex, this.getValence(this.elementScore));
 
                 //update display
                 // this.updateDisplayedComment( $elementComment, commentText );
@@ -24807,7 +24810,7 @@ module.exports = {
          */
         questionScore: {
             get: function get() {
-                return this.store.getQuestionScore(this.store.activeStudent, this.questionIndex);
+                return this.store.getQuestionScoreForActiveStudent(this.questionIndex);
             },
             /**
              * Update the score in the shared data object and send
@@ -24815,7 +24818,7 @@ module.exports = {
              * @param score
              */
             set: function set(score) {
-                this.store.storeQuestionScore(this.store.activeStudent, this.questionIndex, score);
+                this.store.storeQuestionScoreForActiveStudent(this.questionIndex, score);
                 this.notifyRecordScore();
             }
         }
@@ -24907,7 +24910,7 @@ module.exports = {
          * The gradedStudentRow class is bound to this.
          */
         isGraded: function isGraded() {
-            var grade = this.store.examGrades[this.studentIndex];
+            var grade = this.store.getExamGrade(this.studentIndex);
             if (grade != 'undefined' && grade != '' && grade >= 0) {
                 // window.console.log( 'isGraded', true );
                 return true;
@@ -24921,8 +24924,8 @@ module.exports = {
          * The activeStudentRow class is bound to this.
          */
         isActiveStudent: function isActiveStudent() {
-            if (typeof this.store.activeStudent != 'undefined' && this.store.activeStudent != null && this.store.activeStudent == this.studentIndex) {
-                // window.console.log( 'isActive', true );
+            if (this.store.getActiveStudentIndex() == this.studentIndex) {
+                // window.console.log( 'isActive', this.studentIndex, true );
                 return true;
             }
             // window.console.log( 'isActive', false );
@@ -24949,7 +24952,7 @@ module.exports = {
          */
         examGrade: function examGrade() {
             if (this.isGraded) {
-                return this.store.examGrades[this.studentIndex];
+                return this.store.getExamGrade(this.studentIndex);
             }
             // the student has no grade (val of -1)
             return this.defaults.examGradePlaceholder;
@@ -24982,81 +24985,9 @@ module.exports = {
          * dispatches appropriate notifications
          */
         setAsActiveStudent: function setAsActiveStudent() {
-            this.store.activeStudent = this.studentIndex;
+            this.store.setActiveStudent(this.studentIndex, this.studentId);
             this.notifyStudentSelectEvent();
         },
-
-        // /**
-        //  * Change the styling of this student row to
-        //  * indicate that this student is currently being
-        //  * graded.
-        //  */
-        // representAsActiveStudent: function () {
-        //     $( this.el )
-        //         .removeClass( 'gradedStudentRow' )
-        //         .removeClass( 'unalteredStudentRow' )
-        //         .addClass( 'activeStudentRow' );
-        // },
-        //
-        // /**
-        //  * Removes the styling which indicated that this student is
-        //  * currently being graded.
-        //  */
-        // removeActiveStudentRepresentation: function () {
-        // },
-        //
-        // /**
-        //  * Adds styling to indicate that this student has been graded.
-        //  */
-        // representAsGraded: function () {
-        //     $( this.el )
-        //         .removeClass( 'activeStudentRow' )
-        //         .removeClass( 'unalteredStudentRow' )
-        //         .addClass( 'gradedStudentRow' );
-        // },
-
-        /**
-        //  * Removes the styling which indicates that this student has been graded.
-        //  */
-        // representAsNotGraded: function () {
-        // },
-        // /**
-        //  * set background colors in the student roster
-        //  *  graded = green
-        //  *  ungraded = white
-        //  *  active = blue
-        //  */
-        // setStudentBackgroundColors: function ( data ) {
-        //     for ( var i = 0; i < Object.keys( data.examGrades ).length; i ++ ) {
-        //         var name = "#studentListItem" + i;
-        //         var $item = $( '#studentRoster' ).find( name );
-        //         if ( this.activeStudent && this.activeStudent == i ) {
-        //             this.setRowToActiveStudent( $item );
-        //         } else if ( data.isGraded( i ) ) {
-        //             this.setRowToGraded( $item );
-        //         } else {
-        //             this.setRowToUnaltered( $item )
-        //         }
-        //     }
-        // },
-        //
-        // setRowToUnaltered: function ( item ) {
-        //     $( item )
-        //         .removeClass( 'activeStudentRow' )
-        //         .removeClass( 'gradedStudentRow' )
-        //         .addClass( 'unalteredStudentRow' );
-        // },
-        //
-        // /**
-        //  * set color for a student roster row
-        //  * @param item
-        //  * @param backColor
-        //  * @param textColor
-        //  */
-        // setRosterBackgroundColor: function ( item, backColor, textColor ) {
-        //     $( item ).find( '[class^="col"]' ).css( 'background-color', backColor );
-        //     $( item ).css( 'color', textColor );
-        // },
 
         /* ------------------------ Notifications and events --------------------- */
         handleRowClick: function handleRowClick() {

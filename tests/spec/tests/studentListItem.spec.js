@@ -24,7 +24,7 @@ var Vue = require( 'vue' );
 //tested stuff
 var testedComponent = require( "../../../resources/assets/js/grade/components/studentListItem" );
 require( '../../../resources/assets/js/grade/components/Data.js' );
-
+var fixture = 'studentListItem.fixture.html';
 
 /**
  * Checks whether student row is set as active.
@@ -74,18 +74,6 @@ function assertRowDefault( dthis, studentIndex, not = false ) {
 
 
 describe( "StudentListItem | ", function () {
-    var vm;
-    var $fixtures;
-    var helper;
-
-    var $studentName;
-    var $studentIdentifier;
-    var $examGrade;
-
-    var $row;
-    var studentIndex;
-    var placeHolder;
-
 
     beforeEach( function () {
         this.studentIndex = 0;
@@ -117,7 +105,8 @@ describe( "StudentListItem | ", function () {
         store.loadNumberQuestions( 2 );
         window.store = store;
 
-        this.$fixture = loadFixtures( 'studentListItem.fixture.html' );
+
+        this.$fixture = loadFixtures( fixture );
 
         this.vm = Helper.loadVueComponent( testedComponent, 'student-list-item' );
 
@@ -133,11 +122,11 @@ describe( "StudentListItem | ", function () {
         //  this.helper = '';
     } );
 
-    describe( "integrity check | ", function () {
+    describe( "Intact | ", function () {
 
-        it( "checks that the data store is valid and accessible", function () {
+        it( "data store", function () {
             expect( store ).not.toBeUndefined();
-            expect( store.examGrades[ 0 ] ).toBe( 'Letter grade' );
+            //expect( store.examGrades[ 0 ] ).toBe( 'Letter grade' );
         } );
 
 
@@ -166,128 +155,91 @@ describe( "StudentListItem | ", function () {
             } );
         } );
 
-//         it( "designates the active student by setting a class", function (done) {
-//
-//             //call
-//             store.activeStudent = this.studentIndex;
-//
-//                 setTimeout(function() {
-//                     done();
-//                 }, 5000);
-//
-//             var row = document.getElementById('studentListItem' + this.studentIndex);
-//             window.console.log('row classList', row.classList);
-//             window.console.log('classList', row.classList.item(1).value);
-//             expect(row.classList[1]).toBe('activeStudentRow');
-//
-// // setTimeout(function(){}, 5);
-//             expect(this.$row).toExist();
-//             // window.console.log('class', row.className);
-//             // window.console.log('class2', row.getProperty('class'));
-//             // expect(this.$row).not.toHaveAttr('class', 'studentListItem unalteredStudentRow');
-//             // expect(this.$row.attr('class')).not.toBe('studentListItem unalteredStudentRow');
-//             // expect(this.$row.attr('class')).not.toBe('studentListItem gradedStudentRow');
-//             // expect(this.$row.attr('class')).toBe('studentListItem activeStudentRow');
-//             // expect(this.$row).toHaveAttr('class', 'studentListItem activeStudentRow');
-//             // expect(this.$row).not.toHaveClass('unalteredStudentRow');
-//             // expect(this.$row).not.toHaveClass('gradedStudentRow');
-//            // expect(this.$row).toHaveClass('activeStudentRow');
-//            //  expect(row).toHaveAttr('class', 'activeStudentRow');
-//         } );
 
-        describe( "student is active | ", function () {
+        describe( "isActiveStudent | ", function () {
 
             beforeEach( function () {
-                this.studentIndex = 0;
-                this.firstName = 'Jill';
-                this.lastName = 'Jillenson';
-                this.studentIdentifier = '123456789';
-                this.studentId = '1';
-                this.placeHolder = "--";
-
-                var store = new Data();
-                store.activeStudent = this.studentIndex;
-                store.loadQuestionScores( {
-                    0: {
-                        0: null,
-                        1: null,
-                        2: null
-                    },
-                    1: {
-                        0: null,
-                        1: null,
-                        2: null,
-                    }
-                } );
-                store.loadGradingTimes( {} );
-                store.loadExamGrades( {
-                    0: 'Letter grade',
-                    1: 'Letter grade',
-                    2: 'Letter grade'
-                } );
-                store.loadNumberQuestions( 2 );
-                window.store = store;
-
-                this.rowIdString = '#studentListItem' + this.studentIndex;
-
-                this.$fixture = loadFixtures( 'studentListItem.fixture.html' );
-
-                this.vm = Helper.loadVueComponent( testedComponent, 'student-list-item' );
             } );
 
-            it( "designates the active student by setting a class", function () {
-                //prep
-                expect( store.activeStudent ).toBe( this.studentIndex );
+            describe( "Happy paths | ", function () {
 
-                //check
-                assertRowActive( this, this.studentIndex );
-                Helper.assertValueIs( this, 'isActiveStudent', true );
-                Helper.assertValueIs( this, 'isUnaltered', false );
-                // assertRowActive(this.studentIndex);
+                it( "active = true", function () {
+                    store.setActiveStudent( this.studentIndex );
+                    this.$fixture = loadFixtures( fixture );
+                    this.vm = Helper.loadVueComponent( testedComponent, 'student-list-item' );
+
+                    //check
+                    assertRowActive( this, this.studentIndex );
+                    Helper.assertValueIs( this, 'isActiveStudent', true );
+                    Helper.assertValueIs( this, 'isUnaltered', false );
+
+                } );
+
+                it( "active = false", function () {
+                    //prep
+                    store.setActiveStudent( 300 );
+                    this.$fixture = loadFixtures( 'studentListItem.fixture.html' );
+                    this.vm = Helper.loadVueComponent( testedComponent, 'student-list-item' );
+
+                    //check --starting with active student
+                    assertRowActive( this, this.studentIndex, true );
+                    Helper.assertValueIs( this, 'isActiveStudent', false );
+                    Helper.assertValueIs( this, 'isUnaltered', true );
+                } );
+
             } );
 
-            it( "when the student is no longer active, the row lacks the active student class", function () {
-                //prep
-                assertRowActive( this, this.studentIndex );
+            describe( "Problem cases | ", function () {
+                it( "activeStudentIndex = null", function () {
+                    //prep
+                    store.setActiveStudent( null );
 
-                //call
-                store.activeStudent = null;
+                    this.$fixture = loadFixtures( fixture );
+                    this.vm = Helper.loadVueComponent( testedComponent, 'student-list-item' );
 
-                //check --starting with active student
-                assertRowActive( this, this.studentIndex, not = true );
-                Helper.assertValueIs( this, 'isActiveStudent', false );
-                Helper.assertValueIs( this, 'isUnaltered', true );
+                    //check --starting with active student
+                    assertRowActive( this, this.studentIndex, true );
+                    Helper.assertValueIs( this, 'isActiveStudent', false );
+                    Helper.assertValueIs( this, 'isUnaltered', true );
+                } );
+
+
             } );
 
         } );
 
-        describe( "check that values change properly when set to active | ", function () {
-
-            beforeEach( function () {
-                //call
-                this.$row.trigger( 'click' );
-            } );
-            it( "when clicked, sets the student to active", function () {
-                assertRowActive( this, this.studentIndex );
-                //double checking to make sure
-                Helper.assertValueIs( this, 'isActiveStudent', true );
-            } );
-            it( "when clicked, sets the student to not unaltered", function () {
-                Helper.assertValueIs( this, 'isUnaltered', false ); //because is active
-            } );
-        } );
+        // describe( "check that values change properly when set to active | ", function () {
+        //
+        //     beforeEach( function () {
+        //         //call
+        //         this.$row.trigger( 'click' );
+        //     } );
+        //     it( "when clicked, sets the student to active", function () {
+        //         assertRowActive( this, this.studentIndex );
+        //         //double checking to make sure
+        //         Helper.assertValueIs( this, 'isActiveStudent', true );
+        //     } );
+        //     it( "when clicked, sets the student to not unaltered", function () {
+        //         Helper.assertValueIs( this, 'isUnaltered', false ); //because is active
+        //     } );
+        // } );
 
     } );
 
 
-    describe( "student grade  | ", function () {
+    describe( "examGrade  | ", function () {
         beforeEach( function () {
-            store.activeStudent = this.studentIndex;
         } );
 
-        describe( " ungraded student | ", function () {
+        describe( "ungraded student | ", function () {
             beforeEach( function () {
-                store.examGrades[ this.studentIndex ] = "letterGrade";
+                let d = new Data();
+                let st = sinon.stub( d, 'getExamGrade' ).returns( "Letter grade" );
+                window.store = d;
+
+                //prep the page
+                this.$fixture = loadFixtures( fixture );
+                this.vm = Helper.loadVueComponent( testedComponent, 'dashboard-timer' );
             } );
 
             it( "displays a placeholder for the grade of an ungraded student", function () {
@@ -304,12 +256,18 @@ describe( "StudentListItem | ", function () {
         } );
 
 
-        describe( " graded student | ", function () {
+        describe( "graded student | ", function () {
             var gradeVal;
             beforeEach( function () {
                 //prep
                 this.gradeVal = 55;
-                store.examGrades[ this.studentIndex ] = this.gradeVal;
+                let d = new Data();
+                let st = sinon.stub( d, 'getExamGrade' ).returns( this.gradeVal );
+                window.store = d;
+
+                //prep the page
+                this.$fixture = loadFixtures( fixture );
+                this.vm = Helper.loadVueComponent( testedComponent, 'dashboard-timer' );
             } );
 
             it( "displays the score for a graded student ", function () {
@@ -336,43 +294,17 @@ describe( "StudentListItem | ", function () {
 
         describe( "change graded state | ", function () {
             var gradeVal;
-
             beforeEach( function () {
                 //prep
-                store.examGrades[ this.studentIndex ] = "letterGrade";
                 this.gradeVal = 55;
-            } );
+                let d = new Data();
+                let st = sinon.stub( d, 'getExamGrade' );
+                st.onCall( 0 ).returns( this.gradeVal );
+                window.store = d;
 
-            it( "when a grade is recorded for a student, the placeholder is replaced with the actual grade", function () {
-                //make sure starting with placeholder
-                Helper.assertValueIs( this, 'examGrade', '--' );
-
-                //call --student is graded
-                store.examGrades[ this.studentIndex ] = this.gradeVal;
-
-                //check --see grade and graded
-                Helper.assertValueIs( this, 'examGrade', this.gradeVal );
-                Helper.assertValueIs( this, 'isGraded', true );
-                var me = this;
-                //expect(me.$examGrade.val() ).toBe( me.gradeVal );
-
-            } );
-
-            xit( "when a grade is recorded for a student, the visible styling is updated", function () {
-                //TODO resurrect when figure out vue display testing
-
-                //prep
-                var gradeVal = 55;
-                store.examGrades[ this.activeStudent ] = "letterGrade";
-
-                //check --see placeholder
-                expect( this.$row ).toHaveClass( 'unalteredStudentRow' );
-
-                //call --student is graded
-                store.examGrades[ this.activeStudent ] = gradeVal;
-
-                //check --see grade
-                expect( this.$row ).toHaveClass( 'gradedStudentRow' );
+                //prep the page
+                this.$fixture = loadFixtures( fixture );
+                this.vm = Helper.loadVueComponent( testedComponent, 'dashboard-timer' );
             } );
 
         } );

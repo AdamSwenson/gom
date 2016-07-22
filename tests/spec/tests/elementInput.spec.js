@@ -14,10 +14,10 @@ window.jQuery = jQuery;
 //test libraries
 require( 'jasmine-jquery' );
 jasmine.getFixtures().fixturesPath = 'base/tests/spec/fixtures';
-
+require( 'sinon' );
 
 //helpers
-//var Helper = require('helpers/vueTestingHelpers.js');
+var Helper = require( '../helpers/vueTesting.helper.js' );
 
 //for fixture
 require( 'bootstrap' );
@@ -27,10 +27,9 @@ Vue.config.debug = true;
 //tested stuff
 var testedComponent = require( "../../../resources/assets/js/grade/components/elementInput.js" );
 require( '../../../resources/assets/js/grade/components/Data.js' );
+var fixture = 'elementInput.fixture.html';
 
-
-describe( "Slider and comment integration", function () {
-    var fixture;
+describe( "elementInput.js | ", function () {
     var $fixture;
     var vm;
     // var store;
@@ -51,48 +50,10 @@ describe( "Slider and comment integration", function () {
         $comment.val( newText ).trigger( 'change' ).trigger( 'blur' );
     }
 
-    function loadComponent() {
-        //declare
-        var MyComponent = Vue.extend( testedComponent );
-        // register
-        Vue.component( 'element-input', MyComponent )
-
-        // create a root instance
-        var vm = new Vue( {
-            el: '#app'
-        } ).$mount();
-
-        return vm;
-        // compile off-document and append afterwards:
-        // new MyComponent().$mount().$appendTo( '#app' )
-    }
 
     beforeEach( function () {
-        this.$fixture = loadFixtures( 'elementInput.fixture.html' );
-        // fixture = '<div class="fixture container-fluid">' +
-        //     '<div id="gradeExamPage">' +
-        //     '<element-input :element-number="1"' +
-        //     ':element-index="1"' +
-        //     'element-id="1"' +
-        //     'element-name="testname"' +
-        //     ':question-number="1"></element-input>' +
-        //     '</div></div>';
-
-        // fixture = '<div class="fixture container-fluid">' +
-        //     '<div id="gradeExamPage">' +
-        //     '<input type="text" id="test"/>' +
-        //     '<div id="app">' + +
-        //         '<div id="gradeExamPage">' +
-        //     '<element-input :element-number="1"' +
-        //     ':element-index="1"' +
-        //     'element-id="1"' +
-        //     'element-name="testname"' +
-        //     ':question-number="1"></element-input>' +
-        //     '</div></div></div></div>';
-        // this.$fixture = setFixtures(fixture);
-
         var store = new Data();
-        store.activeStudent = 0;
+        store.setActiveStudent( 0 );
         store.loadStockComments( {
             0: {
                 0: 'e0 missing',
@@ -122,7 +83,6 @@ describe( "Slider and comment integration", function () {
         } );
         store.loadElementScores( {
             0: {
-
                 0: null,
                 1: null
             },
@@ -134,49 +94,31 @@ describe( "Slider and comment integration", function () {
             }
         } );
 
-        // store.loadQuestionScores( {
-        //     0: {
-        //         0: null,
-        //         1: null,
-        //         2: null
-        //     },
-        //     1: {
-        //         0: null,
-        //         1: null,
-        //         2: null,
-        //     }
-        // } );
-        //
-        // store.loadGradingTimes( {} );
-        // store.loadExamGrades( {
-        //     0: 'Letter grade',
-        //     1: 'Letter grade',
-        //     2: 'Letter grade'
-        // } );
         store.loadNumberQuestions( 2 );
         window.store = store;
 
-        loadComponent();
+        //prep the page
+        this.$fixture = loadFixtures( fixture );
+        this.vm = Helper.loadVueComponent( testedComponent, 'element-input' );
 
         this.$slider = $( "#sliderQ1E1" );
         this.$comment = $( "#commentQ1E1" );
 
-    } )
-    ;
+    } );
 
     afterEach( function () {
     } );
 
     /* -------------------------- make sure intact ----------- */
-    describe( "prepared and intact", function () {
+    describe( "Intact | ", function () {
 
-        it( "checks that the data store is valid and accessible", function () {
+        it( "store valid and accessible", function () {
             expect( store ).not.toBeUndefined();
-            expect( store.stockComments[ 0 ][ 0 ] ).toBe( 'e0 missing' );
+            expect( typeof store).toBe( 'object' );
         } );
 
 
-        it( "checks that fixture has loaded", function () {
+        it( "fixture loaded", function () {
             var $el = $( '#gradeExamPage' );
             expect( $el ).toExist();
             expect( $el ).not.toBeUndefined();
@@ -184,7 +126,7 @@ describe( "Slider and comment integration", function () {
         } );
 
 
-        it( "checks that the slider and comment areas are present", function () {
+        it( "slider and comment areas are present", function () {
             expect( this.$slider ).toExist();
             expect( this.$slider ).not.toBeUndefined()
             expect( this.$slider ).not.toBeNull()
@@ -213,50 +155,50 @@ describe( "Slider and comment integration", function () {
 
 
     /* ------------------------------- Slider movement -------------------- */
-    describe( "slider movements", function () {
+    describe( "slider movements |", function () {
 
 
-        it( "case: excellent | moves the slider and checks the comment text", function () {
+        it( "case: excellent ", function () {
             //prep
             var newVal = 10;
             //call
             moveSlider( this.$slider, newVal );
             //check
-            expect( store.elementScores[ activeStudent ][ elementIndex ] ).toBe( newVal );
-            expect( store.elementComments[ activeStudent ][ elementIndex ] ).toBe( 'e1 excellent' );
+            expect( store.getElementScore(activeStudent, elementIndex ) ).toBe( newVal );
+            expect( store._getStoredCommentText(activeStudent, elementIndex ) ).toBe( 'e1 excellent' );
         } );
 
 
-        it( "case: fair | moves the slider and checks the comment text", function () {
+        it( "case: fair ", function () {
             var newVal = 6.3;
 
             //call
             moveSlider( this.$slider, newVal );
 
             //check
-            expect( store.elementScores[ activeStudent ][ elementIndex ] ).toBe( newVal );
-            expect( store.elementComments[ activeStudent ][ elementIndex ] ).toBe( 'e1 fair' );
+            expect( store.getElementScore(activeStudent, elementIndex ) ).toBe( newVal );
+            expect( store._getStoredCommentText(activeStudent, elementIndex ) ).toBe( 'e1 fair' );
         } );
 
-        it( "case: poor | moves the slider and checks the comment text", function () {
+        it( "case: poor", function () {
             var newVal = 1.75;
 
             //call
             moveSlider( this.$slider, newVal );
 
             //check
-            expect( store.elementScores[ activeStudent ][ elementIndex ] ).toBe( newVal );
-            expect( store.elementComments[ activeStudent ][ elementIndex ] ).toBe( 'e1 poor' );
+            expect( store.getElementScore(activeStudent, elementIndex ) ).toBe( newVal );
+            expect( store._getStoredCommentText(activeStudent, elementIndex ) ).toBe( 'e1 poor' );
         } );
 
 
-        it( "case: missing | moves the slider and checks the comment text", function () {
+        it( "case: missing ", function () {
             var newVal = 0;
             moveSlider( this.$slider, newVal );
 
             //check
-            expect( store.elementScores[ activeStudent ][ elementIndex ] ).toBe( newVal );
-            expect( store.elementComments[ activeStudent ][ elementIndex ] ).toBe( 'e1 missing' );
+            expect( store.getElementScore(activeStudent, elementIndex ) ).toBe( newVal );
+            expect( store._getStoredCommentText(activeStudent, elementIndex )).toBe( 'e1 missing' );
         } );
     } );
 
@@ -269,7 +211,7 @@ describe( "Slider and comment integration", function () {
             editComment( this.$comment, newText );
 
             //check
-            expect( store.elementComments[ activeStudent ][ elementIndex ] ).toBe( newText );
+            expect( store.getCommentText(activeStudent, elementIndex ) ).toBe( newText );
             expect( this.$comment.val() ).toBe( newText );
         } );
 
@@ -280,17 +222,17 @@ describe( "Slider and comment integration", function () {
             editComment( this.$comment, newText );
 
             //check
-            expect( store.elementComments[ activeStudent ][ elementIndex ] ).toBe( newText );
+            expect( store.getCommentText(activeStudent, elementIndex ) ).toBe( newText );
             expect( this.$comment.val() ).toBe( newText );
 
             //call
             moveSlider( this.$slider, 10 );
 
             //check
-            expect( store.elementComments[ activeStudent ][ elementIndex ] ).toBe( newText );
+            expect( store.getCommentText(activeStudent, elementIndex )).toBe( newText );
             expect( this.$comment.val() ).toBe( newText );
             //Make sure does not interfere with slider value
-            expect( store.elementScores[ activeStudent ][ elementIndex ] ).toBe( 10 );
+            expect( store.getElementScore(activeStudent, elementIndex ) ).toBe( 10 );
 
         } );
 
@@ -303,21 +245,21 @@ describe( "Slider and comment integration", function () {
             editComment( this.$comment, newText );
 
             //check
-            expect( store.elementComments[ activeStudent ][ elementIndex ] ).toBe( newText );
+            expect( store.getCommentText(activeStudent, elementIndex ) ).toBe( newText );
             expect( this.$comment.val() ).toBe( newText );
 
             //call ---alter with new comment
             editComment( this.$comment, newText2 );
 
             //check
-            expect( store.elementComments[ activeStudent ][ elementIndex ] ).toBe( newText2 );
+            expect( store.getCommentText(activeStudent, elementIndex ) ).toBe( newText2 );
             expect( this.$comment.val() ).toBe( newText2 );
 
             //call ---make sure still persists after slider movement
             moveSlider( this.$slider, 10 );
 
             //check
-            expect( store.elementComments[ activeStudent ][ elementIndex ] ).toBe( newText2 );
+            expect( store.getCommentText(activeStudent, elementIndex ) ).toBe( newText2 );
             expect( this.$comment.val() ).toBe( newText2 );
         } );
 

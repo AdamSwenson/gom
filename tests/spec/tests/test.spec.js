@@ -21,7 +21,7 @@ var Helper = require('../helpers/vueTesting.helper.js');
 
 // var kvc = require('karma-vue-component');
 require( 'jasmine-jquery' );
-
+require('sinon')
 jasmine.getFixtures().fixturesPath = 'base/tests/spec/fixtures';
 
 
