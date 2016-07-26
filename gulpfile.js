@@ -24,7 +24,7 @@ elixir( function ( mix ) {
         'help/bodyText.scss'
     ], 'public/css/help-styles.css' );
 
-    mix.styles( [ 
+    mix.styles( [
         'libraries/bootstrap.min.css',
         'libraries/bootstrap-theme.min.css',
         'libraries/bootstrap-slider.css',
@@ -42,8 +42,10 @@ elixir( function ( mix ) {
 
     /* ------------ grade pages -------------- */
     mix.sass( [
-            'grade/mainGrading.scss'
-        ], 'public/css/grade-package.css' );
+        'grade/mainGrading.scss',
+        "../../../node_modules/typeahead/style.css"
+    ], 'public/css/grade-package.css' );
+
     mix.sass( [
         'common/common.sass',
         'grade/examSelectTable.scss'
@@ -60,12 +62,12 @@ elixir( function ( mix ) {
     mix.sass( [
         'common/common.sass',
         'reports/examControls.sass'
-    ], 'public/css/report-index-package.css');
-    
+    ], 'public/css/report-index-package.css' );
+
     mix.sass( [
         'reports/examControls.sass'
     ], 'public/css/exam-controls-package.css' );
-    
+
     mix.sass( [
         'reports/examAnalytics.scss'
     ], 'public/css/exam-analytics-package.css' );
@@ -80,7 +82,6 @@ elixir( function ( mix ) {
         'common/common.sass',
         'setup/selectExam.scss'
     ], 'public/css/select-exam-package.css' );
-
 
 
     /* ---------------------------------------------- scripts ----------------------------------------------------*/
@@ -107,7 +108,7 @@ elixir( function ( mix ) {
 //this is basically dead. using dev-roster now
     mix.browserify( 'setupPages/editRoster.js', 'public/js/roster-edit-package.js' );
     mix.browserify( 'setupPages/selectExam.js', 'public/js/exam-select-package.js' );
-    mix.browserify('setupPages/DEVeditRoster.js', 'public/js/dev-roster-edit-package.js');
+    mix.browserify( 'setupPages/DEVeditRoster.js', 'public/js/dev-roster-edit-package.js' );
 
 
     /* --------------------- Reports ---------------------- */
@@ -120,8 +121,9 @@ elixir( function ( mix ) {
     mix.browserify( 'grade/gradeAssign.js', 'public/js/grade-assign-package.js' );
     mix.browserify( [ 'grade/gradeExam.js' ], 'public/js/grade-exam-package.js' );
     mix.browserify( 'grade/examSelect.js', 'public/js/grade-exam-select-package.js' );
-    mix.scripts('grade/components/Data.js', 'public/js/grade-exam-data.js');
+    // mix.scripts('grade/components/Data.js', 'public/js/grade-exam-data.js');
 
+    mix.scripts( 'grade/components/Data.open.js', 'public/js/grade-exam-data.js' );
 
     /* --------------------- Feedback ---------------------- */
     mix.browserify( 'feedback/feedbackLogin.js', 'public/js/feedback-login-package.js' );
@@ -132,11 +134,11 @@ elixir( function ( mix ) {
     mix.browserify( 'help/help.js', 'public/js/help-package.js' );
 
     //testing
-    mix.browserify(['libraries/jquery-1.11.3.min.js'], 'public/js/jquery.js');
+    mix.browserify( [ 'libraries/jquery-1.11.3.min.js' ], 'public/js/jquery.js' );
 
-    
+
     /* --------------------- Admin ---------------------- */
-    mix.browserify(['admin/restrictedRegistration.js'], 'public/js/restricted-registration-package.js');
+    mix.browserify( [ 'admin/restrictedRegistration.js' ], 'public/js/restricted-registration-package.js' );
 
     //
     // elixir(function(mix) {
@@ -144,19 +146,19 @@ elixir( function ( mix ) {
     //         proxy: "localhost:8000"
     //     });
     // });
-/* ------------------------- Dev and testing -------------------------- */
-    mix.scripts([
-            "libraries/unitTestHelpers/jquery-1.11.1.js",
-            "libraries/unitTestHelpers/jquery-ui.js",
-            "libraries/unitTestHelpers/jquery.tmpl.min.js",
-            "libraries/unitTestHelpers/qunit-1.15.0.js",
-            "libraries/unitTestHelpers/json2.js",
-            "libraries/unitTestHelpers/jquery.mockjax.js",
-            "libraries/unitTestHelpers/jquery.cookie.js"
-    ], 'public/js/testing/js-test-suite.js');
+    /* ------------------------- Dev and testing -------------------------- */
+    mix.scripts( [
+        "libraries/unitTestHelpers/jquery-1.11.1.js",
+        "libraries/unitTestHelpers/jquery-ui.js",
+        "libraries/unitTestHelpers/jquery.tmpl.min.js",
+        "libraries/unitTestHelpers/qunit-1.15.0.js",
+        "libraries/unitTestHelpers/json2.js",
+        "libraries/unitTestHelpers/jquery.mockjax.js",
+        "libraries/unitTestHelpers/jquery.cookie.js"
+    ], 'public/js/testing/js-test-suite.js' );
 
 
-    mix.browserify('grade/gradeVue.js', 'public/js/dev/grade-vue.js');
+    mix.browserify( 'grade/gradeVue.js', 'public/js/dev/grade-vue.js' );
 //
 //     var gulpNSP = require('gulp-nsp');
 //

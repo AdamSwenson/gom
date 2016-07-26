@@ -35,13 +35,52 @@ new Vue({
     data: {
         store: store,
 
-        ajaxTools: ajaxTools
+        ajaxTools: ajaxTools,
 
+        sortAsc: true
     },
 
     computed: {},
 
     methods: {
+        /* ------------------------------ Display ------------------------------ */
+
+        showQuestionPanel: function showQuestionPanel() {
+            $('#selectPrompt').hide();
+            $('#questionArea').show("fast");
+        },
+
+        /**
+         * Sorts the StudentRoster by the clicked header. Sort order reverses with each press.
+         * @param value
+         * @param data
+         */
+        sortRosterBy: function sortRosterBy(value) {
+            var data = this.store;
+            var me = this;
+            var $roster = $('#studentRosterBody');
+            $roster.append($roster.find('[id^="studentListItem"]').sort(function (a, b) {
+                var i = $(a).find('[id^="' + value + '"]');
+                var j = $(b).find('[id^="' + value + '"]');
+                var result;
+                if (value == 'studentName' || value == 'studentIdentifier') {
+                    result = $(i).text().toUpperCase().localeCompare($(j).text().toUpperCase());
+                } else {
+                    // sort by exam grade
+                    var gradeA = data.examGrades[$(a).attr('data-index')];
+                    var gradeB = data.examGrades[$(b).attr('data-index')];
+                    result = gradeA - gradeB;
+                }
+                // flip results if we're sorting in DESC
+                if (!me.sortAsc) {
+                    result *= -1;
+                }
+                return result;
+            }));
+            me.sortAsc = !me.sortAsc;
+        },
+
+        /* ------------------------------ Server ------------------------------ */
 
         /**
          * Saves a comment (and score if present) to the database
@@ -76,18 +115,37 @@ new Vue({
 
         /**
          * Save a question or element score (along with grading time) to the server
-         * @param studentId
-         * @param gradeRequest
-         * @param store
+         *
+         * NB, To avoid race conditions, don't use the active student shortcuts in store to get the values.
+         *
+         * @param elementId
+         * @param score
          */
-        saveScoreWithTime: function saveScoreWithTime(dataType, dataId, score) {
-            var me = this;
-
-            var studentId = this.store.getActiveStudentId();
+        saveElementScoreWithTime: function saveElementScoreWithTime(studentIndex, elementId, score) {
+            var student = this.store.getStudent(studentIndex);
             var examId = this.store.getExamId();
-            var time = this.store.getActiveStudentGradingTime();
+            var time = this.store.getStudentGradingTime(studentIndex);
 
-            var request = this.ajaxTools.createGradeRequestObject(studentId, dataType, dataId, score, null, time);
+            var request = new this.ajaxTools.requests.elementScoreRequest(student.studentId, elementId, score, time);
+
+            return this.ajaxTools.sendRequest(examId, request);
+        },
+
+        /**
+         * Save a question or element score (along with grading time) to the server
+         *
+         * NB, To avoid race conditions, don't use the active student shortcuts in store to get the values.
+         *
+         * @param studentIndex
+         * @param questionIndex
+         * @param questionAssignmentId
+         */
+        saveQuestionScoreWithTime: function saveQuestionScoreWithTime(studentIndex, questionIndex, questionAssignmentId) {
+            var student = this.store.getStudent(studentIndex);
+            var examId = this.store.getExamId();
+            var time = this.store.getStudentGradingTime(studentIndex);
+            var score = this.store.getQuestionScore(studentIndex, questionIndex);
+            var request = new this.ajaxTools.requests.questionScoreRequest(student.studentId, questionAssignmentId, score, time);
 
             return this.ajaxTools.sendRequest(examId, request);
         },
@@ -104,8 +162,29 @@ new Vue({
             var examId = this.store.getExamId();
 
             return this.ajaxTools.deleteScoreRequest(examId, studentId, questionAssignmentId);
+        },
+
+        /* ------------------------------ Events ------------------------------ */
+
+        /**
+         * Sends an event requesting that the timer start
+         */
+        requestTimerStart: function requestTimerStart() {
+            window.console.log('gradeVue', 'sending start-timer-request');
+            this.$broadcast('start-timer-request');
+        },
+
+        /**
+         * Sends an event requesting that the timer stop
+         */
+        requestTimerStop: function requestTimerStop() {
+            window.console.log('gradeVue', 'sending stop-timer-request');
+            this.$broadcast('stop-timer-request');
         }
+
     },
+
+    /* ------------------------------ other ------------------------------ */
 
     events: {
         /**
@@ -117,11 +196,20 @@ new Vue({
             //     //Update dashboard and roster data displayed
             //     updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
             //Sigh. The user forgot to restart the timer. Do it for them
+            this.requestTimerStart();
             //Timer.resumeTimerIfPaused( data, Roster, Dashboard );
         },
 
+        /**
+         * Save the question score
+         * obj.questionIndex
+         * obj.questionNumber
+         * obj.score
+         * @param obj
+         */
         'letter-grade-selected': function letterGradeSelected(obj) {
             window.console.log('gradeVue', 'letter-grade-selected', obj);
+            this.store.storeQuestionScoreForActiveStudent(obj.questionIndex, obj.score);
             this.$broadcast('letter-grade-selected', obj);
         },
 
@@ -143,6 +231,9 @@ new Vue({
          */
         'student-select-event': function studentSelectEvent(obj) {
             window.console.log('gradeVue', 'student-select-event');
+            this.showQuestionPanel();
+            this.$broadcast('start-timer-request');
+            this.requestTimerStart();
             this.$broadcast('student-select-event', obj);
         },
 
@@ -169,11 +260,15 @@ new Vue({
         /**
          * Handles the request to store question score on the server
          * Accompanying object should contain:
+         *      obj.questionAssignmentId: Db id of the question assignment
          *      obj.questionIndex: Index of the question whose score needs updating
-         * @param obj
+         *      obj.studentIndex: Index of the student to record grades for.
+         *          This is here to avoid a race condition
+         * @param questionScoreRequestObj
          */
-        'store-question-score-request': function storeQuestionScoreRequest(obj) {
-            window.console.log('gradeVue', 'store-question-score-request', obj);
+        'store-question-score-request': function storeQuestionScoreRequest(questionScoreRequestObj) {
+            window.console.log('gradeVue', 'caught store-question-score-request', questionScoreRequestObj);
+            this.saveQuestionScoreWithTime(questionScoreRequestObj.studentIndex, questionScoreRequestObj.questionIndex, questionScoreRequestObj.questionAssignmentId);
         },
 
         /**
@@ -181,13 +276,16 @@ new Vue({
          */
         'start-timer-request': function startTimerRequest() {
             window.console.log('gradeVue', 'caught start-timer-request');
+            this.requestTimerStart();
         },
 
         /**
-         * Handles the request to stop the grading timer
+         * Handles the request to stop the grading timer by
+         * retransmitting it back down the chain
          */
         'stop-timer-request': function stopTimerRequest() {
             window.console.log('gradeVue', 'stop-timer-request');
+            this.requestTimerStop();
         },
 
         /**
@@ -218,6 +316,32 @@ new Vue({
     directives: {},
 
     ready: function ready() {
+        /* ------------------ table sorting listeners --------- */
+        // $( "#nameHeader" ).on( 'click', function () {
+        //     Roster.sortRosterBy( 'studentName', data );
+        // } );
+        // $( "#idHeader" ).on( 'click', function () {
+        //     Roster.sortRosterBy( 'studentIdentifier', data );
+        // } );
+        // $( "#gradeHeader" ).on( 'click', function () {
+        //     Roster.sortRosterBy( 'examGrade', data );
+        // } );
+        //
+        //
+        var me = this;
+        /* ------------------ table sorting listeners --------- */
+        $("#nameHeader").on('click', function () {
+            me.sortRosterBy('studentName');
+        });
+        $("#idHeader").on('click', function () {
+            me.sortRosterBy('studentIdentifier');
+        });
+        $("#gradeHeader").on('click', function () {
+            me.sortRosterBy('examGrade');
+        });
+
+        this.sortRosterBy('studentName');
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -227,7 +351,7 @@ new Vue({
     }
 });
 
-},{"./components/ajax.tools.js":19,"./components/currentStudentArea.component.js":20,"./components/dashboard.counts.component":21,"./components/dashboard.timer.component":22,"./components/elementInput.js":23,"./components/letterGradeButton.component.js":24,"./components/questionScore.component":25,"./components/studentListItem":26,"bootbox":2,"bootstrap":3,"jquery":16,"vue":18}],2:[function(require,module,exports){
+},{"./components/ajax.tools.js":29,"./components/currentStudentArea.component.js":30,"./components/dashboard.counts.component":31,"./components/dashboard.timer.component":32,"./components/elementInput.js":33,"./components/letterGradeButton.component.js":34,"./components/questionScore.component":35,"./components/studentListItem":37,"bootbox":2,"bootstrap":3,"jquery":24,"vue":28}],2:[function(require,module,exports){
 /**
  * bootbox.js [v4.4.0]
  *
@@ -1214,7 +1338,7 @@ new Vue({
   return exports;
 }));
 
-},{"jquery":16}],3:[function(require,module,exports){
+},{"jquery":24}],3:[function(require,module,exports){
 // This file is autogenerated via the `commonjs` Grunt task. You can require() this file in a CommonJS environment.
 require('../../js/transition.js')
 require('../../js/alert.js')
@@ -3587,6 +3711,1232 @@ require('../../js/affix.js')
 }(jQuery);
 
 },{}],16:[function(require,module,exports){
+
+var domify = require('./lib/domify');
+var classes = require('./lib/classes');
+var matches = require('./lib/matches');
+var event = require('./lib/event');
+var mutation = require('./lib/mutation');
+
+/**
+ * Expose `dom()`.
+ */
+
+exports = module.exports = dom;
+
+/**
+ * Return a dom `List` for the given
+ * `html`, selector, or element.
+ *
+ * @param {String|Element|List}
+ * @return {List}
+ * @api public
+ */
+
+function dom(selector, context) {
+
+  // user must specify a selector
+  if (!selector) {
+    throw new Error('no selector specified');
+  }
+
+  // array
+  if (Array.isArray(selector)) {
+    return new List(selector);
+  }
+
+  var ctx = context;
+
+  // if no context, then use document
+  if (!ctx) {
+    ctx = document;
+  }
+  // if context is another list, use the first element
+  else if (ctx instanceof List) {
+    ctx = context[0];
+  }
+
+  // flatten out a nodelist into regular array
+  if (selector instanceof NodeList) {
+    var arr = [];
+    for (var i=0; i<selector.length ; ++i) {
+      arr.push(selector[i]);
+    }
+    return new List(arr, selector);
+  }
+
+  // List
+  if (selector instanceof List) {
+    return selector;
+  }
+
+  // node
+  if (selector.nodeName) {
+    return new List([selector]);
+  }
+
+  // if selector is a string, trim off leading and trailing whitespace
+  if (typeof selector === 'string') {
+    selector = selector.trim();
+  }
+
+  // html
+  if ('<' == selector.charAt(0)) {
+    return dom(domify(selector));
+  }
+
+  // selector
+  if ('string' == typeof selector) {
+    return dom(ctx.querySelectorAll(selector), selector);
+  }
+}
+
+/**
+ * Expose `List` constructor.
+ */
+
+exports.List = List;
+
+/**
+ * Initialize a new `List` with the
+ * given array-ish of `els` and `selector`
+ * string.
+ *
+ * @param {Mixed} els
+ * @param {String} selector
+ * @api private
+ */
+
+function List(els, selector) {
+  Array.prototype.push.apply(this, els);
+  this.selector = selector;
+}
+
+// for minifying
+var proto = List.prototype;
+
+/**
+ * Set attribute `name` to `val`, or get attr `name`.
+ *
+ * @param {String} name
+ * @param {String} [val]
+ * @return {String|List} self
+ * @api public
+ */
+
+proto.attr = function(name, val) {
+  if (val === undefined) {
+    return this[0].getAttribute(name);
+  }
+
+  this[0].setAttribute(name, val);
+  return this;
+};
+
+proto.removeAttr = function(name) {
+  this[0].removeAttribute(name);
+  return this;
+};
+
+// set or get the data attribute for the first element in the list
+proto.data = function(key, value) {
+  return this.attr('data-' + key, value);
+};
+
+/**
+ * Return a cloned `List` with all elements cloned.
+ *
+ * @return {List}
+ * @api public
+ */
+
+proto.clone = function(){
+  var arr = [];
+  for (var i = 0, len = this.length; i < len; ++i) {
+    arr.push(this[i].cloneNode(true));
+  }
+  return new List(arr);
+};
+
+/**
+ * Return a `List` containing the element at `i`.
+ *
+ * @param {Number} i
+ * @return {List}
+ * @api public
+ */
+
+proto.at = function(i){
+  return new List([this[i]], this.selector);
+};
+
+/**
+ * Return a `List` containing the first element.
+ *
+ * @param {Number} i
+ * @return {List}
+ * @api public
+ */
+
+proto.first = function(){
+  return new List([this[0]], this.selector);
+};
+
+/**
+ * Return a `List` containing the last element.
+ *
+ * @param {Number} i
+ * @return {List}
+ * @api public
+ */
+
+proto.last = function(){
+  return new List([this[this.length - 1]], this.selector);
+};
+
+/**
+ * Return list length.
+ *
+ * @return {Number}
+ * @api public
+ */
+
+proto.length = function() {
+  return this.length;
+};
+
+/**
+ * Return element text.
+ *
+ * @return {String}
+ * @api public
+ */
+
+proto.text = function(val) {
+  if (val) {
+    this[0].textContent = val;
+    return this;
+  }
+
+  // TODO: real impl
+  var str = '';
+  for (var i = 0; i < this.length; ++i) {
+    str += this[i].textContent;
+  }
+  return str;
+};
+
+/**
+ * Return element html.
+ *
+ * @return {String}
+ * @api public
+ */
+
+proto.html = function(val){
+  var el = this[0];
+
+  if (val) {
+    if (typeof(val) !== 'string') {
+      throw new Error('.html() requires a string');
+    }
+
+    el.innerHTML = val;
+    return this;
+  }
+
+  return el.innerHTML;
+};
+
+proto.hide = function() {
+  this.forEach(function(item) {
+    var save = item.style.display;
+    if (save) {
+      item.setAttribute('data-olddisplay', save);
+    }
+    item.style.display = 'none';
+  });
+  return this;
+};
+
+proto.show = function() {
+  this.forEach(function(item) {
+    var old = item.getAttribute('data-olddisplay');
+    item.removeAttribute('data-olddisplay');
+
+    // use default display for element
+    if (!old || old === 'none') {
+      old = '';
+    }
+
+    item.style.display = old;
+  });
+  return this;
+};
+
+/**
+ * Bind to `event` and invoke `fn(e)`. When
+ * a `selector` is given then events are delegated.
+ *
+ * @param {String} event
+ * @param {String} [selector]
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {List}
+ * @api public
+ */
+
+proto.on = function(name, selector, fn, capture) {
+  if ('string' == typeof selector) {
+
+    var el = this[0];
+    var deleg = function(e) {
+      var target = e.target;
+      do {
+        if (matches(target, selector)) {
+
+          var Event = function(e) {
+            for (var k in e) {
+              this[k] = e[k];
+            }
+          };
+
+          // craete a new 'event' object
+          // so we can replace the 'currentTarget' field
+          var new_ev = new Event(e);
+
+          // replace the current target
+          new_ev.currentTarget = target;
+
+          return fn.call(target, new_ev);
+        }
+        target = target.parentElement;
+      } while (target && target !== el);
+    }
+
+    // TODO(shtylman) synthesize this event
+    if (name === 'mouseenter') {
+      name = 'mouseover';
+    }
+
+    for (var i = 0; i < this.length; ++i) {
+      fn._delegate = deleg;
+      event.bind(this[i], name, deleg, capture);
+    }
+    return this;
+  }
+
+  //TODO(shtylman) why not just override the fn and bind that?
+
+  capture = fn;
+  fn = selector;
+
+  for (var i = 0; i < this.length; ++i) {
+    event.bind(this[i], name, fn, capture);
+  }
+
+  return this;
+};
+
+/**
+ * Unbind to `event` and invoke `fn(e)`. When
+ * a `selector` is given then delegated event
+ * handlers are unbound.
+ *
+ * @param {String} event
+ * @param {String} [selector]
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {List}
+ * @api public
+ */
+
+proto.off = function(name, selector, fn, capture){
+  if ('string' == typeof selector) {
+    for (var i = 0; i < this.length; ++i) {
+      // TODO: add selector support back
+      delegate.unbind(this[i], name, fn._delegate, capture);
+    }
+    return this;
+  }
+
+  capture = fn;
+  fn = selector;
+
+  for (var i = 0; i < this.length; ++i) {
+    event.unbind(this[i], name, fn, capture);
+  }
+  return this;
+};
+
+/**
+ * Iterate elements and invoke `fn(list, i)`.
+ *
+ * @param {Function} fn
+ * @return {List} self
+ * @api public
+ */
+
+proto.each = function(fn) {
+  for (var i = 0; i < this.length; ++i) {
+    fn(new List([this[i]], this.selector), i);
+  }
+  return this;
+};
+
+/**
+ * Iterate elements and invoke `fn(el, i)`.
+ *
+ * @param {Function} fn
+ * @return {List} self
+ * @api public
+ */
+
+proto.forEach = function(fn) {
+  Array.prototype.forEach.call(this, fn);
+  return this;
+};
+
+/**
+ * Map elements invoking `fn(list, i)`.
+ *
+ * @param {Function} fn
+ * @return {Array}
+ * @api public
+ */
+
+proto.map = function(fn){
+  return Array.prototype.map.call(this, fn);
+};
+
+proto.select = function() {
+  for (var i=0; i<this.length ; ++i) {
+    var el = this[i];
+    el.select();
+  };
+
+  return this;
+};
+
+/**
+ * Filter elements invoking `fn(list, i)`, returning
+ * a new `List` of elements when a truthy value is returned.
+ *
+ * @param {Function} fn
+ * @return {List}
+ * @api public
+ */
+
+proto.filter = function(fn) {
+  var els = Array.prototype.filter.call(this, function(el) {
+    return fn(new List([el], this.selector));
+  });
+  return new List(els, this.selector);
+};
+
+proto.value = function(val) {
+  var el = this[0];
+  if (val) {
+    el.value = val;
+    return this
+  }
+
+  return el.value;
+};
+
+proto.offset = function() {
+  var el = this[0];
+  var curleft = 0;
+  var curtop = 0;
+
+  if (el.offsetParent) {
+    do {
+      curleft += el.offsetLeft;
+      curtop += el.offsetTop;
+    } while (el = el.offsetParent);
+  }
+
+  return {
+    left: curleft,
+    top: curtop
+  }
+};
+
+proto.position = function() {
+  var el = this[0];
+  return {
+    top: el.offsetTop,
+    left: el.offsetLeft
+  }
+};
+
+/// includes border
+proto.outerHeight = function() {
+  return this[0].offsetHeight;
+};
+
+/// no border, includes padding
+proto.innerHeight = function() {
+  return this[0].clientHeight;
+};
+
+/// no border, no padding
+/// this is slower than the others because it must get computed style values
+proto.contentHeight = function() {
+  var style = window.getComputedStyle(this[0], null);
+  var ptop = style.getPropertyValue('padding-top').replace('px', '') - 0;
+  var pbot = style.getPropertyValue('padding-bottom').replace('px', '') - 0;
+
+  return this.innerHeight() - ptop - pbot;
+};
+
+proto.scrollHeight = function() {
+  return this[0].scrollHeight;
+};
+
+/// includes border
+proto.outerWidth = function() {
+  return this[0].offsetWidth;
+};
+
+/// no border, includes padding
+proto.innerWidth = function() {
+  return this[0].clientWidth;
+};
+
+/// no border, no padding
+/// this is slower than the others because it must get computed style values
+proto.contentWidth = function() {
+  var style = window.getComputedStyle(this[0], null);
+  var pleft = style.getPropertyValue('padding-left').replace('px', '') - 0;
+  var pright = style.getPropertyValue('padding-right').replace('px', '') - 0;
+
+  return this.innerWidth() - pleft - pright;
+};
+
+proto.scrollWidth = function() {
+  return this[0].scrollWidth;
+};
+
+/**
+ * Add the given class `name`.
+ *
+ * @param {String} name
+ * @return {List} self
+ * @api public
+ */
+
+proto.addClass = function(name){
+  var el;
+  for (var i = 0; i < this.length; ++i) {
+    el = this[i];
+    el._classes = el._classes || classes(el);
+    el._classes.add(name);
+  }
+  return this;
+};
+
+/**
+ * Remove the given class `name`.
+ *
+ * @param {String} name
+ * @return {List} self
+ * @api public
+ */
+
+proto.removeClass = function(name){
+  var el;
+  for (var i = 0; i < this.length; ++i) {
+    el = this[i];
+    el._classes = el._classes || classes(el);
+    el._classes.remove(name);
+  }
+  return this;
+};
+
+/**
+ * Toggle the given class `name`.
+ *
+ * @param {String} name
+ * @return {List} self
+ * @api public
+ */
+
+proto.toggleClass = function(name){
+  var el;
+  for (var i = 0; i < this.length; ++i) {
+    el = this[i];
+    el._classes = el._classes || classes(el);
+    el._classes.toggle(name);
+  }
+  return this;
+};
+
+/**
+ * Check if the given class `name` is present.
+ *
+ * @param {String} name
+ * @return {Boolean}
+ * @api public
+ */
+
+proto.hasClass = function(name){
+  var el;
+  for (var i = 0; i < this.length; ++i) {
+    el = this[i];
+    el._classes = el._classes || classes(el);
+    if (el._classes.has(name)) return true;
+  }
+  return false;
+};
+
+/**
+ * Set CSS `prop` to `val` or get `prop` value.
+ *
+ * @param {String} prop
+ * @param {Mixed} val
+ * @return {List|String}
+ * @api public
+ */
+
+proto.css = function(prop, val){
+  if (prop instanceof Object) {
+    for(var p in prop) {
+      this.setStyle(p, prop[p]);
+    }
+  }
+
+  if (2 == arguments.length) {
+    return this.setStyle(prop, val);
+  }
+
+  return this.getStyle(prop);
+};
+
+/**
+ * Set CSS `prop` to `val`.
+ *
+ * @param {String} prop
+ * @param {Mixed} val
+ * @return {List} self
+ * @api private
+ */
+
+proto.setStyle = function(prop, val){
+  for (var i = 0; i < this.length; ++i) {
+    this[i].style[prop] = val;
+  }
+  return this;
+};
+
+/**
+ * Get CSS `prop` value.
+ *
+ * @param {String} prop
+ * @return {String}
+ * @api private
+ */
+
+proto.getStyle = function(prop) {
+  var el = this[0];
+  if (el) return el.style[prop];
+};
+
+/**
+ * Find children matching the given `selector`.
+ *
+ * @param {String} selector
+ * @return {List}
+ * @api public
+ */
+
+proto.find = function(selector) {
+  return dom(selector, this);
+};
+
+proto.next = function() {
+  var els = [];
+  for (var i=0 ; i<this.length ; ++i) {
+    var next = this[i].nextElementSibling;
+    // if no more siblings then don't push
+    if (next) {
+      els.push(next);
+    }
+  }
+
+  return new List(els);
+};
+
+proto.prev = function() {
+  var els = [];
+  for (var i=0 ; i<this.length ; ++i) {
+    var next = this[i].previousElementSibling;
+    // if no more siblings then don't push
+    if (next) {
+      els.push(next);
+    }
+  }
+  return new List(els);
+};
+
+proto.emit = function(name, opt) {
+  event.emit(this[0], name, opt);
+  return this;
+};
+
+proto.parent = function() {
+  var els = [];
+  for (var i=0 ; i<this.length ; ++i) {
+    els.push(this[i].parentNode);
+  }
+
+  return new List(els);
+};
+
+/// mutation
+
+proto.prepend = function(what) {
+  for (var i=0 ; i<this.length ; ++i) {
+    mutation.prepend(this[i], dom(what));
+  }
+  return this;
+};
+
+proto.append = function(what) {
+  for (var i=0 ; i<this.length ; ++i) {
+    mutation.append(this[i], dom(what));
+  }
+  return this;
+};
+
+proto.before = function(what) {
+  for (var i=0 ; i<this.length ; ++i) {
+    mutation.before(this[i], dom(what));
+  }
+  return this;
+};
+
+proto.after = function(what) {
+  for (var i=0 ; i<this.length ; ++i) {
+    mutation.after(this[i], dom(what));
+  }
+  return this;
+};
+
+proto.remove = function() {
+  for (var i=0 ; i<this.length ; ++i) {
+    mutation.remove(this[i]);
+  }
+};
+
+proto.replace = function(what) {
+  for (var i=0 ; i<this.length ; ++i) {
+    mutation.replace(this[i], dom(what));
+  }
+  return this;
+};
+
+// note, we don't do .find('*').remove() here for efficiency
+proto.empty = function() {
+  for (var i=0 ; i<this.length ; ++i) {
+    mutation.empty(this[i]);
+  }
+  return this;
+};
+
+
+},{"./lib/classes":17,"./lib/domify":18,"./lib/event":19,"./lib/matches":21,"./lib/mutation":22}],17:[function(require,module,exports){
+
+// whitespace regex to avoid creating every time
+var re = /\s+/;
+
+/**
+ * Wrap `el` in a `ClassList`.
+ *
+ * @param {Element} el
+ * @return {ClassList}
+ * @api public
+ */
+
+module.exports = function(el){
+  return new ClassList(el);
+};
+
+/**
+ * Initialize a new ClassList for `el`.
+ *
+ * @param {Element} el
+ * @api private
+ */
+
+function ClassList(el) {
+  this.el = el;
+  this.list = el.classList;
+}
+
+/**
+ * Add class `name` if not already present.
+ *
+ * @param {String} name
+ * @return {ClassList}
+ * @api public
+ */
+
+ClassList.prototype.add = function(name){
+  // classList
+  if (this.list) {
+    this.list.add(name);
+    return this;
+  }
+
+  // fallback
+  var arr = this.array();
+  var i = arr.indexOf(name);
+  if (!~i) {
+    arr.push(name);
+  }
+  this.el.className = arr.join(' ');
+  return this;
+};
+
+/**
+ * Remove class `name` when present.
+ *
+ * @param {String} name
+ * @return {ClassList}
+ * @api public
+ */
+
+ClassList.prototype.remove = function(name){
+  // classList
+  if (this.list) {
+    this.list.remove(name);
+    return this;
+  }
+
+  // fallback
+  var arr = this.array();
+  var i = arr.indexOf(name);
+  if (~i) {
+    arr.splice(i, 1);
+  }
+  this.el.className = arr.join(' ');
+  return this;
+};
+
+/**
+ * Toggle class `name`.
+ *
+ * @param {String} name
+ * @return {ClassList}
+ * @api public
+ */
+
+ClassList.prototype.toggle = function(name){
+  // classList
+  if (this.list) {
+    this.list.toggle(name);
+    return this;
+  }
+
+  // fallback
+  if (this.has(name)) {
+    return this.remove(name);
+  }
+
+  return this.add(name);
+};
+
+/**
+ * Return an array of classes.
+ *
+ * @return {Array}
+ * @api public
+ */
+
+ClassList.prototype.array = function(){
+  var arr = this.el.className.split(re);
+  if ('' === arr[0]) {
+    arr.pop();
+  }
+  return arr;
+};
+
+/**
+ * Check if class `name` is present.
+ *
+ * @param {String} name
+ * @return {ClassList}
+ * @api public
+ */
+
+ClassList.prototype.has = function(name){
+  return this.list
+    ? this.list.contains(name)
+    : !! ~this.array().indexOf(name);
+};
+
+},{}],18:[function(require,module,exports){
+
+/**
+ * Wrap map from jquery.
+ */
+
+var map = {
+    option: [1, '<select multiple="multiple">', '</select>'],
+    optgroup: [1, '<select multiple="multiple">', '</select>'],
+    legend: [1, '<fieldset>', '</fieldset>'],
+    thead: [1, '<table>', '</table>'],
+    tbody: [1, '<table>', '</table>'],
+    tfoot: [1, '<table>', '</table>'],
+    colgroup: [1, '<table>', '</table>'],
+    caption: [1, '<table>', '</table>'],
+    tr: [2, '<table><tbody>', '</tbody></table>'],
+    td: [3, '<table><tbody><tr>', '</tr></tbody></table>'],
+    th: [3, '<table><tbody><tr>', '</tr></tbody></table>'],
+    col: [2, '<table><tbody></tbody><colgroup>', '</colgroup></table>'],
+    _default: [0, '', '']
+};
+
+/**
+ * Convert the given `html` into DOM elements.
+ * @return {Array} of html elements
+ *
+ * @api public
+ */
+
+module.exports = function(html){
+    if (typeof html !== 'string') {
+        throw new TypeError('String expected');
+    }
+
+    // tag name
+    var m = /<([\w:]+)/.exec(html);
+    if (!m) throw new Error('No elements were generated.');
+    var tag = m[1];
+
+    // body support
+    if (tag == 'body') {
+        var el = document.createElement('html');
+        el.innerHTML = html;
+        return [el.removeChild(el.lastChild)];
+    }
+
+    var elements = [];
+
+    // wrap map
+    var wrap = map[tag] || map._default;
+    var depth = wrap[0];
+    var prefix = wrap[1];
+    var suffix = wrap[2];
+    var el = document.createElement('div');
+    el.innerHTML = prefix + html + suffix;
+
+    // trim away wrapper elements
+    while (depth--) {
+        el = el.lastChild;
+    };
+
+    var els = [];
+
+    var child = el.firstChild;
+    do {
+        els.push(child);
+    } while (child = child.nextElementSibling);
+
+    for (var i=0 ; i<els.length ; ++i) {
+        el.removeChild(els[i]);
+    }
+
+    return els;
+};
+
+},{}],19:[function(require,module,exports){
+
+/**
+ * Bind `el` event `type` to `fn`.
+ *
+ * @param {Element} el
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {Function}
+ * @api public
+*/
+
+exports.bind = function(el, type, fn, capture) {
+    if (el.addEventListener) {
+        el.addEventListener(type, fn, capture || false);
+    } else {
+        el.attachEvent('on' + type, fn);
+    }
+
+    return fn;
+};
+
+/**
+ * Unbind `el` event `type`'s callback `fn`.
+ *
+ * @param {Element} el
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {Function}
+ * @api public
+*/
+
+exports.unbind = function(el, type, fn, capture) {
+    if (el.removeEventListener) {
+        el.removeEventListener(type, fn, capture || false);
+    } else {
+        el.detachEvent('on' + type, fn);
+    }
+    return fn;
+};
+
+exports.emit = function(el, name, opts) {
+    opts = opts || {};
+    var type = typeOf(name);
+
+    var ev = document.createEvent(type + 's');
+
+    // initKeyEvent in firefox
+    // initKeyboardEvent in chrome
+
+    var init = typeof ev['init' + type] === 'function'
+      ? 'init' + type : 'initEvent';
+
+    var sig = initSignatures[init];
+    var args = [];
+    var used = {};
+
+    opts.type = name;
+
+    for (var i = 0; i < sig.length; ++i) {
+        var key = sig[i];
+        var val = opts[key];
+        // if no user specified value, then use event default
+        if (val === undefined) {
+            val = ev[key];
+        }
+        args.push(val);
+    }
+    ev[init].apply(ev, args);
+
+    // attach remaining unused options to the object
+    for (var key in opts) {
+        if (!used[key]) {
+            ev[key] = opts[key];
+        }
+    }
+
+    return el.dispatchEvent(ev);
+};
+
+var initSignatures = require('./init.json');
+var types = require('./types.json');
+var typeOf = (function () {
+    var typs = {};
+    for (var key in types) {
+        var ts = types[key];
+        for (var i = 0; i < ts.length; i++) {
+            typs[ts[i]] = key;
+        }
+    }
+
+    return function (name) {
+        return typs[name] || 'Event';
+    };
+})();
+
+},{"./init.json":20,"./types.json":23}],20:[function(require,module,exports){
+module.exports={
+  "initEvent" : [
+    "type",
+    "bubbles",
+    "cancelable"
+  ],
+  "initUIEvent" : [
+    "type",
+    "bubbles",
+    "cancelable",
+    "view",
+    "detail"
+  ],
+  "initMouseEvent" : [
+    "type",
+    "bubbles",
+    "cancelable",
+    "view",
+    "detail",
+    "screenX",
+    "screenY",
+    "clientX",
+    "clientY",
+    "ctrlKey",
+    "altKey",
+    "shiftKey",
+    "metaKey",
+    "button",
+    "relatedTarget"
+  ],
+  "initMutationEvent" : [
+    "type",
+    "bubbles",
+    "cancelable",
+    "relatedNode",
+    "prevValue",
+    "newValue",
+    "attrName",
+    "attrChange"
+  ],
+  "initKeyEvent" : [
+    "type",
+    "bubbles",
+    "cancelable",
+    "view",
+    "ctrlKey",
+    "altKey",
+    "shiftKey",
+    "metaKey",
+    "keyCode",
+    "charCode"
+  ]
+}
+
+},{}],21:[function(require,module,exports){
+
+var proto = Element.prototype;
+
+var vendor = proto.matchesSelector
+  || proto.webkitMatchesSelector
+  || proto.mozMatchesSelector
+  || proto.msMatchesSelector
+  || proto.oMatchesSelector;
+
+module.exports = function match(el, selector) {
+    if (vendor) {
+        return vendor.call(el, selector);
+    }
+
+    var nodes = el.parentNode.querySelectorAll(selector);
+    for (var i = 0; i < nodes.length; ++i) {
+        if (nodes[i] == el) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
+},{}],22:[function(require,module,exports){
+
+function mkfragment(elements) {
+    var frag = document.createDocumentFragment();
+
+    for (var i=0 ; i<elements.length ; ++i) {
+        frag.appendChild(elements[i]);
+    }
+
+    return frag;
+};
+
+module.exports.remove = function(el) {
+    if (!el.parentNode) {
+        return;
+    }
+    return el.parentNode.removeChild(el);
+};
+
+module.exports.replace = function(el, what) {
+    if (!el.parentNode) {
+        return;
+    }
+    return el.parentNode.replaceChild(mkfragment(what), el);
+};
+
+module.exports.prepend = function(el, what) {
+    return el.insertBefore(mkfragment(what), el.firstChild);
+};
+
+module.exports.append = function(el, what) {
+    var frag = document.createDocumentFragment();
+    return el.appendChild(mkfragment(what));
+};
+
+// returns newly inserted element
+module.exports.after = function(el, what) {
+    if (!el.parentNode) {
+        return;
+    }
+
+    // ie9 doesn't like null for insertBefore
+    if (!el.nextSilbling) {
+        return el.parentNode.appendChild(mkfragment(what));
+    }
+
+    return el.parentNode.insertBefore(mkfragment(what), el.nextSilbling);
+};
+
+module.exports.before = function(el, what) {
+    if (!el.parentNode) {
+        return;
+    }
+    return el.parentNode.insertBefore(mkfragment(what), el);
+};
+
+module.exports.empty = function(parent) {
+    // cheap way to remove all children
+    parent.innerHTML = '';
+};
+
+
+},{}],23:[function(require,module,exports){
+module.exports={
+  "MouseEvent" : [
+    "click",
+    "mousedown",
+    "mouseup",
+    "mouseover",
+    "mousemove",
+    "mouseout"
+  ],
+  "KeyEvent" : [
+    "keydown",
+    "keyup",
+    "keypress"
+  ],
+  "MutationEvent" : [
+    "DOMSubtreeModified",
+    "DOMNodeInserted",
+    "DOMNodeRemoved",
+    "DOMNodeRemovedFromDocument",
+    "DOMNodeInsertedIntoDocument",
+    "DOMAttrModified",
+    "DOMCharacterDataModified"
+  ],
+  "HTMLEvent" : [
+    "load",
+    "unload",
+    "abort",
+    "error",
+    "select",
+    "change",
+    "submit",
+    "reset",
+    "focus",
+    "blur",
+    "resize",
+    "scroll"
+  ],
+  "UIEvent" : [
+    "DOMFocusIn",
+    "DOMFocusOut",
+    "DOMActivate"
+  ]
+}
+
+},{}],24:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.2.4
  * http://jquery.com/
@@ -13402,7 +14752,7 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-},{}],17:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -13462,7 +14812,324 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],18:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
+module.exports = extend
+
+function extend(target) {
+    for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i],
+            keys = Object.keys(source)
+
+        for (var j = 0; j < keys.length; j++) {
+            var name = keys[j]
+            target[name] = source[name]
+        }
+    }
+
+    return target
+}
+},{}],27:[function(require,module,exports){
+// vendor
+var xtend = require('xtend');
+var dom = require('dom');
+
+var defaults = {
+    source: [],
+    items: 8,
+    menu: '<ul class="typeahead hidden"></ul>',
+    item: '<li><a href="#"></a></li>',
+    minLength: 1,
+    autoselect: true
+}
+
+var Typeahead = function (element, options) {
+    if (!(this instanceof Typeahead)) {
+        return new Typeahead(element, options);
+    }
+
+    var self = this;
+
+    self.element = dom(element);
+    self.options = xtend({}, defaults, options);
+    self.matcher = self.options.matcher || self.matcher
+    self.sorter = self.options.sorter || self.sorter
+    self.highlighter = self.options.highlighter || self.highlighter
+    self.updater = self.options.updater || self.updater
+    self.menu = dom(self.options.menu);
+    dom(document.body).append(self.menu);
+
+    self.source = self.options.source;
+    self.shown = false;
+    self.listen();
+}
+
+// for minification
+var proto = Typeahead.prototype;
+
+proto.constructor = Typeahead;
+
+// select the current item
+proto.select = function() {
+    var self = this;
+    var val = self.menu.find('.active').attr('data-value');
+
+    self.element
+      .value(self.updater(val))
+      .emit('change');
+
+    return self.hide();
+}
+
+proto.updater = function (item) {
+    return item;
+}
+
+// show the popup menu
+proto.show = function () {
+    var self = this;
+
+    var offset = self.element.offset();
+    var pos = xtend({}, offset, {
+        height: self.element.outerHeight()
+    })
+
+    var scroll = 0
+    var parent = self.element[0]
+    while (parent = parent.parentElement) {
+        // prevent adding window scroll
+        var tag = parent.tagName.toLowerCase();
+        if (tag === 'html' || tag === 'body') {
+            continue;
+        }
+        
+        scroll += parent.scrollTop
+    }
+
+    // if page has scrolled we need real position in viewport
+    var top = pos.top + pos.height - scroll + 'px'
+    var bottom = 'auto'
+    var left = pos.left + 'px'
+
+    if (self.options.position === 'above') {
+        top = 'auto'
+        bottom = document.body.clientHeight - pos.top + 3
+    } else if (self.options.position === 'right') {
+        top = parseInt(top.split('px')[0], 10) - self.element.outerHeight() + 'px'
+        left = parseInt(left.split('px')[0], 10) + self.element.outerWidth() + 'px'
+    }
+
+    self.menu.css({
+        top: top,
+        bottom: bottom,
+        left: left
+    });
+
+    self.menu.removeClass('hidden');
+    self.shown = true;
+    return self;
+}
+
+// hide the popup menu
+proto.hide = function () {
+    this.menu.addClass('hidden');
+    this.shown = false;
+    return this;
+}
+
+proto.lookup = function (event) {
+    var self = this;
+
+    self.query = self.element.value();
+
+    if (!self.query || self.query.length < self.options.minLength) {
+        return self.shown ? self.hide() : self
+    }
+
+    if (self.source instanceof Function) {
+        self.source(self.query, self.process.bind(self));
+    }
+    else {
+        self.process(self.source);
+    }
+
+    return self;
+}
+
+proto.process = function (items) {
+    var self = this;
+
+    items = items.filter(self.matcher.bind(self));
+    items = self.sorter(items)
+
+    if (!items.length) {
+      return self.shown ? self.hide() : self
+    }
+
+    return self.render(items.slice(0, self.options.items)).show()
+}
+
+proto.matcher = function (item) {
+  return ~item.toLowerCase().indexOf(this.query.toLowerCase())
+}
+
+proto.sorter = function (items) {
+    var beginswith = [];
+    var caseSensitive = [];
+    var caseInsensitive = [];
+    var item;
+
+    while (item = items.shift()) {
+      if (!item.toLowerCase().indexOf(this.query.toLowerCase())) beginswith.push(item)
+      else if (~item.indexOf(this.query)) caseSensitive.push(item)
+      else caseInsensitive.push(item)
+    }
+
+    return beginswith.concat(caseSensitive, caseInsensitive)
+}
+
+proto.highlighter = function (item) {
+    var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&');
+    return item.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
+        return '<strong>' + match + '</strong>'
+    })
+}
+
+proto.render = function (items) {
+    var self = this;
+
+    items = items.map(function (item) {
+        var li = dom(self.options.item);
+        li.attr('data-value', item)
+          .find('a').html(self.highlighter(item));
+        return li;
+    })
+
+    self.options.autoselect && items[0].addClass('active');
+
+    self.menu.empty();
+    items.forEach(function(item) {
+        self.menu.append(item);
+    });
+
+    return this;
+}
+
+proto.next = function (event) {
+    var active = this.menu.find('.active').removeClass('active');
+    var next = active.next();
+
+    if (!next.length) {
+        next = this.menu.find('li').first();
+    }
+
+    next.addClass('active');
+}
+
+proto.prev = function (event) {
+    var active = this.menu.find('.active').removeClass('active');
+    var prev = active.prev();
+
+    if (!prev.length) {
+        prev = this.menu.find('li').last();
+    }
+
+    prev.addClass('active');
+}
+
+proto.listen = function () {
+    var self = this;
+
+    self.element
+      .on('blur', self.blur.bind(self))
+      .on('keypress', self.keypress.bind(self))
+      .on('keyup', self.keyup.bind(self))
+      .on('keydown', self.keydown.bind(self))
+
+    self.menu
+      .on('click', self.click.bind(self))
+      .on('mouseenter', 'li', self.mouseenter.bind(self))
+}
+
+proto.move = function (e) {
+    if (!this.shown) return
+
+    switch(e.keyCode) {
+    case 9: // tab
+    case 13: // enter
+    case 27: // escape
+        e.preventDefault()
+        break
+
+    case 38: // up arrow
+        e.preventDefault()
+        this.prev()
+        break
+
+    case 40: // down arrow
+        e.preventDefault()
+        this.next()
+        break
+    }
+
+    e.stopPropagation()
+}
+
+proto.keydown = function (e) {
+    this.suppressKeyPressRepeat = [40,38,9,13,27].indexOf(e.keyCode) >= 0
+    this.move(e)
+}
+
+proto.keypress = function (e) {
+    if (this.suppressKeyPressRepeat) return
+    this.move(e)
+}
+
+proto.keyup = function (e) {
+    var self = this;
+
+    switch(e.keyCode) {
+    case 40: // down arrow
+    case 38: // up arrow
+            break
+
+    case 9: // tab
+    case 13: // enter
+        if (!self.shown) return
+        self.select()
+        break
+
+    case 27: // escape
+        if (!self.shown) return
+        self.hide()
+        break
+
+    default:
+        self.lookup()
+    }
+
+    e.stopPropagation()
+    e.preventDefault()
+}
+
+proto.blur = function (e) {
+    var self = this;
+    setTimeout(function () { self.hide() }, 150);
+}
+
+proto.click = function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+    this.select();
+}
+
+proto.mouseenter = function (e) {
+    this.menu.find('.active').removeClass('active');
+    dom(e.currentTarget).addClass('active');
+}
+
+module.exports = Typeahead;
+
+},{"dom":16,"xtend":26}],28:[function(require,module,exports){
 (function (process,global){
 /*!
  * Vue.js v1.0.26
@@ -23539,7 +25206,7 @@ setTimeout(function () {
 
 module.exports = Vue;
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":17}],19:[function(require,module,exports){
+},{"_process":25}],29:[function(require,module,exports){
 /**
  * Created by adam on 5/15/16.
  */
@@ -23763,15 +25430,21 @@ module.exports = {
 
 };
 
-},{"bootbox":2,"bootstrap":3,"jquery":16}],20:[function(require,module,exports){
+},{"bootbox":2,"bootstrap":3,"jquery":24}],30:[function(require,module,exports){
 /**
  * Created by adam on 7/16/16.
  */
 //var $ = require('jquery');
 //window.$ = $;
-//TODO needs typeahead stuff
+
+// //TODO figure out which typeahead to use
 'use strict';
 
+var Typeahead = require('typeahead');
+
+// var typeahead = require( '../libraries/bootstrap3-typeahead.min.js' );
+// var typeahead = require( '../libraries/typeahead.bundle.js' );
+//TODO needs typeahead stuff
 module.exports = {
 
     template: require('../templates/current-student-area.template.html'),
@@ -23793,7 +25466,17 @@ module.exports = {
             /**
              * The identifier of the student currently being graded
              */
-            studentIdentifier: ''
+            studentIdentifier: '',
+
+            /** studentNames supplies name data for the search box (typeahead) */
+            studentNames: [],
+
+            /** Student identifier data for the ID search box (typeahead) */
+            studentIdents: [],
+
+            /** Total number of students */
+            numStudents: null
+
         };
     },
 
@@ -23818,6 +25501,59 @@ module.exports = {
         toggleNameVisibility: function toggleNameVisibility() {
             this.store.isBlind = !this.store.isBlind;
             this.notifyToggleNameVisibility();
+        },
+
+        /**
+         * grab the name of the student, and perform a click on the appropriate row in the student roster
+         */
+        handleStudentNameSearch: function handleStudentNameSearch() {
+            this.initialize();
+            var nameToFind = $('#activeStudentName').val().replace(/\s+/g, ' ');
+            var i = this.studentNames.indexOf(nameToFind);
+            window.console.log('handlingNameSearch', nameToFind, i);
+            //not sure if this needs to be added
+            //$( "#activeStudentName" ).blur();
+            if (i >= 0) {
+                window.console.log($('#studentListItem' + i));
+                $('#studentListItem' + i).trigger('click');
+            }
+        },
+
+        /**
+         * do the same with ID search
+         */
+        handleStudentIdentifierSearch: function handleStudentIdentifierSearch() {
+            window.console.log('handlingIdSearch');
+            this.initialize();
+            var idToFind = $('#activeStudentIdentifier').val();
+            var i = this.studentIdents.indexOf(idToFind);
+            //    window.console.log('handlingIdSearch', i);
+            $("#activeStudentIdentifier").blur();
+            if (i >= 0) {
+                $('#studentListItem' + i).trigger('click');
+            }
+        },
+
+        initialize: function initialize() {
+            //only do this once if the list is empty
+            // should this also check idents? probably not because those are optional
+            if (this.studentNames.length > 0) return;
+            var me = this;
+            var $studentNames = $('[id^="studentName"]');
+            $studentNames.each(function () {
+                me.studentNames.push($(this).text());
+            });
+
+            //Calculate the number of students and store
+            this.numStudents = $studentNames.length;
+
+            //Load the student id numbers
+            var $studentIdents = $('[id^="studentIdentifier"]');
+            $studentIdents.each(function () {
+                me.studentIdents.push($(this).text());
+            });
+
+            window.console.log('search box data initialized', this);
         }
 
     },
@@ -23834,10 +25570,40 @@ module.exports = {
         }
     },
 
-    directives: {}
+    directives: {},
+    ready: function ready() {
+
+        var me = this;
+        var nameBox = document.getElementById('activeStudentName');
+        var ta1 = Typeahead(nameBox, {
+            source: me.studentNames
+        });
+
+        var idBox = document.getElementById('activeStudentIdentifier');
+        var ta1 = Typeahead(idBox, {
+            source: me.studentIdents
+        });
+        window.console.log('currentStudentArea.component ready');
+
+        //         $( '#activeStudentName' ).typeahead( {
+        //     source: SearchBox.studentNames
+        // } );
+
+        // $( '#activeStudentIdentifier' ).typeahead( {
+        //     source: SearchBox.studentIdents
+        // } );
+        //
+        // $( "#activeStudentName" ).on( 'change', function () {
+        //     SearchBox.handleStudentNameSearch();
+        // } );
+        //
+        // $( "#activeStudentIdentifier" ).on( 'change', function () {
+        //     SearchBox.handleStudentIdentifierSearch();
+        // } );
+    }
 };
 
-},{"../templates/current-student-area.template.html":27}],21:[function(require,module,exports){
+},{"../templates/current-student-area.template.html":38,"typeahead":27}],31:[function(require,module,exports){
 /**
  * Created by adam on 7/19/16.
  */
@@ -23864,18 +25630,22 @@ module.exports = {
     },
 
     computed: {
-
+        buttonStyle: function buttonStyle() {
+            if (this.finishButtonHidden) {
+                return "display:none";
+            }
+        },
         /* --------------- # exams ------------- */
         /**
          * Number of exams already graded
          */
         gradedExams: function gradedExams() {
-            var numGraded = this.store.getNumberGraded();
-            if (numGraded) {
-                return numGraded;
-            }
-            return '';
-            //            return this.store.getNumberGraded();
+            // let numGraded = this.store.getNumberGraded();
+            // if ( numGraded ) {
+            //     return numGraded;
+            // }
+            // return '';
+            return this.store.getNumberGraded();
         },
 
         /**
@@ -23890,8 +25660,9 @@ module.exports = {
          * Number of exams remaining to be graded
          */
         remainingExams: function remainingExams() {
-            if (typeof this.totalExams == Number && typeof this.gradedExams == Number) {
+            if (typeof this.totalExams != 'undefined' && typeof this.gradedExams != 'undefined') {
                 var remaining = this.totalExams - this.gradedExams;
+                window.console.log(remaining);
                 if (remaining === 0) {
                     this.showFinishButton();
                 }
@@ -23912,7 +25683,7 @@ module.exports = {
     directives: {}
 };
 
-},{"../templates/dashboard.counts.template.html":28}],22:[function(require,module,exports){
+},{"../templates/dashboard.counts.template.html":39}],32:[function(require,module,exports){
 /**
  * Created by adam on 7/19/16.
  */
@@ -24008,7 +25779,7 @@ module.exports = {
          * @returns Number
          */
         currentExamTime: function currentExamTime() {
-            return this.store.getStudentGradingTime(this.store.activeStudent);
+            return this.store.getActiveStudentGradingTime();
         },
 
         /**
@@ -24112,8 +25883,6 @@ module.exports = {
             // set a new timer to fire every second. Update examGradingTimes[]
             this.timer = setInterval(function () {
                 me.store.increaseActiveStudentGradingTime(1);
-                //ask for the time to be saved
-                me.requestTimerSave();
             }, 1000);
         },
 
@@ -24182,7 +25951,7 @@ module.exports = {
 
 };
 
-},{"../templates/dashboard.timer.template.html":29}],23:[function(require,module,exports){
+},{"../templates/dashboard.timer.template.html":40}],33:[function(require,module,exports){
 /**
  * Created by adam on 7/11/16.
  */
@@ -24480,6 +26249,13 @@ module.exports = {
             // Timer.resumeTimerIfPaused( data, Roster, Dashboard );
         },
 
+        setSliderScore: function setSliderScore() {
+            //avoid causing an error when slider gets null as a value
+            // var modScore = score === null ? 0 : this.elementScore;
+            this.sliderSelector.slider('setValue', this.elementScore);
+            //            this.sliderSelector.slider( 'refresh' );
+        },
+
         /* --------------------- Notifications to observers ---------------------- */
         /**
          * Requests that the db be updated with the element score.
@@ -24523,10 +26299,15 @@ module.exports = {
          * @param elementIndex
          * @param activeStudent
          */
-        'student-select-event': function studentSelectEvent(elementIndex, activeStudent) {
-            if (elementIndex == this.elementIndex) {}
+        'student-select-event': function studentSelectEvent(obj) {
+            //ignore if not belonging to us
+            //           if ( elementIndex == this.elementIndex ) {
+            window.console.log('elementInput', 'caught student-select-event', this.elementScore);
+            //    window.console.log(this.elementScore);
+            //update the slider value
+            this.setSliderScore();
             //update the comment text
-
+            //         }
             //return true just in case someone else is listening and
             //needs to hear the event
             return true;
@@ -24535,10 +26316,11 @@ module.exports = {
 
     ready: function ready() {
         var me = this;
+
         // initialize slider
         $('#' + this.sliderId).slider({
             tooltip: 'show',
-            value: this.elementScore,
+            //value: this.elementScore,
             step: this.settings.sliderStep,
             ticks: this.settings.valenceCutoffs,
             ticks_labels: this.settings.valenceLabels,
@@ -24565,7 +26347,7 @@ module.exports = {
     }
 };
 
-},{"../../libraries/bootstrap-slider-modified.js":34,"../templates/element-input.template.html":30,"jquery":16}],24:[function(require,module,exports){
+},{"../../libraries/bootstrap-slider-modified.js":45,"../templates/element-input.template.html":41,"jquery":24}],34:[function(require,module,exports){
 /**
  * Created by adam on 7/18/16.
  */
@@ -24597,15 +26379,15 @@ module.exports = {
             defaults: {
                 displayedGrade: 'Letter grade',
                 gradeValue: null
-            },
-
-            storage: {
-                currentGradeDisplay: null,
-                currentGradeValue: null
             }
 
         };
     },
+
+    // storage: {
+    //     currentGradeDisplay: null,
+    //     currentGradeValue: null
+    // }
 
     computed: {
 
@@ -24613,44 +26395,59 @@ module.exports = {
          * The value displayed on the button
          * @returns {*}
          */
-        displayedGrade: {
-            get: function get() {
-                if (this.storage.currentGradeDisplay) {
-                    return this.storage.currentGradeDisplay;
-                }
+        displayedGrade: function displayedGrade() {
+            if (typeof this.score === "undefined" || this.score === null || this.score == '') {
+                //display 'Letter grade' if score not set
                 return this.defaults.displayedGrade;
-            },
-            set: function set(val) {
-                this.storage.currentGradeDisplay = val;
             }
+
+            //display the inferred letter grade
+            return this.calcLetter(this.maxScore, this.score);
         },
 
-        //The value of the letter grade used in calculation
-        gradeValue: {
-            get: function get() {
-                if (this.storage.currentGradeValue != null) {
-                    return this.storage.currentGradeValue;
-                }
-                return this.defaults.gradeValue;
-            },
-            set: function set(val) {
-                this.storage.currentGradeValue = val;
-            }
-        },
+        // //The value of the letter grade used in calculation
+        // gradeValue: {
+        //     get: function () {
+        //         if ( this.storage.currentGradeValue != null ) {
+        //             return this.storage.currentGradeValue;
+        //         }
+        //         return this.defaults.gradeValue;
+        //
+        //     },
+        //     set: function ( val ) {
+        //         this.storage.currentGradeValue = val;
+        //     }
+        // },
 
+        /**
+         * The maximum possible score for the question
+         * @returns {*}
+         */
         maxScore: function maxScore() {
-            return this.store.maxQuestionScores[this.questionIndex];
-            // return Number(this.store.maxQuestionScores[this.questionIndex]);
+            return Number(this.store.getMaxQuestionScore(this.questionIndex));
         },
 
-        score: function score() {
-            // window.console.log('score', this.gradeValue, this.maxScore);
-            return this.calcGrade(this.gradeValue, this.maxScore);
+        /**
+         * The assigned score for the question.
+         * @returns {*}
+         */
+        score: {
+            get: function get() {
+                return this.store.getQuestionScoreForActiveStudent(this.questionIndex);
+            },
+            set: function set(score) {
+                this.store.storeQuestionScoreForActiveStudent(this.questionIndex, score);
+            }
         },
 
+        /**
+         * Converts the question score to a string for display
+         * @returns {string}
+         */
         scoreString: function scoreString() {
             return this.score.toFixed(2);
         },
+
         targetId: function targetId() {
             return "questionScore" + this.questionNumber;
         }
@@ -24659,10 +26456,44 @@ module.exports = {
 
     methods: {
 
+        /**
+         * Calculates the question score from the standard grades and max score
+         * @param gradeValue
+         * @param maxScore
+         * @returns {number}
+         */
         calcGrade: function calcGrade(gradeValue, maxScore) {
             gradeValue = Number(gradeValue);
             maxScore = Number(maxScore);
-            return gradeValue * .01 * maxScore;
+            var result = gradeValue * .01 * maxScore;
+            return this.roundToTwo(result);
+        },
+
+        /**
+         * Reverse calculates the letter grade to display
+         * based on the total score.
+         * TODO This needs a flag so that we don't infer grades to people who don't want them or who entered a score manually
+         * @param totalScore
+         * @param maxScore
+         */
+        calcLetter: function calcLetter(maxScore, totalScore) {
+            totalScore = Number(totalScore);
+            maxScore = Number(maxScore);
+
+            var pctOfTotal = maxScore / totalScore;
+            //multiple by 100 to more easily compare with grades list
+            pctOfTotal = Math.round(pctOfTotal * 100);
+            var grade = 'Letter grade';
+
+            // window.console.log( maxScore, totalScore, pctOfTotal );
+            for (var i = 0; i < this.grades.length; i++) {
+                var cutOff = Number(this.grades[i].calcValue);
+                if (pctOfTotal >= cutOff) {
+                    grade = this.grades[i].displayValue;
+                    break;
+                }
+            }
+            return grade;
         },
 
         /**
@@ -24675,18 +26506,29 @@ module.exports = {
          * @param dthis The this context of the event handler
          */
         handleLetterGradeClick: function handleLetterGradeClick(index) {
-            window.console.log('letter grade clicked', index);
+            //The numeric value of the letter grade selected
+            var gradeValue = this.grades[index].calcValue;
+            var letterGrade = this.grades[index].displayValue;
+            this.score = this.calcGrade(gradeValue, this.maxScore);
+            //            let letterGrade = this.calcLetter( this.maxScore, this.score );
 
-            //The value of the letter grade selected
-            this.gradeValue = this.grades[index].calcValue;
-
+            window.console.log('handle', index, gradeValue, letterGrade);
             //The letter grade
-            this.displayedGrade = this.grades[index].displayValue;
-
+            // this.displayedGrade = this.grades[ index ].displayValue;
             this.notifyLetterGradeSelection();
 
             //Display tooltip explaining the calculation
-            this.showGradePopOver(this.targetId, this.displayedGrade, this.gradeValue, this.maxScore);
+            this.showGradePopOver(this.targetId, letterGrade, gradeValue, this.maxScore);
+        },
+
+        /**
+         * Handles rounding of the score
+         * Cf http://stackoverflow.com/questions/11832914/round-to-at-most-2-decimal-places-in-javascript
+         * @param num
+         * @returns {number}
+         */
+        roundToTwo: function roundToTwo(num) {
+            return +(Math.round(num + "e+2") + "e-2");
         },
 
         /**
@@ -24752,7 +26594,7 @@ module.exports = {
 
 };
 
-},{"../templates/letter-grade-button.template.html":31,"bootstrap":3,"jquery":16}],25:[function(require,module,exports){
+},{"../templates/letter-grade-button.template.html":42,"bootstrap":3,"jquery":24}],35:[function(require,module,exports){
 /**
  * Created by adam on 7/18/16.
  */
@@ -24761,11 +26603,28 @@ module.exports = {
 
 'use strict';
 
+var Requests = require('./requests.tools');
+
 module.exports = {
 
     template: require('../templates/question-score.template.html'),
 
-    props: ['questionIndex', 'questionNumber'],
+    props: [
+    /**
+     * The db id of the assignment of the question to the exam
+     * @type integer
+     */
+    'questionAssignmentId',
+    /**
+     * The index identifying the question in the data json objects
+     * @type integer
+     */
+    'questionIndex',
+    /**
+     * The number of the question on the exam
+     * @type string
+     */
+    'questionNumber'],
 
     data: function data() {
         return {
@@ -24777,6 +26636,9 @@ module.exports = {
     },
 
     computed: {
+
+        //TODO convert question number and qa id into computed properties
+
         /**
          * The string id of the question score field for this question.
          * Does not contain '#'
@@ -24801,7 +26663,7 @@ module.exports = {
          * @returns {*}
          */
         maxScore: function maxScore() {
-            return this.store.maxQuestionScores[this.questionIndex];
+            return this.store.getMaxQuestionScore(this.questionIndex);
         },
 
         /**
@@ -24810,7 +26672,11 @@ module.exports = {
          */
         questionScore: {
             get: function get() {
-                return this.store.getQuestionScoreForActiveStudent(this.questionIndex);
+                var qs = this.store.getQuestionScoreForActiveStudent(this.questionIndex);
+                if (qs != null) {
+                    return qs;
+                }
+                // return '';
             },
             /**
              * Update the score in the shared data object and send
@@ -24830,8 +26696,12 @@ module.exports = {
          * recorded in the db
          */
         notifyRecordScore: function notifyRecordScore() {
-            var obj = {};
-            obj.questionIndex = this.questionIndex;
+            var studentIndex = this.store.getActiveStudentIndex();
+            var questionAssignmentId = this.questionAssignmentId;
+            var questionIndex = this.questionIndex;
+
+            var obj = new Requests.QuestionScoreRequest(studentIndex, questionIndex, questionAssignmentId);
+
             this.$dispatch('store-question-score-request', obj);
         }
     },
@@ -24851,7 +26721,38 @@ module.exports = {
 
 };
 
-},{"../templates/question-score.template.html":32}],26:[function(require,module,exports){
+},{"../templates/question-score.template.html":43,"./requests.tools":36}],36:[function(require,module,exports){
+/**
+ * Created by adam on 7/26/16.
+ */
+
+/**
+ * These create uniformity in what is expected to be included along with
+ * events
+ */
+"use strict";
+
+module.exports = {
+
+  /**
+   * Object transmitted with requests about questionScores
+   * @param studentIndex
+   * @param questionIndex
+   * @param questionAssignmentId
+   */
+  QuestionScoreRequest: function QuestionScoreRequest(studentIndex, questionIndex, questionAssignmentId) {
+    this.studentIndex = studentIndex;
+    this.questionIndex = questionIndex;
+    this.questionAssignmentId = questionAssignmentId;
+  },
+
+  ElementScoreRequest: function ElementScoreRequest(studentIndex, elementId) {
+    this.studentIndex = studentIndex;
+    this.elementId = elementId;
+  }
+};
+
+},{}],37:[function(require,module,exports){
 /**
  * Created by adam on 7/11/16.
  */
@@ -24973,7 +26874,7 @@ module.exports = {
 
         studentName: function studentName() {
             if (this.isBlind) {
-                return this.defaults.studentPlaceholder;
+                return this.defaults.nameHiddenString;
             }
             return this.lastName + ", " + this.firstName;
         }
@@ -25015,21 +26916,21 @@ module.exports = {
     }
 };
 
-},{"../templates/student-list-item.template.html":33}],27:[function(require,module,exports){
-module.exports = '<div class="form-group activeStudentInput">\n    <div id="activeStudentNameArea"\n         class="col-xs-7">\n        <label for="activeStudentName">\n            <span class="sr-only">Click to hide student names</span>\n            <span id="nameVisibilityControl"\n                  class="glyphicon glyphicon-pencil"\n                  title="Click to hide student names"\n                  v-on:click="toggleNameVisibility":\n            > </span>\n        </label>\n        <input id="activeStudentName"\n               class="typeahead full-width"\n               type="text"\n               placeholder="No Student Selected"\n        v-model="studentName">\n    </div>\n    <div id="activeStudentIdentifierArea"\n         class="col-xs-5">\n        <label for="activeStudentIdentifier">ID</label>\n        <input class="typeahead full-width"\n               type="text"\n               id="activeStudentIdentifier"\n               placeholder="--"\n        v-model="studentIdentifier">\n    </div>\n</div>';
-},{}],28:[function(require,module,exports){
-module.exports = '<div id="dashboardCounts">\n<!-- graded / remaining counters -->\n<p>Graded: <span id="graded">{{ gradedExams }}</span> Remaining: <span id="remaining">{{ remainingExams }}</span></p>\n\n<!-- save & finish button -->\n<a id="finishButton"\n   class="btn btn-success col-lg-12 startHidden"\n   v-bind:class="[finishButtonHidden ? display:none : \'\']"\n   href="{{ finishedLink }}">\n    <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish\n</a>\n</div>';
-},{}],29:[function(require,module,exports){
+},{"../templates/student-list-item.template.html":44}],38:[function(require,module,exports){
+module.exports = '<div class="form-group activeStudentInput">\n    <div id="activeStudentNameArea"\n         class="col-xs-7">\n        <label for="activeStudentName">\n            <span class="sr-only">Click to hide student names</span>\n            <span id="nameVisibilityControl"\n                  class="glyphicon glyphicon-pencil"\n                  title="Click to hide student names"\n                  v-on:click="toggleNameVisibility" :\n            > </span>\n        </label>\n        <input id="activeStudentName"\n               class="typeahead full-width"\n               type="text"\n               placeholder="No Student Selected"\n               v-on:focus="initialize"\n               v-on:change="handleStudentNameSearch"\n               v-model="studentName">\n    </div>\n    <div id="activeStudentIdentifierArea"\n         class="col-xs-5">\n        <label for="activeStudentIdentifier">ID</label>\n        <input class="typeahead full-width"\n               type="text"\n               id="activeStudentIdentifier"\n               placeholder="--"\n               v-on:focus="initialize"\n               v-on:change="handleStudentIdentifierSearch"\n               v-model="studentIdentifier">\n    </div>\n</div>';
+},{}],39:[function(require,module,exports){
+module.exports = '<div id="dashboardCounts">\n<!-- graded / remaining counters -->\n<p>Graded: <span id="graded">{{ gradedExams }}</span> Remaining: <span id="remaining">{{ remainingExams }}</span></p>\n\n<!-- save & finish button -->\n<a id="finishButton"\n   class="btn btn-success col-lg-12 startHidden"\n   v-bind:style="buttonStyle"\n   href="{{ finishedLink }}">\n    <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish\n</a>\n</div>';
+},{}],40:[function(require,module,exports){
 module.exports = '<div id="dashboard">\n    <h4 class="row">\n    <span class="col-xs-7 dashboard-header">\n            <!--<span class="col-xs-7 dashboard-header" style="vertical-align:middle">-->\n        <span class="glyphicon glyphicon-time"\n              aria-hidden="true"></span> Statistics\n    </span>\n\n        <span class="col-xs-5">\n        <a id="btnTimer"\n           v-bind:class="buttonStyling"\n           title="Toggle timer"\n           v-on:click="toggleTimer">\n            <span id="btnTimerIcon"\n                  v-bind:class="buttonIcon"\n                  aria-hidden="true"></span>\n            <span id="btnTimerLabel">{{buttonLabel}}</span>\n        </a>\n    </span>\n    </h4>\n\n    <div class="panel panel-default">\n\n        <div id="gradingStatsPanel" class="panel-body">\n            <span class="col-xs-6">Time This Exam</span>\n            <span class="col-xs-6" id="thisExamTime">{{ currentExamTimeDisplay }}</span>\n\n            <span class="col-xs-6">Average Time</span>\n            <span class="col-xs-6" id="avgTime">{{ averageTimeDisplay }}</span>\n\n            <span class="col-xs-6">Total Time</span>\n            <span class="col-xs-6" id="totalTime">{{ totalTimeDisplay }}</span>\n\n            <span class="col-xs-6">Time Remaining</span>\n            <span class="col-xs-6" id="timeRemaining">{{ remainingTimeDisplay }}</span>\n        </div>\n    </div>\n</div>';
-},{}],30:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 module.exports = '<div id="element{{ elementNumber }}"\n     class="list-group-item elementPanel"\n     data-element-index="{{ elementIndex }}"\n     data-element-id="{{ elementId }}"\n     data-comment-area-id="{{ commentAreaId  }}">\n\n    <h5 class="elementTitle">{{ elementTitle }}</h5>\n    <div class="row">\n                <span class="col-lg-5 sliderContainer Q{{ questionNumber }}E{{ elementNumber }}">\n                    <!-- score slider -->\n                    <label for="{{ sliderId }}"></label>\n                    <input id="{{ sliderId }}"\n                           type="text"\n                           class="slider"/>\n                </span>\n\n        <!-- comment area -->\n                <span class="col-lg-7 commentContainer Q{{ questionNumber }}E{{ elementNumber }}">\n                    <textarea id="{{ commentAreaId  }}"\n                              class="form-control"\n                              rows="4"\n                              name="{{ commentAreaId  }}"\n                              placeholder="No score for this element"\n                              v-model="commentText"\n                    ></textarea>\n                </span>\n    </div>\n</div>\n';
-},{}],31:[function(require,module,exports){
-module.exports = '<!-- Single button -->\n<div id="letterGradeArea"\n     class="btn-group">\n    <button id="letterGradeButton{{questionNumber}}"\n            type="button"\n            class="btn btn-default dropdown-toggle"\n            data-toggle="dropdown"\n            aria-haspopup="true"\n            aria-expanded="false">\n        <span id="letterGradeForQuestion{{ questionNumber }}">{{ displayedGrade }}</span> <span class="caret"></span>\n    </button>\n\n    <ul id="letterGradeList"\n        class="dropdown-menu letterGradeList">\n        <template v-for="grade in grades">\n            <li class="gradeListItem" v-on:click="handleLetterGradeClick($index)">{{ grade.displayValue }}</li>\n        </template>\n    </ul>\n\n</div>\n';
-},{}],32:[function(require,module,exports){
-module.exports = '\n    <form class="form-horizontal" role="form">\n        <div class="form-group">\n            <label class="col-xs-1 control-label questionScoreLabel"\n                   for="{{ scoreFieldIdString }}">Score:</label>\n\n            <div class="col-xs-1" style="padding: 0px;">\n                <input id="{{ scoreFieldIdString }}"\n                       v-model="questionScore"\n                       class="form-control pull-right questionScore"\n                       type="number"\n                       min="0"\n                       max="{{ maxScore }}"\n                />\n            </div>\n            <div class="col-xs-1 control-label maxScore">\n                <b>/ <span id="{{ maxScoreFieldIdString}}">{{ maxScore }}</span> </b>\n            </div>\n        </div>\n    </form>\n';
-},{}],33:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
+module.exports = '<!-- Single button -->\n<div id="letterGradeArea"\n     class="btn-group">\n    <button id="letterGradeButton{{questionNumber}}"\n            type="button"\n            class="btn btn-default dropdown-toggle"\n            data-toggle="dropdown"\n            aria-haspopup="true"\n            aria-expanded="false">\n        <span id="letterGradeForQuestion{{ questionNumber }}">{{ displayedGrade }}</span> <span class="caret"></span>\n    </button>\n\n    <ul id="letterGradeList"\n        class="dropdown-menu letterGradeList">\n        <template v-for="grade in grades">\n            <li class="gradeListItem">\n                <a class="letterGrade question{{ questionNumber }} q{{questionNumber}}g{{ grade.calcValue }}"\n                   v-on:click="handleLetterGradeClick($index)"\n                   href="#">{{ grade.displayValue }}</a>\n            </li>\n        </template>\n    </ul>\n\n</div>\n';
+},{}],43:[function(require,module,exports){
+module.exports = '\n    <form class="questionScoreForm form-horizontal" role="form">\n        <div class="form-group">\n            <label class="col-xs-1 control-label questionScoreLabel"\n                   for="{{ scoreFieldIdString }}">Score:</label>\n\n            <div class="col-xs-1 scoreArea">\n                <input id="{{ scoreFieldIdString }}"\n                       v-model="questionScore"\n                       class="form-control pull-right questionScore"\n                       type="number"\n                       min="0"\n                       max="{{ maxScore }}"\n                />\n            </div>\n            <div class="col-xs-1 control-label maxScore">\n                <b>/ <span id="{{ maxScoreFieldIdString}}">{{ maxScore }}</span> </b>\n            </div>\n        </div>\n    </form>\n';
+},{}],44:[function(require,module,exports){
 module.exports = '\n        <tr id="{{ rowIdString }}"\n            class="studentListItem "\n            v-on:click="handleRowClick"\n            v-bind:class="{ \'unalteredStudentRow\': isUnaltered, \'activeStudentRow\': isActiveStudent, \'gradedStudentRow\': isGraded }"\n            data-index="{{ studentIndex }}"\n            data-fName="{{ firstName }}"\n            data-lName="{{ lastName }}"\n            data-sid="{{ studentId }}"\n            data-student-identifier="{{ studentIdentifier }}">\n            <td class="col-xs-6"\n                id="studentName{{ studentIndex }}">{{ studentName }}</td>\n            <td class="col-xs-4"\n                id="studentIdentifier{{ studentIndex }}">{{ studentIdentifierDisplay }}</td>\n            <td class="col-xs-2"\n                id="examGrade{{ studentIndex }}">{{ examGrade }}</td>\n        </tr>\n';
-},{}],34:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 /*! =========================================================
  * bootstrap-slider.js
  *
@@ -26527,4 +28428,4 @@ module.exports = '\n        <tr id="{{ rowIdString }}"\n            class="stude
  * MIT license
  */
 
-},{"jquery":16}]},{},[1]);
+},{"jquery":24}]},{},[1]);

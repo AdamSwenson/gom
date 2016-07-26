@@ -307,6 +307,14 @@ module.exports = {
             // Timer.resumeTimerIfPaused( data, Roster, Dashboard );
         },
 
+        setSliderScore: function(){
+            //avoid causing an error when slider gets null as a value
+          // var modScore = score === null ? 0 : this.elementScore;
+            this.sliderSelector.slider( 'setValue', this.elementScore );
+//            this.sliderSelector.slider( 'refresh' );
+
+        },
+
         /* --------------------- Notifications to observers ---------------------- */
         /**
          * Requests that the db be updated with the element score.
@@ -352,10 +360,15 @@ module.exports = {
          * @param elementIndex
          * @param activeStudent
          */
-        'student-select-event': function ( elementIndex, activeStudent ) {
-            if ( elementIndex == this.elementIndex ) {
+        'student-select-event': function ( obj ) {
+            //ignore if not belonging to us
+ //           if ( elementIndex == this.elementIndex ) {
+                window.console.log('elementInput', 'caught student-select-event', this.elementScore);
+            //    window.console.log(this.elementScore);
+                //update the slider value
+                this.setSliderScore();
                 //update the comment text
-            }
+   //         }
             //return true just in case someone else is listening and
             //needs to hear the event
             return true;
@@ -364,10 +377,11 @@ module.exports = {
 
     ready: function () {
         var me = this;
+
         // initialize slider
         $( '#' + this.sliderId ).slider( {
             tooltip: 'show',
-            value: this.elementScore,
+            //value: this.elementScore,
             step: this.settings.sliderStep,
             ticks: this.settings.valenceCutoffs,
             ticks_labels: this.settings.valenceLabels,

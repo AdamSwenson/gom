@@ -1,10 +1,10 @@
 
-    <form class="form-horizontal" role="form">
+    <form class="questionScoreForm form-horizontal" role="form">
         <div class="form-group">
             <label class="col-xs-1 control-label questionScoreLabel"
                    for="{{ scoreFieldIdString }}">Score:</label>
 
-            <div class="col-xs-1" style="padding: 0px;">
+            <div class="col-xs-1 scoreArea">
                 <input id="{{ scoreFieldIdString }}"
                        v-model="questionScore"
                        class="form-control pull-right questionScore"

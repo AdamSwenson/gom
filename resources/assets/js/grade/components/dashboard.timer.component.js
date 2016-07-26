@@ -93,7 +93,7 @@ module.exports = {
          * @returns Number
          */
         currentExamTime: function () {
-            return this.store.getStudentGradingTime( this.store.activeStudent );
+            return this.store.getActiveStudentGradingTime( );
         },
 
         /**
@@ -197,8 +197,6 @@ return this.store.getTotalGradingTime();
             // set a new timer to fire every second. Update examGradingTimes[]
             this.timer = setInterval( function () {
                 me.store.increaseActiveStudentGradingTime( 1 );
-                //ask for the time to be saved
-                me.requestTimerSave();
             }, 1000 );
         },
 

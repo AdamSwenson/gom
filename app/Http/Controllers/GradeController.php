@@ -370,7 +370,7 @@ class GradeController extends Controller
         $students = $this->studentDao->load_students_by_exam($exam);
         // load all question assignments and all elements for those questions
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
-        $maxQuestionScores = null;
+        $maxQuestionScores = [];
 
         // return to grade select if 0 students or 0 questions
         if ( sizeof($students) == 0 || sizeof($questionAssignments) == 0 )
@@ -381,9 +381,10 @@ class GradeController extends Controller
         foreach ( $questionAssignments as $qAssignment )
         {
             $qNumber = $qAssignment->getQuestionNumber();
+            $qIndex = $qNumber - 1;
             $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qNumber);
             // load maxQuestionScores
-            $maxQuestionScores[ $qNumber ] = $qAssignment->getQuestion()->getMaxScore();
+            $maxQuestionScores[ $qIndex ] = $qAssignment->getQuestion()->getMaxScore();
 
         }
 
@@ -466,20 +467,25 @@ class GradeController extends Controller
             $studentGrades[] = 'Letter grade';
         }
 
+        $questionsJson = $this->makeQuestionsJson($exam);
+        $studentsJson = $this->makeStudentJson($exam);
 
-        return View::make('grade.grade_exam')->with([
-                                                        'exam'                   => $exam,
-                                                        'students'               => $students,
-                                                        'questionAssignments'    => $questionAssignments,
-                                                        'maxQuestionScores'      => $maxQuestionScores,
-                                                        'allElements'            => $allElements,
-                                                        'stockComments'          => $stockComments,
-                                                        'examGradingTimes'       => $examGradingTimes,
-                                                        'studentElementScores'   => $studentElementScores,
-                                                        'studentElementComments' => $studentElementComments,
-                                                        'studentQuestionScores'  => $studentQuestionScores,
-                                                        'studentGrades'          => $studentGrades,
-                                                    ]);
+
+        return View::make('development.newGrading')->with([
+                                                              'exam'                   => $exam,
+                                                              'students'               => $students,
+                                                              'questionAssignments'    => $questionAssignments,
+                                                              'maxQuestionScores'      => $maxQuestionScores,
+                                                              'allElements'            => $allElements,
+                                                              'stockComments'          => $stockComments,
+                                                              'examGradingTimes'       => $examGradingTimes,
+                                                              'studentElementScores'   => $studentElementScores,
+                                                              'studentElementComments' => $studentElementComments,
+                                                              'studentQuestionScores'  => $studentQuestionScores,
+                                                              'studentGrades'          => $studentGrades,
+                                                              'questionsJson'          => $questionsJson,
+                                                              'studentsJson'           => $studentsJson,
+                                                          ]);
     }
 
     /**
@@ -606,6 +612,68 @@ class GradeController extends Controller
             $this->elementScoreDao->deleteScore($eAssignid, $request['student_id']);
         }
     }
+
+
+    /**
+     * Builds the json object containing questions which the page js expects
+     * @param Exam $exam
+     * @return string
+     */
+    public function makeQuestionsJson(Exam $exam)
+    {
+        $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
+
+        $questionIndex = 0;
+        $questions = [];
+        foreach ( $questionAssignments as $qa )
+        {
+            $questions[ $questionIndex ] = [
+                'questionName'   => $qa->getQuestionName(),
+                'questionNumber' => $qa->getQuestionNumber(),
+                'maxScore'       => $qa->getQuestion()->getMaxScore(),
+                'questionAssignmentId' => $qa->id
+            ];
+            $questionIndex++;
+        }
+
+        return json_encode($questions, JSON_FORCE_OBJECT);
+
+    }
+
+
+    /**
+     * Builds the json object containing students which the page js expects
+     * @param Exam $exam
+     * @return string
+     */
+    public function makeStudentJson(Exam $exam)
+    {
+        $students = $this->studentDao->load_students_by_exam($exam);
+        $studentIndex = 0;
+        $s = [];
+        foreach ( $students as $student )
+        {
+            $s[ $studentIndex ] = [
+                'studentId'         => $student->id,
+                'studentIdentifier' => $student->student_identfier,
+                'firstName'         => $student->first_name,
+                'lastName'          => $student->last_name,
+            ];
+//            'studentId'         => $student->getId(),
+//                            'studentIdentifier' => $student->getStudentId(),
+//                            'firstName'         => $student->getStudentFName(),
+//                            'lastName'          => $student->getStudentLName()
+
+            $studentIndex++;
+        }
+
+        return json_encode($s, JSON_FORCE_OBJECT);
+
+        // load all question assignments and all elements for those questions
+
+    }
+
+
 
 //    /**
 //     * Load the time spent grade a particular student exam

@@ -25,7 +25,7 @@ extensions:
         - Codeception\Extension\Logger
         - Group\Setup
         - Group\Grade
-        - Codeception\Extension\Phantoman
+#        - Codeception\Extension\Phantoman
 
     config:
         Codeception\Extension\Logger:

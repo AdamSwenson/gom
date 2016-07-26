@@ -3,9 +3,12 @@
 @import "components/elementArea";
 @import "components/studentTable";
 @import "components/dashboard";
+@import "components/questionScore.component";
+@import "components/letterGradeButton.component";
+@import "components/currentStudentArea.component";
 @import "../common/bootstrap_overrides";
 
-
+//typeahead library added in gulpfile
 
 .startHidden {
   display: none;
@@ -39,31 +42,31 @@
 }
 
 
-.activeStudentInput {
-  font-size: 1.25em;
-
-  .typeahead {
-    border: 0px;
-  }
-
-  #activeStudentNameArea {
-    padding-right: 0px;
-
-    #nameVisibilityControl {
-      cursor: pointer;
-    }
-
-    #activeStudentName {
-      //width: 160px;
-    }
-  }
-
-  #activeStudentIdentifierArea {
-    padding-right: 0px;
-
-    #activeStudentIdentifier {
-      width: 90px;
-    }
-  }
-
-}
+//.activeStudentInput {
+//  font-size: 1.25em;
+//
+//  .typeahead {
+//    border: 0px;
+//  }
+//
+//  #activeStudentNameArea {
+//    padding-right: 0px;
+//
+//    #nameVisibilityControl {
+//      cursor: pointer;
+//    }
+//
+//    #activeStudentName {
+//      //width: 160px;
+//    }
+//  }
+//
+//  #activeStudentIdentifierArea {
+//    padding-right: 0px;
+//
+//    #activeStudentIdentifier {
+//      width: 90px;
+//    }
+//  }
+//
+//}

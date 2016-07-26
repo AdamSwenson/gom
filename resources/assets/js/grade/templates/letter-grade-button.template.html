@@ -13,7 +13,11 @@
     <ul id="letterGradeList"
         class="dropdown-menu letterGradeList">
         <template v-for="grade in grades">
-            <li class="gradeListItem" v-on:click="handleLetterGradeClick($index)">{{ grade.displayValue }}</li>
+            <li class="gradeListItem">
+                <a class="letterGrade question{{ questionNumber }} q{{questionNumber}}g{{ grade.calcValue }}"
+                   v-on:click="handleLetterGradeClick($index)"
+                   href="#">{{ grade.displayValue }}</a>
+            </li>
         </template>
     </ul>
 

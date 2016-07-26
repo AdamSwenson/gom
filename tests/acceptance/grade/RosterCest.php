@@ -180,21 +180,17 @@ class RosterCest
 
         $I->amGoingTo("start typing in the student name box");
         $I->fillField(GradingPage::$activeStudentNameFieldLocator, "last");
-        $I->wait(2);
+        $I->waitForElementVisible(RosterArea::$typeaheadIdDropdownListLocator);
 
         $I->expectTo("see the typeahead list");
         $I->seeElement(RosterArea::$typeaheadNameDropdownListLocator);
 
         $I->amGoingTo("click the first item on the dropdown list");
-        $I->click(['css' => "#activeStudentNameArea > ul > li.active > a"]);
-        $I->wait(2);
+        $I->click(RosterArea::$typeaheadIdDropdownListLocator);
+        $I->waitForElementNotVisible(RosterArea::$typeaheadIdDropdownListLocator);
 
         $I->expectTo("see that the first student is now active");
         RosterArea::assertRowIsMarkedActive($I, 0);
-
-//        $I->expect("the dropdown list to have hidden");
-//        $I->dontSeeElement(RosterArea::$typeaheadNameDropdownListLocator);
-
     }
 
     /**
@@ -213,20 +209,17 @@ class RosterCest
 
         $I->amGoingTo("start typing in the student identifier box");
         $I->fillField(GradingPage::$activeStudentIdFieldLocator, 3);
-        $I->wait(2);
+        $I->waitForElementVisible(RosterArea::$typeaheadIdDropdownListLocator);
 
         $I->expectTo("see the typeahead list");
         $I->seeElement(RosterArea::$typeaheadIdDropdownListLocator);
 
         $I->amGoingTo("click the first item on the dropdown list");
-        $I->click(['css' => "#activeStudentIdentifierArea > ul > li.active > a"]);
-        $I->wait(2);
+        $I->click(RosterArea::$typeaheadIdDropdownListLocator);
 
         $I->expectTo("see that the student with id 333333333 is now active");
+        $I->waitForElementNotVisible(RosterArea::$typeaheadIdDropdownListLocator);
         RosterArea::assertRowIsMarkedActive($I, 2);
-
-//        $I->expect("the dropdown list to have hidden");
-//        $I->dontSeeElement(RosterArea::$typeaheadIdDropdownListLocator);
 
     }
 

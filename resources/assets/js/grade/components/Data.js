@@ -67,6 +67,13 @@ function Data() {
     var examGradingTimes = {};
 
     /**
+     * Format:
+     *      { questionIndex : {questionName, questionNumber, questionAssignmentId, maxScore}, .... }
+     * @type {{}}
+     */
+    var questions = {};
+
+    /**
      * Object containing empty slots and actual scores for each
      * student on the exam. Structure of items:
      *      {studentIndex : {questionIndex: score}]
@@ -82,6 +89,14 @@ function Data() {
     var maxQuestionScores = {};
 
     var stockComments = {};
+
+    /**
+     * Json of students
+     * Format:
+     *      { studentIndex : { studentId: int, firstName: str, lastName: str, studentIdentifier: str }, ....}
+     * @type {{}}
+     */
+    var students = {};
 
 
     /* -------------------------------- Initialization ------------------------ */
@@ -158,7 +173,8 @@ function Data() {
      * @returns {*}
      */
     this.getActiveStudentGradingTime = function () {
-        if ( ! this.isActive() ) throw "ERROR: getActiveStudentGradingTime | No active student set ";
+        // if ( ! this.isActive() ) throw "ERROR: getActiveStudentGradingTime | No active student set ";
+        if(activeStudentIndex == null) return '';
 
         return this.getStudentGradingTime( activeStudentIndex );
     };
@@ -223,6 +239,7 @@ function Data() {
     };
 
     this.getElementScoreForActiveStudent = function ( elementIndex ) {
+        if(activeStudentIndex == null) return '';
         return elementScores[ activeStudentIndex ][ elementIndex ];
     };
 
@@ -314,8 +331,30 @@ function Data() {
     };
 
     this.getCommentTextForActiveStudent = function ( elementIndex, valence ) {
+        if(activeStudentIndex == null) return '';
         return this.getCommentText(activeStudentIndex, elementIndex, valence);
     };
+
+
+    /* ------------------ Questions  ------------ */
+    /**
+     * Loads a json object of questions.
+     * @param .questionsJSON
+     */
+    this.loadQuestions = function ( questionsJSON ) {
+        questions = questionsJSON;
+    };
+
+    /**
+     * Returns a question object.
+     * This has keys: questionName, questionNumber, questionAssignmentId, maxScore
+     * @param questionIndex
+     * @returns {*}
+     */
+    this.getQuestion = function(questionIndex){
+        return questions[questionIndex];
+    }
+
 
     /* ------------------ Question scores  ------------ */
     /**
@@ -358,7 +397,8 @@ function Data() {
      * @param questionIndex
      */
     this.getQuestionScoreForActiveStudent = function ( questionIndex ) {
-        if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set ";
+        // if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set ";
+        if(activeStudentIndex == null) return '';
         return this.getQuestionScore( activeStudentIndex, questionIndex );
     };
 
@@ -382,6 +422,8 @@ function Data() {
     };
 
 
+
+
     /* ------------------ Exam grades ------------ */
     this.loadExamGrades = function ( studentGrades ) {
         examGrades = studentGrades;
@@ -392,7 +434,26 @@ function Data() {
     };
 
     this.getExamGradeForActiveStudent = function(){
+        if(activeStudentIndex == null) return '';
         return examGrades[activeStudentIndex];
+    };
+
+    /* ----------------------------------- Students ----------------------- */
+    this.loadStudents = function(studentJson){
+        students = studentJson;
+    };
+
+    /**
+     * Returns a student object with keys:
+     *      studentId
+     *      studentIdentifier
+     *      firstName
+     *      lastName
+     * @param studentIndex
+     * @returns {*}
+     */
+    this.getStudent = function(studentIndex){
+        return students[studentIndex];
     };
 
     /**
@@ -534,5 +595,9 @@ function Data() {
         }
 
         return true;
+    };
+
+    this._spy = function(propertyName){
+      return DapropertyName;
     };
 };

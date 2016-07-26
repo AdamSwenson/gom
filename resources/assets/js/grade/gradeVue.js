@@ -36,11 +36,53 @@ new Vue( {
 
         ajaxTools: ajaxTools,
 
+        sortAsc: true
     },
 
     computed: {},
 
     methods: {
+        /* ------------------------------ Display ------------------------------ */
+
+        showQuestionPanel: function(){
+            $( '#selectPrompt' ).hide();
+            $( '#questionArea' ).show( "fast" );
+        },
+
+        /**
+         * Sorts the StudentRoster by the clicked header. Sort order reverses with each press.
+         * @param value
+         * @param data
+         */
+        sortRosterBy: function ( value) {
+            let data = this.store;
+            var me = this;
+            var $roster = $( '#studentRosterBody' );
+            $roster.append(
+                $roster.find( '[id^="studentListItem"]' ).sort( function ( a, b ) {
+                    var i = $( a ).find( '[id^="' + value + '"]' );
+                    var j = $( b ).find( '[id^="' + value + '"]' );
+                    var result;
+                    if ( value == 'studentName' || value == 'studentIdentifier' ) {
+                        result = $( i ).text().toUpperCase().localeCompare(
+                            $( j ).text().toUpperCase() );
+                    } else {
+                        // sort by exam grade
+                        var gradeA = data.examGrades[ $( a ).attr( 'data-index' ) ];
+                        var gradeB = data.examGrades[ $( b ).attr( 'data-index' ) ];
+                        result = gradeA - gradeB;
+                    }
+                    // flip results if we're sorting in DESC
+                    if ( ! me.sortAsc ) {
+                        result *= - 1;
+                    }
+                    return result;
+                } )
+            );
+            me.sortAsc = ! me.sortAsc;
+        },
+
+        /* ------------------------------ Server ------------------------------ */
 
         /**
          * Saves a comment (and score if present) to the database
@@ -75,18 +117,37 @@ new Vue( {
 
         /**
          * Save a question or element score (along with grading time) to the server
-         * @param studentId
-         * @param gradeRequest
-         * @param store
+         *
+         * NB, To avoid race conditions, don't use the active student shortcuts in store to get the values.
+         *
+         * @param elementId
+         * @param score
          */
-        saveScoreWithTime: function ( dataType, dataId, score) {
-            var me = this;
-
-            let studentId = this.store.getActiveStudentId();
+        saveElementScoreWithTime: function ( studentIndex, elementId, score) {
+            let student = this.store.getStudent(studentIndex);
             let examId = this.store.getExamId();
-            let time = this.store.getActiveStudentGradingTime();
+            let time = this.store.getStudentGradingTime(studentIndex);
 
-            let request = this.ajaxTools.createGradeRequestObject(studentId, dataType, dataId, score, null, time);
+            let request = new this.ajaxTools.requests.elementScoreRequest(student.studentId, elementId, score, time );
+
+            return this.ajaxTools.sendRequest(examId, request);
+        },
+
+        /**
+         * Save a question or element score (along with grading time) to the server
+         *
+         * NB, To avoid race conditions, don't use the active student shortcuts in store to get the values.
+         *
+         * @param studentIndex
+         * @param questionIndex
+         * @param questionAssignmentId
+         */
+        saveQuestionScoreWithTime: function ( studentIndex, questionIndex, questionAssignmentId) {
+            let student = this.store.getStudent(studentIndex);
+            let examId = this.store.getExamId();
+            let time = this.store.getStudentGradingTime(studentIndex);
+            let score = this.store.getQuestionScore(studentIndex, questionIndex);
+            let request = new this.ajaxTools.requests.questionScoreRequest(student.studentId, questionAssignmentId, score, time );
 
             return this.ajaxTools.sendRequest(examId, request);
         },
@@ -103,7 +164,28 @@ new Vue( {
             let examId = this.store.getExamId();
 
             return this.ajaxTools.deleteScoreRequest(examId, studentId, questionAssignmentId);
-        }
+        },
+
+        /* ------------------------------ Events ------------------------------ */
+
+        /**
+         * Sends an event requesting that the timer start
+         */
+        requestTimerStart: function(){
+            window.console.log('gradeVue', 'sending start-timer-request');
+            this.$broadcast('start-timer-request');
+        },
+
+        /**
+         * Sends an event requesting that the timer stop
+         */
+        requestTimerStop: function(){
+            window.console.log('gradeVue', 'sending stop-timer-request');
+            this.$broadcast('stop-timer-request');
+        },
+
+/* ------------------------------ other ------------------------------ */
+
     },
 
     events: {
@@ -116,11 +198,20 @@ new Vue( {
             //     //Update dashboard and roster data displayed
             //     updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
             //Sigh. The user forgot to restart the timer. Do it for them
+            this.requestTimerStart();
             //Timer.resumeTimerIfPaused( data, Roster, Dashboard );
         },
 
+        /**
+         * Save the question score
+         * obj.questionIndex
+         * obj.questionNumber
+         * obj.score
+         * @param obj
+         */
         'letter-grade-selected': function ( obj ) {
             window.console.log( 'gradeVue', 'letter-grade-selected', obj );
+            this.store.storeQuestionScoreForActiveStudent(obj.questionIndex, obj.score);
             this.$broadcast( 'letter-grade-selected', obj );
         },
 
@@ -142,6 +233,9 @@ new Vue( {
          */
         'student-select-event': function ( obj ) {
             window.console.log( 'gradeVue', 'student-select-event' );
+            this.showQuestionPanel();
+            this.$broadcast('start-timer-request');
+            this.requestTimerStart();
             this.$broadcast( 'student-select-event', obj );
         },
 
@@ -168,11 +262,15 @@ new Vue( {
         /**
          * Handles the request to store question score on the server
          * Accompanying object should contain:
+         *      obj.questionAssignmentId: Db id of the question assignment
          *      obj.questionIndex: Index of the question whose score needs updating
-         * @param obj
+         *      obj.studentIndex: Index of the student to record grades for.
+         *          This is here to avoid a race condition
+         * @param questionScoreRequestObj
          */
-        'store-question-score-request': function ( obj ) {
-            window.console.log( 'gradeVue', 'store-question-score-request', obj );
+        'store-question-score-request': function ( questionScoreRequestObj ) {
+            window.console.log( 'gradeVue', 'caught store-question-score-request', questionScoreRequestObj );
+            this.saveQuestionScoreWithTime(questionScoreRequestObj.studentIndex, questionScoreRequestObj.questionIndex, questionScoreRequestObj.questionAssignmentId )
         },
 
         /**
@@ -180,13 +278,16 @@ new Vue( {
          */
         'start-timer-request': function () {
             window.console.log( 'gradeVue', 'caught start-timer-request' );
+            this.requestTimerStart();
         },
 
         /**
-         * Handles the request to stop the grading timer
+         * Handles the request to stop the grading timer by
+         * retransmitting it back down the chain
          */
         'stop-timer-request': function () {
             window.console.log( 'gradeVue', 'stop-timer-request' );
+           this.requestTimerStop();
         },
 
         /**
@@ -218,6 +319,37 @@ new Vue( {
     directives: {},
 
     ready: function () {
+        /* ------------------ table sorting listeners --------- */
+        // $( "#nameHeader" ).on( 'click', function () {
+        //     Roster.sortRosterBy( 'studentName', data );
+        // } );
+        // $( "#idHeader" ).on( 'click', function () {
+        //     Roster.sortRosterBy( 'studentIdentifier', data );
+        // } );
+        // $( "#gradeHeader" ).on( 'click', function () {
+        //     Roster.sortRosterBy( 'examGrade', data );
+        // } );
+        //
+        //
+var me = this;
+        /* ------------------ table sorting listeners --------- */
+        $( "#nameHeader" ).on( 'click', function () {
+            me.sortRosterBy( 'studentName');
+        } );
+        $( "#idHeader" ).on( 'click', function () {
+            me.sortRosterBy( 'studentIdentifier');
+        } );
+        $( "#gradeHeader" ).on( 'click', function () {
+            me.sortRosterBy( 'examGrade' );
+        } );
+
+
+
+
+
+        this.sortRosterBy( 'studentName' );
+
+
         $.ajaxSetup( {
             headers: {
                 'X-CSRF-TOKEN': $( 'meta[name="csrf-token"]' ).attr( 'content' )

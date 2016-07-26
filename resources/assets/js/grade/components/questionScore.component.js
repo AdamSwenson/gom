@@ -4,12 +4,27 @@
 //var $ = require('jquery');
 //window.$ = $;
 
+var Requests = require('./requests.tools');
+
 module.exports = {
 
     template: require( '../templates/question-score.template.html' ),
 
     props: [
+        /**
+         * The db id of the assignment of the question to the exam
+         * @type integer
+         */
+        'questionAssignmentId',
+        /**
+         * The index identifying the question in the data json objects
+         * @type integer
+         */
         'questionIndex',
+        /**
+         * The number of the question on the exam
+         * @type string
+         */
         'questionNumber',
     ],
 
@@ -23,6 +38,9 @@ module.exports = {
     },
 
     computed: {
+
+        //TODO convert question number and qa id into computed properties
+
         /**
          * The string id of the question score field for this question.
          * Does not contain '#'
@@ -47,7 +65,7 @@ module.exports = {
          * @returns {*}
          */
         maxScore: function () {
-            return this.store.maxQuestionScores[ this.questionIndex ];
+            return this.store.getMaxQuestionScore( this.questionIndex );
         },
 
         /**
@@ -56,7 +74,11 @@ module.exports = {
          */
         questionScore: {
             get: function () {
-                return this.store.getQuestionScoreForActiveStudent( this.questionIndex );
+                let qs = this.store.getQuestionScoreForActiveStudent( this.questionIndex );
+                if ( qs != null ) {
+                    return qs;
+                }
+                // return '';
             },
             /**
              * Update the score in the shared data object and send
@@ -64,7 +86,7 @@ module.exports = {
              * @param score
              */
             set: function ( score ) {
-                this.store.storeQuestionScoreForActiveStudent(this.questionIndex, score );
+                this.store.storeQuestionScoreForActiveStudent( this.questionIndex, score );
                 this.notifyRecordScore();
             }
         }
@@ -76,16 +98,20 @@ module.exports = {
          * recorded in the db
          */
         notifyRecordScore: function () {
-            var obj = {};
-            obj.questionIndex = this.questionIndex;
+            let studentIndex = this.store.getActiveStudentIndex();
+            let questionAssignmentId = this.questionAssignmentId;
+            let questionIndex = this.questionIndex;
+
+            let obj = new Requests.QuestionScoreRequest(studentIndex, questionIndex, questionAssignmentId);
+
             this.$dispatch( 'store-question-score-request', obj );
         }
     },
 
     events: {
         'letter-grade-selected': function ( obj ) {
-            window.console.log('questionScore', 'caught letter-grade-selected', obj);
-            if ( (typeof obj.questionIndex != 'undefined') && (obj.questionIndex == this.questionIndex)){
+            window.console.log( 'questionScore', 'caught letter-grade-selected', obj );
+            if ( (typeof obj.questionIndex != 'undefined') && (obj.questionIndex == this.questionIndex) ) {
                 if ( typeof obj.score != 'undefined' ) {
                     this.questionScore = obj.score;
                 }

@@ -23,35 +23,40 @@ module.exports = {
     },
 
     computed: {
-
+        buttonStyle: function () {
+            if ( this.finishButtonHidden ) {
+                return "display:none";
+            }
+        },
         /* --------------- # exams ------------- */
         /**
          * Number of exams already graded
          */
-        gradedExams: function(){
-            let numGraded = this.store.getNumberGraded();
-            if(numGraded){
-                return numGraded;
-            }
-            return '';
-//            return this.store.getNumberGraded();
+        gradedExams: function () {
+            // let numGraded = this.store.getNumberGraded();
+            // if ( numGraded ) {
+            //     return numGraded;
+            // }
+            // return '';
+           return this.store.getNumberGraded();
         },
 
         /**
          * Total number of exams to be graded
          * @returns {number|Number}
          */
-        totalExams: function(){
+        totalExams: function () {
             return this.store.getTotalExams();
         },
 
         /**
          * Number of exams remaining to be graded
          */
-        remainingExams: function(){
-            if((typeof this.totalExams == Number) && typeof this.gradedExams == Number){
+        remainingExams: function () {
+            if ( (typeof this.totalExams != 'undefined') && typeof this.gradedExams != 'undefined' ) {
                 var remaining = this.totalExams - this.gradedExams;
-                if(remaining === 0){
+                window.console.log(remaining);
+                if ( remaining === 0 ) {
                     this.showFinishButton();
                 }
                 return remaining;
@@ -62,8 +67,8 @@ module.exports = {
     },
 
     methods: {
-        showFinishButton: function(){
-          this.finishButtonHidden = false;
+        showFinishButton: function () {
+            this.finishButtonHidden = false;
         },
 
     },

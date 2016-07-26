@@ -5,7 +5,7 @@
 <!-- save & finish button -->
 <a id="finishButton"
    class="btn btn-success col-lg-12 startHidden"
-   v-bind:class="[finishButtonHidden ? display:none : '']"
+   v-bind:style="buttonStyle"
    href="{{ finishedLink }}">
     <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish
 </a>

@@ -208,6 +208,8 @@ describe( "dashboard-timer tests | ", function () {
                 let d = new Data();
                 let st = sinon.stub( d, 'getStudentGradingTime' );
                 st.returns( this.testTime );
+                let st1 = sinon.stub( d, 'getActiveStudentGradingTime' );
+                st1.returns( this.testTime );
 
                 window.store = d;
 

@@ -7,7 +7,7 @@ window.$ = $;
 var jQuery = $;
 window.jQuery = jQuery;
 
-require('bootstrap');
+require( 'bootstrap' );
 
 module.exports = {
 
@@ -27,15 +27,15 @@ module.exports = {
              */
             store: store,
 
-            defaults:{
+            defaults: {
                 displayedGrade: 'Letter grade',
                 gradeValue: null
             },
 
-            storage:{
-                currentGradeDisplay: null,
-                currentGradeValue: null
-            }
+            // storage: {
+            //     currentGradeDisplay: null,
+            //     currentGradeValue: null
+            // }
 
         };
     },
@@ -46,46 +46,61 @@ module.exports = {
          * The value displayed on the button
          * @returns {*}
          */
-        displayedGrade: {
-            get: function () {
-                if ( this.storage.currentGradeDisplay ) {
-                    return this.storage.currentGradeDisplay
-                }
+        displayedGrade: function () {
+            if ( (typeof this.score === "undefined") || (this.score === null) || (this.score == '') ) {
+                //display 'Letter grade' if score not set
                 return this.defaults.displayedGrade;
+            }
+
+            //display the inferred letter grade
+            return this.calcLetter( this.maxScore, this.score );
+        },
+
+
+        // //The value of the letter grade used in calculation
+        // gradeValue: {
+        //     get: function () {
+        //         if ( this.storage.currentGradeValue != null ) {
+        //             return this.storage.currentGradeValue;
+        //         }
+        //         return this.defaults.gradeValue;
+        //
+        //     },
+        //     set: function ( val ) {
+        //         this.storage.currentGradeValue = val;
+        //     }
+        // },
+
+        /**
+         * The maximum possible score for the question
+         * @returns {*}
+         */
+        maxScore: function () {
+            return Number( this.store.getMaxQuestionScore( this.questionIndex ) );
+        },
+
+        /**
+         * The assigned score for the question.
+         * @returns {*}
+         */
+        score: {
+            get: function () {
+                return this.store.getQuestionScoreForActiveStudent( this.questionIndex );
             },
-            set: function (val) {
-                this.storage.currentGradeDisplay = val;
+            set: function ( score ) {
+                this.store.storeQuestionScoreForActiveStudent( this.questionIndex, score );
             }
         },
 
-        //The value of the letter grade used in calculation
-        gradeValue: {
-            get: function(){
-                if(this.storage.currentGradeValue != null){
-                    return this.storage.currentGradeValue;
-                }
-                return this.defaults.gradeValue;
-
-            },
-            set: function(val) {
-                this.storage.currentGradeValue = val;
-            }
+        /**
+         * Converts the question score to a string for display
+         * @returns {string}
+         */
+        scoreString: function () {
+            return this.score.toFixed( 2 );
         },
 
-        maxScore: function(){
-            return this.store.maxQuestionScores[this.questionIndex];
-          // return Number(this.store.maxQuestionScores[this.questionIndex]);
-        },
-
-        score: function(){
-            // window.console.log('score', this.gradeValue, this.maxScore);
-            return this.calcGrade(this.gradeValue, this.maxScore);
-        },
-
-        scoreString: function(){
-            return this.score.toFixed(2);
-        },
-        targetId: function(){
+        targetId: function () {
             return "questionScore" + this.questionNumber;
         }
 
@@ -93,10 +108,44 @@ module.exports = {
 
     methods: {
 
-        calcGrade: function(gradeValue, maxScore){
-            gradeValue = Number(gradeValue);
-            maxScore = Number(maxScore);
-            return (gradeValue * .01) * maxScore;
+        /**
+         * Calculates the question score from the standard grades and max score
+         * @param gradeValue
+         * @param maxScore
+         * @returns {number}
+         */
+        calcGrade: function ( gradeValue, maxScore ) {
+            gradeValue = Number( gradeValue );
+            maxScore = Number( maxScore );
+            let result =(gradeValue * .01) * maxScore;
+            return this.roundToTwo(result);
+        },
+
+        /**
+         * Reverse calculates the letter grade to display
+         * based on the total score.
+         * TODO This needs a flag so that we don't infer grades to people who don't want them or who entered a score manually
+         * @param totalScore
+         * @param maxScore
+         */
+        calcLetter: function ( maxScore, totalScore ) {
+            totalScore = Number( totalScore );
+            maxScore = Number( maxScore );
+
+            let pctOfTotal = maxScore / totalScore;
+            //multiple by 100 to more easily compare with grades list
+            pctOfTotal = Math.round( pctOfTotal * 100 );
+            let grade = 'Letter grade';
+
+            // window.console.log( maxScore, totalScore, pctOfTotal );
+            for ( let i = 0; i < this.grades.length; i ++ ) {
+                let cutOff = Number( this.grades[ i ].calcValue );
+                if ( pctOfTotal >= cutOff ) {
+                    grade = this.grades[ i ].displayValue;
+                    break;
+                }
+            }
+            return grade;
         },
 
         /**
@@ -109,22 +158,30 @@ module.exports = {
          * @param dthis The this context of the event handler
          */
         handleLetterGradeClick: function ( index ) {
-            window.console.log('letter grade clicked', index);
+            //The numeric value of the letter grade selected
+            let gradeValue = this.grades[ index ].calcValue;
+            let letterGrade = this.grades[ index ].displayValue;
+            this.score = this.calcGrade( gradeValue, this.maxScore );
+//            let letterGrade = this.calcLetter( this.maxScore, this.score );
 
-
-            //The value of the letter grade selected
-            this.gradeValue = this.grades[index].calcValue;
-
+            window.console.log( 'handle', index, gradeValue, letterGrade );
             //The letter grade
-            this.displayedGrade = this.grades[index].displayValue;
-
+            // this.displayedGrade = this.grades[ index ].displayValue;
             this.notifyLetterGradeSelection();
 
             //Display tooltip explaining the calculation
-           this.showGradePopOver( this.targetId, this.displayedGrade, this.gradeValue, this.maxScore );
+            this.showGradePopOver( this.targetId, letterGrade, gradeValue, this.maxScore );
         },
 
-
+        /**
+         * Handles rounding of the score
+         * Cf http://stackoverflow.com/questions/11832914/round-to-at-most-2-decimal-places-in-javascript
+         * @param num
+         * @returns {number}
+         */
+        roundToTwo: function ( num ) {
+            return + (Math.round( num + "e+2" ) + "e-2");
+        },
 
         /**
          * Creates a tooltip over the score box explaining the calculation done
@@ -175,17 +232,17 @@ module.exports = {
         },
 
         /* --------------------- Notifications and events ---------------------------- */
-        notifyLetterGradeSelection: function(){
+        notifyLetterGradeSelection: function () {
             var obj = {};
             obj.questionIndex = this.questionIndex;
             obj.questionNumber = this.questionNumber;
             obj.score = this.score;
-            this.$dispatch('letter-grade-selected', obj);
+            this.$dispatch( 'letter-grade-selected', obj );
         }
     },
 
     directives: {},
-    ready: function(){
+    ready: function () {
         // window.console.log('ready', this.grades);
     }
 

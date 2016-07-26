@@ -70,6 +70,7 @@ class DashboardCest
 
 
     /**
+     * @group devv
      * @param AcceptanceTester $I
      * @group grade
      * @group dashboard
@@ -80,18 +81,21 @@ class DashboardCest
         $examId = 2;
         $numQuestions = 5;
 
-        $I->amGoingTo("Click the student row {$this->studentRowId} and check that see expected dashboard changes happen  (other page components are checked elsewhere)");
+        $I->amGoingTo("Click the student row and check that see expected dashboard changes happen  (other page components are checked elsewhere)");
         $I->dontSeeElement(['id' => 'questionPanel']);
 
         for ( $i = 1; $i <= $numQuestions; $i++ )
         {
             $I->expectTo("not see the question tab for q{$i}");
             $I->dontSee("Q{$i}");
-            $I->dontSeeElement(GradingPage::questionPanelTabXPath($i));
+            $I->dontSeeElement(GradingPage::questionPanelTabLocator($i));
         }
 
-        $I->click(['css' => '#studentListItem0']);
-        $I->wait(1);
+        $I->seeElement(['id' => 'studentListItem0']);
+        $I->click(['id' => 'studentListItem0']);
+        $I->waitForElementVisible(GradingPage::questionPanelTabLocator(1));
+        //$I->click(['css' => '#studentListItem0']);
+//        $I->wait(1);
 
         $I->expectTo("see that the question fields have displayed");
         $I->see('Question #1: "Exam' . $examId . 'Question1"');

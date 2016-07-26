@@ -6,14 +6,16 @@
             <span id="nameVisibilityControl"
                   class="glyphicon glyphicon-pencil"
                   title="Click to hide student names"
-                  v-on:click="toggleNameVisibility":
+                  v-on:click="toggleNameVisibility" :
             > </span>
         </label>
         <input id="activeStudentName"
                class="typeahead full-width"
                type="text"
                placeholder="No Student Selected"
-        v-model="studentName">
+               v-on:focus="initialize"
+               v-on:change="handleStudentNameSearch"
+               v-model="studentName">
     </div>
     <div id="activeStudentIdentifierArea"
          class="col-xs-5">
@@ -22,6 +24,8 @@
                type="text"
                id="activeStudentIdentifier"
                placeholder="--"
-        v-model="studentIdentifier">
+               v-on:focus="initialize"
+               v-on:change="handleStudentIdentifierSearch"
+               v-model="studentIdentifier">
     </div>
 </div>

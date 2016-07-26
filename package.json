@@ -47,10 +47,13 @@
     "datatables.net-fixedcolumns": "^3.2.1",
     "datatables.net-fixedcolumns-bs": "^3.2.1",
     "gulp-nsp": "^2.4.1",
+    "install": "^0.8.1",
     "jquery": "^2.2.0",
     "jquery-ui": "^1.10.5",
     "laravel-elixir": "^2.0.0",
+    "npm": "^3.10.5",
     "sortablejs": "^1.4.2",
+    "typeahead": "^0.2.2",
     "vue": "^1.0.0",
     "vue-charts": "0.0.5"
   }

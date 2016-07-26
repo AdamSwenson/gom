@@ -269,6 +269,13 @@ window.onload = function () {
         Roster.sortRosterBy( 'examGrade', data );
     } );
 
+
+
+
+
+
+
+
     /* ------------------ Student selection listeners --------- */
     $( "[id^='studentListItem']" ).on( 'click', function () {
         onStudentSelect( this, data, Timer, Roster, AjaxHandler, Dashboard );

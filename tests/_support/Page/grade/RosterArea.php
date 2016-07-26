@@ -46,10 +46,16 @@ class RosterArea
     public static $gradeHiddenText = "--";
 
 
-    public static $typeaheadNameDropdownListLocator= ['xpath' => '//*[@id="activeStudentNameArea"]/ul'];
+    public static $typeaheadNameDropdownListLocator= ['css' => 'ul.typeahead li.active a'];
+//        ['css' => '#activeStudentNameArea.typeahead.active > a'];
+
+//To style a li container.['xpath' => '//*[@id="activeStudentNameArea"]/ul'];
 // '#activeStudentNameArea > ul'];
 
-    public static $typeaheadIdDropdownListLocator= ['xpath' =>  '//*[@id="activeStudentIdentifierArea"]/ul'];
+    public static $typeaheadIdDropdownListLocator=
+        ['css' => 'ul.typeahead li.active a'];
+//        ['css' => '#activeStudentIdentifierArea.typeahead.active > a'];
+//        ['xpath' =>  '//*[@id="activeStudentIdentifierArea"]/ul'];
 
     public static function studentRowLocator($rowIndex)
     {

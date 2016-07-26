@@ -125,7 +125,7 @@ module.exports = {
 
         studentName: function () {
             if ( this.isBlind ) {
-                return this.defaults.studentPlaceholder;
+                return this.defaults.nameHiddenString;
             }
             return this.lastName + ", " + this.firstName;
         }

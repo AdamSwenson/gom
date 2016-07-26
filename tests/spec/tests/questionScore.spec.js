@@ -31,7 +31,7 @@ var fixture = 'questionScore.fixture.html';
 require( '../../../resources/assets/js/grade/components/Data.js' );
 
 
-describe( "QuestionScoreComponent tests | ", function () {
+describe( "QuestionScoreComponent | ", function () {
     var $fixture;
     var vm;
 
@@ -54,10 +54,12 @@ describe( "QuestionScoreComponent tests | ", function () {
     beforeEach( function () {
         this.questionIndex = 0;
         this.questionNumber = 1;
+        this.questionAssignmentId = 1;
+        this.studentIndex = 0;
         this.maxScore = 100;
 
         var store = new Data();
-        store.setActiveStudent( 0 );
+        store.setActiveStudent( this.studentIndex );
         store.loadMaxQuestionScores( { 0: this.maxScore, 1: 52 } );
         store.loadQuestionScores( { 0: { 0: null, 1: null }, 1: { 0: null, 1: null } } );
         window.store = store;
@@ -141,11 +143,13 @@ describe( "QuestionScoreComponent tests | ", function () {
 
             //call
             component.questionScore = 34;
-
+            window.console.log(spy.args);
             //check
             expect( spy.calledOnce ).toBe( true );
             expect( spy.calledWith( {
                 questionIndex: this.questionIndex,
+                studentIndex: this.studentIndex,
+                questionAssignmentId: this.questionAssignmentId
             } ) ).toBe( true );
         } );
     } );

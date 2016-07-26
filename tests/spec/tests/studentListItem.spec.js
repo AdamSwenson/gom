@@ -82,6 +82,7 @@ describe( "StudentListItem | ", function () {
         this.studentIdentifier = '123456789';
         this.studentId = '1';
         this.placeHolder = "--";
+        this.namePlaceholder = 'Name Hidden';
 
         var store = new Data();
         store.loadQuestionScores( {
@@ -362,7 +363,7 @@ describe( "StudentListItem | ", function () {
             } );
 
             it( "displays a placeholder rather than the student name if the exam is being graded blind", function () {
-                Helper.assertValueIs( this, 'studentName', this.placeHolder, false );
+                Helper.assertValueIs( this, 'studentName', this.namePlaceholder, false );
                 // expect( this.$studentName.text() ).toBe( this.placeHolder );
             } );
 
