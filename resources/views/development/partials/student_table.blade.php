@@ -25,11 +25,11 @@
         <?php $studentIndex = 0; ?>
         @foreach($students as $student)
             <tr is="student-list-item"
-            :student-index="{{ $studentIndex }}"
-            first-name="{{ $student->getStudentFName() }}"
-            last-name="{{ $student->getStudentLName() }}"
-            student-identifier="{{ $student->getStudentId() }}"
-            student-id="{{ $student->id }}"
+                :student-index="{{ $studentIndex }}"
+                first-name="{{ $student->getStudentFName() }}"
+                last-name="{{ $student->getStudentLName() }}"
+                student-identifier="{{ $student->getStudentId() }}"
+                student-id="{{ $student->id }}"
             ></tr>
             <?php $studentIndex++; ?>
         @endforeach

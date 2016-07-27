@@ -26,7 +26,6 @@ module.exports = {
          * @returns {string}
          */
         buttonStyle: function () {
-            window.console.log(this.remainingExams);
             if ( this.remainingExams != 0 ) {
 
                 return "display:none";

@@ -284,14 +284,18 @@
     border: 0px; }
   .activeStudentInput #activeStudentNameArea {
     padding-right: 0px; }
-  .activeStudentInput #activeStudentName {
-    width: 200px;
-    padding-right: 0px;
-    margin-right: 0px; }
+    .activeStudentInput #activeStudentNameArea #activeStudentName {
+      width: 230px;
+      padding-right: 0px;
+      margin-right: 0px;
+      border: none; }
+    .activeStudentInput #activeStudentNameArea #nameVisibilityControl {
+      cursor: pointer; }
   .activeStudentInput #activeStudentIdentifierArea {
     padding-right: 0px; }
     .activeStudentInput #activeStudentIdentifierArea #activeStudentIdentifier {
-      width: 100px; }
+      width: 100px;
+      border: none; }
 
 .btn {
   border-radius: 2px; }

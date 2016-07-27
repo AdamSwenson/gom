@@ -23,9 +23,9 @@ new Vue({
     el: '#gradeExamPage',
 
     components: {
-        'element-input': require('./components/elementInput.js'),
+        'element-input': require('./components/elementInput.component.js'),
         'current-student-area': require('./components/currentStudentArea.component.js'),
-        'student-list-item': require('./components/studentListItem'),
+        'student-list-item': require('./components/studentListItem.component'),
         'letter-grade-button': require('./components/letterGradeButton.component.js'),
         'question-score': require('./components/questionScore.component'),
         'dashboard-timer': require('./components/dashboard.timer.component'),
@@ -351,7 +351,7 @@ new Vue({
     }
 });
 
-},{"./components/ajax.tools.js":29,"./components/currentStudentArea.component.js":30,"./components/dashboard.counts.component":31,"./components/dashboard.timer.component":32,"./components/elementInput.js":33,"./components/letterGradeButton.component.js":34,"./components/questionScore.component":35,"./components/studentListItem":37,"bootbox":2,"bootstrap":3,"jquery":24,"vue":28}],2:[function(require,module,exports){
+},{"./components/ajax.tools.js":29,"./components/currentStudentArea.component.js":30,"./components/dashboard.counts.component":31,"./components/dashboard.timer.component":32,"./components/elementInput.component.js":33,"./components/letterGradeButton.component.js":34,"./components/questionScore.component":35,"./components/studentListItem.component":37,"bootbox":2,"bootstrap":3,"jquery":24,"vue":28}],2:[function(require,module,exports){
 /**
  * bootbox.js [v4.4.0]
  *
@@ -25633,7 +25633,6 @@ module.exports = {
          * @returns {string}
          */
         buttonStyle: function buttonStyle() {
-            window.console.log(this.remainingExams);
             if (this.remainingExams != 0) {
 
                 return "display:none";
@@ -26909,9 +26908,9 @@ module.exports = {
 };
 
 },{"../templates/student-list-item.template.html":44}],38:[function(require,module,exports){
-module.exports = '<div class="form-group activeStudentInput">\n    <div id="activeStudentNameArea"\n         class="col-xs-7">\n        <label for="activeStudentName">\n            <span class="sr-only">Click to hide student names</span>\n            <span id="nameVisibilityControl"\n                  class="glyphicon glyphicon-pencil"\n                  title="Click to hide student names"\n                  v-on:click="toggleNameVisibility"> </span>\n        </label>\n        <input id="activeStudentName"\n               type="text"\n               placeholder="No Student Selected"\n               v-on:focus="initialize"\n               v-on:change="handleStudentNameSearch"\n               v-model="studentName" />\n    </div>\n    <div id="activeStudentIdentifierArea"\n         class="col-xs-5">\n        <label for="activeStudentIdentifier">ID</label>\n        <input class=""\n               type="text"\n               id="activeStudentIdentifier"\n               placeholder="--"\n               v-on:focus="initialize"\n               v-on:change="handleStudentIdentifierSearch"\n               v-model="studentIdentifier">\n    </div>\n</div>';
+module.exports = '<form class="form-horizontal">\n    <div class="form-group activeStudentInput">\n        <div id="activeStudentNameArea"\n             class="col-md-7">\n            <label for="activeStudentName">\n                <span class="sr-only">Click to hide student names</span>\n                <span id="nameVisibilityControl"\n                      class="glyphicon glyphicon-pencil"\n                      title="Click to hide student names"\n                      v-on:click="toggleNameVisibility"> </span>\n            </label>\n            <input id="activeStudentName"\n                   type="text"\n                   class=""\n                   placeholder="No Student Selected"\n                   v-on:focus="initialize"\n                   v-on:change="handleStudentNameSearch"\n                   v-model="studentName"/>\n        </div>\n\n        <div id="activeStudentIdentifierArea"\n             class="col-md-5">\n            <label for="activeStudentIdentifier">ID</label>\n            <input id="activeStudentIdentifier"\n                   class=""\n                   type="text"\n                   placeholder="--"\n                   v-on:focus="initialize"\n                   v-on:change="handleStudentIdentifierSearch"\n                   v-model="studentIdentifier">\n        </div>\n    </div>\n</form>';
 },{}],39:[function(require,module,exports){
-module.exports = '<div id="dashboardCounts">\n<!-- graded / remaining counters -->\n<p>Graded: <span id="graded">{{ gradedExams }}</span> Remaining: <span id="remaining">{{ remainingExams }}</span></p>\n\n<!-- save & finish button -->\n<a id="finishButton"\n   class="btn btn-success col-lg-12 "\n   v-bind:style="buttonStyle"\n   href="{{ finishedLink }}">\n    <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish\n</a>\n</div>';
+module.exports = '<div id="dashboardCounts" class="">\n    <!--<div class="row">-->\n<!-- graded / remaining counters -->\n        <p>Graded: <span id="graded">{{ gradedExams }}</span> | Remaining: <span id="remaining">{{ remainingExams }}</span></p>\n<!--<div class="col-xs-6"><p>Graded: <span id="graded">{{ gradedExams }}</span> </p></div><div class="col-xs-6"> Remaining: <span id="remaining">{{ remainingExams }}</span></div>-->\n    <!--</div>-->\n    <!--<div class="row">-->\n<!-- save & finish button -->\n<a id="finishButton"\n   class="btn btn-success col-lg-12 "\n   v-bind:style="buttonStyle"\n   href="{{ finishedLink }}">\n    <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish\n</a>\n    <!--</div>-->\n</div>';
 },{}],40:[function(require,module,exports){
 module.exports = '<div id="dashboard">\n    <h4 class="row">\n    <span class="col-xs-7 dashboard-header">\n            <!--<span class="col-xs-7 dashboard-header" style="vertical-align:middle">-->\n        <span class="glyphicon glyphicon-time"\n              aria-hidden="true"></span> Statistics\n    </span>\n\n        <span class="col-xs-5">\n        <a id="btnTimer"\n           v-bind:class="buttonStyling"\n           title="Toggle timer"\n           v-on:click="toggleTimer">\n            <span id="btnTimerIcon"\n                  v-bind:class="buttonIcon"\n                  aria-hidden="true"></span>\n            <span id="btnTimerLabel">{{buttonLabel}}</span>\n        </a>\n    </span>\n    </h4>\n\n    <div class="panel panel-default">\n\n        <div id="gradingStatsPanel" class="panel-body">\n            <span class="col-xs-6">Time This Exam</span>\n            <span class="col-xs-6" id="thisExamTime">{{ currentExamTimeDisplay }}</span>\n\n            <span class="col-xs-6">Average Time</span>\n            <span class="col-xs-6" id="avgTime">{{ averageTimeDisplay }}</span>\n\n            <span class="col-xs-6">Total Time</span>\n            <span class="col-xs-6" id="totalTime">{{ totalTimeDisplay }}</span>\n\n            <span class="col-xs-6">Time Remaining</span>\n            <span class="col-xs-6" id="timeRemaining">{{ remainingTimeDisplay }}</span>\n        </div>\n    </div>\n</div>';
 },{}],41:[function(require,module,exports){

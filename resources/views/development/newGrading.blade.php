@@ -175,9 +175,9 @@ $grades = App\Repositories\Grade\GradeFactory::gradeJson();
              class="col-md-4 rosterAndDashboardColumn">
 
             <!-- student name and ID -->
-            <form class="form-horizontal">
+            {{--<form class="form-horizontal">--}}
                 <current-student-area></current-student-area>
-            </form>
+            {{--</form>--}}
 
             <!-- graded / remaining counters -->
             <dashboard-counts finished-link="{{ url('grade/') }}"></dashboard-counts>

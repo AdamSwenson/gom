@@ -1,29 +1,33 @@
-<div class="form-group activeStudentInput">
-    <div id="activeStudentNameArea"
-         class="col-xs-7">
-        <label for="activeStudentName">
-            <span class="sr-only">Click to hide student names</span>
-            <span id="nameVisibilityControl"
-                  class="glyphicon glyphicon-pencil"
-                  title="Click to hide student names"
-                  v-on:click="toggleNameVisibility"> </span>
-        </label>
-        <input id="activeStudentName"
-               type="text"
-               placeholder="No Student Selected"
-               v-on:focus="initialize"
-               v-on:change="handleStudentNameSearch"
-               v-model="studentName" />
+<form class="form-horizontal">
+    <div class="form-group activeStudentInput">
+        <div id="activeStudentNameArea"
+             class="col-md-7">
+            <label for="activeStudentName">
+                <span class="sr-only">Click to hide student names</span>
+                <span id="nameVisibilityControl"
+                      class="glyphicon glyphicon-pencil"
+                      title="Click to hide student names"
+                      v-on:click="toggleNameVisibility"> </span>
+            </label>
+            <input id="activeStudentName"
+                   type="text"
+                   class=""
+                   placeholder="No Student Selected"
+                   v-on:focus="initialize"
+                   v-on:change="handleStudentNameSearch"
+                   v-model="studentName"/>
+        </div>
+
+        <div id="activeStudentIdentifierArea"
+             class="col-md-5">
+            <label for="activeStudentIdentifier">ID</label>
+            <input id="activeStudentIdentifier"
+                   class=""
+                   type="text"
+                   placeholder="--"
+                   v-on:focus="initialize"
+                   v-on:change="handleStudentIdentifierSearch"
+                   v-model="studentIdentifier">
+        </div>
     </div>
-    <div id="activeStudentIdentifierArea"
-         class="col-xs-5">
-        <label for="activeStudentIdentifier">ID</label>
-        <input class=""
-               type="text"
-               id="activeStudentIdentifier"
-               placeholder="--"
-               v-on:focus="initialize"
-               v-on:change="handleStudentIdentifierSearch"
-               v-model="studentIdentifier">
-    </div>
-</div>
+</form>

@@ -22,7 +22,7 @@ var Vue = require( 'vue' );
 // Vue.config.debug = true;
 
 //tested stuff
-var testedComponent = require( "../../../resources/assets/js/grade/components/studentListItem" );
+var testedComponent = require( "../../../resources/assets/js/grade/components/studentListItem.component" );
 require( '../../../resources/assets/js/grade/components/Data.js' );
 var fixture = 'studentListItem.fixture.html';
 

@@ -1,7 +1,10 @@
-<div id="dashboardCounts">
+<div id="dashboardCounts" class="">
+    <!--<div class="row">-->
 <!-- graded / remaining counters -->
-<p>Graded: <span id="graded">{{ gradedExams }}</span> Remaining: <span id="remaining">{{ remainingExams }}</span></p>
-
+        <p>Graded: <span id="graded">{{ gradedExams }}</span> | Remaining: <span id="remaining">{{ remainingExams }}</span></p>
+<!--<div class="col-xs-6"><p>Graded: <span id="graded">{{ gradedExams }}</span> </p></div><div class="col-xs-6"> Remaining: <span id="remaining">{{ remainingExams }}</span></div>-->
+    <!--</div>-->
+    <!--<div class="row">-->
 <!-- save & finish button -->
 <a id="finishButton"
    class="btn btn-success col-lg-12 "
@@ -9,4 +12,5 @@
    href="{{ finishedLink }}">
     <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish
 </a>
+    <!--</div>-->
 </div>

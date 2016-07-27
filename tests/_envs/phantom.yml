@@ -7,9 +7,14 @@ modules:
             browser: phantomjs
             restart: false
 
+        - Laravel5:
+            part: ORM
+            environment_file: .env.testing
+
 extensions:
     enabled:
         - Codeception\Extension\Phantoman
+
 
     config:
         Codeception\Extension\Phantoman:

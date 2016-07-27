@@ -21,9 +21,9 @@ new Vue( {
     el: '#gradeExamPage',
 
     components: {
-        'element-input': require( './components/elementInput.js' ),
+        'element-input': require( './components/elementInput.component.js' ),
         'current-student-area': require( './components/currentStudentArea.component.js' ),
-        'student-list-item': require( './components/studentListItem' ),
+        'student-list-item': require( './components/studentListItem.component' ),
         'letter-grade-button': require( './components/letterGradeButton.component.js' ),
         'question-score': require( './components/questionScore.component' ),
         'dashboard-timer': require( './components/dashboard.timer.component' ),

@@ -12,7 +12,7 @@ var Vue = require( 'vue' );
 //dev
 Vue.config.debug = true;
 
-var testedComponent = require( "../../../resources/assets/js/grade/components/elementInput.js" );
+var testedComponent = require( "../../../resources/assets/js/grade/components/elementInput.component.js" );
 
 require( '../../../resources/assets/js/grade/components/Data.js' );
 
