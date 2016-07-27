@@ -284,10 +284,14 @@
     border: 0px; }
   .activeStudentInput #activeStudentNameArea {
     padding-right: 0px; }
+  .activeStudentInput #activeStudentName {
+    width: 200px;
+    padding-right: 0px;
+    margin-right: 0px; }
   .activeStudentInput #activeStudentIdentifierArea {
     padding-right: 0px; }
     .activeStudentInput #activeStudentIdentifierArea #activeStudentIdentifier {
-      width: 90px; }
+      width: 100px; }
 
 .btn {
   border-radius: 2px; }

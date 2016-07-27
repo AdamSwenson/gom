@@ -1,0 +1,22 @@
+# `phantom` environment config goes here
+modules:
+    enabled:
+        - WebDriver:
+            url: 'http://localhost:8000'
+            window_size: maximize
+            browser: phantomjs
+            restart: false
+
+extensions:
+    enabled:
+        - Codeception\Extension\Phantoman
+
+    config:
+        Codeception\Extension\Phantoman:
+          - path: '/usr/local/bin/phantomjs'
+          - suites: ['acceptance', 'functional']
+          - webSecurityEnabled: false
+          - ignoreSslErrors: true
+          - outputEncoding: 'utf8'
+          - localToRemoteUrlAccessEnabled: true
+          - printDebugMessages: true

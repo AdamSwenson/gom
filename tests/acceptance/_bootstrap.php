@@ -7,8 +7,8 @@ $examWith5QuestionsId = 1;
 $examWithNoQuestionsId = 4;
 
 //$this->config['paths.log'] = 'tests/_output/report';
-//require 'bootstrap/autoload.php';
-//$app = require 'bootstrap/app.php';
-//$app->loadEnvironmentFrom('.env.testing');
-//$app->instance('request', new \Illuminate\Http\Request);
-//$app->make('Illuminate\Contracts\Http\Kernel')->bootstrap();
+require 'bootstrap/autoload.php';
+$app = require 'bootstrap/app.php';
+$app->loadEnvironmentFrom('.env.testing');
+$app->instance('request', new \Illuminate\Http\Request);
+$app->make('Illuminate\Contracts\Http\Kernel')->bootstrap();

@@ -20,16 +20,33 @@ use Illuminate\Support\Facades\Auth;
 class AcceptanceTester extends \Codeception\Actor
 {
     use _generated\AcceptanceTesterActions;
-
+public static $started = false;
     public $loginPageRoute = '/auth/login';
     public $loginEmail = 'test2@gradeomatic.net';
     public $loginPassword = 'testtest';
     public $logoutRoute = '/auth/logout';
 
+
+
     /**
      * Define custom actions here
      */
+function start(){
+    if(! self::$started){
+        $scenario = $this->getScenario();
+        switch($scenario->current('env')){
+            case 'chrome':
+                exec('selenium-server -p 4444');
+                exec('chromedriver');
+                break;
+            case 'phantom':
+                exec('phantomjs --webdriver=4444');
+                break;
+            default:
+        }
+    }
 
+}
     function start_artisan()
     {
         // $this->runShellCommand('APP_ENV=codeceptWorld php artisan up');
@@ -99,6 +116,22 @@ class AcceptanceTester extends \Codeception\Actor
         }
         $this->wait(2);
     }
+
+//    /**
+//     * Sets the user id in a cookie which can be detected by a middleware
+//     * http://themsaid.com/draft-to-eric/
+//     * @param null $loginUsingId
+//     */
+//    public function init($loginUsingId = null)
+//    {
+//        $this->amOnPage('/');
+//
+//        $this->setCookie('selenium_request', 'true');
+//
+//        if ($loginUsingId) {
+//            $this->setCookie('selenium_auth', (string) $loginUsingId);
+//        }
+//    }
 
     /**
      * From http://theaveragedev.com/two-codeception-acceptance-tests-gotchas/

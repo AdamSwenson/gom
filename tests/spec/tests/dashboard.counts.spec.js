@@ -22,10 +22,10 @@ var fixture = 'dashboard.counts.fixture.html';
 
 
 //Dependencies
-require( '../../../resources/assets/js/grade/components/Data.js' );
+// require( '../../../resources/assets/js/grade/components/Data.open.js' );
 
 
-describe( "dashboard-counts tests | ", function () {
+describe( "dashboard.counts.component | ", function () {
     var $fixture;
     var vm;
 
@@ -82,30 +82,36 @@ describe( "dashboard-counts tests | ", function () {
 
 
     describe( "showFinishButton | ", function () {
-
-        it( "programmatically called ", function () {
+        it( "remaining > 0", function () {
             //prep
+            this.expectedGraded = this.expectedTotal - 1;
             let component = Helper.getComponent( this );
-            expect( component.finishButtonHidden ).toBe( true );
-
-            //call
-            component.showFinishButton();
-
-            //check
-            expect( component.finishButtonHidden ).toBe( false );
+            expect( component.buttonStyle ).toBe( "display:none" );
         } );
 
-        it( "shows when 0 remain ", function () {
-            //prep
-            let component = Helper.getComponent( this );
-            expect( component.finishButtonHidden ).toBe( true );
+        it( "remaining = 0", function () {
+            //set graded to equal total
             this.expectedGraded = this.expectedTotal;
 
-            //call
-            component.showFinishButton();
+            //mock the Data object
+            var store = {};
+            var me = this;
+            store.activeStudent = 0;
+            store.getNumberGraded = function () {
+                return me.expectedGraded;
+            };
+            store.getTotalExams = function () {
+                return me.expectedTotal;
+            };
+            window.store = store;
+
+            //prep the page
+            this.$fixture = loadFixtures( fixture );
+            this.vm = Helper.loadVueComponent( testedComponent, 'dashboard-counts' );
+            let component = Helper.getComponent( this );
 
             //check
-            expect( component.finishButtonHidden ).toBe( false );
+            expect( component.buttonStyle ).toBe( "" );
         } );
     } );
 

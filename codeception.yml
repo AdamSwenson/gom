@@ -34,14 +34,14 @@ extensions:
         Codeception\Extension\Recorder:
           - delete_successful: true
 
-        Codeception\Extension\Phantoman:
-          - path: '/usr/local/bin/phantomjs'
-          - suites: ['acceptance', 'functional']
-          - webSecurityEnabled: false
-          - ignoreSslErrors: true
-          - outputEncoding: 'utf8'
-          - localToRemoteUrlAccessEnabled: true
-          - printDebugMessages: true
+#        Codeception\Extension\Phantoman:
+#          - path: '/usr/local/bin/phantomjs'
+#          - suites: ['acceptance', 'functional']
+#          - webSecurityEnabled: false
+#          - ignoreSslErrors: true
+#          - outputEncoding: 'utf8'
+#          - localToRemoteUrlAccessEnabled: true
+#          - printDebugMessages: true
 
 modules:
     enabled:

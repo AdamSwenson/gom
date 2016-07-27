@@ -16,16 +16,22 @@ module.exports = {
 
     data: function () {
         return {
-            store: store,
-
-            finishButtonHidden: true
+            store: store
         }
     },
 
     computed: {
+        /**
+         * Button will not display unless remaining is 0
+         * @returns {string}
+         */
         buttonStyle: function () {
-            if ( this.finishButtonHidden ) {
+            window.console.log(this.remainingExams);
+            if ( this.remainingExams != 0 ) {
+
                 return "display:none";
+            }else if(this.remainingExams == 0){
+                return '';
             }
         },
         /* --------------- # exams ------------- */
@@ -33,11 +39,6 @@ module.exports = {
          * Number of exams already graded
          */
         gradedExams: function () {
-            // let numGraded = this.store.getNumberGraded();
-            // if ( numGraded ) {
-            //     return numGraded;
-            // }
-            // return '';
            return this.store.getNumberGraded();
         },
 
@@ -54,11 +55,7 @@ module.exports = {
          */
         remainingExams: function () {
             if ( (typeof this.totalExams != 'undefined') && typeof this.gradedExams != 'undefined' ) {
-                var remaining = this.totalExams - this.gradedExams;
-                window.console.log(remaining);
-                if ( remaining === 0 ) {
-                    this.showFinishButton();
-                }
+                let remaining = this.totalExams - this.gradedExams;
                 return remaining;
             }
             return '';
@@ -67,10 +64,6 @@ module.exports = {
     },
 
     methods: {
-        showFinishButton: function () {
-            this.finishButtonHidden = false;
-        },
-
     },
 
     directives: {}

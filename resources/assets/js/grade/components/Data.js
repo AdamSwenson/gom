@@ -109,7 +109,7 @@ function Data() {
 
     /* ------------------ Active student ------------------- */
     this.setActiveStudent = function ( studentIndex, studentId ) {
-        window.console.log('setting', studentIndex);
+        // window.console.log('setting', studentIndex);
         activeStudentIndex = studentIndex;
         activeStudentId = studentId;
     };

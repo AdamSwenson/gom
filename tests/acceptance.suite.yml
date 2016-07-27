@@ -9,7 +9,7 @@ modules:
     enabled:
         - WebDriver:
             url: 'http://localhost:8000'
-            window_size: maximize
+#            window_size: maximize
             browser: chrome
             restart: false
 
@@ -20,10 +20,10 @@ modules:
         - Asserts
 
         - \Helper\Acceptance
-
-        - Laravel5:
-            part: ORM
-            environment_file: .env.testing
+#
+#        - Laravel5:
+#            part: ORM
+#            environment_file: .env.testing
 
 extensions:
     enabled: [Group\Report]

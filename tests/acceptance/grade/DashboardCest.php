@@ -23,10 +23,6 @@ class DashboardCest
     public function _before(AcceptanceTester $I)
     {
         GradingPage::navigateToGradingPage($I, $this->examId);
-
-//        $I->test_login($I);
-//        $I->amOnPage(GradingPage::route($this->examId));
-//        $I->wait(1);
     }
 
     public function _after(AcceptanceTester $I)
@@ -162,18 +158,9 @@ class DashboardCest
      * @param AcceptanceTester $I
      * @group grade
      * @group dashboard
-     * @incomplete
      */
-    public function checkStats(AcceptanceTester $I)
+    public function checkThatNumberGradedUpdates(AcceptanceTester $I)
     {
-    }
-
-    /**
-     * @param AcceptanceTester $I
-     * @group grade
-     * @group dashboard
-     */
-    public function checkThatNumberGradedUpdates(AcceptanceTester $I){
         $I->expectTo("see that no exams have been graded");
         DashboardArea::assertExamStatsHasValues($I, 0, $this->numberStudents);
 
@@ -187,7 +174,7 @@ class DashboardCest
 
         $I->expectTo("see the number graded field has the new value when the page is reloaded ");
         $I->reloadPage();
-        $I->wait(3);
+        $I->waitForElementVisible(GradingPage::$mainBodyLocator);
         DashboardArea::assertExamStatsHasValues($I, 1, $this->numberStudents - 1);
     }
 
@@ -195,33 +182,31 @@ class DashboardCest
      * @param AcceptanceTester $I
      * @group grade
      * @group dashboard
-     * 
+     *
      */
-    public function checkThatSaveAndFinishButtonAppears(AcceptanceTester $I, $scenario){
-        $scenario->incomplete();
-
-        
+    public function checkThatSaveAndFinishButtonAppears(AcceptanceTester $I)
+    {
         $I->expect("that the finished button is not showing");
         $I->dontSeeElement(DashboardArea::$finishButtonLocator);
         $I->dontSee(DashboardArea::$finishButtonText, DashboardArea::$finishButtonLocator);
 
         $I->amGoingTo("give each student a grade on one question and check that the finished button appears");
-        for($i=0; $i<$this->numberStudents; $i++){
-                $I->amGoingTo('enter a question score for a previously ungraded student ');
-                RosterArea::assertRowIsMarkedGraded($I, $i, true);
-                GradingPage::clickStudentRow($I, $i);
+        for ( $i = 0; $i < $this->numberStudents; $i++ )
+        {
+            $I->amGoingTo('enter a question score for a previously ungraded student ');
+            RosterArea::assertRowIsMarkedGraded($I, $i, true);
+            GradingPage::clickStudentRow($I, $i);
             GradingPage::clickQuestionTab($I, 1);
-                $I->fillField(GradingPage::questionScoreFieldLocator(1), 92);
+            $I->fillField(GradingPage::questionScoreFieldLocator(1), 92);
             GradingPage::clickQuestionTab($I, 3);
 
-                $I->amGoingTo("select another student");
-                $next = $i == $this->numberStudents -1 ? 0 : $i + 1;
-                GradingPage::clickStudentRow($I, $next);
-
-            //$I->wait(2);
+            $I->amGoingTo("select another student");
+            $next = $i == $this->numberStudents - 1 ? 0 : $i + 1;
+            GradingPage::clickStudentRow($I, $next);
         }
 
         $I->expect("that the finished button is showing");
+        $I->waitForElementVisible(DashboardArea::$finishButtonLocator);
         $I->seeElement(DashboardArea::$finishButtonLocator);
         $I->see(DashboardArea::$finishButtonText, DashboardArea::$finishButtonLocator);
     }

@@ -1,0 +1,12 @@
+# `chrome` environment config goes here
+modules:
+    enabled:
+        - WebDriver:
+          url: 'http://localhost:8000'
+#          window_size: maximize
+          browser: chrome
+          restart: false
+
+        - Laravel5:
+            part: ORM
+            environment_file: .env.testing
