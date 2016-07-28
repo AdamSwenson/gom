@@ -109,6 +109,10 @@ function Data() {
     /* ------------------ Active student ------------------- */
     this.setActiveStudent = function ( studentIndex, studentId ) {
         this.activeStudentIndex = studentIndex;
+        if(typeof studentId == 'undefined'){
+            let student = this.students[studentIndex];
+            studentId = student.studentId;
+        }
         this.activeStudentId = studentId;
     };
 
@@ -498,6 +502,20 @@ function Data() {
    this.getStudent = function(studentIndex){
        return this.students[studentIndex];
    };
+
+    /**
+     * Returns a json containing student objects with student indexes as keys.
+     * The contained object has the keys:
+     *      studentId
+     *      studentIdentifier
+     *      firstName
+     *      lastName
+     * @returns {*}
+     */
+    this.getStudents = function(){
+        return this.students;
+    };
+
 
 
     /* ----------------------------------- Shortcuts ----------------------- */

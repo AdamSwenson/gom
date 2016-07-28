@@ -29,7 +29,9 @@ new Vue({
         'letter-grade-button': require('./components/letterGradeButton.component.js'),
         'question-score': require('./components/questionScore.component'),
         'dashboard-timer': require('./components/dashboard.timer.component'),
-        'dashboard-counts': require('./components/dashboard.counts.component')
+        'dashboard-counts': require('./components/dashboard.counts.component'),
+
+        'student-table': require('./components/studentTable.component')
     },
 
     data: {
@@ -230,7 +232,7 @@ new Vue({
          * @param obj
          */
         'student-select-event': function studentSelectEvent(obj) {
-            window.console.log('gradeVue', 'student-select-event');
+            window.console.log('gradeVue', 'caught student-select-event', obj);
             this.showQuestionPanel();
             this.$broadcast('start-timer-request');
             this.requestTimerStart();
@@ -330,17 +332,21 @@ new Vue({
         //
         var me = this;
         /* ------------------ table sorting listeners --------- */
-        $("#nameHeader").on('click', function () {
-            me.sortRosterBy('studentName');
-        });
-        $("#idHeader").on('click', function () {
-            me.sortRosterBy('studentIdentifier');
-        });
-        $("#gradeHeader").on('click', function () {
-            me.sortRosterBy('examGrade');
-        });
-
-        this.sortRosterBy('studentName');
+        // $( "#nameHeader" ).on( 'click', function () {
+        //     me.sortRosterBy( 'studentName');
+        // } );
+        // $( "#idHeader" ).on( 'click', function () {
+        //     me.sortRosterBy( 'studentIdentifier');
+        // } );
+        // $( "#gradeHeader" ).on( 'click', function () {
+        //     me.sortRosterBy( 'examGrade' );
+        // } );
+        //
+        //
+        //
+        //
+        //
+        // this.sortRosterBy( 'studentName' );
 
         $.ajaxSetup({
             headers: {
@@ -351,7 +357,7 @@ new Vue({
     }
 });
 
-},{"./components/ajax.tools.js":29,"./components/currentStudentArea.component.js":30,"./components/dashboard.counts.component":31,"./components/dashboard.timer.component":32,"./components/elementInput.component.js":33,"./components/letterGradeButton.component.js":34,"./components/questionScore.component":35,"./components/studentListItem.component":37,"bootbox":2,"bootstrap":3,"jquery":24,"vue":28}],2:[function(require,module,exports){
+},{"./components/ajax.tools.js":29,"./components/currentStudentArea.component.js":30,"./components/dashboard.counts.component":31,"./components/dashboard.timer.component":32,"./components/elementInput.component.js":33,"./components/letterGradeButton.component.js":34,"./components/questionScore.component":35,"./components/studentListItem.component":37,"./components/studentTable.component":38,"bootbox":2,"bootstrap":3,"jquery":24,"vue":28}],2:[function(require,module,exports){
 /**
  * bootbox.js [v4.4.0]
  *
@@ -25603,7 +25609,7 @@ module.exports = {
     }
 };
 
-},{"../templates/current-student-area.template.html":38,"typeahead":27}],31:[function(require,module,exports){
+},{"../templates/current-student-area.template.html":39,"typeahead":27}],31:[function(require,module,exports){
 /**
  * Created by adam on 7/19/16.
  */
@@ -25674,7 +25680,7 @@ module.exports = {
     directives: {}
 };
 
-},{"../templates/dashboard.counts.template.html":39}],32:[function(require,module,exports){
+},{"../templates/dashboard.counts.template.html":40}],32:[function(require,module,exports){
 /**
  * Created by adam on 7/19/16.
  */
@@ -25942,7 +25948,7 @@ module.exports = {
 
 };
 
-},{"../templates/dashboard.timer.template.html":40}],33:[function(require,module,exports){
+},{"../templates/dashboard.timer.template.html":41}],33:[function(require,module,exports){
 /**
  * Created by adam on 7/11/16.
  */
@@ -26338,7 +26344,7 @@ module.exports = {
     }
 };
 
-},{"../../libraries/bootstrap-slider-modified.js":45,"../templates/element-input.template.html":41,"jquery":24}],34:[function(require,module,exports){
+},{"../../libraries/bootstrap-slider-modified.js":47,"../templates/element-input.template.html":42,"jquery":24}],34:[function(require,module,exports){
 /**
  * Created by adam on 7/18/16.
  */
@@ -26585,7 +26591,7 @@ module.exports = {
 
 };
 
-},{"../templates/letter-grade-button.template.html":42,"bootstrap":3,"jquery":24}],35:[function(require,module,exports){
+},{"../templates/letter-grade-button.template.html":43,"bootstrap":3,"jquery":24}],35:[function(require,module,exports){
 /**
  * Created by adam on 7/18/16.
  */
@@ -26712,7 +26718,7 @@ module.exports = {
 
 };
 
-},{"../templates/question-score.template.html":43,"./requests.tools":36}],36:[function(require,module,exports){
+},{"../templates/question-score.template.html":44,"./requests.tools":36}],36:[function(require,module,exports){
 /**
  * Created by adam on 7/26/16.
  */
@@ -26725,22 +26731,27 @@ module.exports = {
 
 module.exports = {
 
-  /**
-   * Object transmitted with requests about questionScores
-   * @param studentIndex
-   * @param questionIndex
-   * @param questionAssignmentId
-   */
-  QuestionScoreRequest: function QuestionScoreRequest(studentIndex, questionIndex, questionAssignmentId) {
-    this.studentIndex = studentIndex;
-    this.questionIndex = questionIndex;
-    this.questionAssignmentId = questionAssignmentId;
-  },
+    /**
+     * Object transmitted with requests about questionScores
+     * @param studentIndex
+     * @param questionIndex
+     * @param questionAssignmentId
+     */
+    QuestionScoreRequest: function QuestionScoreRequest(studentIndex, questionIndex, questionAssignmentId) {
+        this.studentIndex = studentIndex;
+        this.questionIndex = questionIndex;
+        this.questionAssignmentId = questionAssignmentId;
+    },
 
-  ElementScoreRequest: function ElementScoreRequest(studentIndex, elementId) {
-    this.studentIndex = studentIndex;
-    this.elementId = elementId;
-  }
+    ElementScoreRequest: function ElementScoreRequest(studentIndex, elementId) {
+        this.studentIndex = studentIndex;
+        this.elementId = elementId;
+    },
+
+    StudentSelectEvent: function StudentSelectEvent(studentName, studentIdentifier) {
+        this.studentName = studentName;
+        this.studentIdentifier = studentIdentifier;
+    }
 };
 
 },{}],37:[function(require,module,exports){
@@ -26756,8 +26767,12 @@ module.exports = {
 
     template: require('../templates/student-list-item.template.html'),
 
-    props: ['studentIndex', 'firstName', 'lastName', 'studentIdentifier', 'studentId'],
+    props: ['studentIndex'],
 
+    // 'firstName',
+    // 'lastName',
+    // 'studentIdentifier',
+    // 'studentId'
     data: function data() {
         return {
 
@@ -26785,6 +26800,29 @@ module.exports = {
     },
 
     computed: {
+        firstName: function firstName() {
+            var student = this.store.getStudent(this.studentIndex);
+            return student.firstName;
+        },
+        lastName: function lastName() {
+            var student = this.store.getStudent(this.studentIndex);
+            return student.lastName;
+        },
+        studentIdentifier: function studentIdentifier() {
+            var student = this.store.getStudent(this.studentIndex);
+            // window.console.log(student.studentIdentifier);
+            return student.studentIdentifier;
+        },
+        studentId: function studentId() {
+            var student = this.store.getStudent(this.studentIndex);
+            // window.console.log(student.studentId );
+            return student.studentId;
+        },
+
+        /**
+         * Returns the id attribute for the item
+         * @returns {string}
+         */
         rowIdString: function rowIdString() {
             return "studentListItem" + this.studentIndex;
         },
@@ -26907,21 +26945,232 @@ module.exports = {
     }
 };
 
-},{"../templates/student-list-item.template.html":44}],38:[function(require,module,exports){
+},{"../templates/student-list-item.template.html":45}],38:[function(require,module,exports){
+/**
+ * Created by adam on 7/27/16.
+ */
+//var $ = require('jquery');
+//window.$ = $;
+
+'use strict';
+
+var Requests = require('./requests.tools');
+
+module.exports = {
+
+    template: require('../templates/student-table.template.html'),
+
+    props: [],
+
+    data: function data() {
+        return {
+            /**
+             * The data repository store shared by everyone
+             */
+            store: store,
+
+            sortAsc: true,
+
+            defaults: {
+                examGradePlaceholder: '--',
+                studentPlaceholder: '--',
+                nameHiddenString: "Name Hidden", // text to show when student names are invisible
+                noActiveStudentString: "No Student Selected"
+            },
+            displayClasses: {
+                unaltered: 'unalteredStudentRow',
+                active: 'activeStudentRow',
+                graded: 'gradedStudentRow'
+            }
+        };
+    },
+
+    computed: {
+
+        /**
+         * Whether student names should be hidden
+         * @returns boolean
+         */
+        isBlind: function isBlind() {
+            return this.store.isBlind;
+        },
+
+        students: function students() {
+            return this.store.getStudents();
+        }
+
+    },
+
+    methods: {
+        /**
+         * Sets this student as the active student and
+         * dispatches appropriate notifications
+         */
+        setAsActiveStudent: function setAsActiveStudent(studentIndex) {
+            this.store.setActiveStudent(studentIndex);
+        },
+
+        /**
+         * Whether this student has been graded.
+         * The gradedStudentRow class is bound to this.
+         */
+        isGraded: function isGraded(studentIndex) {
+            var grade = this.store.getExamGrade(studentIndex);
+            if (grade != 'undefined' && grade != '' && grade != 'Letter grade' && grade >= 0) {
+                // window.console.log( 'isGraded', true );
+                return true;
+            }
+            // window.console.log( 'isGraded', false );
+            return false;
+        },
+
+        /**
+         * Whether this is the active student.
+         * The activeStudentRow class is bound to this.
+         */
+        isActiveStudent: function isActiveStudent(studentIndex) {
+            if (this.store.getActiveStudentIndex() == studentIndex) {
+                // window.console.log( 'isActive', this.studentIndex, true );
+                return true;
+            }
+            // window.console.log( 'isActive', false );
+            return false;
+        },
+
+        /* ------------------------ Notifications and events --------------------- */
+
+        handleStudentRowClick: function handleStudentRowClick(index) {
+            window.console.log('student row click', index);
+            this.setAsActiveStudent(index);
+            this.notifyStudentSelectEvent(index);
+        },
+
+        /**
+         * Emits a notification that a student has been selected.
+         * This is the only place the student name and identifier are stored
+         * so we need to send them to whomever is going to display them.
+         */
+        notifyStudentSelectEvent: function notifyStudentSelectEvent(studentIndex) {
+            var studentName = this.getName(studentIndex);
+            var studentIdentifier = this.getIdentifier(studentIndex);
+            var toSend = new Requests.StudentSelectEvent(studentName, studentIdentifier);
+
+            this.$dispatch('student-select-event', toSend);
+        },
+
+        /* -------------------------- Getters -------------------------- */
+        /**
+         * Returns the student's grade for display or a placeholder
+         * @param studentIndex
+         * @returns {string}
+         */
+        getGrade: function getGrade(studentIndex) {
+            if (this.isGraded(studentIndex)) {
+                return this.store.getExamGrade(studentIndex);
+            }
+            // the student has no grade (val of -1)
+            return this.defaults.examGradePlaceholder;
+        },
+
+        /**
+         * Returns the student identifier
+         * NB, this is the user provided student id, not the db's id
+         * @param studentIndex
+         * @returns {*}
+         */
+        getIdentifier: function getIdentifier(studentIndex) {
+            var student = this.store.getStudent(studentIndex);
+            if (!student.studentIdentifier) {
+                return '';
+            }
+            return student.studentIdentifier;
+        },
+
+        /**
+         * Returns the student's name or the placeholder if the
+         * exam is being graded blind
+         * @param studentIndex
+         * @returns {*}
+         */
+        getName: function getName(studentIndex) {
+            var student = this.store.getStudent(studentIndex);
+
+            if (this.isBlind) {
+                return this.defaults.nameHiddenString;
+            }
+            return student.lastName + ", " + student.firstName;
+        },
+
+        /* --------------------------- Row styling ---------------------- */
+        /**
+         * The active student styling is bound to this
+         * @param studentIndex
+         * @returns {boolean}
+         */
+        isActiveStyle: function isActiveStyle(studentIndex) {
+
+            if (this.isActiveStudent(studentIndex)) {
+                return true;
+            }
+            return false;
+        },
+
+        /**
+         * The graded student styling is bound to this.
+         */
+        isGradedStyle: function isGradedStyle(studentIndex) {
+            //check if active first because do not want graded to trump active
+            //that is, if a student has been graded and we return to her
+            //she should show up as active
+            if (this.isActiveStudent(studentIndex)) {
+                return false;
+            }
+            return this.isGraded(studentIndex);
+        },
+
+        /**
+         * Whether the student is neither graded nor active.
+         * The unalteredStudentRow class is bound to this
+         */
+        isUnalteredStyle: function isUnalteredStyle(studentIndex) {
+
+            if (!this.isActiveStudent(studentIndex) && !this.isGraded(studentIndex)) {
+                // window.console.log( 'isUnaltered', true );
+                return true;
+            }
+            // window.console.log( 'isUnaltered', false );
+            return false;
+        }
+
+    },
+
+    /* -------------------------- Table operations ------------------------ */
+
+    directives: {},
+
+    events: {},
+    ready: function ready() {
+        // window.console.log('student table ready',  this.students );
+    }
+};
+
+},{"../templates/student-table.template.html":46,"./requests.tools":36}],39:[function(require,module,exports){
 module.exports = '<form class="form-horizontal">\n    <div class="form-group activeStudentInput">\n        <div id="activeStudentNameArea"\n             class="col-md-7">\n            <label for="activeStudentName">\n                <span class="sr-only">Click to hide student names</span>\n                <span id="nameVisibilityControl"\n                      class="glyphicon glyphicon-pencil"\n                      title="Click to hide student names"\n                      v-on:click="toggleNameVisibility"> </span>\n            </label>\n            <input id="activeStudentName"\n                   type="text"\n                   class=""\n                   placeholder="No Student Selected"\n                   v-on:focus="initialize"\n                   v-on:change="handleStudentNameSearch"\n                   v-model="studentName"/>\n        </div>\n\n        <div id="activeStudentIdentifierArea"\n             class="col-md-5">\n            <label for="activeStudentIdentifier">ID</label>\n            <input id="activeStudentIdentifier"\n                   class=""\n                   type="text"\n                   placeholder="--"\n                   v-on:focus="initialize"\n                   v-on:change="handleStudentIdentifierSearch"\n                   v-model="studentIdentifier">\n        </div>\n    </div>\n</form>';
-},{}],39:[function(require,module,exports){
-module.exports = '<div id="dashboardCounts" class="">\n    <!--<div class="row">-->\n<!-- graded / remaining counters -->\n        <p>Graded: <span id="graded">{{ gradedExams }}</span> | Remaining: <span id="remaining">{{ remainingExams }}</span></p>\n<!--<div class="col-xs-6"><p>Graded: <span id="graded">{{ gradedExams }}</span> </p></div><div class="col-xs-6"> Remaining: <span id="remaining">{{ remainingExams }}</span></div>-->\n    <!--</div>-->\n    <!--<div class="row">-->\n<!-- save & finish button -->\n<a id="finishButton"\n   class="btn btn-success col-lg-12 "\n   v-bind:style="buttonStyle"\n   href="{{ finishedLink }}">\n    <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish\n</a>\n    <!--</div>-->\n</div>';
 },{}],40:[function(require,module,exports){
-module.exports = '<div id="dashboard">\n    <h4 class="row">\n    <span class="col-xs-7 dashboard-header">\n            <!--<span class="col-xs-7 dashboard-header" style="vertical-align:middle">-->\n        <span class="glyphicon glyphicon-time"\n              aria-hidden="true"></span> Statistics\n    </span>\n\n        <span class="col-xs-5">\n        <a id="btnTimer"\n           v-bind:class="buttonStyling"\n           title="Toggle timer"\n           v-on:click="toggleTimer">\n            <span id="btnTimerIcon"\n                  v-bind:class="buttonIcon"\n                  aria-hidden="true"></span>\n            <span id="btnTimerLabel">{{buttonLabel}}</span>\n        </a>\n    </span>\n    </h4>\n\n    <div class="panel panel-default">\n\n        <div id="gradingStatsPanel" class="panel-body">\n            <span class="col-xs-6">Time This Exam</span>\n            <span class="col-xs-6" id="thisExamTime">{{ currentExamTimeDisplay }}</span>\n\n            <span class="col-xs-6">Average Time</span>\n            <span class="col-xs-6" id="avgTime">{{ averageTimeDisplay }}</span>\n\n            <span class="col-xs-6">Total Time</span>\n            <span class="col-xs-6" id="totalTime">{{ totalTimeDisplay }}</span>\n\n            <span class="col-xs-6">Time Remaining</span>\n            <span class="col-xs-6" id="timeRemaining">{{ remainingTimeDisplay }}</span>\n        </div>\n    </div>\n</div>';
+module.exports = '<div id="dashboardCounts" class="">\n\n    <!-- graded / remaining counters -->\n    <p>Graded: <span id="graded">{{ gradedExams }}</span> | Remaining: <span id="remaining">{{ remainingExams }}</span>\n    </p>\n\n    <!-- save & finish button -->\n    <a id="finishButton"\n       class="btn btn-success col-lg-12 "\n       v-bind:style="buttonStyle"\n       href="{{ finishedLink }}">\n        <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish\n    </a>\n\n</div>';
 },{}],41:[function(require,module,exports){
-module.exports = '<div id="element{{ elementNumber }}"\n     class="list-group-item elementPanel"\n     data-element-index="{{ elementIndex }}"\n     data-element-id="{{ elementId }}"\n     data-comment-area-id="{{ commentAreaId  }}">\n\n    <h5 class="elementTitle">{{ elementTitle }}</h5>\n    <div class="row">\n                <span class="col-lg-5 sliderContainer Q{{ questionNumber }}E{{ elementNumber }}">\n                    <!-- score slider -->\n                    <label for="{{ sliderId }}"></label>\n                    <input id="{{ sliderId }}"\n                           type="text"\n                           class="slider"/>\n                </span>\n\n        <!-- comment area -->\n                <span class="col-lg-7 commentContainer Q{{ questionNumber }}E{{ elementNumber }}">\n                    <textarea id="{{ commentAreaId  }}"\n                              class="form-control"\n                              rows="4"\n                              name="{{ commentAreaId  }}"\n                              placeholder="No score for this element"\n                              v-model="commentText"\n                    ></textarea>\n                </span>\n    </div>\n</div>\n';
+module.exports = '<div id="dashboard">\n    <h4 class="row">\n    <span class="col-xs-7 dashboard-header">\n            <!--<span class="col-xs-7 dashboard-header" style="vertical-align:middle">-->\n        <span class="glyphicon glyphicon-time"\n              aria-hidden="true"></span> Statistics\n    </span>\n\n        <span class="col-xs-5">\n        <a id="btnTimer"\n           v-bind:class="buttonStyling"\n           title="Toggle timer"\n           v-on:click="toggleTimer">\n            <span id="btnTimerIcon"\n                  v-bind:class="buttonIcon"\n                  aria-hidden="true"></span>\n            <span id="btnTimerLabel">{{buttonLabel}}</span>\n        </a>\n    </span>\n    </h4>\n\n    <div class="panel panel-default">\n\n        <div id="gradingStatsPanel" class="panel-body">\n            <span class="col-xs-6">Time This Exam</span>\n            <span class="col-xs-6" id="thisExamTime">{{ currentExamTimeDisplay }}</span>\n\n            <span class="col-xs-6">Average Time</span>\n            <span class="col-xs-6" id="avgTime">{{ averageTimeDisplay }}</span>\n\n            <span class="col-xs-6">Total Time</span>\n            <span class="col-xs-6" id="totalTime">{{ totalTimeDisplay }}</span>\n\n            <span class="col-xs-6">Time Remaining</span>\n            <span class="col-xs-6" id="timeRemaining">{{ remainingTimeDisplay }}</span>\n        </div>\n    </div>\n</div>';
 },{}],42:[function(require,module,exports){
-module.exports = '<!-- Single button -->\n<div id="letterGradeArea"\n     class="btn-group">\n    <button id="letterGradeButton{{questionNumber}}"\n            type="button"\n            class="btn btn-default dropdown-toggle"\n            data-toggle="dropdown"\n            aria-haspopup="true"\n            aria-expanded="false">\n        <span id="letterGradeForQuestion{{ questionNumber }}">{{ displayedGrade }}</span> <span class="caret"></span>\n    </button>\n\n    <ul id="letterGradeList"\n        class="dropdown-menu letterGradeList">\n        <template v-for="grade in grades">\n            <li class="gradeListItem">\n                <a class="letterGrade question{{ questionNumber }} q{{questionNumber}}g{{ grade.calcValue }}"\n                   v-on:click="handleLetterGradeClick($index)"\n                   href="#">{{ grade.displayValue }}</a>\n            </li>\n        </template>\n    </ul>\n\n</div>\n';
+module.exports = '<div id="element{{ elementNumber }}"\n     class="list-group-item elementPanel"\n     data-element-index="{{ elementIndex }}"\n     data-element-id="{{ elementId }}"\n     data-comment-area-id="{{ commentAreaId  }}">\n\n    <h5 class="elementTitle">{{ elementTitle }}</h5>\n    <div class="row">\n                <span class="col-lg-5 sliderContainer Q{{ questionNumber }}E{{ elementNumber }}">\n                    <!-- score slider -->\n                    <label for="{{ sliderId }}"></label>\n                    <input id="{{ sliderId }}"\n                           type="text"\n                           class="slider"/>\n                </span>\n\n        <!-- comment area -->\n                <span class="col-lg-7 commentContainer Q{{ questionNumber }}E{{ elementNumber }}">\n                    <textarea id="{{ commentAreaId  }}"\n                              class="form-control"\n                              rows="4"\n                              name="{{ commentAreaId  }}"\n                              placeholder="No score for this element"\n                              v-model="commentText"\n                    ></textarea>\n                </span>\n    </div>\n</div>\n';
 },{}],43:[function(require,module,exports){
-module.exports = '\n    <form class="questionScoreForm form-horizontal" role="form">\n        <div class="form-group">\n            <label class="col-xs-1 control-label questionScoreLabel"\n                   for="{{ scoreFieldIdString }}">Score:</label>\n\n            <div class="col-xs-1 scoreArea">\n                <input id="{{ scoreFieldIdString }}"\n                       v-model="questionScore"\n                       class="form-control pull-right questionScore"\n                       type="number"\n                       min="0"\n                       max="{{ maxScore }}"\n                />\n            </div>\n            <div class="col-xs-1 control-label maxScore">\n                <b>/ <span id="{{ maxScoreFieldIdString}}">{{ maxScore }}</span> </b>\n            </div>\n        </div>\n    </form>\n';
+module.exports = '<!-- Single button -->\n<div id="letterGradeArea"\n     class="btn-group">\n    <button id="letterGradeButton{{questionNumber}}"\n            type="button"\n            class="btn btn-default dropdown-toggle"\n            data-toggle="dropdown"\n            aria-haspopup="true"\n            aria-expanded="false">\n        <span id="letterGradeForQuestion{{ questionNumber }}">{{ displayedGrade }}</span> <span class="caret"></span>\n    </button>\n\n    <ul id="letterGradeList"\n        class="dropdown-menu letterGradeList">\n        <template v-for="grade in grades">\n            <li class="gradeListItem">\n                <a class="letterGrade question{{ questionNumber }} q{{questionNumber}}g{{ grade.calcValue }}"\n                   v-on:click="handleLetterGradeClick($index)"\n                   href="#">{{ grade.displayValue }}</a>\n            </li>\n        </template>\n    </ul>\n\n</div>\n';
 },{}],44:[function(require,module,exports){
-module.exports = '\n        <tr id="{{ rowIdString }}"\n            class="studentListItem "\n            v-on:click="handleRowClick"\n            v-bind:class="{ \'unalteredStudentRow\': isUnaltered, \'activeStudentRow\': isActiveStudent, \'gradedStudentRow\': isGraded }"\n            data-index="{{ studentIndex }}"\n            data-fName="{{ firstName }}"\n            data-lName="{{ lastName }}"\n            data-sid="{{ studentId }}"\n            data-student-identifier="{{ studentIdentifier }}">\n            <td class="col-xs-6"\n                id="studentName{{ studentIndex }}">{{ studentName }}</td>\n            <td class="col-xs-4"\n                id="studentIdentifier{{ studentIndex }}">{{ studentIdentifierDisplay }}</td>\n            <td class="col-xs-2"\n                id="examGrade{{ studentIndex }}">{{ examGrade }}</td>\n        </tr>\n';
+module.exports = '\n    <form class="questionScoreForm form-horizontal" role="form">\n        <div class="form-group">\n            <label class="col-xs-1 control-label questionScoreLabel"\n                   for="{{ scoreFieldIdString }}">Score:</label>\n\n            <div class="col-xs-1 scoreArea">\n                <input id="{{ scoreFieldIdString }}"\n                       v-model="questionScore"\n                       class="form-control pull-right questionScore"\n                       type="number"\n                       min="0"\n                       max="{{ maxScore }}"\n                />\n            </div>\n            <div class="col-xs-1 control-label maxScore">\n                <b>/ <span id="{{ maxScoreFieldIdString}}">{{ maxScore }}</span> </b>\n            </div>\n        </div>\n    </form>\n';
 },{}],45:[function(require,module,exports){
+module.exports = '\n        <tr id="{{ rowIdString }}"\n            class="studentListItem "\n            v-on:click="handleRowClick"\n            v-bind:class="{ \'unalteredStudentRow\': isUnaltered, \'activeStudentRow\': isActiveStudent, \'gradedStudentRow\': isGraded }"\n            data-index="{{ studentIndex }}"\n            data-fName="{{ firstName }}"\n            data-lName="{{ lastName }}"\n            data-sid="{{ studentId }}"\n            data-student-identifier="{{ studentIdentifier }}">\n            <td class="col-xs-6"\n                id="studentName{{ studentIndex }}">{{ studentName }}</td>\n            <td class="col-xs-4"\n                id="studentIdentifier{{ studentIndex }}">{{ studentIdentifierDisplay }}</td>\n            <td class="col-xs-2"\n                id="examGrade{{ studentIndex }}">{{ examGrade }}</td>\n        </tr>\n';
+},{}],46:[function(require,module,exports){
+module.exports = '<table class="table table-fixed table-hover" id="studentRoster">\n    <thead>\n    <tr>\n        <th class="col-xs-6"\n            id="nameHeader"\n            title="Sort by name"\n        >Name\n        </th>\n        <th class="col-xs-4"\n            id="idHeader"\n            title="Sort by ID">ID\n        </th>\n        <th class="col-xs-2"\n            id="gradeHeader"\n            title="Sort by grade"\n        >Grade\n        </th>\n    </tr>\n\n    </thead>\n\n    <tbody id="studentRosterBody">\n\n    <tr v-for="s in students"\n        v-on:click="handleStudentRowClick(s.studentIndex)"\n        v-bind:class="{ \'unalteredStudentRow\': isUnalteredStyle(s.studentIndex),\n         \'activeStudentRow\': isActiveStyle(s.studentIndex),\n          \'gradedStudentRow\': isGradedStyle(s.studentIndex) }"\n        id="studentListItem{{ s.studentIndex }}"\n        class="studentListItem ">\n        <td class="col-xs-6"\n            id="studentName{{ s.studentIndex }}">{{ getName(s.studentIndex) }}</td>\n        <td class="col-xs-4"\n            id="studentIdentifier{{ s.studentIndex }}">{{ s.studentIdentifier }}</td>\n        <td class="col-xs-2"\n            id="examGrade{{ s.studentIndex }}">{{ getGrade(s.studentIndex) }}</td>\n    </tr>\n\n    </tbody>\n</table>\n';
+},{}],47:[function(require,module,exports){
 /*! =========================================================
  * bootstrap-slider.js
  *

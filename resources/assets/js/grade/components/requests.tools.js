@@ -24,5 +24,10 @@ module.exports = {
     ElementScoreRequest: function(studentIndex, elementId){
         this.studentIndex = studentIndex;
         this.elementId = elementId;
+    },
+
+    StudentSelectEvent: function(studentName, studentIdentifier){
+        this.studentName = studentName;
+        this.studentIdentifier = studentIdentifier;
     }
 };

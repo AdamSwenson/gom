@@ -27,7 +27,9 @@ new Vue( {
         'letter-grade-button': require( './components/letterGradeButton.component.js' ),
         'question-score': require( './components/questionScore.component' ),
         'dashboard-timer': require( './components/dashboard.timer.component' ),
-        'dashboard-counts': require( './components/dashboard.counts.component' )
+        'dashboard-counts': require( './components/dashboard.counts.component' ),
+
+        'student-table': require('./components/studentTable.component')
     },
 
 
@@ -232,7 +234,7 @@ new Vue( {
          * @param obj
          */
         'student-select-event': function ( obj ) {
-            window.console.log( 'gradeVue', 'student-select-event' );
+            window.console.log( 'gradeVue', 'caught student-select-event', obj );
             this.showQuestionPanel();
             this.$broadcast('start-timer-request');
             this.requestTimerStart();
@@ -333,21 +335,21 @@ new Vue( {
         //
 var me = this;
         /* ------------------ table sorting listeners --------- */
-        $( "#nameHeader" ).on( 'click', function () {
-            me.sortRosterBy( 'studentName');
-        } );
-        $( "#idHeader" ).on( 'click', function () {
-            me.sortRosterBy( 'studentIdentifier');
-        } );
-        $( "#gradeHeader" ).on( 'click', function () {
-            me.sortRosterBy( 'examGrade' );
-        } );
-
-
-
-
-
-        this.sortRosterBy( 'studentName' );
+        // $( "#nameHeader" ).on( 'click', function () {
+        //     me.sortRosterBy( 'studentName');
+        // } );
+        // $( "#idHeader" ).on( 'click', function () {
+        //     me.sortRosterBy( 'studentIdentifier');
+        // } );
+        // $( "#gradeHeader" ).on( 'click', function () {
+        //     me.sortRosterBy( 'examGrade' );
+        // } );
+        //
+        //
+        //
+        //
+        //
+        // this.sortRosterBy( 'studentName' );
 
 
         $.ajaxSetup( {

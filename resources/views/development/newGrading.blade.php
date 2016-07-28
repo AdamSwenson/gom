@@ -183,7 +183,10 @@ $grades = App\Repositories\Grade\GradeFactory::gradeJson();
             <dashboard-counts finished-link="{{ url('grade/') }}"></dashboard-counts>
 
             <!-- student table shows the student roster -->
-        @include('development.partials.student_table')
+            <div class="panel panel-default">
+            <student-table></student-table>
+                </div>
+        {{--@include('development.partials.student_table')--}}
 
         <!-- statistics area holds time info -->
             <dashboard-timer></dashboard-timer>
@@ -283,7 +286,7 @@ $grades = App\Repositories\Grade\GradeFactory::gradeJson();
 
     <script type="text/javascript">
                 <?php
-                $stockComments = json_encode($stockComments, JSON_FORCE_OBJECT);
+//                $stockComments = json_encode($stockComments, JSON_FORCE_OBJECT);
                 $studentElementComments = json_encode($studentElementComments, JSON_FORCE_OBJECT);
                 $studentElementScores = json_encode($studentElementScores, JSON_FORCE_OBJECT);
                 $studentQuestionScores = json_encode($studentQuestionScores, JSON_FORCE_OBJECT);
@@ -291,18 +294,6 @@ $grades = App\Repositories\Grade\GradeFactory::gradeJson();
                 $studentGrades = json_encode($studentGrades, JSON_FORCE_OBJECT);
                 $maxScores = json_encode($maxQuestionScores, JSON_FORCE_OBJECT);
                 $numQuestions = count($questionAssignments);
-
-//                $st = [];
-//                foreach ( $students as $student )
-//                {
-//                    $st[] = [
-//                            'studentId'         => $student->getId(),
-//                            'studentIdentifier' => $student->getStudentId(),
-//                            'firstName'         => $student->getStudentFName(),
-//                            'lastName'          => $student->getStudentLName()
-//                    ];
-//                }
-//                $studentJson = json_encode($st, JSON_FORCE_OBJECT);
                 ?>
 
         var activeTab = 'navGrade';
@@ -311,7 +302,7 @@ $grades = App\Repositories\Grade\GradeFactory::gradeJson();
         var store = new Data();
         store.activeStudent = 0;
         store.setExamId({!! $exam->id !!});
-        store.loadStockComments({!! $stockComments !!});
+        store.loadStockComments({!! $stockCommentsJson !!});
         store.loadElementComments( {!! $studentElementComments !!});
         store.loadElementScores({!! $studentElementScores !!});
         store.loadQuestionScores( {!! $studentQuestionScores !!});

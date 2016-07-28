@@ -10,10 +10,10 @@ module.exports = {
 
     props: [
         'studentIndex',
-        'firstName',
-        'lastName',
-        'studentIdentifier',
-        'studentId'
+        // 'firstName',
+        // 'lastName',
+        // 'studentIdentifier',
+        // 'studentId'
     ],
 
     data: function () {
@@ -43,7 +43,30 @@ module.exports = {
     },
 
     computed: {
-        rowIdString: function(){
+        firstName: function () {
+            let student = this.store.getStudent( this.studentIndex );
+            return student.firstName;
+        },
+        lastName: function () {
+            let student = this.store.getStudent( this.studentIndex );
+            return student.lastName;
+        },
+        studentIdentifier: function () {
+            let student = this.store.getStudent( this.studentIndex );
+            // window.console.log(student.studentIdentifier);
+            return student.studentIdentifier;
+        },
+        studentId: function () {
+            let student = this.store.getStudent( this.studentIndex );
+            // window.console.log(student.studentId );
+            return student.studentId;
+        },
+
+        /**
+         * Returns the id attribute for the item
+         * @returns {string}
+         */
+        rowIdString: function () {
             return "studentListItem" + this.studentIndex;
         },
 
@@ -60,7 +83,7 @@ module.exports = {
          * The gradedStudentRow class is bound to this.
          */
         isGraded: function () {
-            var grade = this.store.getExamGrade(this.studentIndex );
+            var grade = this.store.getExamGrade( this.studentIndex );
             if ( (grade != 'undefined') && (grade != '') && ( grade >= 0 ) ) {
                 // window.console.log( 'isGraded', true );
                 return true;
@@ -75,7 +98,7 @@ module.exports = {
          */
         isActiveStudent: function () {
             if ( this.store.getActiveStudentIndex() == this.studentIndex ) {
-                 // window.console.log( 'isActive', this.studentIndex, true );
+                // window.console.log( 'isActive', this.studentIndex, true );
                 return true;
             }
             // window.console.log( 'isActive', false );
@@ -137,14 +160,14 @@ module.exports = {
          * dispatches appropriate notifications
          */
         setAsActiveStudent: function () {
-            this.store.setActiveStudent(this.studentIndex, this.studentId);
+            this.store.setActiveStudent( this.studentIndex, this.studentId );
             this.notifyStudentSelectEvent();
         },
 
 
         /* ------------------------ Notifications and events --------------------- */
-        handleRowClick: function(){
-           // window.console.log('studentListItem', 'click', this.studentIndex);
+        handleRowClick: function () {
+            // window.console.log('studentListItem', 'click', this.studentIndex);
             this.setAsActiveStudent();
         },
         /**

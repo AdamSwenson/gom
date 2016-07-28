@@ -456,6 +456,21 @@ function Data() {
         return students[studentIndex];
     };
 
+
+    /**
+     * Returns a json containing student objects with student indexes as keys.
+     * The contained object has the keys:
+     *      studentId
+     *      studentIdentifier
+     *      firstName
+     *      lastName
+     * @returns {*}
+     */
+    this.getStudents = function(){
+        return students;
+    };
+
+
     /**
      * Mostly used for testing
      * @param studentIndex

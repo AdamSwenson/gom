@@ -84,6 +84,18 @@ describe( "StudentListItem | ", function () {
         this.placeHolder = "--";
         this.namePlaceholder = 'Name Hidden';
 
+        var students = {
+            0 : {firstName: this.firstName,
+                lastName: this.lastName,
+                studentId: this.studentId,
+                studentIdentifier: this.studentIdentifier
+        }
+        };
+        // students[ this.studentIndex ][ 'firstName' ] = this.firstName;
+        // students[ this.studentIndex ][ 'lastName' ] = this.lastName;
+        // students[ this.studentIndex ][ 'studentId' ] = this.studentId;
+        // students[ this.studentIndex ][ 'studentIdentifier' ] = this.studentIdentifier;
+        // window.console.log(students[0]);
         var store = new Data();
         store.loadQuestionScores( {
             0: {
@@ -104,6 +116,7 @@ describe( "StudentListItem | ", function () {
             2: 'Letter grade'
         } );
         store.loadNumberQuestions( 2 );
+        store.loadStudents( students );
         window.store = store;
 
 

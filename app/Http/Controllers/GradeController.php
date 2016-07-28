@@ -445,21 +445,8 @@ class GradeController extends Controller
                 $examGradingTimes[] = 0;
             }
         }
+        $stockCommentsJson = $this->makeStockCommentsJson($allElements);
 
-        // load stock comments for each element
-        $stockComments = [];
-        foreach ( $allElements as $aQuestion )
-        {
-            foreach ( $aQuestion as $element )
-            {
-                $defaultComments = null;
-                for ( $i = 0; $i < count(Comment::$valences); $i++ )
-                {
-                    $defaultComments[] = $this->elementDao->loadCommentByElementIdAndValence($element->getId(), $i)->getBody();
-                }
-                $stockComments[] = $defaultComments;
-            }
-        }
 
         $studentGrades = [];
         foreach ( $students as $s )
@@ -470,14 +457,14 @@ class GradeController extends Controller
         $questionsJson = $this->makeQuestionsJson($exam);
         $studentsJson = $this->makeStudentJson($exam);
 
-
+//        return View::make('development.newTable')->with([
         return View::make('development.newGrading')->with([
                                                               'exam'                   => $exam,
                                                               'students'               => $students,
                                                               'questionAssignments'    => $questionAssignments,
                                                               'maxQuestionScores'      => $maxQuestionScores,
                                                               'allElements'            => $allElements,
-                                                              'stockComments'          => $stockComments,
+                                                              'stockCommentsJson'          => $stockCommentsJson,
                                                               'examGradingTimes'       => $examGradingTimes,
                                                               'studentElementScores'   => $studentElementScores,
                                                               'studentElementComments' => $studentElementComments,
@@ -654,8 +641,9 @@ class GradeController extends Controller
         foreach ( $students as $student )
         {
             $s[ $studentIndex ] = [
+                'studentIndex' => $studentIndex, //this is here so can use with component
                 'studentId'         => $student->id,
-                'studentIdentifier' => $student->student_identfier,
+                'studentIdentifier' => $student->student_identifier,
                 'firstName'         => $student->first_name,
                 'lastName'          => $student->last_name,
             ];
@@ -671,6 +659,31 @@ class GradeController extends Controller
 
         // load all question assignments and all elements for those questions
 
+    }
+
+    /**
+     * @param $allElements
+     * @return array
+     */
+    public function makeStockCommentsJson($allElements)
+    {
+// load stock comments for each element
+        $stockComments = [];
+        foreach ( $allElements as $aQuestion )
+        {
+            foreach ( $aQuestion as $element )
+            {
+                $defaultComments = null;
+                for ( $i = 0; $i < count(Comment::$valences); $i++ )
+                {
+                    $defaultComments[] = $this->elementDao->loadCommentByElementIdAndValence($element->getId(), $i)->getBody();
+                }
+                $stockComments[] = $defaultComments;
+            }
+        }
+        $stockComments = json_encode($stockComments, JSON_FORCE_OBJECT);
+
+        return $stockComments;
     }
 
 
