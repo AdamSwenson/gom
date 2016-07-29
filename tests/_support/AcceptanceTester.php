@@ -27,6 +27,17 @@ public static $started = false;
     public $logoutRoute = '/auth/logout';
 
 
+    public function init($loginUsingId = null)
+    {
+//        $this->amOnPage('/');
+
+        $this->setCookie('selenium_request', 'true');
+
+        if ($loginUsingId) {
+            $this->setCookie('selenium_auth', (string) $loginUsingId);
+        }
+    }
+
 
     /**
      * Define custom actions here

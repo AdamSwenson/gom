@@ -174,6 +174,7 @@ TAG;
     /* --------------- Actions ----------------- */
     public static function navigateToGradingPage($I, $examId){
         $I->test_login($I);
+//        $I->init(1);
         $I->amOnPage(self::route($examId));
         $I->waitForElementVisible(self::$mainBodyLocator);
 
