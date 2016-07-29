@@ -51,38 +51,38 @@ new Vue( {
             $( '#questionArea' ).show( "fast" );
         },
 
-        /**
-         * Sorts the StudentRoster by the clicked header. Sort order reverses with each press.
-         * @param value
-         * @param data
-         */
-        sortRosterBy: function ( value) {
-            let data = this.store;
-            var me = this;
-            var $roster = $( '#studentRosterBody' );
-            $roster.append(
-                $roster.find( '[id^="studentListItem"]' ).sort( function ( a, b ) {
-                    var i = $( a ).find( '[id^="' + value + '"]' );
-                    var j = $( b ).find( '[id^="' + value + '"]' );
-                    var result;
-                    if ( value == 'studentName' || value == 'studentIdentifier' ) {
-                        result = $( i ).text().toUpperCase().localeCompare(
-                            $( j ).text().toUpperCase() );
-                    } else {
-                        // sort by exam grade
-                        var gradeA = data.examGrades[ $( a ).attr( 'data-index' ) ];
-                        var gradeB = data.examGrades[ $( b ).attr( 'data-index' ) ];
-                        result = gradeA - gradeB;
-                    }
-                    // flip results if we're sorting in DESC
-                    if ( ! me.sortAsc ) {
-                        result *= - 1;
-                    }
-                    return result;
-                } )
-            );
-            me.sortAsc = ! me.sortAsc;
-        },
+        // /**
+        //  * Sorts the StudentRoster by the clicked header. Sort order reverses with each press.
+        //  * @param value
+        //  * @param data
+        //  */
+        // sortRosterBy: function ( value) {
+        //     let data = this.store;
+        //     var me = this;
+        //     var $roster = $( '#studentRosterBody' );
+        //     $roster.append(
+        //         $roster.find( '[id^="studentListItem"]' ).sort( function ( a, b ) {
+        //             var i = $( a ).find( '[id^="' + value + '"]' );
+        //             var j = $( b ).find( '[id^="' + value + '"]' );
+        //             var result;
+        //             if ( value == 'studentName' || value == 'studentIdentifier' ) {
+        //                 result = $( i ).text().toUpperCase().localeCompare(
+        //                     $( j ).text().toUpperCase() );
+        //             } else {
+        //                 // sort by exam grade
+        //                 var gradeA = data.examGrades[ $( a ).attr( 'data-index' ) ];
+        //                 var gradeB = data.examGrades[ $( b ).attr( 'data-index' ) ];
+        //                 result = gradeA - gradeB;
+        //             }
+        //             // flip results if we're sorting in DESC
+        //             if ( ! me.sortAsc ) {
+        //                 result *= - 1;
+        //             }
+        //             return result;
+        //         } )
+        //     );
+        //     me.sortAsc = ! me.sortAsc;
+        // },
 
         /* ------------------------------ Server ------------------------------ */
 
@@ -156,16 +156,15 @@ new Vue( {
 
         /**
          * Sends a request to delete a score from the database
+         * @param studentIndex
          * @param questionAssignmentId
          * @returns boolean
          */
-        deleteScore: function(questionAssignmentId){
-            var me = this;
-
-            let studentId = this.store.getActiveStudentId();
+        deleteScore: function(studentIndex, questionAssignmentId){
+            let student = this.store.getStudent(studentIndex);
             let examId = this.store.getExamId();
 
-            return this.ajaxTools.deleteScoreRequest(examId, studentId, questionAssignmentId);
+            return this.ajaxTools.deleteScoreRequest(examId, student.studentId, questionAssignmentId);
         },
 
         /* ------------------------------ Events ------------------------------ */
@@ -196,12 +195,9 @@ new Vue( {
          */
         'element-slider-stop-event': function () {
             window.console.log( 'gradeVue', 'element-slider-stop-event' );
-            // this.handleElementSliderStopEvent( slideEvt, data, Roster, function () {
-            //     //Update dashboard and roster data displayed
-            //     updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
-            //Sigh. The user forgot to restart the timer. Do it for them
+
+            //Sigh. The user might have forgotten to restart the timer. Do it for them
             this.requestTimerStart();
-            //Timer.resumeTimerIfPaused( data, Roster, Dashboard );
         },
 
         /**
@@ -272,7 +268,13 @@ new Vue( {
          */
         'store-question-score-request': function ( questionScoreRequestObj ) {
             window.console.log( 'gradeVue', 'caught store-question-score-request', questionScoreRequestObj );
-            this.saveQuestionScoreWithTime(questionScoreRequestObj.studentIndex, questionScoreRequestObj.questionIndex, questionScoreRequestObj.questionAssignmentId )
+            let score = this.store.getQuestionScoreForActiveStudent(questionScoreRequestObj.questionIndex);
+            if( score == '' || score == null){
+                this.deleteScore(questionScoreRequestObj.studentIndex, questionScoreRequestObj.questionAssignmentId);
+            }else{
+                this.saveQuestionScoreWithTime(questionScoreRequestObj.studentIndex, questionScoreRequestObj.questionIndex, questionScoreRequestObj.questionAssignmentId )
+            }
+
         },
 
         /**
@@ -321,36 +323,6 @@ new Vue( {
     directives: {},
 
     ready: function () {
-        /* ------------------ table sorting listeners --------- */
-        // $( "#nameHeader" ).on( 'click', function () {
-        //     Roster.sortRosterBy( 'studentName', data );
-        // } );
-        // $( "#idHeader" ).on( 'click', function () {
-        //     Roster.sortRosterBy( 'studentIdentifier', data );
-        // } );
-        // $( "#gradeHeader" ).on( 'click', function () {
-        //     Roster.sortRosterBy( 'examGrade', data );
-        // } );
-        //
-        //
-var me = this;
-        /* ------------------ table sorting listeners --------- */
-        // $( "#nameHeader" ).on( 'click', function () {
-        //     me.sortRosterBy( 'studentName');
-        // } );
-        // $( "#idHeader" ).on( 'click', function () {
-        //     me.sortRosterBy( 'studentIdentifier');
-        // } );
-        // $( "#gradeHeader" ).on( 'click', function () {
-        //     me.sortRosterBy( 'examGrade' );
-        // } );
-        //
-        //
-        //
-        //
-        //
-        // this.sortRosterBy( 'studentName' );
-
 
         $.ajaxSetup( {
             headers: {

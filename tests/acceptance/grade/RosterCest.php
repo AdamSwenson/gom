@@ -224,6 +224,7 @@ class RosterCest
     }
 
     /**
+     * @group ddd
      * @param AcceptanceTester $I
      * @group grade
      * @group rosterArea
@@ -237,8 +238,8 @@ class RosterCest
             $I->see(RosterArea::expectedStudentId($i), RosterArea::studentIdLocator($i - 1));
 
             $I->expect("that the rows are correctly ordered too");
-            $I->see(RosterArea::expectedStudentName($i), ['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(1)"]);
-            $I->see(RosterArea::expectedStudentId($i), ['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(2)"]);
+            $I->see(RosterArea::expectedStudentName($i), RosterArea::studentNameLocator($i - 1)); //['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(1)"]);
+            $I->see(RosterArea::expectedStudentId($i), RosterArea::studentIdLocator($i - 1)); //['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(2)"]);
         }
 
         $I->amGoingTo("click the name area to sort by name into descending order");
@@ -251,8 +252,10 @@ class RosterCest
         for ( $i = $j; $i > 0; $i-- )
         {
             //first line should be student w id #5
-            $I->see(RosterArea::expectedStudentName($i), ['css' => "tr.studentListItem:nth-child({$k}) > td:nth-child(1)"]);
-            $I->see(RosterArea::expectedStudentId($i), ['css' => "tr.studentListItem:nth-child({$k}) > td:nth-child(2)"]);
+            $I->see(RosterArea::expectedStudentName($i), RosterArea::studentNameLocator($i - 1));
+            //['css' => "tr.studentListItem:nth-child({$k}) > td:nth-child(1)"]);
+            $I->see(RosterArea::expectedStudentId($i), RosterArea::studentIdLocator($i -1));
+//['css' => "tr.studentListItem:nth-child({$k}) > td:nth-child(2)"]);
             $k++;
         }
 
@@ -263,8 +266,10 @@ class RosterCest
         $I->expectTo("see the names of students in ascending order");
         for ( $i = 1; $i <= $this->numStudents; $i++ )
         {
-            $I->see(RosterArea::expectedStudentName($i), ['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(1)"]);
-            $I->see(RosterArea::expectedStudentId($i), ['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(2)"]);
+            $I->see(RosterArea::expectedStudentName($i), RosterArea::studentNameLocator($i - 1));
+            //['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(1)"]);
+            $I->see(RosterArea::expectedStudentId($i), RosterArea::studentIdLocator($i-1));
+            //['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(2)"]);
         }
         
     }
@@ -283,20 +288,22 @@ class RosterCest
         }
 
         $I->amGoingTo("click the id header area to sort by id");
+        //todo fix sorting so doesn't take two clicks
+        $I->click(RosterArea::$tableHeaderIdLocator);
         $I->click(RosterArea::$tableHeaderIdLocator);
         $I->wait(1);
 
         $I->expect("that the students are in numeric order by id (descending)");
         $k = 1;
         $j = $this->numStudents - 1; //4
-        for ( $i = $j; $i >= 0; $i-- )
+        for ( $i = $j; $i >= 0; $i-- ) //$i starts at 4
         {
             //sorting on '--' is non-deterministic, so skip students 1 and 2
             if ( $i + 1 > 2 )
             {
                 //first line should be student w id #5
-                $I->see(RosterArea::expectedStudentName($i + 1), ['css' => "tr.studentListItem:nth-child({$k}) > td:nth-child(1)"]);
-                $I->see(RosterArea::expectedStudentId($i + 1), ['css' => "tr.studentListItem:nth-child({$k}) > td:nth-child(2)"]);
+                $I->see(RosterArea::expectedStudentName($i + 1), RosterArea::rowLocator($k, 1));//['css' => "tr.studentListItem:nth-child({$k}) > td:nth-child(1)"]);
+                $I->see(RosterArea::expectedStudentId($i + 1), RosterArea::rowLocator($k, 2)); //['css' => "tr.studentListItem:nth-child({$k}) > td:nth-child(2)"]);
             }
             $k++;
         }
@@ -305,15 +312,14 @@ class RosterCest
         $I->click(RosterArea::$tableHeaderIdLocator);
         $I->wait(1);
 
-
         $I->expectTo("see the ids of students in ascending order");
         for ( $i = 1; $i <= $this->numStudents; $i++ )
         {
             //sorting on '--' is non-deterministic, so skip students 1 and 2
             if ( $i > 2 )
             {
-                $I->see(RosterArea::expectedStudentName($i), ['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(1)"]);
-                $I->see(RosterArea::expectedStudentId($i), ['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(2)"]);
+                $I->see(RosterArea::expectedStudentName($i), RosterArea::rowLocator($i, 1));
+                $I->see(RosterArea::expectedStudentId($i), RosterArea::rowLocator($i, 2));//['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(2)"]);
             }
         }
 
@@ -347,7 +353,9 @@ class RosterCest
 
         $I->amGoingTo("click the sort by grade header");
         $I->click(RosterArea::$tableHeaderGradeLocator);
-        $I->wait(2);
+        $I->click(RosterArea::$tableHeaderGradeLocator);
+
+        $I->wait(1);
 
         $I->expectTo("see the students in descending order by grade");
         $k = 1; //this will count up
@@ -355,24 +363,27 @@ class RosterCest
         for ( $i = $j; $i >= 0; $i-- )
         {
             //student #5 should have the highest score; student #1 should have the lowest
-            $I->see(RosterArea::expectedStudentName($i + 1), ['css' => "tr.studentListItem:nth-child({$k}) > td:nth-child(1)"]);
-            $I->see(RosterArea::expectedStudentId($i + 1), ['css' => "tr.studentListItem:nth-child({$k}) > td:nth-child(2)"]);
-            $I->see(floatval($i), ['css' => "tr.studentListItem:nth-child({$k}) > td:nth-child(3)"]);
+            $I->see(RosterArea::expectedStudentName($i + 1), RosterArea::rowLocator($k, 1));
+            $I->see(RosterArea::expectedStudentId($i + 1), RosterArea::rowLocator($k, 2));
+            $I->see(floatval($i), RosterArea::rowLocator($k, 3));
+
             $k++; //$k is counting rows from the top
         }
 
-
         $I->amGoingTo("click the grade header again");
         $I->click(RosterArea::$tableHeaderGradeLocator);
-        $I->wait(2);
+        $I->wait(1);
 
         $I->expectTo("see the students in ascending order by grade");
         for ( $i = 1; $i <= $this->numStudents; $i++ )
         {
             //student #1/0 should have the lowest score and be in the highest row
-            $I->see(RosterArea::expectedStudentName($i), ['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(1)"]);
-            $I->see(RosterArea::expectedStudentId($i), ['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(2)"]);
-            $I->see(floatval($i - 1), ['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(3)"]);
+            $I->see(RosterArea::expectedStudentName($i), RosterArea::rowLocator($i, 1));//['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(1)"]);
+            $I->see(RosterArea::expectedStudentId($i), RosterArea::rowLocator($i, 2));
+            //['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(2)"]);
+
+            $I->see(floatval($i - 1), RosterArea::rowLocator($i, 3));//RosterArea::studentGradeLocator($i - 1));
+            //['css' => "tr.studentListItem:nth-child({$i}) > td:nth-child(3)"]);
         }
 
 

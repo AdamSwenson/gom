@@ -19,7 +19,6 @@ module.exports = {
         'elementIndex',
         'elementId',
         'elementName',
-
         'questionNumber'
     ],
 //elementId = $elements[$eNumber-1]->getId()
@@ -53,10 +52,10 @@ module.exports = {
         commentText: {
             cache: false,
             get: function () {
-               return this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
+                return this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
             },
             set: function ( text ) {
-                this.store.storeCommentTextForActiveStudent(this.elementIndex, text );
+                this.store.storeCommentTextForActiveStudent( this.elementIndex, text );
                 //send to the db
                 this.notifyStoreCommentText();
             }
@@ -275,7 +274,7 @@ module.exports = {
                 //Dear Adam, make sure you read the doc for storeCommentText before fucking with
                 //anything in these lines
                 //this.commentText = this.commentSelector.val();
-                this.commentText = this.store.getCommentTextForActiveStudent(  this.elementIndex, this.getValence( this.elementScore ) );
+                this.commentText = this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
 
                 //update display
                 // this.updateDisplayedComment( $elementComment, commentText );
@@ -307,9 +306,9 @@ module.exports = {
             // Timer.resumeTimerIfPaused( data, Roster, Dashboard );
         },
 
-        setSliderScore: function(){
+        setSliderScore: function () {
             //avoid causing an error when slider gets null as a value
-          // var modScore = score === null ? 0 : this.elementScore;
+            // var modScore = score === null ? 0 : this.elementScore;
             this.sliderSelector.slider( 'setValue', this.elementScore );
 //            this.sliderSelector.slider( 'refresh' );
 
@@ -361,14 +360,9 @@ module.exports = {
          * @param activeStudent
          */
         'student-select-event': function ( obj ) {
-            //ignore if not belonging to us
- //           if ( elementIndex == this.elementIndex ) {
-                window.console.log('elementInput', 'caught student-select-event', this.elementScore);
-            //    window.console.log(this.elementScore);
-                //update the slider value
-                this.setSliderScore();
-                //update the comment text
-   //         }
+           window.console.log( 'elementInput', 'caught student-select-event', obj);
+            //update the slider value
+            this.setSliderScore();
             //return true just in case someone else is listening and
             //needs to hear the event
             return true;
@@ -397,13 +391,9 @@ module.exports = {
         this.sliderSelector.on( 'slideStop', function ( slideEvt ) {
             me.handleElementSliderStopEvent( slideEvt );
             me.notifySlideEvent();
-            // this.handleElementSliderStopEvent( slideEvt, data, Roster, function () {
-            //     //Update dashboard and roster data displayed
-            //     updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
-            //Sigh. The user forgot to restart the timer. Do it for them
-            //Timer.resumeTimerIfPaused( data, Roster, Dashboard );
+
         } );
-        // window.console.log('store', this.store);
+
         // window.console.log('input ready', 'elementIndex', this.elementIndex);
     }
 };

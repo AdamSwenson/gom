@@ -131,7 +131,9 @@ describe( "studentTable | ", function () {
         this.$studentName = $( "#studentName" + this.studentIndex );
         this.$studentIdentifier = $( "#studentIdentifier" + this.studentIndex );
         this.$examGrade = $( "#examGrade" + this.studentIndex );
-
+        this.$nameSortButton = $( "#nameHeader" );
+        this.$identifierSortButton = $( "#idHeader" );
+        this.$gradeSortButton = $( "#gradeHeader" );
     } );
 
 
@@ -149,6 +151,10 @@ describe( "studentTable | ", function () {
             expect( this.$studentName ).toExist();
             expect( this.$studentIdentifier ).toExist();
             expect( this.$examGrade ).toExist();
+            //sort buttons
+            expect( this.$nameSortButton ).toExist();
+            expect( this.$identifierSortButton ).toExist();
+            expect( this.$gradeSortButton ).toExist();
             //check has data
             expect( this.$studentName.text() ).toBe( this.lastName + ', ' + this.firstName );
             expect( this.$studentIdentifier.text() ).toBe( this.studentIdentifier );
@@ -292,7 +298,7 @@ describe( "studentTable | ", function () {
                 beforeEach( function () {
                     this.gradeVal = '27';
                     let d = new Data();
-                    d.setActiveStudent(this.studentIndex);
+                    d.setActiveStudent( this.studentIndex );
                     sinon.stub( d, "getExamGrade" ).returns( this.gradeVal );
                     sinon.stub( d, "getStudents" ).returns( students );
                     window.store = d;
@@ -302,15 +308,15 @@ describe( "studentTable | ", function () {
                     this.vm = Helper.loadVueComponent( testedComponent, 'student-table' );
                 } );
 
-                it("has correct values", function(){
-                   let component = Helper.getComponent(this);
-                    expect(component.isActiveStudent(this.studentIndex)).toBe(true);
-                    expect(component.isGraded(this.studentIndex)).toBe(true);
+                it( "has correct values", function () {
+                    let component = Helper.getComponent( this );
+                    expect( component.isActiveStudent( this.studentIndex ) ).toBe( true );
+                    expect( component.isGraded( this.studentIndex ) ).toBe( true );
                     //style properties
-                    expect(component.isActiveStyle(this.studentIndex)).toBe(true);
-                    expect(component.isGradedStyle(this.studentIndex)).toBe(false);
-                    expect(component.isUnalteredStyle(this.studentIndex)).toBe(false);
-                });
+                    expect( component.isActiveStyle( this.studentIndex ) ).toBe( true );
+                    expect( component.isGradedStyle( this.studentIndex ) ).toBe( false );
+                    expect( component.isUnalteredStyle( this.studentIndex ) ).toBe( false );
+                } );
 
                 it( "displays score ", function () {
                     let $grade = examGradeSelector( this.studentIndex );
@@ -415,5 +421,347 @@ describe( "studentTable | ", function () {
             } );
         } );
     } );
+
+    describe( "Sort | ", function () {
+        var s;
+        beforeEach( function () {
+            s = {
+                0: {
+                    studentIndex: 0,
+                    firstName: 'aaaa',
+                    lastName: 'aaaa',
+                    studentId: 0,
+                    studentIdentifier: '0000'
+                },
+                1: {
+                    studentIndex: 1,
+                    firstName: 'bbbb',
+                    lastName: 'bbbb',
+                    studentId: 1,
+                    studentIdentifier: '1111'
+                }
+            };
+            let d = new Data();
+            sinon.stub( d, "getStudents" ).returns( s );
+            window.store = d;
+
+            //prep the page
+            this.$fixture = loadFixtures( fixture );
+            this.vm = Helper.loadVueComponent( testedComponent, 'student-table' );
+        } );
+
+        describe( "component | ", function () {
+            let component;
+            beforeEach( function () {
+                let d = new Data();
+                sinon.stub( d, "getStudents" ).returns( s );
+                window.store = d;
+
+                //prep the page
+                this.$fixture = loadFixtures( fixture );
+                this.vm = Helper.loadVueComponent( testedComponent, 'student-table' );
+                component = Helper.getComponent( this );
+                expect( component.sortAsc ).toBe( true );
+            } );
+
+            it( "initial", function () {
+                let $names = $( '#studentRosterBody' ).find( '[id^="studentName"]' );
+                expect( $names.length ).toBe( 2 );
+                expect( $( $names[ 0 ] ).attr( 'id' ) ).toBe( 'studentName0' );
+                expect( $( $names[ 1 ] ).attr( 'id' ) ).toBe( 'studentName1' );
+                expect( component.sortAsc ).toBe( true );
+            } );
+
+            describe( "sort | studentName | ", function () {
+                describe( "asc->desc", function () {
+                    beforeEach( function () {
+                        component.sortRosterBy( 'studentName' );
+                    } );
+                    it( "property", function () {
+                        expect( component.sortAsc ).toBe( false );
+                    } );
+
+                    xit( "display", function () {
+                        let $names = $( '#studentRosterBody' ).find( '[id^="studentName"]' );
+                        expect( $names.length ).toBe( 2 );
+                        expect( $( $names[ 0 ] ).attr( 'id' ) ).toBe( 'studentName1' );
+                        expect( $( $names[ 1 ] ).attr( 'id' ) ).toBe( 'studentName0' );
+                    } );
+
+                } );
+                describe( "desc->asc", function () {
+                    beforeEach( function () {
+                        component.sortAsc = false;
+                        expect( component.sortAsc ).toBe( false );
+
+                        component.sortRosterBy( 'studentName' );
+                    } );
+                    it( "property", function () {
+                        //check
+                        expect( component.sortAsc ).toBe( true );
+                    } );
+
+                    xit( "display", function () {
+                        let $names = $( '#studentRosterBody' ).find( '[id^="studentName"]' );
+                        expect( $names.length ).toBe( 2 );
+                        expect( $( $names[ 0 ] ).attr( 'id' ) ).toBe( 'studentName0' );
+                        expect( $( $names[ 1 ] ).attr( 'id' ) ).toBe( 'studentName1' );
+                    } );
+                } );
+            } );
+
+            describe( "sort | studentIdentifier | ", function () {
+                describe( "asc->desc", function () {
+                    beforeEach( function () {
+                        component.sortRosterBy( 'studentIdentifier' );
+                    } );
+                    it( "property", function () {
+                        expect( component.sortAsc ).toBe( false );
+                    } );
+
+                    xit( "display", function () {
+                        let $names = $( '#studentRosterBody' ).find( '[id^="studentName"]' );
+                        expect( $names.length ).toBe( 2 );
+                        expect( $( $names[ 0 ] ).attr( 'id' ) ).toBe( 'studentName1' );
+                        expect( $( $names[ 1 ] ).attr( 'id' ) ).toBe( 'studentName0' );
+                    } );
+
+                } );
+                describe( "desc->asc", function () {
+                    beforeEach( function () {
+                        component.sortAsc = false;
+                        expect( component.sortAsc ).toBe( false );
+
+                        component.sortRosterBy( 'studentIdentifier' );
+                    } );
+                    it( "property", function () {
+                        expect( component.sortAsc ).toBe( true );
+                    } );
+
+                    xit( "display", function () {
+                        let $names = $( '#studentRosterBody' ).find( '[id^="studentName"]' );
+                        expect( $names.length ).toBe( 2 );
+                        expect( $( $names[ 0 ] ).attr( 'id' ) ).toBe( 'studentName0' );
+                        expect( $( $names[ 1 ] ).attr( 'id' ) ).toBe( 'studentName1' );
+                    } );
+                } );
+            } );
+            describe( "sort | grade | ", function () {
+                describe( "asc->desc", function () {
+                    beforeEach( function () {
+                        component.sortRosterBy( );
+                    } );
+                    it( "property", function () {
+                        expect( component.sortAsc ).toBe( false );
+                    } );
+
+                    xit( "display", function () {
+                        let $names = $( '#studentRosterBody' ).find( '[id^="studentName"]' );
+                        expect( $names.length ).toBe( 2 );
+                        expect( $( $names[ 0 ] ).attr( 'id' ) ).toBe( 'studentName1' );
+                        expect( $( $names[ 1 ] ).attr( 'id' ) ).toBe( 'studentName0' );
+                    } );
+
+                } );
+                describe( "desc->asc", function () {
+                    beforeEach( function () {
+                        component.sortAsc = false;
+                        expect( component.sortAsc ).toBe( false );
+
+                        component.sortRosterBy( );
+                    } );
+                    it( "property", function () {
+                        //check
+                        expect( component.sortAsc ).toBe( true );
+                    } );
+
+                    xit( "display", function () {
+                        let $names = $( '#studentRosterBody' ).find( '[id^="studentName"]' );
+                        expect( $names.length ).toBe( 2 );
+                        expect( $( $names[ 0 ] ).attr( 'id' ) ).toBe( 'studentName0' );
+                        expect( $( $names[ 1 ] ).attr( 'id' ) ).toBe( 'studentName1' );
+                    } );
+                } );
+            } );
+
+        } );
+
+
+        describe( "name | ", function () {
+            it( "initial", function () {
+                let $names = $( '#studentRosterBody' ).find( '[id^="studentName"]' );
+                expect( $names.length ).toBe( 2 );
+                expect( $( $names[ 0 ] ).attr( 'id' ) ).toBe( 'studentName0' );
+                expect( $( $names[ 1 ] ).attr( 'id' ) ).toBe( 'studentName1' );
+                //make sure sort order in correct initial state
+                expect( $( "#nameHeader" ) ).toExist();
+
+                let component = Helper.getComponent( this );
+                expect( component.sortAsc ).toBe( true );
+            } );
+
+            describe( "asc -> desc | ", function () {
+                let component;
+                beforeEach( function () {
+                    let d = new Data();
+                    sinon.stub( d, "getStudents" ).returns( s );
+                    window.store = d;
+
+                    //prep the page
+                    this.$fixture = loadFixtures( fixture );
+                    this.vm = Helper.loadVueComponent( testedComponent, 'student-table' );
+                    component = Helper.getComponent( this );
+                    expect( component.sortAsc ).toBe( true );
+
+                    //call
+                    $( "#nameHeader" ).trigger( 'click' );
+                } );
+
+                it( "property", function () {
+                    expect( component.sortAsc ).toBe( false );
+                } );
+
+                xit( "displayed order", function () {
+                    let $names = $( '#studentRosterBody' ).find( '[id^="studentName"]' );
+                    expect( $names.length ).toBe( 2 );
+                    expect( $( $names[ 0 ] ).attr( 'id' ) ).toBe( 'studentName1' );
+                    expect( $( $names[ 1 ] ).attr( 'id' ) ).toBe( 'studentName0' );
+                } );
+            } );
+
+            describe( "desc -> asc | ", function () {
+                let component;
+                beforeEach( function () {
+                    component = Helper.getComponent( this );
+                    component.sortAsc = false;
+                    // expect(component.sortAsc).toBe(false);
+                    $( "#nameHeader" ).trigger( 'click' );
+                } );
+
+                it( "property", function () {
+                    expect( component.sortAsc ).toBe( true );
+                } );
+
+                it( "displayed order", function () {
+                    let $names = $( '#studentRosterBody' ).find( '[id^="studentName"]' );
+                    expect( $names.length ).toBe( 2 );
+                    expect( $( $names[ 0 ] ).attr( 'id' ) ).toBe( 'studentName0' );
+                    expect( $( $names[ 1 ] ).attr( 'id' ) ).toBe( 'studentName1' );
+                } );
+            } );
+
+        } );
+
+
+        describe( "identifier | ", function () {
+
+            it( "initial", function () {
+                let $names = $( '#studentRosterBody' ).find( '[id^="studentName"]' );
+                expect( $names.length ).toBe( 2 );
+                expect( $( $names[ 0 ] ).attr( 'id' ) ).toBe( 'studentName0' );
+                expect( $( $names[ 1 ] ).attr( 'id' ) ).toBe( 'studentName1' );
+                //make sure sort order in correct initial state
+                expect( this.$identifierSortButton ).toExist();
+                let component = Helper.getComponent( this );
+                expect( component.sortAsc ).toBe( true );
+            } );
+
+            describe( "asc -> desc | ", function () {
+                let component;
+                beforeEach( function () {
+                    component = Helper.getComponent( this );
+                    $( "#idHeader" ).trigger( 'click' ); //this.$identifierSortButton.trigger( 'click' );
+                } );
+
+                it( "property", function () {
+                    expect( component.sortAsc ).toBe( false );
+                } );
+
+                xit( "displayed order", function () {
+                    let $names = $( '#studentRosterBody' ).find( '[id^="studentName"]' );
+                    expect( $names.length ).toBe( 2 );
+                    expect( $( $names[ 0 ] ).attr( 'id' ) ).toBe( 'studentName1' );
+                    expect( $( $names[ 1 ] ).attr( 'id' ) ).toBe( 'studentName0' );
+                } );
+            } );
+
+            describe( "desc -> asc | ", function () {
+                let component;
+                beforeEach( function () {
+                    component = Helper.getComponent( this );
+                    component.sortAsc = false;
+                    $( "#idHeader" ).trigger( 'click' );
+//                    this.$identifierSortButton.trigger( 'click' );
+                } );
+
+                it( "property", function () {
+                    expect( component.sortAsc ).toBe( true );
+                } );
+
+                xit( "displayed order", function () {
+                    let $names = $( '#studentRosterBody' ).find( '[id^="studentName"]' );
+                    expect( $names.length ).toBe( 2 );
+                    expect( $( $names[ 0 ] ).attr( 'id' ) ).toBe( 'studentName0' );
+                    expect( $( $names[ 1 ] ).attr( 'id' ) ).toBe( 'studentName1' );
+                } );
+            } );
+        } );
+
+
+        describe( "grades ", function () {
+            it( "initial", function () {
+                let $names = $( '#studentRosterBody' ).find( '[id^="studentName"]' );
+                expect( $names.length ).toBe( 2 );
+                expect( $( $names[ 0 ] ).attr( 'id' ) ).toBe( 'studentName0' );
+                expect( $( $names[ 1 ] ).attr( 'id' ) ).toBe( 'studentName1' );
+                //make sure sort order in correct initial state
+                expect( this.$gradeSortButton ).toExist();
+                let component = Helper.getComponent( this );
+                expect( component.sortAsc ).toBe( true );
+            } );
+
+            describe( "asc -> desc | ", function () {
+                let component;
+                beforeEach( function () {
+                    component = Helper.getComponent( this );
+                    $( "#gradeHeader" ).trigger( 'click' );
+                } );
+
+                it( "property", function () {
+                    expect( component.sortAsc ).toBe( false );
+                } );
+
+                xit( "displayed order", function () {
+                    let $names = $( '#studentRosterBody' ).find( '[id^="studentName"]' );
+                    expect( $names.length ).toBe( 2 );
+                    expect( $( $names[ 0 ] ).attr( 'id' ) ).toBe( 'studentName1' );
+                    expect( $( $names[ 1 ] ).attr( 'id' ) ).toBe( 'studentName0' );
+                } );
+            } );
+
+            describe( "desc -> asc | ", function () {
+                let component;
+                beforeEach( function () {
+                    component = Helper.getComponent( this );
+                    component.sortAsc = false;
+                    $( "#gradeHeader" ).trigger( 'click' );
+                } );
+
+                it( "property", function () {
+                    expect( component.sortAsc ).toBe( true );
+                } );
+
+                xit( "displayed order", function () {
+                    let $names = $( '#studentRosterBody' ).find( '[id^="studentName"]' );
+                    expect( $names.length ).toBe( 2 );
+                    expect( $( $names[ 0 ] ).attr( 'id' ) ).toBe( 'studentName0' );
+                    expect( $( $names[ 1 ] ).attr( 'id' ) ).toBe( 'studentName1' );
+                } );
+            } );
+
+        } );
+
+    } );
+
 } )
 ;

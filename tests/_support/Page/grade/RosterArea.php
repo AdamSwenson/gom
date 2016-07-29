@@ -79,6 +79,21 @@ class RosterArea
         return ['id' => "examGrade{$rowIndex}"];
     }
 
+    /**
+     * 0 indexed expected location of the row counting from the top down.
+     * Cell index is 1-based from left to right.
+     *      1 : Name
+     *      2 : identifier
+     *      3 : grade
+     * Mainly used in testing sorting.
+     * @param $rowOrderFromTop
+     * @param $cellIndex
+     * @return array
+     */
+    public static function rowLocator($rowOrderFromTop, $cellIndex){
+        return ['css' => "tr.studentListItem:nth-child({$rowOrderFromTop}) > td:nth-child({$cellIndex})"];
+    }
+
 
     /* ----------------------------- Helpers --------------------------------- */
     /**

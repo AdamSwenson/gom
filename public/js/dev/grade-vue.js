@@ -52,35 +52,38 @@ new Vue({
             $('#questionArea').show("fast");
         },
 
-        /**
-         * Sorts the StudentRoster by the clicked header. Sort order reverses with each press.
-         * @param value
-         * @param data
-         */
-        sortRosterBy: function sortRosterBy(value) {
-            var data = this.store;
-            var me = this;
-            var $roster = $('#studentRosterBody');
-            $roster.append($roster.find('[id^="studentListItem"]').sort(function (a, b) {
-                var i = $(a).find('[id^="' + value + '"]');
-                var j = $(b).find('[id^="' + value + '"]');
-                var result;
-                if (value == 'studentName' || value == 'studentIdentifier') {
-                    result = $(i).text().toUpperCase().localeCompare($(j).text().toUpperCase());
-                } else {
-                    // sort by exam grade
-                    var gradeA = data.examGrades[$(a).attr('data-index')];
-                    var gradeB = data.examGrades[$(b).attr('data-index')];
-                    result = gradeA - gradeB;
-                }
-                // flip results if we're sorting in DESC
-                if (!me.sortAsc) {
-                    result *= -1;
-                }
-                return result;
-            }));
-            me.sortAsc = !me.sortAsc;
-        },
+        // /**
+        //  * Sorts the StudentRoster by the clicked header. Sort order reverses with each press.
+        //  * @param value
+        //  * @param data
+        //  */
+        // sortRosterBy: function ( value) {
+        //     let data = this.store;
+        //     var me = this;
+        //     var $roster = $( '#studentRosterBody' );
+        //     $roster.append(
+        //         $roster.find( '[id^="studentListItem"]' ).sort( function ( a, b ) {
+        //             var i = $( a ).find( '[id^="' + value + '"]' );
+        //             var j = $( b ).find( '[id^="' + value + '"]' );
+        //             var result;
+        //             if ( value == 'studentName' || value == 'studentIdentifier' ) {
+        //                 result = $( i ).text().toUpperCase().localeCompare(
+        //                     $( j ).text().toUpperCase() );
+        //             } else {
+        //                 // sort by exam grade
+        //                 var gradeA = data.examGrades[ $( a ).attr( 'data-index' ) ];
+        //                 var gradeB = data.examGrades[ $( b ).attr( 'data-index' ) ];
+        //                 result = gradeA - gradeB;
+        //             }
+        //             // flip results if we're sorting in DESC
+        //             if ( ! me.sortAsc ) {
+        //                 result *= - 1;
+        //             }
+        //             return result;
+        //         } )
+        //     );
+        //     me.sortAsc = ! me.sortAsc;
+        // },
 
         /* ------------------------------ Server ------------------------------ */
 
@@ -154,16 +157,15 @@ new Vue({
 
         /**
          * Sends a request to delete a score from the database
+         * @param studentIndex
          * @param questionAssignmentId
          * @returns boolean
          */
-        deleteScore: function deleteScore(questionAssignmentId) {
-            var me = this;
-
-            var studentId = this.store.getActiveStudentId();
+        deleteScore: function deleteScore(studentIndex, questionAssignmentId) {
+            var student = this.store.getStudent(studentIndex);
             var examId = this.store.getExamId();
 
-            return this.ajaxTools.deleteScoreRequest(examId, studentId, questionAssignmentId);
+            return this.ajaxTools.deleteScoreRequest(examId, student.studentId, questionAssignmentId);
         },
 
         /* ------------------------------ Events ------------------------------ */
@@ -194,12 +196,9 @@ new Vue({
          */
         'element-slider-stop-event': function elementSliderStopEvent() {
             window.console.log('gradeVue', 'element-slider-stop-event');
-            // this.handleElementSliderStopEvent( slideEvt, data, Roster, function () {
-            //     //Update dashboard and roster data displayed
-            //     updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
-            //Sigh. The user forgot to restart the timer. Do it for them
+
+            //Sigh. The user might have forgotten to restart the timer. Do it for them
             this.requestTimerStart();
-            //Timer.resumeTimerIfPaused( data, Roster, Dashboard );
         },
 
         /**
@@ -270,7 +269,12 @@ new Vue({
          */
         'store-question-score-request': function storeQuestionScoreRequest(questionScoreRequestObj) {
             window.console.log('gradeVue', 'caught store-question-score-request', questionScoreRequestObj);
-            this.saveQuestionScoreWithTime(questionScoreRequestObj.studentIndex, questionScoreRequestObj.questionIndex, questionScoreRequestObj.questionAssignmentId);
+            var score = this.store.getQuestionScoreForActiveStudent(questionScoreRequestObj.questionIndex);
+            if (score == '' || score == null) {
+                this.deleteScore(questionScoreRequestObj.studentIndex, questionScoreRequestObj.questionAssignmentId);
+            } else {
+                this.saveQuestionScoreWithTime(questionScoreRequestObj.studentIndex, questionScoreRequestObj.questionIndex, questionScoreRequestObj.questionAssignmentId);
+            }
         },
 
         /**
@@ -318,35 +322,6 @@ new Vue({
     directives: {},
 
     ready: function ready() {
-        /* ------------------ table sorting listeners --------- */
-        // $( "#nameHeader" ).on( 'click', function () {
-        //     Roster.sortRosterBy( 'studentName', data );
-        // } );
-        // $( "#idHeader" ).on( 'click', function () {
-        //     Roster.sortRosterBy( 'studentIdentifier', data );
-        // } );
-        // $( "#gradeHeader" ).on( 'click', function () {
-        //     Roster.sortRosterBy( 'examGrade', data );
-        // } );
-        //
-        //
-        var me = this;
-        /* ------------------ table sorting listeners --------- */
-        // $( "#nameHeader" ).on( 'click', function () {
-        //     me.sortRosterBy( 'studentName');
-        // } );
-        // $( "#idHeader" ).on( 'click', function () {
-        //     me.sortRosterBy( 'studentIdentifier');
-        // } );
-        // $( "#gradeHeader" ).on( 'click', function () {
-        //     me.sortRosterBy( 'examGrade' );
-        // } );
-        //
-        //
-        //
-        //
-        //
-        // this.sortRosterBy( 'studentName' );
 
         $.ajaxSetup({
             headers: {
@@ -26297,14 +26272,9 @@ module.exports = {
          * @param activeStudent
          */
         'student-select-event': function studentSelectEvent(obj) {
-            //ignore if not belonging to us
-            //           if ( elementIndex == this.elementIndex ) {
-            window.console.log('elementInput', 'caught student-select-event', this.elementScore);
-            //    window.console.log(this.elementScore);
+            window.console.log('elementInput', 'caught student-select-event', obj);
             //update the slider value
             this.setSliderScore();
-            //update the comment text
-            //         }
             //return true just in case someone else is listening and
             //needs to hear the event
             return true;
@@ -26333,13 +26303,8 @@ module.exports = {
         this.sliderSelector.on('slideStop', function (slideEvt) {
             me.handleElementSliderStopEvent(slideEvt);
             me.notifySlideEvent();
-            // this.handleElementSliderStopEvent( slideEvt, data, Roster, function () {
-            //     //Update dashboard and roster data displayed
-            //     updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
-            //Sigh. The user forgot to restart the timer. Do it for them
-            //Timer.resumeTimerIfPaused( data, Roster, Dashboard );
         });
-        // window.console.log('store', this.store);
+
         // window.console.log('input ready', 'elementIndex', this.elementIndex);
     }
 };
@@ -26976,15 +26941,15 @@ module.exports = {
                 studentPlaceholder: '--',
                 nameHiddenString: "Name Hidden", // text to show when student names are invisible
                 noActiveStudentString: "No Student Selected"
-            },
-            displayClasses: {
-                unaltered: 'unalteredStudentRow',
-                active: 'activeStudentRow',
-                graded: 'gradedStudentRow'
             }
         };
     },
 
+    // displayClasses: {
+    //     unaltered: 'unalteredStudentRow',
+    //     active: 'activeStudentRow',
+    //     graded: 'gradedStudentRow'
+    // }
     computed: {
 
         /**
@@ -26995,6 +26960,10 @@ module.exports = {
             return this.store.isBlind;
         },
 
+        /**
+         * The shared json of students
+         * @returns {*}
+         */
         students: function students() {
             return this.store.getStudents();
         }
@@ -27080,8 +27049,8 @@ module.exports = {
          */
         getIdentifier: function getIdentifier(studentIndex) {
             var student = this.store.getStudent(studentIndex);
-            if (!student.studentIdentifier) {
-                return '';
+            if (typeof student == 'undefined' || !student.studentIdentifier) {
+                return '--';
             }
             return student.studentIdentifier;
         },
@@ -27094,7 +27063,26 @@ module.exports = {
          */
         getName: function getName(studentIndex) {
             var student = this.store.getStudent(studentIndex);
+            // if(typeof student == 'undefined'){
+            //     return '';
+            // }
+            if (this.isBlind) {
+                return this.defaults.nameHiddenString;
+            }
+            return student.lastName + ", " + student.firstName;
+        },
 
+        /**
+         * Returns the student's name or the placeholder if the
+         * exam is being graded blind
+         * @param studentIndex
+         * @returns {*}
+         */
+        getNameDisplay: function getNameDisplay(studentIndex) {
+            var student = this.store.getStudent(studentIndex);
+            // if(typeof student == 'undefined'){
+            //     return '';
+            // }
             if (this.isBlind) {
                 return this.defaults.nameHiddenString;
             }
@@ -27140,11 +27128,44 @@ module.exports = {
             }
             // window.console.log( 'isUnaltered', false );
             return false;
+        },
+
+        /* -------------------------- Table operations ------------------------ */
+
+        /**
+         * Sorts the StudentRoster by the clicked header. Sort order reverses with each press.
+         * @param value
+         * @param data
+         */
+        sortRosterBy: function sortRosterBy(value) {
+            var data = this.store;
+            var me = this;
+            var $roster = $('#studentRosterBody');
+            $roster.append($roster.find('[id^="studentListItem"]').sort(function (a, b) {
+                var i = $(a).find('[id^="' + value + '"]');
+                var j = $(b).find('[id^="' + value + '"]');
+                var result = undefined;
+                if (value == 'studentName' || value == 'studentIdentifier') {
+                    result = $(i).text().toUpperCase().localeCompare($(j).text().toUpperCase());
+                } else {
+                    // sort by exam grade
+                    var gradeA = data.getExamGrade($(a).attr('data-index'));
+                    var gradeB = data.getExamGrade($(b).attr('data-index'));
+                    result = gradeA - gradeB;
+                    // var gradeA = data.examGrades[ $( a ).attr( 'data-index' ) ];
+                    // var gradeB = data.examGrades[ $( b ).attr( 'data-index' ) ];
+                    result = gradeA - gradeB;
+                }
+                // flip results if we're sorting in DESC
+                if (!me.sortAsc) {
+                    result *= -1;
+                }
+                return result;
+            }));
+            me.sortAsc = !me.sortAsc;
         }
 
     },
-
-    /* -------------------------- Table operations ------------------------ */
 
     directives: {},
 
@@ -27169,7 +27190,7 @@ module.exports = '\n    <form class="questionScoreForm form-horizontal" role="fo
 },{}],45:[function(require,module,exports){
 module.exports = '\n        <tr id="{{ rowIdString }}"\n            class="studentListItem "\n            v-on:click="handleRowClick"\n            v-bind:class="{ \'unalteredStudentRow\': isUnaltered, \'activeStudentRow\': isActiveStudent, \'gradedStudentRow\': isGraded }"\n            data-index="{{ studentIndex }}"\n            data-fName="{{ firstName }}"\n            data-lName="{{ lastName }}"\n            data-sid="{{ studentId }}"\n            data-student-identifier="{{ studentIdentifier }}">\n            <td class="col-xs-6"\n                id="studentName{{ studentIndex }}">{{ studentName }}</td>\n            <td class="col-xs-4"\n                id="studentIdentifier{{ studentIndex }}">{{ studentIdentifierDisplay }}</td>\n            <td class="col-xs-2"\n                id="examGrade{{ studentIndex }}">{{ examGrade }}</td>\n        </tr>\n';
 },{}],46:[function(require,module,exports){
-module.exports = '<table class="table table-fixed table-hover" id="studentRoster">\n    <thead>\n    <tr>\n        <th class="col-xs-6"\n            id="nameHeader"\n            title="Sort by name"\n        >Name\n        </th>\n        <th class="col-xs-4"\n            id="idHeader"\n            title="Sort by ID">ID\n        </th>\n        <th class="col-xs-2"\n            id="gradeHeader"\n            title="Sort by grade"\n        >Grade\n        </th>\n    </tr>\n\n    </thead>\n\n    <tbody id="studentRosterBody">\n\n    <tr v-for="s in students"\n        v-on:click="handleStudentRowClick(s.studentIndex)"\n        v-bind:class="{ \'unalteredStudentRow\': isUnalteredStyle(s.studentIndex),\n         \'activeStudentRow\': isActiveStyle(s.studentIndex),\n          \'gradedStudentRow\': isGradedStyle(s.studentIndex) }"\n        id="studentListItem{{ s.studentIndex }}"\n        class="studentListItem ">\n        <td class="col-xs-6"\n            id="studentName{{ s.studentIndex }}">{{ getName(s.studentIndex) }}</td>\n        <td class="col-xs-4"\n            id="studentIdentifier{{ s.studentIndex }}">{{ s.studentIdentifier }}</td>\n        <td class="col-xs-2"\n            id="examGrade{{ s.studentIndex }}">{{ getGrade(s.studentIndex) }}</td>\n    </tr>\n\n    </tbody>\n</table>\n';
+module.exports = '<table class="table table-fixed table-hover" id="studentRoster">\n    <thead>\n    <tr>\n        <th class="col-xs-6"\n            id="nameHeader"\n            title="Sort by name"\n            v-on:click="sortRosterBy(\'studentName\')"\n        >Name\n        </th>\n        <th class="col-xs-4"\n            id="idHeader"\n            v-on:click="sortRosterBy(\'studentIdentifier\')"\n            title="Sort by ID"\n        >ID\n        </th>\n        <th class="col-xs-2"\n            id="gradeHeader"\n            title="Sort by grade"\n            v-on:click="sortRosterBy()"\n        >Grade\n        </th>\n    </tr>\n\n    </thead>\n    <tbody id="studentRosterBody">\n    <tr v-for="s in students"\n            v-on:click="handleStudentRowClick(s.studentIndex)"\n            v-bind:class="{ \'unalteredStudentRow\': isUnalteredStyle(s.studentIndex),\'activeStudentRow\': isActiveStyle(s.studentIndex),\'gradedStudentRow\': isGradedStyle(s.studentIndex) }"\n            id="studentListItem{{ s.studentIndex }}"\n            class="studentListItem "\n            data-index="{{ s.studentIndex }}"\n            data-fName="{{ s.firstName }}"\n            data-lName="{{ s.lastName }}"\n            data-sid="{{ s.studentId }}"\n            data-student-identifier="{{ s.studentIdentifier }}"\n    >\n        <td class="col-xs-6"\n            id="studentName{{ s.studentIndex }}">{{ getName(s.studentIndex) }}</td>\n        <td class="col-xs-4"\n            id="studentIdentifier{{ s.studentIndex }}">{{ getIdentifier(s.studentIndex) }}</td>\n        <td class="col-xs-2"\n            id="examGrade{{ s.studentIndex }}">{{ getGrade(s.studentIndex) }}</td>\n    </tr>\n    </tbody>\n</table>\n';
 },{}],47:[function(require,module,exports){
 /*! =========================================================
  * bootstrap-slider.js

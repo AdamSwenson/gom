@@ -27,11 +27,11 @@ module.exports = {
                 nameHiddenString: "Name Hidden", // text to show when student names are invisible
                 noActiveStudentString: "No Student Selected",
             },
-            displayClasses: {
-                unaltered: 'unalteredStudentRow',
-                active: 'activeStudentRow',
-                graded: 'gradedStudentRow'
-            }
+            // displayClasses: {
+            //     unaltered: 'unalteredStudentRow',
+            //     active: 'activeStudentRow',
+            //     graded: 'gradedStudentRow'
+            // }
         };
     },
 
@@ -45,6 +45,10 @@ module.exports = {
             return this.store.isBlind;
         },
 
+        /**
+         * The shared json of students
+         * @returns {*}
+         */
         students: function () {
             return this.store.getStudents();
         },
@@ -134,8 +138,8 @@ module.exports = {
          */
         getIdentifier: function ( studentIndex ) {
             let student = this.store.getStudent( studentIndex );
-            if ( ! student.studentIdentifier ) {
-                return '';
+            if (typeof student == 'undefined' || ! student.studentIdentifier ) {
+                return '--';
             }
             return student.studentIdentifier;
         },
@@ -148,7 +152,26 @@ module.exports = {
          */
         getName: function ( studentIndex ) {
             let student = this.store.getStudent( studentIndex );
+            // if(typeof student == 'undefined'){
+            //     return '';
+            // }
+            if ( this.isBlind ) {
+                return this.defaults.nameHiddenString;
+            }
+            return student.lastName + ", " + student.firstName;
+        },
 
+        /**
+         * Returns the student's name or the placeholder if the
+         * exam is being graded blind
+         * @param studentIndex
+         * @returns {*}
+         */
+        getNameDisplay: function ( studentIndex ) {
+            let student = this.store.getStudent( studentIndex );
+            // if(typeof student == 'undefined'){
+            //     return '';
+            // }
             if ( this.isBlind ) {
                 return this.defaults.nameHiddenString;
             }
@@ -199,6 +222,42 @@ module.exports = {
 
 
         /* -------------------------- Table operations ------------------------ */
+
+        /**
+         * Sorts the StudentRoster by the clicked header. Sort order reverses with each press.
+         * @param value
+         * @param data
+         */
+        sortRosterBy: function ( value) {
+            let data = this.store;
+            var me = this;
+            var $roster = $( '#studentRosterBody' );
+            $roster.append(
+                $roster.find( '[id^="studentListItem"]' ).sort( function ( a, b ) {
+                    let i = $( a ).find( '[id^="' + value + '"]' );
+                    let j = $( b ).find( '[id^="' + value + '"]' );
+                    let result;
+                    if ( value == 'studentName' || value == 'studentIdentifier' ) {
+                        result = $( i ).text().toUpperCase().localeCompare(
+                            $( j ).text().toUpperCase() );
+                    } else {
+                        // sort by exam grade
+                        let gradeA = data.getExamGrade( $( a ).attr( 'data-index' ) );
+                        let gradeB = data.getExamGrade( $( b ).attr( 'data-index' ) );
+                        result = gradeA - gradeB;
+                        // var gradeA = data.examGrades[ $( a ).attr( 'data-index' ) ];
+                        // var gradeB = data.examGrades[ $( b ).attr( 'data-index' ) ];
+                        result = gradeA - gradeB;
+                    }
+                    // flip results if we're sorting in DESC
+                    if ( ! me.sortAsc ) {
+                        result *= - 1;
+                    }
+                    return result;
+                } )
+            );
+            me.sortAsc = ! me.sortAsc;
+        },
 
     },
 
