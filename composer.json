@@ -16,7 +16,8 @@
         "backup-manager/laravel": "~1.0",
         "league/flysystem-dropbox": "~1.0",
         "spatie/laravel-tail": "^1.1",
-        "barryvdh/laravel-dompdf": "^0.6.1"
+        "barryvdh/laravel-dompdf": "^0.6.1",
+        "laracasts/utilities": "^2.1"
     },
     "require-dev": {
         "symfony/dom-crawler": "~3.0",

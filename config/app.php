@@ -156,6 +156,7 @@ return [
         Laracasts\Flash\FlashServiceProvider::class,
         BackupManager\Laravel\Laravel5ServiceProvider::class,
         Spatie\Tail\TailServiceProvider::class,
+        Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class,
 
         /*
          * Custom service providers

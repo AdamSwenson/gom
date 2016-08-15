@@ -95,6 +95,10 @@ class GradingPage
         return ['id'=>"tabQuestion{$questionNumber}"];
     }
 
+    public static function questionPanelLocator($questionNumber){
+        return ['id'=> "questionPanel{$questionNumber}"];
+    }
+
     public static function elementAreaXPath($questionNumber, $elementNumber){
         return "//*[@id='element{$elementNumber}']";
 //        return "//*[@id='Q{$questionNumber}E{$elementNumber}']";

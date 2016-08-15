@@ -1,92 +1,95 @@
 // Karma configuration
 // Generated on Mon Jul 11 2016 14:59:04 GMT-0700 (PDT)
 
-module.exports = function(config) {
-  config.set({
+module.exports = function ( config ) {
+    config.set( {
 
-    // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
+        // base path that will be used to resolve all patterns (eg. files, exclude)
+        basePath: '',
 
-    // frameworks to use
-    // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['browserify', 'jasmine', 'sinon', 'vue-component'],
-
-
-    // list of files / patterns to load in the browser
-    files: [
-        'resources/assets/js/grade/components/Data.js',
-        'tests/spec/tests/*.spec.js',
-        {pattern: 'tests/spec/helpers/*.helper.js', included: false},
-      {pattern: 'tests/spec/fixtures/*.fixture.html', included: false},
-      {pattern: 'node_modules/karma-jasmine-html-reporter/src/css/jasmine.css'},
-      {pattern: 'node_modules/karma-jasmine-html-reporter/src/lib/html.jasmine.reporter.js'},
-      {pattern: 'node_modules/karma-jasmine-html-reporter/src/lib/adapter.js'},
-    ],
-
-    // list of files to exclude
-    exclude: [
-    ],
-
-    // preprocess matching files before serving them to the browser
-    // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-      'node_modules/jasmine-core': ['browserify'],
-      'tests/spec/**/*.js': [ 'browserify' ],
-      'resources/assets/js/grade/components/elementInput.js': [ 'browserify' ],
-    },
-
-    browserify: {
-      debug: true,
-      transform: [ 'stringify', 'vueify' ],
-    },
+        // frameworks to use
+        // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
+        frameworks: [ 'browserify', 'jasmine', 'sinon', 'vue-component' ],
 
 
-    // test results reporter to use
-    // possible values: 'dots', 'progress'
-    // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-     //reporters: ['progress'],
+        // list of files / patterns to load in the browser
+        files: [
+            'resources/assets/js/grade/components/Data.js',
+            'tests/spec/tests/*.spec.js',
+            { pattern: 'tests/spec/helpers/*.helper.js', included: false },
+            { pattern: 'tests/spec/fixtures/*.fixture.html', included: false },
+            { pattern: 'node_modules/karma-jasmine-html-reporter/src/css/jasmine.css' },
+            { pattern: 'node_modules/karma-jasmine-html-reporter/src/lib/html.jasmine.reporter.js' },
+            { pattern: 'node_modules/karma-jasmine-html-reporter/src/lib/adapter.js' },
+        ],
 
-    // web server port
-    port: 9876,
+        // list of files to exclude
+        exclude: [],
+
+        // preprocess matching files before serving them to the browser
+        // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+        preprocessors: {
+            'node_modules/jasmine-core': [ 'browserify' ],
+            'tests/spec/**/*.js': [ 'rollup', 'browserify' ],
+            'resources/assets/js/grade/components/elementInput.js': [ 'rollup', 'browserify' ],
+        },
+
+        browserify: {
+            debug: true,
+            transform: [
+                [ 'babelify', { "presets": [ "es2015" ] } ],
+                'stringify',
+                'vueify'
+            ],
+        },
 
 
-    // enable / disable colors in the output (reporters and logs)
-    colors: true,
+        // test results reporter to use
+        // possible values: 'dots', 'progress'
+        // available reporters: https://npmjs.org/browse/keyword/karma-reporter
+        //reporters: ['progress'],
+
+        // web server port
+        port: 9876,
 
 
-    // level of logging
-    // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_DEBUG,
+        // enable / disable colors in the output (reporters and logs)
+        colors: true,
 
 
-    // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: true,
+        // level of logging
+        // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+        logLevel: config.LOG_DEBUG,
 
 
-    // start these browsers
-    // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome'],
-    // browsers: ['Chrome', 'Firefox', 'PhantomJS', 'IE'],
+        // enable / disable watching file and executing tests whenever any file changes
+        autoWatch: true,
 
-    // Continuous Integration mode
-    // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false,
 
-    // Concurrency level
-    // how many browser should be started simultaneous
-    concurrency: Infinity,
+        // start these browsers
+        // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
+        browsers: [ 'Chrome' ],
+        // browsers: ['Chrome', 'Firefox', 'PhantomJS', 'IE'],
 
-    // browserify: {
-    //   debug: true,
-    //   // transform: [ 'brfs' ],
-    //   configure: function(bundle) {
-    //     bundle.on('prebundle', function() {
-    //       // bundle.external('foobar');
-    //     });
-    //   }
-    // },
+        // Continuous Integration mode
+        // if true, Karma captures browsers, runs the tests and exits
+        singleRun: false,
 
-    //plugins: ['karma-spec-reporter'],
+        // Concurrency level
+        // how many browser should be started simultaneous
+        concurrency: Infinity,
 
-  })
+        // browserify: {
+        //   debug: true,
+        //   // transform: [ 'brfs' ],
+        //   configure: function(bundle) {
+        //     bundle.on('prebundle', function() {
+        //       // bundle.external('foobar');
+        //     });
+        //   }
+        // },
+
+        //plugins: ['karma-spec-reporter'],
+
+    } )
 }
