@@ -456,6 +456,7 @@ class GradeController extends Controller
 
         $questionsJson = $this->makeQuestionsJson($exam);
         $studentsJson = $this->makeStudentJson($exam);
+        $gradesJson = $this->makeGradesJson();
 
 //        return View::make('development.newTable')->with([
         return View::make('development.newGrading')->with([
@@ -464,7 +465,7 @@ class GradeController extends Controller
                                                               'questionAssignments'    => $questionAssignments,
                                                               'maxQuestionScores'      => $maxQuestionScores,
                                                               'allElements'            => $allElements,
-                                                              'stockCommentsJson'          => $stockCommentsJson,
+                                                              'stockCommentsJson'      => $stockCommentsJson,
                                                               'examGradingTimes'       => $examGradingTimes,
                                                               'studentElementScores'   => $studentElementScores,
                                                               'studentElementComments' => $studentElementComments,
@@ -472,6 +473,7 @@ class GradeController extends Controller
                                                               'studentGrades'          => $studentGrades,
                                                               'questionsJson'          => $questionsJson,
                                                               'studentsJson'           => $studentsJson,
+                                                              'gradesJson'             => $gradesJson,
                                                           ]);
     }
 
@@ -580,23 +582,42 @@ class GradeController extends Controller
      * @param Exam $exam
      * @param GradingRequest $request
      * @return mixed
+     * @throws \Exception
      */
     public function removeScore(Exam $exam, GradingRequest $request)
     {
         //Check that user owns the exam
         $this->authorize('access-object', $exam);
-
-        if ( $request->has('question_assignment_id') )
+        try
         {
-            $this->questionScoreDao->deleteScore($request['question_assignment_id'], $request['student_id']);
-        }
+            //Don't even get started if there's no student id
+            if ( ! $request->has('student_id') )
+            {
+                throw new \Exception('No student id set in grade request');
+            }
 
-        // at this point, this isn't used as there is no means to reset an element score to ungraded.
-        // Since the grade page doesn't store element assignment info, the element id must be used.
-        if ( $request->has('element_id') )
+            $studentId = $request->input('student_id');
+
+            if ( $request->has('question_assignment_id') )
+            {
+                $this->questionScoreDao->deleteScore($request['question_assignment_id'], $studentId);
+            }
+
+            // at this point, this isn't used as there is no means to reset an element score to ungraded.
+            // Since the grade page doesn't store element assignment info, the element id must be used.
+            if ( $request->has('element_id') )
+            {
+                $eAssignid = $this->elementAssignmentDao->load_element_assignment_by_element($exam->getId(), $request['element_assignment_id']);
+                $this->elementScoreDao->deleteScore($eAssignid, $studentId);
+            }
+
+            return $this->sendAjaxSuccess();
+
+        } catch ( \Exception $e )
         {
-            $eAssignid = $this->elementAssignmentDao->load_element_assignment_by_element($exam->getId(), $request['element_assignment_id']);
-            $this->elementScoreDao->deleteScore($eAssignid, $request['student_id']);
+            throw $e;
+
+            return $this->sendAjaxFailure();
         }
     }
 
@@ -615,10 +636,11 @@ class GradeController extends Controller
         foreach ( $questionAssignments as $qa )
         {
             $questions[ $questionIndex ] = [
-                'questionName'   => $qa->getQuestionName(),
-                'questionNumber' => $qa->getQuestionNumber(),
-                'maxScore'       => $qa->getQuestion()->getMaxScore(),
-                'questionAssignmentId' => $qa->id
+                'questionIndex'        => $questionIndex,
+                'questionName'         => $qa->getQuestionName(),
+                'questionNumber'       => $qa->getQuestionNumber(),
+                'maxScore'             => $qa->getQuestion()->getMaxScore(),
+                'questionAssignmentId' => $qa->id,
             ];
             $questionIndex++;
         }
@@ -641,17 +663,12 @@ class GradeController extends Controller
         foreach ( $students as $student )
         {
             $s[ $studentIndex ] = [
-                'studentIndex' => $studentIndex, //this is here so can use with component
+                'studentIndex'      => $studentIndex, //this is here so can use with component
                 'studentId'         => $student->id,
                 'studentIdentifier' => $student->student_identifier,
                 'firstName'         => $student->first_name,
                 'lastName'          => $student->last_name,
             ];
-//            'studentId'         => $student->getId(),
-//                            'studentIdentifier' => $student->getStudentId(),
-//                            'firstName'         => $student->getStudentFName(),
-//                            'lastName'          => $student->getStudentLName()
-
             $studentIndex++;
         }
 
@@ -662,12 +679,13 @@ class GradeController extends Controller
     }
 
     /**
+     * Makes the object which the page's javascript expects
      * @param $allElements
      * @return array
      */
     public function makeStockCommentsJson($allElements)
     {
-// load stock comments for each element
+        // load stock comments for each element
         $stockComments = [];
         foreach ( $allElements as $aQuestion )
         {
@@ -686,6 +704,10 @@ class GradeController extends Controller
         return $stockComments;
     }
 
+    public function makeGradesJson()
+    {
+        return GradeFactory::gradeJson();
+    }
 
 
 //    /**

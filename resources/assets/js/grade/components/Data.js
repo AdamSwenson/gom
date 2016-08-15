@@ -66,6 +66,8 @@ function Data() {
      */
     var examGradingTimes = {};
 
+    var grades = {};
+
     /**
      * Format:
      *      { questionIndex : {questionName, questionNumber, questionAssignmentId, maxScore}, .... }
@@ -136,8 +138,29 @@ function Data() {
     };
 
 
-    /* ------------------ Grading time ------------------- */
 
+
+
+    /* ------------------ Grades ------------------- */
+    /**
+     * Sets the standard grades
+     * @param gradesJson
+     */
+    this.loadGrades = function(gradesJson){
+        grades = gradesJson;
+    };
+    /**
+     * Returns the standard grades json.
+     * NB, this is not the total scores for students
+     * @returns {{}}
+     */
+    this.getGrades = function(){
+        return grades;
+    };
+
+
+
+    /* ------------------ Grading time ------------------- */
     /**
      * Sets the grading time data from the server
      * @param examGradingTimes JSON object

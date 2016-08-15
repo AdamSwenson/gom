@@ -26327,9 +26327,7 @@ module.exports = {
 
     template: require('../templates/letter-grade-button.template.html'),
 
-    props: ['questionIndex', 'questionNumber',
-    //json of grades with keys displayValue and calcValue
-    'grades'],
+    props: ['questionIndex', 'grades'],
 
     data: function data() {
         return {
@@ -26342,14 +26340,8 @@ module.exports = {
                 displayedGrade: 'Letter grade',
                 gradeValue: null
             }
-
         };
     },
-
-    // storage: {
-    //     currentGradeDisplay: null,
-    //     currentGradeValue: null
-    // }
 
     computed: {
 
@@ -26366,19 +26358,13 @@ module.exports = {
             //display the inferred letter grade
             return this.calcLetter(this.maxScore, this.score);
         },
-
-        // //The value of the letter grade used in calculation
-        // gradeValue: {
-        //     get: function () {
-        //         if ( this.storage.currentGradeValue != null ) {
-        //             return this.storage.currentGradeValue;
-        //         }
-        //         return this.defaults.gradeValue;
         //
-        //     },
-        //     set: function ( val ) {
-        //         this.storage.currentGradeValue = val;
-        //     }
+        // /**
+        //  * Json of grades with keys displayValue and calcValue
+        //  * @returns {{}}
+        //  */
+        // grades: function () {
+        //     return this.store.getGrades();
         // },
 
         /**
@@ -26412,8 +26398,12 @@ module.exports = {
 
         targetId: function targetId() {
             return "questionScore" + this.questionNumber;
-        }
+        },
 
+        questionNumber: function questionNumber() {
+            var question = this.store.getQuestion(this.questionIndex);
+            return question.questionNumber;
+        }
     },
 
     methods: {
@@ -26573,20 +26563,10 @@ module.exports = {
 
     props: [
     /**
-     * The db id of the assignment of the question to the exam
-     * @type integer
-     */
-    'questionAssignmentId',
-    /**
      * The index identifying the question in the data json objects
      * @type integer
      */
-    'questionIndex',
-    /**
-     * The number of the question on the exam
-     * @type string
-     */
-    'questionNumber'],
+    'questionIndex'],
 
     data: function data() {
         return {
@@ -26598,9 +26578,6 @@ module.exports = {
     },
 
     computed: {
-
-        //TODO convert question number and qa id into computed properties
-
         /**
          * The string id of the question score field for this question.
          * Does not contain '#'
@@ -26629,8 +26606,25 @@ module.exports = {
         },
 
         /**
+         * The db id of the assignment of the question to the exam
+         * @type integer
+         */
+        questionAssignmentId: function questionAssignmentId() {
+            var question = this.store.getQuestion(this.questionIndex);
+            return question.questionAssignmentId;
+        },
+
+        /**
+         * The number of the question on the exam
+         * @type string
+         */
+        questionNumber: function questionNumber() {
+            var question = this.store.getQuestion(this.questionIndex);
+            return question.questionNumber;
+        },
+
+        /**
          * The student's score for this question
-         *
          */
         questionScore: {
             get: function get() {
@@ -26638,11 +26632,15 @@ module.exports = {
                 if (qs != null) {
                     return qs;
                 }
-                // return '';
             },
             /**
              * Update the score in the shared data object and send
              * a request for someone else to record it to the server.
+             *
+             * Note that we use the 'lazy' parameter in the template so that
+             * this only syncs once the change event has fired. That prevents
+             * us from sending two different requests for a two digit score.
+             *
              * @param score
              */
             set: function set(score) {
@@ -26670,9 +26668,11 @@ module.exports = {
 
     events: {
         'letter-grade-selected': function letterGradeSelected(obj) {
-            window.console.log('questionScore', 'caught letter-grade-selected', obj);
+            //ignore if doesn't belong to this object
             if (typeof obj.questionIndex != 'undefined' && obj.questionIndex == this.questionIndex) {
+                window.console.log('questionScore', 'caught letter-grade-selected', obj);
                 if (typeof obj.score != 'undefined') {
+                    //set question score
                     this.questionScore = obj.score;
                 }
             }
@@ -27186,7 +27186,7 @@ module.exports = '<div id="element{{ elementNumber }}"\n     class="list-group-i
 },{}],43:[function(require,module,exports){
 module.exports = '<!-- Single button -->\n<div id="letterGradeArea"\n     class="btn-group">\n    <button id="letterGradeButton{{questionNumber}}"\n            type="button"\n            class="btn btn-default dropdown-toggle"\n            data-toggle="dropdown"\n            aria-haspopup="true"\n            aria-expanded="false">\n        <span id="letterGradeForQuestion{{ questionNumber }}">{{ displayedGrade }}</span> <span class="caret"></span>\n    </button>\n\n    <ul id="letterGradeList"\n        class="dropdown-menu letterGradeList">\n        <template v-for="grade in grades">\n            <li class="gradeListItem">\n                <a class="letterGrade question{{ questionNumber }} q{{questionNumber}}g{{ grade.calcValue }}"\n                   v-on:click="handleLetterGradeClick($index)"\n                   href="#">{{ grade.displayValue }}</a>\n            </li>\n        </template>\n    </ul>\n\n</div>\n';
 },{}],44:[function(require,module,exports){
-module.exports = '\n    <form class="questionScoreForm form-horizontal" role="form">\n        <div class="form-group">\n            <label class="col-xs-1 control-label questionScoreLabel"\n                   for="{{ scoreFieldIdString }}">Score:</label>\n\n            <div class="col-xs-1 scoreArea">\n                <input id="{{ scoreFieldIdString }}"\n                       v-model="questionScore"\n                       class="form-control pull-right questionScore"\n                       type="number"\n                       min="0"\n                       max="{{ maxScore }}"\n                />\n            </div>\n            <div class="col-xs-1 control-label maxScore">\n                <b>/ <span id="{{ maxScoreFieldIdString}}">{{ maxScore }}</span> </b>\n            </div>\n        </div>\n    </form>\n';
+module.exports = '\n    <form class="questionScoreForm form-horizontal" role="form">\n        <div class="form-group">\n            <label class="col-xs-1 control-label questionScoreLabel"\n                   for="{{ scoreFieldIdString }}">Score:</label>\n\n            <div class="col-xs-1 scoreArea">\n                <input id="{{ scoreFieldIdString }}"\n                       v-model="questionScore" lazy\n                       class="form-control pull-right questionScore"\n                       type="number"\n                       min="0"\n                       max="{{ maxScore }}"\n                />\n            </div>\n            <div class="col-xs-1 control-label maxScore">\n                <b>/ <span id="{{ maxScoreFieldIdString}}">{{ maxScore }}</span> </b>\n            </div>\n        </div>\n    </form>\n';
 },{}],45:[function(require,module,exports){
 module.exports = '\n        <tr id="{{ rowIdString }}"\n            class="studentListItem "\n            v-on:click="handleRowClick"\n            v-bind:class="{ \'unalteredStudentRow\': isUnaltered, \'activeStudentRow\': isActiveStudent, \'gradedStudentRow\': isGraded }"\n            data-index="{{ studentIndex }}"\n            data-fName="{{ firstName }}"\n            data-lName="{{ lastName }}"\n            data-sid="{{ studentId }}"\n            data-student-identifier="{{ studentIdentifier }}">\n            <td class="col-xs-6"\n                id="studentName{{ studentIndex }}">{{ studentName }}</td>\n            <td class="col-xs-4"\n                id="studentIdentifier{{ studentIndex }}">{{ studentIdentifierDisplay }}</td>\n            <td class="col-xs-2"\n                id="examGrade{{ studentIndex }}">{{ examGrade }}</td>\n        </tr>\n';
 },{}],46:[function(require,module,exports){

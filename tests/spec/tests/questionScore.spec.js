@@ -62,6 +62,7 @@ describe( "QuestionScoreComponent | ", function () {
         store.setActiveStudent( this.studentIndex );
         store.loadMaxQuestionScores( { 0: this.maxScore, 1: 52 } );
         store.loadQuestionScores( { 0: { 0: null, 1: null }, 1: { 0: null, 1: null } } );
+        store.loadQuestions({ 0: { questionIndex: this.questionIndex, questionAssignmentId: this.questionAssignmentId, questionNumber: this.questionNumber}});
         window.store = store;
 
         //prep the page
@@ -143,6 +144,7 @@ describe( "QuestionScoreComponent | ", function () {
 
             //call
             component.questionScore = 34;
+
             window.console.log(spy.args);
             //check
             expect( spy.calledOnce ).toBe( true );

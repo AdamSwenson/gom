@@ -15,8 +15,6 @@ module.exports = {
 
     props: [
         'questionIndex',
-        'questionNumber',
-        //json of grades with keys displayValue and calcValue
         'grades'
     ],
 
@@ -30,13 +28,7 @@ module.exports = {
             defaults: {
                 displayedGrade: 'Letter grade',
                 gradeValue: null
-            },
-
-            // storage: {
-            //     currentGradeDisplay: null,
-            //     currentGradeValue: null
-            // }
-
+            }
         };
     },
 
@@ -55,20 +47,13 @@ module.exports = {
             //display the inferred letter grade
             return this.calcLetter( this.maxScore, this.score );
         },
-
-
-        // //The value of the letter grade used in calculation
-        // gradeValue: {
-        //     get: function () {
-        //         if ( this.storage.currentGradeValue != null ) {
-        //             return this.storage.currentGradeValue;
-        //         }
-        //         return this.defaults.gradeValue;
         //
-        //     },
-        //     set: function ( val ) {
-        //         this.storage.currentGradeValue = val;
-        //     }
+        // /**
+        //  * Json of grades with keys displayValue and calcValue
+        //  * @returns {{}}
+        //  */
+        // grades: function () {
+        //     return this.store.getGrades();
         // },
 
         /**
@@ -102,8 +87,12 @@ module.exports = {
 
         targetId: function () {
             return "questionScore" + this.questionNumber;
-        }
+        },
 
+        questionNumber: function () {
+            let question = this.store.getQuestion( this.questionIndex );
+            return question.questionNumber;
+        }
     },
 
     methods: {
@@ -117,8 +106,8 @@ module.exports = {
         calcGrade: function ( gradeValue, maxScore ) {
             gradeValue = Number( gradeValue );
             maxScore = Number( maxScore );
-            let result =(gradeValue * .01) * maxScore;
-            return this.roundToTwo(result);
+            let result = (gradeValue * .01) * maxScore;
+            return this.roundToTwo( result );
         },
 
         /**

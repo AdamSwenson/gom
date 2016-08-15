@@ -21,15 +21,11 @@
                         <!-- question Score -->
                         <div class="col-xs-2">
                             <letter-grade-button
-                                    :question-assignment-id="{{$qAssignment->id}}"
                                     :question-index="{{$qIndex}}"
-                                    question-number="{{ $qNumber }}"
                                     :grades="{{ $grades }}"></letter-grade-button>
                         </div>
-                        <question-score
-                                :question-assignment-id="{{$qAssignment->id}}"
-                                :question-index="{{$qIndex}}"
-                                        question-number="{{ $qNumber }}"></question-score>
+
+                        <question-score :question-index="{{$qIndex}}"></question-score>
 
                     </div>
 

@@ -4,7 +4,7 @@
 //var $ = require('jquery');
 //window.$ = $;
 
-var Requests = require('./requests.tools');
+var Requests = require( './requests.tools' );
 
 module.exports = {
 
@@ -12,20 +12,10 @@ module.exports = {
 
     props: [
         /**
-         * The db id of the assignment of the question to the exam
-         * @type integer
-         */
-        'questionAssignmentId',
-        /**
          * The index identifying the question in the data json objects
          * @type integer
          */
         'questionIndex',
-        /**
-         * The number of the question on the exam
-         * @type string
-         */
-        'questionNumber',
     ],
 
     data: function () {
@@ -38,9 +28,6 @@ module.exports = {
     },
 
     computed: {
-
-        //TODO convert question number and qa id into computed properties
-
         /**
          * The string id of the question score field for this question.
          * Does not contain '#'
@@ -69,8 +56,25 @@ module.exports = {
         },
 
         /**
+         * The db id of the assignment of the question to the exam
+         * @type integer
+         */
+        questionAssignmentId: function(){
+            let question = this.store.getQuestion(this.questionIndex);
+            return question.questionAssignmentId;
+        },
+
+        /**
+         * The number of the question on the exam
+         * @type string
+         */
+        questionNumber: function(){
+            let question = this.store.getQuestion(this.questionIndex);
+            return question.questionNumber;
+        },
+
+        /**
          * The student's score for this question
-         *
          */
         questionScore: {
             get: function () {
@@ -78,11 +82,15 @@ module.exports = {
                 if ( qs != null ) {
                     return qs;
                 }
-                // return '';
             },
             /**
              * Update the score in the shared data object and send
              * a request for someone else to record it to the server.
+             *
+             * Note that we use the 'lazy' parameter in the template so that
+             * this only syncs once the change event has fired. That prevents
+             * us from sending two different requests for a two digit score.
+             *
              * @param score
              */
             set: function ( score ) {
@@ -102,7 +110,7 @@ module.exports = {
             let questionAssignmentId = this.questionAssignmentId;
             let questionIndex = this.questionIndex;
 
-            let obj = new Requests.QuestionScoreRequest(studentIndex, questionIndex, questionAssignmentId);
+            let obj = new Requests.QuestionScoreRequest( studentIndex, questionIndex, questionAssignmentId );
 
             this.$dispatch( 'store-question-score-request', obj );
         }
@@ -110,9 +118,11 @@ module.exports = {
 
     events: {
         'letter-grade-selected': function ( obj ) {
-            window.console.log( 'questionScore', 'caught letter-grade-selected', obj );
+            //ignore if doesn't belong to this object
             if ( (typeof obj.questionIndex != 'undefined') && (obj.questionIndex == this.questionIndex) ) {
+                window.console.log( 'questionScore', 'caught letter-grade-selected', obj );
                 if ( typeof obj.score != 'undefined' ) {
+                    //set question score
                     this.questionScore = obj.score;
                 }
             }

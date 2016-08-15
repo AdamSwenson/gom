@@ -175,118 +175,27 @@ $grades = App\Repositories\Grade\GradeFactory::gradeJson();
              class="col-md-4 rosterAndDashboardColumn">
 
             <!-- student name and ID -->
-            {{--<form class="form-horizontal">--}}
-                <current-student-area></current-student-area>
-            {{--</form>--}}
+            <current-student-area></current-student-area>
 
             <!-- graded / remaining counters -->
             <dashboard-counts finished-link="{{ url('grade/') }}"></dashboard-counts>
 
             <!-- student table shows the student roster -->
             <div class="panel panel-default">
-            <student-table></student-table>
-                </div>
-        {{--@include('development.partials.student_table')--}}
+                <student-table></student-table>
+            </div>
 
-        <!-- statistics area holds time info -->
+            <!-- statistics area holds time info -->
             <dashboard-timer></dashboard-timer>
 
         </div>
     </div>
 
-    {{--<div id="gradeExamPage">--}}
-    {{--<div class="row currentStudent">--}}
-    {{--<div class="col-lg-2"></div>--}}
-    {{--<div class="col-lg-8">--}}
-    {{--<current-student-area></current-student-area>--}}
-    {{--</div>--}}
-    {{--<div class="col-lg-2"></div>--}}
-    {{--</div>--}}
-
-
-    {{--<div class="row elementInput">--}}
-    {{--<div class="col-lg-2"></div>--}}
-    {{--<div class="col-lg-8">--}}
-    {{--<element-input :element-number="1"--}}
-    {{--:element-index="1"--}}
-    {{--element-id="1"--}}
-    {{--element-name="testname"--}}
-    {{--:question-number="1"></element-input>--}}
-    {{--</div>--}}
-    {{--<div class="col-lg-2"></div>--}}
-    {{--</div>--}}
-
-    {{--<div class="row studentRoster">--}}
-    {{--<div class="col-lg-2"></div>--}}
-    {{--<div class="col-lg-8">--}}
-    {{--<table>--}}
-    {{--<tr is="student-list-item"--}}
-    {{--:student-index="0"--}}
-    {{--first-name="Jill"--}}
-    {{--last-name="Jillenson"--}}
-    {{--student-identifier="123456789"--}}
-    {{--student-id="1"--}}
-    {{--></tr>--}}
-    {{--<tr is="student-list-item"--}}
-    {{--:student-index="1"--}}
-    {{--first-name="Sue"--}}
-    {{--last-name="Suenson"--}}
-    {{--student-identifier="0123456789"--}}
-    {{--student-id="2"--}}
-    {{--></tr>--}}
-    {{--</table>--}}
-    {{--</div>--}}
-    {{--<div class="col-lg-2"></div>--}}
-    {{--</div>--}}
-
-
-    {{--<div class="row questionScore">--}}
-    {{--<div class="col-lg-2"></div>--}}
-    {{--<div class="col-lg-8">--}}
-    {{--<question-score--}}
-    {{--v-ref:test-object--}}
-    {{--:question-index="0"--}}
-    {{--question-number="1"></question-score>--}}
-    {{--</div>--}}
-    {{--<div class="col-lg-2"></div>--}}
-    {{--</div>--}}
-
-    {{--<div class="row letterGrade">--}}
-    {{--<div class="col-lg-2"></div>--}}
-    {{--<div class="col-lg-8">--}}
-    {{--<letter-grade-button--}}
-    {{--:question-index="0"--}}
-    {{--question-number="1"--}}
-    {{--:grades="{{ $grades }}"></letter-grade-button>--}}
-    {{--</div>--}}
-    {{--<div class="col-lg-2"></div>--}}
-    {{--</div>--}}
-
-    {{--<div class="row dashboard">--}}
-    {{--<div class="col-lg-2"></div>--}}
-    {{--<div class="col-lg-8">--}}
-    {{--<dashboard-timer></dashboard-timer>--}}
-    {{--</div>--}}
-    {{--<div class="col-lg-2"></div>--}}
-    {{--</div>--}}
-
-    {{--<div class="row dashboard">--}}
-    {{--<div class="col-lg-2"></div>--}}
-    {{--<div class="col-lg-8">--}}
-    {{--<dashboard-counts></dashboard-counts>--}}
-    {{--</div>--}}
-    {{--<div class="col-lg-2"></div>--}}
-    {{--</div>--}}
-
-    {{--</div>--}}
 @endsection
 
 @section('jsArea')
-
-
     <script type="text/javascript">
                 <?php
-//                $stockComments = json_encode($stockComments, JSON_FORCE_OBJECT);
                 $studentElementComments = json_encode($studentElementComments, JSON_FORCE_OBJECT);
                 $studentElementScores = json_encode($studentElementScores, JSON_FORCE_OBJECT);
                 $studentQuestionScores = json_encode($studentQuestionScores, JSON_FORCE_OBJECT);
@@ -312,6 +221,7 @@ $grades = App\Repositories\Grade\GradeFactory::gradeJson();
         store.loadMaxQuestionScores({!! $maxScores !!});
         store.loadStudents({!! $studentsJson !!});
         store.loadQuestions({!! $questionsJson !!})
+        store.loadGrades({!! $gradesJson !!})
     </script>
 
     <script src="{{ asset('js/dev/grade-vue.js') }}"></script>
