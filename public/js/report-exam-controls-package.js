@@ -1,153 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
- * Scripts for exam_controls.blade
- * Created by  adam on 3/3/16.
- */
-
-'use strict';
-
-var $ = require('jquery');
-var jQuery = $;
-window.$ = $;
-window.jQuery = $;
-require('bootstrap');
-
-var common = require('../common.js');
-
-var Vue = require('vue');
-
-//dev
-//Vue.config.debug = true;
-
-new Vue({
-    el: '#app',
-
-    components: {
-        'exam-release-toggle': require('./components/examReleaseToggle.js'),
-        'exam-buttons': require('./components/reportExamButtons.js'),
-        'exam-buttons-dropdown': require('./components/examButtonsDropdown.js')
-    },
-
-    data: {},
-
-    computed: {
-        baseUrl: (function (_baseUrl) {
-            function baseUrl() {
-                return _baseUrl.apply(this, arguments);
-            }
-
-            baseUrl.toString = function () {
-                return _baseUrl.toString();
-            };
-
-            return baseUrl;
-        })(function () {
-            return baseUrl;
-        })
-
-    },
-
-    methods: {
-        releaseRoute: function releaseRoute(examId) {
-            return this.baseUrl + "/report/" + examId + "/release";
-        },
-
-        hideRoute: function hideRoute(examId) {
-            return this.baseUrl + "/report/" + examId + "/unrelease";
-        },
-        /**
-         * Make the request to server to release the exam.
-         *
-         * This will compile student scores and stats, then sends notification emails to all
-         * graded students who have not yet received an email. Normally, this will be most (if not all)
-         * of the class.
-         *
-         * Any late graded exams can be processed by releasing again or individually via
-         * the student controls page
-         *
-         * @param examId
-         */
-        releaseExam: function releaseExam(examId) {
-            var me = this;
-            var path = this.releaseRoute(examId);
-            $.ajax({
-                url: path,
-                type: "POST",
-                success: function success() {
-                    window.console.log('j');
-                    me.notifyReleaseSuccess(examId);
-                },
-                error: function error() {
-                    me.notifyReleaseError(examId);
-                },
-                complete: function complete() {}
-            });
-        },
-
-        /**
-         * Makes the request to the server to hide the exam.
-         * This removes student access to the exam, deleting any response keys that have been generated.
-         * @param examId
-         */
-        hideExam: function hideExam(examId) {
-            var me = this;
-            var path = this.hideRoute(examId);
-            $.ajax({
-                url: path,
-                type: "POST",
-                success: function success() {
-                    me.notifyHideSuccess(examId);
-                },
-                error: function error() {
-                    me.notifyHideError(examId);
-                },
-                complete: function complete() {}
-            });
-        },
-
-        notifyReleaseSuccess: function notifyReleaseSuccess(examId) {
-            this.$broadcast('exam-release-success', examId);
-        },
-
-        notifyReleaseError: function notifyReleaseError(examId) {
-            this.$broadcast('exam-release-error', examId);
-        },
-
-        notifyHideSuccess: function notifyHideSuccess(examId) {
-            this.$broadcast('exam-hide-success', examId);
-        },
-
-        notifyHideError: function notifyHideError(examId) {
-            this.$broadcast('exam-hide-error', examId);
-        }
-    },
-
-    events: {
-        'exam-release-event': function examReleaseEvent(examId) {
-            window.console.log('examButtons', 'caught exam-release-event', examId);
-            this.releaseExam(examId);
-        },
-
-        'exam-hide-event': function examHideEvent(examId) {
-            window.console.log('examButtons', 'caught exam-hide-event', examId);
-            this.hideExam(examId);
-        }
-    },
-
-    directives: {},
-
-    ready: function ready() {
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-        window.console.log('examButtons ready');
-    }
-});
-
-},{"../common.js":20,"./components/examButtonsDropdown.js":21,"./components/examReleaseToggle.js":22,"./components/reportExamButtons.js":23,"bootstrap":4,"jquery":17,"vue":19}],2:[function(require,module,exports){
-/**
  * bootbox.js [v4.4.0]
  *
  * http://bootboxjs.com/license.txt
@@ -1133,7 +985,7 @@ new Vue({
   return exports;
 }));
 
-},{"jquery":17}],3:[function(require,module,exports){
+},{"jquery":16}],2:[function(require,module,exports){
 /*! ========================================================================
  * Bootstrap Toggle: bootstrap-toggle.js v2.2.0
  * http://www.bootstraptoggle.com
@@ -1315,7 +1167,7 @@ new Vue({
 
 }(jQuery);
 
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 // This file is autogenerated via the `commonjs` Grunt task. You can require() this file in a CommonJS environment.
 require('../../js/transition.js')
 require('../../js/alert.js')
@@ -1329,12 +1181,12 @@ require('../../js/popover.js')
 require('../../js/scrollspy.js')
 require('../../js/tab.js')
 require('../../js/affix.js')
-},{"../../js/affix.js":5,"../../js/alert.js":6,"../../js/button.js":7,"../../js/carousel.js":8,"../../js/collapse.js":9,"../../js/dropdown.js":10,"../../js/modal.js":11,"../../js/popover.js":12,"../../js/scrollspy.js":13,"../../js/tab.js":14,"../../js/tooltip.js":15,"../../js/transition.js":16}],5:[function(require,module,exports){
+},{"../../js/affix.js":4,"../../js/alert.js":5,"../../js/button.js":6,"../../js/carousel.js":7,"../../js/collapse.js":8,"../../js/dropdown.js":9,"../../js/modal.js":10,"../../js/popover.js":11,"../../js/scrollspy.js":12,"../../js/tab.js":13,"../../js/tooltip.js":14,"../../js/transition.js":15}],4:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: affix.js v3.3.6
+ * Bootstrap: affix.js v3.3.7
  * http://getbootstrap.com/javascript/#affix
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1360,7 +1212,7 @@ require('../../js/affix.js')
     this.checkPosition()
   }
 
-  Affix.VERSION  = '3.3.6'
+  Affix.VERSION  = '3.3.7'
 
   Affix.RESET    = 'affix affix-top affix-bottom'
 
@@ -1493,12 +1345,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: alert.js v3.3.6
+ * Bootstrap: alert.js v3.3.7
  * http://getbootstrap.com/javascript/#alerts
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1514,7 +1366,7 @@ require('../../js/affix.js')
     $(el).on('click', dismiss, this.close)
   }
 
-  Alert.VERSION = '3.3.6'
+  Alert.VERSION = '3.3.7'
 
   Alert.TRANSITION_DURATION = 150
 
@@ -1527,7 +1379,7 @@ require('../../js/affix.js')
       selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
     }
 
-    var $parent = $(selector)
+    var $parent = $(selector === '#' ? [] : selector)
 
     if (e) e.preventDefault()
 
@@ -1589,12 +1441,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: button.js v3.3.6
+ * Bootstrap: button.js v3.3.7
  * http://getbootstrap.com/javascript/#buttons
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1611,7 +1463,7 @@ require('../../js/affix.js')
     this.isLoading = false
   }
 
-  Button.VERSION  = '3.3.6'
+  Button.VERSION  = '3.3.7'
 
   Button.DEFAULTS = {
     loadingText: 'loading...'
@@ -1633,10 +1485,10 @@ require('../../js/affix.js')
 
       if (state == 'loadingText') {
         this.isLoading = true
-        $el.addClass(d).attr(d, d)
+        $el.addClass(d).attr(d, d).prop(d, true)
       } else if (this.isLoading) {
         this.isLoading = false
-        $el.removeClass(d).removeAttr(d)
+        $el.removeClass(d).removeAttr(d).prop(d, false)
       }
     }, this), 0)
   }
@@ -1700,10 +1552,15 @@ require('../../js/affix.js')
 
   $(document)
     .on('click.bs.button.data-api', '[data-toggle^="button"]', function (e) {
-      var $btn = $(e.target)
-      if (!$btn.hasClass('btn')) $btn = $btn.closest('.btn')
+      var $btn = $(e.target).closest('.btn')
       Plugin.call($btn, 'toggle')
-      if (!($(e.target).is('input[type="radio"]') || $(e.target).is('input[type="checkbox"]'))) e.preventDefault()
+      if (!($(e.target).is('input[type="radio"], input[type="checkbox"]'))) {
+        // Prevent double click on radios, and the double selections (so cancellation) on checkboxes
+        e.preventDefault()
+        // The target component still receive the focus
+        if ($btn.is('input,button')) $btn.trigger('focus')
+        else $btn.find('input:visible,button:visible').first().trigger('focus')
+      }
     })
     .on('focus.bs.button.data-api blur.bs.button.data-api', '[data-toggle^="button"]', function (e) {
       $(e.target).closest('.btn').toggleClass('focus', /^focus(in)?$/.test(e.type))
@@ -1711,12 +1568,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: carousel.js v3.3.6
+ * Bootstrap: carousel.js v3.3.7
  * http://getbootstrap.com/javascript/#carousel
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1744,7 +1601,7 @@ require('../../js/affix.js')
       .on('mouseleave.bs.carousel', $.proxy(this.cycle, this))
   }
 
-  Carousel.VERSION  = '3.3.6'
+  Carousel.VERSION  = '3.3.7'
 
   Carousel.TRANSITION_DURATION = 600
 
@@ -1950,15 +1807,16 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: collapse.js v3.3.6
+ * Bootstrap: collapse.js v3.3.7
  * http://getbootstrap.com/javascript/#collapse
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
+/* jshint latedef: false */
 
 +function ($) {
   'use strict';
@@ -1982,7 +1840,7 @@ require('../../js/affix.js')
     if (this.options.toggle) this.toggle()
   }
 
-  Collapse.VERSION  = '3.3.6'
+  Collapse.VERSION  = '3.3.7'
 
   Collapse.TRANSITION_DURATION = 350
 
@@ -2163,12 +2021,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: dropdown.js v3.3.6
+ * Bootstrap: dropdown.js v3.3.7
  * http://getbootstrap.com/javascript/#dropdowns
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2185,7 +2043,7 @@ require('../../js/affix.js')
     $(element).on('click.bs.dropdown', this.toggle)
   }
 
-  Dropdown.VERSION = '3.3.6'
+  Dropdown.VERSION = '3.3.7'
 
   function getParent($this) {
     var selector = $this.attr('data-target')
@@ -2330,12 +2188,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: modal.js v3.3.6
+ * Bootstrap: modal.js v3.3.7
  * http://getbootstrap.com/javascript/#modals
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2366,7 +2224,7 @@ require('../../js/affix.js')
     }
   }
 
-  Modal.VERSION  = '3.3.6'
+  Modal.VERSION  = '3.3.7'
 
   Modal.TRANSITION_DURATION = 300
   Modal.BACKDROP_TRANSITION_DURATION = 150
@@ -2473,7 +2331,9 @@ require('../../js/affix.js')
     $(document)
       .off('focusin.bs.modal') // guard against infinite focus loop
       .on('focusin.bs.modal', $.proxy(function (e) {
-        if (this.$element[0] !== e.target && !this.$element.has(e.target).length) {
+        if (document !== e.target &&
+            this.$element[0] !== e.target &&
+            !this.$element.has(e.target).length) {
           this.$element.trigger('focus')
         }
       }, this))
@@ -2669,12 +2529,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: popover.js v3.3.6
+ * Bootstrap: popover.js v3.3.7
  * http://getbootstrap.com/javascript/#popovers
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2691,7 +2551,7 @@ require('../../js/affix.js')
 
   if (!$.fn.tooltip) throw new Error('Popover requires tooltip.js')
 
-  Popover.VERSION  = '3.3.6'
+  Popover.VERSION  = '3.3.7'
 
   Popover.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
     placement: 'right',
@@ -2779,12 +2639,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: scrollspy.js v3.3.6
+ * Bootstrap: scrollspy.js v3.3.7
  * http://getbootstrap.com/javascript/#scrollspy
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2810,7 +2670,7 @@ require('../../js/affix.js')
     this.process()
   }
 
-  ScrollSpy.VERSION  = '3.3.6'
+  ScrollSpy.VERSION  = '3.3.7'
 
   ScrollSpy.DEFAULTS = {
     offset: 10
@@ -2953,12 +2813,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: tab.js v3.3.6
+ * Bootstrap: tab.js v3.3.7
  * http://getbootstrap.com/javascript/#tabs
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2975,7 +2835,7 @@ require('../../js/affix.js')
     // jscs:enable requireDollarBeforejQueryAssignment
   }
 
-  Tab.VERSION = '3.3.6'
+  Tab.VERSION = '3.3.7'
 
   Tab.TRANSITION_DURATION = 150
 
@@ -3110,13 +2970,13 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: tooltip.js v3.3.6
+ * Bootstrap: tooltip.js v3.3.7
  * http://getbootstrap.com/javascript/#tooltip
  * Inspired by the original jQuery.tipsy by Jason Frame
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -3139,7 +2999,7 @@ require('../../js/affix.js')
     this.init('tooltip', element, options)
   }
 
-  Tooltip.VERSION  = '3.3.6'
+  Tooltip.VERSION  = '3.3.7'
 
   Tooltip.TRANSITION_DURATION = 150
 
@@ -3430,9 +3290,11 @@ require('../../js/affix.js')
 
     function complete() {
       if (that.hoverState != 'in') $tip.detach()
-      that.$element
-        .removeAttr('aria-describedby')
-        .trigger('hidden.bs.' + that.type)
+      if (that.$element) { // TODO: Check whether guarding this code with this `if` is really necessary.
+        that.$element
+          .removeAttr('aria-describedby')
+          .trigger('hidden.bs.' + that.type)
+      }
       callback && callback()
     }
 
@@ -3475,7 +3337,10 @@ require('../../js/affix.js')
       // width and height are missing in IE8, so compute them manually; see https://github.com/twbs/bootstrap/issues/14093
       elRect = $.extend({}, elRect, { width: elRect.right - elRect.left, height: elRect.bottom - elRect.top })
     }
-    var elOffset  = isBody ? { top: 0, left: 0 } : $element.offset()
+    var isSvg = window.SVGElement && el instanceof window.SVGElement
+    // Avoid using $.offset() on SVGs since it gives incorrect results in jQuery 3.
+    // See https://github.com/twbs/bootstrap/issues/20280
+    var elOffset  = isBody ? { top: 0, left: 0 } : (isSvg ? null : $element.offset())
     var scroll    = { scroll: isBody ? document.documentElement.scrollTop || document.body.scrollTop : $element.scrollTop() }
     var outerDims = isBody ? { width: $(window).width(), height: $(window).height() } : null
 
@@ -3591,6 +3456,7 @@ require('../../js/affix.js')
       that.$tip = null
       that.$arrow = null
       that.$viewport = null
+      that.$element = null
     })
   }
 
@@ -3626,12 +3492,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: transition.js v3.3.6
+ * Bootstrap: transition.js v3.3.7
  * http://getbootstrap.com/javascript/#transitions
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -3687,7 +3553,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.2.4
  * http://jquery.com/
@@ -13503,38 +13369,113 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 // shim for using process in browser
-
 var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+(function () {
+    try {
+        cachedSetTimeout = setTimeout;
+    } catch (e) {
+        cachedSetTimeout = function () {
+            throw new Error('setTimeout is not defined');
+        }
+    }
+    try {
+        cachedClearTimeout = clearTimeout;
+    } catch (e) {
+        cachedClearTimeout = function () {
+            throw new Error('clearTimeout is not defined');
+        }
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        return setTimeout(fun, 0);
+    } else {
+        return cachedSetTimeout.call(null, fun, 0);
+    }
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        clearTimeout(marker);
+    } else {
+        cachedClearTimeout.call(null, marker);
+    }
+}
 var queue = [];
 var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
 
 function drainQueue() {
     if (draining) {
         return;
     }
+    var timeout = runTimeout(cleanUpNextTick);
     draining = true;
-    var currentQueue;
+
     var len = queue.length;
     while(len) {
         currentQueue = queue;
         queue = [];
-        var i = -1;
-        while (++i < len) {
-            currentQueue[i]();
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
         }
+        queueIndex = -1;
         len = queue.length;
     }
+    currentQueue = null;
     draining = false;
+    runClearTimeout(timeout);
 }
+
 process.nextTick = function (fun) {
-    queue.push(fun);
-    if (!draining) {
-        setTimeout(drainQueue, 0);
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
     }
 };
 
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
 process.title = 'browser';
 process.browser = true;
 process.env = {};
@@ -13556,14 +13497,13 @@ process.binding = function (name) {
     throw new Error('process.binding is not supported');
 };
 
-// TODO(shtylman)
 process.cwd = function () { return '/' };
 process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 process.umask = function() { return 0; };
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 (function (process,global){
 /*!
  * Vue.js v1.0.25
@@ -23634,12 +23574,12 @@ setTimeout(function () {
 
 module.exports = Vue;
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":18}],20:[function(require,module,exports){
+},{"_process":17}],19:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 2/12/16.
  */
-
-'use strict';
 
 var $ = require('jquery');
 
@@ -23648,14 +23588,14 @@ var navBar = require('./utilities/navbar.js')();
 var flash = require('./utilities/flashMessageHandling.js')();
 var jira = require('./utilities/JiraIssueCollector.js')();
 
-},{"./utilities/JiraIssueCollector.js":27,"./utilities/ajaxCsrfPrep.js":28,"./utilities/flashMessageHandling.js":29,"./utilities/navbar.js":30,"jquery":17}],21:[function(require,module,exports){
+},{"./utilities/JiraIssueCollector.js":27,"./utilities/ajaxCsrfPrep.js":28,"./utilities/flashMessageHandling.js":29,"./utilities/navbar.js":30,"jquery":16}],20:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 3/16/16.
  */
 //var $ = require('jquery');
 //window.$ = $;
-
-'use strict';
 
 module.exports = {
 
@@ -23687,12 +23627,12 @@ module.exports = {
     }
 };
 
-},{"../templates/exam-buttons-dropdown.template.html":24}],22:[function(require,module,exports){
+},{"../templates/exam-buttons-dropdown.template.html":24}],21:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 3/16/16.
  */
-'use strict';
-
 var $ = require('jquery');
 window.$ = $;
 
@@ -23997,12 +23937,12 @@ module.exports = {
     }
 };
 
-},{"../templates/exam-release-toggle.template.html":25,"./../../../../../node_modules/bootstrap-toggle/js/bootstrap-toggle.js":3,"bootbox":2,"jquery":17}],23:[function(require,module,exports){
+},{"../templates/exam-release-toggle.template.html":25,"./../../../../../node_modules/bootstrap-toggle/js/bootstrap-toggle.js":2,"bootbox":1,"jquery":16}],22:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 3/3/16.
  */
-'use strict';
-
 var $ = require('jquery');
 var jQuery = $;
 window.jQuery = $;
@@ -24043,18 +23983,166 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/report-exam-buttons.template.html":26,"jquery":17}],24:[function(require,module,exports){
+},{"../templates/report-exam-buttons.template.html":26,"jquery":16}],23:[function(require,module,exports){
+'use strict';
+
+/**
+ * Scripts for exam_controls.blade
+ * Created by  adam on 3/3/16.
+ */
+
+var $ = require('jquery');
+var jQuery = $;
+window.$ = $;
+window.jQuery = $;
+require('bootstrap');
+
+var common = require('../common.js');
+
+var Vue = require('vue');
+
+//dev
+//Vue.config.debug = true;
+
+new Vue({
+    el: '#app',
+
+    components: {
+        'exam-release-toggle': require('./components/examReleaseToggle.js'),
+        'exam-buttons': require('./components/reportExamButtons.js'),
+        'exam-buttons-dropdown': require('./components/examButtonsDropdown.js')
+    },
+
+    data: {},
+
+    computed: {
+        baseUrl: function (_baseUrl) {
+            function baseUrl() {
+                return _baseUrl.apply(this, arguments);
+            }
+
+            baseUrl.toString = function () {
+                return _baseUrl.toString();
+            };
+
+            return baseUrl;
+        }(function () {
+            return baseUrl;
+        })
+
+    },
+
+    methods: {
+        releaseRoute: function releaseRoute(examId) {
+            return this.baseUrl + "/report/" + examId + "/release";
+        },
+
+        hideRoute: function hideRoute(examId) {
+            return this.baseUrl + "/report/" + examId + "/unrelease";
+        },
+        /**
+         * Make the request to server to release the exam.
+         *
+         * This will compile student scores and stats, then sends notification emails to all
+         * graded students who have not yet received an email. Normally, this will be most (if not all)
+         * of the class.
+         *
+         * Any late graded exams can be processed by releasing again or individually via
+         * the student controls page
+         *
+         * @param examId
+         */
+        releaseExam: function releaseExam(examId) {
+            var me = this;
+            var path = this.releaseRoute(examId);
+            $.ajax({
+                url: path,
+                type: "POST",
+                success: function success() {
+                    window.console.log('j');
+                    me.notifyReleaseSuccess(examId);
+                },
+                error: function error() {
+                    me.notifyReleaseError(examId);
+                },
+                complete: function complete() {}
+            });
+        },
+
+        /**
+         * Makes the request to the server to hide the exam.
+         * This removes student access to the exam, deleting any response keys that have been generated.
+         * @param examId
+         */
+        hideExam: function hideExam(examId) {
+            var me = this;
+            var path = this.hideRoute(examId);
+            $.ajax({
+                url: path,
+                type: "POST",
+                success: function success() {
+                    me.notifyHideSuccess(examId);
+                },
+                error: function error() {
+                    me.notifyHideError(examId);
+                },
+                complete: function complete() {}
+            });
+        },
+
+        notifyReleaseSuccess: function notifyReleaseSuccess(examId) {
+            this.$broadcast('exam-release-success', examId);
+        },
+
+        notifyReleaseError: function notifyReleaseError(examId) {
+            this.$broadcast('exam-release-error', examId);
+        },
+
+        notifyHideSuccess: function notifyHideSuccess(examId) {
+            this.$broadcast('exam-hide-success', examId);
+        },
+
+        notifyHideError: function notifyHideError(examId) {
+            this.$broadcast('exam-hide-error', examId);
+        }
+    },
+
+    events: {
+        'exam-release-event': function examReleaseEvent(examId) {
+            window.console.log('examButtons', 'caught exam-release-event', examId);
+            this.releaseExam(examId);
+        },
+
+        'exam-hide-event': function examHideEvent(examId) {
+            window.console.log('examButtons', 'caught exam-hide-event', examId);
+            this.hideExam(examId);
+        }
+    },
+
+    directives: {},
+
+    ready: function ready() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        window.console.log('examButtons ready');
+    }
+});
+
+},{"../common.js":19,"./components/examButtonsDropdown.js":20,"./components/examReleaseToggle.js":21,"./components/reportExamButtons.js":22,"bootstrap":3,"jquery":16,"vue":18}],24:[function(require,module,exports){
 module.exports = '<div class="btn-group">\n    <button\n            type="button"\n            class="btn btn-primary dropdown-toggle"\n            data-toggle="dropdown"\n            aria-haspopup="true"\n            aria-expanded="false">\n        Actions <span class="caret"></span>\n    </button>\n    <ul class="dropdown-menu">\n        <li>\n            <a class="analyticsLink"\n               href="{{ analyticsTarget }}">\n                <span class="glyphicon glyphicon-stats"\n                      aria-hidden="true"></span> Analytics\n            </a>\n        </li>\n        <li>\n            <a class="qualityControlLink"\n                    href="{{ qualityControlsTarget }}">\n                <span class="glyphicon glyphicon-apple" aria-hidden="true"></span> Quality Control Tools</a>\n        </li>\n        <li>\n            <a class="backupLink"\n               href="{{ backupTarget }}">\n                <span class="glyphicon glyphicon glyphicon-save" aria-hidden="true"></span> Export Scores to Spreadsheet</a>\n        </li>\n\n        <li><a class="studentControlsLink"\n               href="{{ studentControlsTarget }}">\n            <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Student Controls</a>\n        </li>\n    </ul>\n</div>';
 },{}],25:[function(require,module,exports){
 module.exports = '\n<input\n        id="{{ toggleId }}"\n        class="exam-release-toggle confirmRelease"\n        type="checkbox"\n        v-model="checked"\n        data-toggle="toggle"\n        data-on="{{ onStateText }}"\n        data-off="{{ offStateText}}"\n        data-width="{{ buttonWidth }}"\n        data-onstyle="{{ onStyle }}"\n        data-offstyle="{{ offStyle}}"\n/>\n';
 },{}],26:[function(require,module,exports){
 module.exports = '<div>\n\n\n\n    <a class="btn btn-info"\n       title="Exam Analytics"\n       href="{{ analyticsTarget }}"\n    ><span\n            class="glyphicon glyphicon-stats"\n            aria-hidden="true"\n    ></span>\n    </a>\n\n    <a class="btn btn-default"\n       href="{{ qualityControlsTarget }}"\n       title="Quality Control"\n    >\n        <span class="glyphicon glyphicon-apple" aria-hidden="true"></span>\n    </a>\n\n    <a class="btn btn-default"\n       href="{{ backupTarget }}"\n       title="Export Scores to Csv"\n    >\n        <span class="glyphicon glyphicon glyphicon-save" aria-hidden="true"></span>\n    </a>\n    <a class="btn btn-info"\n       title="Student Controls"\n       href="{{ studentControlsTarget }}"\n    >\n        <span class="glyphicon glyphicon-user" aria-hidden="true"></span> </a>\n\n</div>';
 },{}],27:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 3/23/16.
  */
-
-'use strict';
 
 var $ = require('jquery');
 
@@ -24072,7 +24160,7 @@ module.exports = function () {
 
 };
 
-},{"jquery":17}],28:[function(require,module,exports){
+},{"jquery":16}],28:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
@@ -24091,12 +24179,12 @@ module.exports = function () {
     });
 };
 
-},{"jquery":17}],29:[function(require,module,exports){
+},{"jquery":16}],29:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 10/4/15.
  */
-
-'use strict';
 
 var $ = require('jquery');
 
@@ -24108,12 +24196,12 @@ module.exports = function () {
   $('div.alert').not('alert-important').delay(2000).slideUp(300);
 };
 
-},{"jquery":17}],30:[function(require,module,exports){
+},{"jquery":16}],30:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 2/12/16.
  */
-
-'use strict';
 
 var $ = require('jquery');
 window.$ = $;
@@ -24147,4 +24235,6 @@ module.exports = function () {
     })();
 };
 
-},{"bootstrap":4,"jquery":17}]},{},[1]);
+},{"bootstrap":3,"jquery":16}]},{},[23]);
+
+//# sourceMappingURL=report-exam-controls-package.js.map

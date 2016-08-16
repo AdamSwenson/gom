@@ -193,4 +193,10 @@ module.exports = {
     }
 
 
+<<<<<<< HEAD
+=======
+    this._spy = function(propertyName){
+      return propertyName;
+    };
+>>>>>>> ac3eae0... seems ready to push to production
 }
