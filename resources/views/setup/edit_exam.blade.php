@@ -9,7 +9,7 @@
 @endsection
 
 @section('body')
-    <div class="section" id="editExam">
+    <div class="section mainBodyLocator" id="editExamPage">
         <form id="examForm" method="post" action="{{ url('exam/'.$exam->getId()) }}"
               accept-charset="UTF-8">
             <input type="hidden" name="_method" value="patch">

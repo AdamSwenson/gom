@@ -9,7 +9,7 @@ use Faker\Factory;
 use Page\ElementEditPage;
 use Page\grade\GradeSelectExamPage;
 use Page\QuestionEditPage;
-use Page\RosterEditPage;
+use Page\setup\RosterEditPage;
 use Page\SetupExamSelectPage;
 
 class Acceptance extends \Codeception\Module

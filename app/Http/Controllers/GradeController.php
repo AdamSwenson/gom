@@ -29,6 +29,8 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 
+use JavaScript;
+
 /**
  * Class GradeController
  *
@@ -370,7 +372,7 @@ class GradeController extends Controller
         $students = $this->studentDao->load_students_by_exam($exam);
         // load all question assignments and all elements for those questions
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
-        $maxQuestionScores = null;
+        $maxQuestionScores = [];
 
         // return to grade select if 0 students or 0 questions
         if ( sizeof($students) == 0 || sizeof($questionAssignments) == 0 )
@@ -381,9 +383,10 @@ class GradeController extends Controller
         foreach ( $questionAssignments as $qAssignment )
         {
             $qNumber = $qAssignment->getQuestionNumber();
+            $qIndex = $qNumber - 1;
             $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qNumber);
             // load maxQuestionScores
-            $maxQuestionScores[ $qNumber ] = $qAssignment->getQuestion()->getMaxScore();
+            $maxQuestionScores[ $qIndex ] = $qAssignment->getQuestion()->getMaxScore();
 
         }
 
@@ -444,21 +447,8 @@ class GradeController extends Controller
                 $examGradingTimes[] = 0;
             }
         }
+        $stockCommentsJson = $this->makeStockCommentsJson($allElements);
 
-        // load stock comments for each element
-        $stockComments = [];
-        foreach ( $allElements as $aQuestion )
-        {
-            foreach ( $aQuestion as $element )
-            {
-                $defaultComments = null;
-                for ( $i = 0; $i < count(Comment::$valences); $i++ )
-                {
-                    $defaultComments[] = $this->elementDao->loadCommentByElementIdAndValence($element->getId(), $i)->getBody();
-                }
-                $stockComments[] = $defaultComments;
-            }
-        }
 
         $studentGrades = [];
         foreach ( $students as $s )
@@ -466,20 +456,53 @@ class GradeController extends Controller
             $studentGrades[] = 'Letter grade';
         }
 
+        $questionsJson = $this->makeQuestionsJson($exam);
+        $studentsJson = $this->makeStudentJson($exam);
+        $gradesJson = $this->makeGradesJson();
 
-        return View::make('grade.grade_exam')->with([
-                                                        'exam'                   => $exam,
-                                                        'students'               => $students,
-                                                        'questionAssignments'    => $questionAssignments,
-                                                        'maxQuestionScores'      => $maxQuestionScores,
-                                                        'allElements'            => $allElements,
-                                                        'stockComments'          => $stockComments,
-                                                        'examGradingTimes'       => $examGradingTimes,
-                                                        'studentElementScores'   => $studentElementScores,
-                                                        'studentElementComments' => $studentElementComments,
-                                                        'studentQuestionScores'  => $studentQuestionScores,
-                                                        'studentGrades'          => $studentGrades,
-                                                    ]);
+        //added
+//        $studentElementComments = json_encode($studentElementComments, JSON_FORCE_OBJECT);
+//        $studentElementScores = json_encode($studentElementScores, JSON_FORCE_OBJECT);
+//        $studentQuestionScores = json_encode($studentQuestionScores, JSON_FORCE_OBJECT);
+//        $examGradingTimes = json_encode($examGradingTimes, JSON_FORCE_OBJECT);
+//        $studentGrades = json_encode($studentGrades, JSON_FORCE_OBJECT);
+//        $maxScores = json_encode($maxQuestionScores, JSON_FORCE_OBJECT);
+//        $numQuestions = count($questionAssignments);
+        Javascript::put([
+            'exam'                   => $exam,
+            'students'               => $students,
+            'questionAssignments'    => $questionAssignments,
+            'maxQuestionScores'      => $maxQuestionScores,
+            'allElements'            => $allElements,
+            'stockCommentsJson'      => $stockCommentsJson,
+            'examGradingTimes'       => $examGradingTimes,
+            'studentElementScores'   => $studentElementScores,
+            'studentElementComments' => $studentElementComments,
+            'studentQuestionScores'  => $studentQuestionScores,
+            'studentGrades'          => $studentGrades,
+            'questionsJson'          => $questionsJson,
+            'studentsJson'           => $studentsJson,
+            'gradesJson'             => $gradesJson,
+        ]);
+
+//        return View::make('development.newTable')->with([
+//        return View::make('development.newGrading')->with([
+        return View::make('grade.newGrading')->with([
+                                                              'exam'                   => $exam,
+                                                              'students'               => $students,
+                                                              'questionAssignments'    => $questionAssignments,
+                                                              'maxQuestionScores'      => $maxQuestionScores,
+                                                              'allElements'            => $allElements,
+                                                              'stockCommentsJson'      => $stockCommentsJson,
+                                                              'examGradingTimes'       => $examGradingTimes,
+                                                              'studentElementScores'   => $studentElementScores,
+                                                              'studentElementComments' => $studentElementComments,
+                                                              'studentQuestionScores'  => $studentQuestionScores,
+                                                              'studentGrades'          => $studentGrades,
+                                                              'questionsJson'          => $questionsJson,
+                                                              'studentsJson'           => $studentsJson,
+                                                              'gradesJson'             => $gradesJson,
+                                                          ]);
     }
 
     /**
@@ -543,7 +566,7 @@ class GradeController extends Controller
             // A released exam will have its compiled feedback updated  for this student
             if ( $exam->getReleased() )
             {
-                $reportController = app()->make('App\Http\Controllers\ReportController');
+                $reportController = app()->make('App\Http\Controllers\Report\ReportController');
                 $reportController->updateFeedbackForStudent($exam, $studentId);
             }
 
@@ -587,25 +610,153 @@ class GradeController extends Controller
      * @param Exam $exam
      * @param GradingRequest $request
      * @return mixed
+     * @throws \Exception
      */
     public function removeScore(Exam $exam, GradingRequest $request)
     {
         //Check that user owns the exam
         $this->authorize('access-object', $exam);
-
-        if ( $request->has('question_assignment_id') )
+        try
         {
-            $this->questionScoreDao->deleteScore($request['question_assignment_id'], $request['student_id']);
-        }
+            //Don't even get started if there's no student id
+            if ( ! $request->has('student_id') )
+            {
+                throw new \Exception('No student id set in grade request');
+            }
 
-        // at this point, this isn't used as there is no means to reset an element score to ungraded.
-        // Since the grade page doesn't store element assignment info, the element id must be used.
-        if ( $request->has('element_id') )
+            $studentId = $request->input('student_id');
+
+            if ( $request->has('question_assignment_id') )
+            {
+                $this->questionScoreDao->deleteScore($request['question_assignment_id'], $studentId);
+            }
+
+            // at this point, this isn't used as there is no means to reset an element score to ungraded.
+            // Since the grade page doesn't store element assignment info, the element id must be used.
+            if ( $request->has('element_id') )
+            {
+                $eAssignid = $this->elementAssignmentDao->load_element_assignment_by_element($exam->getId(), $request['element_assignment_id']);
+                $this->elementScoreDao->deleteScore($eAssignid, $studentId);
+            }
+
+            return $this->sendAjaxSuccess();
+
+        } catch ( \Exception $e )
         {
-            $eAssignid = $this->elementAssignmentDao->load_element_assignment_by_element($exam->getId(), $request['element_assignment_id']);
-            $this->elementScoreDao->deleteScore($eAssignid, $request['student_id']);
+            throw $e;
+
+            return $this->sendAjaxFailure();
         }
     }
+
+
+    /**
+     * Builds the json object containing questions which the page js expects
+     * Also injects the object into the view as GOM.questions
+     * @param Exam $exam
+     * @return string
+     */
+    public function makeQuestionsJson(Exam $exam)
+    {
+        $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
+
+        $questionIndex = 0;
+        $questions = [];
+        foreach ( $questionAssignments as $qa )
+        {
+            $questions[ $questionIndex ] = [
+                'questionIndex'        => $questionIndex,
+                'questionName'         => $qa->getQuestionName(),
+                'questionNumber'       => $qa->getQuestionNumber(),
+                'maxScore'             => $qa->getQuestion()->getMaxScore(),
+                'questionAssignmentId' => $qa->id,
+            ];
+            $questionIndex++;
+        }
+
+        Javascript::put(['questions' => $questions]);
+
+        return json_encode($questions, JSON_FORCE_OBJECT);
+    }
+
+
+    /**
+     * Builds the json object containing students which the page js expects
+     * Also injects the object into the view as GOM.students
+     * @param Exam $exam
+     * @return string
+     */
+    public function makeStudentJson(Exam $exam)
+    {
+        $students = $this->studentDao->load_students_by_exam($exam);
+        $studentIndex = 0;
+        $s = [];
+        foreach ( $students as $student )
+        {
+            $s[ $studentIndex ] = [
+                'studentIndex'      => $studentIndex, //this is here so can use with component
+                'studentId'         => $student->id,
+                'studentIdentifier' => $student->student_identifier,
+                'firstName'         => $student->first_name,
+                'lastName'          => $student->last_name,
+            ];
+            $studentIndex++;
+        }
+
+
+        //send to page
+        Javascript::put(['students' => $s]);
+
+        return json_encode($s, JSON_FORCE_OBJECT);
+
+        // load all question assignments and all elements for those questions
+
+    }
+
+    /**
+     * Makes the object which the page's javascript expects.
+     * Also injects the object into the view GOM.stockComments
+     * @param $allElements
+     * @return array
+     */
+    public function makeStockCommentsJson($allElements)
+    {
+        // load stock comments for each element
+        $stockComments = [];
+        foreach ( $allElements as $aQuestion )
+        {
+            foreach ( $aQuestion as $element )
+            {
+                $defaultComments = null;
+                for ( $i = 0; $i < count(Comment::$valences); $i++ )
+                {
+                    $defaultComments[] = $this->elementDao->loadCommentByElementIdAndValence($element->getId(), $i)->getBody();
+                }
+                $stockComments[] = $defaultComments;
+            }
+        }
+
+        //send to page
+        Javascript::put(['stockComments' => $stockComments]);
+
+        $stockComments = json_encode($stockComments, JSON_FORCE_OBJECT);
+
+        return $stockComments;
+    }
+
+    /**
+     * Makes json of standard grade values
+     * Also injects into view as GOM.grades
+     * @return string
+     */
+    public function makeGradesJson()
+    {
+        //send to page
+        Javascript::put(['grades' => GradeFactory::gradeJson()]);
+
+        return GradeFactory::gradeJson();
+    }
+
 
 //    /**
 //     * Load the time spent grade a particular student exam

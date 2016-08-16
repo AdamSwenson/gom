@@ -64,7 +64,7 @@ class GradeExamsCest
     }
 
     /**
-     * @group('grade')
+     * @group grade
      * @param AcceptanceTester $I
      */
     public function checkClickQuestionTabs(AcceptanceTester $I)
@@ -86,39 +86,15 @@ class GradeExamsCest
     }
 
 
-    
     /**
-     * @group('grade')
+     * @group grade
      * @param AcceptanceTester $I
+     * @incomplete
      */
     public function checkIfNoElements(AcceptanceTester $I, $scenario)
     {
         $I->wantTo("See the default message if there are no elements for a question");
         $scenario->skip();
-    }
-
-    /**
-     * @group('grade')
-     * @param AcceptanceTester $I
-     * @param $scenario
-     */ 
-    public function checkSwitchingStudents(AcceptanceTester $I, $scenario)
-    {
-        $scenario->incomplete();
-        //switch student
-
-        //switch back to first student
-
-    }
-
-    /**
-     * @group('grade')
-     * @param AcceptanceTester $I
-     */
-    public function checkTypeahead(AcceptanceTester $I, $scenario)
-    {
-        $scenario->incomplete();
-    //test typeahead
     }
 
 

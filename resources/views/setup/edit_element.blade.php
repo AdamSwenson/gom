@@ -8,6 +8,7 @@
 @endsection
 
 @section('body')
+    <div id="elementEditPage" class="mainBodyLocator">
     <nav>
         <ul class="pager">
             <li class="previous">
@@ -64,7 +65,7 @@
         $e = NULL; ?>
         @include('setup.partials.element_form')
     </ul>
-
+    </div>
 @endsection
 
 

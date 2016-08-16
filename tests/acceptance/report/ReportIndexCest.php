@@ -16,13 +16,18 @@ class ReportIndexCest
 
     public function _before(AcceptanceTester $I)
     {
+        #$I->config['paths']['log'] = 'tests/_output/report';
         ReportIndexPage::navigateToReportIndexPage($I);
-        $I->wait(5);
+
 //        $I->wantTo('Inspect the /report page and make sure the navigation functions work correctly. (Releasing and locking are handled in separate file)');
     }
 
     public function _after(AcceptanceTester $I)
     {
+        //$I->stop_artisan();
+//          $I->runShellCommand('APP_ENV=codeceptWorld php artisan down');
+//        shell_exec('APP_ENV=codeceptWorld php artisan down');
+
     }
 
     /** @group report */
@@ -35,17 +40,26 @@ class ReportIndexCest
     /** @group report */
     public function checkToggleDropdown(AcceptanceTester $I)
     {
+
         $I->amGoingTo("Click the dropdown toggle button for each exam and see the expected options");
+        $I->dontSeeElement(['class' => 'dropdown-menu']);
         for ( $i = 1; $i <= $this->numberOfExams; $i++ )
         {
             if ( ! in_array($i, $this->examIdsToSkip) )
             {
                 $I->click(ReportIndexPage::dropdownButtonLocator($i));
                 $I->wait(1);
-                $I->seeLink(ReportIndexPage::$analyticsText, ReportIndexPage::analyticsLink($i));
-                $I->seeLink(ReportIndexPage::$qualityControlText, ReportIndexPage::qualityControlLink($i));
-                $I->seeLink(ReportIndexPage::$exportControlsText, ReportIndexPage::exportControlsLink($i));
-                $I->seeLink(ReportIndexPage::$studentControlsText, ReportIndexPage::studentControlsLink($i));
+                $I->seeElement(['class' => 'analyticsLink']);
+                $I->expect("that all the link text is visible");
+                $I->see(ReportIndexPage::$analyticsText);
+                $I->see(ReportIndexPage::$qualityControlText);
+                $I->see(ReportIndexPage::$exportControlsText);
+                $I->see(ReportIndexPage::$studentControlsText);
+
+//                $I->seeLink(ReportIndexPage::$analyticsText, ReportIndexPage::analyticsLink($i));
+//                $I->seeLink(ReportIndexPage::$qualityControlText, ReportIndexPage::qualityControlLink($i));
+//                $I->seeLink(ReportIndexPage::$exportControlsText, ReportIndexPage::exportControlsLink($i));
+//                $I->seeLink(ReportIndexPage::$studentControlsText, ReportIndexPage::studentControlsLink($i));
             }
         }
     }
@@ -55,19 +69,17 @@ class ReportIndexCest
     {
         $I->amGoingTo("Try each of the drop down options (except export) and check that I am properly redirected");
         $I->expectTo("be redirected to the analytics page");
+        $I->dontSeeElement(['class' => 'dropdown-menu']);
         //display menu
         $I->click(ReportIndexPage::dropdownButtonLocator($this->examIdToFollow));
-        $I->wait(1);
+        $I->waitForElementVisible(['class' => 'analyticsLink']);
         //click link
         $I->click(ReportIndexPage::analyticsLinkLocator($this->examIdToFollow));
-        $I->wait(2);
+        $I->waitForElementVisible(AnalyticsPage::$mainBodyLocator);
         //check in right place
         $I->seeInTitle(AnalyticsPage::$pageTitleText);
         $I->canSeeInCurrentUrl(AnalyticsPage::URL($this->examIdToFollow));
-        //go back
-        $I->amOnPage(ReportIndexPage::$URL);
-        $I->wait(2);
-        ReportIndexPage::verifyPageIntact($I, $this->numberOfExams, $this->examIdsToSkip);
+      
     }
 
     /** @group report */
@@ -76,17 +88,13 @@ class ReportIndexCest
         $I->expectTo("be redirected to the student controls page");
         //display menu
         $I->click(ReportIndexPage::dropdownButtonLocator($this->examIdToFollow));
-        $I->wait(1);
+        $I->waitForElementVisible(ReportIndexPage::studentControlsLinkLocator($this->examIdToFollow));
         //click link
         $I->click(ReportIndexPage::studentControlsLinkLocator($this->examIdToFollow));
-        $I->wait(2);
+        $I->waitForElementVisible(StudentControlsPage::$mainBodyLocator);
         //check in right place
         $I->seeInTitle(StudentControlsPage::$pageTitleText);
         $I->canSeeInCurrentUrl(StudentControlsPage::URL($this->examIdToFollow));
-        //go back
-        $I->amOnPage(ReportIndexPage::$URL);
-        $I->wait(2);
-        ReportIndexPage::verifyPageIntact($I, $this->numberOfExams, $this->examIdsToSkip);
     }
 
     /** @group report */
@@ -95,17 +103,13 @@ class ReportIndexCest
         $I->expectTo("be redirected to the quality control page");
         //display menu
         $I->click(ReportIndexPage::dropdownButtonLocator($this->examIdToFollow));
-        $I->wait(1);
+        $I->waitForElementVisible(ReportIndexPage::qualityControlLinkLocator($this->examIdToFollow));
         //click link
         $I->click(ReportIndexPage::qualityControlLinkLocator($this->examIdToFollow));
-        $I->wait(2);
+        $I->waitForElementNotVisible(QualityControlPage::$mainBodyLocator);
         //check in right place
         $I->seeInTitle(QualityControlPage::$pageTitleText);
         $I->canSeeInCurrentUrl(QualityControlPage::URL($this->examIdToFollow));
-        //go back
-        $I->amOnPage(ReportIndexPage::$URL);
-        $I->wait(2);
-        ReportIndexPage::verifyPageIntact($I, $this->numberOfExams, $this->examIdsToSkip);
     }
 
 

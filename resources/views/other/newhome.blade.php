@@ -339,10 +339,10 @@ function drawChart(elementNumber, title, score, average)
 //            // update comment text -- only replace text if the score has changed valence regions
 //            var $parent = $(this).parents('[id^="element"]');
 //            var $elementComment = $parent.find('textArea');
-//            if (getValence(newScore) != getValence(oldScore)) {
+//            if (updateValence(newScore) != updateValence(oldScore)) {
 //                // Score is in a new valence region.
 //                // plug in the appropriate comment text and save to DB
-//                var stockResponse = stockComments[elementNumber][getValence(newScore)];
+//                var stockResponse = stockComments[elementNumber][updateValence(newScore)];
 //                $elementComment.val(stockResponse);
 //                updateAndSaveComment($elementComment);
 //            } else {

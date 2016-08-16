@@ -1,6 +1,6 @@
 <?php
 
-use Page\RosterEditPage;
+use Page\setup\RosterEditPage;
 
 
 class RosterPopulateCest

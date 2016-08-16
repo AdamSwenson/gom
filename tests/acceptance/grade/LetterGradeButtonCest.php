@@ -40,7 +40,7 @@ class LetterGradeButtonCest
      */
     public function clickLetterGradeButton(AcceptanceTester $I)
     {
-        $I->wantTo("Test the letter grade buttons");
+        $I->wantTo("Click each of the letter grade buttons and check that displays grade list ");
         for ( $i = 1; $i <= $this->numQuestions; $i++ )
         {
             $I->amGoingTo("Test the letter grade button for question {$i}");
@@ -75,7 +75,7 @@ class LetterGradeButtonCest
             $I->wait(1);
 
             $expectedScore = intval($this->maxScore * (.01 * $g['calc_value']));
-            $I->expectTo("see the question score {$expectedScore}");
+            $I->expectTo("see the question score update with the expected value");
             $I->seeInField(GradingPage::questionScoreFieldLocator($questionNumber), $expectedScore);
 
             $i++;

@@ -10,7 +10,6 @@
 | and give it the controller to call when that URI is requested.
 |
 */
-use App\Exam;
 
 Route::get('info/instructions', 'InfoController@showInstructions');
 Route::get('info/faq', 'InfoController@showFaq');
@@ -74,139 +73,67 @@ Route::resource('exam.student', 'StudentController');
 
 /* ------------------------------------------------ Grade exams ----------------------------------------------------- */
 //TODO Rework to be more coherent and restful
-Route::get('grade', 'GradeController@index'); // present list of exams to grade.
-Route::get('grade/exam/{exam}', 'GradeController@grade');  // begin grade the specified exam
-//Route::get('grade/exam/{exam}/student/{student}', 'GradeController@grade');  // begin grade the specified exam
-Route::get('grade/exam/{exam}/assign', 'GradeController@assign'); // launch grade assigner
-Route::post('grade/exam/{exam}/assign', 'GradeController@recordAssignments'); // record grade assignments
-Route::post('grade/exam/{exam}', 'GradeController@recordScore'); // record a question or element score
-Route::delete('grade/exam/{exam}', 'GradeController@removeScore'); // delete a question or element score
+// present list of exams to grade.
+Route::get('grade', 'GradeController@index');
+// begin grade the specified exam
+Route::get('grade/exam/{exam}', 'GradeController@grade');
+// launch grade assigner
+Route::get('grade/exam/{exam}/assign', 'GradeController@assign');
+// record grade assignments
+Route::post('grade/exam/{exam}/assign', 'GradeController@recordAssignments');
+// record a question or element score
+Route::post('grade/exam/{exam}', 'GradeController@recordScore');
+// delete a question or element score
+Route::delete('grade/exam/{exam}', 'GradeController@removeScore');
 
 /* ----------------------------------------------- Reports ---------------------------------------------------------- */
-/* Reporting and analytics */
-Route::get('report', 'ReportController@showExams');
-Route::get('report/{exam}/gradeassign', array('uses' => 'ReportController@showGradeAssign'));
-Route::get('report/{exam}/students', 'ReportController@showStudents'); // shows student controls for the exam
+/* Reporting and analytics pages */
+// Report index page
+Route::get('report', 'Report\ReportController@index');
+// Analytics page
+Route::get('report/{exam}/analytics','Report\AnalyticsController@index');
+// Quality control tools
+Route::get('report/{exam}/qualitycontrol', 'Report\QualityControlController@index');
+// shows student controls for the exam
+Route::get('report/{exam}/students', 'Report\ReportController@showStudentControls');
 
-//feedback display
-Route::get('report/{exam}/students/{student}', 'ReportController@showStudentFeedback'); // show feedback for the student
-Route::get('report/{exam}/feedback/all', 'ReportController@showFeedbackForAllStudentsOnExam');
 
-//tool routes
-Route::get('report/{exam}/analytics','ReportController@showAnalytics');
-Route::get('report/{exam}/qualitycontrol', 'ReportController@showQualityControl');
+/* Feedback */
+// show feedback for the student
+Route::get('report/{exam}/students/{student}', 'Report\ReportController@showStudentFeedback');
+// show feedback for all students on one page
+Route::get('report/{exam}/feedback/all', 'Report\ReportController@showFeedbackForAllStudentsOnExam');
 
-Route::post('report/{exam}/students/{student}', 'ReportController@notifyStudent'); // email the student with feedback
-Route::post('report/{exam}/release', 'ReportController@releaseExam'); // releases {exam}
-Route::post('report/{exam}/unrelease', 'ReportController@unreleaseExam'); // delete student access and set to unreleased
+
+/* Notifications */
+// email a student with their feedback link
+Route::post('report/{exam}/students/{student}', 'Report\ReportController@notifyStudent');
+// releases {exam} to all students
+Route::post('report/{exam}/release', 'Report\ReportController@releaseExam');
+// delete student access and set to unreleased
+Route::post('report/{exam}/unrelease', 'Report\ReportController@unreleaseExam');
 
 
 /* ------------------------------------------------- Feedback --------------------------------------------------------*/
 /* Creation */
-Route::get('feedback/make/{exam}', 'ReportController@createFeedback');
+Route::get('feedback/make/{exam}', 'Report\ReportController@createFeedback');
 
 /* Public access (i.e., student arriving) */
-# If arrived via link in email to student
-Route::get('feedback', 'PublicFeedbackController@showFeedback');
-# If arrived via feedback login page
-Route::post('feedback/login', 'PublicFeedbackController@showFeedback');
-Route::get('feedback/login', 'PublicFeedbackController@showLogin');
-Route::get('feedback/view', 'PublicFeedbackController@showFeedback');
+// If arrived via link in email to student
+Route::get('feedback', 'Report\PublicFeedbackController@showFeedback');
+// If arrived via feedback login page
+Route::post('feedback/login', 'Report\PublicFeedbackController@showFeedback');
+Route::get('feedback/login', 'Report\PublicFeedbackController@showLogin');
+Route::get('feedback/view', 'Report\PublicFeedbackController@showFeedback');
 
 
 /* ---------------------------------------------- Utilities --------------------------------------------------------- */
+// Export exam scores in csv
 Route::get('backup/{exam}', 'UtilityController@exportExamScores');
+// Make sure stats stored in redis are up to date
 Route::get('utilities/updateExamCounts', 'UtilityController@updateExamCounts');
 
 
 /* ---------------------------------------------- Testing ----------------------------------------------------------- */
 Route::get('testing/gradingSliders', 'TestController@gradingSlidersTest');
-
-
-
-//Route::get('test2', 'StudentController@devEditAll');
-//
-//Route::get('test1', function(){
-//   $exams = Exam::all();
-//    //$exams = Exam::where('id', '>', 0)->get();
-//   return view('development.exambuttons', ['exams' => $exams]);
-//});
-
-
-
-
-/* Account */
-//Route::post('account/home', 'LandingController@loggedIn');
-//Route::get('account/home', 'LandingController@loggedIn');
-
-//register account
-//Route::get('account/create','LandingController@accountCreate');
-//Route::post('account/confirm','LandingController@accountConfirm');
-//Route::get('account/retrieve','LandingController@retrievePassword');
-//Route::post('account/sent','LandingController@sentPassword');
-
-//// Authentication routes...
-//Route::get('auth/login', 'Auth\AuthController@getLogin');
-//Route::post('auth/login', 'Auth\AuthController@postLogin');
-//Route::get('auth/logout', 'Auth\AuthController@getLogout');
-//
-//// Registration routes...
-//Route::get('auth/register', 'Auth\AuthController@getRegister');
-//Route::post('auth/register', 'Auth\AuthController@postRegister');
-
-
-
-
-/*
-Route::get('exam/{id}/question', 'QuestionController@index');
-Route::get('exam/{id}/question/create', 'QuestionController@create');
-Route::post('exam/{id}/question', 'QuestionController@store');
-Route::get('exam/{id}/question/{question}', 'QuestionController@show');
-Route::get('exam/{id}/question/{question}/edit', 'QuestionController@edit');
-Route::patch('exam/{id}/question/{question}', 'QuestionController@update');
-Route::delete('exam/{id}/question/{question}', 'QuestionController@destroy');
-*/
-
-/*
-Route::get('exam/{id}/question/{id}/element', 'ElementController@index');
-Route::get('exam/{id}/question/{id}/element/create', 'ElementController@create');
-Route::post('exam/{id}/question/{id}/element', 'ElementController@store');
-Route::get('exam/{id}/question/{id}/element/{id}', 'ElementController@show');
-Route::get('exam/{id}/question/{id}/element/{id}/edit', 'ElementController@edit');
-Route::patch('exam/{id}/question/{id}/element/{id}', 'ElementController@update');
-Route::delete('exam/{id}/question/{id}/element/{id}', 'ElementController@destroy');
-*/
-
-
-
-/*
-Route::get('exam/{exam}/student', 'StudentController@index'); //gets list of students for import / editing
-Route::get('exam/{exam}/student/create', 'StudentController@create'); // request form to create a student
-Route::post('exam/{exam}/student', 'StudentController@store'); // upload a new student
-Route::get('exam/{exam}/student/{id}', 'StudentController@show'); // show student
-Route::get('exam/{exam}/student/{id}/edit', 'StudentController@edit'); // edit a student given by {id}
-Route::patch('exam/{exam}/student/{id}', 'StudentController@update'); //update given student
-Route::delete('exam/{exam}/student/{id}', 'StudentController@destroy'); // delete student
-*/
-
-/*
-Route::get('exam', 'ExamController@index'); // get all exams for user
-Route::get('exam/create', 'ExamController@create'); // display the create exam form
-Route::post('exam', 'ExamController@store'); // save a new exam
-Route::get('exam/{exam}', 'ExamController@show'); // show exam given by {id}
-Route::get('exam/{exam}/edit', 'ExamController@edit'); // get form to edit element {id}
-Route::patch('exam/{exam}', 'ExamController@update'); // save changes to element {id}
-Route::delete('exam/{exam}', 'ExamController@destroy'); // delete element {id}
-*/
-
-
-//Route::get('account/user_settings', function(){
-//    return "User settings page";
-//});
-//Route::get('account/preferences', function(){
-//    return "Preferences page";
-//});
-//Route::get('account/logout', function(){
-//    return "Logout";
-//});
-
+Route::get('dev/newgrading', 'TestController@newGrading');

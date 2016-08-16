@@ -51,7 +51,7 @@ class NotifyStudentsHelperTest extends \TestCase
      */
     protected function buildFeedbackLink($accessKey)
     {
-        return 'http://www.gradeomatic.net/feedback?accessKey=' . $accessKey;
+        return 'https://www.gradeomatic.net/feedback?accessKey=' . $accessKey;
     }
 
     /**
@@ -61,7 +61,7 @@ class NotifyStudentsHelperTest extends \TestCase
      * @return string
      */
     protected function buildSiteLink(){
-        return 'http://www.gradeomatic.net/feedback/login';
+        return 'https://www.gradeomatic.net/feedback/login';
     }
     
 
@@ -119,8 +119,7 @@ class NotifyStudentsHelperTest extends \TestCase
             ->andReturn($accessKey);
 
         $mailer = $this->createMock(IMailSender::class);
-        $mailer->shouldReceive('send')
-            ->once()
+        $mailer->shouldReceive('send')->once()
             ->with($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam));
 
         #call

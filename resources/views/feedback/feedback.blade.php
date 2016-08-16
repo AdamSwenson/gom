@@ -16,9 +16,9 @@ foreach ( $dataAll as $data )
 //    $r[ 'accessKey' ] = $data->content;
 //    $r[ $data->getAccessKey() ] = $data->content;
     $r[ $data['accessKey'] ] = $data;
+//    $r[ $data->getAccessKey() ] = $data;
 }
 $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
-//var_dump($encodedStudentData);
 ?>
 
 
@@ -62,11 +62,11 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
     @endif
 @endif
 
-<div class="container-fluid">
+<div id="studentFeedbackPage" class="container-fluid mainBodyLocator">
+
     @foreach($dataAll as $data)
         <?php $accessKey = $data['accessKey']; ?>
         @include('feedback.partials.student_info')
-
         @include('feedback.partials.overall_chart')
 
         <div id="questionResultsHere">
@@ -77,13 +77,15 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
 
         <div class="pageEnd"></div>
     @endforeach
+
 </div>
 
 
 <div class="jsArea">
     <script type="text/javascript">
-        var studentData = JSON.parse('{!! $encodedStudentData !!}');
-        window.console.log(studentData);
+        var studentData = {!! $encodedStudentData !!};
+        {{--var studentData = JSON.parse( '{!! $encodedStudentData !!}' );--}}
+        window.console.log( studentData );
         var activeTab = '';
     </script>
     <script type="text/javascript" src="{{ asset('js/feedback-package.js') }}"></script>

@@ -91,6 +91,13 @@ class GradingPage
     public static function questionPanelTabXPath($questionNumber){
         return "//*[@id='tabQuestion{$questionNumber}']";
     }
+    public static function questionPanelTabLocator($questionNumber){
+        return ['id'=>"tabQuestion{$questionNumber}"];
+    }
+
+    public static function questionPanelLocator($questionNumber){
+        return ['id'=> "questionPanel{$questionNumber}"];
+    }
 
     public static function elementAreaXPath($questionNumber, $elementNumber){
         return "//*[@id='element{$elementNumber}']";
@@ -171,6 +178,7 @@ TAG;
     /* --------------- Actions ----------------- */
     public static function navigateToGradingPage($I, $examId){
         $I->test_login($I);
+//        $I->init(1);
         $I->amOnPage(self::route($examId));
         $I->waitForElementVisible(self::$mainBodyLocator);
 

@@ -1,0 +1,20 @@
+
+    <form class="questionScoreForm form-horizontal" role="form">
+        <div class="form-group">
+            <label class="col-xs-1 control-label questionScoreLabel"
+                   for="{{ scoreFieldIdString }}">Score:</label>
+
+            <div class="col-xs-1 scoreArea">
+                <input id="{{ scoreFieldIdString }}"
+                       v-model="questionScore" lazy
+                       class="form-control pull-right questionScore"
+                       type="number"
+                       min="0"
+                       max="{{ maxScore }}"
+                />
+            </div>
+            <div class="col-xs-1 control-label maxScore">
+                <b>/ <span id="{{ maxScoreFieldIdString}}">{{ maxScore }}</span> </b>
+            </div>
+        </div>
+    </form>

@@ -24,7 +24,7 @@ elixir( function ( mix ) {
         'help/bodyText.scss'
     ], 'public/css/help-styles.css' );
 
-    mix.styles( [ 
+    mix.styles( [
         'libraries/bootstrap.min.css',
         'libraries/bootstrap-theme.min.css',
         'libraries/bootstrap-slider.css',
@@ -42,8 +42,10 @@ elixir( function ( mix ) {
 
     /* ------------ grade pages -------------- */
     mix.sass( [
-            'grade/mainGrading.scss'
-        ], 'public/css/grade-package.css' );
+        'grade/mainGrading.scss',
+        "../../../node_modules/typeahead/style.css"
+    ], 'public/css/grade-package.css' );
+
     mix.sass( [
         'common/common.sass',
         'grade/examSelectTable.scss'
@@ -60,12 +62,12 @@ elixir( function ( mix ) {
     mix.sass( [
         'common/common.sass',
         'reports/examControls.sass'
-    ], 'public/css/report-index-package.css');
-    
+    ], 'public/css/report-index-package.css' );
+
     mix.sass( [
         'reports/examControls.sass'
     ], 'public/css/exam-controls-package.css' );
-    
+
     mix.sass( [
         'reports/examAnalytics.scss'
     ], 'public/css/exam-analytics-package.css' );
@@ -82,48 +84,57 @@ elixir( function ( mix ) {
     ], 'public/css/select-exam-package.css' );
 
 
-
     /* ---------------------------------------------- scripts ----------------------------------------------------*/
 
     //Include in development
     mix.browserify( [ 'utilities/vueDebug.js' ], 'public/js/debug.js' );
 
-    mix.browserify( [
-            //'https://code.jquery.com/jquery-2.2.0.js',
-            //'https://code.jquery.com/ui/1.11.3/jquery-ui.js',
-            //'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js',
-            'interactiveHome/home.js' ],
-        'public/js/home-package.js' );
+    // mix.browserify( [
+    //         //'https://code.jquery.com/jquery-2.2.0.js',
+    //         //'https://code.jquery.com/ui/1.11.3/jquery-ui.js',
+    //         //'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js',
+    //         'interactiveHome/home.js' ],
+    //     'public/js/home-package.js' );
 
     //Normally this stuff will be integrated with another package. This is just for pages
     //which have no other js.
     mix.browserify( 'common.js', 'public/js/common-package.js' );
 
-    //AsyncStorage pages
+
+    /* --------------------- Setup ---------------------- */
     mix.browserify( 'setupPages/examForm.js', 'public/js/exam-setup-package.js' );
     mix.browserify( 'setupPages/editElement.js', 'public/js/element-edit-package.js' );
     mix.browserify( 'setupPages/editQuestion.js', 'public/js/question-edit-package.js' );
+//this is basically dead. using dev-roster now
     mix.browserify( 'setupPages/editRoster.js', 'public/js/roster-edit-package.js' );
     mix.browserify( 'setupPages/selectExam.js', 'public/js/exam-select-package.js' );
+    mix.browserify( 'setupPages/DEVeditRoster.js', 'public/js/dev-roster-edit-package.js' );
 
-    //Report pages
+
+    /* --------------------- Reports ---------------------- */
     mix.browserify( 'reports/examAnalytics.js', 'public/js/report-exam-analytics-package.js' );
     mix.browserify( 'reports/examControls.js', 'public/js/report-exam-controls-package.js' );
     mix.browserify( 'reports/studentControls.js', 'public/js/report-student-controls-package.js' );
     mix.browserify( 'reports/qualityControl.js', 'public/js/report-quality-control-package.js' );
 
-    //Grading pages
+    /* --------------------- Grading ---------------------- */
     mix.browserify( 'grade/gradeAssign.js', 'public/js/grade-assign-package.js' );
     mix.browserify( [ 'grade/gradeExam.js' ], 'public/js/grade-exam-package.js' );
     mix.browserify( 'grade/examSelect.js', 'public/js/grade-exam-select-package.js' );
+    // mix.scripts('grade/components/Data.js', 'public/js/grade-exam-data.js');
 
-    //Feedback pages
+    mix.scripts( 'grade/components/Data.open.js', 'public/js/grade-exam-data.js' );
+
+    /* --------------------- Feedback ---------------------- */
     mix.browserify( 'feedback/feedbackLogin.js', 'public/js/feedback-login-package.js' );
     mix.browserify( 'feedback/feedbackCharts.js', 'public/js/feedback-package.js' );
+
 
     //help
     mix.browserify( 'help/help.js', 'public/js/help-package.js' );
 
+    //testing
+    mix.browserify( [ 'libraries/jquery-1.11.3.min.js' ], 'public/js/jquery.js' );
 
 
     /* --------------------- Admin ---------------------- */
@@ -136,9 +147,6 @@ elixir( function ( mix ) {
     //     });
     // });
     /* ------------------------- Dev and testing -------------------------- */
-    //testing
-    mix.browserify( [ 'libraries/jquery-1.11.3.min.js' ], 'public/js/jquery.js' );
-
     mix.scripts( [
         "libraries/unitTestHelpers/jquery-1.11.1.js",
         "libraries/unitTestHelpers/jquery-ui.js",
@@ -151,7 +159,6 @@ elixir( function ( mix ) {
 
 mix.browserify('data/Store.js', 'public/js/dev/new-data-package.js');
     mix.browserify( 'grade/gradeVue.js', 'public/js/dev/grade-vue.js' );
-
 //
 //     var gulpNSP = require('gulp-nsp');
 //

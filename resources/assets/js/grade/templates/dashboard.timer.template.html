@@ -1,0 +1,38 @@
+<div id="dashboard">
+    <h4 class="row">
+    <span class="col-xs-7 dashboard-header">
+            <!--<span class="col-xs-7 dashboard-header" style="vertical-align:middle">-->
+        <span class="glyphicon glyphicon-time"
+              aria-hidden="true"></span> Statistics
+    </span>
+
+        <span class="col-xs-5">
+        <a id="btnTimer"
+           v-bind:class="buttonStyling"
+           title="Toggle timer"
+           v-on:click="toggleTimer">
+            <span id="btnTimerIcon"
+                  v-bind:class="buttonIcon"
+                  aria-hidden="true"></span>
+            <span id="btnTimerLabel">{{buttonLabel}}</span>
+        </a>
+    </span>
+    </h4>
+
+    <div class="panel panel-default">
+
+        <div id="gradingStatsPanel" class="panel-body">
+            <span class="col-xs-6">Time This Exam</span>
+            <span class="col-xs-6" id="thisExamTime">{{ currentExamTimeDisplay }}</span>
+
+            <span class="col-xs-6">Average Time</span>
+            <span class="col-xs-6" id="avgTime">{{ averageTimeDisplay }}</span>
+
+            <span class="col-xs-6">Total Time</span>
+            <span class="col-xs-6" id="totalTime">{{ totalTimeDisplay }}</span>
+
+            <span class="col-xs-6">Time Remaining</span>
+            <span class="col-xs-6" id="timeRemaining">{{ remainingTimeDisplay }}</span>
+        </div>
+    </div>
+</div>

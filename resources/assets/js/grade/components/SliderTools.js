@@ -27,7 +27,7 @@ module.exports = {
      * @param score
      * @returns {number}
      */
-    getValence: function ( score ) {
+    updateValence: function ( score ) {
         var valence = 0;
         var me = this;
 
@@ -99,8 +99,7 @@ module.exports = {
         //store the new element score in the data object
         data.storeElementScore( Roster.activeStudent, elementIndex, score );
 
-        window.console.log('same', oldScore, score, this.isSameValence( oldScore, score ));
-
+       
         /**
          * update comment text and save to DB.
          * Only replace text if the score has changed valence regions

@@ -25,6 +25,7 @@ class ElementScoreRepository implements IElementScoreRepository
 
     /**
      * Load score for a student by the id of the element assignment
+     * or create a new element score object.
      * @param integer $elementAssignmentId
      * @param integer $studentId
      * @return ElementScore
@@ -257,7 +258,9 @@ MYSQL;
      */
     public function deleteScore($elementAssignmentId, $studentId)
     {
-        $score = ElementScore::where('element_assignment_id', $elementAssignmentId)->where('student_id', $studentId)->firstOrFail();
+        $score = ElementScore::where('element_assignment_id', $elementAssignmentId)
+            ->where('student_id', $studentId)
+            ->firstOrFail();
 
         return $score->delete();
     }

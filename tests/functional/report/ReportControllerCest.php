@@ -1,6 +1,9 @@
 <?php
 
 
+use App\Jobs\Feedback\NotifySingleStudent;
+use Page\report\StudentControlsPage;
+
 class ReportControllerCest
 {
     public function _before(FunctionalTester $I)
@@ -12,8 +15,10 @@ class ReportControllerCest
     }
 
     // tests
-    public function tryToTest(FunctionalTester $I)
+    public function notifyStudent(FunctionalTester $I)
     {
-//        $this->expectsJobs(App\Jobs\PurchasePodcast::class);
+        $examId = 1;
+        StudentControlsPage::navigateToPage($I, $examId);
+        $this->expectsJobs(NotifySingleStudent::class);
     }
 }

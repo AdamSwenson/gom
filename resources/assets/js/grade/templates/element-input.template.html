@@ -1,0 +1,28 @@
+<div id="element{{ elementNumber }}"
+     class="list-group-item elementPanel"
+     data-element-index="{{ elementIndex }}"
+     data-element-id="{{ elementId }}"
+     data-comment-area-id="{{ commentAreaId  }}">
+
+    <h5 class="elementTitle">{{ elementTitle }}</h5>
+    <div class="row">
+                <span class="col-lg-5 sliderContainer Q{{ questionNumber }}E{{ elementNumber }}">
+                    <!-- score slider -->
+                    <label for="{{ sliderId }}"></label>
+                    <input id="{{ sliderId }}"
+                           type="text"
+                           class="slider"/>
+                </span>
+
+        <!-- comment area -->
+                <span class="col-lg-7 commentContainer Q{{ questionNumber }}E{{ elementNumber }}">
+                    <textarea id="{{ commentAreaId  }}"
+                              class="form-control"
+                              rows="4"
+                              name="{{ commentAreaId  }}"
+                              placeholder="No score for this element"
+                              v-model="commentText"
+                    ></textarea>
+                </span>
+    </div>
+</div>

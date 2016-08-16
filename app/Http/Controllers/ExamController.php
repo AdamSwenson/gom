@@ -22,15 +22,15 @@ class ExamController extends Controller
 {
 
     const CLONE_FAIL = "There was a problem cloning the exam. Please try again.";
-    const CLONE_SUCCESS = "Successfully cloned ";
+    const CLONE_SUCCESS = "You successfully cloned the exam.";
 
-    const CREATE_SUCCESS = "Successfully created exam ";
-    const CREATE_FAIL = "There was a problem creating the exam ";
+    const CREATE_SUCCESS = "You successfully created an exam.";
+    const CREATE_FAIL = "There was a problem creating the exam.";
 
-    const DELETE_SUCCESS = 'you have successfully destroyed an exam. I hope you are proud of yourself.';
+    const DELETE_SUCCESS = 'You have successfully deleted an exam.';
     const DELETE_FAIL = 'There was a problem deleting the exam';
 
-    const UPDATE_SUCCESS = "Successfully updated the exam ";
+    const UPDATE_SUCCESS = "You successfully updated the exam.";
     const UPDATE_FAIL = "There was a problem updating the exam";
 
     // $terms defines the various yearly divisions the user can choose from in the create / edit exam pages.

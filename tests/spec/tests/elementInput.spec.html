@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Jasmine Spec Runner v2.4.1</title>
+
+    <link rel="shortcut icon"
+          type="image/png"
+          href="/Users/adam/Dropbox/gom3/tests/spec/lib/jasmine-2.4.1/jasmine_favicon.png">
+    <link rel="stylesheet" href="/Users/adam/Dropbox/gom3/tests/spec/lib/jasmine-2.4.1/jasmine.css">
+
+    <!--<script src="../lib/jasmine-2.4.1/jasmine.js"></script>-->
+    <!--<script src="../lib/jasmine-2.4.1/jasmine-html.js"></script>-->
+    <!--<script src="../lib/jasmine-2.4.1/boot.js"></script>-->
+
+    <!-- include source files here... -->
+    <!--<script src="../../../resources/assets/js/grade/components/elementInput.js"></script>-->
+    <!--<script src="/resources/assets/js/grade/components/elementInput.js"></script>-->
+    <!-- include spec files here... -->
+    <!--<script src="/tests/spec/grade/elementInput.spec.js"></script>-->
+    <!--<script src="../../../resources/assets/js/grade/components/Data.js"></script>-->
+
+</head>
+
+<body><div class="container-fluid">
+    <div id="gradeExamPage">
+        <element-input :element-number="1"
+                       :element-index="1"
+                       element-id="1"
+                       element-name="testname"
+                       :question-number="1"></element-input>
+    </div>
+</div>
+<script>
+
+    var store = new Data();
+    store.activeStudent = 0;
+    store.loadStockComments( {
+        0: {
+            0: 'e0 missing',
+            1: 'e0 poor',
+            2: 'e0 fair',
+            3: 'e0 excellent'
+        },
+        1: {
+
+            0: 'e1 missing',
+            1: 'e1 poor',
+            2: 'e1 fair',
+            3: 'e1 excellent'
+        }
+    } );
+    store.loadElementComments( {
+        0: {
+            0: '',
+            1: '',
+            2: ''
+        },
+        1: {
+            0: '',
+            1: '',
+            2: ''
+        }
+    } );
+    store.loadElementScores( {
+        0 : {
+
+            0: null,
+            1: null
+        },
+
+        1 : {
+            0: null,
+            1: null,
+            2: null,
+        }});
+    store.loadQuestionScores( {});
+    store.loadGradingTimes( {} );
+    store.loadExamGrades( {} );
+    store.loadNumberQuestions( 2);
+
+</script>
+
+</body>
+</html>

@@ -52,12 +52,7 @@ class ElementAssignment extends BaseModelNoUser
         'subtask' => 'integer'
     ];
 
-//    public function __construct()
-//    {
-////        parent::junctionBoot();
-////        parent::boot();
-//    }
-
+    /* ------------------------------- Getters and setters ------------------------ */
     /**
      * Returns the id of the element which this object associates with a question.
      *
@@ -110,8 +105,6 @@ class ElementAssignment extends BaseModelNoUser
             ->where('question_id', $this->attributes['question_id'])
             ->first();
         return $qa->question_number;
-
-        //return $this->questionAssignment->question_number;
     }
 #--------------- Queries
 
@@ -140,10 +133,6 @@ class ElementAssignment extends BaseModelNoUser
 //    }
 
 # -------------- Foreign key associations
-    public function user()
-    {
-        return $this->belongsTo('App\User');
-    }
 
 
     /**
@@ -153,22 +142,28 @@ class ElementAssignment extends BaseModelNoUser
     public function exam()
     {
         return $this->belongsTo('App\Exam');
-//        return $this->hasManyThrough('App\Exam', 'App\QuestionAssignment', 'exam_id', 'question_assignment_id' );
     }
 
     /**
      * Link to the element which partially comprises the assignment
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function element()
     {
         return $this->belongsTo('App\Element');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function elementScores()
     {
         return $this->hasMany('App\ElementScore');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function question()
     {
         return $this->belongsTo('App\Question');

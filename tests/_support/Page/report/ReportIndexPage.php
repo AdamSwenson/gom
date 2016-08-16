@@ -11,12 +11,14 @@ class ReportIndexPage
      * public static $usernameField = '#username';
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
+    public static $mainBodyLocator = ['id' => 'examControlsPage'];
     public static $pageTitleText = "Reports | gradeomatic";
     public static $pageHeadingText = "Post-Grading Tasks";
     public static $pageSubHeadingText = "Release grades to students or view data about an exam";
 
     public static $releaseToggleOnText = "Hide exam from students";
     public static $releaseToggleOffText = "Release exam to students";
+
 
     /* ------------ Analytics ---------- */
     public static $analyticsText = "Analytics";
@@ -140,10 +142,19 @@ class ReportIndexPage
 //        return ['css' => 'body > div.bootbox.modal.fade.bootbox-confirm.in > div > div > div.modal-footer > button.btn.btn-default'];
 //    }
 
+    /** @var array Shared by all confirmation modals */
+    public static $confirmationModalLocator = ['class' => 'confirmationModal'];
+
+    public static $releaseConfirmButtonLocator = ['css' => 'button.btn.btn-sm.btn-danger.confirmRelease'];
+    public static $releaseCancelButtonLocator = ['css' => 'button.btn.btn-sm.cancelRelease'];
+    public static $hideConfirmButtonLocator = ['css' => 'button.btn.btn-sm.btn-danger.confirmHide'];
+
+
+//Classes for the message text
     public static $modalTextClass = "confirmText";
-    public static $releaseTextClass = "releaseConfirm";
-    public static $reReleaseTextClass = "reReleaseConfirm";
-    public static $hideTextClass = "hideConfirm";
+    public static $releaseTextClass = "releaseConfirmText";
+    public static $reReleaseTextClass = "reReleaseConfirmText";
+    public static $hideTextClass = "hideConfirmText";
 
     public static $successTextClass = "successText";
     public static $releaseSuccessTextClass = "releaseSuccess";
@@ -179,12 +190,7 @@ class ReportIndexPage
     public static function navigateToReportIndexPage($I){
         $I->test_login($I);
         $I->amOnPage(self::$URL);
-        $I->waitForElementVisible(['css' => '#examControlsPage']);
-
-        $I->amGoingTo("Check that the page title and url are correct");
-        $I->seeInCurrentUrl(self::$URL);
-        $I->seeInTitle(self::$pageTitleText);
-        $I->see(self::$pageSubHeadingText);
+        $I->waitForElementVisible(self::$mainBodyLocator);
     }
 
 
@@ -196,6 +202,12 @@ class ReportIndexPage
      */
     public static function verifyPageIntact($I, $numberOfExams, $examIdsToSkip)
     {
+
+        $I->amGoingTo("Check that the page title and url are correct");
+        $I->seeInCurrentUrl(self::$URL);
+        $I->seeInTitle(self::$pageTitleText);
+        $I->see(self::$pageSubHeadingText);
+
         $I->expectTo("see the standard page text components");
         $I->seeInTitle(self::$pageTitleText);
         $I->see(self::$pageHeadingText);

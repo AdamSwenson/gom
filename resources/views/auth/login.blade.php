@@ -12,5 +12,7 @@
     @endsection
 
 @section('body')
+    <div id="loginPage" class="mainBodyLocator">
     @include('auth.partials.login_form')
+    </div>
 @endsection

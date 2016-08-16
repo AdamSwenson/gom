@@ -13276,7 +13276,7 @@ function confirmEmail(studentId) {
 }
 
 function alertEmailSent($tr) {
-    var email = $tr.find('#studentEmail').text();
+    var email = $tr.find('[id^="studentEmail"]').text();
     bootbox.alert("An email has been sent to " + email + ".", function () {});
 }
 
@@ -13337,13 +13337,13 @@ module.exports = function () {
  */
 
 var $ = require('jquery');
-
+var delayTime = 5000;
 /**
  * Automatically hide non-important flash message
  */
 module.exports = function () {
   //Automatically hide non-important flash message
-  $('div.alert').not('alert-important').delay(2000).slideUp(300);
+  $('div.alert').not('alert-important').delay(delayTime).slideUp(300);
 };
 
 },{"jquery":15}],21:[function(require,module,exports){

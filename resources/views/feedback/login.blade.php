@@ -15,7 +15,7 @@
 </head>
 <body>
 
-<div class="container-fluid">
+<div id="feedbackLoginPage" class="container-fluid mainBodyLocator">
     @include('flash::message')
     @include('errors.list')
 

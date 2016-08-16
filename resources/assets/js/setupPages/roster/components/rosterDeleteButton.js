@@ -29,6 +29,7 @@ module.exports = {
             if ( $roster.length == 0 ) return;
 
             bootbox.dialog( {
+                className: "confirmationModal",
                 message: "Warning: This will remove all students from the current roster, including their grades and feedback.",
                 title: "Delete Roster",
                 buttons: {
@@ -47,7 +48,7 @@ module.exports = {
                             } );
                             bootbox.alert( {
                                 message: "Removal of students will not be complete until you click 'Save and Finish'. ",
-                                className: "postDeleteMessageCloseButton"
+                                className: "postDeleteMessage"
                             } );
                         }
                     }

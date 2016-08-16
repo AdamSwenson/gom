@@ -2,7 +2,6 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 
 class Feedback extends BaseModelNoUser
 {
@@ -38,10 +37,9 @@ class Feedback extends BaseModelNoUser
      */
     public function grade()
     {
-        $r = $this->attributes['grade_display'] ? $this->attributes['grade_display'] : self::NO_GRADE;
-
-        return $r;
+        return $this->attributes['grade_display'] ? $this->attributes['grade_display'] : self::NO_GRADE;
     }
+    
 
     /**
      * Getter for the calculated value of the grade
@@ -56,6 +54,18 @@ class Feedback extends BaseModelNoUser
     {
         return $this->attributes['access_key'];
     }
+
+    /**
+     * Alias for access key so that if someone
+     * tries to access accessKey (which was an earlier property)
+     * they will still get what they expect.
+     * @return array
+     */
+    public function getAccessKeyAttribute()
+    {
+        return $this->attributes['access_key'];
+    }
+
 
     public function setAccessKey($accessKey)
     {

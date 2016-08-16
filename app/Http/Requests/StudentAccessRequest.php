@@ -35,18 +35,18 @@ class StudentAccessRequest extends Request
     public function rules()
     {
         return [
-            'accessKey' => 'required|exists:feedback,access_key|alpha_num|max:' . self::ACCESS_KEY_MAX_LENGTH
+            'accessKey' => 'required|exists:feedback,access_key|alpha_num|max:' . self::ACCESS_KEY_MAX_LENGTH,
         ];
     }
 
     public function messages()
     {
         return [
-          'accessKey' => 'The access key you provided was invalid',
-            'accessKey.required' => 'Please enter your access key',
-            'accessKey.exists' => 'The access key you provided was invalid',
+            'accessKey'           => 'The access key you provided was invalid',
+            'accessKey.required'  => 'Please enter your access key',
+            'accessKey.exists'    => 'The access key you provided was invalid',
             'accessKey.alpha_num' => 'The access key you provided was invalid',
-            'accessKey.max' => 'The access key you provided was invalid'
+            'accessKey.max'       => 'The access key you provided was invalid',
         ];
     }
 }

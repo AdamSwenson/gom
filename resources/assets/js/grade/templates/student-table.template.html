@@ -1,0 +1,45 @@
+<table class="table table-fixed table-hover" id="studentRoster">
+    <thead>
+    <tr>
+        <th class="col-xs-6"
+            id="nameHeader"
+            title="Sort by name"
+            v-on:click="sortRosterBy('studentName')"
+        >Name
+        </th>
+        <th class="col-xs-4"
+            id="idHeader"
+            v-on:click="sortRosterBy('studentIdentifier')"
+            title="Sort by ID"
+        >ID
+        </th>
+        <th class="col-xs-2"
+            id="gradeHeader"
+            title="Sort by grade"
+            v-on:click="sortRosterBy()"
+        >Grade
+        </th>
+    </tr>
+
+    </thead>
+    <tbody id="studentRosterBody">
+    <tr v-for="s in students"
+            v-on:click="handleStudentRowClick(s.studentIndex)"
+            v-bind:class="{ 'unalteredStudentRow': isUnalteredStyle(s.studentIndex),'activeStudentRow': isActiveStyle(s.studentIndex),'gradedStudentRow': isGradedStyle(s.studentIndex) }"
+            id="studentListItem{{ s.studentIndex }}"
+            class="studentListItem "
+            data-index="{{ s.studentIndex }}"
+            data-fName="{{ s.firstName }}"
+            data-lName="{{ s.lastName }}"
+            data-sid="{{ s.studentId }}"
+            data-student-identifier="{{ s.studentIdentifier }}"
+    >
+        <td class="col-xs-6"
+            id="studentName{{ s.studentIndex }}">{{ getName(s.studentIndex) }}</td>
+        <td class="col-xs-4"
+            id="studentIdentifier{{ s.studentIndex }}">{{ getIdentifier(s.studentIndex) }}</td>
+        <td class="col-xs-2"
+            id="examGrade{{ s.studentIndex }}">{{ getGrade(s.studentIndex) }}</td>
+    </tr>
+    </tbody>
+</table>

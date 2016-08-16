@@ -44,8 +44,8 @@ $factory->define(App\User::class, function (Faker\Generator $faker)
 $factory->define(App\Exam::class, function (Faker\Generator $faker)
 {
     return [
-        'term'     => $faker->word,
-        'name'     => $faker->text,
+        'term'     => $faker->text(10),
+        'name'     => $faker->text(15),
         'year'     => $faker->year,
         'released' => 0,
         'locked'   => 0,
@@ -56,13 +56,13 @@ $factory->define(App\Kumi::class, function (Faker\Generator $faker)
 {
     return [
         'year'     => $faker->year,
-        'nickname' => $faker->word,
+        'nickname' => $faker->text(30),
     ];
 });
 $factory->defineAs(App\Kumi::class, 'with_exam', function (Faker\Generator $faker) use ($factory){
     return [
         'year'     => $faker->year,
-        'nickname' => $faker->word,
+        'nickname' => $faker->text(30),
     ];
 });
 

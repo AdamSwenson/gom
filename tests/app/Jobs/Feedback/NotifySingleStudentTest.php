@@ -38,7 +38,8 @@ class NotifySingleStudentTest extends \TestCase
         $mock = $this->createMock(INotifyStudentsHelper::class);
         $mock->shouldReceive('sendEmailToStudent')
             ->once()
-            ->with(\Mockery::type(Exam::class), \Mockery::type(Student::class));
+            ->with(\Mockery::type(Exam::class), \Mockery::type(Student::class))
+            ->andReturn(true);
 
         $this->expectsEvents(StudentNotificationCompleteEvent::class);
 

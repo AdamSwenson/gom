@@ -153,7 +153,7 @@ $actions_requiring_authentication = [
     'ReportController@notifyStudent',
     'ReportController@releaseExam',
     'ReportController@unreleaseExam',
-    'ReportController@showAnalytics',
+    'ReportController@index',
     'ReportController@showQualityControl',
     /* Feedback */
     'ReportController@createFeedback',

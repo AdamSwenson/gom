@@ -28,4 +28,8 @@ class TestController extends Controller
         return view('tests.grade.gradingSlidersTest');
     }
 
+    public function newGrading(){
+        return view('development.newGrading');
+    }
+
 }

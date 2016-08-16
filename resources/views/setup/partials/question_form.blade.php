@@ -47,7 +47,8 @@
                   placeholder="Enter the full question text (optional)">{{ isset($q) ? $q->getQuestionText() : '' }}</textarea>
     </div>
     <div class="form-group questionButtonArea">
-        <span class="btn btn-info btn-sm handle">
+        <span id="moveQuestionButton{{$counter}}"
+              class="btn btn-info btn-sm handle">
             <span class="glyphicon glyphicon-move"
                   aria-hidden="true"></span>
             Move

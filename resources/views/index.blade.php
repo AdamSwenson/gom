@@ -5,7 +5,7 @@
     {{--<link href="{{ asset('css/grade-package.css') }}" rel="stylesheet" type="text/css">--}}
 @endsection
 @section('body')
-<div class="row">
+<div id="homePage" class="row mainBodyLocator">
     <div class="col-xs-1 col-md-2 col-lg-2"></div>
     <div class="col-xs-10 col-md-8 col-lg-8">
         <img

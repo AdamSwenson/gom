@@ -9,22 +9,29 @@ modules:
     enabled:
         - WebDriver:
             url: 'http://localhost:8000'
-            window_size: maximize
-            browser: phantomjs
+#            window_size: maximize
+            browser: chrome
+            restart: false
+
         - Db
+
+        - Cli
 
         - Asserts
 
         - \Helper\Acceptance
+#
+#        - Laravel5:
+#            part: ORM
+#            environment_file: .env.testing
+
+extensions:
+    enabled: [Group\Report]
 
 groups:
   report: tests/acceptance/report/reportGroup
   grade: tests/acceptance/grade/gradeGroup
 
-#
-#        - Laravel5:
-#            part: ORM
-#            cleanup: false
 
 #extensions:
 #    enabled: [Codeception\Extension\Logger, Codeception\Extension\Recorder]

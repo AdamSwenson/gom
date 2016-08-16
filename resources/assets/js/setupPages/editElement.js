@@ -80,19 +80,20 @@ $( "#addElement" ).on('click', function () {
 
             // show warning message on delete
             bootbox.dialog( {
+                className: 'confirmationModal',
                 message: "<span class='glyphicon glyphicon-warning-sign'></span> " +
                 "Warning: This will delete any scores associated with this element",
                 title: "Delete Element",
                 buttons: {
                     success: {
                         label: 'Cancel',
-                        className: "btn-sm btn-default",
+                        className: "cancelDelete btn-sm btn-default",
                         callback: function () {
                         }
                     },
                     danger: {
                         label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-                        className: "btn-danger btn-sm",
+                        className: "confirmDelete btn-danger btn-sm",
                         callback: function () {
                             deleteElement( el );
                         }

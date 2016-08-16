@@ -78,6 +78,7 @@ module.exports = {
             }
             var me = this;
             bootbox.dialog( {
+                className: 'confirmationModal',
                 message: '<span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span> ' +
                 'Warning: this will delete the student, including their feedback and scores.',
                 title: "Delete Student",

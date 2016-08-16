@@ -1,0 +1,17 @@
+
+        <tr id="{{ rowIdString }}"
+            class="studentListItem "
+            v-on:click="handleRowClick"
+            v-bind:class="{ 'unalteredStudentRow': isUnaltered, 'activeStudentRow': isActiveStudent, 'gradedStudentRow': isGraded }"
+            data-index="{{ studentIndex }}"
+            data-fName="{{ firstName }}"
+            data-lName="{{ lastName }}"
+            data-sid="{{ studentId }}"
+            data-student-identifier="{{ studentIdentifier }}">
+            <td class="col-xs-6"
+                id="studentName{{ studentIndex }}">{{ studentName }}</td>
+            <td class="col-xs-4"
+                id="studentIdentifier{{ studentIndex }}">{{ studentIdentifierDisplay }}</td>
+            <td class="col-xs-2"
+                id="examGrade{{ studentIndex }}">{{ examGrade }}</td>
+        </tr>

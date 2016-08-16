@@ -5,7 +5,8 @@ class FeedbackPage
 {
     // include url of current page
     public static $URL = '/feedback';
-
+public static $mainBodyLocator = ['id' => 'studentFeedbackPage'];
+    
     public static $elementChartDivClass = "";
 
     public static $studentNameId = 'studentName';

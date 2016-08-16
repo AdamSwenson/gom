@@ -34,7 +34,7 @@ class TestingServiceProvider extends ServiceProvider
 
             $this->app['config']['queue.default'] = 'sync';
             
-            Log::info('running codeception. environment is: ' . $this->app->environment());
+           // Log::info('running codeception. environment is: ' . $this->app->environment());
         }
 
     }

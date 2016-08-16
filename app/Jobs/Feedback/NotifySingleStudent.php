@@ -80,9 +80,10 @@ class NotifySingleStudent extends Job implements SelfHandling, ShouldQueue
         $student = Student::findOrFail($this->student->id);
 
         //Do the sending
-        $this->helper->sendEmailToStudent($exam, $student);
-
-        //Signal that the emails have been sent (or, more correctly, been pushed to mailgun)
-        event(new StudentNotificationCompleteEvent());
+        if($this->helper->sendEmailToStudent($exam, $student)){
+            //Signal that the emails have been sent (or, more correctly, been pushed to mailgun)
+            event(new StudentNotificationCompleteEvent());
+        }
+        
     }
 }

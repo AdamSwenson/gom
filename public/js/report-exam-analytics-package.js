@@ -39104,7 +39104,9 @@ module.exports = function () {
             render: $.fn.dataTable.render.number(',', '.', 3)
         }, { data: 'maxScore' }, { data: 'minScore' }, { data: 'numberAnswers' }, { data: 'action' }],
         searching: false,
-        lengthMenu: [5, 10, 25, 50, 75, 100]
+        paging: false,
+        scrollY: 400
+        //        lengthMenu: [ 5, 10, 25, 50, 75, 100 ]
     });
 }();
 
@@ -39416,7 +39418,7 @@ module.exports = function () {
 };
 
 },{"./components/elementDistributionChartsButtons.js":21,"bootbox":1,"bootstrap":2,"jquery":17,"vue":19}],26:[function(require,module,exports){
-module.exports = '<div class="pull-left"><button v-on:click="showElementHistogram" class="btn btn-primary btn-xs elementHistButton ">Histogram</button> </div> <div><button v-on:click="showElementBoxplot" class="btn btn-primary btn-xs elementBoxplotButton ">Boxplot</button> </div>';
+module.exports = '<div class="elementChartButtons">\n    <div class="pull-left">\n        <button v-on:click="showElementHistogram" class="btn btn-primary btn-xs elementHistButton ">Histogram</button>\n    </div>\n    <div class="pull-left">\n        <button v-on:click="showElementBoxplot" class="btn btn-primary btn-xs elementBoxplotButton ">Boxplot</button>\n    </div>\n</div>';
 },{}],27:[function(require,module,exports){
 'use strict';
 
@@ -39467,13 +39469,13 @@ module.exports = function () {
  */
 
 var $ = require('jquery');
-
+var delayTime = 5000;
 /**
  * Automatically hide non-important flash message
  */
 module.exports = function () {
   //Automatically hide non-important flash message
-  $('div.alert').not('alert-important').delay(2000).slideUp(300);
+  $('div.alert').not('alert-important').delay(delayTime).slideUp(300);
 };
 
 },{"jquery":17}],30:[function(require,module,exports){

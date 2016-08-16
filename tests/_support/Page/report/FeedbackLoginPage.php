@@ -11,14 +11,18 @@ class FeedbackLoginPage
      * public static $usernameField = '#username';
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
-    
+    public static $mainBodyLocator = ['id' => 'feedbackLoginPage'];
+
     public static $pageTitleText = "Your feedback";
 
+    public static $accessKeyFieldLocator = ['id' => "accessKey"];
     public static $accessKeyFieldId = "accessKey";
 
+    public static $submitButtonLocator = ['id' => 'submit'];
     public static $submitButtonId = "submit";
     public static $submitButtonText = "View Feedback";
 
+    public static $blankKeyErrorMessage = "Please enter your access key";
 
     public static function verifyPageIntact($I){
         $I->amGoingTo("Check that the login page displays properly");
@@ -48,5 +52,10 @@ class FeedbackLoginPage
         return static::$URL.$param;
     }
 
+    public static function navigateToPage($I)
+    {
+        $I->amOnPage(self::$URL);
+        $I->waitForElementVisible(self::$mainBodyLocator);
+    }
 
 }

@@ -11,7 +11,7 @@
  */ ?>
 <div class="row">
     <div class="col-xs-3"></div>
-    <form role="form" method="POST" action="{{url('/auth/login')}}" accept-charset="UTF-8" class="col-xs-6">
+    <form role="form" id="loginForm" method="POST" action="{{url('/auth/login')}}" accept-charset="UTF-8" class="col-xs-6">
         {!! csrf_field() !!}
         <h3 class="text-left">Login</h3>
 
@@ -36,7 +36,7 @@
 
             <div class="col-xs-4 verticallyAligned">
                 <span class="">
-                    <a href={{url('password/email')}}>Forgot Password</a>
+                    <a id="forgotPasswordLink" href={{url('password/email')}}>Forgot Password</a>
                     </span>
             </div>
         </div>

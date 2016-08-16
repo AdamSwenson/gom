@@ -43,6 +43,17 @@ class GradeFactory
     /** @var array Laravel collection of the grades  */
     static protected $searchableGrades = [];
 
+    /**
+     * Returns grades as a json object for the grading page
+     */
+    static public function gradeJson(){
+        $grades = [];
+        foreach ( self::$grades as $g )
+        {
+            $grades[] = ['displayValue' => $g['display_value'], 'calcValue' => $g['calc_value']];
+        }
+        return json_encode($grades, JSON_FORCE_OBJECT);
+    }
 
     /**
      * Factory method for grade object

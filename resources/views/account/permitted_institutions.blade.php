@@ -78,15 +78,7 @@
 
 @section('jsArea')
     <script type="text/javascript">
-        $(document).ready(function () {
-            $('#institutionList li').bind('click', function () {
-                $('#institutionType').val($(this).text());
-                var $institution = $('#institutionSelect');
-                var $icon = $institution.find('span');
-                $institution.text($(this).text());
-                $institution.append(" ");
-                $institution.append($icon);
-            });
-        });
+        var activeTab = '';
     </script>
+    <script type="text/javascript" src="{{ asset('js/restricted-registration-package.js') }}"></script>
 @endsection

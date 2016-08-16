@@ -11,6 +11,11 @@ class QuestionEditPage
      * public static $usernameField = '#username';
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
+    #common
+    public static $mainBodyLocator = ['id' => 'questionEditPage'];
+    public static $pageHeadingText = 'Add / Edit Questions: ';
+    public static $pageTitleText = 'Edit Questions | gradeomatic';
+
 
     /** @var int The number of question fields displayed for a new exam */
     public static $defaultNumberOfQuestions = 1;
@@ -23,25 +28,33 @@ class QuestionEditPage
     public static $moveButtonClass = "handle";
     /** @var string The class all the delete buttons share */
     public static $deleteButtonClass = "js-remove";
+    /** @var string @deprecated */
     public static $addQuestionButtonId = "#addQuestion";
-
-    //Visible page text
-    public static $pageHeadingText = 'Add / Edit Questions: ';
-    public static $pageTitleText = 'Edit Questions | gradeomatic';
+    public static $addQuestionButtonLocator = ['id' => 'addQuestion'];
 
     //Navigation
-    /** @var string Id of the forward navigation button */
+    /** @var string Id of the forward navigation button @deprecated */
     public static $forwardNavButton = "#forwardNavButton";
+    /** @var string Id of the forward navigation button */
+    public static $forwardNavButtonLocator = ['id' => "forwardNavButton"];
     /** @var string Text displayed on the button to the user */
-    public static $forwardNavButtonText = "";
-    /** @var string Id of the back navigation button */
-    public static $backNavButton = "#backNavButton";
-    /** @var string Text displayed on the back button to the user */
-    public static $backNavButtonText = "";
+    public static $forwardNavButtonText = "Add / Edit Elements";
 
+    /** @var string Id of the back navigation button @deprecated */
+    public static $backNavButton = "#backNavButton";
+    /** @var string Id of the back navigation button */
+    public static $backNavButtonLocator = ['id' => "backNavButton"];
+    /** @var string Text displayed on the back button to the user */
+    public static $backNavButtonText = "Edit Exam";
+
+    #confirmation modal
+    public static $confirmationModalLocator = ['class' => 'confirmationModal'];
     public static $deleteConfirmationTextId = "questionDeleteWarning";
     public static $deleteConfirmationModalText = "Warning: This will permanently delete all elements and scores associated with the question";
-//    public static $deleteConfirmationModalText = "<span class='glyphicon glyphicon-warning-sign'></span> Warning: This will permanently delete all elements and scores associated with the question";
+
+    public static $deleteConfirmButtonLocator = ['css' => 'button.btn.btn-danger.btn-sm.confirmQuestionDelete'];
+    public static $deleteCancelButtonLocator = ['css' => '.button.btn.btn-danger.btn-sm.cancelQuestionDelete'];
+
     public static $deleteConfirmationModalConfirmButton = '.confirmQuestionDelete';
     public static $deleteConfirmationModalCancelButton = '.cancelQuestionDelete';
 //    public static $deleteConfirmationModalConfirmButton = '/html/body/div[5]/div/div/div[3]/button[2]';
@@ -116,7 +129,8 @@ public static function questionPanelId($questionNumber){
      * @return array
      */
     public static function deleteButtonLocator($questionNumber){
-        return ['css' => "#questionItem{$questionNumber} > div.form-group.questionButtonArea > button"];
+        return ['id' => "deleteQuestionButton{$questionNumber}"];
+//        return ['css' => "#questionItem{$questionNumber} > div.form-group.questionButtonArea > button"];
 //        return ['css' => '#' . self::questionPanelId($questionNumber) . ' .questionButtonArea .js-remove'];
 
 
@@ -128,7 +142,8 @@ public static function questionPanelId($questionNumber){
      * @return array
      */
     public static function moveButtonLocator($questionNumber){
-        return ['css' => '#' . self::questionPanelId($questionNumber) . ' .questionButtonArea .handle'];
+        return ['id' => "moveQuestionButton{$questionNumber}"];
+//        return ['css' => '#' . self::questionPanelId($questionNumber) . ' .questionButtonArea .handle'];
     }
 
     /**
@@ -156,7 +171,8 @@ public static function questionPanelId($questionNumber){
     {
         $I->test_login($I);
         $I->amOnPage("exam/{$examId}/question/edit");
-        $I->waitForElement(['id' => 'scriptBox']);
+        $I->waitForElement(self::$mainBodyLocator);
+//        $I->waitForElement(['id' => 'scriptBox']);
 
     }
 
@@ -179,31 +195,41 @@ public static function questionPanelId($questionNumber){
 
     /**
      * Checks whether the fields for creating or editing a given question number are present.
-     * If not is true, this checks whether there are no fields for the questionNumber
+     * If not is true, this checks whether there are no fields for the questionNumber.
+     * Because the sortable buttons are identified by ids which will not be
+     * distinguished if the question is new, it is optional whether to check
+     * the buttons are present
+     *
      * @param $I
      * @param $questionNumber
      * @param bool $not
+     * @param bool $checkSortableButtons
      */
-    public static function checkQuestionFieldsPresent($I, $questionNumber, $not = false)
+    public static function checkQuestionFieldsPresent($I, $questionNumber, $not = false, $checkSortableButtons=false)
     {
         if ( $not )
         {
-            $I->dontSeeElement(self::questionNameXPath($questionNumber));
-            $I->dontSeeElement(self::questionTextXPath($questionNumber));
-            $I->dontSeeElement(self::maxScoreXPath($questionNumber));
+            $I->expect("not to see the component fields of the element");
+            $I->dontSeeElement(['xpath' => self::questionNameXPath($questionNumber)]);
+            $I->dontSeeElement(['xpath' => self::questionTextXPath($questionNumber)]);
+            $I->dontSeeElement(['xpath' => self::maxScoreXPath($questionNumber)]);
         } else
         {
+            $I->expect("to see the component fields of the element");
             $I->seeElement(['id' => self::questionPanelId($questionNumber)]);
-            $I->seeElement(self::questionNameXPath($questionNumber));
-            $I->seeElement(self::questionTextXPath($questionNumber));
-            $I->seeElement(self::maxScoreXPath($questionNumber));
+            $I->seeElement(['xpath' => self::questionNameXPath($questionNumber)]);
+            $I->seeElement(['xpath' => self::questionTextXPath($questionNumber)]);
+            $I->seeElement(['xpath' => self::maxScoreXPath($questionNumber)]);
             //buttons
             //note that any ew question's buttons will not have the right ids
-            #move button
-            $I->seeElement(self::moveButtonLocator($questionNumber));
-            #delete button
-            $I->seeElement(self::deleteButtonLocator($questionNumber));
-        }
+            if($checkSortableButtons)
+            {
+                #move button
+                $I->seeElement(self::moveButtonLocator($questionNumber));
+                #delete button
+                $I->seeElement(self::deleteButtonLocator($questionNumber));
+            }
+            }
     }
 
 
@@ -217,14 +243,19 @@ public static function questionPanelId($questionNumber){
     public static function verifyQuestionEditPageIntact($I, $examId, $examName, $numberQuestions)
     {
         $I->amGoingTo("Check that everything is displayed properly");
+        $I->expectTo('see page level items');
         $I->seeInCurrentUrl("exam/{$examId}/question/edit");
         $I->seeInTitle(self::$pageTitleText);
         $I->see($examName);
-        $I->seeElement(self::$addQuestionButtonId);
-        //correct navs
-        $I->seeElement(self::$forwardNavButton);
-        $I->seeElement(self::$backNavButton);
-        //fields present
+        $I->seeElement(self::$addQuestionButtonLocator);
+
+        $I->expectTo('see the correct nav buttons');
+        $I->seeElement(self::$forwardNavButtonLocator);
+        $I->see(self::$forwardNavButtonText);
+        $I->seeElement(self::$backNavButtonLocator);
+        $I->see(self::$backNavButtonText);
+
+        $I->expectTo('see the form fields for each of the expected questions');
         for ( $i = 1; $i <= $numberQuestions; $i++ )
         {
             self::checkQuestionFieldsPresent($I, $i);
@@ -237,15 +268,18 @@ public static function questionPanelId($questionNumber){
         for ( $i = 1; $i <= $numberQuestions; $i++ )
         {
             $v = self::getQuestionFieldsInitialValues($examId, $i);
-            //question name
-            $I->seeElement(self::questionNameXPath($i));
-            $I->seeInField(self::questionNameXPath($i), $v['questionName']);
-            //question text
-            $I->seeElement(self::questionTextXPath($i));
-            $I->seeInField(self::questionTextXPath($i), $v['questionText']);
-            //max score
-            $I->seeElement(self::maxScoreXPath($i));
-            $I->seeInField(self::maxScoreXPath($i), $v['maxScore']);
+
+            $I->expectTo('see the question namefields');
+            $I->seeElement(['xpath' => self::questionNameXPath($i)]);
+            $I->seeInField(['xpath' => self::questionNameXPath($i)], $v['questionName']);
+
+            $I->expectTo('see the question text fields');
+            $I->seeElement(['xpath' => self::questionTextXPath($i)]);
+            $I->seeInField(['xpath' => self::questionTextXPath($i)], $v['questionText']);
+
+            $I->expectTo('see the max score fields');
+            $I->seeElement(['xpath' => self::maxScoreXPath($i)]);
+            $I->seeInField(['xpath' => self::maxScoreXPath($i)], $v['maxScore']);
         }
     }
 

@@ -38,6 +38,8 @@
 <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
 
 <div id="scriptBox">
+    @include('layouts.jsData')
+
     @if(env('APP_DEBUG') == true)
         <script type="text/javascript" src="{{ asset('js/debug.js') }}"></script>
     @endif

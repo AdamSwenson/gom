@@ -9,6 +9,7 @@
 @endsection
 
 @section('body')
+    <div id="questionEditPage" class="mainBodyLocator">
     <nav>
         <ul class="pager">
             <li class="previous">
@@ -71,7 +72,7 @@
         $q = NULL; ?>
         @include('setup.partials.question_form')
     </ul>
-
+    </div>
 @endsection
 
 

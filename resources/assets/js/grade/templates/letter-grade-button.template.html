@@ -1,0 +1,24 @@
+<!-- Single button -->
+<div id="letterGradeArea"
+     class="btn-group">
+    <button id="letterGradeButton{{questionNumber}}"
+            type="button"
+            class="btn btn-default dropdown-toggle"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false">
+        <span id="letterGradeForQuestion{{ questionNumber }}">{{ displayedGrade }}</span> <span class="caret"></span>
+    </button>
+
+    <ul id="letterGradeList"
+        class="dropdown-menu letterGradeList">
+        <template v-for="grade in grades">
+            <li class="gradeListItem">
+                <a class="letterGrade question{{ questionNumber }} q{{questionNumber}}g{{ grade.calcValue }}"
+                   v-on:click="handleLetterGradeClick($index)"
+                   href="#">{{ grade.displayValue }}</a>
+            </li>
+        </template>
+    </ul>
+
+</div>

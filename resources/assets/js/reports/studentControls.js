@@ -71,7 +71,7 @@ function confirmEmail(studentId) {
 }
 
 function alertEmailSent($tr) {
-    var email = $tr.find('#studentEmail').text();
+    var email = $tr.find('[id^="studentEmail"]').text();
     bootbox.alert("An email has been sent to " + email + ".", function () {
     });
 }

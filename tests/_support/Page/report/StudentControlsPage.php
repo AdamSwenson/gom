@@ -3,8 +3,6 @@ namespace Page\report;
 
 class StudentControlsPage
 {
-    // include url of current page
-    public static $URL = '';
 
     /**
      * Basic route example for your current URL
@@ -21,6 +19,7 @@ class StudentControlsPage
      * public static $usernameField = '#username';
      * public static $formSubmitButton = "#mainForm input[type=submit]";
      */
+    public static $mainBodyLocator = ['id' => 'studentControlsPage'];
     public static $pageTitleText = "Student Controls | gradeomatic";
     public static $pageHeadingText = "Student Controls";
     public static $pageSubHeadingText = "Send email notifications or review student feedback";
@@ -32,4 +31,9 @@ class StudentControlsPage
     public static $controlRowClassName = "studentControlRow";
 
 
+    public static function navigateToPage($I, $examId){
+        $I->test_login($I);
+        $I->amOnPage(self::URL($examId));
+        $I->waitForElementVisible(self::$mainBodyLocator);
+    }
 }

@@ -13730,7 +13730,7 @@ module.exports = {
      * @param score
      * @returns {number}
      */
-    getValence: function getValence(score) {
+    updateValence: function updateValence(score) {
         var valence = 0;
         var me = this;
 
@@ -13799,8 +13799,6 @@ module.exports = {
 
         //store the new element score in the data object
         data.storeElementScore(Roster.activeStudent, elementIndex, score);
-
-        window.console.log('same', oldScore, score, this.isSameValence(oldScore, score));
 
         /**
          * update comment text and save to DB.
@@ -14145,7 +14143,7 @@ window.onload = function () {
     //         //Dear Adam, make sure you read the doc for storeCommentText before fucking with
     //         //anything in these lines
     //         data.storeCommentText( Roster.activeStudent, elementIndex, $elementComment.val() );
-    //         var commentText = data.getCommentText( Roster.activeStudent, elementIndex, SliderTools.getValence( score ) );
+    //         var commentText = data.getCommentText( Roster.activeStudent, elementIndex, SliderTools.updateValence( score ) );
     //
     //         //update display
     //         updateDisplayedComment( $elementComment, commentText );
@@ -14299,7 +14297,7 @@ window.onload = function () {
                 $(this).prop('readonly', 'true');
             } else {
                 // It has already been scored, so retrieve and set the comment text
-                var valence = SliderTools.getValence(elementScore);
+                var valence = SliderTools.updateValence(elementScore);
                 var thisComment = data.getCommentText(Roster.activeStudent, index, valence);
                 $(this).val(thisComment);
                 //no need for it to remain read only
@@ -16100,13 +16098,13 @@ module.exports = function () {
  */
 
 var $ = require('jquery');
-
+var delayTime = 5000;
 /**
  * Automatically hide non-important flash message
  */
 module.exports = function () {
   //Automatically hide non-important flash message
-  $('div.alert').not('alert-important').delay(2000).slideUp(300);
+  $('div.alert').not('alert-important').delay(delayTime).slideUp(300);
 };
 
 },{"jquery":15}],30:[function(require,module,exports){

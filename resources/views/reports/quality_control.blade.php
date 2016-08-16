@@ -12,6 +12,7 @@
 
 @endsection
 @section('body')
+    <div id="qualityControlPage" class="mainBodyLocator">
     <h2><span class="glyphicon glyphicon-apple" aria-hidden="true"></span> Quality Control
         <small>Catch grading errors before your students do</small>
     </h2>
@@ -117,7 +118,7 @@
             <div id="gradingTimeHistogram"></div>
         </div>
     </div>
-
+    </div>
 @endsection
 
 @section('jsArea')

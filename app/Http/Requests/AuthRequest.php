@@ -24,7 +24,15 @@ class AuthRequest extends Request
     public function rules()
     {
         return [
-            //
+            'name'     => 'required|max:255',
+            'email'    => 'required|email|max:255|unique:users',
+            'password' => 'required|confirmed|min:6',
         ];
+    }
+    public function messages() {
+        return [
+            'email.required' => 'Your email is required',
+        ];
+
     }
 }

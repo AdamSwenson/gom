@@ -11,7 +11,7 @@
 @section('description', 'Reset your password')
 
 @section('body')
-    <div class="row">
+    <div id="resetPassPage" class="row mainBodyLocator">
         <div class="col-xs-3"></div>
         <form role="form" method="POST" action="{{url('/password/email')}}" accept-charset="UTF-8" class="col-xs-6">
             {!! csrf_field() !!}

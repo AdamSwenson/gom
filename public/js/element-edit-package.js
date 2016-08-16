@@ -14535,17 +14535,18 @@ var common = require('../common.js');
 
             // show warning message on delete
             bootbox.dialog({
+                className: 'confirmationModal',
                 message: "<span class='glyphicon glyphicon-warning-sign'></span> " + "Warning: This will delete any scores associated with this element",
                 title: "Delete Element",
                 buttons: {
                     success: {
                         label: 'Cancel',
-                        className: "btn-sm btn-default",
+                        className: "cancelDelete btn-sm btn-default",
                         callback: function callback() {}
                     },
                     danger: {
                         label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-                        className: "btn-danger btn-sm",
+                        className: "confirmDelete btn-danger btn-sm",
                         callback: function callback() {
                             deleteElement(el);
                         }
@@ -14678,13 +14679,13 @@ module.exports = function () {
  */
 
 var $ = require('jquery');
-
+var delayTime = 5000;
 /**
  * Automatically hide non-important flash message
  */
 module.exports = function () {
   //Automatically hide non-important flash message
-  $('div.alert').not('alert-important').delay(2000).slideUp(300);
+  $('div.alert').not('alert-important').delay(delayTime).slideUp(300);
 };
 
 },{"jquery":15}],22:[function(require,module,exports){
