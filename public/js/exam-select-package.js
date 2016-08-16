@@ -1,63 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-<<<<<<< HEAD
-'use strict';
-
-var $ = require('jquery');
-window.$ = $;
-var jQuery = $;
-window.jQuery = jQuery;
-
-require('bootstrap');
-
-var bootbox = require('bootbox');
-var common = require('../common.js');
-
-$(".deleteExam").on('click', function () {
-    var examId = $(this).data('exam-id');
-    window.console.log('deleting ' + examId);
-    showConfirmation(examId);
-});
-
-function showConfirmation(examId) {
-    bootbox.dialog({
-        message: '<p id="confirmationModalText"><span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span> ' + "Warning: This will delete all associated students, scores, questions and elements. " + "<br/>Do you wish to proceed?</p>",
-        title: "Delete Exam",
-        buttons: {
-            success: {
-                label: 'Cancel',
-                className: "cancelDelete btn btn-default btn-sm",
-                callback: function callback() {}
-            },
-            danger: {
-                label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-                className: "confirmDelete btn-danger btn-sm",
-                callback: function callback() {
-                    // do deletion for examId
-                    deleteExam(examId);
-                }
-            }
-        }
-    });
-}
-
-function deleteExam(examId) {
-
-    $.ajax({
-        url: 'exam/' + examId,
-        type: "post",
-        data: { _method: "DELETE" },
-        success: function success(data) {
-            window.location.replace(data.url_redirect);
-        },
-        error: function error() {
-            bootbox.alert("Whoops! The exam failed to delete. Please try again.");
-        }
-    });
-}
-
-},{"../common.js":17,"bootbox":2,"bootstrap":3,"jquery":16}],2:[function(require,module,exports){
-=======
->>>>>>> ac3eae0... seems ready to push to production
 /**
  * bootbox.js [v4.4.0]
  *
@@ -13281,7 +13222,6 @@ $(".deleteExam").on('click', function () {
 
 function showConfirmation(examId) {
     bootbox.dialog({
-        className: 'confirmationModal',
         message: '<p id="confirmationModalText"><span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span> ' + "Warning: This will delete all associated students, scores, questions and elements. " + "<br/>Do you wish to proceed?</p>",
         title: "Delete Exam",
         buttons: {

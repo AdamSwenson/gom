@@ -1,184 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
-<<<<<<< HEAD
- * JavaScript for edit_element.blade
- */
-
-'use strict';
-
-var $ = require('jquery');
-window.$ = $;
-var jQuery = $;
-window.jQuery = jQuery;
-
-require('bootstrap');
-
-var bootbox = require('bootbox');
-var Sortable = require('sortablejs');
-// var Sortable = require('../utilities/Sortable.js');
-var common = require('../common.js');
-
-(function () {
-    $("#prev-question").on('click', function () {
-        submitForm(backNavTarget);
-    });
-
-    $("#next-question").on('click', function () {
-        submitForm(forwardNavTarget);
-    });
-
-    // handle add element button
-    $("#addElement").on('click', function () {
-        // copy empty form
-        var order = getElementCount() + 1;
-        var myClone = $('#elementItem0').clone();
-        // set values
-
-        // add to editableList and refresh
-        myClone.appendTo($("#elementList"));
-        updateListItemData(myClone, order);
-        updateNumbers();
-        registerCustomtizeHandlers();
-    });
-
-    // validate and submit form. Currently, questions are valid with 0 elements.
-    function submitForm(target) {
-        if (formFieldsValid()) {
-            $('#nextAction').val(target);
-            $('#elementForm').submit();
-        } else {
-            bootbox.alert('One or more elements is missing a name.');
-        }
-    }
-
-    function numberOfElements() {
-        return $('#elementForm').find('[id^="elementName"]').length;
-    }
-
-    function formFieldsValid() {
-        var valid = true;
-        var $names = $('#elementForm').find('[id^="elementName"]');
-        $names.each(function () {
-            if ($(this).val() == '') {
-                valid = false;
-            }
-        });
-        return valid;
-    }
-
-    // clear local storage to dump Sortable data - or it may display items out of order
-    localStorage.clear();
-    // magic 4 for now... this could change if given as an option
-    var numValences = 4;
-    // set up Sortable list
-    var eList = document.getElementById('elementList');
-    var editableList = Sortable.create(eList, {
-        filter: '.js-remove',
-        animation: 150,
-        handle: '.handle',
-        ghostClass: 'sortable-ghost',
-        onFilter: function onFilter(evt) {
-            var el = editableList.closest(evt.item); // get dragged item
-
-            // show warning message on delete
-            bootbox.dialog({
-                message: "<span class='glyphicon glyphicon-warning-sign'></span> " + "Warning: This will delete any scores associated with this element",
-                title: "Delete Element",
-                buttons: {
-                    success: {
-                        label: 'Cancel',
-                        className: "btn-sm btn-default",
-                        callback: function callback() {}
-                    },
-                    danger: {
-                        label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-                        className: "btn-danger btn-sm",
-                        callback: function callback() {
-                            deleteElement(el);
-                        }
-                    }
-                }
-            });
-        },
-        store: {
-            // store the ordering to localStorage
-            get: function get(sortable) {
-                var order = localStorage.getItem(sortable.options.group);
-                return order ? order.split('|') : [];
-            },
-            set: function set(sortable) {
-                var order = sortable.toArray();
-                localStorage.setItem(sortable.options.group, order.join('|'));
-                updateNumbers();
-            }
-        }
-    });
-
-    // 'Customize responses': Copy base response into empty comments
-    function registerCustomtizeHandlers() {
-        $("[id^='commentForm']").on('shown.bs.modal', function () {
-            // find closest elementText and copy to all blank valences
-            var parent = $(this).closest("[id^='elementItem']");
-            var elementText = $(parent).find("[id^='elementText']").val();
-
-            for (var i = 0; i < numValences; i++) {
-                var valenceText = $(parent).find("[name$='valence" + i + "']");
-                if (valenceText.val() == '') {
-                    valenceText.val(elementText);
-                }
-            }
-        });
-    }
-
-    registerCustomtizeHandlers();
-
-    // update all elements
-    function updateNumbers() {
-
-        $('#elementForm').find("[id^='elementItem']").each(function (index, el) {
-            updateListItemData(el, index + 1);
-        });
-    }
-
-    // set all relevant names and ids of [item] to value [order]
-    function updateListItemData(item, order) {
-        $(item).attr('id', 'elementItem' + order);
-        $(item).find('#displayNumber').text('Element #' + order);
-        $(item).find("[id^='elementName']").attr('id', 'elementName' + order);
-        $(item).find("[id^='elementName']").attr('name', 'elementName' + order);
-        $(item).find("[id^='elementText']").attr('id', 'elementText' + order);
-        $(item).find("[id^='elementText']").attr('name', 'elementText' + order);
-        $(item).find('#elementId').attr('name', 'elementId' + order);
-
-        // update customizeResponse button and set which modal it opens
-        $(item).find("[id^='btnCustomizeResponse']").attr('id', 'btnCustomizeResponse' + order);
-        $(item).find("[id^='btnCustomizeResponse']").attr('data-target', '#commentForm' + order);
-
-        // update items within comment_form
-        $(item).find("[id^='commentForm']").attr('id', 'commentForm' + order);
-
-        for (var i = 0; i < numValences; i++) {
-            $(item).find('#tab' + i).attr('href', '#e' + order + "area" + i);
-            var toFind = 'valence' + i;
-            $(item).find("[id$='area" + i + "']").attr('id', 'e' + order + 'area' + i);
-            $(item).find("[name$='" + toFind + "']").attr('name', "e" + order + toFind);
-        }
-    }
-
-    function getElementCount() {
-        return $('elementForm').find("[id^='elementItem']").length;
-    }
-
-    function deleteElement(el) {
-        if (el && el.parentNode.removeChild(el)) updateNumbers();
-        if (!numberOfElements()) bootbox.alert('A question can have no elements, however, students will not ' + 'receive written feedback');
-    }
-})();
-
-},{"../common.js":18,"bootbox":2,"bootstrap":3,"jquery":16,"sortablejs":17}],2:[function(require,module,exports){
-/**
-=======
->>>>>>> ac3eae0... seems ready to push to production
  * bootbox.js [v4.4.0]
  *
  * http://bootboxjs.com/license.txt
@@ -14714,18 +14535,17 @@ var common = require('../common.js');
 
             // show warning message on delete
             bootbox.dialog({
-                className: 'confirmationModal',
                 message: "<span class='glyphicon glyphicon-warning-sign'></span> " + "Warning: This will delete any scores associated with this element",
                 title: "Delete Element",
                 buttons: {
                     success: {
                         label: 'Cancel',
-                        className: "cancelDelete btn-sm btn-default",
+                        className: "btn-sm btn-default",
                         callback: function callback() {}
                     },
                     danger: {
                         label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-                        className: "confirmDelete btn-danger btn-sm",
+                        className: "btn-danger btn-sm",
                         callback: function callback() {
                             deleteElement(el);
                         }
