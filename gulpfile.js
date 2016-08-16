@@ -124,25 +124,6 @@ elixir( function ( mix ) {
     //help
     mix.browserify( 'help/help.js', 'public/js/help-package.js' );
 
-    //testing
-<<<<<<< HEAD
-    mix.browserify('setupPages/DEVeditRoster.js', 'public/js/dev-roster-edit-package.js');
-
-    mix.browserify(['libraries/jquery-1.11.3.min.js'], 'public/js/jquery.js');
-//    mix.browserify( 'reports/examControls.js', 'public/js/dev-exam-buttons.js' );
-
-    // mix.browserify([
-    //         "libraries/unitTestHelpers/jquery-1.11.1.js",
-    //         "libraries/unitTestHelpers/jquery-ui.js",
-    //         "libraries/unitTestHelpers/jquery.tmpl.min.js",
-    //         "libraries/unitTestHelpers/qunit-1.15.0.js",
-    //         "libraries/unitTestHelpers/json2.js",
-    //         "libraries/unitTestHelpers/jquery.mockjax.js",
-    //         "libraries/unitTestHelpers/jquery.cookie.js"
-    // ], 'public/js/testing/js-test-suite.js');
-
-=======
-    mix.browserify( [ 'libraries/jquery-1.11.3.min.js' ], 'public/js/jquery.js' );
 
 
     /* --------------------- Admin ---------------------- */
@@ -155,6 +136,9 @@ elixir( function ( mix ) {
     //     });
     // });
     /* ------------------------- Dev and testing -------------------------- */
+    //testing
+    mix.browserify( [ 'libraries/jquery-1.11.3.min.js' ], 'public/js/jquery.js' );
+
     mix.scripts( [
         "libraries/unitTestHelpers/jquery-1.11.1.js",
         "libraries/unitTestHelpers/jquery-ui.js",
@@ -167,7 +151,7 @@ elixir( function ( mix ) {
 
 mix.browserify('data/Store.js', 'public/js/dev/new-data-package.js');
     mix.browserify( 'grade/gradeVue.js', 'public/js/dev/grade-vue.js' );
->>>>>>> ac3eae0... seems ready to push to production
+
 //
 //     var gulpNSP = require('gulp-nsp');
 //
