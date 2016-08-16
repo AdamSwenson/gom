@@ -228,8 +228,6 @@ function Data() {
     };
 
 
-
-
     /* ------------------ Exam grades ------------ */
     this.loadExamGrades = function ( studentGrades ) {
         this.examGrades = studentGrades;

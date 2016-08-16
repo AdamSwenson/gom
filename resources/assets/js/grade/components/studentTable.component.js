@@ -36,6 +36,15 @@ module.exports = {
     },
 
     computed: {
+        // store: function(){
+        //     if(GOM){
+        //         return GOM.store;
+        //     }
+        //
+        //     if(store){
+        //         return store;
+        //     }
+        // },
 
         /**
          * Whether student names should be hidden

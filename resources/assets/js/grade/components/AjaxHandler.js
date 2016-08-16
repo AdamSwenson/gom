@@ -117,7 +117,7 @@ module.exports = {
      * @param questionAssId
      * @param Roster
      */
-    deleteScoreRequest: function ( questionAssId, Roster, ) {
+    deleteScoreRequest: function ( questionAssId, Roster) {
         var me = this;
         var examId = $( 'h3' ).attr( 'data-exam-id' );
         var gradeRequest = {};

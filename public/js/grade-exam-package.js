@@ -1,360 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-'use strict';
-
-window.onload = function () {
-    var $ = require('jquery');
-    window.$ = $;
-    var jQuery = $;
-    window.jQuery = jQuery;
-
-    require('bootstrap');
-
-    var common = require('../common.js');
-    var bootbox = require('bootbox');
-
-    var Slider = require("../libraries/bootstrap-slider-modified.js");
-
-    // //TODO figure out which typeahead to use
-    var typeahead = require('../libraries/bootstrap3-typeahead.min.js');
-    // var typeahead = require( '../libraries/typeahead.bundle.js' );
-
-    var LetterGradeButton = require('./components/letterGradeButton.js')();
-    var Roster = require('./components/Roster.js');
-    var Dashboard = require('./components/Dashboard.js');
-    var AjaxHandler = require('./components/AjaxHandler.js');
-    var Timer = require('./components/Timer.js');
-    var SearchBox = require('./components/SearchBox.js');
-    var SliderTools = require('./components/SliderTools.js');
-
-    // /* -------------------------------- GENERAL FUNCTIONS ------------------------------ */
-
-    // /**
-    //  * Called when an element slider stops movement. Updates element
-    //  * score and text (if necessary), then saves score, text and time
-    //  * @param slideEvt
-    //  */
-    // function handleElementSliderStopEvent( slideEvt, data, SliderTools, Roster, AjaxHandler, Dashboard ) {
-    //     //grab the info related to elements
-    //     var $element = $( slideEvt.target ).closest( '[id^="element"]' );
-    //     var $parent = $element.parents( '[id^="element"]' );
-    //     var commentAreaId = $element.attr( 'data-comment-area-id' );
-    //     var $elementComment = $( '#' + commentAreaId );
-    //     var elementIndex = $element.attr( 'data-element-index' ); //the subtask number of the element
-    //     var elementId = $element.attr( 'data-element-id' ); //the DB's id for the element
-    //
-    //     //grab scores
-    //     var oldScore = data.getElementScore( Roster.activeStudent, elementIndex );
-    //     var score = slideEvt.value;
-    //
-    //     /* ---------- update the element's score visually and in data.elementScores[] --------- */
-    //
-    //     //store the new element score in the data object
-    //     data.storeElementScore( Roster.activeStudent, elementIndex, score );
-    //
-    //
-    //     /**
-    //      * update comment text and save to DB.
-    //      * Only replace text if the score has changed valence regions
-    //      */
-    //     if ( ! SliderTools.isSameValence( oldScore, score ) ) {
-    //         //Score is in a new valence region.
-    //         //So let's plug in the appropriate comment text and save to DB
-    //
-    //         //Store comment text in data object
-    //         //Dear Adam, make sure you read the doc for storeCommentText before fucking with
-    //         //anything in these lines
-    //         data.storeCommentText( Roster.activeStudent, elementIndex, $elementComment.val() );
-    //         var commentText = data.getCommentText( Roster.activeStudent, elementIndex, SliderTools.updateValence( score ) );
-    //
-    //         //update display
-    //         updateDisplayedComment( $elementComment, commentText );
-    //
-    //         //send to the db
-    //         AjaxHandler.saveComment( data, Roster, elementId, score, commentText );
-    //
-    //     } else {
-    //         // Score is in the same valence region.
-    //         // Jump straight to saving without changing the elementComment
-    //         // Fear not. Changes directly to the comment text will be handled elsewhere.
-    //         AjaxHandler.createGradeRequest( data, 'element_id', elementId, score, null, Roster );
-    //     }
-    //
-    //     // If using bell curve (standardScoring), element score affects
-    //     // the total question score, so update
-    //     if ( Roster.standardScoring ) {
-    //         updateStandardScores();
-    //     }
-    //
-    //     //Update dashboard and roster data displayed
-    //     updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
-    //     //Sigh. The user forgot to restart the timer. Do it for them
-    //     Timer.resumeTimerIfPaused( data, Roster, Dashboard );
-    // }
-
-    /**
-     * Changes the text of the displayed comment
-     * @param $comment
-     * @param commentText
-     */
-    function updateDisplayedComment($comment, commentText) {
-        //make writable
-        $comment.removeAttr('readonly');
-
-        //set text
-        $comment.val(commentText);
-    }
-
-    /**
-     * Bulk function updates all the dependent data in the roster area.
-     * @param data
-     * @param Dashboard
-     * @param Roster
-     */
-    function updateStudentDashboardAndRosterAreas(data, Dashboard, Roster) {
-        Dashboard.updateExamGrades(data);
-        Dashboard.updateGradedRemainingCounter(data);
-        Roster.updateRosterGradeDisplay(data);
-        Roster.setStudentBackgroundColors(data);
-    }
-
-    /**
-     * Handle question score inputs. When focus is lost, store values,
-     * update grades and save timers.
-     *
-     * @param me Context from bound input
-     * @param data
-     * @param Roster
-     * @param AjaxHandler
-     */
-    function handleQuestionScoreChange(me, data, Roster, AjaxHandler) {
-        var qNumber = $(me).attr('data-number');
-        var questionIndex = qNumber - 1;
-        var score = parseFloat($(me).val());
-        var maxScore = parseFloat($(me).attr('max'));
-        if (score > maxScore) {
-            score = maxScore;
-            $(me).val(maxScore);
-        }
-        data.storeQuestionScore(Roster.activeStudent, questionIndex, score);
-        data.updateExamGrade(Roster.activeStudent);
-
-        var questionAssId = $(me).attr('data-question-assignment-id');
-
-        if (score >= 0) {
-            AjaxHandler.createGradeRequest(data, 'question_assignment_id', questionAssId, score, null, Roster);
-        } else {
-            AjaxHandler.deleteScoreRequest(questionAssId, Roster);
-        }
-    }
-
-    function handleCommentFieldChange(dthis, data, AjaxHandler, Dashboard, Roster, Timer) {
-        //grab element and its properties
-        var $element = $(dthis).parents('[id^="element"]');
-        var elementId = $element.attr('data-element-id');
-        var elementIndex = $element.attr('data-element-index');
-        var commentText = $(dthis).val();
-
-        data.storeCommentText(Roster.activeStudent, elementIndex, commentText);
-
-        //TODO make sure that score being null doesn't overwrite actual score
-
-        AjaxHandler.saveComment(data, Roster, elementId, null, commentText);
-        Timer.resumeTimerIfPaused(data, Roster, Dashboard);
-    }
-
-    /**
-     * A student is selected from the roster - DO LOTS OF STUFF
-     * @param row
-     * @param data
-     * @param Timer
-     * @param Roster
-     */
-    function onStudentSelect(row, data, Timer, Roster, AjaxHandler, Dashboard) {
-        Timer.saveTimer(data, Roster, AjaxHandler, Dashboard);
-
-        $('#selectPrompt').hide();
-        $('#questionArea').show("fast");
-
-        // set the active student
-        Roster.activeStudent = $(row).attr("data-index");
-        Roster.setSelectedNameAndId();
-        Roster.setStudentBackgroundColors(data);
-        // Roster.setActiveStudentBackgroundColor( data );
-
-        // load the timer area with new values
-        Timer.loadTimer(data, Roster, Dashboard);
-
-        // set question scores
-        $("[id^='questionScore']").each(function (index) {
-            var score = data.getQuestionScore(Roster.activeStudent, index);
-            $(this).val(score);
-        });
-
-        // set slider values, if any exist
-        var $sliders = $('input.slider');
-        if (typeof $sliders != 'undefined' && $sliders) {
-            $sliders.each(function (index, item) {
-                var score = data.getElementScore(Roster.activeStudent, index);
-                //avoid causing an error when slider gets null as a value
-                var modScore = score === null ? 0 : score;
-                $(item).slider('setValue', modScore);
-            });
-        }
-
-        // set comments
-        $('[name^="commentQ"]').each(function (index) {
-            // var thisComment = data.elementComments[ Roster.activeStudent ][ index ];
-            var elementScore = data.getElementScore(Roster.activeStudent, index);
-
-            //TODO Add a test for the potential corner cases making the default null creates
-
-            if (elementScore === null) {
-                // clear any text that might have been left over from another user
-                $(this).val('');
-                // if NULL, disable comment text area until a slider is moved.
-                // this is so that the user doesn't enter custom text, move the slider,
-                // and then see their custom text irreversibly wiped out.
-                $(this).prop('readonly', 'true');
-            } else {
-                // It has already been scored, so retrieve and set the comment text
-                var valence = SliderTools.updateValence(elementScore);
-                var thisComment = data.getCommentText(Roster.activeStudent, index, valence);
-                $(this).val(thisComment);
-                //no need for it to remain read only
-                $(this).prop('readonly', '');
-            }
-        });
-    }
-
-    /**
-     * sums elements scores and sets question scores - will be
-     * used for StandardScoring
-     */
-    function updateStandardScores() {}
-    //
-
-    /* -------------------------------------- Listeners ------------------------------------ */
-
-    /* ------------------ Timer listeners --------- */
-    $("#btnTimer").on('click', function () {
-        Timer.toggleTimer(data, Roster, Dashboard);
-    });
-
-    /* ------------------ Roster display and search listeners --------- */
-    $("#nameVisibilityControl").on('click', function () {
-        Roster.toggleNameVisibility();
-    });
-
-    // $( "#activeStudentName" ).on( 'change', function () {
-    //     SearchBox.handleStudentNameSearch();
-    // } );
-    //
-    // $( "#activeStudentIdentifier" ).on( 'change', function () {
-    //     SearchBox.handleStudentIdentifierSearch();
-    // } );
-
-    /* ------------------ table sorting listeners --------- */
-    $("#nameHeader").on('click', function () {
-        Roster.sortRosterBy('studentName', data);
-    });
-    $("#idHeader").on('click', function () {
-        Roster.sortRosterBy('studentIdentifier', data);
-    });
-    $("#gradeHeader").on('click', function () {
-        Roster.sortRosterBy('examGrade', data);
-    });
-
-    /* ------------------ Student selection listeners --------- */
-    $("[id^='studentListItem']").on('click', function () {
-        onStudentSelect(this, data, Timer, Roster, AjaxHandler, Dashboard);
-    });
-
-    /* ------------------ Listeners for scores and other grade fields ------------------- */
-
-    /**  Listener for changes to the question score field */
-    $('[id^="questionScore"]').bind('change', function () {
-        // Handle question score inputs. When focus is lost, store values,
-        // update grades and save timers.
-        handleQuestionScoreChange(this, data, Roster, AjaxHandler);
-        updateStudentDashboardAndRosterAreas(data, Dashboard, Roster);
-        Timer.resumeTimerIfPaused(data, Roster, Dashboard);
-    });
-
-    /** Handle changes to the comment TextArea when focus is lost. Saves data and timers. */
-    $('[name^="comment"]').focusout(function () {
-        if (!Roster.isActiveStudent()) return;
-        handleCommentFieldChange(this, data, AjaxHandler, Dashboard, Roster, Timer);
-    });
-
-    /* ----------------- slider listeners --------------- */
-    /* When an element slider stops movement,
-     update element score and text (if necessary),
-     then save score, text and time
-     *  */
-    $('input.slider').on('slideStop', function (slideEvt) {
-        SliderTools.handleElementSliderStopEvent(slideEvt, data, Roster, function () {
-            //Update dashboard and roster data displayed
-            updateStudentDashboardAndRosterAreas(data, Dashboard, Roster);
-            //Sigh. The user forgot to restart the timer. Do it for them
-            Timer.resumeTimerIfPaused(data, Roster, Dashboard);
-        });
-    });
-
-    $(document).ready(function () {
-        /**
-         * Utility to give each slider a unique id
-         * @returns {string}
-         * @constructor
-         */
-        function Counter() {
-            if (!Counter.i) {
-                Counter.i = 0;
-            }
-            Counter.i++;
-            return "Qs" + Counter.i;
-        };
-
-        /* initialize Sliders with valenceCutoffs */
-        $.each($('input.slider'), function () {
-            $(this).slider({
-                tooltip: 'show',
-                value: 0,
-                step: SliderTools.settings.sliderStep,
-                ticks: SliderTools.settings.valenceCutoffs,
-                ticks_labels: SliderTools.settings.valenceLabels,
-                ticks_position: SliderTools.settings.valenceLabels,
-                id: Counter()
-            });
-        });
-
-        var $sliders = $('input.slider');
-
-        // set up typeahead [search] boxes for name and ID
-        SearchBox.initialize();
-        $('#activeStudentName').typeahead({
-            source: SearchBox.studentNames
-        });
-
-        $('#activeStudentIdentifier').typeahead({
-            source: SearchBox.studentIdents
-        });
-
-        $("#activeStudentName").on('change', function () {
-            SearchBox.handleStudentNameSearch();
-        });
-
-        $("#activeStudentIdentifier").on('change', function () {
-            SearchBox.handleStudentIdentifierSearch();
-        });
-
-        /* ----------------- stuff to do at end of load --------------- */
-        updateStudentDashboardAndRosterAreas(data, Dashboard, Roster);
-        Roster.sortRosterBy('studentName');
-        Timer.updateTimer(data, Roster, Dashboard);
-    });
-};
-
-},{"../common.js":17,"../libraries/bootstrap-slider-modified.js":25,"../libraries/bootstrap3-typeahead.min.js":26,"./components/AjaxHandler.js":18,"./components/Dashboard.js":19,"./components/Roster.js":20,"./components/SearchBox.js":21,"./components/SliderTools.js":22,"./components/Timer.js":23,"./components/letterGradeButton.js":24,"bootbox":2,"bootstrap":3,"jquery":16}],2:[function(require,module,exports){
 /**
  * bootbox.js [v4.4.0]
  *
@@ -1341,7 +985,7 @@ window.onload = function () {
   return exports;
 }));
 
-},{"jquery":16}],3:[function(require,module,exports){
+},{"jquery":15}],2:[function(require,module,exports){
 // This file is autogenerated via the `commonjs` Grunt task. You can require() this file in a CommonJS environment.
 require('../../js/transition.js')
 require('../../js/alert.js')
@@ -1355,12 +999,12 @@ require('../../js/popover.js')
 require('../../js/scrollspy.js')
 require('../../js/tab.js')
 require('../../js/affix.js')
-},{"../../js/affix.js":4,"../../js/alert.js":5,"../../js/button.js":6,"../../js/carousel.js":7,"../../js/collapse.js":8,"../../js/dropdown.js":9,"../../js/modal.js":10,"../../js/popover.js":11,"../../js/scrollspy.js":12,"../../js/tab.js":13,"../../js/tooltip.js":14,"../../js/transition.js":15}],4:[function(require,module,exports){
+},{"../../js/affix.js":3,"../../js/alert.js":4,"../../js/button.js":5,"../../js/carousel.js":6,"../../js/collapse.js":7,"../../js/dropdown.js":8,"../../js/modal.js":9,"../../js/popover.js":10,"../../js/scrollspy.js":11,"../../js/tab.js":12,"../../js/tooltip.js":13,"../../js/transition.js":14}],3:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: affix.js v3.3.6
+ * Bootstrap: affix.js v3.3.7
  * http://getbootstrap.com/javascript/#affix
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1386,7 +1030,7 @@ require('../../js/affix.js')
     this.checkPosition()
   }
 
-  Affix.VERSION  = '3.3.6'
+  Affix.VERSION  = '3.3.7'
 
   Affix.RESET    = 'affix affix-top affix-bottom'
 
@@ -1519,12 +1163,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: alert.js v3.3.6
+ * Bootstrap: alert.js v3.3.7
  * http://getbootstrap.com/javascript/#alerts
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1540,7 +1184,7 @@ require('../../js/affix.js')
     $(el).on('click', dismiss, this.close)
   }
 
-  Alert.VERSION = '3.3.6'
+  Alert.VERSION = '3.3.7'
 
   Alert.TRANSITION_DURATION = 150
 
@@ -1553,7 +1197,7 @@ require('../../js/affix.js')
       selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
     }
 
-    var $parent = $(selector)
+    var $parent = $(selector === '#' ? [] : selector)
 
     if (e) e.preventDefault()
 
@@ -1615,12 +1259,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: button.js v3.3.6
+ * Bootstrap: button.js v3.3.7
  * http://getbootstrap.com/javascript/#buttons
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1637,7 +1281,7 @@ require('../../js/affix.js')
     this.isLoading = false
   }
 
-  Button.VERSION  = '3.3.6'
+  Button.VERSION  = '3.3.7'
 
   Button.DEFAULTS = {
     loadingText: 'loading...'
@@ -1659,10 +1303,10 @@ require('../../js/affix.js')
 
       if (state == 'loadingText') {
         this.isLoading = true
-        $el.addClass(d).attr(d, d)
+        $el.addClass(d).attr(d, d).prop(d, true)
       } else if (this.isLoading) {
         this.isLoading = false
-        $el.removeClass(d).removeAttr(d)
+        $el.removeClass(d).removeAttr(d).prop(d, false)
       }
     }, this), 0)
   }
@@ -1726,10 +1370,15 @@ require('../../js/affix.js')
 
   $(document)
     .on('click.bs.button.data-api', '[data-toggle^="button"]', function (e) {
-      var $btn = $(e.target)
-      if (!$btn.hasClass('btn')) $btn = $btn.closest('.btn')
+      var $btn = $(e.target).closest('.btn')
       Plugin.call($btn, 'toggle')
-      if (!($(e.target).is('input[type="radio"]') || $(e.target).is('input[type="checkbox"]'))) e.preventDefault()
+      if (!($(e.target).is('input[type="radio"], input[type="checkbox"]'))) {
+        // Prevent double click on radios, and the double selections (so cancellation) on checkboxes
+        e.preventDefault()
+        // The target component still receive the focus
+        if ($btn.is('input,button')) $btn.trigger('focus')
+        else $btn.find('input:visible,button:visible').first().trigger('focus')
+      }
     })
     .on('focus.bs.button.data-api blur.bs.button.data-api', '[data-toggle^="button"]', function (e) {
       $(e.target).closest('.btn').toggleClass('focus', /^focus(in)?$/.test(e.type))
@@ -1737,12 +1386,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: carousel.js v3.3.6
+ * Bootstrap: carousel.js v3.3.7
  * http://getbootstrap.com/javascript/#carousel
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1770,7 +1419,7 @@ require('../../js/affix.js')
       .on('mouseleave.bs.carousel', $.proxy(this.cycle, this))
   }
 
-  Carousel.VERSION  = '3.3.6'
+  Carousel.VERSION  = '3.3.7'
 
   Carousel.TRANSITION_DURATION = 600
 
@@ -1976,15 +1625,16 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: collapse.js v3.3.6
+ * Bootstrap: collapse.js v3.3.7
  * http://getbootstrap.com/javascript/#collapse
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
+/* jshint latedef: false */
 
 +function ($) {
   'use strict';
@@ -2008,7 +1658,7 @@ require('../../js/affix.js')
     if (this.options.toggle) this.toggle()
   }
 
-  Collapse.VERSION  = '3.3.6'
+  Collapse.VERSION  = '3.3.7'
 
   Collapse.TRANSITION_DURATION = 350
 
@@ -2189,12 +1839,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: dropdown.js v3.3.6
+ * Bootstrap: dropdown.js v3.3.7
  * http://getbootstrap.com/javascript/#dropdowns
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2211,7 +1861,7 @@ require('../../js/affix.js')
     $(element).on('click.bs.dropdown', this.toggle)
   }
 
-  Dropdown.VERSION = '3.3.6'
+  Dropdown.VERSION = '3.3.7'
 
   function getParent($this) {
     var selector = $this.attr('data-target')
@@ -2356,12 +2006,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: modal.js v3.3.6
+ * Bootstrap: modal.js v3.3.7
  * http://getbootstrap.com/javascript/#modals
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2392,7 +2042,7 @@ require('../../js/affix.js')
     }
   }
 
-  Modal.VERSION  = '3.3.6'
+  Modal.VERSION  = '3.3.7'
 
   Modal.TRANSITION_DURATION = 300
   Modal.BACKDROP_TRANSITION_DURATION = 150
@@ -2499,7 +2149,9 @@ require('../../js/affix.js')
     $(document)
       .off('focusin.bs.modal') // guard against infinite focus loop
       .on('focusin.bs.modal', $.proxy(function (e) {
-        if (this.$element[0] !== e.target && !this.$element.has(e.target).length) {
+        if (document !== e.target &&
+            this.$element[0] !== e.target &&
+            !this.$element.has(e.target).length) {
           this.$element.trigger('focus')
         }
       }, this))
@@ -2695,12 +2347,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: popover.js v3.3.6
+ * Bootstrap: popover.js v3.3.7
  * http://getbootstrap.com/javascript/#popovers
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2717,7 +2369,7 @@ require('../../js/affix.js')
 
   if (!$.fn.tooltip) throw new Error('Popover requires tooltip.js')
 
-  Popover.VERSION  = '3.3.6'
+  Popover.VERSION  = '3.3.7'
 
   Popover.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
     placement: 'right',
@@ -2805,12 +2457,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: scrollspy.js v3.3.6
+ * Bootstrap: scrollspy.js v3.3.7
  * http://getbootstrap.com/javascript/#scrollspy
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2836,7 +2488,7 @@ require('../../js/affix.js')
     this.process()
   }
 
-  ScrollSpy.VERSION  = '3.3.6'
+  ScrollSpy.VERSION  = '3.3.7'
 
   ScrollSpy.DEFAULTS = {
     offset: 10
@@ -2979,12 +2631,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: tab.js v3.3.6
+ * Bootstrap: tab.js v3.3.7
  * http://getbootstrap.com/javascript/#tabs
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -3001,7 +2653,7 @@ require('../../js/affix.js')
     // jscs:enable requireDollarBeforejQueryAssignment
   }
 
-  Tab.VERSION = '3.3.6'
+  Tab.VERSION = '3.3.7'
 
   Tab.TRANSITION_DURATION = 150
 
@@ -3136,13 +2788,13 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: tooltip.js v3.3.6
+ * Bootstrap: tooltip.js v3.3.7
  * http://getbootstrap.com/javascript/#tooltip
  * Inspired by the original jQuery.tipsy by Jason Frame
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -3165,7 +2817,7 @@ require('../../js/affix.js')
     this.init('tooltip', element, options)
   }
 
-  Tooltip.VERSION  = '3.3.6'
+  Tooltip.VERSION  = '3.3.7'
 
   Tooltip.TRANSITION_DURATION = 150
 
@@ -3456,9 +3108,11 @@ require('../../js/affix.js')
 
     function complete() {
       if (that.hoverState != 'in') $tip.detach()
-      that.$element
-        .removeAttr('aria-describedby')
-        .trigger('hidden.bs.' + that.type)
+      if (that.$element) { // TODO: Check whether guarding this code with this `if` is really necessary.
+        that.$element
+          .removeAttr('aria-describedby')
+          .trigger('hidden.bs.' + that.type)
+      }
       callback && callback()
     }
 
@@ -3501,7 +3155,10 @@ require('../../js/affix.js')
       // width and height are missing in IE8, so compute them manually; see https://github.com/twbs/bootstrap/issues/14093
       elRect = $.extend({}, elRect, { width: elRect.right - elRect.left, height: elRect.bottom - elRect.top })
     }
-    var elOffset  = isBody ? { top: 0, left: 0 } : $element.offset()
+    var isSvg = window.SVGElement && el instanceof window.SVGElement
+    // Avoid using $.offset() on SVGs since it gives incorrect results in jQuery 3.
+    // See https://github.com/twbs/bootstrap/issues/20280
+    var elOffset  = isBody ? { top: 0, left: 0 } : (isSvg ? null : $element.offset())
     var scroll    = { scroll: isBody ? document.documentElement.scrollTop || document.body.scrollTop : $element.scrollTop() }
     var outerDims = isBody ? { width: $(window).width(), height: $(window).height() } : null
 
@@ -3617,6 +3274,7 @@ require('../../js/affix.js')
       that.$tip = null
       that.$arrow = null
       that.$viewport = null
+      that.$element = null
     })
   }
 
@@ -3652,12 +3310,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: transition.js v3.3.6
+ * Bootstrap: transition.js v3.3.7
  * http://getbootstrap.com/javascript/#transitions
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -3713,7 +3371,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.2.4
  * http://jquery.com/
@@ -13529,12 +13187,12 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 2/12/16.
  */
-
-'use strict';
 
 var $ = require('jquery');
 
@@ -13543,12 +13201,12 @@ var navBar = require('./utilities/navbar.js')();
 var flash = require('./utilities/flashMessageHandling.js')();
 var jira = require('./utilities/JiraIssueCollector.js')();
 
-},{"./utilities/JiraIssueCollector.js":27,"./utilities/ajaxCsrfPrep.js":28,"./utilities/flashMessageHandling.js":29,"./utilities/navbar.js":30,"jquery":16}],18:[function(require,module,exports){
+},{"./utilities/JiraIssueCollector.js":27,"./utilities/ajaxCsrfPrep.js":28,"./utilities/flashMessageHandling.js":29,"./utilities/navbar.js":30,"jquery":15}],17:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 5/15/16.
  */
-'use strict';
-
 var $ = require('jquery');
 window.$ = $;
 var jQuery = $;
@@ -13695,7 +13353,7 @@ module.exports = {
             message: msg,
             title: title,
             buttons: {
-                'default': {
+                default: {
                     label: 'Cancel',
                     className: "btn btn-sm btn-primary",
                     callback: function callback() {}
@@ -13706,7 +13364,7 @@ module.exports = {
 
 };
 
-},{"bootbox":2,"jquery":16}],19:[function(require,module,exports){
+},{"bootbox":1,"jquery":15}],18:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
@@ -13776,7 +13434,7 @@ module.exports = {
 
 };
 
-},{"bootstrap":3,"jquery":16}],20:[function(require,module,exports){
+},{"bootstrap":2,"jquery":15}],19:[function(require,module,exports){
 "use strict";
 
 var $ = require('jquery');
@@ -13965,12 +13623,12 @@ module.exports = {
 
 };
 
-},{"jquery":16}],21:[function(require,module,exports){
+},{"jquery":15}],20:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 5/15/16.
  */
-'use strict';
-
 var $ = require('jquery');
 window.$ = $;
 var jQuery = $;
@@ -14040,12 +13698,12 @@ module.exports = {
 
 };
 
-},{"jquery":16}],22:[function(require,module,exports){
+},{"jquery":15}],21:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 5/15/16.
  */
-
-'use strict';
 
 var $ = require('jquery');
 window.$ = $;
@@ -14183,12 +13841,12 @@ module.exports = {
 
 };
 
-},{"./AjaxHandler.js":18,"jquery":16}],23:[function(require,module,exports){
+},{"./AjaxHandler.js":17,"jquery":15}],22:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 5/15/16.
  */
-'use strict';
-
 var $ = require('jquery');
 window.$ = $;
 var jQuery = $;
@@ -14314,12 +13972,12 @@ module.exports = {
     }
 };
 
-},{"jquery":16}],24:[function(require,module,exports){
+},{"jquery":15}],23:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by ars62917 on 11/2/15.
  */
-
-'use strict';
 
 var $ = require('jquery');
 window.$ = $;
@@ -14418,7 +14076,370 @@ module.exports = function () {
     })();
 };
 
-},{"jquery":16}],25:[function(require,module,exports){
+},{"jquery":15}],24:[function(require,module,exports){
+'use strict';
+
+window.onload = function () {
+    var $ = require('jquery');
+    window.$ = $;
+    var jQuery = $;
+    window.jQuery = jQuery;
+
+    require('bootstrap');
+
+    var common = require('../common.js');
+    var bootbox = require('bootbox');
+
+    var Slider = require("../libraries/bootstrap-slider-modified.js");
+
+    // //TODO figure out which typeahead to use
+    var typeahead = require('../libraries/bootstrap3-typeahead.min.js');
+    // var typeahead = require( '../libraries/typeahead.bundle.js' );
+
+    var LetterGradeButton = require('./components/letterGradeButton.js')();
+    var Roster = require('./components/Roster.js');
+    var Dashboard = require('./components/Dashboard.js');
+    var AjaxHandler = require('./components/AjaxHandler.js');
+    var Timer = require('./components/Timer.js');
+    var SearchBox = require('./components/SearchBox.js');
+    var SliderTools = require('./components/SliderTools.js');
+
+    // /* -------------------------------- GENERAL FUNCTIONS ------------------------------ */
+
+
+    // /**
+    //  * Called when an element slider stops movement. Updates element
+    //  * score and text (if necessary), then saves score, text and time
+    //  * @param slideEvt
+    //  */
+    // function handleElementSliderStopEvent( slideEvt, data, SliderTools, Roster, AjaxHandler, Dashboard ) {
+    //     //grab the info related to elements
+    //     var $element = $( slideEvt.target ).closest( '[id^="element"]' );
+    //     var $parent = $element.parents( '[id^="element"]' );
+    //     var commentAreaId = $element.attr( 'data-comment-area-id' );
+    //     var $elementComment = $( '#' + commentAreaId );
+    //     var elementIndex = $element.attr( 'data-element-index' ); //the subtask number of the element
+    //     var elementId = $element.attr( 'data-element-id' ); //the DB's id for the element
+    //
+    //     //grab scores
+    //     var oldScore = data.getElementScore( Roster.activeStudent, elementIndex );
+    //     var score = slideEvt.value;
+    //
+    //     /* ---------- update the element's score visually and in data.elementScores[] --------- */
+    //
+    //     //store the new element score in the data object
+    //     data.storeElementScore( Roster.activeStudent, elementIndex, score );
+    //
+    //
+    //     /**
+    //      * update comment text and save to DB.
+    //      * Only replace text if the score has changed valence regions
+    //      */
+    //     if ( ! SliderTools.isSameValence( oldScore, score ) ) {
+    //         //Score is in a new valence region.
+    //         //So let's plug in the appropriate comment text and save to DB
+    //
+    //         //Store comment text in data object
+    //         //Dear Adam, make sure you read the doc for storeCommentText before fucking with
+    //         //anything in these lines
+    //         data.storeCommentText( Roster.activeStudent, elementIndex, $elementComment.val() );
+    //         var commentText = data.getCommentText( Roster.activeStudent, elementIndex, SliderTools.updateValence( score ) );
+    //
+    //         //update display
+    //         updateDisplayedComment( $elementComment, commentText );
+    //
+    //         //send to the db
+    //         AjaxHandler.saveComment( data, Roster, elementId, score, commentText );
+    //
+    //     } else {
+    //         // Score is in the same valence region.
+    //         // Jump straight to saving without changing the elementComment
+    //         // Fear not. Changes directly to the comment text will be handled elsewhere.
+    //         AjaxHandler.createGradeRequest( data, 'element_id', elementId, score, null, Roster );
+    //     }
+    //
+    //     // If using bell curve (standardScoring), element score affects
+    //     // the total question score, so update
+    //     if ( Roster.standardScoring ) {
+    //         updateStandardScores();
+    //     }
+    //
+    //     //Update dashboard and roster data displayed
+    //     updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
+    //     //Sigh. The user forgot to restart the timer. Do it for them
+    //     Timer.resumeTimerIfPaused( data, Roster, Dashboard );
+    // }
+
+
+    /**
+     * Changes the text of the displayed comment
+     * @param $comment
+     * @param commentText
+     */
+    function updateDisplayedComment($comment, commentText) {
+        //make writable
+        $comment.removeAttr('readonly');
+
+        //set text
+        $comment.val(commentText);
+    }
+
+    /**
+     * Bulk function updates all the dependent data in the roster area.
+     * @param data
+     * @param Dashboard
+     * @param Roster
+     */
+    function updateStudentDashboardAndRosterAreas(data, Dashboard, Roster) {
+        Dashboard.updateExamGrades(data);
+        Dashboard.updateGradedRemainingCounter(data);
+        Roster.updateRosterGradeDisplay(data);
+        Roster.setStudentBackgroundColors(data);
+    }
+
+    /**
+     * Handle question score inputs. When focus is lost, store values,
+     * update grades and save timers.
+     *
+     * @param me Context from bound input
+     * @param data
+     * @param Roster
+     * @param AjaxHandler
+     */
+    function handleQuestionScoreChange(me, data, Roster, AjaxHandler) {
+        var qNumber = $(me).attr('data-number');
+        var questionIndex = qNumber - 1;
+        var score = parseFloat($(me).val());
+        var maxScore = parseFloat($(me).attr('max'));
+        if (score > maxScore) {
+            score = maxScore;
+            $(me).val(maxScore);
+        }
+        data.storeQuestionScore(Roster.activeStudent, questionIndex, score);
+        data.updateExamGrade(Roster.activeStudent);
+
+        var questionAssId = $(me).attr('data-question-assignment-id');
+
+        if (score >= 0) {
+            AjaxHandler.createGradeRequest(data, 'question_assignment_id', questionAssId, score, null, Roster);
+        } else {
+            AjaxHandler.deleteScoreRequest(questionAssId, Roster);
+        }
+    }
+
+    function handleCommentFieldChange(dthis, data, AjaxHandler, Dashboard, Roster, Timer) {
+        //grab element and its properties
+        var $element = $(dthis).parents('[id^="element"]');
+        var elementId = $element.attr('data-element-id');
+        var elementIndex = $element.attr('data-element-index');
+        var commentText = $(dthis).val();
+
+        data.storeCommentText(Roster.activeStudent, elementIndex, commentText);
+
+        //TODO make sure that score being null doesn't overwrite actual score
+
+        AjaxHandler.saveComment(data, Roster, elementId, null, commentText);
+        Timer.resumeTimerIfPaused(data, Roster, Dashboard);
+    }
+
+    /**
+     * A student is selected from the roster - DO LOTS OF STUFF
+     * @param row
+     * @param data
+     * @param Timer
+     * @param Roster
+     */
+    function onStudentSelect(row, data, Timer, Roster, AjaxHandler, Dashboard) {
+        Timer.saveTimer(data, Roster, AjaxHandler, Dashboard);
+
+        $('#selectPrompt').hide();
+        $('#questionArea').show("fast");
+
+        // set the active student
+        Roster.activeStudent = $(row).attr("data-index");
+        Roster.setSelectedNameAndId();
+        Roster.setStudentBackgroundColors(data);
+        // Roster.setActiveStudentBackgroundColor( data );
+
+        // load the timer area with new values
+        Timer.loadTimer(data, Roster, Dashboard);
+
+        // set question scores
+        $("[id^='questionScore']").each(function (index) {
+            var score = data.getQuestionScore(Roster.activeStudent, index);
+            $(this).val(score);
+        });
+
+        // set slider values, if any exist
+        var $sliders = $('input.slider');
+        if (typeof $sliders != 'undefined' && $sliders) {
+            $sliders.each(function (index, item) {
+                var score = data.getElementScore(Roster.activeStudent, index);
+                //avoid causing an error when slider gets null as a value
+                var modScore = score === null ? 0 : score;
+                $(item).slider('setValue', modScore);
+            });
+        }
+
+        // set comments
+        $('[name^="commentQ"]').each(function (index) {
+            // var thisComment = data.elementComments[ Roster.activeStudent ][ index ];
+            var elementScore = data.getElementScore(Roster.activeStudent, index);
+
+            //TODO Add a test for the potential corner cases making the default null creates
+
+            if (elementScore === null) {
+                // clear any text that might have been left over from another user
+                $(this).val('');
+                // if NULL, disable comment text area until a slider is moved.
+                // this is so that the user doesn't enter custom text, move the slider,
+                // and then see their custom text irreversibly wiped out.
+                $(this).prop('readonly', 'true');
+            } else {
+                // It has already been scored, so retrieve and set the comment text
+                var valence = SliderTools.updateValence(elementScore);
+                var thisComment = data.getCommentText(Roster.activeStudent, index, valence);
+                $(this).val(thisComment);
+                //no need for it to remain read only
+                $(this).prop('readonly', '');
+            }
+        });
+    }
+
+    /**
+     * sums elements scores and sets question scores - will be
+     * used for StandardScoring
+     */
+    function updateStandardScores() {}
+    //
+
+
+    /* -------------------------------------- Listeners ------------------------------------ */
+
+    /* ------------------ Timer listeners --------- */
+    $("#btnTimer").on('click', function () {
+        Timer.toggleTimer(data, Roster, Dashboard);
+    });
+
+    /* ------------------ Roster display and search listeners --------- */
+    $("#nameVisibilityControl").on('click', function () {
+        Roster.toggleNameVisibility();
+    });
+
+    // $( "#activeStudentName" ).on( 'change', function () {
+    //     SearchBox.handleStudentNameSearch();
+    // } );
+    //
+    // $( "#activeStudentIdentifier" ).on( 'change', function () {
+    //     SearchBox.handleStudentIdentifierSearch();
+    // } );
+
+    /* ------------------ table sorting listeners --------- */
+    $("#nameHeader").on('click', function () {
+        Roster.sortRosterBy('studentName', data);
+    });
+    $("#idHeader").on('click', function () {
+        Roster.sortRosterBy('studentIdentifier', data);
+    });
+    $("#gradeHeader").on('click', function () {
+        Roster.sortRosterBy('examGrade', data);
+    });
+
+    /* ------------------ Student selection listeners --------- */
+    $("[id^='studentListItem']").on('click', function () {
+        onStudentSelect(this, data, Timer, Roster, AjaxHandler, Dashboard);
+    });
+
+    /* ------------------ Listeners for scores and other grade fields ------------------- */
+
+    /**  Listener for changes to the question score field */
+    $('[id^="questionScore"]').bind('change', function () {
+        // Handle question score inputs. When focus is lost, store values,
+        // update grades and save timers.
+        handleQuestionScoreChange(this, data, Roster, AjaxHandler);
+        updateStudentDashboardAndRosterAreas(data, Dashboard, Roster);
+        Timer.resumeTimerIfPaused(data, Roster, Dashboard);
+    });
+
+    /** Handle changes to the comment TextArea when focus is lost. Saves data and timers. */
+    $('[name^="comment"]').focusout(function () {
+        if (!Roster.isActiveStudent()) return;
+        handleCommentFieldChange(this, data, AjaxHandler, Dashboard, Roster, Timer);
+    });
+
+    /* ----------------- slider listeners --------------- */
+    /* When an element slider stops movement,
+     update element score and text (if necessary),
+     then save score, text and time
+     *  */
+    $('input.slider').on('slideStop', function (slideEvt) {
+        SliderTools.handleElementSliderStopEvent(slideEvt, data, Roster, function () {
+            //Update dashboard and roster data displayed
+            updateStudentDashboardAndRosterAreas(data, Dashboard, Roster);
+            //Sigh. The user forgot to restart the timer. Do it for them
+            Timer.resumeTimerIfPaused(data, Roster, Dashboard);
+        });
+    });
+
+    $(document).ready(function () {
+        /**
+         * Utility to give each slider a unique id
+         * @returns {string}
+         * @constructor
+         */
+        function Counter() {
+            if (!Counter.i) {
+                Counter.i = 0;
+            }
+            Counter.i++;
+            return "Qs" + Counter.i;
+        };
+
+        /* initialize Sliders with valenceCutoffs */
+        $.each($('input.slider'), function () {
+            $(this).slider({
+                tooltip: 'show',
+                value: 0,
+                step: SliderTools.settings.sliderStep,
+                ticks: SliderTools.settings.valenceCutoffs,
+                ticks_labels: SliderTools.settings.valenceLabels,
+                ticks_position: SliderTools.settings.valenceLabels,
+                id: Counter()
+            });
+        });
+
+        var $sliders = $('input.slider');
+
+        // set up typeahead [search] boxes for name and ID
+        SearchBox.initialize();
+        $('#activeStudentName').typeahead({
+            source: SearchBox.studentNames
+        });
+
+        $('#activeStudentIdentifier').typeahead({
+            source: SearchBox.studentIdents
+        });
+
+        $("#activeStudentName").on('change', function () {
+            SearchBox.handleStudentNameSearch();
+        });
+
+        $("#activeStudentIdentifier").on('change', function () {
+            SearchBox.handleStudentIdentifierSearch();
+        });
+
+        /* ----------------- stuff to do at end of load --------------- */
+        updateStudentDashboardAndRosterAreas(data, Dashboard, Roster);
+        Roster.sortRosterBy('studentName');
+        Timer.updateTimer(data, Roster, Dashboard);
+    });
+};
+
+},{"../common.js":16,"../libraries/bootstrap-slider-modified.js":25,"../libraries/bootstrap3-typeahead.min.js":26,"./components/AjaxHandler.js":17,"./components/Dashboard.js":18,"./components/Roster.js":19,"./components/SearchBox.js":20,"./components/SliderTools.js":21,"./components/Timer.js":22,"./components/letterGradeButton.js":23,"bootbox":1,"bootstrap":2,"jquery":15}],25:[function(require,module,exports){
+"use strict";
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 /*! =========================================================
  * bootstrap-slider.js
  *
@@ -14445,12 +14466,16 @@ module.exports = function () {
  * limitations under the License.
  * ========================================================= */
 
-"use strict";
+/**
+ * Bridget makes jQuery widgets
+ * v1.0.1
+ * MIT license
+ */
 
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
         define(["jquery"], factory);
-    } else if (typeof module === "object" && module.exports) {
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         var jQuery;
         try {
             jQuery = require("jquery");
@@ -14703,7 +14728,7 @@ module.exports = function () {
         /*************************************************
           CONSTRUCTOR
           **************************************************/
-        Slider = function (element, options) {
+        Slider = function Slider(element, options) {
             try {
                 createNewSlider.call(this, element, options);
             } catch (e) {
@@ -15881,20 +15906,20 @@ module.exports = function () {
                 if (this.options.orientation === 'vertical') {
                     var tooltipPos = this.options.tooltip_position || 'right';
                     var oppositeSide = tooltipPos === 'left' ? 'right' : 'left';
-                    tooltips.forEach((function (tooltip) {
+                    tooltips.forEach(function (tooltip) {
                         this._addClass(tooltip, tooltipPos);
                         tooltip.style[oppositeSide] = '100%';
-                    }).bind(this));
+                    }.bind(this));
                 } else if (this.options.tooltip_position === 'bottom') {
-                    tooltips.forEach((function (tooltip) {
+                    tooltips.forEach(function (tooltip) {
                         this._addClass(tooltip, 'bottom');
                         tooltip.style.top = 22 + 'px';
-                    }).bind(this));
+                    }.bind(this));
                 } else {
-                    tooltips.forEach((function (tooltip) {
+                    tooltips.forEach(function (tooltip) {
                         this._addClass(tooltip, 'top');
                         tooltip.style.top = -this.tooltip.outerHeight - 14 + 'px';
-                    }).bind(this));
+                    }.bind(this));
                 }
             }
         };
@@ -15910,24 +15935,23 @@ module.exports = function () {
 
     return Slider;
 });
-/**
- * Bridget makes jQuery widgets
- * v1.0.1
- * MIT license
- */
 
-},{"jquery":16}],26:[function(require,module,exports){
+},{"jquery":15}],26:[function(require,module,exports){
 "use strict";
 
-!(function (a, b) {
-  "use strict";"undefined" != typeof module && module.exports ? module.exports = b(require("jquery")) : "function" == typeof define && define.amd ? define(["jquery"], function (a) {
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+!function (a, b) {
+  "use strict";
+  "undefined" != typeof module && module.exports ? module.exports = b(require("jquery")) : "function" == typeof define && define.amd ? define(["jquery"], function (a) {
     return b(a);
   }) : b(a.jQuery);
-})(undefined, function (a) {
-  "use strict";var b = function b(_b, c) {
+}(undefined, function (a) {
+  "use strict";
+  var b = function b(_b, c) {
     this.$element = a(_b), this.options = a.extend({}, a.fn.typeahead.defaults, c), this.matcher = this.options.matcher || this.matcher, this.sorter = this.options.sorter || this.sorter, this.select = this.options.select || this.select, this.autoSelect = "boolean" == typeof this.options.autoSelect ? this.options.autoSelect : !0, this.highlighter = this.options.highlighter || this.highlighter, this.render = this.options.render || this.render, this.updater = this.options.updater || this.updater, this.displayText = this.options.displayText || this.displayText, this.source = this.options.source, this.delay = this.options.delay, this.$menu = a(this.options.menu), this.$appendTo = this.options.appendTo ? a(this.options.appendTo) : null, this.shown = !1, this.listen(), this.showHintOnFocus = "boolean" == typeof this.options.showHintOnFocus ? this.options.showHintOnFocus : !1, this.afterSelect = this.options.afterSelect, this.addItem = !1;
   };b.prototype = { constructor: b, select: function select() {
-      var a = this.$menu.find(".active").data("value");if ((this.$element.data("active", a), this.autoSelect || a)) {
+      var a = this.$menu.find(".active").data("value");if (this.$element.data("active", a), this.autoSelect || a) {
         var b = this.updater(a);this.$element.val(this.displayText(b) || b).change(), this.afterSelect(b);
       }return this.hide();
     }, updater: function updater(a) {
@@ -15940,7 +15964,7 @@ module.exports = function () {
     }, hide: function hide() {
       return this.$menu.hide(), this.shown = !1, this;
     }, lookup: function lookup(b) {
-      if ((this.query = "undefined" != typeof b && null !== b ? b : this.$element.val() || "", this.query.length < this.options.minLength)) return this.shown ? this.hide() : this;var c = a.proxy(function () {
+      if (this.query = "undefined" != typeof b && null !== b ? b : this.$element.val() || "", this.query.length < this.options.minLength) return this.shown ? this.hide() : this;var c = a.proxy(function () {
         a.isFunction(this.source) ? this.source(this.query, a.proxy(this.process, this)) : this.source && this.process(this.source);
       }, this);clearTimeout(this.lookupWorker), this.lookupWorker = setTimeout(c, this.delay);
     }, process: function process(b) {
@@ -15961,7 +15985,9 @@ module.exports = function () {
           g,
           h = a("<div></div>"),
           i = this.query,
-          j = b.toLowerCase().indexOf(i.toLowerCase());if ((c = i.length, 0 === c)) return h.text(b).html();for (; j > -1;) d = b.substr(0, j), e = b.substr(j, c), f = b.substr(j + c), g = a("<strong></strong>").text(e), h.append(document.createTextNode(d)).append(g), b = f, j = b.toLowerCase().indexOf(i.toLowerCase());return h.append(document.createTextNode(b)).html();
+          j = b.toLowerCase().indexOf(i.toLowerCase());if (c = i.length, 0 === c) return h.text(b).html();for (; j > -1;) {
+        d = b.substr(0, j), e = b.substr(j, c), f = b.substr(j + c), g = a("<strong></strong>").text(e), h.append(document.createTextNode(d)).append(g), b = f, j = b.toLowerCase().indexOf(i.toLowerCase());
+      }return h.append(document.createTextNode(b)).html();
     }, render: function render(b) {
       var c = this,
           d = this,
@@ -15981,7 +16007,7 @@ module.exports = function () {
     }, destroy: function destroy() {
       this.$element.data("typeahead", null), this.$element.data("active", null), this.$element.off("focus").off("blur").off("keypress").off("keyup"), this.eventSupported("keydown") && this.$element.off("keydown"), this.$menu.remove();
     }, eventSupported: function eventSupported(a) {
-      var b = (a in this.$element);return b || (this.$element.setAttribute(a, "return;"), b = "function" == typeof this.$element[a]), b;
+      var b = a in this.$element;return b || (this.$element.setAttribute(a, "return;"), b = "function" == typeof this.$element[a]), b;
     }, move: function move(a) {
       if (this.shown) {
         switch (a.keyCode) {case 9:case 13:case 27:
@@ -16013,7 +16039,7 @@ module.exports = function () {
     var d = arguments;return "string" == typeof c && "getActive" == c ? this.data("active") : this.each(function () {
       var e = a(this),
           f = e.data("typeahead"),
-          g = "object" == typeof c && c;f || e.data("typeahead", f = new b(this, g)), "string" == typeof c && (d.length > 1 ? f[c].apply(f, Array.prototype.slice.call(d, 1)) : f[c]());
+          g = "object" == (typeof c === "undefined" ? "undefined" : _typeof(c)) && c;f || e.data("typeahead", f = new b(this, g)), "string" == typeof c && (d.length > 1 ? f[c].apply(f, Array.prototype.slice.call(d, 1)) : f[c]());
     });
   }, a.fn.typeahead.defaults = { source: [], items: 8, menu: '<ul class="typeahead dropdown-menu" role="listbox"></ul>', item: '<li><a href="#" role="option"></a></li>', minLength: 1, scrollHeight: 0, autoSelect: !0, afterSelect: a.noop, addItem: !1, delay: 0 }, a.fn.typeahead.Constructor = b, a.fn.typeahead.noConflict = function () {
     return a.fn.typeahead = c, this;
@@ -16022,12 +16048,12 @@ module.exports = function () {
   });
 });
 
-},{"jquery":16}],27:[function(require,module,exports){
+},{"jquery":15}],27:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 3/23/16.
  */
-
-'use strict';
 
 var $ = require('jquery');
 
@@ -16045,7 +16071,7 @@ module.exports = function () {
 
 };
 
-},{"jquery":16}],28:[function(require,module,exports){
+},{"jquery":15}],28:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
@@ -16064,12 +16090,12 @@ module.exports = function () {
     });
 };
 
-},{"jquery":16}],29:[function(require,module,exports){
+},{"jquery":15}],29:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 10/4/15.
  */
-
-'use strict';
 
 var $ = require('jquery');
 var delayTime = 5000;
@@ -16081,12 +16107,12 @@ module.exports = function () {
   $('div.alert').not('alert-important').delay(delayTime).slideUp(300);
 };
 
-},{"jquery":16}],30:[function(require,module,exports){
+},{"jquery":15}],30:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 2/12/16.
  */
-
-'use strict';
 
 var $ = require('jquery');
 window.$ = $;
@@ -16120,4 +16146,6 @@ module.exports = function () {
     })();
 };
 
-},{"bootstrap":3,"jquery":16}]},{},[1]);
+},{"bootstrap":2,"jquery":15}]},{},[24]);
+
+//# sourceMappingURL=grade-exam-package.js.map

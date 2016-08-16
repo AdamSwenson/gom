@@ -10,8 +10,8 @@ require( 'sinon' );
 var faker = require('faker');
 
 //Dependencies
+// require( 'resources/assets/js/grade/components/Data.js' );
 require( '../../../resources/assets/js/grade/components/Data.js' );
-
 
 describe( "Data.js | ", function () {
     var object, defaults, activeStudent;

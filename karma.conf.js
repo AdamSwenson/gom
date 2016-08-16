@@ -14,6 +14,7 @@ module.exports = function ( config ) {
 
         // list of files / patterns to load in the browser
         files: [
+            'resources/assets/js/data/Store.js',
             'resources/assets/js/grade/components/Data.js',
             'tests/spec/tests/*.spec.js',
             { pattern: 'tests/spec/helpers/*.helper.js', included: false },
@@ -29,11 +30,13 @@ module.exports = function ( config ) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
+            // 'resources/assets/js/data/Store.js': ['rollup', 'browserify'],
             'node_modules/jasmine-core': [ 'browserify' ],
             'tests/spec/**/*.js': [ 'rollup', 'browserify' ],
-            'resources/assets/js/grade/components/elementInput.js': [ 'rollup', 'browserify' ],
+            'resources/assets/js/**/*.js': [ 'rollup', 'browserify' ],
         },
 
+        //                [ 'babelify', { "presets": [ "es2015" ] } ],
         browserify: {
             debug: true,
             transform: [

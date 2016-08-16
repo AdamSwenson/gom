@@ -157,7 +157,7 @@ elixir( function ( mix ) {
         "libraries/unitTestHelpers/jquery.cookie.js"
     ], 'public/js/testing/js-test-suite.js' );
 
-
+mix.browserify('data/Store.js', 'public/js/dev/new-data-package.js');
     mix.browserify( 'grade/gradeVue.js', 'public/js/dev/grade-vue.js' );
 //
 //     var gulpNSP = require('gulp-nsp');

@@ -636,6 +636,6 @@ function Data() {
     };
 
     this._spy = function(propertyName){
-      return DapropertyName;
+      return propertyName;
     };
-};
+}

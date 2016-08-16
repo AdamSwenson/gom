@@ -1,209 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
- * This is the main javascript for edit_roster.blade
- *
- * Created by  adam on 3/23/16.
- */
-
-'use strict';
-
-var $ = require('jquery');
-var jQuery = $;
-window.$ = $;
-window.jQuery = $;
-
-require('bootstrap');
-
-var DataTable = require('datatables.net-bs')(window, $);
-// var sorting = require('datatables.net.dataSourcePlugins')( window, $ );
-var buttons = require('datatables.net-buttons-bs')(window, $);
-var colReorder = require('datatables.net-colreorder')(window, $);
-
-var bootbox = require('bootbox');
-var Vue = require('vue');
-
-//dev
-Vue.config.debug = true;
-Vue.config.devtools = true;
-
-var Row = Vue.extend(require('./roster/components/studentRow.js'));
-
-new Vue({
-    el: '#app',
-
-    components: {
-        'add-empty-row-button': require('./roster/components/addStudentButton.js'),
-        'delete-roster-button': require('./roster/components/rosterDeleteButton.js'),
-        'import-roster-button': require('./roster/components/rosterImportButton.js'),
-        'import-roster-help-button': require('./roster/components/rosterImportHelpButton.js'),
-        'setup-navs': require('./shared/components/setupNavButtons.js'),
-        'student-row': require('./roster/components/studentRow.js')
-    },
-
-    data: {
-
-        storage: {
-            maxRow: 0
-        },
-        table: false
-    },
-
-    computed: {
-        maxRow: {
-            get: function get() {
-                if (this.storage.maxRow === 0) {
-                    if (typeof maxRow != 'undefined') {
-                        this.storage.maxRow = Number(maxRow);
-                    }
-                }
-                return this.storage.maxRow;
-            },
-
-            set: function set(v) {
-                this.storage.maxRow = v;
-            }
-        }
-    },
-
-    methods: {
-        updateRowValues: function updateRowValues() {
-
-            //                this.table.draw();
-
-        },
-
-        notifyRowValuesUpdated: function notifyRowValuesUpdated() {
-            this.$broadcast('row-values-updated');
-        },
-
-        addRow: function addRow(rowId, lastName, firstName, studentId, email) {
-            //add a placeholder to the table
-            var s = "dataRow" + rowId;
-            var h = "<tr id='" + s + "'></tr>";
-            $('#studentRosterBody').append(h);
-            var el = function el() {
-                return "#" + s;
-            };
-            //initialize the component on the placeholder
-            var row = new Row({
-                el: el,
-                replace: true,
-                propsData: {
-                    studentRecordId: 0, //server expects new students to have an id of 0
-                    rowId: rowId,
-                    lastName: lastName,
-                    firstName: firstName,
-                    studentId: studentId,
-                    email: email
-                }
-            });
-            //replace the placeholder
-            //vue will complain in the console about this being called multiple times. But
-            //it doesn't seem to be creating any noticeable effects.
-            row.$mount("#" + s);
-        },
-
-        /**
-         * This will be called by the nav buttons via throwing
-         * the 'please-validate-and-submit' event.
-         * It performs the appropriate validation and submits
-         * the form if everything is okay
-         * @param target String expected by the server (not the route!)
-         */
-        validateAndSubmit: function validateAndSubmit(target) {
-            var $table = $('#studentRosterBody');
-            var valid = true;
-
-            // check that first and last names have values
-            $table.find('[id$="Name"]').each(function () {
-                if ($(this).val() == '') {
-                    valid = false;
-                }
-            });
-
-            if (valid) {
-                $('[name="navigateTo"]').val(target);
-                $('#rosterData').submit();
-            } else {
-                bootbox.alert("Name missing! Make sure all students have a first and last name before proceeding.", function () {});
-            }
-        }
-    },
-
-    events: {
-        'please-add-row': function pleaseAddRow(rowObj) {
-            window.console.log('editRoster.js', 'caught please-add-row', rowObj);
-            this.maxRow += 1;
-            this.addRow(this.maxRow, rowObj.lastName, rowObj.firstName, rowObj.studentId, rowObj.email);
-        },
-
-        'please-add-empty-row': function pleaseAddEmptyRow() {
-            window.console.log('editRoster.js', 'caught please-add-empty-row');
-            this.maxRow += 1;
-            this.addRow(this.maxRow, '', '', '', '');
-        },
-
-        'please-remove-row': function pleaseRemoveRow(rowId) {
-            window.console.log('editRoster.js', 'caught please-remove-row', rowId);
-        },
-
-        'please-update-row-values': function pleaseUpdateRowValues() {
-            window.console.log('editRoster.js', 'caught please-update-row-values');
-            this.updateRowValues();
-        },
-        'please-validate-and-submit': function pleaseValidateAndSubmit(target) {
-            window.console.log('editRoster.js', 'caught please-validate-and-submit', target);
-            this.validateAndSubmit(target);
-        }
-    },
-
-    directives: {
-        datatable: {
-
-            bind: function bind() {
-                window.console.log('bind called: datatable');
-                /**
-                 * Read information from a column of input (type text) elements and return an
-                 * array to use as a basis for sorting.
-                 *
-                 *  @summary Sorting based on the values of `dt-tag input` elements in a column.
-                 *  @name Input element data source
-                 *  @requires DataTables 1.10+
-                 *  @author [Allan Jardine](http://sprymedia.co.uk)
-                 */
-
-                $.fn.dataTable.ext.order['dom-text'] = function (settings, col) {
-                    return this.api().column(col, { order: 'index' }).nodes().map(function (td, i) {
-                        return $('input', td).val();
-                    });
-                };
-
-                //$(this.el).DataTable();
-                this.table = $("#rosterTable").DataTable({
-                    columnDefs: [
-                    //no idea why column didn't work. No idea why only works if type is numeric, even though
-                    //the relevant columns are strings. Whatevs. It works.
-                    { "orderDataType": "dom-text", "type": "numeric", targets: [0, 1, 2, 3] }],
-                    paging: false
-                });
-            }
-        }
-    },
-
-    // scrollY: 100,
-    ready: function ready() {
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
-        window.console.log('editRoster.js ready');
-    }
-});
-
-},{"./roster/components/addStudentButton.js":24,"./roster/components/rosterDeleteButton.js":25,"./roster/components/rosterImportButton.js":26,"./roster/components/rosterImportHelpButton.js":27,"./roster/components/studentRow.js":28,"./shared/components/setupNavButtons.js":34,"bootbox":2,"bootstrap":3,"datatables.net-bs":16,"datatables.net-buttons-bs":17,"datatables.net-colreorder":19,"jquery":21,"vue":23}],2:[function(require,module,exports){
-/**
  * bootbox.js [v4.4.0]
  *
  * http://bootboxjs.com/license.txt
@@ -1189,7 +985,7 @@ new Vue({
   return exports;
 }));
 
-},{"jquery":21}],3:[function(require,module,exports){
+},{"jquery":20}],2:[function(require,module,exports){
 // This file is autogenerated via the `commonjs` Grunt task. You can require() this file in a CommonJS environment.
 require('../../js/transition.js')
 require('../../js/alert.js')
@@ -1203,12 +999,12 @@ require('../../js/popover.js')
 require('../../js/scrollspy.js')
 require('../../js/tab.js')
 require('../../js/affix.js')
-},{"../../js/affix.js":4,"../../js/alert.js":5,"../../js/button.js":6,"../../js/carousel.js":7,"../../js/collapse.js":8,"../../js/dropdown.js":9,"../../js/modal.js":10,"../../js/popover.js":11,"../../js/scrollspy.js":12,"../../js/tab.js":13,"../../js/tooltip.js":14,"../../js/transition.js":15}],4:[function(require,module,exports){
+},{"../../js/affix.js":3,"../../js/alert.js":4,"../../js/button.js":5,"../../js/carousel.js":6,"../../js/collapse.js":7,"../../js/dropdown.js":8,"../../js/modal.js":9,"../../js/popover.js":10,"../../js/scrollspy.js":11,"../../js/tab.js":12,"../../js/tooltip.js":13,"../../js/transition.js":14}],3:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: affix.js v3.3.6
+ * Bootstrap: affix.js v3.3.7
  * http://getbootstrap.com/javascript/#affix
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1234,7 +1030,7 @@ require('../../js/affix.js')
     this.checkPosition()
   }
 
-  Affix.VERSION  = '3.3.6'
+  Affix.VERSION  = '3.3.7'
 
   Affix.RESET    = 'affix affix-top affix-bottom'
 
@@ -1367,12 +1163,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: alert.js v3.3.6
+ * Bootstrap: alert.js v3.3.7
  * http://getbootstrap.com/javascript/#alerts
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1388,7 +1184,7 @@ require('../../js/affix.js')
     $(el).on('click', dismiss, this.close)
   }
 
-  Alert.VERSION = '3.3.6'
+  Alert.VERSION = '3.3.7'
 
   Alert.TRANSITION_DURATION = 150
 
@@ -1401,7 +1197,7 @@ require('../../js/affix.js')
       selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
     }
 
-    var $parent = $(selector)
+    var $parent = $(selector === '#' ? [] : selector)
 
     if (e) e.preventDefault()
 
@@ -1463,12 +1259,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: button.js v3.3.6
+ * Bootstrap: button.js v3.3.7
  * http://getbootstrap.com/javascript/#buttons
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1485,7 +1281,7 @@ require('../../js/affix.js')
     this.isLoading = false
   }
 
-  Button.VERSION  = '3.3.6'
+  Button.VERSION  = '3.3.7'
 
   Button.DEFAULTS = {
     loadingText: 'loading...'
@@ -1507,10 +1303,10 @@ require('../../js/affix.js')
 
       if (state == 'loadingText') {
         this.isLoading = true
-        $el.addClass(d).attr(d, d)
+        $el.addClass(d).attr(d, d).prop(d, true)
       } else if (this.isLoading) {
         this.isLoading = false
-        $el.removeClass(d).removeAttr(d)
+        $el.removeClass(d).removeAttr(d).prop(d, false)
       }
     }, this), 0)
   }
@@ -1574,10 +1370,15 @@ require('../../js/affix.js')
 
   $(document)
     .on('click.bs.button.data-api', '[data-toggle^="button"]', function (e) {
-      var $btn = $(e.target)
-      if (!$btn.hasClass('btn')) $btn = $btn.closest('.btn')
+      var $btn = $(e.target).closest('.btn')
       Plugin.call($btn, 'toggle')
-      if (!($(e.target).is('input[type="radio"]') || $(e.target).is('input[type="checkbox"]'))) e.preventDefault()
+      if (!($(e.target).is('input[type="radio"], input[type="checkbox"]'))) {
+        // Prevent double click on radios, and the double selections (so cancellation) on checkboxes
+        e.preventDefault()
+        // The target component still receive the focus
+        if ($btn.is('input,button')) $btn.trigger('focus')
+        else $btn.find('input:visible,button:visible').first().trigger('focus')
+      }
     })
     .on('focus.bs.button.data-api blur.bs.button.data-api', '[data-toggle^="button"]', function (e) {
       $(e.target).closest('.btn').toggleClass('focus', /^focus(in)?$/.test(e.type))
@@ -1585,12 +1386,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: carousel.js v3.3.6
+ * Bootstrap: carousel.js v3.3.7
  * http://getbootstrap.com/javascript/#carousel
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1618,7 +1419,7 @@ require('../../js/affix.js')
       .on('mouseleave.bs.carousel', $.proxy(this.cycle, this))
   }
 
-  Carousel.VERSION  = '3.3.6'
+  Carousel.VERSION  = '3.3.7'
 
   Carousel.TRANSITION_DURATION = 600
 
@@ -1824,15 +1625,16 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: collapse.js v3.3.6
+ * Bootstrap: collapse.js v3.3.7
  * http://getbootstrap.com/javascript/#collapse
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
+/* jshint latedef: false */
 
 +function ($) {
   'use strict';
@@ -1856,7 +1658,7 @@ require('../../js/affix.js')
     if (this.options.toggle) this.toggle()
   }
 
-  Collapse.VERSION  = '3.3.6'
+  Collapse.VERSION  = '3.3.7'
 
   Collapse.TRANSITION_DURATION = 350
 
@@ -2037,12 +1839,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: dropdown.js v3.3.6
+ * Bootstrap: dropdown.js v3.3.7
  * http://getbootstrap.com/javascript/#dropdowns
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2059,7 +1861,7 @@ require('../../js/affix.js')
     $(element).on('click.bs.dropdown', this.toggle)
   }
 
-  Dropdown.VERSION = '3.3.6'
+  Dropdown.VERSION = '3.3.7'
 
   function getParent($this) {
     var selector = $this.attr('data-target')
@@ -2204,12 +2006,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: modal.js v3.3.6
+ * Bootstrap: modal.js v3.3.7
  * http://getbootstrap.com/javascript/#modals
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2240,7 +2042,7 @@ require('../../js/affix.js')
     }
   }
 
-  Modal.VERSION  = '3.3.6'
+  Modal.VERSION  = '3.3.7'
 
   Modal.TRANSITION_DURATION = 300
   Modal.BACKDROP_TRANSITION_DURATION = 150
@@ -2347,7 +2149,9 @@ require('../../js/affix.js')
     $(document)
       .off('focusin.bs.modal') // guard against infinite focus loop
       .on('focusin.bs.modal', $.proxy(function (e) {
-        if (this.$element[0] !== e.target && !this.$element.has(e.target).length) {
+        if (document !== e.target &&
+            this.$element[0] !== e.target &&
+            !this.$element.has(e.target).length) {
           this.$element.trigger('focus')
         }
       }, this))
@@ -2543,12 +2347,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: popover.js v3.3.6
+ * Bootstrap: popover.js v3.3.7
  * http://getbootstrap.com/javascript/#popovers
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2565,7 +2369,7 @@ require('../../js/affix.js')
 
   if (!$.fn.tooltip) throw new Error('Popover requires tooltip.js')
 
-  Popover.VERSION  = '3.3.6'
+  Popover.VERSION  = '3.3.7'
 
   Popover.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
     placement: 'right',
@@ -2653,12 +2457,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: scrollspy.js v3.3.6
+ * Bootstrap: scrollspy.js v3.3.7
  * http://getbootstrap.com/javascript/#scrollspy
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2684,7 +2488,7 @@ require('../../js/affix.js')
     this.process()
   }
 
-  ScrollSpy.VERSION  = '3.3.6'
+  ScrollSpy.VERSION  = '3.3.7'
 
   ScrollSpy.DEFAULTS = {
     offset: 10
@@ -2827,12 +2631,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: tab.js v3.3.6
+ * Bootstrap: tab.js v3.3.7
  * http://getbootstrap.com/javascript/#tabs
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2849,7 +2653,7 @@ require('../../js/affix.js')
     // jscs:enable requireDollarBeforejQueryAssignment
   }
 
-  Tab.VERSION = '3.3.6'
+  Tab.VERSION = '3.3.7'
 
   Tab.TRANSITION_DURATION = 150
 
@@ -2984,13 +2788,13 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: tooltip.js v3.3.6
+ * Bootstrap: tooltip.js v3.3.7
  * http://getbootstrap.com/javascript/#tooltip
  * Inspired by the original jQuery.tipsy by Jason Frame
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -3013,7 +2817,7 @@ require('../../js/affix.js')
     this.init('tooltip', element, options)
   }
 
-  Tooltip.VERSION  = '3.3.6'
+  Tooltip.VERSION  = '3.3.7'
 
   Tooltip.TRANSITION_DURATION = 150
 
@@ -3304,9 +3108,11 @@ require('../../js/affix.js')
 
     function complete() {
       if (that.hoverState != 'in') $tip.detach()
-      that.$element
-        .removeAttr('aria-describedby')
-        .trigger('hidden.bs.' + that.type)
+      if (that.$element) { // TODO: Check whether guarding this code with this `if` is really necessary.
+        that.$element
+          .removeAttr('aria-describedby')
+          .trigger('hidden.bs.' + that.type)
+      }
       callback && callback()
     }
 
@@ -3349,7 +3155,10 @@ require('../../js/affix.js')
       // width and height are missing in IE8, so compute them manually; see https://github.com/twbs/bootstrap/issues/14093
       elRect = $.extend({}, elRect, { width: elRect.right - elRect.left, height: elRect.bottom - elRect.top })
     }
-    var elOffset  = isBody ? { top: 0, left: 0 } : $element.offset()
+    var isSvg = window.SVGElement && el instanceof window.SVGElement
+    // Avoid using $.offset() on SVGs since it gives incorrect results in jQuery 3.
+    // See https://github.com/twbs/bootstrap/issues/20280
+    var elOffset  = isBody ? { top: 0, left: 0 } : (isSvg ? null : $element.offset())
     var scroll    = { scroll: isBody ? document.documentElement.scrollTop || document.body.scrollTop : $element.scrollTop() }
     var outerDims = isBody ? { width: $(window).width(), height: $(window).height() } : null
 
@@ -3465,6 +3274,7 @@ require('../../js/affix.js')
       that.$tip = null
       that.$arrow = null
       that.$viewport = null
+      that.$element = null
     })
   }
 
@@ -3500,12 +3310,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: transition.js v3.3.6
+ * Bootstrap: transition.js v3.3.7
  * http://getbootstrap.com/javascript/#transitions
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -3561,7 +3371,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /*! DataTables Bootstrap 3 integration
  * ©2011-2015 SpryMedia Ltd - datatables.net/license
  */
@@ -3744,7 +3554,7 @@ DataTable.ext.renderer.pageButton.bootstrap = function ( settings, host, idx, bu
 
 return DataTable;
 }));
-},{"datatables.net":20}],17:[function(require,module,exports){
+},{"datatables.net":19}],16:[function(require,module,exports){
 /*! Bootstrap integration for DataTables' Buttons
  * ©2016 SpryMedia Ltd - datatables.net/license
  */
@@ -3814,8 +3624,8 @@ DataTable.ext.buttons.collection.text = function ( dt ) {
 return DataTable.Buttons;
 }));
 
-},{"datatables.net-bs":16,"datatables.net-buttons":18}],18:[function(require,module,exports){
-/*! Buttons for DataTables 1.2.1
+},{"datatables.net-bs":15,"datatables.net-buttons":17}],17:[function(require,module,exports){
+/*! Buttons for DataTables 1.2.2
  * ©2016 SpryMedia Ltd - datatables.net/license
  */
 
@@ -4696,7 +4506,9 @@ Buttons.background = function ( show, className, fade ) {
 	else {
 		$('body > div.'+className)
 			.fadeOut( fade, function () {
-				$(this).remove();
+				$(this)
+					.removeClass( className )
+					.remove();
 			} );
 	}
 };
@@ -4933,7 +4745,7 @@ Buttons.defaults = {
  * @type {string}
  * @static
  */
-Buttons.version = '1.2.1';
+Buttons.version = '1.2.2';
 
 
 $.extend( _dtButtons, {
@@ -5004,7 +4816,10 @@ $.extend( _dtButtons, {
 				$('div.dt-button-background').on( 'click.dtb-collection', function () {} );
 
 				$('body').on( 'click.dtb-collection', function (e) {
-					if ( ! $(e.target).parents().andSelf().filter( config._collection ).length ) {
+					// andSelf is deprecated in jQ1.8, but we want 1.7 compat
+					var back = $.fn.addBack ? 'addBack' : 'andSelf';
+
+					if ( ! $(e.target).parents()[back]().filter( config._collection ).length ) {
 						config._collection
 							.fadeOut( config.fade, function () {
 								config._collection.detach();
@@ -5131,7 +4946,9 @@ DataTable.Api.register( 'buttons()', function ( group, selector ) {
 		group = undefined;
 	}
 
-	return this.iterator( true, 'table', function ( ctx ) {
+	this.selector.buttonGroup = group;
+
+	var res = this.iterator( true, 'table', function ( ctx ) {
 		if ( ctx._buttons ) {
 			return Buttons.buttonSelector(
 				Buttons.instanceSelector( group, ctx._buttons ),
@@ -5139,6 +4956,9 @@ DataTable.Api.register( 'buttons()', function ( group, selector ) {
 			);
 		}
 	}, true );
+
+	res._groupSelector = group;
+	return res;
 } );
 
 // Individual button selector
@@ -5225,25 +5045,40 @@ DataTable.Api.registerPlural( 'buttons().trigger()', 'button().trigger()', funct
 	} );
 } );
 
-// Get the container elements for the button sets selected
+// Get the container elements
 DataTable.Api.registerPlural( 'buttons().containers()', 'buttons().container()', function () {
 	var jq = $();
+	var groupSelector = this._groupSelector;
 
-	// jQuery will automatically reduce duplicates to a single entry
-	$( this.each( function ( set ) {
-		jq = jq.add( set.inst.container() );
-	} ) );
+	// We need to use the group selector directly, since if there are no buttons
+	// the result set will be empty
+	this.iterator( true, 'table', function ( ctx ) {
+		if ( ctx._buttons ) {
+			var insts = Buttons.instanceSelector( groupSelector, ctx._buttons );
+
+			for ( var i=0, ien=insts.length ; i<ien ; i++ ) {
+				jq = jq.add( insts[i].container() );
+			}
+		}
+	} );
 
 	return jq;
 } );
 
 // Add a new button
 DataTable.Api.register( 'button().add()', function ( idx, conf ) {
-	if ( this.length === 1 ) {
-		this[0].inst.add( conf, idx );
+	var ctx = this.context;
+
+	// Don't use `this` as it could be empty - select the instances directly
+	if ( ctx.length ) {
+		var inst = Buttons.instanceSelector( this._groupSelector, ctx[0]._buttons );
+
+		if ( inst.length ) {
+			inst[0].add( conf, idx );
+		}
 	}
 
-	return this.button( idx );
+	return this.button( this._groupSelector, idx );
 } );
 
 // Destroy the button sets selected
@@ -5369,13 +5204,14 @@ var _exportData = function ( dt, inOpts )
 
 
 	var header = dt.columns( config.columns ).indexes().map( function (idx) {
-		return config.format.header( dt.column( idx ).header().innerHTML, idx );
+		var el = dt.column( idx ).header();
+		return config.format.header( el.innerHTML, idx, el );
 	} ).toArray();
 
 	var footer = dt.table().footer() ?
 		dt.columns( config.columns ).indexes().map( function (idx) {
 			var el = dt.column( idx ).footer();
-			return config.format.footer( el ? el.innerHTML : '', idx );
+			return config.format.footer( el ? el.innerHTML : '', idx, el );
 		} ).toArray() :
 		null;
 
@@ -5384,6 +5220,11 @@ var _exportData = function ( dt, inOpts )
 		.cells( rowIndexes, config.columns )
 		.render( config.orthogonal )
 		.toArray();
+	var cellNodes = dt
+		.cells( rowIndexes, config.columns )
+		.nodes()
+		.toArray();
+
 	var columns = header.length;
 	var rows = columns > 0 ? cells.length / columns : 0;
 	var body = new Array( rows );
@@ -5393,7 +5234,7 @@ var _exportData = function ( dt, inOpts )
 		var row = new Array( columns );
 
 		for ( var j=0 ; j<columns ; j++ ) {
-			row[j] = config.format.body( cells[ cellCounter ], j, i );
+			row[j] = config.format.body( cells[ cellCounter ], i, j, cellNodes[ cellCounter ] );
 			cellCounter++;
 		}
 
@@ -5450,7 +5291,7 @@ DataTable.ext.feature.push( {
 return Buttons;
 }));
 
-},{"datatables.net":20}],19:[function(require,module,exports){
+},{"datatables.net":19}],18:[function(require,module,exports){
 /*! ColReorder 1.3.2
  * ©2010-2015 SpryMedia Ltd - datatables.net/license
  */
@@ -6787,7 +6628,7 @@ $.fn.dataTable.Api.register( 'colReorder.transpose()', function ( idx, dir ) {
 return ColReorder;
 }));
 
-},{"datatables.net":20}],20:[function(require,module,exports){
+},{"datatables.net":19}],19:[function(require,module,exports){
 /*! DataTables 1.10.12
  * ©2008-2015 SpryMedia Ltd - datatables.net/license
  */
@@ -22066,7 +21907,7 @@ return ColReorder;
 	return $.fn.dataTable;
 }));
 
-},{"jquery":21}],21:[function(require,module,exports){
+},{"jquery":20}],20:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.2.4
  * http://jquery.com/
@@ -31882,38 +31723,113 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 // shim for using process in browser
-
 var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+(function () {
+    try {
+        cachedSetTimeout = setTimeout;
+    } catch (e) {
+        cachedSetTimeout = function () {
+            throw new Error('setTimeout is not defined');
+        }
+    }
+    try {
+        cachedClearTimeout = clearTimeout;
+    } catch (e) {
+        cachedClearTimeout = function () {
+            throw new Error('clearTimeout is not defined');
+        }
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        return setTimeout(fun, 0);
+    } else {
+        return cachedSetTimeout.call(null, fun, 0);
+    }
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        clearTimeout(marker);
+    } else {
+        cachedClearTimeout.call(null, marker);
+    }
+}
 var queue = [];
 var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
 
 function drainQueue() {
     if (draining) {
         return;
     }
+    var timeout = runTimeout(cleanUpNextTick);
     draining = true;
-    var currentQueue;
+
     var len = queue.length;
     while(len) {
         currentQueue = queue;
         queue = [];
-        var i = -1;
-        while (++i < len) {
-            currentQueue[i]();
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
         }
+        queueIndex = -1;
         len = queue.length;
     }
+    currentQueue = null;
     draining = false;
+    runClearTimeout(timeout);
 }
+
 process.nextTick = function (fun) {
-    queue.push(fun);
-    if (!draining) {
-        setTimeout(drainQueue, 0);
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
     }
 };
 
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
 process.title = 'browser';
 process.browser = true;
 process.env = {};
@@ -31935,14 +31851,13 @@ process.binding = function (name) {
     throw new Error('process.binding is not supported');
 };
 
-// TODO(shtylman)
 process.cwd = function () { return '/' };
 process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 process.umask = function() { return 0; };
 
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 (function (process,global){
 /*!
  * Vue.js v1.0.26
@@ -42019,7 +41934,210 @@ setTimeout(function () {
 
 module.exports = Vue;
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":22}],24:[function(require,module,exports){
+},{"_process":21}],23:[function(require,module,exports){
+'use strict';
+
+/**
+ * This is the main javascript for edit_roster.blade
+ *
+ * Created by  adam on 3/23/16.
+ */
+
+var $ = require('jquery');
+var jQuery = $;
+window.$ = $;
+window.jQuery = $;
+
+require('bootstrap');
+
+var DataTable = require('datatables.net-bs')(window, $);
+// var sorting = require('datatables.net.dataSourcePlugins')( window, $ );
+var buttons = require('datatables.net-buttons-bs')(window, $);
+var colReorder = require('datatables.net-colreorder')(window, $);
+
+var bootbox = require('bootbox');
+var Vue = require('vue');
+
+//dev
+Vue.config.debug = true;
+Vue.config.devtools = true;
+
+var Row = Vue.extend(require('./roster/components/studentRow.js'));
+
+new Vue({
+    el: '#app',
+
+    components: {
+        'add-empty-row-button': require('./roster/components/addStudentButton.js'),
+        'delete-roster-button': require('./roster/components/rosterDeleteButton.js'),
+        'import-roster-button': require('./roster/components/rosterImportButton.js'),
+        'import-roster-help-button': require('./roster/components/rosterImportHelpButton.js'),
+        'setup-navs': require('./shared/components/setupNavButtons.js'),
+        'student-row': require('./roster/components/studentRow.js')
+    },
+
+    data: {
+
+        storage: {
+            maxRow: 0
+        },
+        table: false
+    },
+
+    computed: {
+        maxRow: {
+            get: function get() {
+                if (this.storage.maxRow === 0) {
+                    if (typeof maxRow != 'undefined') {
+                        this.storage.maxRow = Number(maxRow);
+                    }
+                }
+                return this.storage.maxRow;
+            },
+
+            set: function set(v) {
+                this.storage.maxRow = v;
+            }
+        }
+    },
+
+    methods: {
+        updateRowValues: function updateRowValues() {
+
+            //                this.table.draw();
+
+        },
+
+        notifyRowValuesUpdated: function notifyRowValuesUpdated() {
+            this.$broadcast('row-values-updated');
+        },
+
+        addRow: function addRow(rowId, lastName, firstName, studentId, email) {
+            //add a placeholder to the table
+            var s = "dataRow" + rowId;
+            var h = "<tr id='" + s + "'></tr>";
+            $('#studentRosterBody').append(h);
+            var el = function el() {
+                return "#" + s;
+            };
+            //initialize the component on the placeholder
+            var row = new Row({
+                el: el,
+                replace: true,
+                propsData: {
+                    studentRecordId: 0, //server expects new students to have an id of 0
+                    rowId: rowId,
+                    lastName: lastName,
+                    firstName: firstName,
+                    studentId: studentId,
+                    email: email
+                }
+            });
+            //replace the placeholder
+            //vue will complain in the console about this being called multiple times. But
+            //it doesn't seem to be creating any noticeable effects.
+            row.$mount("#" + s);
+        },
+
+        /**
+         * This will be called by the nav buttons via throwing
+         * the 'please-validate-and-submit' event.
+         * It performs the appropriate validation and submits
+         * the form if everything is okay
+         * @param target String expected by the server (not the route!)
+         */
+        validateAndSubmit: function validateAndSubmit(target) {
+            var $table = $('#studentRosterBody');
+            var valid = true;
+
+            // check that first and last names have values
+            $table.find('[id$="Name"]').each(function () {
+                if ($(this).val() == '') {
+                    valid = false;
+                }
+            });
+
+            if (valid) {
+                $('[name="navigateTo"]').val(target);
+                $('#rosterData').submit();
+            } else {
+                bootbox.alert("Name missing! Make sure all students have a first and last name before proceeding.", function () {});
+            }
+        }
+    },
+
+    events: {
+        'please-add-row': function pleaseAddRow(rowObj) {
+            window.console.log('editRoster.js', 'caught please-add-row', rowObj);
+            this.maxRow += 1;
+            this.addRow(this.maxRow, rowObj.lastName, rowObj.firstName, rowObj.studentId, rowObj.email);
+        },
+
+        'please-add-empty-row': function pleaseAddEmptyRow() {
+            window.console.log('editRoster.js', 'caught please-add-empty-row');
+            this.maxRow += 1;
+            this.addRow(this.maxRow, '', '', '', '');
+        },
+
+        'please-remove-row': function pleaseRemoveRow(rowId) {
+            window.console.log('editRoster.js', 'caught please-remove-row', rowId);
+        },
+
+        'please-update-row-values': function pleaseUpdateRowValues() {
+            window.console.log('editRoster.js', 'caught please-update-row-values');
+            this.updateRowValues();
+        },
+        'please-validate-and-submit': function pleaseValidateAndSubmit(target) {
+            window.console.log('editRoster.js', 'caught please-validate-and-submit', target);
+            this.validateAndSubmit(target);
+        }
+    },
+
+    directives: {
+        datatable: {
+
+            bind: function bind() {
+                window.console.log('bind called: datatable');
+                /**
+                 * Read information from a column of input (type text) elements and return an
+                 * array to use as a basis for sorting.
+                 *
+                 *  @summary Sorting based on the values of `dt-tag input` elements in a column.
+                 *  @name Input element data source
+                 *  @requires DataTables 1.10+
+                 *  @author [Allan Jardine](http://sprymedia.co.uk)
+                 */
+
+                $.fn.dataTable.ext.order['dom-text'] = function (settings, col) {
+                    return this.api().column(col, { order: 'index' }).nodes().map(function (td, i) {
+                        return $('input', td).val();
+                    });
+                };
+
+                //$(this.el).DataTable();
+                this.table = $("#rosterTable").DataTable({
+                    columnDefs: [
+                    //no idea why column didn't work. No idea why only works if type is numeric, even though
+                    //the relevant columns are strings. Whatevs. It works.
+                    { "orderDataType": "dom-text", "type": "numeric", targets: [0, 1, 2, 3] }],
+                    paging: false
+                });
+            }
+        }
+    },
+
+    ready: function ready() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        window.console.log('editRoster.js ready');
+    }
+});
+
+},{"./roster/components/addStudentButton.js":24,"./roster/components/rosterDeleteButton.js":25,"./roster/components/rosterImportButton.js":26,"./roster/components/rosterImportHelpButton.js":27,"./roster/components/studentRow.js":28,"./shared/components/setupNavButtons.js":34,"bootbox":1,"bootstrap":2,"datatables.net-bs":15,"datatables.net-buttons-bs":16,"datatables.net-colreorder":18,"jquery":20,"vue":22}],24:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -42044,11 +42162,11 @@ module.exports = {
 };
 
 },{"../templates/add-student-button.template.html":29}],25:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 3/25/16.
  */
-'use strict';
-
 var $ = require('jquery');
 window.$ = $;
 
@@ -42107,12 +42225,12 @@ module.exports = {
     directives: {}
 };
 
-},{"../templates/roster-delete-button.template.html":30,"bootbox":2,"jquery":21}],26:[function(require,module,exports){
+},{"../templates/roster-delete-button.template.html":30,"bootbox":1,"jquery":20}],26:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 3/24/16.
  */
-'use strict';
-
 var $ = require('jquery');
 window.$ = $;
 
@@ -42369,14 +42487,14 @@ module.exports = {
     directives: {}
 };
 
-},{"../templates/roster-import-button.template.html":31,"jquery":21}],27:[function(require,module,exports){
+},{"../templates/roster-import-button.template.html":31,"jquery":20}],27:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 3/25/16.
  */
 //var $ = require('jquery');
 //window.$ = $;
-
-'use strict';
 
 var bootbox = require('bootbox');
 
@@ -42416,12 +42534,12 @@ module.exports = {
     directives: {}
 };
 
-},{"../templates/roster-import-help-button.template.html":32,"bootbox":2}],28:[function(require,module,exports){
+},{"../templates/roster-import-help-button.template.html":32,"bootbox":1}],28:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 3/23/16.
  */
-'use strict';
-
 var $ = require('jquery');
 var jQuery = $;
 window.$ = $;
@@ -42527,7 +42645,7 @@ module.exports = {
 
 };
 
-},{"../templates/student-row.template.html":33,"bootbox":2,"jquery":21}],29:[function(require,module,exports){
+},{"../templates/student-row.template.html":33,"bootbox":1,"jquery":20}],29:[function(require,module,exports){
 module.exports = '<!-- add student button -->\n<button class="btn btn-primary"\n   id="addStudent"\n   v-on:click="addEmptyRow"\n><span\n        class="glyphicon glyphicon-plus"\n        aria-hidden="true"></span>\n    Add Student\n</button>';
 },{}],30:[function(require,module,exports){
 module.exports = '<button\n        class="btn btn-danger"\n        id="deleteRoster"\n        v-on:click="deleteRoster"\n><span\n        class="glyphicon glyphicon-minus"\n        aria-hidden="true"></span>\n    Delete Roster\n</button>';
@@ -42538,6 +42656,8 @@ module.exports = '<button\n        id="importHelpButton"\n        class="btn btn
 },{}],33:[function(require,module,exports){
 module.exports = '<!-- template used by "edit_roster" to display one table row displaying a single student.\n    Holds student lname, fname, id, email and delete button -->\n<tr class="dataRow {{ isFailed }}"\n    id="dataRow{{ rowId }}">\n    <td>\n        <input\n                class="form-control"\n                type="text"\n                id="lastName{{ rowId }}"\n                name="lastName{{ rowId }}"\n                placeholder="Last Name"\n                v-model="lastName"\n        >\n    </td>\n    <td>\n        <input\n                class="form-control"\n                type="text"\n                id="firstName{{ rowId }}"\n                name="firstName{{ rowId }}"\n                placeholder="First Name"\n                v-model="firstName"\n        >\n    </td>\n    <td>\n        <input\n                class="form-control"\n                type="text"\n                id="studentIdentifier{{ rowId }}"\n                placeholder="Student ID"\n                name="studentIdentifier{{ rowId }}"\n                v-model="studentId"\n        >\n    </td>\n    <td>\n        <input\n                class="form-control"\n                type="text"\n                id="email{{ rowId }}"\n                name="email{{ rowId }}"\n                placeholder="Email"\n                v-model="email"\n        >\n    </td>\n    <td align="center" style="vertical-align: middle;">\n        <a\n                id="deleteStudentButton{{ rowId }}"\n                class="deleteStudentButton"\n                data-rowid="{{ rowId }}"\n                v-on:click="deleteStudent"\n        >\n            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>\n        </a>\n    </td>\n    <input\n            type="hidden"\n            name="id{{ rowId }}"\n            value="{{ studentRecordId }}"\n    >\n</tr>';
 },{}],34:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 3/25/16.
  */
@@ -42551,8 +42671,6 @@ module.exports = '<!-- template used by "edit_roster" to display one table row d
  *
  * @type {{template: *, props: string[], data: module.exports.data, computed: {isDisk: module.exports.computed.isDisk, isLeft: module.exports.computed.isLeft, isRight: module.exports.computed.isRight}, methods: {validateAndSubmit: module.exports.methods.validateAndSubmit, navigateForward: module.exports.methods.navigateForward, navigateBack: module.exports.methods.navigateBack}, directives: {}}}
  */
-'use strict';
-
 module.exports = {
 
     template: require('../templates/setup-nav-buttons.template.html'),
@@ -42611,4 +42729,6 @@ module.exports = {
 
 },{"../templates/setup-nav-buttons.template.html":35}],35:[function(require,module,exports){
 module.exports = '<nav id="setupNavigation">\n    <ul class="pager">\n        <li class="next">\n            <a id="forwardNavButton"\n               class="setupNavButton"\n               v-on:click="navigateForward"\n            >\n                <div class="forwardNavLabel"\n                     v-show="isDisk">\n                        <span class=\'glyphicon glyphicon-floppy-disk\' aria-hidden=\'true\'></span> {{ forwardNavLabel }}\n                </div>\n                <div class="forwardNavLabel" v-show="isRight"> {{ forwardNavLabel }} <span class=\'glyphicon glyphicon-chevron-right\' aria-hidden=\'true\'></span> </div>\n            </a>\n        </li>\n        <li class="previous">\n            <a\n                    id="backNavButton"\n                    class="setupNavButton"\n                    v-on:click="navigateBack"\n            >\n                <div class="backNavLabel" v-if="isLeft"><span class=\'glyphicon glyphicon-chevron-left\' aria-hidden=\'true\'></span> {{ backNavLabel }}</div>\n                <div class="backNavLabel" v-else>{{ backNavLabel }}</div>\n            </a>\n        </li>\n    </ul>\n</nav>\n';
-},{}]},{},[1]);
+},{}]},{},[23]);
+
+//# sourceMappingURL=dev-roster-edit-package.js.map

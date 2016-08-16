@@ -1,218 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-'use strict';
-
-var $ = require('jquery');
-window.$ = $;
-var jQuery = $;
-window.jQuery = jQuery;
-
-require('bootstrap');
-var bootbox = require('bootbox');
-var Sortable = require('sortablejs');
-// var Sortable = require('../utilities/Sortable.js');
-var common = require('../common.js');
-
-//var navs = require('./navControls.js')();
-
-// (function () {
-$("#backNavButton").on('click', function () {
-    submitForm(backNavTarget);
-});
-
-$("#forwardNavButton").on('click', function () {
-    submitForm(forwardNavTarget);
-});
-
-// handle addQuestion button
-$("#addQuestion").on('click', function () {
-    // copy empty form
-    var order = getQuestionCount() + 1;
-    var myClone = $('#questionItem0').clone();
-
-    // add to editableList and refresh
-    myClone.appendTo($("#questionList"));
-    updateListItemData(myClone, order);
-    updateNumbers();
-});
-
-// Basic form validation and prompts.
-// Exams must have 1 question and they must all have names.
-function submitForm(targetForm) {
-    if (numberOfQuestions() == 0) {
-        bootbox.alert('Exams must have at least one question.');
-    } else if (formFieldsValid()) {
-        $('#nextAction').val(targetForm);
-        $('#questionForm').submit();
-    }
-}
-
-function numberOfQuestions() {
-    return $('#questionForm').find('[id^="questionName"]').length;
-}
-
-function formFieldsValid() {
-    var msg = '';
-    var valid = true;
-    var $names = $('#questionForm').find('[id^="questionName"]');
-    $names.each(function () {
-        if ($(this).val() == '') {
-            valid = false;
-            msg = 'One or more questions is missing a name.';
-        }
-    });
-    var $maxScores = $('#questionForm').find('[id^="maxScore"]');
-    $maxScores.each(function () {
-        if ($(this).val() == '') {
-            valid = false;
-            msg = 'One or more questions is missing a maximum score.';
-        }
-    });
-
-    if (!valid) {
-        bootbox.alert(msg);
-    }
-
-    return valid;
-}
-
-/**
- * Handle deletion - items will be deleted once the form is submitted
- * This is actually listening for an attempt to drag a filtered element.
- * It fires on mousedown, so it is practically equivalent to a click.
- *
- * evt.item is HTMLElement receiving the `mousedown|tapstart` event.
- *
- * @param evt
- */
-function handleDelete(evt, editableList) {
-    //get the element from the list
-    var el = editableList.closest(evt.item);
-
-    bootbox.dialog({
-        className: 'confirmationModal',
-        message: "<p class='questionDeleteWarning' id='questionDeleteWarning'> <span class='glyphicon glyphicon-warning-sign'></span>" + " Warning: This will permanently delete all elements and scores associated with the question </p>",
-        title: "Delete Question",
-        buttons: {
-            success: {
-                label: 'Cancel',
-                className: "btn-sm bnt-primary cancelQuestionDelete",
-                callback: function callback() {}
-            },
-            danger: {
-                label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-                className: "btn-danger btn-sm confirmQuestionDelete",
-                callback: function callback() {
-                    if (el && el.parentNode.removeChild(el)) updateNumbers();
-                }
-            }
-        }
-    });
-}
-
-try {
-
-    // (function(){
-    // Sortable is the lib for drag and drop questions
-    // create an editable list and set up some filters to handle callbacks
-    // $(document).ready(function () {
-
-    localStorage.clear();
-    var qList = document.getElementById('questionList');
-    var editableList = Sortable.create(qList, {
-        filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
-        animation: 150,
-        handle: '.handle', // Drag handle selector within list items
-        ghostClass: "sortable-ghost", // Class name for the drop placeholder
-
-        onFilter: function onFilter(evt) {
-            handleDelete(evt, editableList);
-        },
-        store: {
-            // store the ordering to localStorage
-            get: function get(sortable) {
-                var order = localStorage.getItem(sortable.options.group);
-                //window.console.log(localStorage.getItem(sortable.options.group));
-                return order ? order.split('|') : [];
-            },
-            set: function set(sortable) {
-                var order = sortable.toArray();
-                localStorage.setItem(sortable.options.group, order.join('|'));
-                updateNumbers();
-            }
-        }
-    });
-} catch (e) {
-    window.console.log(e);
-}
-// $(".js-remove").on('click', function(){
-//
-//     var el = $(this);
-//
-//     bootbox.dialog( {
-//         message: "<p class='questionDeleteWarning' id='questionDeleteWarning'> <span class='glyphicon glyphicon-warning-sign'></span>" +
-//         " Warning: This will permanently delete all elements and scores associated with the question </p>",
-//         title: "Delete Question",
-//         buttons: {
-//             success: {
-//                 label: 'Cancel',
-//                 className: "btn-sm bnt-primary cancelQuestionDelete",
-//                 callback: function () {
-//                 }
-//             },
-//             danger: {
-//                 label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-//                 className: "btn-danger btn-sm confirmQuestionDelete",
-//                 callback: function () {
-//                     if ( el )
-//                         window.console.log(el);
-//                         var questionNumber = el.data('question-number');
-//
-//                         var parent = $("#questionItem" + questionNumber)
-//                         parent.remove();
-//                     // if ( el && el.parentNode.removeChild( el ) )
-//                         updateNumbers();
-//                 }
-//             }
-//         }
-//     });
-// });
-
-// });
-// })();
-// update all "questionItem" ids. These define the ordering when saved to the DB.
-function updateNumbers() {
-    $('#questionForm').find("[id^='questionItem']").each(function (index, el) {
-        updateListItemData(el, index + 1);
-    });
-}
-
-// set all relevant names and ids of [item] to value [order]
-function updateListItemData(item, order) {
-    $(item).attr('id', 'questionItem' + order);
-    $(item).find('#displayNumber').text('Question #' + order);
-    $(item).find("[id^='questionName']").attr('id', 'questionName' + order);
-    $(item).find("[id^='questionName']").attr('name', 'questionName' + order);
-    $(item).find('textarea').attr('id', 'questionText' + order);
-    $(item).find('textarea').attr('name', 'questionText' + order);
-    $(item).find('#questionId').attr('name', 'questionId' + order);
-    $(item).find("[id^='maxScore']").attr('id', 'maxScore' + order);
-    $(item).find("[id^='maxScore']").attr('name', 'maxScore' + order);
-}
-
-function getQuestionCount() {
-    // return number of questions currently in the questionList
-    return $("[id^='questionItem']").length;
-}
-//
-// $(document).ready(function () {
-//    $(".mainBodyLocator").append("<div id='loadComplete'></div>");
-// });
-
-//        return false;
-//     }
-// );
-
-},{"../common.js":18,"bootbox":2,"bootstrap":3,"jquery":16,"sortablejs":17}],2:[function(require,module,exports){
 /**
  * bootbox.js [v4.4.0]
  *
@@ -1199,7 +985,7 @@ function getQuestionCount() {
   return exports;
 }));
 
-},{"jquery":16}],3:[function(require,module,exports){
+},{"jquery":15}],2:[function(require,module,exports){
 // This file is autogenerated via the `commonjs` Grunt task. You can require() this file in a CommonJS environment.
 require('../../js/transition.js')
 require('../../js/alert.js')
@@ -1213,12 +999,12 @@ require('../../js/popover.js')
 require('../../js/scrollspy.js')
 require('../../js/tab.js')
 require('../../js/affix.js')
-},{"../../js/affix.js":4,"../../js/alert.js":5,"../../js/button.js":6,"../../js/carousel.js":7,"../../js/collapse.js":8,"../../js/dropdown.js":9,"../../js/modal.js":10,"../../js/popover.js":11,"../../js/scrollspy.js":12,"../../js/tab.js":13,"../../js/tooltip.js":14,"../../js/transition.js":15}],4:[function(require,module,exports){
+},{"../../js/affix.js":3,"../../js/alert.js":4,"../../js/button.js":5,"../../js/carousel.js":6,"../../js/collapse.js":7,"../../js/dropdown.js":8,"../../js/modal.js":9,"../../js/popover.js":10,"../../js/scrollspy.js":11,"../../js/tab.js":12,"../../js/tooltip.js":13,"../../js/transition.js":14}],3:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: affix.js v3.3.6
+ * Bootstrap: affix.js v3.3.7
  * http://getbootstrap.com/javascript/#affix
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1244,7 +1030,7 @@ require('../../js/affix.js')
     this.checkPosition()
   }
 
-  Affix.VERSION  = '3.3.6'
+  Affix.VERSION  = '3.3.7'
 
   Affix.RESET    = 'affix affix-top affix-bottom'
 
@@ -1377,12 +1163,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: alert.js v3.3.6
+ * Bootstrap: alert.js v3.3.7
  * http://getbootstrap.com/javascript/#alerts
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1398,7 +1184,7 @@ require('../../js/affix.js')
     $(el).on('click', dismiss, this.close)
   }
 
-  Alert.VERSION = '3.3.6'
+  Alert.VERSION = '3.3.7'
 
   Alert.TRANSITION_DURATION = 150
 
@@ -1411,7 +1197,7 @@ require('../../js/affix.js')
       selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
     }
 
-    var $parent = $(selector)
+    var $parent = $(selector === '#' ? [] : selector)
 
     if (e) e.preventDefault()
 
@@ -1473,12 +1259,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: button.js v3.3.6
+ * Bootstrap: button.js v3.3.7
  * http://getbootstrap.com/javascript/#buttons
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1495,7 +1281,7 @@ require('../../js/affix.js')
     this.isLoading = false
   }
 
-  Button.VERSION  = '3.3.6'
+  Button.VERSION  = '3.3.7'
 
   Button.DEFAULTS = {
     loadingText: 'loading...'
@@ -1517,10 +1303,10 @@ require('../../js/affix.js')
 
       if (state == 'loadingText') {
         this.isLoading = true
-        $el.addClass(d).attr(d, d)
+        $el.addClass(d).attr(d, d).prop(d, true)
       } else if (this.isLoading) {
         this.isLoading = false
-        $el.removeClass(d).removeAttr(d)
+        $el.removeClass(d).removeAttr(d).prop(d, false)
       }
     }, this), 0)
   }
@@ -1584,10 +1370,15 @@ require('../../js/affix.js')
 
   $(document)
     .on('click.bs.button.data-api', '[data-toggle^="button"]', function (e) {
-      var $btn = $(e.target)
-      if (!$btn.hasClass('btn')) $btn = $btn.closest('.btn')
+      var $btn = $(e.target).closest('.btn')
       Plugin.call($btn, 'toggle')
-      if (!($(e.target).is('input[type="radio"]') || $(e.target).is('input[type="checkbox"]'))) e.preventDefault()
+      if (!($(e.target).is('input[type="radio"], input[type="checkbox"]'))) {
+        // Prevent double click on radios, and the double selections (so cancellation) on checkboxes
+        e.preventDefault()
+        // The target component still receive the focus
+        if ($btn.is('input,button')) $btn.trigger('focus')
+        else $btn.find('input:visible,button:visible').first().trigger('focus')
+      }
     })
     .on('focus.bs.button.data-api blur.bs.button.data-api', '[data-toggle^="button"]', function (e) {
       $(e.target).closest('.btn').toggleClass('focus', /^focus(in)?$/.test(e.type))
@@ -1595,12 +1386,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: carousel.js v3.3.6
+ * Bootstrap: carousel.js v3.3.7
  * http://getbootstrap.com/javascript/#carousel
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1628,7 +1419,7 @@ require('../../js/affix.js')
       .on('mouseleave.bs.carousel', $.proxy(this.cycle, this))
   }
 
-  Carousel.VERSION  = '3.3.6'
+  Carousel.VERSION  = '3.3.7'
 
   Carousel.TRANSITION_DURATION = 600
 
@@ -1834,15 +1625,16 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: collapse.js v3.3.6
+ * Bootstrap: collapse.js v3.3.7
  * http://getbootstrap.com/javascript/#collapse
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
+/* jshint latedef: false */
 
 +function ($) {
   'use strict';
@@ -1866,7 +1658,7 @@ require('../../js/affix.js')
     if (this.options.toggle) this.toggle()
   }
 
-  Collapse.VERSION  = '3.3.6'
+  Collapse.VERSION  = '3.3.7'
 
   Collapse.TRANSITION_DURATION = 350
 
@@ -2047,12 +1839,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: dropdown.js v3.3.6
+ * Bootstrap: dropdown.js v3.3.7
  * http://getbootstrap.com/javascript/#dropdowns
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2069,7 +1861,7 @@ require('../../js/affix.js')
     $(element).on('click.bs.dropdown', this.toggle)
   }
 
-  Dropdown.VERSION = '3.3.6'
+  Dropdown.VERSION = '3.3.7'
 
   function getParent($this) {
     var selector = $this.attr('data-target')
@@ -2214,12 +2006,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: modal.js v3.3.6
+ * Bootstrap: modal.js v3.3.7
  * http://getbootstrap.com/javascript/#modals
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2250,7 +2042,7 @@ require('../../js/affix.js')
     }
   }
 
-  Modal.VERSION  = '3.3.6'
+  Modal.VERSION  = '3.3.7'
 
   Modal.TRANSITION_DURATION = 300
   Modal.BACKDROP_TRANSITION_DURATION = 150
@@ -2357,7 +2149,9 @@ require('../../js/affix.js')
     $(document)
       .off('focusin.bs.modal') // guard against infinite focus loop
       .on('focusin.bs.modal', $.proxy(function (e) {
-        if (this.$element[0] !== e.target && !this.$element.has(e.target).length) {
+        if (document !== e.target &&
+            this.$element[0] !== e.target &&
+            !this.$element.has(e.target).length) {
           this.$element.trigger('focus')
         }
       }, this))
@@ -2553,12 +2347,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: popover.js v3.3.6
+ * Bootstrap: popover.js v3.3.7
  * http://getbootstrap.com/javascript/#popovers
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2575,7 +2369,7 @@ require('../../js/affix.js')
 
   if (!$.fn.tooltip) throw new Error('Popover requires tooltip.js')
 
-  Popover.VERSION  = '3.3.6'
+  Popover.VERSION  = '3.3.7'
 
   Popover.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
     placement: 'right',
@@ -2663,12 +2457,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: scrollspy.js v3.3.6
+ * Bootstrap: scrollspy.js v3.3.7
  * http://getbootstrap.com/javascript/#scrollspy
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2694,7 +2488,7 @@ require('../../js/affix.js')
     this.process()
   }
 
-  ScrollSpy.VERSION  = '3.3.6'
+  ScrollSpy.VERSION  = '3.3.7'
 
   ScrollSpy.DEFAULTS = {
     offset: 10
@@ -2837,12 +2631,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: tab.js v3.3.6
+ * Bootstrap: tab.js v3.3.7
  * http://getbootstrap.com/javascript/#tabs
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2859,7 +2653,7 @@ require('../../js/affix.js')
     // jscs:enable requireDollarBeforejQueryAssignment
   }
 
-  Tab.VERSION = '3.3.6'
+  Tab.VERSION = '3.3.7'
 
   Tab.TRANSITION_DURATION = 150
 
@@ -2994,13 +2788,13 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: tooltip.js v3.3.6
+ * Bootstrap: tooltip.js v3.3.7
  * http://getbootstrap.com/javascript/#tooltip
  * Inspired by the original jQuery.tipsy by Jason Frame
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -3023,7 +2817,7 @@ require('../../js/affix.js')
     this.init('tooltip', element, options)
   }
 
-  Tooltip.VERSION  = '3.3.6'
+  Tooltip.VERSION  = '3.3.7'
 
   Tooltip.TRANSITION_DURATION = 150
 
@@ -3314,9 +3108,11 @@ require('../../js/affix.js')
 
     function complete() {
       if (that.hoverState != 'in') $tip.detach()
-      that.$element
-        .removeAttr('aria-describedby')
-        .trigger('hidden.bs.' + that.type)
+      if (that.$element) { // TODO: Check whether guarding this code with this `if` is really necessary.
+        that.$element
+          .removeAttr('aria-describedby')
+          .trigger('hidden.bs.' + that.type)
+      }
       callback && callback()
     }
 
@@ -3359,7 +3155,10 @@ require('../../js/affix.js')
       // width and height are missing in IE8, so compute them manually; see https://github.com/twbs/bootstrap/issues/14093
       elRect = $.extend({}, elRect, { width: elRect.right - elRect.left, height: elRect.bottom - elRect.top })
     }
-    var elOffset  = isBody ? { top: 0, left: 0 } : $element.offset()
+    var isSvg = window.SVGElement && el instanceof window.SVGElement
+    // Avoid using $.offset() on SVGs since it gives incorrect results in jQuery 3.
+    // See https://github.com/twbs/bootstrap/issues/20280
+    var elOffset  = isBody ? { top: 0, left: 0 } : (isSvg ? null : $element.offset())
     var scroll    = { scroll: isBody ? document.documentElement.scrollTop || document.body.scrollTop : $element.scrollTop() }
     var outerDims = isBody ? { width: $(window).width(), height: $(window).height() } : null
 
@@ -3475,6 +3274,7 @@ require('../../js/affix.js')
       that.$tip = null
       that.$arrow = null
       that.$viewport = null
+      that.$element = null
     })
   }
 
@@ -3510,12 +3310,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: transition.js v3.3.6
+ * Bootstrap: transition.js v3.3.7
  * http://getbootstrap.com/javascript/#transitions
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -3571,7 +3371,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.2.4
  * http://jquery.com/
@@ -13387,7 +13187,7 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /**!
  * Sortable
  * @author	RubaXa   <trash@rubaxa.org>
@@ -14638,12 +14438,12 @@ return jQuery;
 	return Sortable;
 });
 
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 2/12/16.
  */
-
-'use strict';
 
 var $ = require('jquery');
 
@@ -14652,12 +14452,226 @@ var navBar = require('./utilities/navbar.js')();
 var flash = require('./utilities/flashMessageHandling.js')();
 var jira = require('./utilities/JiraIssueCollector.js')();
 
-},{"./utilities/JiraIssueCollector.js":19,"./utilities/ajaxCsrfPrep.js":20,"./utilities/flashMessageHandling.js":21,"./utilities/navbar.js":22,"jquery":16}],19:[function(require,module,exports){
+},{"./utilities/JiraIssueCollector.js":19,"./utilities/ajaxCsrfPrep.js":20,"./utilities/flashMessageHandling.js":21,"./utilities/navbar.js":22,"jquery":15}],18:[function(require,module,exports){
+'use strict';
+
+var $ = require('jquery');
+window.$ = $;
+var jQuery = $;
+window.jQuery = jQuery;
+
+require('bootstrap');
+var bootbox = require('bootbox');
+var Sortable = require('sortablejs');
+// var Sortable = require('../utilities/Sortable.js');
+var common = require('../common.js');
+
+//var navs = require('./navControls.js')();
+
+// (function () {
+$("#backNavButton").on('click', function () {
+    submitForm(backNavTarget);
+});
+
+$("#forwardNavButton").on('click', function () {
+    submitForm(forwardNavTarget);
+});
+
+// handle addQuestion button
+$("#addQuestion").on('click', function () {
+    // copy empty form
+    var order = getQuestionCount() + 1;
+    var myClone = $('#questionItem0').clone();
+
+    // add to editableList and refresh
+    myClone.appendTo($("#questionList"));
+    updateListItemData(myClone, order);
+    updateNumbers();
+});
+
+// Basic form validation and prompts.
+// Exams must have 1 question and they must all have names.
+function submitForm(targetForm) {
+    if (numberOfQuestions() == 0) {
+        bootbox.alert('Exams must have at least one question.');
+    } else if (formFieldsValid()) {
+        $('#nextAction').val(targetForm);
+        $('#questionForm').submit();
+    }
+}
+
+function numberOfQuestions() {
+    return $('#questionForm').find('[id^="questionName"]').length;
+}
+
+function formFieldsValid() {
+    var msg = '';
+    var valid = true;
+    var $names = $('#questionForm').find('[id^="questionName"]');
+    $names.each(function () {
+        if ($(this).val() == '') {
+            valid = false;
+            msg = 'One or more questions is missing a name.';
+        }
+    });
+    var $maxScores = $('#questionForm').find('[id^="maxScore"]');
+    $maxScores.each(function () {
+        if ($(this).val() == '') {
+            valid = false;
+            msg = 'One or more questions is missing a maximum score.';
+        }
+    });
+
+    if (!valid) {
+        bootbox.alert(msg);
+    }
+
+    return valid;
+}
+
+/**
+ * Handle deletion - items will be deleted once the form is submitted
+ * This is actually listening for an attempt to drag a filtered element.
+ * It fires on mousedown, so it is practically equivalent to a click.
+ *
+ * evt.item is HTMLElement receiving the `mousedown|tapstart` event.
+ *
+ * @param evt
+ */
+function handleDelete(evt, editableList) {
+    //get the element from the list
+    var el = editableList.closest(evt.item);
+
+    bootbox.dialog({
+        className: 'confirmationModal',
+        message: "<p class='questionDeleteWarning' id='questionDeleteWarning'> <span class='glyphicon glyphicon-warning-sign'></span>" + " Warning: This will permanently delete all elements and scores associated with the question </p>",
+        title: "Delete Question",
+        buttons: {
+            success: {
+                label: 'Cancel',
+                className: "btn-sm bnt-primary cancelQuestionDelete",
+                callback: function callback() {}
+            },
+            danger: {
+                label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
+                className: "btn-danger btn-sm confirmQuestionDelete",
+                callback: function callback() {
+                    if (el && el.parentNode.removeChild(el)) updateNumbers();
+                }
+            }
+        }
+    });
+}
+
+try {
+
+    // (function(){
+    // Sortable is the lib for drag and drop questions
+    // create an editable list and set up some filters to handle callbacks
+    // $(document).ready(function () {
+
+    localStorage.clear();
+    var qList = document.getElementById('questionList');
+    var editableList = Sortable.create(qList, {
+        filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
+        animation: 150,
+        handle: '.handle', // Drag handle selector within list items
+        ghostClass: "sortable-ghost", // Class name for the drop placeholder
+
+        onFilter: function onFilter(evt) {
+            handleDelete(evt, editableList);
+        },
+        store: {
+            // store the ordering to localStorage
+            get: function get(sortable) {
+                var order = localStorage.getItem(sortable.options.group);
+                //window.console.log(localStorage.getItem(sortable.options.group));
+                return order ? order.split('|') : [];
+            },
+            set: function set(sortable) {
+                var order = sortable.toArray();
+                localStorage.setItem(sortable.options.group, order.join('|'));
+                updateNumbers();
+            }
+        }
+    });
+} catch (e) {
+    window.console.log(e);
+}
+// $(".js-remove").on('click', function(){
+//
+//     var el = $(this);
+//
+//     bootbox.dialog( {
+//         message: "<p class='questionDeleteWarning' id='questionDeleteWarning'> <span class='glyphicon glyphicon-warning-sign'></span>" +
+//         " Warning: This will permanently delete all elements and scores associated with the question </p>",
+//         title: "Delete Question",
+//         buttons: {
+//             success: {
+//                 label: 'Cancel',
+//                 className: "btn-sm bnt-primary cancelQuestionDelete",
+//                 callback: function () {
+//                 }
+//             },
+//             danger: {
+//                 label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
+//                 className: "btn-danger btn-sm confirmQuestionDelete",
+//                 callback: function () {
+//                     if ( el )
+//                         window.console.log(el);
+//                         var questionNumber = el.data('question-number');
+//
+//                         var parent = $("#questionItem" + questionNumber)
+//                         parent.remove();
+//                     // if ( el && el.parentNode.removeChild( el ) )
+//                         updateNumbers();
+//                 }
+//             }
+//         }
+//     });
+// });
+
+// });
+// })();
+// update all "questionItem" ids. These define the ordering when saved to the DB.
+function updateNumbers() {
+    $('#questionForm').find("[id^='questionItem']").each(function (index, el) {
+        updateListItemData(el, index + 1);
+    });
+}
+
+// set all relevant names and ids of [item] to value [order]
+function updateListItemData(item, order) {
+    $(item).attr('id', 'questionItem' + order);
+    $(item).find('#displayNumber').text('Question #' + order);
+    $(item).find("[id^='questionName']").attr('id', 'questionName' + order);
+    $(item).find("[id^='questionName']").attr('name', 'questionName' + order);
+    $(item).find('textarea').attr('id', 'questionText' + order);
+    $(item).find('textarea').attr('name', 'questionText' + order);
+    $(item).find('#questionId').attr('name', 'questionId' + order);
+    $(item).find("[id^='maxScore']").attr('id', 'maxScore' + order);
+    $(item).find("[id^='maxScore']").attr('name', 'maxScore' + order);
+}
+
+function getQuestionCount() {
+    // return number of questions currently in the questionList
+    return $("[id^='questionItem']").length;
+}
+//
+// $(document).ready(function () {
+//    $(".mainBodyLocator").append("<div id='loadComplete'></div>");
+// });
+
+//        return false;
+//     }
+// );
+
+},{"../common.js":17,"bootbox":1,"bootstrap":2,"jquery":15,"sortablejs":16}],19:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 3/23/16.
  */
-
-'use strict';
 
 var $ = require('jquery');
 
@@ -14675,7 +14689,7 @@ module.exports = function () {
 
 };
 
-},{"jquery":16}],20:[function(require,module,exports){
+},{"jquery":15}],20:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
@@ -14694,12 +14708,12 @@ module.exports = function () {
     });
 };
 
-},{"jquery":16}],21:[function(require,module,exports){
+},{"jquery":15}],21:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 10/4/15.
  */
-
-'use strict';
 
 var $ = require('jquery');
 var delayTime = 5000;
@@ -14711,12 +14725,12 @@ module.exports = function () {
   $('div.alert').not('alert-important').delay(delayTime).slideUp(300);
 };
 
-},{"jquery":16}],22:[function(require,module,exports){
+},{"jquery":15}],22:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 2/12/16.
  */
-
-'use strict';
 
 var $ = require('jquery');
 window.$ = $;
@@ -14750,4 +14764,6 @@ module.exports = function () {
     })();
 };
 
-},{"bootstrap":3,"jquery":16}]},{},[1]);
+},{"bootstrap":2,"jquery":15}]},{},[18]);
+
+//# sourceMappingURL=question-edit-package.js.map

@@ -41,6 +41,18 @@ module.exports = {
     },
 
     computed: {
+        // store: function(){
+        //   if(GOM){
+        //       return GOM.store;
+        //   }
+        //   if(window.store){
+        //       return window.store;
+        //   }
+        //
+        //   if(store){
+        //       return store;
+        //   }
+        // },
         /* --------------- button ------------- */
         buttonLabel: function () {
             if ( ! this.paused ) {

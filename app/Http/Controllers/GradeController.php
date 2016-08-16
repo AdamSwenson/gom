@@ -29,6 +29,8 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 
+use JavaScript;
+
 /**
  * Class GradeController
  *
@@ -458,8 +460,34 @@ class GradeController extends Controller
         $studentsJson = $this->makeStudentJson($exam);
         $gradesJson = $this->makeGradesJson();
 
+        //added
+//        $studentElementComments = json_encode($studentElementComments, JSON_FORCE_OBJECT);
+//        $studentElementScores = json_encode($studentElementScores, JSON_FORCE_OBJECT);
+//        $studentQuestionScores = json_encode($studentQuestionScores, JSON_FORCE_OBJECT);
+//        $examGradingTimes = json_encode($examGradingTimes, JSON_FORCE_OBJECT);
+//        $studentGrades = json_encode($studentGrades, JSON_FORCE_OBJECT);
+//        $maxScores = json_encode($maxQuestionScores, JSON_FORCE_OBJECT);
+//        $numQuestions = count($questionAssignments);
+        Javascript::put([
+            'exam'                   => $exam,
+            'students'               => $students,
+            'questionAssignments'    => $questionAssignments,
+            'maxQuestionScores'      => $maxQuestionScores,
+            'allElements'            => $allElements,
+            'stockCommentsJson'      => $stockCommentsJson,
+            'examGradingTimes'       => $examGradingTimes,
+            'studentElementScores'   => $studentElementScores,
+            'studentElementComments' => $studentElementComments,
+            'studentQuestionScores'  => $studentQuestionScores,
+            'studentGrades'          => $studentGrades,
+            'questionsJson'          => $questionsJson,
+            'studentsJson'           => $studentsJson,
+            'gradesJson'             => $gradesJson,
+        ]);
+
 //        return View::make('development.newTable')->with([
-        return View::make('development.newGrading')->with([
+//        return View::make('development.newGrading')->with([
+        return View::make('grade.newGrading')->with([
                                                               'exam'                   => $exam,
                                                               'students'               => $students,
                                                               'questionAssignments'    => $questionAssignments,
@@ -624,6 +652,7 @@ class GradeController extends Controller
 
     /**
      * Builds the json object containing questions which the page js expects
+     * Also injects the object into the view as GOM.questions
      * @param Exam $exam
      * @return string
      */
@@ -645,13 +674,15 @@ class GradeController extends Controller
             $questionIndex++;
         }
 
-        return json_encode($questions, JSON_FORCE_OBJECT);
+        Javascript::put(['questions' => $questions]);
 
+        return json_encode($questions, JSON_FORCE_OBJECT);
     }
 
 
     /**
      * Builds the json object containing students which the page js expects
+     * Also injects the object into the view as GOM.students
      * @param Exam $exam
      * @return string
      */
@@ -672,6 +703,10 @@ class GradeController extends Controller
             $studentIndex++;
         }
 
+
+        //send to page
+        Javascript::put(['students' => $s]);
+
         return json_encode($s, JSON_FORCE_OBJECT);
 
         // load all question assignments and all elements for those questions
@@ -679,7 +714,8 @@ class GradeController extends Controller
     }
 
     /**
-     * Makes the object which the page's javascript expects
+     * Makes the object which the page's javascript expects.
+     * Also injects the object into the view GOM.stockComments
      * @param $allElements
      * @return array
      */
@@ -699,13 +735,25 @@ class GradeController extends Controller
                 $stockComments[] = $defaultComments;
             }
         }
+
+        //send to page
+        Javascript::put(['stockComments' => $stockComments]);
+
         $stockComments = json_encode($stockComments, JSON_FORCE_OBJECT);
 
         return $stockComments;
     }
 
+    /**
+     * Makes json of standard grade values
+     * Also injects into view as GOM.grades
+     * @return string
+     */
     public function makeGradesJson()
     {
+        //send to page
+        Javascript::put(['grades' => GradeFactory::gradeJson()]);
+
         return GradeFactory::gradeJson();
     }
 

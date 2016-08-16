@@ -28,6 +28,15 @@ module.exports = {
     },
 
     computed: {
+        // store: function(){
+        //     if(GOM){
+        //         return GOM.store;
+        //     }
+        //
+        //     if(store){
+        //         return store;
+        //     }
+        // },
         /**
          * The string id of the question score field for this question.
          * Does not contain '#'

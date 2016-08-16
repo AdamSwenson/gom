@@ -1,339 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
- * Created by  adam on 7/11/16.
- */
-
-'use strict';
-
-var $ = require('jquery');
-window.$ = $;
-var jQuery = $;
-window.jQuery = jQuery;
-
-require('bootstrap');
-var bootbox = require('bootbox');
-
-var Vue = require('vue');
-//dev
-Vue.config.debug = true;
-
-var ajaxTools = require('./components/ajax.tools.js');
-
-new Vue({
-    el: '#gradeExamPage',
-
-    components: {
-        'element-input': require('./components/elementInput.component.js'),
-        'current-student-area': require('./components/currentStudentArea.component.js'),
-        'student-list-item': require('./components/studentListItem.component'),
-        'letter-grade-button': require('./components/letterGradeButton.component.js'),
-        'question-score': require('./components/questionScore.component'),
-        'dashboard-timer': require('./components/dashboard.timer.component'),
-        'dashboard-counts': require('./components/dashboard.counts.component'),
-
-        'student-table': require('./components/studentTable.component')
-    },
-
-    data: {
-        store: store,
-
-        ajaxTools: ajaxTools,
-
-        sortAsc: true
-    },
-
-    computed: {},
-
-    methods: {
-        /* ------------------------------ Display ------------------------------ */
-
-        showQuestionPanel: function showQuestionPanel() {
-            $('#selectPrompt').hide();
-            $('#questionArea').show("fast");
-        },
-
-        // /**
-        //  * Sorts the StudentRoster by the clicked header. Sort order reverses with each press.
-        //  * @param value
-        //  * @param data
-        //  */
-        // sortRosterBy: function ( value) {
-        //     let data = this.store;
-        //     var me = this;
-        //     var $roster = $( '#studentRosterBody' );
-        //     $roster.append(
-        //         $roster.find( '[id^="studentListItem"]' ).sort( function ( a, b ) {
-        //             var i = $( a ).find( '[id^="' + value + '"]' );
-        //             var j = $( b ).find( '[id^="' + value + '"]' );
-        //             var result;
-        //             if ( value == 'studentName' || value == 'studentIdentifier' ) {
-        //                 result = $( i ).text().toUpperCase().localeCompare(
-        //                     $( j ).text().toUpperCase() );
-        //             } else {
-        //                 // sort by exam grade
-        //                 var gradeA = data.examGrades[ $( a ).attr( 'data-index' ) ];
-        //                 var gradeB = data.examGrades[ $( b ).attr( 'data-index' ) ];
-        //                 result = gradeA - gradeB;
-        //             }
-        //             // flip results if we're sorting in DESC
-        //             if ( ! me.sortAsc ) {
-        //                 result *= - 1;
-        //             }
-        //             return result;
-        //         } )
-        //     );
-        //     me.sortAsc = ! me.sortAsc;
-        // },
-
-        /* ------------------------------ Server ------------------------------ */
-
-        /**
-         * Saves a comment (and score if present) to the database
-         * @param elementId Database id of the element
-         * @param commentText Text of the comment to save
-         * @param score Associated score to save (can be left null)
-         * @returns boolean
-         */
-        saveCommentWithTime: function saveCommentWithTime(elementId, commentText, score) {
-            var me = this;
-
-            var studentId = this.store.getActiveStudentId();
-            var examId = this.store.getExamId();
-            var time = this.store.getActiveStudentGradingTime();
-
-            var request = new this.ajaxTools.requests.commentRequest(studentId, elementId, commentText, score, time);
-
-            return this.ajaxTools.sendRequest(examId, request);
-        },
-
-        /**
-         * Records grading time to the db
-         */
-        saveTime: function saveTime() {
-            var studentId = this.store.getActiveStudentId();
-            var examId = this.store.getExamId();
-            var time = this.store.getActiveStudentGradingTime();
-
-            var request = new this.ajaxTools.requests.timeRequest(studentId, time);
-            return this.ajaxTools.sendRequest(examId, request);
-        },
-
-        /**
-         * Save a question or element score (along with grading time) to the server
-         *
-         * NB, To avoid race conditions, don't use the active student shortcuts in store to get the values.
-         *
-         * @param elementId
-         * @param score
-         */
-        saveElementScoreWithTime: function saveElementScoreWithTime(studentIndex, elementId, score) {
-            var student = this.store.getStudent(studentIndex);
-            var examId = this.store.getExamId();
-            var time = this.store.getStudentGradingTime(studentIndex);
-
-            var request = new this.ajaxTools.requests.elementScoreRequest(student.studentId, elementId, score, time);
-
-            return this.ajaxTools.sendRequest(examId, request);
-        },
-
-        /**
-         * Save a question or element score (along with grading time) to the server
-         *
-         * NB, To avoid race conditions, don't use the active student shortcuts in store to get the values.
-         *
-         * @param studentIndex
-         * @param questionIndex
-         * @param questionAssignmentId
-         */
-        saveQuestionScoreWithTime: function saveQuestionScoreWithTime(studentIndex, questionIndex, questionAssignmentId) {
-            var student = this.store.getStudent(studentIndex);
-            var examId = this.store.getExamId();
-            var time = this.store.getStudentGradingTime(studentIndex);
-            var score = this.store.getQuestionScore(studentIndex, questionIndex);
-            var request = new this.ajaxTools.requests.questionScoreRequest(student.studentId, questionAssignmentId, score, time);
-
-            return this.ajaxTools.sendRequest(examId, request);
-        },
-
-        /**
-         * Sends a request to delete a score from the database
-         * @param studentIndex
-         * @param questionAssignmentId
-         * @returns boolean
-         */
-        deleteScore: function deleteScore(studentIndex, questionAssignmentId) {
-            var student = this.store.getStudent(studentIndex);
-            var examId = this.store.getExamId();
-
-            return this.ajaxTools.deleteScoreRequest(examId, student.studentId, questionAssignmentId);
-        },
-
-        /* ------------------------------ Events ------------------------------ */
-
-        /**
-         * Sends an event requesting that the timer start
-         */
-        requestTimerStart: function requestTimerStart() {
-            window.console.log('gradeVue', 'sending start-timer-request');
-            this.$broadcast('start-timer-request');
-        },
-
-        /**
-         * Sends an event requesting that the timer stop
-         */
-        requestTimerStop: function requestTimerStop() {
-            window.console.log('gradeVue', 'sending stop-timer-request');
-            this.$broadcast('stop-timer-request');
-        }
-
-    },
-
-    /* ------------------------------ other ------------------------------ */
-
-    events: {
-        /**
-         * Handles anything not done by the elementInput when a slider stops moving
-         */
-        'element-slider-stop-event': function elementSliderStopEvent() {
-            window.console.log('gradeVue', 'element-slider-stop-event');
-
-            //Sigh. The user might have forgotten to restart the timer. Do it for them
-            this.requestTimerStart();
-        },
-
-        /**
-         * Save the question score
-         * obj.questionIndex
-         * obj.questionNumber
-         * obj.score
-         * @param obj
-         */
-        'letter-grade-selected': function letterGradeSelected(obj) {
-            window.console.log('gradeVue', 'letter-grade-selected', obj);
-            this.store.storeQuestionScoreForActiveStudent(obj.questionIndex, obj.score);
-            this.$broadcast('letter-grade-selected', obj);
-        },
-
-        /**
-         * Lets anyone who might be interested know that the visibility of
-         * student names has been toggled.
-         */
-        'name-visibility-toggled': function nameVisibilityToggled() {
-            window.console.log('gradeVue', 'name-visibility-toggled');
-        },
-
-        /**
-         * Catches the event fired upon student selection.
-         * The object accompanying the event should have the properties:
-         * obj.studentName
-         * obj.studentIdentifier
-         *
-         * @param obj
-         */
-        'student-select-event': function studentSelectEvent(obj) {
-            window.console.log('gradeVue', 'caught student-select-event', obj);
-            this.showQuestionPanel();
-            this.$broadcast('start-timer-request');
-            this.requestTimerStart();
-            this.$broadcast('student-select-event', obj);
-        },
-
-        /**
-         * Handles the request to store comment text on the server
-         * Accompanying object should contain:
-         *      obj.elementIndex: Index of the element whose score needs updating
-         */
-        'store-comment-text-request': function storeCommentTextRequest(obj) {
-            var elementIndex = obj.elementIndex;
-            window.console.log('gradeVue', 'store-comment-text-request', obj);
-        },
-
-        /**
-         * Handles the request to store element score on the server
-         * Accompanying object should contain:
-         *      obj.elementIndex: Index of the element whose score needs updating
-         */
-        'store-element-score-request': function storeElementScoreRequest(obj) {
-            var elementIndex = obj.elementIndex;
-            window.console.log('gradeVue', 'store-element-score-request', obj);
-        },
-
-        /**
-         * Handles the request to store question score on the server
-         * Accompanying object should contain:
-         *      obj.questionAssignmentId: Db id of the question assignment
-         *      obj.questionIndex: Index of the question whose score needs updating
-         *      obj.studentIndex: Index of the student to record grades for.
-         *          This is here to avoid a race condition
-         * @param questionScoreRequestObj
-         */
-        'store-question-score-request': function storeQuestionScoreRequest(questionScoreRequestObj) {
-            window.console.log('gradeVue', 'caught store-question-score-request', questionScoreRequestObj);
-            var score = this.store.getQuestionScoreForActiveStudent(questionScoreRequestObj.questionIndex);
-            if (score == '' || score == null) {
-                this.deleteScore(questionScoreRequestObj.studentIndex, questionScoreRequestObj.questionAssignmentId);
-            } else {
-                this.saveQuestionScoreWithTime(questionScoreRequestObj.studentIndex, questionScoreRequestObj.questionIndex, questionScoreRequestObj.questionAssignmentId);
-            }
-        },
-
-        /**
-         * Handles request to start the grading timer
-         */
-        'start-timer-request': function startTimerRequest() {
-            window.console.log('gradeVue', 'caught start-timer-request');
-            this.requestTimerStart();
-        },
-
-        /**
-         * Handles the request to stop the grading timer by
-         * retransmitting it back down the chain
-         */
-        'stop-timer-request': function stopTimerRequest() {
-            window.console.log('gradeVue', 'stop-timer-request');
-            this.requestTimerStop();
-        },
-
-        /**
-         * Handles notification that the timer has started
-         */
-        'timer-start-event': function timerStartEvent() {
-            window.console.log('gradeVue', 'caught timer-start-event');
-            this.saveTime();
-        },
-        /**
-         * Handles notification that the timer has stopped
-         */
-        'timer-stop-event': function timerStopEvent() {
-            window.console.log('gradeVue', 'caught timer-stop-event');
-            this.saveTime();
-        },
-
-        /**
-         * Handles the request to save the time to the db
-         */
-        'time-save-request': function timeSaveRequest() {
-            window.console.log('gradeVue', 'caught time-save-request');
-            this.saveTime();
-        }
-
-    },
-
-    directives: {},
-
-    ready: function ready() {
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-        window.console.log('gradeVue.js ready');
-    }
-});
-
-},{"./components/ajax.tools.js":29,"./components/currentStudentArea.component.js":30,"./components/dashboard.counts.component":31,"./components/dashboard.timer.component":32,"./components/elementInput.component.js":33,"./components/letterGradeButton.component.js":34,"./components/questionScore.component":35,"./components/studentListItem.component":37,"./components/studentTable.component":38,"bootbox":2,"bootstrap":3,"jquery":24,"vue":28}],2:[function(require,module,exports){
-/**
  * bootbox.js [v4.4.0]
  *
  * http://bootboxjs.com/license.txt
@@ -1319,7 +985,7 @@ new Vue({
   return exports;
 }));
 
-},{"jquery":24}],3:[function(require,module,exports){
+},{"jquery":23}],2:[function(require,module,exports){
 // This file is autogenerated via the `commonjs` Grunt task. You can require() this file in a CommonJS environment.
 require('../../js/transition.js')
 require('../../js/alert.js')
@@ -1333,12 +999,12 @@ require('../../js/popover.js')
 require('../../js/scrollspy.js')
 require('../../js/tab.js')
 require('../../js/affix.js')
-},{"../../js/affix.js":4,"../../js/alert.js":5,"../../js/button.js":6,"../../js/carousel.js":7,"../../js/collapse.js":8,"../../js/dropdown.js":9,"../../js/modal.js":10,"../../js/popover.js":11,"../../js/scrollspy.js":12,"../../js/tab.js":13,"../../js/tooltip.js":14,"../../js/transition.js":15}],4:[function(require,module,exports){
+},{"../../js/affix.js":3,"../../js/alert.js":4,"../../js/button.js":5,"../../js/carousel.js":6,"../../js/collapse.js":7,"../../js/dropdown.js":8,"../../js/modal.js":9,"../../js/popover.js":10,"../../js/scrollspy.js":11,"../../js/tab.js":12,"../../js/tooltip.js":13,"../../js/transition.js":14}],3:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: affix.js v3.3.6
+ * Bootstrap: affix.js v3.3.7
  * http://getbootstrap.com/javascript/#affix
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1364,7 +1030,7 @@ require('../../js/affix.js')
     this.checkPosition()
   }
 
-  Affix.VERSION  = '3.3.6'
+  Affix.VERSION  = '3.3.7'
 
   Affix.RESET    = 'affix affix-top affix-bottom'
 
@@ -1497,12 +1163,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: alert.js v3.3.6
+ * Bootstrap: alert.js v3.3.7
  * http://getbootstrap.com/javascript/#alerts
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1518,7 +1184,7 @@ require('../../js/affix.js')
     $(el).on('click', dismiss, this.close)
   }
 
-  Alert.VERSION = '3.3.6'
+  Alert.VERSION = '3.3.7'
 
   Alert.TRANSITION_DURATION = 150
 
@@ -1531,7 +1197,7 @@ require('../../js/affix.js')
       selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
     }
 
-    var $parent = $(selector)
+    var $parent = $(selector === '#' ? [] : selector)
 
     if (e) e.preventDefault()
 
@@ -1593,12 +1259,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: button.js v3.3.6
+ * Bootstrap: button.js v3.3.7
  * http://getbootstrap.com/javascript/#buttons
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1615,7 +1281,7 @@ require('../../js/affix.js')
     this.isLoading = false
   }
 
-  Button.VERSION  = '3.3.6'
+  Button.VERSION  = '3.3.7'
 
   Button.DEFAULTS = {
     loadingText: 'loading...'
@@ -1637,10 +1303,10 @@ require('../../js/affix.js')
 
       if (state == 'loadingText') {
         this.isLoading = true
-        $el.addClass(d).attr(d, d)
+        $el.addClass(d).attr(d, d).prop(d, true)
       } else if (this.isLoading) {
         this.isLoading = false
-        $el.removeClass(d).removeAttr(d)
+        $el.removeClass(d).removeAttr(d).prop(d, false)
       }
     }, this), 0)
   }
@@ -1704,10 +1370,15 @@ require('../../js/affix.js')
 
   $(document)
     .on('click.bs.button.data-api', '[data-toggle^="button"]', function (e) {
-      var $btn = $(e.target)
-      if (!$btn.hasClass('btn')) $btn = $btn.closest('.btn')
+      var $btn = $(e.target).closest('.btn')
       Plugin.call($btn, 'toggle')
-      if (!($(e.target).is('input[type="radio"]') || $(e.target).is('input[type="checkbox"]'))) e.preventDefault()
+      if (!($(e.target).is('input[type="radio"], input[type="checkbox"]'))) {
+        // Prevent double click on radios, and the double selections (so cancellation) on checkboxes
+        e.preventDefault()
+        // The target component still receive the focus
+        if ($btn.is('input,button')) $btn.trigger('focus')
+        else $btn.find('input:visible,button:visible').first().trigger('focus')
+      }
     })
     .on('focus.bs.button.data-api blur.bs.button.data-api', '[data-toggle^="button"]', function (e) {
       $(e.target).closest('.btn').toggleClass('focus', /^focus(in)?$/.test(e.type))
@@ -1715,12 +1386,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: carousel.js v3.3.6
+ * Bootstrap: carousel.js v3.3.7
  * http://getbootstrap.com/javascript/#carousel
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1748,7 +1419,7 @@ require('../../js/affix.js')
       .on('mouseleave.bs.carousel', $.proxy(this.cycle, this))
   }
 
-  Carousel.VERSION  = '3.3.6'
+  Carousel.VERSION  = '3.3.7'
 
   Carousel.TRANSITION_DURATION = 600
 
@@ -1954,15 +1625,16 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: collapse.js v3.3.6
+ * Bootstrap: collapse.js v3.3.7
  * http://getbootstrap.com/javascript/#collapse
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
+/* jshint latedef: false */
 
 +function ($) {
   'use strict';
@@ -1986,7 +1658,7 @@ require('../../js/affix.js')
     if (this.options.toggle) this.toggle()
   }
 
-  Collapse.VERSION  = '3.3.6'
+  Collapse.VERSION  = '3.3.7'
 
   Collapse.TRANSITION_DURATION = 350
 
@@ -2167,12 +1839,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: dropdown.js v3.3.6
+ * Bootstrap: dropdown.js v3.3.7
  * http://getbootstrap.com/javascript/#dropdowns
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2189,7 +1861,7 @@ require('../../js/affix.js')
     $(element).on('click.bs.dropdown', this.toggle)
   }
 
-  Dropdown.VERSION = '3.3.6'
+  Dropdown.VERSION = '3.3.7'
 
   function getParent($this) {
     var selector = $this.attr('data-target')
@@ -2334,12 +2006,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: modal.js v3.3.6
+ * Bootstrap: modal.js v3.3.7
  * http://getbootstrap.com/javascript/#modals
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2370,7 +2042,7 @@ require('../../js/affix.js')
     }
   }
 
-  Modal.VERSION  = '3.3.6'
+  Modal.VERSION  = '3.3.7'
 
   Modal.TRANSITION_DURATION = 300
   Modal.BACKDROP_TRANSITION_DURATION = 150
@@ -2477,7 +2149,9 @@ require('../../js/affix.js')
     $(document)
       .off('focusin.bs.modal') // guard against infinite focus loop
       .on('focusin.bs.modal', $.proxy(function (e) {
-        if (this.$element[0] !== e.target && !this.$element.has(e.target).length) {
+        if (document !== e.target &&
+            this.$element[0] !== e.target &&
+            !this.$element.has(e.target).length) {
           this.$element.trigger('focus')
         }
       }, this))
@@ -2673,12 +2347,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: popover.js v3.3.6
+ * Bootstrap: popover.js v3.3.7
  * http://getbootstrap.com/javascript/#popovers
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2695,7 +2369,7 @@ require('../../js/affix.js')
 
   if (!$.fn.tooltip) throw new Error('Popover requires tooltip.js')
 
-  Popover.VERSION  = '3.3.6'
+  Popover.VERSION  = '3.3.7'
 
   Popover.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
     placement: 'right',
@@ -2783,12 +2457,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: scrollspy.js v3.3.6
+ * Bootstrap: scrollspy.js v3.3.7
  * http://getbootstrap.com/javascript/#scrollspy
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2814,7 +2488,7 @@ require('../../js/affix.js')
     this.process()
   }
 
-  ScrollSpy.VERSION  = '3.3.6'
+  ScrollSpy.VERSION  = '3.3.7'
 
   ScrollSpy.DEFAULTS = {
     offset: 10
@@ -2957,12 +2631,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: tab.js v3.3.6
+ * Bootstrap: tab.js v3.3.7
  * http://getbootstrap.com/javascript/#tabs
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2979,7 +2653,7 @@ require('../../js/affix.js')
     // jscs:enable requireDollarBeforejQueryAssignment
   }
 
-  Tab.VERSION = '3.3.6'
+  Tab.VERSION = '3.3.7'
 
   Tab.TRANSITION_DURATION = 150
 
@@ -3114,13 +2788,13 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: tooltip.js v3.3.6
+ * Bootstrap: tooltip.js v3.3.7
  * http://getbootstrap.com/javascript/#tooltip
  * Inspired by the original jQuery.tipsy by Jason Frame
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -3143,7 +2817,7 @@ require('../../js/affix.js')
     this.init('tooltip', element, options)
   }
 
-  Tooltip.VERSION  = '3.3.6'
+  Tooltip.VERSION  = '3.3.7'
 
   Tooltip.TRANSITION_DURATION = 150
 
@@ -3434,9 +3108,11 @@ require('../../js/affix.js')
 
     function complete() {
       if (that.hoverState != 'in') $tip.detach()
-      that.$element
-        .removeAttr('aria-describedby')
-        .trigger('hidden.bs.' + that.type)
+      if (that.$element) { // TODO: Check whether guarding this code with this `if` is really necessary.
+        that.$element
+          .removeAttr('aria-describedby')
+          .trigger('hidden.bs.' + that.type)
+      }
       callback && callback()
     }
 
@@ -3479,7 +3155,10 @@ require('../../js/affix.js')
       // width and height are missing in IE8, so compute them manually; see https://github.com/twbs/bootstrap/issues/14093
       elRect = $.extend({}, elRect, { width: elRect.right - elRect.left, height: elRect.bottom - elRect.top })
     }
-    var elOffset  = isBody ? { top: 0, left: 0 } : $element.offset()
+    var isSvg = window.SVGElement && el instanceof window.SVGElement
+    // Avoid using $.offset() on SVGs since it gives incorrect results in jQuery 3.
+    // See https://github.com/twbs/bootstrap/issues/20280
+    var elOffset  = isBody ? { top: 0, left: 0 } : (isSvg ? null : $element.offset())
     var scroll    = { scroll: isBody ? document.documentElement.scrollTop || document.body.scrollTop : $element.scrollTop() }
     var outerDims = isBody ? { width: $(window).width(), height: $(window).height() } : null
 
@@ -3595,6 +3274,7 @@ require('../../js/affix.js')
       that.$tip = null
       that.$arrow = null
       that.$viewport = null
+      that.$element = null
     })
   }
 
@@ -3630,12 +3310,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: transition.js v3.3.6
+ * Bootstrap: transition.js v3.3.7
  * http://getbootstrap.com/javascript/#transitions
  * ========================================================================
- * Copyright 2011-2015 Twitter, Inc.
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -3691,7 +3371,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 
 var domify = require('./lib/domify');
 var classes = require('./lib/classes');
@@ -4426,7 +4106,7 @@ proto.empty = function() {
 };
 
 
-},{"./lib/classes":17,"./lib/domify":18,"./lib/event":19,"./lib/matches":21,"./lib/mutation":22}],17:[function(require,module,exports){
+},{"./lib/classes":16,"./lib/domify":17,"./lib/event":18,"./lib/matches":20,"./lib/mutation":21}],16:[function(require,module,exports){
 
 // whitespace regex to avoid creating every time
 var re = /\s+/;
@@ -4557,7 +4237,7 @@ ClassList.prototype.has = function(name){
     : !! ~this.array().indexOf(name);
 };
 
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 
 /**
  * Wrap map from jquery.
@@ -4632,7 +4312,7 @@ module.exports = function(html){
     return els;
 };
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 
 /**
  * Bind `el` event `type` to `fn`.
@@ -4730,7 +4410,7 @@ var typeOf = (function () {
     };
 })();
 
-},{"./init.json":20,"./types.json":23}],20:[function(require,module,exports){
+},{"./init.json":19,"./types.json":22}],19:[function(require,module,exports){
 module.exports={
   "initEvent" : [
     "type",
@@ -4785,7 +4465,7 @@ module.exports={
   ]
 }
 
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 
 var proto = Element.prototype;
 
@@ -4810,7 +4490,7 @@ module.exports = function match(el, selector) {
     return false;
 };
 
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 
 function mkfragment(elements) {
     var frag = document.createDocumentFragment();
@@ -4872,7 +4552,7 @@ module.exports.empty = function(parent) {
 };
 
 
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports={
   "MouseEvent" : [
     "click",
@@ -4917,7 +4597,7 @@ module.exports={
   ]
 }
 
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.2.4
  * http://jquery.com/
@@ -14733,38 +14413,113 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-},{}],25:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 // shim for using process in browser
-
 var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+(function () {
+    try {
+        cachedSetTimeout = setTimeout;
+    } catch (e) {
+        cachedSetTimeout = function () {
+            throw new Error('setTimeout is not defined');
+        }
+    }
+    try {
+        cachedClearTimeout = clearTimeout;
+    } catch (e) {
+        cachedClearTimeout = function () {
+            throw new Error('clearTimeout is not defined');
+        }
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        return setTimeout(fun, 0);
+    } else {
+        return cachedSetTimeout.call(null, fun, 0);
+    }
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        clearTimeout(marker);
+    } else {
+        cachedClearTimeout.call(null, marker);
+    }
+}
 var queue = [];
 var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
 
 function drainQueue() {
     if (draining) {
         return;
     }
+    var timeout = runTimeout(cleanUpNextTick);
     draining = true;
-    var currentQueue;
+
     var len = queue.length;
     while(len) {
         currentQueue = queue;
         queue = [];
-        var i = -1;
-        while (++i < len) {
-            currentQueue[i]();
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
         }
+        queueIndex = -1;
         len = queue.length;
     }
+    currentQueue = null;
     draining = false;
+    runClearTimeout(timeout);
 }
+
 process.nextTick = function (fun) {
-    queue.push(fun);
-    if (!draining) {
-        setTimeout(drainQueue, 0);
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
     }
 };
 
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
 process.title = 'browser';
 process.browser = true;
 process.env = {};
@@ -14786,14 +14541,13 @@ process.binding = function (name) {
     throw new Error('process.binding is not supported');
 };
 
-// TODO(shtylman)
 process.cwd = function () { return '/' };
 process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 process.umask = function() { return 0; };
 
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 module.exports = extend
 
 function extend(target) {
@@ -14809,7 +14563,7 @@ function extend(target) {
 
     return target
 }
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 // vendor
 var xtend = require('xtend');
 var dom = require('dom');
@@ -15110,7 +14864,7 @@ proto.mouseenter = function (e) {
 
 module.exports = Typeahead;
 
-},{"dom":16,"xtend":26}],28:[function(require,module,exports){
+},{"dom":15,"xtend":25}],27:[function(require,module,exports){
 (function (process,global){
 /*!
  * Vue.js v1.0.26
@@ -25187,12 +24941,12 @@ setTimeout(function () {
 
 module.exports = Vue;
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":25}],29:[function(require,module,exports){
+},{"_process":24}],28:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 5/15/16.
  */
-'use strict';
-
 var $ = require('jquery');
 window.$ = $;
 var jQuery = $;
@@ -25400,7 +25154,7 @@ module.exports = {
             message: msg,
             title: title,
             buttons: {
-                'default': {
+                default: {
                     label: 'Cancel',
                     className: "btn btn-sm btn-primary",
                     callback: function callback() {}
@@ -25411,16 +25165,17 @@ module.exports = {
 
 };
 
-},{"bootbox":2,"bootstrap":3,"jquery":24}],30:[function(require,module,exports){
+},{"bootbox":1,"bootstrap":2,"jquery":23}],29:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 7/16/16.
  */
 //var $ = require('jquery');
 //window.$ = $;
 
-// //TODO figure out which typeahead to use
-'use strict';
 
+// //TODO figure out which typeahead to use
 var Typeahead = require('typeahead');
 
 // var typeahead = require( '../libraries/bootstrap3-typeahead.min.js' );
@@ -25584,14 +25339,14 @@ module.exports = {
     }
 };
 
-},{"../templates/current-student-area.template.html":39,"typeahead":27}],31:[function(require,module,exports){
+},{"../templates/current-student-area.template.html":39,"typeahead":26}],30:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 7/19/16.
  */
 //var $ = require('jquery');
 //window.$ = $;
-
-'use strict';
 
 module.exports = {
 
@@ -25655,14 +25410,14 @@ module.exports = {
     directives: {}
 };
 
-},{"../templates/dashboard.counts.template.html":40}],32:[function(require,module,exports){
+},{"../templates/dashboard.counts.template.html":40}],31:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 7/19/16.
  */
 //var $ = require('jquery');
 //window.$ = $;
-
-'use strict';
 
 module.exports = {
 
@@ -25700,6 +25455,18 @@ module.exports = {
     },
 
     computed: {
+        // store: function(){
+        //   if(GOM){
+        //       return GOM.store;
+        //   }
+        //   if(window.store){
+        //       return window.store;
+        //   }
+        //
+        //   if(store){
+        //       return store;
+        //   }
+        // },
         /* --------------- button ------------- */
         buttonLabel: function buttonLabel() {
             if (!this.paused) {
@@ -25869,8 +25636,8 @@ module.exports = {
                 this.stopTimer();
                 // clearInterval( this.timer );
             } else {
-                    this.startTimer();
-                }
+                this.startTimer();
+            }
         },
 
         convertSecondsToHHMMSS: function convertSecondsToHHMMSS(seconds) {
@@ -25923,13 +25690,13 @@ module.exports = {
 
 };
 
-},{"../templates/dashboard.timer.template.html":41}],33:[function(require,module,exports){
+},{"../templates/dashboard.timer.template.html":41}],32:[function(require,module,exports){
+"use strict";
+
 /**
  * Created by adam on 7/11/16.
  */
 //
-"use strict";
-
 var $ = require('jquery');
 window.$ = $;
 var jQuery = $;
@@ -26111,17 +25878,17 @@ module.exports = {
                 this.disableCommentArea();
                 // $( this ).prop( 'readonly', 'true' );
             } else {
-                    // It has already been scored, so retrieve and set the comment text
-                    //  this.updateValence( this.elementScore );
+                // It has already been scored, so retrieve and set the comment text
+                //  this.updateValence( this.elementScore );
 
-                    //  this.retrieveStoredCommentText();
-                    // var thisComment = data.getCommentText( this.activeStudent, index, valence );
-                    // $( this ).val( thisComment );
+                //  this.retrieveStoredCommentText();
+                // var thisComment = data.getCommentText( this.activeStudent, index, valence );
+                // $( this ).val( thisComment );
 
-                    //no need for it to remain read only
-                    this.enableCommentArea();
-                    //$( this ).prop( 'readonly', '' );
-                }
+                //no need for it to remain read only
+                this.enableCommentArea();
+                //$( this ).prop( 'readonly', '' );
+            }
             // } );
         },
 
@@ -26197,6 +25964,7 @@ module.exports = {
                 //update display
                 // this.updateDisplayedComment( $elementComment, commentText );
 
+
                 // AjaxHandler.saveComment( data, Roster, elementId, score, commentText );
             } else {}
                 // Score is in the same valence region.
@@ -26204,6 +25972,7 @@ module.exports = {
                 // Fear not. Changes directly to the comment text will be handled elsewhere.
                 // this.notifyStoreElementScore();
                 //                AjaxHandler.createGradeRequest( data, 'element_id', elementId, score, null, Roster );
+
 
                 // If using bell curve (standardScoring), element score affects
                 // the total question score, so update
@@ -26309,12 +26078,12 @@ module.exports = {
     }
 };
 
-},{"../../libraries/bootstrap-slider-modified.js":47,"../templates/element-input.template.html":42,"jquery":24}],34:[function(require,module,exports){
+},{"../../libraries/bootstrap-slider-modified.js":47,"../templates/element-input.template.html":42,"jquery":23}],33:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 7/18/16.
  */
-
-'use strict';
 
 var $ = require('jquery');
 window.$ = $;
@@ -26546,14 +26315,14 @@ module.exports = {
 
 };
 
-},{"../templates/letter-grade-button.template.html":43,"bootstrap":3,"jquery":24}],35:[function(require,module,exports){
+},{"../templates/letter-grade-button.template.html":43,"bootstrap":2,"jquery":23}],34:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 7/18/16.
  */
 //var $ = require('jquery');
 //window.$ = $;
-
-'use strict';
 
 var Requests = require('./requests.tools');
 
@@ -26578,6 +26347,15 @@ module.exports = {
     },
 
     computed: {
+        // store: function(){
+        //     if(GOM){
+        //         return GOM.store;
+        //     }
+        //
+        //     if(store){
+        //         return store;
+        //     }
+        // },
         /**
          * The string id of the question score field for this question.
          * Does not contain '#'
@@ -26683,7 +26461,9 @@ module.exports = {
 
 };
 
-},{"../templates/question-score.template.html":44,"./requests.tools":36}],36:[function(require,module,exports){
+},{"../templates/question-score.template.html":44,"./requests.tools":35}],35:[function(require,module,exports){
+"use strict";
+
 /**
  * Created by adam on 7/26/16.
  */
@@ -26692,8 +26472,6 @@ module.exports = {
  * These create uniformity in what is expected to be included along with
  * events
  */
-"use strict";
-
 module.exports = {
 
     /**
@@ -26719,14 +26497,14 @@ module.exports = {
     }
 };
 
-},{}],37:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 7/11/16.
  */
 //var $ = require('jquery');
 //window.$ = $;
-
-'use strict';
 
 module.exports = {
 
@@ -26734,10 +26512,6 @@ module.exports = {
 
     props: ['studentIndex'],
 
-    // 'firstName',
-    // 'lastName',
-    // 'studentIdentifier',
-    // 'studentId'
     data: function data() {
         return {
 
@@ -26910,14 +26684,14 @@ module.exports = {
     }
 };
 
-},{"../templates/student-list-item.template.html":45}],38:[function(require,module,exports){
+},{"../templates/student-list-item.template.html":45}],37:[function(require,module,exports){
+'use strict';
+
 /**
  * Created by adam on 7/27/16.
  */
 //var $ = require('jquery');
 //window.$ = $;
-
-'use strict';
 
 var Requests = require('./requests.tools');
 
@@ -26945,12 +26719,16 @@ module.exports = {
         };
     },
 
-    // displayClasses: {
-    //     unaltered: 'unalteredStudentRow',
-    //     active: 'activeStudentRow',
-    //     graded: 'gradedStudentRow'
-    // }
     computed: {
+        // store: function(){
+        //     if(GOM){
+        //         return GOM.store;
+        //     }
+        //
+        //     if(store){
+        //         return store;
+        //     }
+        // },
 
         /**
          * Whether student names should be hidden
@@ -27144,7 +26922,7 @@ module.exports = {
             $roster.append($roster.find('[id^="studentListItem"]').sort(function (a, b) {
                 var i = $(a).find('[id^="' + value + '"]');
                 var j = $(b).find('[id^="' + value + '"]');
-                var result = undefined;
+                var result = void 0;
                 if (value == 'studentName' || value == 'studentIdentifier') {
                     result = $(i).text().toUpperCase().localeCompare($(j).text().toUpperCase());
                 } else {
@@ -27175,7 +26953,339 @@ module.exports = {
     }
 };
 
-},{"../templates/student-table.template.html":46,"./requests.tools":36}],39:[function(require,module,exports){
+},{"../templates/student-table.template.html":46,"./requests.tools":35}],38:[function(require,module,exports){
+'use strict';
+
+/**
+ * Created by  adam on 7/11/16.
+ */
+
+var $ = require('jquery');
+window.$ = $;
+var jQuery = $;
+window.jQuery = jQuery;
+
+require('bootstrap');
+var bootbox = require('bootbox');
+
+var Vue = require('vue');
+//dev
+Vue.config.debug = true;
+
+var ajaxTools = require('./components/ajax.tools.js');
+
+new Vue({
+    el: '#gradeExamPage',
+
+    components: {
+        'element-input': require('./components/elementInput.component.js'),
+        'current-student-area': require('./components/currentStudentArea.component.js'),
+        'student-list-item': require('./components/studentListItem.component'),
+        'letter-grade-button': require('./components/letterGradeButton.component.js'),
+        'question-score': require('./components/questionScore.component'),
+        'dashboard-timer': require('./components/dashboard.timer.component'),
+        'dashboard-counts': require('./components/dashboard.counts.component'),
+
+        'student-table': require('./components/studentTable.component')
+    },
+
+    data: {
+        store: store,
+
+        ajaxTools: ajaxTools,
+
+        sortAsc: true
+    },
+
+    computed: {},
+
+    methods: {
+        /* ------------------------------ Display ------------------------------ */
+
+        showQuestionPanel: function showQuestionPanel() {
+            $('#selectPrompt').hide();
+            $('#questionArea').show("fast");
+        },
+
+        // /**
+        //  * Sorts the StudentRoster by the clicked header. Sort order reverses with each press.
+        //  * @param value
+        //  * @param data
+        //  */
+        // sortRosterBy: function ( value) {
+        //     let data = this.store;
+        //     var me = this;
+        //     var $roster = $( '#studentRosterBody' );
+        //     $roster.append(
+        //         $roster.find( '[id^="studentListItem"]' ).sort( function ( a, b ) {
+        //             var i = $( a ).find( '[id^="' + value + '"]' );
+        //             var j = $( b ).find( '[id^="' + value + '"]' );
+        //             var result;
+        //             if ( value == 'studentName' || value == 'studentIdentifier' ) {
+        //                 result = $( i ).text().toUpperCase().localeCompare(
+        //                     $( j ).text().toUpperCase() );
+        //             } else {
+        //                 // sort by exam grade
+        //                 var gradeA = data.examGrades[ $( a ).attr( 'data-index' ) ];
+        //                 var gradeB = data.examGrades[ $( b ).attr( 'data-index' ) ];
+        //                 result = gradeA - gradeB;
+        //             }
+        //             // flip results if we're sorting in DESC
+        //             if ( ! me.sortAsc ) {
+        //                 result *= - 1;
+        //             }
+        //             return result;
+        //         } )
+        //     );
+        //     me.sortAsc = ! me.sortAsc;
+        // },
+
+        /* ------------------------------ Server ------------------------------ */
+
+        /**
+         * Saves a comment (and score if present) to the database
+         * @param elementId Database id of the element
+         * @param commentText Text of the comment to save
+         * @param score Associated score to save (can be left null)
+         * @returns boolean
+         */
+        saveCommentWithTime: function saveCommentWithTime(elementId, commentText, score) {
+            var me = this;
+
+            var studentId = this.store.getActiveStudentId();
+            var examId = this.store.getExamId();
+            var time = this.store.getActiveStudentGradingTime();
+
+            var request = new this.ajaxTools.requests.commentRequest(studentId, elementId, commentText, score, time);
+
+            return this.ajaxTools.sendRequest(examId, request);
+        },
+
+        /**
+         * Records grading time to the db
+         */
+        saveTime: function saveTime() {
+            var studentId = this.store.getActiveStudentId();
+            var examId = this.store.getExamId();
+            var time = this.store.getActiveStudentGradingTime();
+
+            var request = new this.ajaxTools.requests.timeRequest(studentId, time);
+            return this.ajaxTools.sendRequest(examId, request);
+        },
+
+        /**
+         * Save a question or element score (along with grading time) to the server
+         *
+         * NB, To avoid race conditions, don't use the active student shortcuts in store to get the values.
+         *
+         * @param elementId
+         * @param score
+         */
+        saveElementScoreWithTime: function saveElementScoreWithTime(studentIndex, elementId, score) {
+            var student = this.store.getStudent(studentIndex);
+            var examId = this.store.getExamId();
+            var time = this.store.getStudentGradingTime(studentIndex);
+
+            var request = new this.ajaxTools.requests.elementScoreRequest(student.studentId, elementId, score, time);
+
+            return this.ajaxTools.sendRequest(examId, request);
+        },
+
+        /**
+         * Save a question or element score (along with grading time) to the server
+         *
+         * NB, To avoid race conditions, don't use the active student shortcuts in store to get the values.
+         *
+         * @param studentIndex
+         * @param questionIndex
+         * @param questionAssignmentId
+         */
+        saveQuestionScoreWithTime: function saveQuestionScoreWithTime(studentIndex, questionIndex, questionAssignmentId) {
+            var student = this.store.getStudent(studentIndex);
+            var examId = this.store.getExamId();
+            var time = this.store.getStudentGradingTime(studentIndex);
+            var score = this.store.getQuestionScore(studentIndex, questionIndex);
+            var request = new this.ajaxTools.requests.questionScoreRequest(student.studentId, questionAssignmentId, score, time);
+
+            return this.ajaxTools.sendRequest(examId, request);
+        },
+
+        /**
+         * Sends a request to delete a score from the database
+         * @param studentIndex
+         * @param questionAssignmentId
+         * @returns boolean
+         */
+        deleteScore: function deleteScore(studentIndex, questionAssignmentId) {
+            var student = this.store.getStudent(studentIndex);
+            var examId = this.store.getExamId();
+
+            return this.ajaxTools.deleteScoreRequest(examId, student.studentId, questionAssignmentId);
+        },
+
+        /* ------------------------------ Events ------------------------------ */
+
+        /**
+         * Sends an event requesting that the timer start
+         */
+        requestTimerStart: function requestTimerStart() {
+            window.console.log('gradeVue', 'sending start-timer-request');
+            this.$broadcast('start-timer-request');
+        },
+
+        /**
+         * Sends an event requesting that the timer stop
+         */
+        requestTimerStop: function requestTimerStop() {
+            window.console.log('gradeVue', 'sending stop-timer-request');
+            this.$broadcast('stop-timer-request');
+        }
+
+    },
+
+    events: {
+        /**
+         * Handles anything not done by the elementInput when a slider stops moving
+         */
+        'element-slider-stop-event': function elementSliderStopEvent() {
+            window.console.log('gradeVue', 'element-slider-stop-event');
+
+            //Sigh. The user might have forgotten to restart the timer. Do it for them
+            this.requestTimerStart();
+        },
+
+        /**
+         * Save the question score
+         * obj.questionIndex
+         * obj.questionNumber
+         * obj.score
+         * @param obj
+         */
+        'letter-grade-selected': function letterGradeSelected(obj) {
+            window.console.log('gradeVue', 'letter-grade-selected', obj);
+            this.store.storeQuestionScoreForActiveStudent(obj.questionIndex, obj.score);
+            this.$broadcast('letter-grade-selected', obj);
+        },
+
+        /**
+         * Lets anyone who might be interested know that the visibility of
+         * student names has been toggled.
+         */
+        'name-visibility-toggled': function nameVisibilityToggled() {
+            window.console.log('gradeVue', 'name-visibility-toggled');
+        },
+
+        /**
+         * Catches the event fired upon student selection.
+         * The object accompanying the event should have the properties:
+         * obj.studentName
+         * obj.studentIdentifier
+         *
+         * @param obj
+         */
+        'student-select-event': function studentSelectEvent(obj) {
+            window.console.log('gradeVue', 'caught student-select-event', obj);
+            this.showQuestionPanel();
+            this.$broadcast('start-timer-request');
+            this.requestTimerStart();
+            this.$broadcast('student-select-event', obj);
+        },
+
+        /**
+         * Handles the request to store comment text on the server
+         * Accompanying object should contain:
+         *      obj.elementIndex: Index of the element whose score needs updating
+         */
+        'store-comment-text-request': function storeCommentTextRequest(obj) {
+            var elementIndex = obj.elementIndex;
+            window.console.log('gradeVue', 'store-comment-text-request', obj);
+        },
+
+        /**
+         * Handles the request to store element score on the server
+         * Accompanying object should contain:
+         *      obj.elementIndex: Index of the element whose score needs updating
+         */
+        'store-element-score-request': function storeElementScoreRequest(obj) {
+            var elementIndex = obj.elementIndex;
+            window.console.log('gradeVue', 'store-element-score-request', obj);
+        },
+
+        /**
+         * Handles the request to store question score on the server
+         * Accompanying object should contain:
+         *      obj.questionAssignmentId: Db id of the question assignment
+         *      obj.questionIndex: Index of the question whose score needs updating
+         *      obj.studentIndex: Index of the student to record grades for.
+         *          This is here to avoid a race condition
+         * @param questionScoreRequestObj
+         */
+        'store-question-score-request': function storeQuestionScoreRequest(questionScoreRequestObj) {
+            window.console.log('gradeVue', 'caught store-question-score-request', questionScoreRequestObj);
+            var score = this.store.getQuestionScoreForActiveStudent(questionScoreRequestObj.questionIndex);
+            if (score == '' || score == null) {
+                this.deleteScore(questionScoreRequestObj.studentIndex, questionScoreRequestObj.questionAssignmentId);
+            } else {
+                this.saveQuestionScoreWithTime(questionScoreRequestObj.studentIndex, questionScoreRequestObj.questionIndex, questionScoreRequestObj.questionAssignmentId);
+            }
+        },
+
+        /**
+         * Handles request to start the grading timer
+         */
+        'start-timer-request': function startTimerRequest() {
+            window.console.log('gradeVue', 'caught start-timer-request');
+            this.requestTimerStart();
+        },
+
+        /**
+         * Handles the request to stop the grading timer by
+         * retransmitting it back down the chain
+         */
+        'stop-timer-request': function stopTimerRequest() {
+            window.console.log('gradeVue', 'stop-timer-request');
+            this.requestTimerStop();
+        },
+
+        /**
+         * Handles notification that the timer has started
+         */
+        'timer-start-event': function timerStartEvent() {
+            window.console.log('gradeVue', 'caught timer-start-event');
+            this.saveTime();
+        },
+        /**
+         * Handles notification that the timer has stopped
+         */
+        'timer-stop-event': function timerStopEvent() {
+            window.console.log('gradeVue', 'caught timer-stop-event');
+            this.saveTime();
+        },
+
+        /**
+         * Handles the request to save the time to the db
+         */
+        'time-save-request': function timeSaveRequest() {
+            window.console.log('gradeVue', 'caught time-save-request');
+            this.saveTime();
+        }
+
+    },
+
+    directives: {},
+
+    ready: function ready() {
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        window.console.log('gradeVue.js ready');
+    }
+});
+
+},{"./components/ajax.tools.js":28,"./components/currentStudentArea.component.js":29,"./components/dashboard.counts.component":30,"./components/dashboard.timer.component":31,"./components/elementInput.component.js":32,"./components/letterGradeButton.component.js":33,"./components/questionScore.component":34,"./components/studentListItem.component":36,"./components/studentTable.component":37,"bootbox":1,"bootstrap":2,"jquery":23,"vue":27}],39:[function(require,module,exports){
 module.exports = '<form class="form-horizontal">\n    <div class="form-group activeStudentInput">\n        <div id="activeStudentNameArea"\n             class="col-md-7">\n            <label for="activeStudentName">\n                <span class="sr-only">Click to hide student names</span>\n                <span id="nameVisibilityControl"\n                      class="glyphicon glyphicon-pencil"\n                      title="Click to hide student names"\n                      v-on:click="toggleNameVisibility"> </span>\n            </label>\n            <input id="activeStudentName"\n                   type="text"\n                   class=""\n                   placeholder="No Student Selected"\n                   v-on:focus="initialize"\n                   v-on:change="handleStudentNameSearch"\n                   v-model="studentName"/>\n        </div>\n\n        <div id="activeStudentIdentifierArea"\n             class="col-md-5">\n            <label for="activeStudentIdentifier">ID</label>\n            <input id="activeStudentIdentifier"\n                   class=""\n                   type="text"\n                   placeholder="--"\n                   v-on:focus="initialize"\n                   v-on:change="handleStudentIdentifierSearch"\n                   v-model="studentIdentifier">\n        </div>\n    </div>\n</form>';
 },{}],40:[function(require,module,exports){
 module.exports = '<div id="dashboardCounts" class="">\n\n    <!-- graded / remaining counters -->\n    <p>Graded: <span id="graded">{{ gradedExams }}</span> | Remaining: <span id="remaining">{{ remainingExams }}</span>\n    </p>\n\n    <!-- save & finish button -->\n    <a id="finishButton"\n       class="btn btn-success col-lg-12 "\n       v-bind:style="buttonStyle"\n       href="{{ finishedLink }}">\n        <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>Save & Finish\n    </a>\n\n</div>';
@@ -27192,6 +27302,10 @@ module.exports = '\n        <tr id="{{ rowIdString }}"\n            class="stude
 },{}],46:[function(require,module,exports){
 module.exports = '<table class="table table-fixed table-hover" id="studentRoster">\n    <thead>\n    <tr>\n        <th class="col-xs-6"\n            id="nameHeader"\n            title="Sort by name"\n            v-on:click="sortRosterBy(\'studentName\')"\n        >Name\n        </th>\n        <th class="col-xs-4"\n            id="idHeader"\n            v-on:click="sortRosterBy(\'studentIdentifier\')"\n            title="Sort by ID"\n        >ID\n        </th>\n        <th class="col-xs-2"\n            id="gradeHeader"\n            title="Sort by grade"\n            v-on:click="sortRosterBy()"\n        >Grade\n        </th>\n    </tr>\n\n    </thead>\n    <tbody id="studentRosterBody">\n    <tr v-for="s in students"\n            v-on:click="handleStudentRowClick(s.studentIndex)"\n            v-bind:class="{ \'unalteredStudentRow\': isUnalteredStyle(s.studentIndex),\'activeStudentRow\': isActiveStyle(s.studentIndex),\'gradedStudentRow\': isGradedStyle(s.studentIndex) }"\n            id="studentListItem{{ s.studentIndex }}"\n            class="studentListItem "\n            data-index="{{ s.studentIndex }}"\n            data-fName="{{ s.firstName }}"\n            data-lName="{{ s.lastName }}"\n            data-sid="{{ s.studentId }}"\n            data-student-identifier="{{ s.studentIdentifier }}"\n    >\n        <td class="col-xs-6"\n            id="studentName{{ s.studentIndex }}">{{ getName(s.studentIndex) }}</td>\n        <td class="col-xs-4"\n            id="studentIdentifier{{ s.studentIndex }}">{{ getIdentifier(s.studentIndex) }}</td>\n        <td class="col-xs-2"\n            id="examGrade{{ s.studentIndex }}">{{ getGrade(s.studentIndex) }}</td>\n    </tr>\n    </tbody>\n</table>\n';
 },{}],47:[function(require,module,exports){
+"use strict";
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 /*! =========================================================
  * bootstrap-slider.js
  *
@@ -27218,12 +27332,16 @@ module.exports = '<table class="table table-fixed table-hover" id="studentRoster
  * limitations under the License.
  * ========================================================= */
 
-"use strict";
+/**
+ * Bridget makes jQuery widgets
+ * v1.0.1
+ * MIT license
+ */
 
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
         define(["jquery"], factory);
-    } else if (typeof module === "object" && module.exports) {
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         var jQuery;
         try {
             jQuery = require("jquery");
@@ -27476,7 +27594,7 @@ module.exports = '<table class="table table-fixed table-hover" id="studentRoster
         /*************************************************
           CONSTRUCTOR
           **************************************************/
-        Slider = function (element, options) {
+        Slider = function Slider(element, options) {
             try {
                 createNewSlider.call(this, element, options);
             } catch (e) {
@@ -28654,20 +28772,20 @@ module.exports = '<table class="table table-fixed table-hover" id="studentRoster
                 if (this.options.orientation === 'vertical') {
                     var tooltipPos = this.options.tooltip_position || 'right';
                     var oppositeSide = tooltipPos === 'left' ? 'right' : 'left';
-                    tooltips.forEach((function (tooltip) {
+                    tooltips.forEach(function (tooltip) {
                         this._addClass(tooltip, tooltipPos);
                         tooltip.style[oppositeSide] = '100%';
-                    }).bind(this));
+                    }.bind(this));
                 } else if (this.options.tooltip_position === 'bottom') {
-                    tooltips.forEach((function (tooltip) {
+                    tooltips.forEach(function (tooltip) {
                         this._addClass(tooltip, 'bottom');
                         tooltip.style.top = 22 + 'px';
-                    }).bind(this));
+                    }.bind(this));
                 } else {
-                    tooltips.forEach((function (tooltip) {
+                    tooltips.forEach(function (tooltip) {
                         this._addClass(tooltip, 'top');
                         tooltip.style.top = -this.tooltip.outerHeight - 14 + 'px';
-                    }).bind(this));
+                    }.bind(this));
                 }
             }
         };
@@ -28683,10 +28801,7 @@ module.exports = '<table class="table table-fixed table-hover" id="studentRoster
 
     return Slider;
 });
-/**
- * Bridget makes jQuery widgets
- * v1.0.1
- * MIT license
- */
 
-},{"jquery":24}]},{},[1]);
+},{"jquery":23}]},{},[38]);
+
+//# sourceMappingURL=grade-vue.js.map
