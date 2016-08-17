@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 
-use JavaScript;
+//use JavaScript;
 
 /**
  * Class GradeController
@@ -468,22 +468,22 @@ class GradeController extends Controller
 //        $studentGrades = json_encode($studentGrades, JSON_FORCE_OBJECT);
 //        $maxScores = json_encode($maxQuestionScores, JSON_FORCE_OBJECT);
 //        $numQuestions = count($questionAssignments);
-        Javascript::put([
-            'exam'                   => $exam,
-            'students'               => $students,
-            'questionAssignments'    => $questionAssignments,
-            'maxQuestionScores'      => $maxQuestionScores,
-            'allElements'            => $allElements,
-            'stockCommentsJson'      => $stockCommentsJson,
-            'examGradingTimes'       => $examGradingTimes,
-            'studentElementScores'   => $studentElementScores,
-            'studentElementComments' => $studentElementComments,
-            'studentQuestionScores'  => $studentQuestionScores,
-            'studentGrades'          => $studentGrades,
-            'questionsJson'          => $questionsJson,
-            'studentsJson'           => $studentsJson,
-            'gradesJson'             => $gradesJson,
-        ]);
+//        Javascript::put([
+//            'exam'                   => $exam,
+//            'students'               => $students,
+//            'questionAssignments'    => $questionAssignments,
+//            'maxQuestionScores'      => $maxQuestionScores,
+//            'allElements'            => $allElements,
+//            'stockCommentsJson'      => $stockCommentsJson,
+//            'examGradingTimes'       => $examGradingTimes,
+//            'studentElementScores'   => $studentElementScores,
+//            'studentElementComments' => $studentElementComments,
+//            'studentQuestionScores'  => $studentQuestionScores,
+//            'studentGrades'          => $studentGrades,
+//            'questionsJson'          => $questionsJson,
+//            'studentsJson'           => $studentsJson,
+//            'gradesJson'             => $gradesJson,
+//        ]);
 
 //        return View::make('development.newTable')->with([
 //        return View::make('development.newGrading')->with([
@@ -674,7 +674,7 @@ class GradeController extends Controller
             $questionIndex++;
         }
 
-        Javascript::put(['questions' => $questions]);
+//        Javascript::put(['questions' => $questions]);
 
         return json_encode($questions, JSON_FORCE_OBJECT);
     }
@@ -705,7 +705,7 @@ class GradeController extends Controller
 
 
         //send to page
-        Javascript::put(['students' => $s]);
+//        Javascript::put(['students' => $s]);
 
         return json_encode($s, JSON_FORCE_OBJECT);
 
@@ -737,7 +737,7 @@ class GradeController extends Controller
         }
 
         //send to page
-        Javascript::put(['stockComments' => $stockComments]);
+//        Javascript::put(['stockComments' => $stockComments]);
 
         $stockComments = json_encode($stockComments, JSON_FORCE_OBJECT);
 
@@ -752,7 +752,7 @@ class GradeController extends Controller
     public function makeGradesJson()
     {
         //send to page
-        Javascript::put(['grades' => GradeFactory::gradeJson()]);
+//        Javascript::put(['grades' => GradeFactory::gradeJson()]);
 
         return GradeFactory::gradeJson();
     }
