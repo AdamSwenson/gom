@@ -15,6 +15,7 @@ require( 'sinon' )
 //helpers
 var Helper = require( '../helpers/vueTesting.helper.js' );
 
+var DataHelper = require( '../helpers/dataObject.helper' );
 
 //for fixture
 require( 'bootstrap' );
@@ -23,8 +24,9 @@ var Vue = require( 'vue' );
 
 //tested stuff
 var testedComponent = require( "../../../resources/assets/js/grade/components/studentListItem.component" );
-require( '../../../resources/assets/js/grade/components/Data.js' );
+//require( '../../../resources/assets/js/grade/components/Data.js' );
 var fixture = 'studentListItem.fixture.html';
+import Data from '../../../resources/assets/js/data/Data.js';
 
 /**
  * Checks whether student row is set as active.
@@ -88,7 +90,8 @@ describe( "StudentListItem | ", function () {
             0 : {firstName: this.firstName,
                 lastName: this.lastName,
                 studentId: this.studentId,
-                studentIdentifier: this.studentIdentifier
+                studentIdentifier: this.studentIdentifier,
+                studentIndex: this.studentIndex
         }
         };
         // students[ this.studentIndex ][ 'firstName' ] = this.firstName;
@@ -117,8 +120,12 @@ describe( "StudentListItem | ", function () {
         } );
         store.loadNumberQuestions( 2 );
         store.loadStudents( students );
-        window.store = store;
+        this.activeStudentIndex = 0;
+        // store.activeStudentIndex = this.activeStudentIndex;
+       // store.activeStudentId = this.studentId;
+       store.setActiveStudent(this.activeStudentIndex, this.studentId);
 
+        window.store = store;
 
         this.$fixture = loadFixtures( fixture );
 
@@ -145,6 +152,7 @@ describe( "StudentListItem | ", function () {
 
 
         it( "checks that the component is intact", function () {
+            window.console.log(store.students);
             expect( this.$row ).toExist();
             expect( this.$row ).toHaveClass( 'studentListItem' );
             expect( this.$studentName ).toExist();
@@ -161,11 +169,15 @@ describe( "StudentListItem | ", function () {
     describe( "active student display | ", function () {
 
         describe( "initial state | ", function () {
-            it( "initial state of the row ", function () {
+            xit( "initial state of the row ", function () {
+                store.activeStudentId = null;
+                store.activeStudentIndex = null;
                 //default class
-                expect( this.$row ).toHaveClass( 'unalteredStudentRow' );
-                expect( this.$row ).not.toHaveClass( 'activeStudentRow' );
-                expect( this.$row ).not.toHaveClass( 'gradedStudentRow' );
+                window.console.log(this.$row);
+                window.console.log(expect( this.$row ).toHaveClass( 'unalteredStudentRow' ));
+                expect( this.$row[0] ).toHaveClass( 'unalteredStudentRow' );
+                expect( this.$row[0] ).not.toHaveClass( 'activeStudentRow' );
+                expect( this.$row[0] ).not.toHaveClass( 'gradedStudentRow' );
             } );
         } );
 
@@ -178,7 +190,7 @@ describe( "StudentListItem | ", function () {
             describe( "Happy paths | ", function () {
 
                 it( "active = true", function () {
-                    store.setActiveStudent( this.studentIndex );
+                    store.setActiveStudent( this.studentIndex, this.studentId );
                     this.$fixture = loadFixtures( fixture );
                     this.vm = Helper.loadVueComponent( testedComponent, 'student-list-item' );
 
@@ -191,7 +203,8 @@ describe( "StudentListItem | ", function () {
 
                 it( "active = false", function () {
                     //prep
-                    store.setActiveStudent( 300 );
+                    store.activeStudentIndex = 300;
+                    // store.setActiveStudent( 300,  );
                     this.$fixture = loadFixtures( 'studentListItem.fixture.html' );
                     this.vm = Helper.loadVueComponent( testedComponent, 'student-list-item' );
 
@@ -206,11 +219,12 @@ describe( "StudentListItem | ", function () {
             describe( "Problem cases | ", function () {
                 it( "activeStudentIndex = null", function () {
                     //prep
-                    store.setActiveStudent( null );
+                    store.activeStudentIndex = null ;
 
                     this.$fixture = loadFixtures( fixture );
                     this.vm = Helper.loadVueComponent( testedComponent, 'student-list-item' );
 
+                    Helper.markLog();
                     //check --starting with active student
                     assertRowActive( this, this.studentIndex, true );
                     Helper.assertValueIs( this, 'isActiveStudent', false );

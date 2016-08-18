@@ -387,7 +387,6 @@ class GradeController extends Controller
             $allElements[] = $this->elementAssignmentDao->load_elements($exam->getId(), $qNumber);
             // load maxQuestionScores
             $maxQuestionScores[ $qIndex ] = $qAssignment->getQuestion()->getMaxScore();
-
         }
 
         // load all current student scores & comments

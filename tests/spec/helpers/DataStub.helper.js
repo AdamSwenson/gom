@@ -3,7 +3,6 @@
  */
 
 require('sinon');
-require( '../../../resources/assets/js/grade/components/Data.open.js' );
 
 
 (function(dthis){

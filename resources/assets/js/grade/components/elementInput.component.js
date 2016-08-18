@@ -52,6 +52,7 @@ module.exports = {
         commentText: {
             cache: false,
             get: function () {
+                if(this.elementScore )
                 return this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
             },
             set: function ( text ) {

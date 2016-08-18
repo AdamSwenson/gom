@@ -25769,7 +25769,7 @@ module.exports = {
         commentText: {
             cache: false,
             get: function get() {
-                return this.store.getCommentTextForActiveStudent(this.elementIndex, this.getValence(this.elementScore));
+                if (this.elementScore) return this.store.getCommentTextForActiveStudent(this.elementIndex, this.getValence(this.elementScore));
             },
             set: function set(text) {
                 this.store.storeCommentTextForActiveStudent(this.elementIndex, text);

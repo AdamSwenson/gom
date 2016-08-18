@@ -16,6 +16,7 @@ var faker = require( 'faker' );
 
 //helpers
 var Helper = require( '../helpers/vueTesting.helper.js' );
+var DataHelper = require( '../helpers/dataObject.helper' );
 
 //for fixture
 require( 'bootstrap' );
@@ -27,7 +28,8 @@ var testedComponent = require( "../../../resources/assets/js/grade/components/le
 var fixture = 'letterGrade.fixture.html';
 
 //Dependencies
-require( '../../../resources/assets/js/grade/components/Data.open.js' );
+// require( '../../../resources/assets/js/grade/components/Data.open.js' );
+import Data from '../../../resources/assets/js/data/Data.js';
 
 
 describe( "LetterGradeButton.component  | ", function () {
@@ -38,6 +40,9 @@ describe( "LetterGradeButton.component  | ", function () {
         this.maxScore = 100;
         this.questionAssignmentId = 2;
         store = new Data();
+        this.activeStudentIndex = 0;
+        store.students[ this.activeStudentIndex ] = DataHelper.makeStudent();
+
         store.loadQuestions( {
             0: {
                 questionIndex: this.questionIndex,

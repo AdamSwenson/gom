@@ -7,14 +7,16 @@ window.jQuery = jQuery;
 require( 'jasmine-jquery' );
 jasmine.getFixtures().fixturesPath = 'base/tests/spec/fixtures';
 require( 'sinon' );
-var faker = require('faker');
+var faker = require( 'faker' );
+
+var DataHelper = require( '../helpers/dataObject.helper' );
 
 //Dependencies
-// require( 'resources/assets/js/grade/components/Data.js' );
-require( '../../../resources/assets/js/grade/components/Data.js' );
+// let Data = require( '../../../resources/assets/js/grade/components/Data.js' );
+import Data from '../../../resources/assets/js/data/Data.js';
 
 describe( "Data.js | ", function () {
-    var object, defaults, activeStudent;
+
     beforeEach( function () {
         this.object = new Data();
 
@@ -95,14 +97,15 @@ describe( "Data.js | ", function () {
 
     describe( "Grading time | ", function () {
         beforeEach( function () {
-            this.object.setActiveStudent(this.activeStudent);
+            this.object.students[ 1 ] = DataHelper.makeStudent();
+            this.object.setActiveStudent( this.activeStudent );
         } );
 
         describe( "getStudentGradingTime | ", function () {
             describe( "Happy paths | ", function () {
-                beforeEach(function(){
-                    this.object.loadGradingTimes(this.defaults.examGradingTimes);
-                });
+                beforeEach( function () {
+                    this.object.loadGradingTimes( this.defaults.examGradingTimes );
+                } );
 
                 it( "initial state", function () {
                     //check
@@ -111,7 +114,7 @@ describe( "Data.js | ", function () {
 
                 it( "after graded ", function () {
                     let newVal = 45;
-                    this.object.storeStudentGradingTime( this.activeStudent, newVal);
+                    this.object.storeStudentGradingTime( this.activeStudent, newVal );
 
                     //check
                     expect( this.object.getStudentGradingTime( this.activeStudent ) ).toBe( newVal );
@@ -121,9 +124,9 @@ describe( "Data.js | ", function () {
 
         describe( "storeStudentGradingTime | ", function () {
             describe( "Happy paths | ", function () {
-                beforeEach(function(){
-                    this.object.loadGradingTimes(this.defaults.examGradingTimes);
-                });
+                beforeEach( function () {
+                    this.object.loadGradingTimes( this.defaults.examGradingTimes );
+                } );
 
                 it( "initial state", function () {
                     let testVal = 45;
@@ -132,7 +135,7 @@ describe( "Data.js | ", function () {
                     this.object.storeStudentGradingTime( this.activeStudent, testVal );
 
                     //check
-                    expect( this.object.getStudentGradingTime(this.activeStudent) ).toBe( testVal );
+                    expect( this.object.getStudentGradingTime( this.activeStudent ) ).toBe( testVal );
                 } );
 
                 // it( "after graded ", function () {
@@ -150,9 +153,9 @@ describe( "Data.js | ", function () {
 
             describe( "increaseStudentGradingTime | ", function () {
                 describe( "Happy paths | ", function () {
-                    beforeEach(function(){
-                        this.object.loadGradingTimes(this.defaults.examGradingTimes);
-                    });
+                    beforeEach( function () {
+                        this.object.loadGradingTimes( this.defaults.examGradingTimes );
+                    } );
 
                     it( "initial state", function () {
                         let testVal = faker.random.number();
@@ -161,7 +164,7 @@ describe( "Data.js | ", function () {
                         this.object.increaseStudentGradingTime( this.activeStudent, testVal );
 
                         //check
-                        expect( this.object.getStudentGradingTime(this.activeStudent)).toBe( testVal );
+                        expect( this.object.getStudentGradingTime( this.activeStudent ) ).toBe( testVal );
                     } );
 
                     // it( "after graded ", function () {
@@ -196,8 +199,8 @@ describe( "Data.js | ", function () {
 
     describe( "Comments | ", function () {
         beforeEach( function () {
-            this.object.loadElementComments(this.defaults.elementComments);
-            this.object.loadStockComments( this.defaults.stockComments);
+            this.object.loadElementComments( this.defaults.elementComments );
+            this.object.loadStockComments( this.defaults.stockComments );
         } );
 
         describe( "getCommentText | ", function () {
@@ -213,7 +216,7 @@ describe( "Data.js | ", function () {
             it( "custom text ", function () {
                 let text = 'custom text';
                 let elementIndex = 0;
-                this.object.storeCommentText( this.activeStudent, elementIndex,text);
+                this.object.storeCommentText( this.activeStudent, elementIndex, text );
                 let me = this;
 
                 //check
@@ -250,38 +253,38 @@ describe( "Data.js | ", function () {
 
             describe( "Happy paths | ", function () {
                 beforeEach( function () {
-                    this.object.loadQuestionScores(this.defaults.questionScores);
-                    this.object.loadExamGrades(this.defaults.examGrades);
+                    this.object.loadQuestionScores( this.defaults.questionScores );
+                    this.object.loadExamGrades( this.defaults.examGrades );
                 } );
 
                 it( "first run | nothing graded", function () {
                     //total score should be set to -1
                     this.object.updateExamGrade( this.activeStudent );
 
-                    expect( this.object.getExamGrade( this.activeStudent )).toBe( - 1 ); //.toBe(this.defaults.examGrades[this.activeStudent]);
+                    expect( this.object.getExamGrade( this.activeStudent ) ).toBe( - 1 ); //.toBe(this.defaults.examGrades[this.activeStudent]);
                 } );
 
                 it( "first run | one question graded | score = 0", function () {
                     let score = 0;
-                    this.object.storeQuestionScore( this.activeStudent,  0, score);
+                    this.object.storeQuestionScore( this.activeStudent, 0, score );
                     this.object.updateExamGrade( this.activeStudent );
 
                     //total score should be 0
-                    expect( this.object.getExamGrade( this.activeStudent )).toBe( score.toPrecision( 3 ) );
+                    expect( this.object.getExamGrade( this.activeStudent ) ).toBe( score.toPrecision( 3 ) );
                 } );
 
                 it( "multiple questions graded ", function () {
                     let score1 = 2;
                     let score2 = 8;
-                    this.object.storeQuestionScore( this.activeStudent,  0, score1);
-                    this.object.storeQuestionScore( this.activeStudent,  1, score2);
+                    this.object.storeQuestionScore( this.activeStudent, 0, score1 );
+                    this.object.storeQuestionScore( this.activeStudent, 1, score2 );
 
                     //call
                     this.object.updateExamGrade( this.activeStudent );
 
                     //check ---total score should be sum of question scores
                     let total = score1 + score2;
-                    expect( this.object.getExamGrade(this.activeStudent )).toBe( total.toPrecision( 3 ) );
+                    expect( this.object.getExamGrade( this.activeStudent ) ).toBe( total.toPrecision( 3 ) );
                 } );
 
             } );
@@ -300,26 +303,38 @@ describe( "Data.js | ", function () {
     describe( "Shortcuts | ", function () {
 
         describe( "isActive | ", function () {
+
             describe( "Happy paths | ", function () {
-                beforeEach( function () {
-                    this.object.loadQuestionScores(this.defaults.questionScores);
-                    this.object.loadExamGrades(this.defaults.examGrades);
+                describe( "true | ", function () {
+                    beforeEach( function () {
+                        this.object.students[ this.activeStudent ] = DataHelper.makeStudent();
+                        this.object.loadQuestionScores( this.defaults.questionScores );
+                        this.object.loadExamGrades( this.defaults.examGrades );
+                    } );
+
+                    it( "null ", function () {
+                        this.object.activeStudentIndex = null;
+                        expect( this.object.isActive() ).toBe( false );
+                    } );
+
+                    it( "0 ", function () {
+                        this.object.activeStudentIndex = 0;
+                        expect( this.object.isActive() ).toBe( true );
+                    } );
+
+                    it( ">0 ", function () {
+                        let index = faker.random.number();
+                        this.object.activeStudentIndex = index;
+                        expect( this.object.isActive() ).toBe( true );
+                    } );
                 } );
 
-                it( "null ", function () {
-                    this.object.setActiveStudent(null, null);
-                    expect( this.object.isActive() ).toBe( false );
-                } );
-
-                it( "0 ", function () {
-                    this.object.setActiveStudent(1);
-                    expect( this.object.isActive() ).toBe( true );
-                } );
-
-                it( ">0 ", function () {
-                    this.object.setActiveStudent(34, null);
-//                    this.object.activeStudent = 34;
-                    expect( this.object.isActive() ).toBe( true );
+                describe( "false | ", function () {
+                    beforeEach( function () {
+                    } );
+                    it( "false ", function () {
+                        expect( this.object.isActive() ).toBe( false );
+                    } );
                 } );
             } );
             xdescribe( "problem cases | ", function () {
@@ -337,8 +352,8 @@ describe( "Data.js | ", function () {
         describe( "isGraded | ", function () {
             describe( "Happy paths | ", function () {
                 beforeEach( function () {
-                    this.object.loadQuestionScores(this.defaults.questionScores);
-                    this.object.loadExamGrades(this.defaults.examGrades);
+                    this.object.loadQuestionScores( this.defaults.questionScores );
+                    this.object.loadExamGrades( this.defaults.examGrades );
 
                 } );
 
@@ -347,7 +362,7 @@ describe( "Data.js | ", function () {
                 } );
 
                 it( "true ", function () {
-                    this.object.storeQuestionScore( this.activeStudent,  0,  34);
+                    this.object.storeQuestionScore( this.activeStudent, 0, 34 );
                     expect( this.object.isGraded( this.activeStudent ) ).toBe( true );
                 } );
             } );
@@ -366,8 +381,8 @@ describe( "Data.js | ", function () {
         describe( "getNumberGraded | ", function () {
             beforeEach( function () {
                 //this makes a call to updateExam scores, so best be ready
-                this.object.loadQuestionScores(this.defaults.questionScores);
-                this.object.loadExamGrades(this.defaults.examGrades);
+                this.object.loadQuestionScores( this.defaults.questionScores );
+                this.object.loadExamGrades( this.defaults.examGrades );
 
             } );
             describe( "Happy paths | ", function () {
@@ -376,7 +391,7 @@ describe( "Data.js | ", function () {
                 } );
 
                 it( ">0 graded ", function () {
-                    this.object.storeQuestionScore( this.activeStudent,  0,  34);
+                    this.object.storeQuestionScore( this.activeStudent, 0, 34 );
                     expect( this.object.getNumberGraded() ).toBe( 1 );
                 } );
             } );
@@ -395,8 +410,8 @@ describe( "Data.js | ", function () {
         describe( "getTotalExams | ", function () {
             describe( "Happy paths | ", function () {
                 beforeEach( function () {
-                    this.object.loadQuestionScores(this.defaults.questionScores);
-                    this.object.loadExamGrades(this.defaults.examGrades);
+                    this.object.loadQuestionScores( this.defaults.questionScores );
+                    this.object.loadExamGrades( this.defaults.examGrades );
                 } );
                 it( "2 exams", function () {
                     expect( this.object.getTotalExams() ).toBe( this.numberStudents );
@@ -414,25 +429,25 @@ describe( "Data.js | ", function () {
         } );
 
 
-            xdescribe("getTotalGradingTime | ", function(){
-                it( " ", function () {
-                    // //prep
-                    // store.examGradingTimes = {
-                    //     0: 125,
-                    //     1: 75,
-                    //     2: 125,
-                    //     3: 75,
-                    //     4: 0
-                    // }; //total 400
-                    // //it updates the examGrades from questionScores. If this isn't present, it freaks out
-                    // store.questionScores = { 0: { 0: 44 }, 1: { 0: 55 }, 2: { 0: 66 }, 3: { 0: 22 }, 4: { 0: null } };
-                    // store.examGrades = { 0: 44, 1: 55, 2: 66, 3: 22, 4: 'Letter grade'
-                    } );
+        xdescribe( "getTotalGradingTime | ", function () {
+            it( " ", function () {
+                // //prep
+                // store.examGradingTimes = {
+                //     0: 125,
+                //     1: 75,
+                //     2: 125,
+                //     3: 75,
+                //     4: 0
+                // }; //total 400
+                // //it updates the examGrades from questionScores. If this isn't present, it freaks out
+                // store.questionScores = { 0: { 0: 44 }, 1: { 0: 55 }, 2: { 0: 66 }, 3: { 0: 22 }, 4: { 0: null } };
+                // store.examGrades = { 0: 44, 1: 55, 2: 66, 3: 22, 4: 'Letter grade'
+            } );
 
-                it( " ", function () {
-                } );
+            it( " ", function () {
+            } );
 
-            });
+        } );
 
 
     } );
