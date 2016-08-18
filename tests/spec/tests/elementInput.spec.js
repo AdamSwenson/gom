@@ -18,6 +18,8 @@ require( 'sinon' );
 
 //helpers
 var Helper = require( '../helpers/vueTesting.helper.js' );
+var DataHelper = require( '../helpers/dataObject.helper' );
+
 
 //for fixture
 require( 'bootstrap' );
@@ -26,7 +28,10 @@ Vue.config.debug = true;
 
 //tested stuff
 var testedComponent = require( "../../../resources/assets/js/grade/components/elementInput.component.js" );
-require( '../../../resources/assets/js/grade/components/Data.js' );
+
+import Data from '../../../resources/assets/js/data/Data.js';
+
+//require( '../../../resources/assets/js/grade/components/Data.js' );
 var fixture = 'elementInput.fixture.html';
 
 describe( "elementInput.js | ", function () {
@@ -53,7 +58,10 @@ describe( "elementInput.js | ", function () {
 
     beforeEach( function () {
         var store = new Data();
-        store.setActiveStudent( 0 );
+        this.activeStudentIndex = 0;
+        store.students[ this.activeStudentIndex ] = DataHelper.makeStudent();
+
+        store.setActiveStudent( this.activeStudentIndex );
         store.loadStockComments( {
             0: {
                 0: 'e0 missing',

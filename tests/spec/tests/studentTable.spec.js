@@ -10,6 +10,7 @@ require( 'sinon' );
 
 //helpers
 var Helper = require( '../helpers/vueTesting.helper.js' );
+var DataHelper = require( '../helpers/dataObject.helper' );
 
 //for fixture
 require( 'bootstrap' );
@@ -22,7 +23,8 @@ var fixture = 'studentTable.fixture.html';
 
 
 //Dependencies
-require( '../../../resources/assets/js/grade/components/Data.open.js' );
+//require( '../../../resources/assets/js/grade/components/Data.open.js' );
+import Data from '../../../resources/assets/js/data/Data.js';
 
 
 /**
@@ -183,7 +185,9 @@ describe( "studentTable | ", function () {
             describe( "Happy paths | ", function () {
 
                 it( "active = true", function () {
-                    store.setActiveStudent( this.studentIndex );
+                    store.activeStudentIndex = this.studentIndex;
+                    store.activeStudentId = this.studentId;
+                    //store.setActiveStudent( this.studentIndex );
                     this.$fixture = loadFixtures( fixture );
                     this.vm = Helper.loadVueComponent( testedComponent, 'student-list-item' );
 
@@ -196,9 +200,12 @@ describe( "studentTable | ", function () {
 
                 it( "active = false", function () {
                     //prep
-                    store.setActiveStudent( 300 );
-                    this.$fixture = loadFixtures( 'studentListItem.fixture.html' );
-                    this.vm = Helper.loadVueComponent( testedComponent, 'student-list-item' );
+                    store.activeStudentIndex = 300;
+                    // store.activeStudentId = this.studentId;
+                    // store.setActiveStudent( 300 );
+                    this.$fixture = loadFixtures( fixture );
+//                    this.$fixture = loadFixtures( 'studentListItem.fixture.html' );
+                    this.vm = Helper.loadVueComponent( testedComponent, 'student-table' );
 
                     //check --starting with active student
                     assertRowActive( this, this.studentIndex, true );
@@ -211,7 +218,7 @@ describe( "studentTable | ", function () {
             describe( "Problem cases | ", function () {
                 it( "activeStudentIndex = null", function () {
                     //prep
-                    store.setActiveStudent( null );
+                    store.activeStudentIndex = null;
 
                     this.$fixture = loadFixtures( fixture );
                     this.vm = Helper.loadVueComponent( testedComponent, 'student-list-item' );
@@ -298,7 +305,8 @@ describe( "studentTable | ", function () {
                 beforeEach( function () {
                     this.gradeVal = '27';
                     let d = new Data();
-                    d.setActiveStudent( this.studentIndex );
+                    d.activeStudentIndex = this.studentIndex;
+                    d.activeStudentId = this.studentId;
                     sinon.stub( d, "getExamGrade" ).returns( this.gradeVal );
                     sinon.stub( d, "getStudents" ).returns( students );
                     window.store = d;

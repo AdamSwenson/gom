@@ -10,6 +10,7 @@ require( 'sinon' );
 
 //helpers
 var Helper = require( '../helpers/vueTesting.helper.js' );
+var DataHelper = require( '../helpers/dataObject.helper' );
 
 //for fixture
 require( 'bootstrap' );
@@ -22,7 +23,9 @@ var fixture = 'dashboard.timer.fixture.html';
 
 
 //Dependencies
-require( '../../../resources/assets/js/grade/components/Data.js' );
+import Data from '../../../resources/assets/js/data/Data.js';
+
+//require( '../../../resources/assets/js/grade/components/Data.js' );
 
 
 describe( "dashboard-timer tests | ", function () {
@@ -33,7 +36,10 @@ describe( "dashboard-timer tests | ", function () {
 
     beforeEach( function () {
         var store = new Data();
-        store.setActiveStudent(0);
+        this.activeStudentIndex = 0;
+        store.students[ this.activeStudentIndex ] = DataHelper.makeStudent();
+        store.setActiveStudent(this.activeStudentIndex);
+
         store.examGradingTimes = {
             0: 0,
             1: 0,
