@@ -62,45 +62,48 @@ describe( "elementInput.js | ", function () {
         store.students[ this.activeStudentIndex ] = DataHelper.makeStudent();
 
         store.setActiveStudent( this.activeStudentIndex );
-        store.loadStockComments( {
-            0: {
-                0: 'e0 missing',
-                1: 'e0 poor',
-                2: 'e0 fair',
-                3: 'e0 excellent'
-            },
-            1: {
-
-                0: 'e1 missing',
-                1: 'e1 poor',
-                2: 'e1 fair',
-                3: 'e1 excellent'
-            }
-        } );
-        store.loadElementComments( {
-            0: {
-                0: '',
-                1: '',
-                2: ''
-            },
-            1: {
-                0: '',
-                1: '',
-                2: ''
-            }
-        } );
-        store.loadElementScores( {
-            0: {
-                0: null,
-                1: null
-            },
-
-            1: {
-                0: null,
-                1: null,
-                2: null,
-            }
-        } );
+         store.loadStockComments( DataHelper.defaultStockComments());
+        //{
+        //     0: {
+        //         0: 'e0 missing',
+        //         1: 'e0 poor',
+        //         2: 'e0 fair',
+        //         3: 'e0 excellent'
+        //     },
+        //     1: {
+        //
+        //         0: 'e1 missing',
+        //         1: 'e1 poor',
+        //         2: 'e1 fair',
+        //         3: 'e1 excellent'
+        //     }
+        // } );
+        store.loadElementComments( DataHelper.defaultElementComments());
+        //{
+        //     0: {
+        //         0: '',
+        //         1: '',
+        //         2: ''
+        //     },
+        //     1: {
+        //         0: '',
+        //         1: '',
+        //         2: ''
+        //     }
+        // } );
+        store.loadElementScores(DataHelper.defaultElementScores());
+        // {
+        //     0: {
+        //         0: null,
+        //         1: null
+        //     },
+        //
+        //     1: {
+        //         0: null,
+        //         1: null,
+        //         2: null,
+        //     }
+        // } );
 
         store.loadNumberQuestions( 2 );
         window.store = store;

@@ -51,38 +51,6 @@ new Vue( {
             $( '#questionArea' ).show( "fast" );
         },
 
-        // /**
-        //  * Sorts the StudentRoster by the clicked header. Sort order reverses with each press.
-        //  * @param value
-        //  * @param data
-        //  */
-        // sortRosterBy: function ( value) {
-        //     let data = this.store;
-        //     var me = this;
-        //     var $roster = $( '#studentRosterBody' );
-        //     $roster.append(
-        //         $roster.find( '[id^="studentListItem"]' ).sort( function ( a, b ) {
-        //             var i = $( a ).find( '[id^="' + value + '"]' );
-        //             var j = $( b ).find( '[id^="' + value + '"]' );
-        //             var result;
-        //             if ( value == 'studentName' || value == 'studentIdentifier' ) {
-        //                 result = $( i ).text().toUpperCase().localeCompare(
-        //                     $( j ).text().toUpperCase() );
-        //             } else {
-        //                 // sort by exam grade
-        //                 var gradeA = data.examGrades[ $( a ).attr( 'data-index' ) ];
-        //                 var gradeB = data.examGrades[ $( b ).attr( 'data-index' ) ];
-        //                 result = gradeA - gradeB;
-        //             }
-        //             // flip results if we're sorting in DESC
-        //             if ( ! me.sortAsc ) {
-        //                 result *= - 1;
-        //             }
-        //             return result;
-        //         } )
-        //     );
-        //     me.sortAsc = ! me.sortAsc;
-        // },
 
         /* ------------------------------ Server ------------------------------ */
 
@@ -219,6 +187,7 @@ new Vue( {
          */
         'name-visibility-toggled': function () {
             window.console.log( 'gradeVue', 'name-visibility-toggled' );
+            this.$broadcast('name-visibility-toggled')
         },
 
         /**
@@ -292,6 +261,7 @@ new Vue( {
         'stop-timer-request': function () {
             window.console.log( 'gradeVue', 'stop-timer-request' );
            this.requestTimerStop();
+            // this.$broadcast('stop-timer-request');
         },
 
         /**
@@ -300,6 +270,7 @@ new Vue( {
         'timer-start-event': function () {
             window.console.log( 'gradeVue', 'caught timer-start-event' );
             this.saveTime();
+            // this.$broadcast('timer-start-event');
         },
         /**
          * Handles notification that the timer has stopped
@@ -307,6 +278,7 @@ new Vue( {
         'timer-stop-event': function () {
             window.console.log( 'gradeVue', 'caught timer-stop-event' );
             this.saveTime();
+            this.$broadcast('timer-stop-event');
         },
 
         /**
@@ -315,6 +287,7 @@ new Vue( {
         'time-save-request': function(){
             window.console.log( 'gradeVue', 'caught time-save-request' );
             this.saveTime();
+            this.$broadcast('time-save-request');
         }
 
     },

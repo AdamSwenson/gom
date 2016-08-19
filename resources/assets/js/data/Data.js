@@ -3,6 +3,7 @@
  */
 
 import Student from './Student';
+import Question from './Question';
 
 export default class Data {
     constructor() {
@@ -127,7 +128,7 @@ export default class Data {
 
     /**
      * Sets the grading time data from the server
-     * @param this.examGradingTimes JSON object
+     * @param examGradingTimes JSON object
      */
     loadGradingTimes( examGradingTimesJSON ) {
         this.examGradingTimes = examGradingTimesJSON;
@@ -147,16 +148,20 @@ export default class Data {
     }
 
     /**
-     * Loads a json object of questions.
-     * @param .questionsJSON
+     * Loads a json object of questions
      */
-    loadQuestions( questionsJSON ) {
-        this.questions = questionsJSON;
+    loadQuestions( questionsJson ) {
+        for ( let i = 0; i < Object.keys( questionsJson ).length; i ++ ) {
+        let index = Object.keys( questionsJson )[ i ];
+            let s = questionsJson[ index ];
+            this.questions[ index ] = Question.factory( s , index);
+        }
+//        this.questions = questionsJSON;
     }
 
     /**
      * Loads a json object of question scores.
-     * @param .questionScoresJSON
+     * @param questionScoresJSON
      */
     loadQuestionScores( questionScoresJSON ) {
         this.questionScores = questionScoresJSON;
@@ -231,8 +236,9 @@ export default class Data {
      * If no customized text is set, then return stockComment.
      *
      * Original: data.this.elementComments[ Roster.activeStudent ][ index ];
-     * @param activeStudent
+     * @param studentIndex
      * @param elementIndex
+     * @param valence
      * @returns {*}
      */
     getCommentText( studentIndex, elementIndex, valence ) {
@@ -273,7 +279,6 @@ export default class Data {
      * (The usual getter will return stock text in those cases)
      * @param studentIndex
      * @param elementIndex
-     * @param valence
      * @private
      */
     _getStoredCommentText( studentIndex, elementIndex ) {
@@ -359,7 +364,7 @@ export default class Data {
     /**
      * Retrieves element score for a student
      * Original: data.this.elementScores[ Roster.activeStudent ][ index ];
-     * @param activeStudent
+     * @param studentIndex
      * @param elementIndex
      * @returns {*}
      */
@@ -425,7 +430,6 @@ export default class Data {
     /**
      * Convenience function for getting the current student's score for question
      * Old way: data.this.questionScores[ Roster.activeStudent ][ index ];
-     * @param activeStudent
      * @param questionIndex
      */
     getQuestionScoreForActiveStudent( questionIndex ) {
@@ -467,10 +471,11 @@ export default class Data {
     /**
      * Mostly used for testing
      * @param studentIndex
+     * @param score
      * @private
      */
     _setExamGrade( studentIndex, score ) {
-        this.examGrades[ studentIndex ];
+        this.examGrades[ studentIndex ] = score;
     }
 
     /**

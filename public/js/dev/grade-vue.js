@@ -25736,48 +25736,6 @@ module.exports = {
 
     computed: {
         /**
-         * The current value of the text area
-         */
-        commentText: {
-            cache: false,
-            get: function get() {
-                if (this.elementScore) return this.store.getCommentTextForActiveStudent(this.elementIndex, this.getValence(this.elementScore));
-            },
-            set: function set(text) {
-                this.store.storeCommentTextForActiveStudent(this.elementIndex, text);
-                //send to the db
-                this.notifyStoreCommentText();
-            }
-        },
-
-        /**
-         * The current value of the slider
-         */
-        elementScore: {
-            cache: false,
-            get: function get() {
-                return this.store.getElementScoreForActiveStudent(this.elementIndex);
-            },
-            set: function set(score) {
-                this.store.storeElementScoreForActiveStudent(this.elementIndex, score);
-                this.notifyStoreElementScore();
-            }
-        },
-
-        /**
-         * The valence corresponding to the currently set element score
-         * @returns {*}
-         */
-        currentValence: function currentValence() {
-            //return false if no element score set
-            if (typeof this.elementScore == 'undefined' || this.elementScore == null) {
-                return false;
-            }
-
-            return this.getValence(this.elementScore);
-        },
-
-        /**
          * Shortcut to where the active student is stored
          * @returns {module.exports.computed.activeStudent|null|*}
          */
@@ -25800,6 +25758,50 @@ module.exports = {
         commentSelector: function commentSelector() {
             // return document.getElementById(this.commentAreaId);
             return $('#' + this.commentAreaId);
+        },
+
+        /**
+         * The current value of the text area
+         */
+        commentText: {
+            cache: false,
+            get: function get() {
+                if (this.elementScore)
+                    // window.console.log('elementInput', 'commentText', this.elementScore, this.getValence( this.elementScore ) );
+                    return this.store.getCommentTextForActiveStudent(this.elementIndex, this.getValence(this.elementScore));
+            },
+            set: function set(text) {
+                this.store.storeCommentTextForActiveStudent(this.elementIndex, text);
+                //send to the db
+                this.notifyStoreCommentText();
+            }
+        },
+
+        /**
+         * The valence corresponding to the currently set element score
+         * @returns {*}
+         */
+        currentValence: function currentValence() {
+            //return false if no element score set
+            if (typeof this.elementScore == 'undefined' || this.elementScore == null) {
+                return false;
+            }
+
+            return this.getValence(this.elementScore);
+        },
+
+        /**
+         * The current value of the slider
+         */
+        elementScore: {
+            cache: false,
+            get: function get() {
+                return this.store.getElementScoreForActiveStudent(this.elementIndex);
+            },
+            set: function set(score) {
+                this.store.storeElementScoreForActiveStudent(this.elementIndex, score);
+                this.notifyStoreElementScore();
+            }
         },
 
         /**
@@ -25838,16 +25840,6 @@ module.exports = {
          */
         emptyCommentArea: function emptyCommentArea() {
             this.commentText = '';
-            // $( this ).val( '' );
-        },
-
-        /**
-         * Allow user to enter text into comment area
-         */
-        enableCommentArea: function enableCommentArea() {
-            this.commentSelector.removeAttribute('readonly');
-            // this.commentSelector.removeAttr( 'readonly' );
-            // this.commentSelector.prop( 'readonly', '' );
         },
 
         /**
@@ -25855,20 +25847,20 @@ module.exports = {
          */
         disableCommentArea: function disableCommentArea() {
             this.commentSelector.setAttribute('readonly', 'true');
-            // this.commentSelector.prop( 'readonly', 'true' );
+        },
+
+        /**
+         * Allow user to enter text into comment area
+         */
+        enableCommentArea: function enableCommentArea() {
+            this.commentSelector.removeAttribute('readonly');
         },
 
         /**
          * Updates the displayed comment to match the current slider value.
+         * TODO Add a test for the potential corner cases making the default null creates
          */
         updateComment: function updateComment() {
-            // set comments
-
-            // var thisComment = data.elementComments[ Roster.activeStudent ][ index ];
-            //  var elementScore = this.store.getElementScore( this.store.activeStudent, index );
-
-            //TODO Add a test for the potential corner cases making the default null creates
-
             if (this.elementScore === null) {
                 // clear any text that might have been left over from another user
                 // this.emptyCommentArea();
@@ -25876,35 +25868,24 @@ module.exports = {
                 // this is so that the user doesn't enter custom text, move the slider,
                 // and then see their custom text irreversibly wiped out.
                 this.disableCommentArea();
-                // $( this ).prop( 'readonly', 'true' );
             } else {
-                // It has already been scored, so retrieve and set the comment text
-                //  this.updateValence( this.elementScore );
-
-                //  this.retrieveStoredCommentText();
-                // var thisComment = data.getCommentText( this.activeStudent, index, valence );
-                // $( this ).val( thisComment );
-
+                // It has already been scored, so the comment text will be retrieved and set.
                 //no need for it to remain read only
                 this.enableCommentArea();
-                //$( this ).prop( 'readonly', '' );
             }
-            // } );
         },
 
         /* ------------------------------- Valence helpers -------------------------------- */
         /**
          * Sets currentValence to which valence group a [score] belongs to by comparing with valenceCutoffs[]
          * i.e. a score > 0 and <= 2.5 will be in the 'poor' valence (1)
+         * TODO Decide what should do if this gets null for the score
          * @param score
          * @returns {number}
          */
         getValence: function getValence(score) {
             var valence = 0;
             var me = this;
-
-            //TODO Decide what should do if this gets null for the score
-
             for (var j = me.settings.valenceCutoffs.length - 2; j >= 0; j--) {
                 if (score > me.settings.valenceCutoffs[j]) {
                     valence = j + 1;
@@ -25927,6 +25908,7 @@ module.exports = {
             if (typeof oldScore == 'undefined' || oldScore == null) {
                 return false;
             }
+            //check old and new are the same
             if (this.getValence(newScore) != this.getValence(oldScore)) {
                 return false;
             }
@@ -25942,7 +25924,7 @@ module.exports = {
          * @param callback
          */
         handleElementSliderStopEvent: function handleElementSliderStopEvent(slideEvt, callback) {
-            //grab scores
+            //get the existing score
             var oldScore = this.store.getElementScoreForActiveStudent(this.elementIndex);
             //store the new element score in the data object
             this.elementScore = slideEvt.value;
@@ -25954,45 +25936,29 @@ module.exports = {
             if (!this.isSameValence(oldScore, this.elementScore)) {
                 //Score is in a new valence region.
                 //So let's plug in the appropriate comment text and save to DB
-
-                //Store comment text in data object
+                //
                 //Dear Adam, make sure you read the doc for storeCommentText before fucking with
                 //anything in these lines
-                //this.commentText = this.commentSelector.val();
                 this.commentText = this.store.getCommentTextForActiveStudent(this.elementIndex, this.getValence(this.elementScore));
-
-                //update display
-                // this.updateDisplayedComment( $elementComment, commentText );
-
-
-                // AjaxHandler.saveComment( data, Roster, elementId, score, commentText );
             } else {}
-                // Score is in the same valence region.
-                // Jump straight to saving without changing the elementComment
-                // Fear not. Changes directly to the comment text will be handled elsewhere.
-                // this.notifyStoreElementScore();
-                //                AjaxHandler.createGradeRequest( data, 'element_id', elementId, score, null, Roster );
+            // Score is in the same valence region.
+            // Jump straight to saving without changing the elementComment
+            // Fear not. Changes directly to the comment text will be handled elsewhere.
 
 
-                // If using bell curve (standardScoring), element score affects
-                // the total question score, so update
-                // if ( Roster.standardScoring ) {
-                //     //  updateStandardScores();
-                // }
+            // If using bell curve (standardScoring), element score affects
+            // the total question score, so update
+            // if ( Roster.standardScoring ) {
+            //     //  updateStandardScores();
+            // }
 
             if (typeof callback != 'undefined') {
                 return callback();
             }
-
-            // //Update dashboard and roster data displayed
-            // updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
-            // //Sigh. The user forgot to restart the timer. Do it for them
-            // Timer.resumeTimerIfPaused( data, Roster, Dashboard );
         },
 
         setSliderScore: function setSliderScore() {
             //avoid causing an error when slider gets null as a value
-            // var modScore = score === null ? 0 : this.elementScore;
             this.sliderSelector.slider('setValue', this.elementScore);
             //            this.sliderSelector.slider( 'refresh' );
         },
@@ -27007,39 +26973,6 @@ new Vue({
             $('#questionArea').show("fast");
         },
 
-        // /**
-        //  * Sorts the StudentRoster by the clicked header. Sort order reverses with each press.
-        //  * @param value
-        //  * @param data
-        //  */
-        // sortRosterBy: function ( value) {
-        //     let data = this.store;
-        //     var me = this;
-        //     var $roster = $( '#studentRosterBody' );
-        //     $roster.append(
-        //         $roster.find( '[id^="studentListItem"]' ).sort( function ( a, b ) {
-        //             var i = $( a ).find( '[id^="' + value + '"]' );
-        //             var j = $( b ).find( '[id^="' + value + '"]' );
-        //             var result;
-        //             if ( value == 'studentName' || value == 'studentIdentifier' ) {
-        //                 result = $( i ).text().toUpperCase().localeCompare(
-        //                     $( j ).text().toUpperCase() );
-        //             } else {
-        //                 // sort by exam grade
-        //                 var gradeA = data.examGrades[ $( a ).attr( 'data-index' ) ];
-        //                 var gradeB = data.examGrades[ $( b ).attr( 'data-index' ) ];
-        //                 result = gradeA - gradeB;
-        //             }
-        //             // flip results if we're sorting in DESC
-        //             if ( ! me.sortAsc ) {
-        //                 result *= - 1;
-        //             }
-        //             return result;
-        //         } )
-        //     );
-        //     me.sortAsc = ! me.sortAsc;
-        // },
-
         /* ------------------------------ Server ------------------------------ */
 
         /**
@@ -27173,6 +27106,7 @@ new Vue({
          */
         'name-visibility-toggled': function nameVisibilityToggled() {
             window.console.log('gradeVue', 'name-visibility-toggled');
+            this.$broadcast('name-visibility-toggled');
         },
 
         /**
@@ -27245,6 +27179,7 @@ new Vue({
         'stop-timer-request': function stopTimerRequest() {
             window.console.log('gradeVue', 'stop-timer-request');
             this.requestTimerStop();
+            // this.$broadcast('stop-timer-request');
         },
 
         /**
@@ -27253,6 +27188,7 @@ new Vue({
         'timer-start-event': function timerStartEvent() {
             window.console.log('gradeVue', 'caught timer-start-event');
             this.saveTime();
+            // this.$broadcast('timer-start-event');
         },
         /**
          * Handles notification that the timer has stopped
@@ -27260,6 +27196,7 @@ new Vue({
         'timer-stop-event': function timerStopEvent() {
             window.console.log('gradeVue', 'caught timer-stop-event');
             this.saveTime();
+            this.$broadcast('timer-stop-event');
         },
 
         /**
@@ -27268,6 +27205,7 @@ new Vue({
         'time-save-request': function timeSaveRequest() {
             window.console.log('gradeVue', 'caught time-save-request');
             this.saveTime();
+            this.$broadcast('time-save-request');
         }
 
     },
@@ -27292,7 +27230,7 @@ module.exports = '<div id="dashboardCounts" class="">\n\n    <!-- graded / remai
 },{}],41:[function(require,module,exports){
 module.exports = '<div id="dashboard">\n    <h4 class="row">\n    <span class="col-xs-7 dashboard-header">\n            <!--<span class="col-xs-7 dashboard-header" style="vertical-align:middle">-->\n        <span class="glyphicon glyphicon-time"\n              aria-hidden="true"></span> Statistics\n    </span>\n\n        <span class="col-xs-5">\n        <a id="btnTimer"\n           v-bind:class="buttonStyling"\n           title="Toggle timer"\n           v-on:click="toggleTimer">\n            <span id="btnTimerIcon"\n                  v-bind:class="buttonIcon"\n                  aria-hidden="true"></span>\n            <span id="btnTimerLabel">{{buttonLabel}}</span>\n        </a>\n    </span>\n    </h4>\n\n    <div class="panel panel-default">\n\n        <div id="gradingStatsPanel" class="panel-body">\n            <span class="col-xs-6">Time This Exam</span>\n            <span class="col-xs-6" id="thisExamTime">{{ currentExamTimeDisplay }}</span>\n\n            <span class="col-xs-6">Average Time</span>\n            <span class="col-xs-6" id="avgTime">{{ averageTimeDisplay }}</span>\n\n            <span class="col-xs-6">Total Time</span>\n            <span class="col-xs-6" id="totalTime">{{ totalTimeDisplay }}</span>\n\n            <span class="col-xs-6">Time Remaining</span>\n            <span class="col-xs-6" id="timeRemaining">{{ remainingTimeDisplay }}</span>\n        </div>\n    </div>\n</div>';
 },{}],42:[function(require,module,exports){
-module.exports = '<div id="element{{ elementNumber }}"\n     class="list-group-item elementPanel"\n     data-element-index="{{ elementIndex }}"\n     data-element-id="{{ elementId }}"\n     data-comment-area-id="{{ commentAreaId  }}">\n\n    <h5 class="elementTitle">{{ elementTitle }}</h5>\n    <div class="row">\n                <span class="col-lg-5 sliderContainer Q{{ questionNumber }}E{{ elementNumber }}">\n                    <!-- score slider -->\n                    <label for="{{ sliderId }}"></label>\n                    <input id="{{ sliderId }}"\n                           type="text"\n                           class="slider"/>\n                </span>\n\n        <!-- comment area -->\n                <span class="col-lg-7 commentContainer Q{{ questionNumber }}E{{ elementNumber }}">\n                    <textarea id="{{ commentAreaId  }}"\n                              class="form-control"\n                              rows="4"\n                              name="{{ commentAreaId  }}"\n                              placeholder="No score for this element"\n                              v-model="commentText"\n                    ></textarea>\n                </span>\n    </div>\n</div>\n';
+module.exports = '<div id="element{{ elementNumber }}"\n     class="list-group-item elementPanel"\n     data-element-index="{{ elementIndex }}"\n     data-element-id="{{ elementId }}"\n     data-comment-area-id="{{ commentAreaId  }}">\n\n    <h5 class="elementTitle">{{ elementTitle }}</h5>\n    <div class="row">\n                <span class="col-lg-5 sliderContainer Q{{ questionNumber }}E{{ elementNumber }}">\n                    <!-- score slider -->\n                    <label for="{{ sliderId }}"></label>\n                    <input id="{{ sliderId }}"\n                           type="text"\n                           class="slider"/>\n                </span>\n\n        <!-- comment area -->\n        <span class="col-lg-7 commentContainer Q{{ questionNumber }}E{{ elementNumber }}">\n                    <textarea id="{{ commentAreaId  }}"\n                              class="form-control"\n                              rows="4"\n                              name="{{ commentAreaId  }}"\n                              placeholder="No score for this element"\n                              v-model="commentText"\n                    ></textarea>\n                </span>\n    </div>\n</div>\n';
 },{}],43:[function(require,module,exports){
 module.exports = '<!-- Single button -->\n<div id="letterGradeArea"\n     class="btn-group">\n    <button id="letterGradeButton{{questionNumber}}"\n            type="button"\n            class="btn btn-default dropdown-toggle"\n            data-toggle="dropdown"\n            aria-haspopup="true"\n            aria-expanded="false">\n        <span id="letterGradeForQuestion{{ questionNumber }}">{{ displayedGrade }}</span> <span class="caret"></span>\n    </button>\n\n    <ul id="letterGradeList"\n        class="dropdown-menu letterGradeList">\n        <template v-for="grade in grades">\n            <li class="gradeListItem">\n                <a class="letterGrade question{{ questionNumber }} q{{questionNumber}}g{{ grade.calcValue }}"\n                   v-on:click="handleLetterGradeClick($index)"\n                   href="#">{{ grade.displayValue }}</a>\n            </li>\n        </template>\n    </ul>\n\n</div>\n';
 },{}],44:[function(require,module,exports){

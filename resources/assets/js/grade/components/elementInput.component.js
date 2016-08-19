@@ -47,56 +47,12 @@ module.exports = {
 
     computed: {
         /**
-         * The current value of the text area
-         */
-        commentText: {
-            cache: false,
-            get: function () {
-                if(this.elementScore )
-                return this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
-            },
-            set: function ( text ) {
-                this.store.storeCommentTextForActiveStudent( this.elementIndex, text );
-                //send to the db
-                this.notifyStoreCommentText();
-            }
-        },
-
-        /**
-         * The current value of the slider
-         */
-        elementScore: {
-            cache: false,
-            get: function () {
-                return this.store.getElementScoreForActiveStudent( this.elementIndex )
-            },
-            set: function ( score ) {
-                this.store.storeElementScoreForActiveStudent( this.elementIndex, score )
-                this.notifyStoreElementScore()
-            }
-        },
-
-        /**
-         * The valence corresponding to the currently set element score
-         * @returns {*}
-         */
-        currentValence: function () {
-            //return false if no element score set
-            if ( typeof this.elementScore == 'undefined' || this.elementScore == null ) {
-                return false;
-            }
-
-            return this.getValence( this.elementScore );
-        },
-
-        /**
          * Shortcut to where the active student is stored
          * @returns {module.exports.computed.activeStudent|null|*}
          */
         activeStudent: function () {
             return this.store.getActiveStudentIndex();
         },
-
 
         /**
          * Returns the string id of the comment area
@@ -113,6 +69,51 @@ module.exports = {
         commentSelector: function () {
             // return document.getElementById(this.commentAreaId);
             return $( '#' + this.commentAreaId );
+        },
+
+        /**
+         * The current value of the text area
+         */
+        commentText: {
+            cache: false,
+            get: function () {
+                if ( this.elementScore )
+                    // window.console.log('elementInput', 'commentText', this.elementScore, this.getValence( this.elementScore ) );
+                    return this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
+            },
+            set: function ( text ) {
+                this.store.storeCommentTextForActiveStudent( this.elementIndex, text );
+                //send to the db
+                this.notifyStoreCommentText();
+            }
+        },
+
+
+        /**
+         * The valence corresponding to the currently set element score
+         * @returns {*}
+         */
+        currentValence: function () {
+            //return false if no element score set
+            if ( typeof this.elementScore == 'undefined' || this.elementScore == null ) {
+                return false;
+            }
+
+            return this.getValence( this.elementScore );
+        },
+
+        /**
+         * The current value of the slider
+         */
+        elementScore: {
+            cache: false,
+            get: function () {
+                return this.store.getElementScoreForActiveStudent( this.elementIndex );
+            },
+            set: function ( score ) {
+                this.store.storeElementScoreForActiveStudent( this.elementIndex, score );
+                this.notifyStoreElementScore()
+            }
         },
 
         /**
@@ -152,16 +153,6 @@ module.exports = {
          */
         emptyCommentArea: function () {
             this.commentText = '';
-            // $( this ).val( '' );
-        },
-
-        /**
-         * Allow user to enter text into comment area
-         */
-        enableCommentArea: function () {
-            this.commentSelector.removeAttribute( 'readonly' );
-            // this.commentSelector.removeAttr( 'readonly' );
-            // this.commentSelector.prop( 'readonly', '' );
         },
 
         /**
@@ -169,20 +160,20 @@ module.exports = {
          */
         disableCommentArea: function () {
             this.commentSelector.setAttribute( 'readonly', 'true' );
-            // this.commentSelector.prop( 'readonly', 'true' );
+        },
+
+        /**
+         * Allow user to enter text into comment area
+         */
+        enableCommentArea: function () {
+            this.commentSelector.removeAttribute( 'readonly' );
         },
 
         /**
          * Updates the displayed comment to match the current slider value.
+         * TODO Add a test for the potential corner cases making the default null creates
          */
         updateComment: function () {
-            // set comments
-
-            // var thisComment = data.elementComments[ Roster.activeStudent ][ index ];
-            //  var elementScore = this.store.getElementScore( this.store.activeStudent, index );
-
-            //TODO Add a test for the potential corner cases making the default null creates
-
             if ( this.elementScore === null ) {
                 // clear any text that might have been left over from another user
                 // this.emptyCommentArea();
@@ -190,41 +181,29 @@ module.exports = {
                 // this is so that the user doesn't enter custom text, move the slider,
                 // and then see their custom text irreversibly wiped out.
                 this.disableCommentArea();
-                // $( this ).prop( 'readonly', 'true' );
             } else {
-                // It has already been scored, so retrieve and set the comment text
-                //  this.updateValence( this.elementScore );
-
-                //  this.retrieveStoredCommentText();
-                // var thisComment = data.getCommentText( this.activeStudent, index, valence );
-                // $( this ).val( thisComment );
-
+                // It has already been scored, so the comment text will be retrieved and set.
                 //no need for it to remain read only
                 this.enableCommentArea();
-                //$( this ).prop( 'readonly', '' );
             }
-            // } );
         },
 
         /* ------------------------------- Valence helpers -------------------------------- */
         /**
          * Sets currentValence to which valence group a [score] belongs to by comparing with valenceCutoffs[]
          * i.e. a score > 0 and <= 2.5 will be in the 'poor' valence (1)
+         * TODO Decide what should do if this gets null for the score
          * @param score
          * @returns {number}
          */
         getValence: function ( score ) {
             var valence = 0;
             var me = this;
-
-            //TODO Decide what should do if this gets null for the score
-
             for ( var j = me.settings.valenceCutoffs.length - 2; j >= 0; j -- ) {
                 if ( score > me.settings.valenceCutoffs[ j ] ) {
                     valence = j + 1;
                     break;
                 }
-
             }
             return valence;
         },
@@ -242,6 +221,7 @@ module.exports = {
             if ( typeof oldScore == 'undefined' || oldScore == null ) {
                 return false;
             }
+            //check old and new are the same
             if ( this.getValence( newScore ) != this.getValence( oldScore ) ) {
                 return false;
             }
@@ -258,7 +238,7 @@ module.exports = {
          * @param callback
          */
         handleElementSliderStopEvent: function ( slideEvt, callback ) {
-            //grab scores
+            //get the existing score
             var oldScore = this.store.getElementScoreForActiveStudent( this.elementIndex );
             //store the new element score in the data object
             this.elementScore = slideEvt.value;
@@ -270,25 +250,15 @@ module.exports = {
             if ( ! this.isSameValence( oldScore, this.elementScore ) ) {
                 //Score is in a new valence region.
                 //So let's plug in the appropriate comment text and save to DB
-
-                //Store comment text in data object
+                //
                 //Dear Adam, make sure you read the doc for storeCommentText before fucking with
                 //anything in these lines
-                //this.commentText = this.commentSelector.val();
                 this.commentText = this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
-
-                //update display
-                // this.updateDisplayedComment( $elementComment, commentText );
-
-
-                // AjaxHandler.saveComment( data, Roster, elementId, score, commentText );
 
             } else {
                 // Score is in the same valence region.
                 // Jump straight to saving without changing the elementComment
                 // Fear not. Changes directly to the comment text will be handled elsewhere.
-                // this.notifyStoreElementScore();
-//                AjaxHandler.createGradeRequest( data, 'element_id', elementId, score, null, Roster );
             }
 
             // If using bell curve (standardScoring), element score affects
@@ -301,18 +271,12 @@ module.exports = {
                 return callback();
             }
 
-            // //Update dashboard and roster data displayed
-            // updateStudentDashboardAndRosterAreas( data, Dashboard, Roster );
-            // //Sigh. The user forgot to restart the timer. Do it for them
-            // Timer.resumeTimerIfPaused( data, Roster, Dashboard );
         },
 
         setSliderScore: function () {
             //avoid causing an error when slider gets null as a value
-            // var modScore = score === null ? 0 : this.elementScore;
             this.sliderSelector.slider( 'setValue', this.elementScore );
 //            this.sliderSelector.slider( 'refresh' );
-
         },
 
         /* --------------------- Notifications to observers ---------------------- */
@@ -337,7 +301,6 @@ module.exports = {
          */
         notifyStartTimer: function () {
             this.$dispatch( 'start-timer-request', this.elementIndex );
-
         },
 
         /**
@@ -361,7 +324,7 @@ module.exports = {
          * @param activeStudent
          */
         'student-select-event': function ( obj ) {
-           window.console.log( 'elementInput', 'caught student-select-event', obj);
+            window.console.log( 'elementInput', 'caught student-select-event', obj );
             //update the slider value
             this.setSliderScore();
             //return true just in case someone else is listening and
@@ -392,7 +355,6 @@ module.exports = {
         this.sliderSelector.on( 'slideStop', function ( slideEvt ) {
             me.handleElementSliderStopEvent( slideEvt );
             me.notifySlideEvent();
-
         } );
 
         // window.console.log('input ready', 'elementIndex', this.elementIndex);

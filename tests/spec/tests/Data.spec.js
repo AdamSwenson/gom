@@ -31,66 +31,72 @@ describe( "Data.js | ", function () {
         //stores the initial state that all the various objects
         //would be in if no exams were graded
         this.defaults = {};
-        this.defaults.elementComments = {
-            0: {
-                0: '',
-                1: '',
-                2: ''
-            },
-            1: {
-                0: '',
-                1: '',
-                2: ''
-            }
-        };
+        this.defaults.elementComments = DataHelper.defaultElementComments();
+        // {
+        //     0: {
+        //         0: '',
+        //         1: '',
+        //         2: ''
+        //     },
+        //     1: {
+        //         0: '',
+        //         1: '',
+        //         2: ''
+        //     }
+        // };
 
-        this.defaults.stockComments = {
-            0: {
-                0: 'e0 missing',
-                1: 'e0 poor',
-                2: 'e0 fair',
-                3: 'e0 excellent'
-            },
-            1: {
-                0: 'e1 missing',
-                1: 'e1 poor',
-                2: 'e1 fair',
-                3: 'e1 excellent'
-            }
-        };
+        this.defaults.stockComments = DataHelper.defaultStockComments();
+        // {
+        //     0: {
+        //         0: 'e0 missing',
+        //         1: 'e0 poor',
+        //         2: 'e0 fair',
+        //         3: 'e0 excellent'
+        //     },
+        //     1: {
+        //         0: 'e1 missing',
+        //         1: 'e1 poor',
+        //         2: 'e1 fair',
+        //         3: 'e1 excellent'
+        //     }
+        // };
 
-        this.defaults.examGradingTimes = {
-            0: 0,
-            1: 0
-        };
+        this.defaults.examGradingTimes = DataHelper.defaultExamGradingTimes();
+        // {
+        //     0: 0,
+        //     1: 0
+        // };
 
-        this.defaults.elementScores = {
-            0: {
-                0: null,
-                1: null
-            },
+        this.defaults.elementScores = DataHelper.defaultElementScores();
+        // {
+        //     0: {
+        //         0: null,
+        //         1: null
+        //     },
+        //
+        //     1: {
+        //         0: null,
+        //         1: null
+        //     }
+        // };
 
-            1: {
-                0: null,
-                1: null
-            }
-        };
+        this.defaults.questionScores = DataHelper.defaultQuestionScores();
+        // {
+        //     0: {
+        //         0: null,
+        //         1: null
+        //     },
+        //     1: {
+        //         0: null,
+        //         1: null
+        //     }
+        // };
 
-        this.defaults.questionScores = {
-            0: {
-                0: null,
-                1: null
-            },
-            1: {
-                0: null,
-                1: null
-            }
-        };
-
-        this.defaults.examGrades = {
-            0: 'Letter grade',
-            1: 'Letter grade'
-        };
+        this.defaults.examGrades = DataHelper.defaultExamGrades();
+        // {
+        //     0: 'Letter grade',
+        //     1: 'Letter grade'
+        // };
 
     } );
 
@@ -229,7 +235,7 @@ describe( "Data.js | ", function () {
 
         xdescribe( "storeCommentText  | ", function () {
 
-            it( "storeCommentText ", function () {
+            it( "Happy path ", function () {
             } );
         } );
 
