@@ -16,6 +16,7 @@ var faker = require( 'faker' );
 
 //helpers
 var Helper = require( '../helpers/vueTesting.helper.js' );
+var DataHelper = require( '../helpers/dataObject.helper' );
 
 //for fixture
 require( 'bootstrap' );
@@ -27,17 +28,21 @@ var testedComponent = require( "../../../resources/assets/js/grade/components/le
 var fixture = 'letterGrade.fixture.html';
 
 //Dependencies
-require( '../../../resources/assets/js/grade/components/Data.open.js' );
+// require( '../../../resources/assets/js/grade/components/Data.open.js' );
+import Data from '../../../resources/assets/js/data/Data.js';
 
 
 describe( "LetterGradeButton.component  | ", function () {
     var store;
     beforeEach( function () {
-        this.questionNumber = "1";
+        this.questionNumber = 1;
         this.questionIndex = 0;
         this.maxScore = 100;
         this.questionAssignmentId = 2;
         store = new Data();
+        this.activeStudentIndex = 0;
+        store.students[ this.activeStudentIndex ] = DataHelper.makeStudent();
+
         store.loadQuestions( {
             0: {
                 questionIndex: this.questionIndex,
@@ -45,46 +50,27 @@ describe( "LetterGradeButton.component  | ", function () {
                 questionNumber: this.questionNumber
             }
         } );
-        store.loadGrades( {
-            0: { displayValue: 'A+', calcValue: 98 },
-            1: { displayValue: 'A', calcValue: 95 },
-            2: { displayValue: 'A-', calcValue: 92 },
-            3: { displayValue: 'B+', calcValue: 88 },
-            4: { displayValue: 'B', calcValue: 85 },
-            5: { displayValue: 'B-', calcValue: 82 },
-            6: { displayValue: 'C+', calcValue: 78 },
-            7: { displayValue: 'C', calcValue: 75 },
-            8: { displayValue: 'C-', calcValue: 72 },
-            9: { displayValue: 'D+', calcValue: 68 },
-            10: { displayValue: 'D', calcValue: 65 },
-            11: { displayValue: 'D-', calcValue: 62 },
-            12: { displayValue: 'F', calcValue: 55 }
-        } );
+        store.loadGrades( DataHelper.defaultGrades());
+        //     {
+        //     0: { displayValue: 'A+', calcValue: 98 },
+        //     1: { displayValue: 'A', calcValue: 95 },
+        //     2: { displayValue: 'A-', calcValue: 92 },
+        //     3: { displayValue: 'B+', calcValue: 88 },
+        //     4: { displayValue: 'B', calcValue: 85 },
+        //     5: { displayValue: 'B-', calcValue: 82 },
+        //     6: { displayValue: 'C+', calcValue: 78 },
+        //     7: { displayValue: 'C', calcValue: 75 },
+        //     8: { displayValue: 'C-', calcValue: 72 },
+        //     9: { displayValue: 'D+', calcValue: 68 },
+        //     10: { displayValue: 'D', calcValue: 65 },
+        //     11: { displayValue: 'D-', calcValue: 62 },
+        //     12: { displayValue: 'F', calcValue: 55 }
+        // } );
     } );
 
     describe( "intact | ", function () {
         beforeEach( function () {
-            // var store = new Data();
-            // store.loadGrades( [ { displayValue: 'A+', calcValue: 98 }, {
-            //     displayValue: 'A',
-            //     calcValue: 95
-            // }, { displayValue: 'A-', calcValue: 92 }, { displayValue: 'B+', calcValue: 88 }, {
-            //     displayValue: 'B',
-            //     calcValue: 85
-            // }, { displayValue: 'B-', calcValue: 82 }, { displayValue: 'C+', calcValue: 78 }, {
-            //     displayValue: 'C',
-            //     calcValue: 75
-            // }, { displayValue: 'C-', calcValue: 72 }, { displayValue: 'D+', calcValue: 68 }, {
-            //     displayValue: 'D',
-            //     calcValue: 65
-            // }, { displayValue: 'D-', calcValue: 62 }, { displayValue: 'F', calcValue: 55 } ] );
-            // store.loadQuestions( {
-            //     0: {
-            //         questionIndex: this.questionIndex,
-            //         questionAssignmentId: this.questionAssignmentId,
-            //         questionNumber: this.questionNumber
-            //     }
-            // } );
+
             let st = sinon.stub( store, 'getMaxQuestionScore' ).returns( this.maxScore );
             window.store = store;
 
@@ -127,27 +113,6 @@ describe( "LetterGradeButton.component  | ", function () {
         describe( "score | ", function () {
             it( "get", function () {
                 let testScore = faker.random.number();
-                // var store = new Data();
-                // store.loadQuestions( {
-                //     0: {
-                //         questionIndex: this.questionIndex,
-                //         questionAssignmentId: this.questionAssignmentId,
-                //         questionNumber: this.questionNumber
-                //     }
-                // } );
-                // store.loadGrades( [ { displayValue: 'A+', calcValue: 98 }, {
-                //     displayValue: 'A',
-                //     calcValue: 95
-                // }, { displayValue: 'A-', calcValue: 92 }, { displayValue: 'B+', calcValue: 88 }, {
-                //     displayValue: 'B',
-                //     calcValue: 85
-                // }, { displayValue: 'B-', calcValue: 82 }, { displayValue: 'C+', calcValue: 78 }, {
-                //     displayValue: 'C',
-                //     calcValue: 75
-                // }, { displayValue: 'C-', calcValue: 72 }, { displayValue: 'D+', calcValue: 68 }, {
-                //     displayValue: 'D',
-                //     calcValue: 65
-                // }, { displayValue: 'D-', calcValue: 62 }, { displayValue: 'F', calcValue: 55 } ] );
 
                 sinon.stub( store, 'getQuestionScoreForActiveStudent' ).returns( testScore );
                 window.store = store;
@@ -162,27 +127,6 @@ describe( "LetterGradeButton.component  | ", function () {
 
             it( "set", function () {
                 let testScore = faker.random.number();
-                // var store = new Data();
-                // store.loadQuestions( {
-                //     0: {
-                //         questionIndex: this.questionIndex,
-                //         questionAssignmentId: this.questionAssignmentId,
-                //         questionNumber: this.questionNumber
-                //     }
-                // } );
-                // store.loadGrades( [ { displayValue: 'A+', calcValue: 98 }, {
-                //     displayValue: 'A',
-                //     calcValue: 95
-                // }, { displayValue: 'A-', calcValue: 92 }, { displayValue: 'B+', calcValue: 88 }, {
-                //     displayValue: 'B',
-                //     calcValue: 85
-                // }, { displayValue: 'B-', calcValue: 82 }, { displayValue: 'C+', calcValue: 78 }, {
-                //     displayValue: 'C',
-                //     calcValue: 75
-                // }, { displayValue: 'C-', calcValue: 72 }, { displayValue: 'D+', calcValue: 68 }, {
-                //     displayValue: 'D',
-                //     calcValue: 65
-                // }, { displayValue: 'D-', calcValue: 62 }, { displayValue: 'F', calcValue: 55 } ] );
 
                 store.setActiveStudent( 0 );
                 store.loadQuestionScores( { 0: { 0: null, 1: 'taco' } } ); //replicate the data array
@@ -204,27 +148,6 @@ describe( "LetterGradeButton.component  | ", function () {
 
         it( "maxScore ", function () {
             let maxScore = 22;
-            // var store = new Data();
-            // store.loadQuestions( {
-            //     0: {
-            //         questionIndex: this.questionIndex,
-            //         questionAssignmentId: this.questionAssignmentId,
-            //         questionNumber: this.questionNumber
-            //     }
-            // } );
-            // store.loadGrades( [ { displayValue: 'A+', calcValue: 98 }, {
-            //     displayValue: 'A',
-            //     calcValue: 95
-            // }, { displayValue: 'A-', calcValue: 92 }, { displayValue: 'B+', calcValue: 88 }, {
-            //     displayValue: 'B',
-            //     calcValue: 85
-            // }, { displayValue: 'B-', calcValue: 82 }, { displayValue: 'C+', calcValue: 78 }, {
-            //     displayValue: 'C',
-            //     calcValue: 75
-            // }, { displayValue: 'C-', calcValue: 72 }, { displayValue: 'D+', calcValue: 68 }, {
-            //     displayValue: 'D',
-            //     calcValue: 65
-            // }, { displayValue: 'D-', calcValue: 62 }, { displayValue: 'F', calcValue: 55 } ] );
 
             sinon.stub( store, 'getMaxQuestionScore' ).returns( maxScore );
             window.store = store;
@@ -260,27 +183,6 @@ describe( "LetterGradeButton.component  | ", function () {
                 let testMax = 100;
                 let testScore = null;
                 let expectedGrade = 'Letter grade';
-                // var store = new Data();
-                // store.loadQuestions( {
-                //     0: {
-                //         questionIndex: this.questionIndex,
-                //         questionAssignmentId: this.questionAssignmentId,
-                //         questionNumber: this.questionNumber
-                //     }
-                // } );
-                // store.loadGrades( [ { displayValue: 'A+', calcValue: 98 }, {
-                //     displayValue: 'A',
-                //     calcValue: 95
-                // }, { displayValue: 'A-', calcValue: 92 }, { displayValue: 'B+', calcValue: 88 }, {
-                //     displayValue: 'B',
-                //     calcValue: 85
-                // }, { displayValue: 'B-', calcValue: 82 }, { displayValue: 'C+', calcValue: 78 }, {
-                //     displayValue: 'C',
-                //     calcValue: 75
-                // }, { displayValue: 'C-', calcValue: 72 }, { displayValue: 'D+', calcValue: 68 }, {
-                //     displayValue: 'D',
-                //     calcValue: 65
-                // }, { displayValue: 'D-', calcValue: 62 }, { displayValue: 'F', calcValue: 55 } ] );
 
                 sinon.stub( store, 'getMaxQuestionScore' ).returns( testScore );
                 sinon.stub( store, 'getQuestionScoreForActiveStudent' ).returns( testMax );
@@ -304,33 +206,6 @@ describe( "LetterGradeButton.component  | ", function () {
                     let testMax = 100;
                     let testScore = 86;
                     let expectedGrade = 'B';
-                    // var store = new Data();
-                    // store.loadQuestions( {
-                    //     0: {
-                    //         questionIndex: this.questionIndex,
-                    //         questionAssignmentId: this.questionAssignmentId,
-                    //         questionNumber: this.questionNumber
-                    //     }
-                    // } );
-                    // store.loadGrades( [ { displayValue: 'A+', calcValue: 98 }, {
-                    //     displayValue: 'A',
-                    //     calcValue: 95
-                    // }, { displayValue: 'A-', calcValue: 92 }, {
-                    //     displayValue: 'B+',
-                    //     calcValue: 88
-                    // }, { displayValue: 'B', calcValue: 85 }, {
-                    //     displayValue: 'B-',
-                    //     calcValue: 82
-                    // }, { displayValue: 'C+', calcValue: 78 }, {
-                    //     displayValue: 'C',
-                    //     calcValue: 75
-                    // }, { displayValue: 'C-', calcValue: 72 }, {
-                    //     displayValue: 'D+',
-                    //     calcValue: 68
-                    // }, { displayValue: 'D', calcValue: 65 }, { displayValue: 'D-', calcValue: 62 }, {
-                    //     displayValue: 'F',
-                    //     calcValue: 55
-                    // } ] );
 
                     let st = sinon.stub( store, 'getMaxQuestionScore' ).returns( testScore );
                     let st2 = sinon.stub( store, 'getQuestionScoreForActiveStudent' ).returns( testMax );
@@ -352,33 +227,6 @@ describe( "LetterGradeButton.component  | ", function () {
                     let testMax = 100;
                     let testScore = 84;
                     let expectedGrade = 'B-';
-                    // var store = new Data();
-                    // store.loadQuestions( {
-                    //     0: {
-                    //         questionIndex: this.questionIndex,
-                    //         questionAssignmentId: this.questionAssignmentId,
-                    //         questionNumber: this.questionNumber
-                    //     }
-                    // } );
-                    // store.loadGrades( [ { displayValue: 'A+', calcValue: 98 }, {
-                    //     displayValue: 'A',
-                    //     calcValue: 95
-                    // }, { displayValue: 'A-', calcValue: 92 }, {
-                    //     displayValue: 'B+',
-                    //     calcValue: 88
-                    // }, { displayValue: 'B', calcValue: 85 }, {
-                    //     displayValue: 'B-',
-                    //     calcValue: 82
-                    // }, { displayValue: 'C+', calcValue: 78 }, {
-                    //     displayValue: 'C',
-                    //     calcValue: 75
-                    // }, { displayValue: 'C-', calcValue: 72 }, {
-                    //     displayValue: 'D+',
-                    //     calcValue: 68
-                    // }, { displayValue: 'D', calcValue: 65 }, { displayValue: 'D-', calcValue: 62 }, {
-                    //     displayValue: 'F',
-                    //     calcValue: 55
-                    // } ] );
 
                     let st = sinon.stub( store, 'getMaxQuestionScore' ).returns( testScore );
                     let st2 = sinon.stub( store, 'getQuestionScoreForActiveStudent' ).returns( testMax );
@@ -396,34 +244,6 @@ describe( "LetterGradeButton.component  | ", function () {
                     let testMax = 100;
                     let testScore = 85;
                     let expectedGrade = 'B';
-                    // var store = new Data();
-                    // store.loadQuestions( {
-                    //     0: {
-                    //         questionIndex: this.questionIndex,
-                    //         questionAssignmentId: this.questionAssignmentId,
-                    //         questionNumber: this.questionNumber
-                    //     }
-                    // } );
-                    // store.loadGrades( [ { displayValue: 'A+', calcValue: 98 }, {
-                    //     displayValue: 'A',
-                    //     calcValue: 95
-                    // }, { displayValue: 'A-', calcValue: 92 }, {
-                    //     displayValue: 'B+',
-                    //     calcValue: 88
-                    // }, { displayValue: 'B', calcValue: 85 }, {
-                    //     displayValue: 'B-',
-                    //     calcValue: 82
-                    // }, { displayValue: 'C+', calcValue: 78 }, {
-                    //     displayValue: 'C',
-                    //     calcValue: 75
-                    // }, { displayValue: 'C-', calcValue: 72 }, {
-                    //     displayValue: 'D+',
-                    //     calcValue: 68
-                    // }, { displayValue: 'D', calcValue: 65 }, { displayValue: 'D-', calcValue: 62 }, {
-                    //     displayValue: 'F',
-                    //     calcValue: 55
-                    // } ] );
-
                     let st = sinon.stub( store, 'getMaxQuestionScore' ).returns( testScore );
                     let st2 = sinon.stub( store, 'getQuestionScoreForActiveStudent' ).returns( testMax );
                     window.store = store;
@@ -444,33 +264,6 @@ describe( "LetterGradeButton.component  | ", function () {
                     let testMax = 100;
                     let testScore = 86;
                     let expectedGrade = 'B';
-                    // var store = new Data();
-                    // store.loadQuestions( {
-                    //     0: {
-                    //         questionIndex: this.questionIndex,
-                    //         questionAssignmentId: this.questionAssignmentId,
-                    //         questionNumber: this.questionNumber
-                    //     }
-                    // } );
-                    // store.loadGrades( [ { displayValue: 'A+', calcValue: 98 }, {
-                    //     displayValue: 'A',
-                    //     calcValue: 95
-                    // }, { displayValue: 'A-', calcValue: 92 }, {
-                    //     displayValue: 'B+',
-                    //     calcValue: 88
-                    // }, { displayValue: 'B', calcValue: 85 }, {
-                    //     displayValue: 'B-',
-                    //     calcValue: 82
-                    // }, { displayValue: 'C+', calcValue: 78 }, {
-                    //     displayValue: 'C',
-                    //     calcValue: 75
-                    // }, { displayValue: 'C-', calcValue: 72 }, {
-                    //     displayValue: 'D+',
-                    //     calcValue: 68
-                    // }, { displayValue: 'D', calcValue: 65 }, { displayValue: 'D-', calcValue: 62 }, {
-                    //     displayValue: 'F',
-                    //     calcValue: 55
-                    // } ] );
 
                     let st = sinon.stub( store, 'getMaxQuestionScore' ).returns( testScore );
                     let st2 = sinon.stub( store, 'getQuestionScoreForActiveStudent' ).returns( testMax );
@@ -502,29 +295,7 @@ describe( "LetterGradeButton.component  | ", function () {
             beforeEach( function () {
                 var maxScore = faker.random.number();
                 testScore = faker.random.number();
-                // var store = new Data();
-                // store.loadQuestions( {
-                //     0: {
-                //         questionIndex: this.questionIndex,
-                //         questionAssignmentId: this.questionAssignmentId,
-                //         questionNumber: this.questionNumber
-                //     }
-                // } );
-                // store.loadGrades( {
-                //     0: { displayValue: 'A+', calcValue: 98 },
-                //     1: { displayValue: 'A', calcValue: 95 },
-                //     2: { displayValue: 'A-', calcValue: 92 },
-                //     3: { displayValue: 'B+', calcValue: 88 },
-                //     4: { displayValue: 'B', calcValue: 85 },
-                //     5: { displayValue: 'B-', calcValue: 82 },
-                //     6: { displayValue: 'C+', calcValue: 78 },
-                //     7: { displayValue: 'C', calcValue: 75 },
-                //     8: { displayValue: 'C-', calcValue: 72 },
-                //     9: { displayValue: 'D+', calcValue: 68 },
-                //     10: { displayValue: 'D', calcValue: 65 },
-                //     11: { displayValue: 'D-', calcValue: 62 },
-                //     12: { displayValue: 'F', calcValue: 55 }
-                // } );
+
                 sinon.stub( store, 'getMaxQuestionScore' ).returns( maxScore );
                 sinon.stub( store, 'getQuestionScoreForActiveStudent' ).returns( testScore );
                 sinon.stub( store, 'storeQuestionScoreForActiveStudent' );
@@ -646,28 +417,6 @@ describe( "LetterGradeButton.component  | ", function () {
         it( 'sends event ', function () {
             //prep
             let testScore = faker.random.number();
-            // let store = new Data();
-            // store.loadQuestions( {
-            //     0: {
-            //         questionIndex: this.questionIndex,
-            //         questionAssignmentId: this.questionAssignmentId,
-            //         questionNumber: this.questionNumber
-            //     }
-            // } );
-            // store.loadGrades( [ { displayValue: 'A+', calcValue: 98 }, {
-            //     displayValue: 'A',
-            //     calcValue: 95
-            // }, { displayValue: 'A-', calcValue: 92 }, { displayValue: 'B+', calcValue: 88 }, {
-            //     displayValue: 'B',
-            //     calcValue: 85
-            // }, { displayValue: 'B-', calcValue: 82 }, { displayValue: 'C+', calcValue: 78 }, {
-            //     displayValue: 'C',
-            //     calcValue: 75
-            // }, { displayValue: 'C-', calcValue: 72 }, { displayValue: 'D+', calcValue: 68 }, {
-            //     displayValue: 'D',
-            //     calcValue: 65
-            // }, { displayValue: 'D-', calcValue: 62 }, { displayValue: 'F', calcValue: 55 } ] );
-
             sinon.stub( store, 'getQuestionScoreForActiveStudent' ).returns( testScore );
             window.store = store;
 

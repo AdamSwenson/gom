@@ -22,7 +22,8 @@ Vue.config.debug = true;
 //tested stuff
 var testedComponent = require( "../../../resources/assets/js/grade/components/currentStudentArea.component.js" );
 
-require( '../../../resources/assets/js/grade/components/Data.js' );
+//require( '../../../resources/assets/js/grade/components/Data.js' );
+import Data from '../../../resources/assets/js/data/Data.js';
 
 
 describe( "CurrentStudentArea tests | ", function () {

@@ -123,7 +123,7 @@ elixir( function ( mix ) {
     mix.browserify( 'grade/examSelect.js', 'public/js/grade-exam-select-package.js' );
     // mix.scripts('grade/components/Data.js', 'public/js/grade-exam-data.js');
 
-    mix.scripts( 'grade/components/Data.open.js', 'public/js/grade-exam-data.js' );
+    mix.browserify( 'data/Data.js', 'public/js/grade-exam-data.js' );
 
     /* --------------------- Feedback ---------------------- */
     mix.browserify( 'feedback/feedbackLogin.js', 'public/js/feedback-login-package.js' );
@@ -159,6 +159,8 @@ elixir( function ( mix ) {
 
 mix.browserify('data/Store.js', 'public/js/dev/new-data-package.js');
     mix.browserify( 'grade/gradeVue.js', 'public/js/dev/grade-vue.js' );
+
+
 //
 //     var gulpNSP = require('gulp-nsp');
 //

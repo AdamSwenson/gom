@@ -14,9 +14,9 @@ module.exports = function ( config ) {
 
         // list of files / patterns to load in the browser
         files: [
-            'resources/assets/js/data/Store.js',
-            'resources/assets/js/grade/components/Data.js',
-            'tests/spec/tests/*.spec.js',
+            // 'resources/assets/js/data/Store.js',
+            'data/Data.js',
+            'tests/spec/tests/**/*.spec.js',
             { pattern: 'tests/spec/helpers/*.helper.js', included: false },
             { pattern: 'tests/spec/fixtures/*.fixture.html', included: false },
             { pattern: 'node_modules/karma-jasmine-html-reporter/src/css/jasmine.css' },
@@ -30,13 +30,13 @@ module.exports = function ( config ) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            // 'resources/assets/js/data/Store.js': ['rollup', 'browserify'],
+            // 'resources/assets/js/data/*.js': ['rollup', 'browserify'],
             'node_modules/jasmine-core': [ 'browserify' ],
-            'tests/spec/**/*.js': [ 'rollup', 'browserify' ],
-            'resources/assets/js/**/*.js': [ 'rollup', 'browserify' ],
+            'tests/spec/**/*.js': [  'browserify' ],
+            'resources/assets/js/**/*.js': [ 'browserify' ],
         },
 
-        //                [ 'babelify', { "presets": [ "es2015" ] } ],
+
         browserify: {
             debug: true,
             transform: [
@@ -81,18 +81,6 @@ module.exports = function ( config ) {
         // Concurrency level
         // how many browser should be started simultaneous
         concurrency: Infinity,
-
-        // browserify: {
-        //   debug: true,
-        //   // transform: [ 'brfs' ],
-        //   configure: function(bundle) {
-        //     bundle.on('prebundle', function() {
-        //       // bundle.external('foobar');
-        //     });
-        //   }
-        // },
-
-        //plugins: ['karma-spec-reporter'],
 
     } )
 }

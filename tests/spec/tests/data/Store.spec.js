@@ -9,12 +9,11 @@ jasmine.getFixtures().fixturesPath = 'base/tests/spec/fixtures';
 require( 'sinon' );
 
 //helpers
-var Helper = require( '../helpers/vueTesting.helper.js' );
 
-require( "../../../resources/assets/js/data/Store.js" );
+import Store from  "../../../../resources/assets/js/data/Store.js";
 
 
-fdescribe( "Store tests | ", function () {
+describe( "Store tests | ", function () {
 
     beforeEach( function () {
 this.store = new Store();

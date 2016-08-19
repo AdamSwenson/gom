@@ -14,7 +14,7 @@ Vue.config.debug = true;
 
 var testedComponent = require( "../../../resources/assets/js/grade/components/elementInput.component.js" );
 
-require( '../../../resources/assets/js/grade/components/Data.js' );
+require( '../../../resources/assets/js/data/Data.js' );
 
 //helpers
 var Helper = require('../helpers/vueTesting.helper.js');

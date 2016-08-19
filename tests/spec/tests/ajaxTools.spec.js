@@ -13,7 +13,7 @@ var faker = require('faker');
 var testedComponent = require( "../../../resources/assets/js/grade/components/ajax.tools.js" );
 
 //Dependencies
-require( '../../../resources/assets/js/grade/components/Data.js' );
+require( '../../../resources/assets/js/data/Data.js' );
 
 
 describe( "AjaxTools | ", function () {

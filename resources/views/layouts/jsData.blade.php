@@ -1,1 +1,0 @@
-{{--The Javascript::put method binds data to this view--}}

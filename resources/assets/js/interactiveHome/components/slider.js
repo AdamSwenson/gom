@@ -47,7 +47,7 @@ module.exports = {
     methods: {
         updateSlider: function (val) {
             var index = this.$parent.chooseValence(val);
-            this.$parent.updateComment(this.elementNumber, index, val);
+            this.$parent.commentAreaUpdate(this.elementNumber, index, val);
             window.console.log('updateSlider');
             //          window.console.log(this.elementNumber, this.sliderValue);
         }

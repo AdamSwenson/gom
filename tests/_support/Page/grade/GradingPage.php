@@ -109,6 +109,42 @@ class GradingPage
         return "//*[@id='sliderQ{$questionNumber}E{$subtask}']";
     }
 
+    public static function sliderHandleLocator($questionNumber, $subtask){
+        return ['css' => "#element{$subtask} > div > span.col-lg-5.sliderContainer.Q{$questionNumber}E{$subtask} > div > div.slider-track > div.slider-tick.round.in-selection"];
+    }
+
+    public static function sliderRightPoleLocator($questionNumber, $subtask)
+    {
+        return ['css' => "#element{$subtask} > div > span.col-lg-5.sliderContainer.Q{$questionNumber}E{$subtask} > div > div.slider-track > div:nth-child(7)"];
+    }
+
+    /**
+     * Note the value of nth child seems to go:
+     * Missing = 4
+     * Poor = 5
+     * Fair = 6
+     * Excellent = 7
+     */
+    public static function sliderTrackPositionLocator($questionNumber, $subtask, $position){
+        return ['css' => "#element{$subtask} > div > span.col-lg-5.sliderContainer.Q{$questionNumber}E{$subtask} > div > div.slider-track > div:nth-child({$position})"];
+    }
+
+    /**
+     * Note the value of nth child seems to go:
+     * Missing = 4
+     * Poor = 5
+     * Fair = 6
+     * Excellent = 7
+     * @param $questionNumber
+     * @param $subtask
+     * @return array
+     */
+    public static function sliderLeftPoleLocator($questionNumber, $subtask)
+    {
+        return ['css' => "#element{$subtask} > div > span.col-lg-5.sliderContainer.Q{$questionNumber}E{$subtask} > div > div.slider-track > div:nth-child(4)"];
+    }
+
+
     public static function commentXPath($questionNumber, $subtask){
         return "//*[@id='commentQ{$questionNumber}E{$subtask}']";
     }
