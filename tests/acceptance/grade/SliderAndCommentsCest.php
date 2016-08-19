@@ -76,7 +76,6 @@ class SliderAndCommentsCest
      */
     public function switchStudentAndCommentChange(AcceptanceTester $I)
     {
-
         $newText = Faker\Factory::create()->text();
         $I->executeJS($this->makeWritable);
         $I->wait(1);
@@ -84,6 +83,8 @@ class SliderAndCommentsCest
         $I->amGoingTo("add text to the field");
         $I->fillField(GradingPage::commentFieldLocator(1, 1), $newText);
         $I->seeInField(GradingPage::commentFieldLocator(1, 1), $newText);
+        $I->executeJS(" $('#commentQ1E1').trigger('change').trigger('blur').trigger('keyup'); ");
+        $I->wait(1);
 
         $I->amGoingTo("select another student to ensure that new text doesn't carry over to different student");
         $newId = $this->studentRowId + 1;
@@ -350,17 +351,5 @@ class SliderAndCommentsCest
         $I->expectTo("see the expected comment");
     }
 
-
-    /**
-     * @param AcceptanceTester $I
-     * @group grade
-     * @group sliders
-     * @group elementInput
-     * @group bugFixes
-     * This should reveal  a possible bug found in 62ae01f0
-     */
-    public function movingSliderToMissingDoesNotClearCustomComment(AcceptanceTester $I){
-
-    }
 
 }
