@@ -246,6 +246,12 @@ var Data = function () {
         value: function getActiveStudentIndex() {
             return this.activeStudentIndex;
         }
+
+        /**
+         * Returns the student object corresponding to the currently selected student.
+         * @returns {Student}
+         */
+
     }, {
         key: 'getActiveStudent',
         value: function getActiveStudent() {
@@ -272,6 +278,13 @@ var Data = function () {
         value: function storeCommentText(studentIndex, elementIndex, commentText) {
             this.elementComments[studentIndex][elementIndex] = commentText;
         }
+
+        /**
+         * Shortcut to avoid having to look up the active student from elsewhere
+         * @param elementIndex
+         * @param commentText
+         */
+
     }, {
         key: 'storeCommentTextForActiveStudent',
         value: function storeCommentTextForActiveStudent(elementIndex, commentText) {
@@ -292,8 +305,11 @@ var Data = function () {
     }, {
         key: 'getCommentText',
         value: function getCommentText(studentIndex, elementIndex, valence) {
+            //First check for a pre-existing comment. This could be a stock comment
+            //or it could be custom.
             var comment = this.elementComments[studentIndex][elementIndex];
             if (comment == "") {
+                //If no comment is set, we're going to go with the stock comment
                 return this.stockComments[elementIndex][valence];
             }
             //now for the fun part. If the user had previously moved the
@@ -306,6 +322,7 @@ var Data = function () {
             var isCustom = true;
             var i = 0;
             //loop through the stock comments and look for a match
+            //TODO should this be < ?
             while (isCustom && i <= this.valences.length) {
                 var stock = this.stockComments[elementIndex][i];
                 if (stock == comment) {
@@ -318,7 +335,7 @@ var Data = function () {
             if (!isCustom) {
                 return this.stockComments[elementIndex][valence];
             }
-            //If it was custom, return the same text
+            //If it was custom, return the custom text
             return comment;
         }
 
@@ -339,6 +356,7 @@ var Data = function () {
     }, {
         key: 'getCommentTextForActiveStudent',
         value: function getCommentTextForActiveStudent(elementIndex, valence) {
+            //If no student is set, the comment field should be blank
             if (this.activeStudentIndex == null) return '';
             return this.getCommentText(this.activeStudentIndex, elementIndex, valence);
         }
@@ -559,6 +577,11 @@ var Data = function () {
         value: function storeElementScore(studentIndex, elementIndex, score) {
             this.elementScores[studentIndex][elementIndex] = score;
         }
+    }, {
+        key: 'storeElementScoreForActiveStudent',
+        value: function storeElementScoreForActiveStudent(elementIndex, score) {
+            this.storeElementScore(this.activeStudentIndex, elementIndex, score);
+        }
 
         /**
          * Mostly used for testing
@@ -631,11 +654,6 @@ var Data = function () {
         value: function storeQuestionScoreForActiveStudent(questionIndex, score) {
             // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
             this.questionScores[this.activeStudentIndex][questionIndex] = score;
-        }
-    }, {
-        key: 'storeElementScoreForActiveStudent',
-        value: function storeElementScoreForActiveStudent(elementIndex, score) {
-            this.storeElementScore(this.activeStudentIndex, elementIndex, score);
         }
 
         /**

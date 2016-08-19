@@ -28,6 +28,19 @@ module.exports = {
         activeStudent: function () {
             return this.store.getActiveStudentIndex();
         },
+
+        getActiveStudentId() {
+            return this.activeStudentId;
+        },
+
+        getActiveStudentIndex() {
+            return this.activeStudentIndex;
+        },
+
+        getActiveStudent() {
+            return this.getStudent( this.activeStudentIndex );
+        },
+
     },
 
     methods: {},

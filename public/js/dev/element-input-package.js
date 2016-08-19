@@ -172,7 +172,7 @@ module.exports = {
          * Sets the comment area to empty (user should see the place holder).
          * Usually used to clear out any text that might be left from other users
          */
-        emptyCommentArea: function emptyCommentArea() {
+        commentAreaEmpty: function emptyCommentArea() {
             this.commentText = '';
             // $( this ).val( '' );
         },
@@ -180,7 +180,7 @@ module.exports = {
         /**
          * Allow user to enter text into comment area
          */
-        enableCommentArea: function enableCommentArea() {
+        commentAreaEnable: function enableCommentArea() {
             this.commentSelector.removeAttribute('readonly');
             // this.commentSelector.removeAttr( 'readonly' );
             // this.commentSelector.prop( 'readonly', '' );
@@ -189,7 +189,7 @@ module.exports = {
         /**
          * Prevent user from entering text into comment area
          */
-        disableCommentArea: function disableCommentArea() {
+        commentAreaDisable: function disableCommentArea() {
             this.commentSelector.setAttribute('readonly', 'true');
             // this.commentSelector.prop( 'readonly', 'true' );
         },
@@ -197,7 +197,7 @@ module.exports = {
         /**
          * Updates the displayed comment to match the current slider value.
          */
-        updateComment: function updateComment() {
+        commentAreaUpdate: function updateComment() {
             // set comments
 
             // var thisComment = data.elementComments[ Roster.activeStudent ][ index ];

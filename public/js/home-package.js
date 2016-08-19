@@ -103,7 +103,7 @@ new Vue({
             }
         },
 
-        updateComment: function updateComment(elementNumber, valence, score) {
+        commentAreaUpdate: function updateComment( elementNumber, valence, score) {
 
             switch (elementNumber) {
                 case 1:
@@ -24188,7 +24188,7 @@ module.exports = {
     methods: {
         updateSlider: function updateSlider(val) {
             var index = this.$parent.chooseValence(val);
-            this.$parent.updateComment(this.elementNumber, index, val);
+            this.$parent.commentAreaUpdate(this.elementNumber, index, val);
             window.console.log('updateSlider');
             //          window.console.log(this.elementNumber, this.sliderValue);
         }

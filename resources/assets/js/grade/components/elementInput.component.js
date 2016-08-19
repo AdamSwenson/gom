@@ -67,7 +67,6 @@ module.exports = {
          * @returns {*|jQuery|HTMLElement}
          */
         commentSelector: function () {
-            // return document.getElementById(this.commentAreaId);
             return $( '#' + this.commentAreaId );
         },
 
@@ -77,8 +76,11 @@ module.exports = {
         commentText: {
             cache: false,
             get: function () {
-                if ( this.elementScore )
-                    // window.console.log('elementInput', 'commentText', this.elementScore, this.getValence( this.elementScore ) );
+                //setting this to just this.elementScore prevents missing from displaying comment.
+                //when element score was 0.
+                //Also led to custom comments being deleted when moved to missing
+                if ( this.elementScore != null)
+                // window.console.log('elementInput', 'commentText', this.elementScore, this.getValence( this.elementScore ) );
                     return this.store.getCommentTextForActiveStudent( this.elementIndex, this.getValence( this.elementScore ) );
             },
             set: function ( text ) {
@@ -108,11 +110,12 @@ module.exports = {
         elementScore: {
             cache: false,
             get: function () {
+                // window.console.log('elementInput', 'elementScore', this.store.getElementScoreForActiveStudent( this.elementIndex ), this.elementIndex );
                 return this.store.getElementScoreForActiveStudent( this.elementIndex );
             },
             set: function ( score ) {
                 this.store.storeElementScoreForActiveStudent( this.elementIndex, score );
-                this.notifyStoreElementScore()
+                this.notifyStoreElementScore( score )
             }
         },
 
@@ -137,11 +140,8 @@ module.exports = {
          * @returns {*|jQuery|HTMLElement}
          */
         sliderSelector: function () {
-            // return document.getElementById(this.sliderId);
             return $( '#' + this.sliderId );
         }
-
-
     },
 
     methods: {
@@ -151,21 +151,21 @@ module.exports = {
          * Sets the comment area to empty (user should see the place holder).
          * Usually used to clear out any text that might be left from other users
          */
-        emptyCommentArea: function () {
+        commentAreaEmpty: function () {
             this.commentText = '';
         },
 
         /**
          * Prevent user from entering text into comment area
          */
-        disableCommentArea: function () {
+        commentAreaDisable: function () {
             this.commentSelector.setAttribute( 'readonly', 'true' );
         },
 
         /**
          * Allow user to enter text into comment area
          */
-        enableCommentArea: function () {
+        commentAreaEnable: function () {
             this.commentSelector.removeAttribute( 'readonly' );
         },
 
@@ -173,18 +173,18 @@ module.exports = {
          * Updates the displayed comment to match the current slider value.
          * TODO Add a test for the potential corner cases making the default null creates
          */
-        updateComment: function () {
+        commentAreaUpdate: function () {
             if ( this.elementScore === null ) {
                 // clear any text that might have been left over from another user
-                // this.emptyCommentArea();
+                // this.commentAreaEmpty();
                 // if NULL, disable comment text area until a slider is moved.
                 // this is so that the user doesn't enter custom text, move the slider,
                 // and then see their custom text irreversibly wiped out.
-                this.disableCommentArea();
+                this.commentAreaDisable();
             } else {
                 // It has already been scored, so the comment text will be retrieved and set.
                 //no need for it to remain read only
-                this.enableCommentArea();
+                this.commentAreaEnable();
             }
         },
 
@@ -192,19 +192,26 @@ module.exports = {
         /**
          * Sets currentValence to which valence group a [score] belongs to by comparing with valenceCutoffs[]
          * i.e. a score > 0 and <= 2.5 will be in the 'poor' valence (1)
-         * TODO Decide what should do if this gets null for the score
+         *
          * @param score
          * @returns {number}
          */
         getValence: function ( score ) {
-            var valence = 0;
-            var me = this;
-            for ( var j = me.settings.valenceCutoffs.length - 2; j >= 0; j -- ) {
+            let me = this;
+            if ( score === null )throw new Error( "cannot get valence for null" );
+            if ( score < 0 || score > me.settings.valenceCutoffs[ me.settings.valenceCutoffs.length - 1 ] )throw new Error( "cannot get valence. value out of range" );
+
+            let valence = 0;
+            //start at the second largest value in the cutoffs.
+            for ( let j = me.settings.valenceCutoffs.length - 2; j >= 0; j -- ) {
                 if ( score > me.settings.valenceCutoffs[ j ] ) {
+                    //if the score is greater than the second largest cutoff value, then it belongs
+                    //to the highest valence and so on.
                     valence = j + 1;
                     break;
                 }
             }
+            //return the set valence. If made it all the way to 0, the default will be returned.
             return valence;
         },
 
@@ -274,7 +281,6 @@ module.exports = {
         },
 
         setSliderScore: function () {
-            //avoid causing an error when slider gets null as a value
             this.sliderSelector.slider( 'setValue', this.elementScore );
 //            this.sliderSelector.slider( 'refresh' );
         },
@@ -285,8 +291,11 @@ module.exports = {
          * The element score is already stored in the shared storage object, so
          * we just need to tell the observer which element needs updating.
          */
-        notifyStoreElementScore: function () {
-            this.$dispatch( 'store-element-score-request', { elementIndex: this.elementIndex } );
+        notifyStoreElementScore: function ( score ) {
+            let obj = {};
+            obj.elementIndex = this.elementIndex;
+            obj.score = score;
+            this.$dispatch( 'store-element-score-request', obj );
         },
 
         /**
