@@ -73,18 +73,24 @@ Route::resource('exam.student', 'StudentController');
 
 /* ------------------------------------------------ Grade exams ----------------------------------------------------- */
 //TODO Rework to be more coherent and restful
+/* Grade exam */
 // present list of exams to grade.
 Route::get('grade', 'GradeController@index');
 // begin grade the specified exam
 Route::get('grade/exam/{exam}', 'GradeController@grade');
+
+/* Grade assignment */
 // launch grade assigner
-Route::get('grade/exam/{exam}/assign', 'GradeController@assign');
+Route::get('grade/exam/{exam}/assign', 'Web\GradeAssignmentController@assign');
 // record grade assignments
-Route::post('grade/exam/{exam}/assign', 'GradeController@recordAssignments');
+Route::post('grade/exam/{exam}/assign', 'Web\GradeAssignmentController@recordAssignments');
+
+/* Api */
 // record a question or element score
-Route::post('grade/exam/{exam}', 'GradeController@recordScore');
+Route::post('grade/exam/{exam}', 'Api\ScoreController@recordScore');
+Route::post('grade/exam/{exam}/time', 'Api\TimeController@recordTime');
 // delete a question or element score
-Route::delete('grade/exam/{exam}', 'GradeController@removeScore');
+Route::delete('grade/exam/{exam}', 'Api\ScoreController@removeScore');
 
 /* ----------------------------------------------- Reports ---------------------------------------------------------- */
 /* Reporting and analytics pages */

@@ -172,6 +172,34 @@ module.exports = {
 
         return wasSuccessful;
     },
+    /**
+     * Pass request to record time to server.
+     * Not for use with deletion requests
+     * @param request
+     */
+    sendTimeRequest: function ( examId, request ) {
+        let wasSuccessful = false;
+        let me = this;
+
+        if ( (typeof examId != 'undefined') && (typeof request != 'undefined') && (examId !== null) && ( request !== null) ) {
+            $.ajax( {
+                url: examId + '/time',
+                data: request,
+                type: 'POST',
+                success: function () {
+                    wasSuccessful = true;
+                },
+                error: function () {
+                    me.showWarningMessage( me.messages.serverErrorTitle, me.messages.serverErrorText );
+                },
+                timeout: function () {
+                    me.showWarningMessage( me.messages.serverTimeoutTitle, me.messages.serverTimeoutText );
+                }
+            } );
+        }
+
+        return wasSuccessful;
+    },
 
     /**
      * Sends a request to delete a score
