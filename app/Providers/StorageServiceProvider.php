@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\Utilities\IJsDataPreparation;
+use App\Repositories\Utilities\JsDataPreparation;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -104,5 +106,6 @@ class StorageServiceProvider extends ServiceProvider
 
         $this->app->bind('App\Repositories\Utilities\IMailSender', 'App\Repositories\Utilities\MailSender');
 
+        $this->app->bind(IJsDataPreparation::class, JsDataPreparation::class);
     }
 }

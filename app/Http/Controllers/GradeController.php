@@ -23,6 +23,7 @@ use App\Repositories\Score\IQuestionScoreRepository;
 use App\Repositories\Student\IStudentRepository;
 use App\Repositories\Time\IGradingTimeRepository;
 
+use App\Repositories\Utilities\IJsDataPreparation;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Response;
@@ -78,6 +79,10 @@ class GradeController extends Controller
 
     /** @var IStudentRepository */
     protected $studentDao;
+    /**
+     * @var IJsDataPreparation
+     */
+    private $jsonPrep;
 
     /**
      * @param IExamRepository $IExamRepository
@@ -89,6 +94,7 @@ class GradeController extends Controller
      * @param IGradingTimeRepository $gradingTimeRepository
      * @param IStudentRepository $studentRepository
      * @param IGradeAssignmentRepository $gradeAssignmentRepository
+     * @param IJsDataPreparation $jsonPrep
      */
     public function __construct(IExamRepository $IExamRepository,
                                 IElementRepository $elementRepository,
@@ -98,7 +104,8 @@ class GradeController extends Controller
                                 IQuestionScoreRepository $questionScoreRepository,
                                 IGradingTimeRepository $gradingTimeRepository,
                                 IStudentRepository $studentRepository,
-                                IGradeAssignmentRepository $gradeAssignmentRepository)
+                                IGradeAssignmentRepository $gradeAssignmentRepository,
+IJsDataPreparation $jsonPrep)
     {
         $this->middleware('auth');
         $this->examDao = $IExamRepository;
@@ -110,6 +117,7 @@ class GradeController extends Controller
         $this->gradingTimeDao = $gradingTimeRepository;
         $this->studentDao = $studentRepository;
         $this->gradeAssignmentDao = $gradeAssignmentRepository;
+        $this->jsonPrep = $jsonPrep;
     }
 
     /**
@@ -467,22 +475,23 @@ class GradeController extends Controller
 //        $studentGrades = json_encode($studentGrades, JSON_FORCE_OBJECT);
 //        $maxScores = json_encode($maxQuestionScores, JSON_FORCE_OBJECT);
 //        $numQuestions = count($questionAssignments);
-        Javascript::put([
-            'exam'                   => $exam,
-            'students'               => $students,
-            'questionAssignments'    => $questionAssignments,
-            'maxQuestionScores'      => $maxQuestionScores,
-            'allElements'            => $allElements,
-            'stockCommentsJson'      => $stockCommentsJson,
-            'examGradingTimes'       => $examGradingTimes,
-            'studentElementScores'   => $studentElementScores,
-            'studentElementComments' => $studentElementComments,
-            'studentQuestionScores'  => $studentQuestionScores,
-            'studentGrades'          => $studentGrades,
-            'questionsJson'          => $questionsJson,
-            'studentsJson'           => $studentsJson,
-            'gradesJson'             => $gradesJson,
-        ]);
+
+//        Javascript::put([
+//            'exam'                   => $exam,
+//            'students'               => $students,
+//            'questionAssignments'    => $questionAssignments,
+//            'maxQuestionScores'      => $maxQuestionScores,
+//            'allElements'            => $allElements,
+//            'stockCommentsJson'      => $stockCommentsJson,
+//            'examGradingTimes'       => $examGradingTimes,
+//            'studentElementScores'   => $studentElementScores,
+//            'studentElementComments' => $studentElementComments,
+//            'studentQuestionScores'  => $studentQuestionScores,
+//            'studentGrades'          => $studentGrades,
+//            'questionsJson'          => $questionsJson,
+//            'studentsJson'           => $studentsJson,
+//            'gradesJson'             => $gradesJson,
+//        ]);
 
 //        return View::make('development.newTable')->with([
 //        return View::make('development.newGrading')->with([
@@ -658,24 +667,8 @@ class GradeController extends Controller
     public function makeQuestionsJson(Exam $exam)
     {
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
-
-        $questionIndex = 0;
-        $questions = [];
-        foreach ( $questionAssignments as $qa )
-        {
-            $questions[ $questionIndex ] = [
-                'questionIndex'        => $questionIndex,
-                'questionName'         => $qa->getQuestionName(),
-                'questionNumber'       => $qa->getQuestionNumber(),
-                'maxScore'             => $qa->getQuestion()->getMaxScore(),
-                'questionAssignmentId' => $qa->id,
-            ];
-            $questionIndex++;
-        }
-
-        Javascript::put(['questions' => $questions]);
-
-        return json_encode($questions, JSON_FORCE_OBJECT);
+        //encode =true , inject=false
+        return $this->jsonPrep->makeQuestionsJson($questionAssignments);
     }
 
 
@@ -688,28 +681,8 @@ class GradeController extends Controller
     public function makeStudentJson(Exam $exam)
     {
         $students = $this->studentDao->load_students_by_exam($exam);
-        $studentIndex = 0;
-        $s = [];
-        foreach ( $students as $student )
-        {
-            $s[ $studentIndex ] = [
-                'studentIndex'      => $studentIndex, //this is here so can use with component
-                'studentId'         => $student->id,
-                'studentIdentifier' => $student->student_identifier,
-                'firstName'         => $student->first_name,
-                'lastName'          => $student->last_name,
-            ];
-            $studentIndex++;
-        }
-
-
-        //send to page
-        Javascript::put(['students' => $s]);
-
-        return json_encode($s, JSON_FORCE_OBJECT);
-
-        // load all question assignments and all elements for those questions
-
+        //encode =true , inject=false
+        return $this->jsonPrep->makeStudentJson($students);
     }
 
     /**
@@ -720,27 +693,8 @@ class GradeController extends Controller
      */
     public function makeStockCommentsJson($allElements)
     {
-        // load stock comments for each element
-        $stockComments = [];
-        foreach ( $allElements as $aQuestion )
-        {
-            foreach ( $aQuestion as $element )
-            {
-                $defaultComments = null;
-                for ( $i = 0; $i < count(Comment::$valences); $i++ )
-                {
-                    $defaultComments[] = $this->elementDao->loadCommentByElementIdAndValence($element->getId(), $i)->getBody();
-                }
-                $stockComments[] = $defaultComments;
-            }
-        }
-
-        //send to page
-        Javascript::put(['stockComments' => $stockComments]);
-
-        $stockComments = json_encode($stockComments, JSON_FORCE_OBJECT);
-
-        return $stockComments;
+        //encode =true , inject=false
+        return $this->jsonPrep->makeStockCommentsJson($allElements);
     }
 
     /**
@@ -750,10 +704,8 @@ class GradeController extends Controller
      */
     public function makeGradesJson()
     {
-        //send to page
-        Javascript::put(['grades' => GradeFactory::gradeJson()]);
-
-        return GradeFactory::gradeJson();
+        //encode =true , inject=false
+        return $this->jsonPrep->makeGradesJson();
     }
 
 
