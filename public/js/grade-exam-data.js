@@ -13,6 +13,10 @@ var _Student = require('./Student');
 
 var _Student2 = _interopRequireDefault(_Student);
 
+var _Question = require('./Question');
+
+var _Question2 = _interopRequireDefault(_Question);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -145,7 +149,7 @@ var Data = function () {
 
         /**
          * Sets the grading time data from the server
-         * @param this.examGradingTimes JSON object
+         * @param examGradingTimes JSON object
          */
 
     }, {
@@ -172,19 +176,23 @@ var Data = function () {
         }
 
         /**
-         * Loads a json object of questions.
-         * @param .questionsJSON
+         * Loads a json object of questions
          */
 
     }, {
         key: 'loadQuestions',
-        value: function loadQuestions(questionsJSON) {
-            this.questions = questionsJSON;
+        value: function loadQuestions(questionsJson) {
+            for (var i = 0; i < Object.keys(questionsJson).length; i++) {
+                var index = Object.keys(questionsJson)[i];
+                var s = questionsJson[index];
+                this.questions[index] = _Question2.default.factory(s, index);
+            }
+            //        this.questions = questionsJSON;
         }
 
         /**
          * Loads a json object of question scores.
-         * @param .questionScoresJSON
+         * @param questionScoresJSON
          */
 
     }, {
@@ -238,6 +246,12 @@ var Data = function () {
         value: function getActiveStudentIndex() {
             return this.activeStudentIndex;
         }
+
+        /**
+         * Returns the student object corresponding to the currently selected student.
+         * @returns {Student}
+         */
+
     }, {
         key: 'getActiveStudent',
         value: function getActiveStudent() {
@@ -264,6 +278,13 @@ var Data = function () {
         value: function storeCommentText(studentIndex, elementIndex, commentText) {
             this.elementComments[studentIndex][elementIndex] = commentText;
         }
+
+        /**
+         * Shortcut to avoid having to look up the active student from elsewhere
+         * @param elementIndex
+         * @param commentText
+         */
+
     }, {
         key: 'storeCommentTextForActiveStudent',
         value: function storeCommentTextForActiveStudent(elementIndex, commentText) {
@@ -275,16 +296,20 @@ var Data = function () {
          * If no customized text is set, then return stockComment.
          *
          * Original: data.this.elementComments[ Roster.activeStudent ][ index ];
-         * @param activeStudent
+         * @param studentIndex
          * @param elementIndex
+         * @param valence
          * @returns {*}
          */
 
     }, {
         key: 'getCommentText',
         value: function getCommentText(studentIndex, elementIndex, valence) {
+            //First check for a pre-existing comment. This could be a stock comment
+            //or it could be custom.
             var comment = this.elementComments[studentIndex][elementIndex];
             if (comment == "") {
+                //If no comment is set, we're going to go with the stock comment
                 return this.stockComments[elementIndex][valence];
             }
             //now for the fun part. If the user had previously moved the
@@ -297,6 +322,7 @@ var Data = function () {
             var isCustom = true;
             var i = 0;
             //loop through the stock comments and look for a match
+            //TODO should this be < ?
             while (isCustom && i <= this.valences.length) {
                 var stock = this.stockComments[elementIndex][i];
                 if (stock == comment) {
@@ -309,7 +335,7 @@ var Data = function () {
             if (!isCustom) {
                 return this.stockComments[elementIndex][valence];
             }
-            //If it was custom, return the same text
+            //If it was custom, return the custom text
             return comment;
         }
 
@@ -319,7 +345,6 @@ var Data = function () {
          * (The usual getter will return stock text in those cases)
          * @param studentIndex
          * @param elementIndex
-         * @param valence
          * @private
          */
 
@@ -331,6 +356,7 @@ var Data = function () {
     }, {
         key: 'getCommentTextForActiveStudent',
         value: function getCommentTextForActiveStudent(elementIndex, valence) {
+            //If no student is set, the comment field should be blank
             if (this.activeStudentIndex == null) return '';
             return this.getCommentText(this.activeStudentIndex, elementIndex, valence);
         }
@@ -423,7 +449,7 @@ var Data = function () {
         /**
          * Retrieves element score for a student
          * Original: data.this.elementScores[ Roster.activeStudent ][ index ];
-         * @param activeStudent
+         * @param studentIndex
          * @param elementIndex
          * @returns {*}
          */
@@ -504,7 +530,6 @@ var Data = function () {
         /**
          * Convenience function for getting the current student's score for question
          * Old way: data.this.questionScores[ Roster.activeStudent ][ index ];
-         * @param activeStudent
          * @param questionIndex
          */
 
@@ -552,17 +577,23 @@ var Data = function () {
         value: function storeElementScore(studentIndex, elementIndex, score) {
             this.elementScores[studentIndex][elementIndex] = score;
         }
+    }, {
+        key: 'storeElementScoreForActiveStudent',
+        value: function storeElementScoreForActiveStudent(elementIndex, score) {
+            this.storeElementScore(this.activeStudentIndex, elementIndex, score);
+        }
 
         /**
          * Mostly used for testing
          * @param studentIndex
+         * @param score
          * @private
          */
 
     }, {
         key: '_setExamGrade',
         value: function _setExamGrade(studentIndex, score) {
-            this.examGrades[studentIndex];
+            this.examGrades[studentIndex] = score;
         }
 
         /**
@@ -623,11 +654,6 @@ var Data = function () {
         value: function storeQuestionScoreForActiveStudent(questionIndex, score) {
             // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
             this.questionScores[this.activeStudentIndex][questionIndex] = score;
-        }
-    }, {
-        key: 'storeElementScoreForActiveStudent',
-        value: function storeElementScoreForActiveStudent(elementIndex, score) {
-            this.storeElementScore(this.activeStudentIndex, elementIndex, score);
         }
 
         /**
@@ -1446,7 +1472,94 @@ exports.default = Data;
     window.Data = Data;
 })();
 
-},{"./Student":2}],2:[function(require,module,exports){
+},{"./Question":2,"./Student":3}],2:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Created by adam on 8/18/16.
+ */
+
+var Question = function () {
+    function Question(questionIndex) {
+        _classCallCheck(this, Question);
+
+        this.questionIndex = questionIndex;
+        this._questionName;
+        this._questionNumber;
+        this._questionAssignmentId;
+        this._maxScore;
+    }
+
+    _createClass(Question, [{
+        key: "questionName",
+        get: function get() {
+            return this._questionName;
+        },
+        set: function set(name) {
+            this._questionName = name;
+        }
+    }, {
+        key: "questionNumber",
+        get: function get() {
+            return this._questionNumber ? Number(this._questionNumber) : null;
+        },
+        set: function set(number) {
+            this._questionNumber = number;
+        }
+    }, {
+        key: "questionAssignmentId",
+        get: function get() {
+            return this._questionAssignmentId ? Number(this._questionAssignmentId) : null;
+        },
+        set: function set(id) {
+            this._questionAssignmentId = id;
+        }
+    }, {
+        key: "maxScore",
+        get: function get() {
+            return this._maxScore ? Number(this._maxScore) : null;
+        },
+        set: function set(score) {
+            this._maxScore = score;
+        }
+    }], [{
+        key: "factory",
+
+
+        /**
+         * Instantiates a question object from the server provided json.
+         * Index is optional as long as the json contains a key questionIndex.
+         * If both are present, will use the parameter value
+         * @param questionJson
+         * @returns {Question}
+         */
+        value: function factory(questionJson, index) {
+            if (!questionJson || !questionJson.questionIndex && !index) throw new Error("no question index given");
+
+            index = index ? index : questionJson.questionIndex;
+            var question = new Question(questionJson.questionIndex);
+            question.questionName = questionJson.questionName;
+            question.questionNumber = questionJson.questionNumber;
+            question.questionAssignmentId = questionJson.questionAssignmentId;
+            question.maxScore = questionJson.maxScore;
+            return question;
+        }
+    }]);
+
+    return Question;
+}();
+
+exports.default = Question;
+
+},{}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {

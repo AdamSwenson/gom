@@ -62,45 +62,48 @@ describe( "elementInput.js | ", function () {
         store.students[ this.activeStudentIndex ] = DataHelper.makeStudent();
 
         store.setActiveStudent( this.activeStudentIndex );
-        store.loadStockComments( {
-            0: {
-                0: 'e0 missing',
-                1: 'e0 poor',
-                2: 'e0 fair',
-                3: 'e0 excellent'
-            },
-            1: {
-
-                0: 'e1 missing',
-                1: 'e1 poor',
-                2: 'e1 fair',
-                3: 'e1 excellent'
-            }
-        } );
-        store.loadElementComments( {
-            0: {
-                0: '',
-                1: '',
-                2: ''
-            },
-            1: {
-                0: '',
-                1: '',
-                2: ''
-            }
-        } );
-        store.loadElementScores( {
-            0: {
-                0: null,
-                1: null
-            },
-
-            1: {
-                0: null,
-                1: null,
-                2: null,
-            }
-        } );
+        store.loadStockComments( DataHelper.defaultStockComments() );
+        //{
+        //     0: {
+        //         0: 'e0 missing',
+        //         1: 'e0 poor',
+        //         2: 'e0 fair',
+        //         3: 'e0 excellent'
+        //     },
+        //     1: {
+        //
+        //         0: 'e1 missing',
+        //         1: 'e1 poor',
+        //         2: 'e1 fair',
+        //         3: 'e1 excellent'
+        //     }
+        // } );
+        store.loadElementComments( DataHelper.defaultElementComments() );
+        //{
+        //     0: {
+        //         0: '',
+        //         1: '',
+        //         2: ''
+        //     },
+        //     1: {
+        //         0: '',
+        //         1: '',
+        //         2: ''
+        //     }
+        // } );
+        store.loadElementScores( DataHelper.defaultElementScores() );
+        // {
+        //     0: {
+        //         0: null,
+        //         1: null
+        //     },
+        //
+        //     1: {
+        //         0: null,
+        //         1: null,
+        //         2: null,
+        //     }
+        // } );
 
         store.loadNumberQuestions( 2 );
         window.store = store;
@@ -122,7 +125,7 @@ describe( "elementInput.js | ", function () {
 
         it( "store valid and accessible", function () {
             expect( store ).not.toBeUndefined();
-            expect( typeof store).toBe( 'object' );
+            expect( typeof store ).toBe( 'object' );
         } );
 
 
@@ -162,6 +165,84 @@ describe( "elementInput.js | ", function () {
     } );
 
 
+    describe( "getValence | ", function () {
+        beforeEach( function () {
+            this.component = Helper.getComponent( this );
+        } );
+
+        describe( "Happy paths | ", function () {
+            describe( "Missing | ", function () {
+                it( "0 ", function () {
+                    expect( this.component.getValence( 0 ) ).toBe( 0 );
+                } );
+            } );
+
+            describe( "Poor | ", function () {
+                it( "0.1", function () {
+                    expect( this.component.getValence( 0.1 ) ).toBe( 1 );
+                } );
+                it( "1", function () {
+                    expect( this.component.getValence( 1 ) ).toBe( 1 );
+                } );
+                it( "3", function () {
+                    expect( this.component.getValence( 3 ) ).toBe( 1 );
+                } );
+                it( "3.25", function () {
+                    expect( this.component.getValence( 3.25 ) ).toBe( 1 );
+                } );
+            } );
+
+            describe( "Fair | ", function () {
+                it( "3.26", function () {
+                    expect( this.component.getValence( 3.26 ) ).toBe( 2 );
+                } );
+                it( "4", function () {
+                    expect( this.component.getValence( 4 ) ).toBe( 2 );
+                } );
+                it( "5.5", function () {
+                    expect( this.component.getValence( 5.5 ) ).toBe( 2 );
+                } );
+                it( "6.75", function () {
+                    expect( this.component.getValence( 6.75 ) ).toBe( 2 );
+                } );
+            } );
+
+            describe( "Excellent | ", function () {
+                it( "6.76 ", function () {
+                    expect( this.component.getValence( 6.76 ) ).toBe( 3 );
+                } );
+                it( "7 ", function () {
+                    expect( this.component.getValence( 7 ) ).toBe( 3 );
+                } );
+                it( "8.34 ", function () {
+                    expect( this.component.getValence( 8.34 ) ).toBe( 3 );
+                } );
+                it( "9 ", function () {
+                    expect( this.component.getValence( 9 ) ).toBe( 3 );
+                } );
+                it( "10 ", function () {
+                    expect( this.component.getValence( 10 ) ).toBe( 3 );
+                } );
+            } );
+        } );
+
+        xdescribe( "Problem cases | ", function () {
+
+            it( "null ", function () {
+                expect( this.component.getValence( null ) ).toThrow();
+            } );
+
+            it( "out of range max ", function () {
+                expect(this.component.getValence(11)).toThrow("cannot get valence. value out of range");
+            } );
+            it( "out of range min ", function () {
+                expect(this.component.getValence(-1)).toThrow("cannot get valence. value out of range");
+            } );
+        } );
+
+    } );
+
+
     /* ------------------------------- Slider movement -------------------- */
     describe( "slider movements |", function () {
 
@@ -172,8 +253,8 @@ describe( "elementInput.js | ", function () {
             //call
             moveSlider( this.$slider, newVal );
             //check
-            expect( store.getElementScore(activeStudent, elementIndex ) ).toBe( newVal );
-            expect( store._getStoredCommentText(activeStudent, elementIndex ) ).toBe( 'e1 excellent' );
+            expect( store.getElementScore( activeStudent, elementIndex ) ).toBe( newVal );
+            expect( store._getStoredCommentText( activeStudent, elementIndex ) ).toBe( 'e1 excellent' );
         } );
 
 
@@ -184,8 +265,8 @@ describe( "elementInput.js | ", function () {
             moveSlider( this.$slider, newVal );
 
             //check
-            expect( store.getElementScore(activeStudent, elementIndex ) ).toBe( newVal );
-            expect( store._getStoredCommentText(activeStudent, elementIndex ) ).toBe( 'e1 fair' );
+            expect( store.getElementScore( activeStudent, elementIndex ) ).toBe( newVal );
+            expect( store._getStoredCommentText( activeStudent, elementIndex ) ).toBe( 'e1 fair' );
         } );
 
         it( "case: poor", function () {
@@ -195,8 +276,8 @@ describe( "elementInput.js | ", function () {
             moveSlider( this.$slider, newVal );
 
             //check
-            expect( store.getElementScore(activeStudent, elementIndex ) ).toBe( newVal );
-            expect( store._getStoredCommentText(activeStudent, elementIndex ) ).toBe( 'e1 poor' );
+            expect( store.getElementScore( activeStudent, elementIndex ) ).toBe( newVal );
+            expect( store._getStoredCommentText( activeStudent, elementIndex ) ).toBe( 'e1 poor' );
         } );
 
 
@@ -205,8 +286,8 @@ describe( "elementInput.js | ", function () {
             moveSlider( this.$slider, newVal );
 
             //check
-            expect( store.getElementScore(activeStudent, elementIndex ) ).toBe( newVal );
-            expect( store._getStoredCommentText(activeStudent, elementIndex )).toBe( 'e1 missing' );
+            expect( store.getElementScore( activeStudent, elementIndex ) ).toBe( newVal );
+            expect( store._getStoredCommentText( activeStudent, elementIndex ) ).toBe( 'e1 missing' );
         } );
     } );
 
@@ -219,7 +300,7 @@ describe( "elementInput.js | ", function () {
             editComment( this.$comment, newText );
 
             //check
-            expect( store.getCommentText(activeStudent, elementIndex ) ).toBe( newText );
+            expect( store.getCommentText( activeStudent, elementIndex ) ).toBe( newText );
             expect( this.$comment.val() ).toBe( newText );
         } );
 
@@ -230,17 +311,17 @@ describe( "elementInput.js | ", function () {
             editComment( this.$comment, newText );
 
             //check
-            expect( store.getCommentText(activeStudent, elementIndex ) ).toBe( newText );
+            expect( store.getCommentText( activeStudent, elementIndex ) ).toBe( newText );
             expect( this.$comment.val() ).toBe( newText );
 
             //call
             moveSlider( this.$slider, 10 );
 
             //check
-            expect( store.getCommentText(activeStudent, elementIndex )).toBe( newText );
+            expect( store.getCommentText( activeStudent, elementIndex ) ).toBe( newText );
             expect( this.$comment.val() ).toBe( newText );
             //Make sure does not interfere with slider value
-            expect( store.getElementScore(activeStudent, elementIndex ) ).toBe( 10 );
+            expect( store.getElementScore( activeStudent, elementIndex ) ).toBe( 10 );
 
         } );
 
@@ -253,21 +334,21 @@ describe( "elementInput.js | ", function () {
             editComment( this.$comment, newText );
 
             //check
-            expect( store.getCommentText(activeStudent, elementIndex ) ).toBe( newText );
+            expect( store.getCommentText( activeStudent, elementIndex ) ).toBe( newText );
             expect( this.$comment.val() ).toBe( newText );
 
             //call ---alter with new comment
             editComment( this.$comment, newText2 );
 
             //check
-            expect( store.getCommentText(activeStudent, elementIndex ) ).toBe( newText2 );
+            expect( store.getCommentText( activeStudent, elementIndex ) ).toBe( newText2 );
             expect( this.$comment.val() ).toBe( newText2 );
 
             //call ---make sure still persists after slider movement
             moveSlider( this.$slider, 10 );
 
             //check
-            expect( store.getCommentText(activeStudent, elementIndex ) ).toBe( newText2 );
+            expect( store.getCommentText( activeStudent, elementIndex ) ).toBe( newText2 );
             expect( this.$comment.val() ).toBe( newText2 );
         } );
 

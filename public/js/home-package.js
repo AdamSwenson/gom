@@ -1,4 +1,202 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/**
+ * Created by adam on 2/3/16.
+ */
+
+'use strict';
+
+var $ = require('jquery');
+window.$ = $;
+
+//require('jquery-ui');
+
+require('bootstrap');
+
+//var Slider = require("bootstrap-slider");
+var Slider = require("../libraries/bootstrap-slider-modified.js");
+
+var Vue = require('vue');
+
+Vue.config.debug = true;
+
+new Vue({
+    el: '#app',
+
+    components: {
+        slider: require('./components/slider.js'),
+        instructions: require('./components/popovers.js')
+    },
+
+    data: {
+        stored: {
+            questionScore: 0
+        },
+
+        qNumber: 1,
+
+        questionName: "Descartes' Cogito argument",
+
+        grade: '',
+
+        commentPara1: '',
+
+        commentPara2: '',
+
+        commentPara3: '',
+
+        chartOptions: {
+            title: "How you did versus class average ",
+            width: 300,
+            height: 200,
+            bar: { groupWidth: "65%" },
+            legend: { position: "top" },
+            vAxis: {
+                viewWindowMode: 'explicit',
+                viewWindow: {
+                    max: 10,
+                    min: 0
+                }
+            }
+        },
+        elements: ["Explain Descartes' goal", 'Explain role of doubt', 'Explain the dreaming doubt'],
+
+        valenceCutoffs: [0, 3.25, 6.75, 10],
+        valenceLabels: ["Missing", "Poor", "Fair", "Excellent"],
+        valenceLabelPositions: [0, 33, 67, 100],
+        sliderStep: .25,
+
+        comments: {
+            e1: ["In order to say why Descartes has adopted the skeptical method of the Meditations, you need to tell the reader what Descartes is hoping to achieve. However, you didn't do this. This leaves it up to your reader to figure out that Descartes is trying to discover what kinds of beliefs can be the completely certain foundations upon which the rest of our knowledge can be built. That is, the idea is to find some beliefs which he can't be wrong about. Then he can work backwards to explaining why and when, for example, scientific beliefs count as certain knowledge.  As you can see, this is pretty complicated. So you can't just assume that the reader will figure it out.", "In order to say why Descartes has adopted the skeptical method of the Meditations, you need to tell the reader what Descartes is hoping to achieve. You tried to do this. But it was not clear from your answer that his goal is to discover what kinds of beliefs can be the completely certain foundations upon which the rest of our knowledge can be built. That is, the idea is to find some beliefs which he can't be wrong about. Then he can work backwards to explaining why and when, for example, scientific beliefs count as certain knowledge.", "You correctly recognized that in order to say why Descartes has adopted the skeptical method of the Meditations, reader needed to be told what Descartes is hoping to achieve. You did a pretty good job here. But it wasn't as clear as it could have been that he is trying to discover what kinds of beliefs can be the completely certain foundations upon which the rest of our knowledge can be built. That is, the idea is to find some beliefs which he can't be wrong about. Then he can work backwards to explaining why and when, for example, scientific beliefs count as certain knowledge.", "You did a good job recognizing that in order to say why Descartes has adopted the skeptical method of the Meditations, the reader needed to be told what Descartes is hoping to achieve. It was completely clear from your answer that he is trying to discover what kinds of beliefs can be the completely certain foundations upon which the rest of our knowledge can be built. From your explanation I think a reader would have been able to see that the idea is to find some beliefs which Descartes can't be wrong about. Then he can work backwards to explaining why and when, for example, scientific beliefs count as certain knowledge."],
+
+            e2: ["You needed to explain the role doubt plays in Descartes method. But you forgot to do it. The reader needed to be shown that Descartes is using a principle like 'If I can find grounds for doubting that a kind of belief is true, then no beliefs of that sort count as knowledge'. So, for example, if we're talking about beliefs based on seeing things in the distance, I might believe that I see a plane. But then someone points out that birds are often confused with faraway planes. Now I can't say that I know that object in the distance is a plane until I can be sure that it is not a bird.", "You remembered that you needed to explain the role doubt plays in Descartes method. However, from what you said, I don't think a reader would've understood that Descartes is using a principle like 'If I can find grounds for doubting that a kind of belief is true, then no beliefs of that sort count as knowledge'. I don't think a reader would've understood that, for example, if we're talking about beliefs based on seeing things in the distance, I might believe that I see a plane. But suppose someone points out that birds are often confused with faraway planes. Now I can't say that I know that object in the distance is a plane until I can be sure that it is not a bird.", "You did a pretty good job explaining the role doubt plays in Descartes method. I think a reader would've basically understood that he is using a principle like 'If I can find grounds for doubting that a kind of belief is true, then no beliefs of that sort count as knowledge'. From your answer, a reader probably would've understood that, for example, if we're talking about beliefs based on seeing things in the distance, I might believe that I see a plane. But suppose someone points out that birds are often confused with faraway planes. Now I can't say that I know that object in the distance is a plane until I can be sure that it is not a bird.", "You did a great job explaining the role doubt plays in Descartes method. A reader definitely would've understood that he is using a principle like 'If I can find grounds for doubting that a kind of belief is true, then no beliefs of that sort count as knowledge'. So, for example, if we're talking about beliefs based on seeing things in the distance, I might believe that I see a plane. But suppose someone points out that birds are often confused with faraway planes. Now I can't say that I know that object in the distance is a plane until I can be sure that it is not a bird."],
+
+            e3: ["It was extremely important to go through Descartes argument that when you are dreaming, things look just the way they do when you are awake. More importantly, in a dream you can't tell that you are dreaming. So, if Descartes were dreaming right now, he would not know that he was dreaming. Yet all of his beliefs about what is around him would be false ---he thinks he is in front of the fire, but actually he is snuggled up in bed. Since many beliefs based on his senses would be false if he were dreaming, he has found a reason to doubt all such beliefs. Unfortunately, you didn't really explain this at all. That will make it very difficult for your reader to understand the reset of your answer.", "You remembered to do the crucial task of explaining Descartes' argument that when you are dreaming, things look just the way they do when you are awake. Unfortunately, I don't think you said enough for the reader to understand how this argument works. It needed to be clear that in a dream you can't tell that you are dreaming. So, if Descartes were dreaming right now, he would not know that he was dreaming. Yet all of his beliefs about what is around him would be false ---he thinks he is in front of the fire, but actually he is snuggled up in bed. Since many beliefs based on his senses would be false if he were dreaming, he has found a reason to doubt all such beliefs.", "You did a pretty good job explaining Descartes' argument that when you are dreaming, things just the way they do when you are awake. It would've been mostly clear to a reader that in a dream you can't tell that you are dreaming. So, if Descartes were dreaming right now, he would not know that he was dreaming. Yet all of his beliefs about what is around him would be false ---he thinks he is in front of the fire, but actually he is snuggled up in bed. Since many beliefs based on his senses would be false if he were dreaming, he has found a reason to doubt all such beliefs.", "From your excellent answer, I think any reader would've been able to understand why Descartes points out that when you are dreaming, things just the way they do when you are awake. It was completely clear that this matters because when you are dreaming you can't tell that you are dreaming. So, if Descartes were dreaming right now, he would not know that he was dreaming. Yet all of his beliefs about what is around him would be false ---he thinks he is in front of the fire, but actually he is snuggled up in bed. As was clear from your answer, since many beliefs based on his senses would be false if he were dreaming, he has found a reason to doubt all such beliefs."]
+        }
+
+    },
+
+    computed: {
+        questionScore: {
+            get: function get() {
+                return this.stored.questionScore;
+            },
+
+            set: function set(val) {
+                this.stored.questionScore = val;
+                this.updateGrade();
+            }
+        }
+    },
+
+    events: {},
+
+    methods: {
+        chooseValence: function chooseValence(val) {
+            if (val <= 1) {
+                return 0;
+            } else if (val <= 3.25) {
+                return 1;
+            } else if (val <= 6.75) {
+                return 2;
+            } else if (val <= 10) {
+                return 3;
+            }
+        },
+
+        commentAreaUpdate: function updateComment( elementNumber, valence, score) {
+
+            switch (elementNumber) {
+                case 1:
+                    this.commentPara1 = this.comments.e1[valence];
+                    this.drawChart(elementNumber, this.elements[0], score, 4.5);
+                    break;
+                case 2:
+                    this.commentPara2 = this.comments.e2[valence];
+                    this.drawChart(elementNumber, this.elements[1], score, 6.5);
+                    break;
+                case 3:
+                    this.commentPara3 = this.comments.e3[valence];
+                    this.drawChart(elementNumber, this.elements[2], score, 2.5);
+                    break;
+            }
+        },
+
+        //
+        //updateSlider1: function () {
+        //    window.console.log('updateSlider1', this.slider1);
+        //    var index = this.chooseValence(this.slider1);
+        //    this.commentPara1 = this.e1[index];
+        //},
+        //
+        //updateSlider2: function () {
+        //    window.console.log('updateSlider2', this.slider2);
+        //    var index = this.chooseValence(this.slider2);
+        //    this.commentPara2 = this.e2[index];
+        //},
+        //
+        //updateSlider3: function () {
+        //    window.console.log('updateSlider3', this.slider3);
+        //    var index = this.chooseValence(this.slider3);
+        //    this.commentPara3 = this.e3[index];
+        //},
+
+        updateGrade: function updateGrade() {
+            window.console.log('updateGrade', this.questionScore);
+            var me = this;
+            var scores = [[55, 'F'], [62, 'D-'], [65, 'D'], [68, 'D+'], [72, 'C-'], [75, 'C'], [78, 'C+'], [82, 'B-'], [85, 'B'], [88, 'B+'], [92, 'A-'], [95, 'A']];
+            var limit = scores.length;
+            for (var i = 0; i < limit; i++) {
+                if (this.questionScore <= scores[i][0]) {
+                    this.grade = scores[i][1];
+                    i = limit;
+                }
+            }
+        },
+
+        drawChart: function drawChart(elementNumber, title, score, average) {
+            var score = Number(score);
+            //Prepare the data
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'question');
+            data.addColumn('number', 'Your Score');
+            data.addColumn('number', 'Class Average');
+
+            data.addRow([title, score, average]);
+            var chartTarget = 'chart' + elementNumber;
+            var chart = new google.visualization.ColumnChart(document.getElementById(chartTarget));
+            chart.draw(data, this.chartOptions);
+        },
+
+        report: function report() {
+            window.console.log(this);
+        }
+
+    },
+
+    directives: {
+        spinner: {
+            bind: function bind() {
+                //$(this.el).spinner({
+                //    step: 1,
+                //    min: 0
+                //});
+            }
+        }
+    },
+
+    //
+    ready: function ready() {
+        var me = this;
+        jQuery(function () {
+            jQuery('.instructionTooltip').tooltip('show');
+            //$('[data-toggle="tooltip"]').tooltip()
+        });
+
+        window.console.log('ready');
+    }
+});
+
+},{"../libraries/bootstrap-slider-modified.js":23,"./components/popovers.js":19,"./components/slider.js":20,"bootstrap":3,"jquery":16,"vue":18}],2:[function(require,module,exports){
 /*! =======================================================
                       VERSION  6.1.6              
 ========================================================= */
@@ -1571,7 +1769,7 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
 	return Slider;
 });
 
-},{"jquery":15}],2:[function(require,module,exports){
+},{"jquery":16}],3:[function(require,module,exports){
 // This file is autogenerated via the `commonjs` Grunt task. You can require() this file in a CommonJS environment.
 require('../../js/transition.js')
 require('../../js/alert.js')
@@ -1585,12 +1783,12 @@ require('../../js/popover.js')
 require('../../js/scrollspy.js')
 require('../../js/tab.js')
 require('../../js/affix.js')
-},{"../../js/affix.js":3,"../../js/alert.js":4,"../../js/button.js":5,"../../js/carousel.js":6,"../../js/collapse.js":7,"../../js/dropdown.js":8,"../../js/modal.js":9,"../../js/popover.js":10,"../../js/scrollspy.js":11,"../../js/tab.js":12,"../../js/tooltip.js":13,"../../js/transition.js":14}],3:[function(require,module,exports){
+},{"../../js/affix.js":4,"../../js/alert.js":5,"../../js/button.js":6,"../../js/carousel.js":7,"../../js/collapse.js":8,"../../js/dropdown.js":9,"../../js/modal.js":10,"../../js/popover.js":11,"../../js/scrollspy.js":12,"../../js/tab.js":13,"../../js/tooltip.js":14,"../../js/transition.js":15}],4:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: affix.js v3.3.7
+ * Bootstrap: affix.js v3.3.6
  * http://getbootstrap.com/javascript/#affix
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2015 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1616,7 +1814,7 @@ require('../../js/affix.js')
     this.checkPosition()
   }
 
-  Affix.VERSION  = '3.3.7'
+  Affix.VERSION  = '3.3.6'
 
   Affix.RESET    = 'affix affix-top affix-bottom'
 
@@ -1749,12 +1947,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: alert.js v3.3.7
+ * Bootstrap: alert.js v3.3.6
  * http://getbootstrap.com/javascript/#alerts
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2015 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1770,7 +1968,7 @@ require('../../js/affix.js')
     $(el).on('click', dismiss, this.close)
   }
 
-  Alert.VERSION = '3.3.7'
+  Alert.VERSION = '3.3.6'
 
   Alert.TRANSITION_DURATION = 150
 
@@ -1783,7 +1981,7 @@ require('../../js/affix.js')
       selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
     }
 
-    var $parent = $(selector === '#' ? [] : selector)
+    var $parent = $(selector)
 
     if (e) e.preventDefault()
 
@@ -1845,12 +2043,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: button.js v3.3.7
+ * Bootstrap: button.js v3.3.6
  * http://getbootstrap.com/javascript/#buttons
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2015 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -1867,7 +2065,7 @@ require('../../js/affix.js')
     this.isLoading = false
   }
 
-  Button.VERSION  = '3.3.7'
+  Button.VERSION  = '3.3.6'
 
   Button.DEFAULTS = {
     loadingText: 'loading...'
@@ -1889,10 +2087,10 @@ require('../../js/affix.js')
 
       if (state == 'loadingText') {
         this.isLoading = true
-        $el.addClass(d).attr(d, d).prop(d, true)
+        $el.addClass(d).attr(d, d)
       } else if (this.isLoading) {
         this.isLoading = false
-        $el.removeClass(d).removeAttr(d).prop(d, false)
+        $el.removeClass(d).removeAttr(d)
       }
     }, this), 0)
   }
@@ -1956,15 +2154,10 @@ require('../../js/affix.js')
 
   $(document)
     .on('click.bs.button.data-api', '[data-toggle^="button"]', function (e) {
-      var $btn = $(e.target).closest('.btn')
+      var $btn = $(e.target)
+      if (!$btn.hasClass('btn')) $btn = $btn.closest('.btn')
       Plugin.call($btn, 'toggle')
-      if (!($(e.target).is('input[type="radio"], input[type="checkbox"]'))) {
-        // Prevent double click on radios, and the double selections (so cancellation) on checkboxes
-        e.preventDefault()
-        // The target component still receive the focus
-        if ($btn.is('input,button')) $btn.trigger('focus')
-        else $btn.find('input:visible,button:visible').first().trigger('focus')
-      }
+      if (!($(e.target).is('input[type="radio"]') || $(e.target).is('input[type="checkbox"]'))) e.preventDefault()
     })
     .on('focus.bs.button.data-api blur.bs.button.data-api', '[data-toggle^="button"]', function (e) {
       $(e.target).closest('.btn').toggleClass('focus', /^focus(in)?$/.test(e.type))
@@ -1972,12 +2165,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: carousel.js v3.3.7
+ * Bootstrap: carousel.js v3.3.6
  * http://getbootstrap.com/javascript/#carousel
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2015 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2005,7 +2198,7 @@ require('../../js/affix.js')
       .on('mouseleave.bs.carousel', $.proxy(this.cycle, this))
   }
 
-  Carousel.VERSION  = '3.3.7'
+  Carousel.VERSION  = '3.3.6'
 
   Carousel.TRANSITION_DURATION = 600
 
@@ -2211,16 +2404,15 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: collapse.js v3.3.7
+ * Bootstrap: collapse.js v3.3.6
  * http://getbootstrap.com/javascript/#collapse
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2015 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
-/* jshint latedef: false */
 
 +function ($) {
   'use strict';
@@ -2244,7 +2436,7 @@ require('../../js/affix.js')
     if (this.options.toggle) this.toggle()
   }
 
-  Collapse.VERSION  = '3.3.7'
+  Collapse.VERSION  = '3.3.6'
 
   Collapse.TRANSITION_DURATION = 350
 
@@ -2425,12 +2617,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: dropdown.js v3.3.7
+ * Bootstrap: dropdown.js v3.3.6
  * http://getbootstrap.com/javascript/#dropdowns
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2015 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2447,7 +2639,7 @@ require('../../js/affix.js')
     $(element).on('click.bs.dropdown', this.toggle)
   }
 
-  Dropdown.VERSION = '3.3.7'
+  Dropdown.VERSION = '3.3.6'
 
   function getParent($this) {
     var selector = $this.attr('data-target')
@@ -2592,12 +2784,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: modal.js v3.3.7
+ * Bootstrap: modal.js v3.3.6
  * http://getbootstrap.com/javascript/#modals
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2015 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2628,7 +2820,7 @@ require('../../js/affix.js')
     }
   }
 
-  Modal.VERSION  = '3.3.7'
+  Modal.VERSION  = '3.3.6'
 
   Modal.TRANSITION_DURATION = 300
   Modal.BACKDROP_TRANSITION_DURATION = 150
@@ -2735,9 +2927,7 @@ require('../../js/affix.js')
     $(document)
       .off('focusin.bs.modal') // guard against infinite focus loop
       .on('focusin.bs.modal', $.proxy(function (e) {
-        if (document !== e.target &&
-            this.$element[0] !== e.target &&
-            !this.$element.has(e.target).length) {
+        if (this.$element[0] !== e.target && !this.$element.has(e.target).length) {
           this.$element.trigger('focus')
         }
       }, this))
@@ -2933,12 +3123,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: popover.js v3.3.7
+ * Bootstrap: popover.js v3.3.6
  * http://getbootstrap.com/javascript/#popovers
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2015 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -2955,7 +3145,7 @@ require('../../js/affix.js')
 
   if (!$.fn.tooltip) throw new Error('Popover requires tooltip.js')
 
-  Popover.VERSION  = '3.3.7'
+  Popover.VERSION  = '3.3.6'
 
   Popover.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
     placement: 'right',
@@ -3043,12 +3233,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: scrollspy.js v3.3.7
+ * Bootstrap: scrollspy.js v3.3.6
  * http://getbootstrap.com/javascript/#scrollspy
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2015 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -3074,7 +3264,7 @@ require('../../js/affix.js')
     this.process()
   }
 
-  ScrollSpy.VERSION  = '3.3.7'
+  ScrollSpy.VERSION  = '3.3.6'
 
   ScrollSpy.DEFAULTS = {
     offset: 10
@@ -3217,12 +3407,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: tab.js v3.3.7
+ * Bootstrap: tab.js v3.3.6
  * http://getbootstrap.com/javascript/#tabs
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2015 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -3239,7 +3429,7 @@ require('../../js/affix.js')
     // jscs:enable requireDollarBeforejQueryAssignment
   }
 
-  Tab.VERSION = '3.3.7'
+  Tab.VERSION = '3.3.6'
 
   Tab.TRANSITION_DURATION = 150
 
@@ -3374,13 +3564,13 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: tooltip.js v3.3.7
+ * Bootstrap: tooltip.js v3.3.6
  * http://getbootstrap.com/javascript/#tooltip
  * Inspired by the original jQuery.tipsy by Jason Frame
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2015 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -3403,7 +3593,7 @@ require('../../js/affix.js')
     this.init('tooltip', element, options)
   }
 
-  Tooltip.VERSION  = '3.3.7'
+  Tooltip.VERSION  = '3.3.6'
 
   Tooltip.TRANSITION_DURATION = 150
 
@@ -3694,11 +3884,9 @@ require('../../js/affix.js')
 
     function complete() {
       if (that.hoverState != 'in') $tip.detach()
-      if (that.$element) { // TODO: Check whether guarding this code with this `if` is really necessary.
-        that.$element
-          .removeAttr('aria-describedby')
-          .trigger('hidden.bs.' + that.type)
-      }
+      that.$element
+        .removeAttr('aria-describedby')
+        .trigger('hidden.bs.' + that.type)
       callback && callback()
     }
 
@@ -3741,10 +3929,7 @@ require('../../js/affix.js')
       // width and height are missing in IE8, so compute them manually; see https://github.com/twbs/bootstrap/issues/14093
       elRect = $.extend({}, elRect, { width: elRect.right - elRect.left, height: elRect.bottom - elRect.top })
     }
-    var isSvg = window.SVGElement && el instanceof window.SVGElement
-    // Avoid using $.offset() on SVGs since it gives incorrect results in jQuery 3.
-    // See https://github.com/twbs/bootstrap/issues/20280
-    var elOffset  = isBody ? { top: 0, left: 0 } : (isSvg ? null : $element.offset())
+    var elOffset  = isBody ? { top: 0, left: 0 } : $element.offset()
     var scroll    = { scroll: isBody ? document.documentElement.scrollTop || document.body.scrollTop : $element.scrollTop() }
     var outerDims = isBody ? { width: $(window).width(), height: $(window).height() } : null
 
@@ -3860,7 +4045,6 @@ require('../../js/affix.js')
       that.$tip = null
       that.$arrow = null
       that.$viewport = null
-      that.$element = null
     })
   }
 
@@ -3896,12 +4080,12 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /* ========================================================================
- * Bootstrap: transition.js v3.3.7
+ * Bootstrap: transition.js v3.3.6
  * http://getbootstrap.com/javascript/#transitions
  * ========================================================================
- * Copyright 2011-2016 Twitter, Inc.
+ * Copyright 2011-2015 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * ======================================================================== */
 
@@ -3957,7 +4141,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.2.4
  * http://jquery.com/
@@ -13773,141 +13957,38 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 // shim for using process in browser
+
 var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-(function () {
-    try {
-        cachedSetTimeout = setTimeout;
-    } catch (e) {
-        cachedSetTimeout = function () {
-            throw new Error('setTimeout is not defined');
-        }
-    }
-    try {
-        cachedClearTimeout = clearTimeout;
-    } catch (e) {
-        cachedClearTimeout = function () {
-            throw new Error('clearTimeout is not defined');
-        }
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
 var queue = [];
 var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
 
 function drainQueue() {
     if (draining) {
         return;
     }
-    var timeout = runTimeout(cleanUpNextTick);
     draining = true;
-
+    var currentQueue;
     var len = queue.length;
     while(len) {
         currentQueue = queue;
         queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
+        var i = -1;
+        while (++i < len) {
+            currentQueue[i]();
         }
-        queueIndex = -1;
         len = queue.length;
     }
-    currentQueue = null;
     draining = false;
-    runClearTimeout(timeout);
 }
-
 process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
+    queue.push(fun);
+    if (!draining) {
+        setTimeout(drainQueue, 0);
     }
 };
 
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
 process.title = 'browser';
 process.browser = true;
 process.env = {};
@@ -13929,16 +14010,17 @@ process.binding = function (name) {
     throw new Error('process.binding is not supported');
 };
 
+// TODO(shtylman)
 process.cwd = function () { return '/' };
 process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 process.umask = function() { return 0; };
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 (function (process,global){
 /*!
- * Vue.js v1.0.26
+ * Vue.js v1.0.25
  * (c) 2016 Evan You
  * Released under the MIT License.
  */
@@ -17348,7 +17430,7 @@ function traverse(val, seen) {
   }
   var isA = isArray(val);
   var isO = isObject(val);
-  if ((isA || isO) && Object.isExtensible(val)) {
+  if (isA || isO) {
     if (val.__ob__) {
       var depId = val.__ob__.dep.id;
       if (seen.has(depId)) {
@@ -18834,13 +18916,13 @@ var select = {
     this.vm.$on('hook:attached', function () {
       nextTick(_this.forceUpdate);
     });
-    if (!inDoc(el)) {
-      nextTick(this.forceUpdate);
-    }
   },
 
   update: function update(value) {
     var el = this.el;
+    if (!inDoc(el)) {
+      return nextTick(this.forceUpdate);
+    }
     el.selectedIndex = -1;
     var multi = this.multiple && isArray(value);
     var options = el.options;
@@ -23788,13 +23870,7 @@ var filters = {
 
   pluralize: function pluralize(value) {
     var args = toArray(arguments, 1);
-    var length = args.length;
-    if (length > 1) {
-      var index = value % 10 - 1;
-      return index in args ? args[index] : args[length - 1];
-    } else {
-      return args[0] + (value === 1 ? '' : 's');
-    }
+    return args.length > 1 ? args[value % 10 - 1] || args[args.length - 1] : args[0] + (value === 1 ? '' : 's');
   },
 
   /**
@@ -23996,7 +24072,7 @@ function installGlobalAPI (Vue) {
 
 installGlobalAPI(Vue);
 
-Vue.version = '1.0.26';
+Vue.version = '1.0.25';
 
 // devtools global hook
 /* istanbul ignore next */
@@ -24012,9 +24088,7 @@ setTimeout(function () {
 
 module.exports = Vue;
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":16}],18:[function(require,module,exports){
-'use strict';
-
+},{"_process":17}],19:[function(require,module,exports){
 /**
  * Created by adam on 2/3/16.
  *
@@ -24023,6 +24097,8 @@ module.exports = Vue;
  *
  * Perhaps also set a cookie
  */
+'use strict';
+
 var $ = require('jquery');
 window.$ = $;
 
@@ -24064,12 +24140,12 @@ module.exports = {
     }
 };
 
-},{"../templates/popovers.template.html":21,"bootstrap":2,"jquery":15}],19:[function(require,module,exports){
-'use strict';
-
+},{"../templates/popovers.template.html":21,"bootstrap":3,"jquery":16}],20:[function(require,module,exports){
 /**
  * Created by adam on 2/3/16.
  */
+
+'use strict';
 
 var $ = require('jquery');
 window.$ = $;
@@ -24091,6 +24167,11 @@ module.exports = {
         };
     },
 
+    //sliderValue: 0,
+    //valenceCutoffs: [0, 3.25, 6.75, 10],
+    //valenceLabels: ["Missing", "Poor", "Fair", "Excellent"],
+    //valenceLabelPositions: [0, 33, 67, 100],
+    //sliderStep: .25,
     computed: {
         sliderValue: {
             set: function set(val) {
@@ -24107,7 +24188,7 @@ module.exports = {
     methods: {
         updateSlider: function updateSlider(val) {
             var index = this.$parent.chooseValence(val);
-            this.$parent.updateComment(this.elementNumber, index, val);
+            this.$parent.commentAreaUpdate(this.elementNumber, index, val);
             window.console.log('updateSlider');
             //          window.console.log(this.elementNumber, this.sliderValue);
         }
@@ -24154,213 +24235,11 @@ module.exports = {
     }
 };
 
-},{"../templates/slider.template.html":22,"bootstrap-slider":1,"jquery":15}],20:[function(require,module,exports){
-'use strict';
-
-/**
- * Created by adam on 2/3/16.
- */
-
-var $ = require('jquery');
-window.$ = $;
-
-//require('jquery-ui');
-
-require('bootstrap');
-
-//var Slider = require("bootstrap-slider");
-var Slider = require("../libraries/bootstrap-slider-modified.js");
-
-var Vue = require('vue');
-
-Vue.config.debug = true;
-
-new Vue({
-    el: '#app',
-
-    components: {
-        slider: require('./components/slider.js'),
-        instructions: require('./components/popovers.js')
-    },
-
-    data: {
-        stored: {
-            questionScore: 0
-        },
-
-        qNumber: 1,
-
-        questionName: "Descartes' Cogito argument",
-
-        grade: '',
-
-        commentPara1: '',
-
-        commentPara2: '',
-
-        commentPara3: '',
-
-        chartOptions: {
-            title: "How you did versus class average ",
-            width: 300,
-            height: 200,
-            bar: { groupWidth: "65%" },
-            legend: { position: "top" },
-            vAxis: {
-                viewWindowMode: 'explicit',
-                viewWindow: {
-                    max: 10,
-                    min: 0
-                }
-            }
-        },
-        elements: ["Explain Descartes' goal", 'Explain role of doubt', 'Explain the dreaming doubt'],
-
-        valenceCutoffs: [0, 3.25, 6.75, 10],
-        valenceLabels: ["Missing", "Poor", "Fair", "Excellent"],
-        valenceLabelPositions: [0, 33, 67, 100],
-        sliderStep: .25,
-
-        comments: {
-            e1: ["In order to say why Descartes has adopted the skeptical method of the Meditations, you need to tell the reader what Descartes is hoping to achieve. However, you didn't do this. This leaves it up to your reader to figure out that Descartes is trying to discover what kinds of beliefs can be the completely certain foundations upon which the rest of our knowledge can be built. That is, the idea is to find some beliefs which he can't be wrong about. Then he can work backwards to explaining why and when, for example, scientific beliefs count as certain knowledge.  As you can see, this is pretty complicated. So you can't just assume that the reader will figure it out.", "In order to say why Descartes has adopted the skeptical method of the Meditations, you need to tell the reader what Descartes is hoping to achieve. You tried to do this. But it was not clear from your answer that his goal is to discover what kinds of beliefs can be the completely certain foundations upon which the rest of our knowledge can be built. That is, the idea is to find some beliefs which he can't be wrong about. Then he can work backwards to explaining why and when, for example, scientific beliefs count as certain knowledge.", "You correctly recognized that in order to say why Descartes has adopted the skeptical method of the Meditations, reader needed to be told what Descartes is hoping to achieve. You did a pretty good job here. But it wasn't as clear as it could have been that he is trying to discover what kinds of beliefs can be the completely certain foundations upon which the rest of our knowledge can be built. That is, the idea is to find some beliefs which he can't be wrong about. Then he can work backwards to explaining why and when, for example, scientific beliefs count as certain knowledge.", "You did a good job recognizing that in order to say why Descartes has adopted the skeptical method of the Meditations, the reader needed to be told what Descartes is hoping to achieve. It was completely clear from your answer that he is trying to discover what kinds of beliefs can be the completely certain foundations upon which the rest of our knowledge can be built. From your explanation I think a reader would have been able to see that the idea is to find some beliefs which Descartes can't be wrong about. Then he can work backwards to explaining why and when, for example, scientific beliefs count as certain knowledge."],
-
-            e2: ["You needed to explain the role doubt plays in Descartes method. But you forgot to do it. The reader needed to be shown that Descartes is using a principle like 'If I can find grounds for doubting that a kind of belief is true, then no beliefs of that sort count as knowledge'. So, for example, if we're talking about beliefs based on seeing things in the distance, I might believe that I see a plane. But then someone points out that birds are often confused with faraway planes. Now I can't say that I know that object in the distance is a plane until I can be sure that it is not a bird.", "You remembered that you needed to explain the role doubt plays in Descartes method. However, from what you said, I don't think a reader would've understood that Descartes is using a principle like 'If I can find grounds for doubting that a kind of belief is true, then no beliefs of that sort count as knowledge'. I don't think a reader would've understood that, for example, if we're talking about beliefs based on seeing things in the distance, I might believe that I see a plane. But suppose someone points out that birds are often confused with faraway planes. Now I can't say that I know that object in the distance is a plane until I can be sure that it is not a bird.", "You did a pretty good job explaining the role doubt plays in Descartes method. I think a reader would've basically understood that he is using a principle like 'If I can find grounds for doubting that a kind of belief is true, then no beliefs of that sort count as knowledge'. From your answer, a reader probably would've understood that, for example, if we're talking about beliefs based on seeing things in the distance, I might believe that I see a plane. But suppose someone points out that birds are often confused with faraway planes. Now I can't say that I know that object in the distance is a plane until I can be sure that it is not a bird.", "You did a great job explaining the role doubt plays in Descartes method. A reader definitely would've understood that he is using a principle like 'If I can find grounds for doubting that a kind of belief is true, then no beliefs of that sort count as knowledge'. So, for example, if we're talking about beliefs based on seeing things in the distance, I might believe that I see a plane. But suppose someone points out that birds are often confused with faraway planes. Now I can't say that I know that object in the distance is a plane until I can be sure that it is not a bird."],
-
-            e3: ["It was extremely important to go through Descartes argument that when you are dreaming, things look just the way they do when you are awake. More importantly, in a dream you can't tell that you are dreaming. So, if Descartes were dreaming right now, he would not know that he was dreaming. Yet all of his beliefs about what is around him would be false ---he thinks he is in front of the fire, but actually he is snuggled up in bed. Since many beliefs based on his senses would be false if he were dreaming, he has found a reason to doubt all such beliefs. Unfortunately, you didn't really explain this at all. That will make it very difficult for your reader to understand the reset of your answer.", "You remembered to do the crucial task of explaining Descartes' argument that when you are dreaming, things look just the way they do when you are awake. Unfortunately, I don't think you said enough for the reader to understand how this argument works. It needed to be clear that in a dream you can't tell that you are dreaming. So, if Descartes were dreaming right now, he would not know that he was dreaming. Yet all of his beliefs about what is around him would be false ---he thinks he is in front of the fire, but actually he is snuggled up in bed. Since many beliefs based on his senses would be false if he were dreaming, he has found a reason to doubt all such beliefs.", "You did a pretty good job explaining Descartes' argument that when you are dreaming, things just the way they do when you are awake. It would've been mostly clear to a reader that in a dream you can't tell that you are dreaming. So, if Descartes were dreaming right now, he would not know that he was dreaming. Yet all of his beliefs about what is around him would be false ---he thinks he is in front of the fire, but actually he is snuggled up in bed. Since many beliefs based on his senses would be false if he were dreaming, he has found a reason to doubt all such beliefs.", "From your excellent answer, I think any reader would've been able to understand why Descartes points out that when you are dreaming, things just the way they do when you are awake. It was completely clear that this matters because when you are dreaming you can't tell that you are dreaming. So, if Descartes were dreaming right now, he would not know that he was dreaming. Yet all of his beliefs about what is around him would be false ---he thinks he is in front of the fire, but actually he is snuggled up in bed. As was clear from your answer, since many beliefs based on his senses would be false if he were dreaming, he has found a reason to doubt all such beliefs."]
-        }
-
-    },
-
-    computed: {
-        questionScore: {
-            get: function get() {
-                return this.stored.questionScore;
-            },
-
-            set: function set(val) {
-                this.stored.questionScore = val;
-                this.updateGrade();
-            }
-        }
-    },
-
-    events: {},
-
-    methods: {
-        chooseValence: function chooseValence(val) {
-            if (val <= 1) {
-                return 0;
-            } else if (val <= 3.25) {
-                return 1;
-            } else if (val <= 6.75) {
-                return 2;
-            } else if (val <= 10) {
-                return 3;
-            }
-        },
-
-        updateComment: function updateComment(elementNumber, valence, score) {
-
-            switch (elementNumber) {
-                case 1:
-                    this.commentPara1 = this.comments.e1[valence];
-                    this.drawChart(elementNumber, this.elements[0], score, 4.5);
-                    break;
-                case 2:
-                    this.commentPara2 = this.comments.e2[valence];
-                    this.drawChart(elementNumber, this.elements[1], score, 6.5);
-                    break;
-                case 3:
-                    this.commentPara3 = this.comments.e3[valence];
-                    this.drawChart(elementNumber, this.elements[2], score, 2.5);
-                    break;
-            }
-        },
-
-        //
-        //updateSlider1: function () {
-        //    window.console.log('updateSlider1', this.slider1);
-        //    var index = this.chooseValence(this.slider1);
-        //    this.commentPara1 = this.e1[index];
-        //},
-        //
-        //updateSlider2: function () {
-        //    window.console.log('updateSlider2', this.slider2);
-        //    var index = this.chooseValence(this.slider2);
-        //    this.commentPara2 = this.e2[index];
-        //},
-        //
-        //updateSlider3: function () {
-        //    window.console.log('updateSlider3', this.slider3);
-        //    var index = this.chooseValence(this.slider3);
-        //    this.commentPara3 = this.e3[index];
-        //},
-
-        updateGrade: function updateGrade() {
-            window.console.log('updateGrade', this.questionScore);
-            var me = this;
-            var scores = [[55, 'F'], [62, 'D-'], [65, 'D'], [68, 'D+'], [72, 'C-'], [75, 'C'], [78, 'C+'], [82, 'B-'], [85, 'B'], [88, 'B+'], [92, 'A-'], [95, 'A']];
-            var limit = scores.length;
-            for (var i = 0; i < limit; i++) {
-                if (this.questionScore <= scores[i][0]) {
-                    this.grade = scores[i][1];
-                    i = limit;
-                }
-            }
-        },
-
-        drawChart: function drawChart(elementNumber, title, score, average) {
-            var score = Number(score);
-            //Prepare the data
-            var data = new google.visualization.DataTable();
-            data.addColumn('string', 'question');
-            data.addColumn('number', 'Your Score');
-            data.addColumn('number', 'Class Average');
-
-            data.addRow([title, score, average]);
-            var chartTarget = 'chart' + elementNumber;
-            var chart = new google.visualization.ColumnChart(document.getElementById(chartTarget));
-            chart.draw(data, this.chartOptions);
-        },
-
-        report: function report() {
-            window.console.log(this);
-        }
-
-    },
-
-    directives: {
-        spinner: {
-            bind: function bind() {
-                //$(this.el).spinner({
-                //    step: 1,
-                //    min: 0
-                //});
-            }
-        }
-    },
-
-    //
-    ready: function ready() {
-        var me = this;
-        jQuery(function () {
-            jQuery('.instructionTooltip').tooltip('show');
-            //$('[data-toggle="tooltip"]').tooltip()
-        });
-
-        window.console.log('ready');
-    }
-});
-
-},{"../libraries/bootstrap-slider-modified.js":23,"./components/popovers.js":18,"./components/slider.js":19,"bootstrap":2,"jquery":15,"vue":17}],21:[function(require,module,exports){
+},{"../templates/slider.template.html":22,"bootstrap-slider":2,"jquery":16}],21:[function(require,module,exports){
 module.exports = '<a href="#" data-toggle="tooltip" title="Some tooltip text!">Hover over me</a>\n\n\n\n<button type="button" class="btn btn-default" data-container="body" data-toggle="popover" data-placement="left" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">\n    Popover on left\n</button>\n\n<!--<button type="button" class="btn btn-default" data-container="body" data-toggle="popover" data-placement="top" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">-->\n    <!--Popover on top-->\n<!--</button>-->\n\n<!--<button type="button" class="btn btn-default" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Vivamus-->\n<!--sagittis lacus vel augue laoreet rutrum faucibus.">-->\n    <!--Popover on bottom-->\n<!--</button>-->\n\n<!--<button type="button" class="btn btn-default" data-container="body" data-toggle="popover" data-placement="right" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">-->\n    <!--Popover on right-->\n<!--</button>-->';
 },{}],22:[function(require,module,exports){
 module.exports = '<!--<div class="list-group">-->\n<div class="list-group-item " style="background-color: #DDDDDD;">\n    <h5>Element #{{ elementNumber}}: "{{ elementName }}"</h5>\n    <div class="row">\n        <div class="col-md-12 InputSlider__slider_body" style="padding-right: 0px;">\n            <label for="slider{{ elementNumber }}"></label>\n            <input\n                    id="slider{{ elementNumber }}"\n                    type="text"\n                    v-model="sliderValue"\n                    v-slider="sliderValue"\n            />\n        </div>\n    </div>\n</div>\n<!--</div>-->';
 },{}],23:[function(require,module,exports){
-"use strict";
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
 /*! =========================================================
  * bootstrap-slider.js
  *
@@ -24387,16 +24266,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  * limitations under the License.
  * ========================================================= */
 
-/**
- * Bridget makes jQuery widgets
- * v1.0.1
- * MIT license
- */
+"use strict";
 
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
         define(["jquery"], factory);
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    } else if (typeof module === "object" && module.exports) {
         var jQuery;
         try {
             jQuery = require("jquery");
@@ -24649,7 +24524,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         /*************************************************
           CONSTRUCTOR
           **************************************************/
-        Slider = function Slider(element, options) {
+        Slider = function (element, options) {
             try {
                 createNewSlider.call(this, element, options);
             } catch (e) {
@@ -25827,20 +25702,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 if (this.options.orientation === 'vertical') {
                     var tooltipPos = this.options.tooltip_position || 'right';
                     var oppositeSide = tooltipPos === 'left' ? 'right' : 'left';
-                    tooltips.forEach(function (tooltip) {
+                    tooltips.forEach((function (tooltip) {
                         this._addClass(tooltip, tooltipPos);
                         tooltip.style[oppositeSide] = '100%';
-                    }.bind(this));
+                    }).bind(this));
                 } else if (this.options.tooltip_position === 'bottom') {
-                    tooltips.forEach(function (tooltip) {
+                    tooltips.forEach((function (tooltip) {
                         this._addClass(tooltip, 'bottom');
                         tooltip.style.top = 22 + 'px';
-                    }.bind(this));
+                    }).bind(this));
                 } else {
-                    tooltips.forEach(function (tooltip) {
+                    tooltips.forEach((function (tooltip) {
                         this._addClass(tooltip, 'top');
                         tooltip.style.top = -this.tooltip.outerHeight - 14 + 'px';
-                    }.bind(this));
+                    }).bind(this));
                 }
             }
         };
@@ -25856,7 +25731,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     return Slider;
 });
+/**
+ * Bridget makes jQuery widgets
+ * v1.0.1
+ * MIT license
+ */
 
-},{"jquery":15}]},{},[20]);
-
-//# sourceMappingURL=home-package.js.map
+},{"jquery":16}]},{},[1]);

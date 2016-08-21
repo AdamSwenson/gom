@@ -3,6 +3,7 @@
  */
 
 import Student from './Student';
+import Question from './Question';
 
 export default class Data {
     constructor() {
@@ -127,7 +128,7 @@ export default class Data {
 
     /**
      * Sets the grading time data from the server
-     * @param this.examGradingTimes JSON object
+     * @param examGradingTimes JSON object
      */
     loadGradingTimes( examGradingTimesJSON ) {
         this.examGradingTimes = examGradingTimesJSON;
@@ -147,16 +148,20 @@ export default class Data {
     }
 
     /**
-     * Loads a json object of questions.
-     * @param .questionsJSON
+     * Loads a json object of questions
      */
-    loadQuestions( questionsJSON ) {
-        this.questions = questionsJSON;
+    loadQuestions( questionsJson ) {
+        for ( let i = 0; i < Object.keys( questionsJson ).length; i ++ ) {
+        let index = Object.keys( questionsJson )[ i ];
+            let s = questionsJson[ index ];
+            this.questions[ index ] = Question.factory( s , index);
+        }
+//        this.questions = questionsJSON;
     }
 
     /**
      * Loads a json object of question scores.
-     * @param .questionScoresJSON
+     * @param questionScoresJSON
      */
     loadQuestionScores( questionScoresJSON ) {
         this.questionScores = questionScoresJSON;
@@ -199,6 +204,10 @@ export default class Data {
         return this.activeStudentIndex;
     }
 
+    /**
+     * Returns the student object corresponding to the currently selected student.
+     * @returns {Student}
+     */
     getActiveStudent() {
         return this.getStudent( this.activeStudentIndex );
     }
@@ -222,6 +231,11 @@ export default class Data {
         this.elementComments[ studentIndex ][ elementIndex ] = commentText;
     }
 
+    /**
+     * Shortcut to avoid having to look up the active student from elsewhere
+     * @param elementIndex
+     * @param commentText
+     */
     storeCommentTextForActiveStudent( elementIndex, commentText ) {
         this.elementComments[ this.activeStudentIndex ][ elementIndex ] = commentText;
     }
@@ -231,13 +245,17 @@ export default class Data {
      * If no customized text is set, then return stockComment.
      *
      * Original: data.this.elementComments[ Roster.activeStudent ][ index ];
-     * @param activeStudent
+     * @param studentIndex
      * @param elementIndex
+     * @param valence
      * @returns {*}
      */
     getCommentText( studentIndex, elementIndex, valence ) {
-        var comment = this.elementComments[ studentIndex ][ elementIndex ];
+        //First check for a pre-existing comment. This could be a stock comment
+        //or it could be custom.
+        let comment = this.elementComments[ studentIndex ][ elementIndex ];
         if ( comment == "" ) {
+            //If no comment is set, we're going to go with the stock comment
             return this.stockComments[ elementIndex ][ valence ];
         }
         //now for the fun part. If the user had previously moved the
@@ -247,9 +265,10 @@ export default class Data {
         //just a stock text value set), then we do want to switch to
         //the stock text corresponding to the new slider value.
         //So we first check whether the existing comment is custom
-        var isCustom = true;
-        var i = 0;
+        let isCustom = true;
+        let i = 0;
         //loop through the stock comments and look for a match
+        //TODO should this be < ?
         while ( isCustom && i <= this.valences.length ) {
             var stock = this.stockComments[ elementIndex ][ i ];
             if ( stock == comment ) {
@@ -262,7 +281,7 @@ export default class Data {
         if ( ! isCustom ) {
             return this.stockComments[ elementIndex ][ valence ];
         }
-        //If it was custom, return the same text
+        //If it was custom, return the custom text
         return comment;
     }
 
@@ -273,7 +292,6 @@ export default class Data {
      * (The usual getter will return stock text in those cases)
      * @param studentIndex
      * @param elementIndex
-     * @param valence
      * @private
      */
     _getStoredCommentText( studentIndex, elementIndex ) {
@@ -281,6 +299,7 @@ export default class Data {
     }
 
     getCommentTextForActiveStudent( elementIndex, valence ) {
+        //If no student is set, the comment field should be blank
         if ( this.activeStudentIndex == null ) return '';
         return this.getCommentText( this.activeStudentIndex, elementIndex, valence );
     }
@@ -359,7 +378,7 @@ export default class Data {
     /**
      * Retrieves element score for a student
      * Original: data.this.elementScores[ Roster.activeStudent ][ index ];
-     * @param activeStudent
+     * @param studentIndex
      * @param elementIndex
      * @returns {*}
      */
@@ -425,7 +444,6 @@ export default class Data {
     /**
      * Convenience function for getting the current student's score for question
      * Old way: data.this.questionScores[ Roster.activeStudent ][ index ];
-     * @param activeStudent
      * @param questionIndex
      */
     getQuestionScoreForActiveStudent( questionIndex ) {
@@ -464,13 +482,18 @@ export default class Data {
     }
 
 
+    storeElementScoreForActiveStudent( elementIndex, score ) {
+        this.storeElementScore( this.activeStudentIndex, elementIndex, score );
+    }
+
     /**
      * Mostly used for testing
      * @param studentIndex
+     * @param score
      * @private
      */
     _setExamGrade( studentIndex, score ) {
-        this.examGrades[ studentIndex ];
+        this.examGrades[ studentIndex ] = score;
     }
 
     /**
@@ -524,10 +547,6 @@ export default class Data {
     storeQuestionScoreForActiveStudent( questionIndex, score ) {
         // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
         this.questionScores[ this.activeStudentIndex ][ questionIndex ] = score;
-    }
-
-    storeElementScoreForActiveStudent( elementIndex, score ) {
-        this.storeElementScore( this.activeStudentIndex, elementIndex, score );
     }
 
 

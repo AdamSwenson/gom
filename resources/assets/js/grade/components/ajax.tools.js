@@ -29,6 +29,10 @@ module.exports = {
         serverTimeoutText: "<p class='errorText timeoutMessage'>There was no response from the server. Either the server is down <br/> or you may be experiencing connection issues.</p>",
     },
 
+    events: {
+
+    },
+
     requests: {
 
         /**
@@ -189,6 +193,7 @@ module.exports = {
             type: 'DELETE',
             success: function () {
                 wasSuccessful = true;
+
             },
             error: function () {
                 me.showWarningMessage( me.messages.serverErrorTitle, me.messages.serverErrorText );

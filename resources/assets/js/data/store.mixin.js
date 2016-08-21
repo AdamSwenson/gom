@@ -20,7 +20,28 @@ module.exports = {
         };
     },
 
-    computed: {},
+    computed: {
+        /**
+         * Shortcut to where the active student is stored
+         * @returns {module.exports.computed.activeStudent|null|*}
+         */
+        activeStudent: function () {
+            return this.store.getActiveStudentIndex();
+        },
+
+        getActiveStudentId() {
+            return this.activeStudentId;
+        },
+
+        getActiveStudentIndex() {
+            return this.activeStudentIndex;
+        },
+
+        getActiveStudent() {
+            return this.getStudent( this.activeStudentIndex );
+        },
+
+    },
 
     methods: {},
 
