@@ -13,14 +13,8 @@ use App\Exam;
 use App\Comment;
 
 use App\Repositories\Grade\GradeFactory;
-use App\Repositories\Grade\IGradeAssignmentRepository;
-use App\Repositories\Question\IQuestionAssignmentRepository;
-use App\Repositories\Element\IElementAssignmentRepository;
+
 use App\Repositories\Element\IElementRepository;
-use App\Repositories\Score\IElementScoreRepository;
-use App\Repositories\Score\IQuestionScoreRepository;
-use App\Repositories\Student\IStudentRepository;
-use App\Repositories\Time\IGradingTimeRepository;
 
 use Illuminate\Database\Eloquent\Collection;
 

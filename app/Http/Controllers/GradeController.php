@@ -463,8 +463,6 @@ IJsDataPreparation $jsonPrep)
             $studentGrades[] = 'Letter grade';
         }
 
-        //$studentsJson = $this->makeStudentJson($exam);
-        //$gradesJson = $this->makeGradesJson();
         $questionsJson = $this->makeQuestionsJson($exam);
         $studentsJson = $this->makeStudentJson($exam);
         $gradesJson = $this->makeGradesJson();
@@ -477,7 +475,7 @@ IJsDataPreparation $jsonPrep)
 //        $studentGrades = json_encode($studentGrades, JSON_FORCE_OBJECT);
 //        $maxScores = json_encode($maxQuestionScores, JSON_FORCE_OBJECT);
 //        $numQuestions = count($questionAssignments);
-        
+
 //        Javascript::put([
 //            'exam'                   => $exam,
 //            'students'               => $students,
@@ -671,23 +669,6 @@ IJsDataPreparation $jsonPrep)
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
         //encode =true , inject=false
         return $this->jsonPrep->makeQuestionsJson($questionAssignments);
-//        $questionIndex = 0;
-//        $questions = [];
-//        foreach ( $questionAssignments as $qa )
-//        {
-//            $questions[ $questionIndex ] = [
-//                'questionIndex'        => $questionIndex,
-//                'questionName'         => $qa->getQuestionName(),
-//                'questionNumber'       => $qa->getQuestionNumber(),
-//                'maxScore'             => $qa->getQuestion()->getMaxScore(),
-//                'questionAssignmentId' => $qa->id,
-//            ];
-//            $questionIndex++;
-//        }
-//
-//        Javascript::put(['questions' => $questions]);
-//
-//        return json_encode($questions, JSON_FORCE_OBJECT);
     }
 
 
@@ -702,28 +683,6 @@ IJsDataPreparation $jsonPrep)
         $students = $this->studentDao->load_students_by_exam($exam);
         //encode =true , inject=false
         return $this->jsonPrep->makeStudentJson($students);
-//        $studentIndex = 0;
-//        $s = [];
-//        foreach ( $students as $student )
-//        {
-//            $s[ $studentIndex ] = [
-//                'studentIndex'      => $studentIndex, //this is here so can use with component
-//                'studentId'         => $student->id,
-//                'studentIdentifier' => $student->student_identifier,
-//                'firstName'         => $student->first_name,
-//                'lastName'          => $student->last_name,
-//            ];
-//            $studentIndex++;
-//        }
-//
-//
-//        //send to page
-//        Javascript::put(['students' => $s]);
-//
-//        return json_encode($s, JSON_FORCE_OBJECT);
-
-        // load all question assignments and all elements for those questions
-
     }
 
     /**
@@ -736,27 +695,6 @@ IJsDataPreparation $jsonPrep)
     {
         //encode =true , inject=false
         return $this->jsonPrep->makeStockCommentsJson($allElements);
-//        // load stock comments for each element
-//        $stockComments = [];
-//        foreach ( $allElements as $aQuestion )
-//        {
-//            foreach ( $aQuestion as $element )
-//            {
-//                $defaultComments = null;
-//                for ( $i = 0; $i < count(Comment::$valences); $i++ )
-//                {
-//                    $defaultComments[] = $this->elementDao->loadCommentByElementIdAndValence($element->getId(), $i)->getBody();
-//                }
-//                $stockComments[] = $defaultComments;
-//            }
-//        }
-//
-//        //send to page
-//        Javascript::put(['stockComments' => $stockComments]);
-//
-//        $stockComments = json_encode($stockComments, JSON_FORCE_OBJECT);
-//
-//        return $stockComments;
     }
 
     /**
@@ -768,10 +706,6 @@ IJsDataPreparation $jsonPrep)
     {
         //encode =true , inject=false
         return $this->jsonPrep->makeGradesJson();
-//        //send to page
-//        Javascript::put(['grades' => GradeFactory::gradeJson()]);
-//
-//        return GradeFactory::gradeJson();
     }
 
 
