@@ -7,6 +7,7 @@
  */
 
 namespace App\Repositories\Utilities;
+
 use App\Exam;
 
 use App\Comment;
@@ -33,15 +34,18 @@ use Javascript;
  */
 class JsDataPreparation implements IJsDataPreparation
 {
+    protected $elementDao;
 
 
     /**
      * Builds the json object containing questions which the page js expects
      * Also injects the object into the view as GOM.questions
      * @param \App\Repositories\Utilities\Exam $questionAssignments
+     * @param bool $encode
+     * @param bool $inject
      * @return string
      */
-    public function makeQuestionsJson($questionAssignments)
+    public function makeQuestionsJson($questionAssignments, $encode = true, $inject = false)
     {
 
         $questionIndex = 0;
@@ -58,9 +62,14 @@ class JsDataPreparation implements IJsDataPreparation
             $questionIndex++;
         }
 
-        Javascript::put(['questions' => $questions]);
+        if ( $inject )
+        {
+            Javascript::put(['questions' => $questions]);
+        }
 
-        return json_encode($questions, JSON_FORCE_OBJECT);
+        $questions = $encode ? json_encode($questions, JSON_FORCE_OBJECT) : $questions;
+
+        return $questions;
     }
 
 
@@ -68,9 +77,11 @@ class JsDataPreparation implements IJsDataPreparation
      * Builds the json object containing students which the page js expects
      * Also injects the object into the view as GOM.students
      * @param $students Collection
+     * @param bool $encode
+     * @param bool $inject
      * @return string
      */
-    public function makeStudentJson($students)
+    public function makeStudentJson($students, $encode = true, $inject = false)
     {
         $studentIndex = 0;
         $s = [];
@@ -86,24 +97,28 @@ class JsDataPreparation implements IJsDataPreparation
             $studentIndex++;
         }
 
+        if ( $inject )
+        {
+            Javascript::put(['students' => $s]);
+        }
 
-        //send to page
-        Javascript::put(['students' => $s]);
+        $s = $encode ? json_encode($s, JSON_FORCE_OBJECT) : $s;
 
-        return json_encode($s, JSON_FORCE_OBJECT);
-
-        // load all question assignments and all elements for those questions
-
+        return $s;
     }
 
     /**
      * Makes the object which the page's javascript expects.
      * Also injects the object into the view GOM.stockComments
      * @param $allElements
+     * @param bool $encode
+     * @param bool $inject
      * @return array
      */
-    public function makeStockCommentsJson($allElements)
+    public function makeStockCommentsJson($allElements, $encode = true, $inject = false)
     {
+        $this->elementDao = app()->make(IElementRepository::class);
+
         // load stock comments for each element
         $stockComments = [];
         foreach ( $allElements as $aQuestion )
@@ -119,10 +134,12 @@ class JsDataPreparation implements IJsDataPreparation
             }
         }
 
-        //send to page
-        Javascript::put(['stockComments' => $stockComments]);
+        if ( $inject )
+        {
+            Javascript::put(['stockComments' => $stockComments]);
+        }
 
-        $stockComments = json_encode($stockComments, JSON_FORCE_OBJECT);
+        $stockComments = $encode ? json_encode($stockComments, JSON_FORCE_OBJECT) : $stockComments;
 
         return $stockComments;
     }
@@ -130,16 +147,19 @@ class JsDataPreparation implements IJsDataPreparation
     /**
      * Makes json of standard grade values
      * Also injects into view as GOM.grades
+     * @param bool $encode
+     * @param bool $inject
      * @return string
      */
-    public function makeGradesJson()
+    public function makeGradesJson($encode = true, $inject = false)
     {
-        //send to page
-        Javascript::put(['grades' => GradeFactory::gradeJson()]);
+        if ( $inject )
+        {
+            Javascript::put(['grades' => GradeFactory::gradeJson()]);
+        }
 
-        return GradeFactory::gradeJson();
+        return $encode ?  GradeFactory::gradeJson() : GradeFactory::$grades;
     }
-
 
 
 }
