@@ -9,15 +9,56 @@
 namespace App\HTTP\Controllers\Api;
 
 
+use App\Exam;
+use App\Http\Controllers\ExamController;
+use App\Http\Requests\ExamRequest;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Laracasts\TestDummy\Factory;
+use Mockery\Mock;
+
+
 class ScoreControllerTest extends \PHPUnit_Framework_TestCase
 {
+    use WithoutMiddleware;
 
+//    public $mock;
+    public $exam;
+    public $examData;
+    public $examYear;
+    public $examTerm;
+    public $examName;
     protected $object;
 
     public function setUp()
     {
         parent::setUp();
-        $this->object = new ScoreControllerTest;
+//        $this->mock = $this->createMock('\App\Repositories\Exam\IExamRepository');
+        $this->exam = Exam::all()->random();
+//        $mock = Mockery::mock('\App\Repositories\Exam\IExamRepository');
+//        $this->app->instance('\App\Repositories\Exam\IExamRepository', $mock);
+        $this->eid = $this->faker->randomNumber(3);
+        $this->examName = $this->faker->text(5);
+        $this->examTerm = $this->faker->text(5);
+        $this->examYear = $this->faker->year();
+
+        $eid = $this->exam->getId();
+        $this->examData = [
+            'exam_id'  => $eid,
+            'name'     => $this->examName,
+            'examTerm' => $this->examTerm,
+            'examYear' => $this->examYear,
+        ];
     }
+
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+
+
 
 }

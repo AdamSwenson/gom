@@ -105,7 +105,7 @@ class GradeController extends Controller
                                 IGradingTimeRepository $gradingTimeRepository,
                                 IStudentRepository $studentRepository,
                                 IGradeAssignmentRepository $gradeAssignmentRepository,
-IJsDataPreparation $jsonPrep)
+                                IJsDataPreparation $jsonPrep)
     {
         $this->middleware('auth');
         $this->examDao = $IExamRepository;
@@ -242,8 +242,8 @@ IJsDataPreparation $jsonPrep)
                 $examGradingTimes[] = 0;
             }
         }
-        $stockCommentsJson = $this->makeStockCommentsJson($allElements);
 
+        $stockCommentsJson = $this->jsonPrep->makeStockCommentsJson($allElements);
 
         $studentGrades = [];
         foreach ( $students as $s )
@@ -251,155 +251,36 @@ IJsDataPreparation $jsonPrep)
             $studentGrades[] = 'Letter grade';
         }
 
-        $questionsJson = $this->makeQuestionsJson($exam);
-        $studentsJson = $this->makeStudentJson($exam);
-        $gradesJson = $this->makeGradesJson();
+        $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
 
-        //added
-//        $studentElementComments = json_encode($studentElementComments, JSON_FORCE_OBJECT);
-//        $studentElementScores = json_encode($studentElementScores, JSON_FORCE_OBJECT);
-//        $studentQuestionScores = json_encode($studentQuestionScores, JSON_FORCE_OBJECT);
-//        $examGradingTimes = json_encode($examGradingTimes, JSON_FORCE_OBJECT);
-//        $studentGrades = json_encode($studentGrades, JSON_FORCE_OBJECT);
-//        $maxScores = json_encode($maxQuestionScores, JSON_FORCE_OBJECT);
-//        $numQuestions = count($questionAssignments);
+        //encode =true , inject=false
+        $questionsJson = $this->jsonPrep->makeQuestionsJson($questionAssignments);
 
-//        Javascript::put([
-//            'exam'                   => $exam,
-//            'students'               => $students,
-//            'questionAssignments'    => $questionAssignments,
-//            'maxQuestionScores'      => $maxQuestionScores,
-//            'allElements'            => $allElements,
-//            'stockCommentsJson'      => $stockCommentsJson,
-//            'examGradingTimes'       => $examGradingTimes,
-//            'studentElementScores'   => $studentElementScores,
-//            'studentElementComments' => $studentElementComments,
-//            'studentQuestionScores'  => $studentQuestionScores,
-//            'studentGrades'          => $studentGrades,
-//            'questionsJson'          => $questionsJson,
-//            'studentsJson'           => $studentsJson,
-//            'gradesJson'             => $gradesJson,
-//        ]);
+        $students = $this->studentDao->load_students_by_exam($exam);
+        //encode =true , inject=false
+        $studentsJson = $this->jsonPrep->makeStudentJson($students);
+
+        $gradesJson = $this->jsonPrep->makeGradesJson();
 
 //        return View::make('development.newTable')->with([
 //        return View::make('development.newGrading')->with([
-        return View::make('grade.newGrading')->with([
-                                                              'exam'                   => $exam,
-                                                              'students'               => $students,
-                                                              'questionAssignments'    => $questionAssignments,
-                                                              'maxQuestionScores'      => $maxQuestionScores,
-                                                              'allElements'            => $allElements,
-                                                              'stockCommentsJson'      => $stockCommentsJson,
-                                                              'examGradingTimes'       => $examGradingTimes,
-                                                              'studentElementScores'   => $studentElementScores,
-                                                              'studentElementComments' => $studentElementComments,
-                                                              'studentQuestionScores'  => $studentQuestionScores,
-                                                              'studentGrades'          => $studentGrades,
-                                                              'questionsJson'          => $questionsJson,
-                                                              'studentsJson'           => $studentsJson,
-                                                              'gradesJson'             => $gradesJson,
-                                                          ]);
+        return View::make('grade.newGrading')->with(
+            [
+                'exam'                   => $exam,
+                'students'               => $students,
+                'questionAssignments'    => $questionAssignments,
+                'maxQuestionScores'      => $maxQuestionScores,
+                'allElements'            => $allElements,
+                'stockCommentsJson'      => $stockCommentsJson,
+                'examGradingTimes'       => $examGradingTimes,
+                'studentElementScores'   => $studentElementScores,
+                'studentElementComments' => $studentElementComments,
+                'studentQuestionScores'  => $studentQuestionScores,
+                'studentGrades'          => $studentGrades,
+                'questionsJson'          => $questionsJson,
+                'studentsJson'           => $studentsJson,
+                'gradesJson'             => $gradesJson,
+            ]);
     }
-
-    /**
-     * Builds the json object containing questions which the page js expects
-     * Also injects the object into the view as GOM.questions
-     * @param Exam $exam
-     * @return string
-     */
-    public function makeQuestionsJson(Exam $exam)
-    {
-        $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
-        //encode =true , inject=false
-        return $this->jsonPrep->makeQuestionsJson($questionAssignments);
-    }
-
-
-    /**
-     * Builds the json object containing students which the page js expects
-     * Also injects the object into the view as GOM.students
-     * @param Exam $exam
-     * @return string
-     */
-    public function makeStudentJson(Exam $exam)
-    {
-        $students = $this->studentDao->load_students_by_exam($exam);
-        //encode =true , inject=false
-        return $this->jsonPrep->makeStudentJson($students);
-    }
-
-    /**
-     * Makes the object which the page's javascript expects.
-     * Also injects the object into the view GOM.stockComments
-     * @param $allElements
-     * @return array
-     */
-    public function makeStockCommentsJson($allElements)
-    {
-        //encode =true , inject=false
-        return $this->jsonPrep->makeStockCommentsJson($allElements);
-    }
-
-    /**
-     * Makes json of standard grade values
-     * Also injects into view as GOM.grades
-     * @return string
-     */
-    public function makeGradesJson()
-    {
-        //encode =true , inject=false
-        return $this->jsonPrep->makeGradesJson();
-    }
-
-
-//    /**
-//     * Load the time spent grade a particular student exam
-//     *
-//     * @param Exam $exam
-//     * @param GradingRequest $request
-//     * @return mixed
-//     */
-//    public function loadTime(Exam $exam, GradingRequest $request)
-//    {
-//        //Check that user owns the exam
-//        $this->authorize('access-object', $exam);
-//
-//        if ( $request->has('student_id') )
-//        {
-//            $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
-//            $time = $dao->load($exam->getId(), $request->input('student_id'));
-//
-//            return $time;
-//        }
-//    }
-//
-//    /**
-//     * Loads array of statistics for grade time.
-//     * See IGradingStatsRepository for description of array.
-//     *
-//     * @param Exam $exam
-//     * @return mixed
-//     */
-//    public function loadStats(Exam $exam)
-//    {
-//        //Check that user owns the exam
-//        $this->authorize('access-object', $exam);
-//
-//        $dao = app()->make('App\Repositories\Time\IGradingStatsRepository');
-//        $stats = $dao->get_grading_time_stats($exam->getId());
-//
-//        return $stats;
-//    }
-//
-//    /**
-//     * This will check whether
-//     * @param Exam $exam
-//     * @param Student $student
-//     */
-//    public function updateNumberGraded(Exam $exam, Student $student)
-//    {
-//
-//    }
-//
 
 }

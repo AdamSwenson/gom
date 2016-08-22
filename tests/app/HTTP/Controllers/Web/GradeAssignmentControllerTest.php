@@ -20,4 +20,27 @@ class GradeAssignmentControllerTest extends \TestCase
         $this->object = new GradeAssignmentControllerTest;
     }
 
+    /** @test
+     * @incomplete
+     */
+    public function assign()
+    {
+//        $exam = Exam::class
+
+//        return View::make('grade.grade_assign', [
+//            'exam'         => $exam,
+//            'examScores'   => $examScores,
+//            'examMaxScore' => $examMaxScore,
+//            'gradeTypes'   => $gradeTypes,
+//            'gradeCutoffs' => $gradeCutoffs,
+//        ]);
+    }
+
+    /** @test
+     * @incomplete
+     */
+    public function recordAssignments(){
+//        Exam $exam, GradeAssignmentRequest $request
+
+    }
 }
