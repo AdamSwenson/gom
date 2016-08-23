@@ -12,6 +12,7 @@ namespace App\HTTP\Controllers\Api;
 use App\Exam;
 use App\Http\Controllers\ExamController;
 use App\Http\Requests\ExamRequest;
+use App\QuestionScore;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +22,7 @@ use Laracasts\TestDummy\Factory;
 use Mockery\Mock;
 
 
-class ScoreControllerTest extends \PHPUnit_Framework_TestCase
+class ScoreControllerTest extends \TestCase
 {
     use WithoutMiddleware;
 
@@ -37,7 +38,7 @@ class ScoreControllerTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 //        $this->mock = $this->createMock('\App\Repositories\Exam\IExamRepository');
-        $this->exam = Exam::all()->random();
+        $this->exam = factory(Exam::class)->create(); //all()->random();
 //        $mock = Mockery::mock('\App\Repositories\Exam\IExamRepository');
 //        $this->app->instance('\App\Repositories\Exam\IExamRepository', $mock);
         $this->eid = $this->faker->randomNumber(3);
@@ -59,6 +60,18 @@ class ScoreControllerTest extends \PHPUnit_Framework_TestCase
         \Mockery::close();
     }
 
+
+    public function testRecordScoreQuestion()
+    {
+        $questionScore = factory(QuestionScore::class)->create();
+        $data = ['examId' => 1, 'question_assignment_id' => 1, 'student_id' => 2, 'score' => 3.4];
+        $mock = $this->createMock('App\Repositories\Score\IQuestionScoreRepository');
+        $mock->shouldReceive('record')
+            ->with([$data['question_assignment_id'], $data['student_id'], $data['score']])
+            ->andReturn($questionScore);
+        $response = $this->action('POST', 'Api\ScoreController@recordScore', $data);
+        $this->assertNotNull($response);
+    }
 
 
 }

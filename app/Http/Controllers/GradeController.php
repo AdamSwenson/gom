@@ -170,7 +170,7 @@ class GradeController extends Controller
         $questionAssignments = $this->questionAssignmentDao->load_all_for_exam($exam->getId());
         $maxQuestionScores = [];
 
-        // return to grade select if 0 students or 0 questions
+        // return to grade select page if 0 students or 0 questions
         if ( sizeof($students) == 0 || sizeof($questionAssignments) == 0 )
         {
             return redirect()->action('GradeController@index');

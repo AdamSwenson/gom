@@ -259,6 +259,11 @@ class ScoreController extends Controller
      */
     public function recordTime(Exam $exam, GradingRequest $request)
     {
+
+    //    return redirect()->action('Api\TimeController@recordTime');
+        //->with(['exam' => $exam, 'request' => $request]);
+
+
         //Check that user owns the exam
         $this->authorize('access-object', $exam);
 
