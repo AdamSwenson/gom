@@ -7,13 +7,12 @@ use App\Jobs\Job;
 use App\Repositories\Exam\IStoredExamStatsRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Student\IStudentRepository;
-use Illuminate\Contracts\Bus\SelfHandling;
 
 /**
  * Used to asynchronously make sure the number of questions and number of students are updated in Redis.
  * @package App\Jobs
  */
-class UpdateStoredExamStats extends Job implements SelfHandling
+class UpdateStoredExamStats extends Job
 {
     /** @var IStoredExamStatsRepository */
     protected $storedExamStatsRepository;

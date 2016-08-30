@@ -22,10 +22,10 @@
                     <a href="{{url('help')}}" style="color:white;">What Is This?</a>
                 </li>
                 <li id="navSetup" title="Sign up for gradeomatic">
-                    <a href="{{url('auth/register')}}" style="color:white;">Sign Up</a>
+                    <a href="{{url('register')}}" style="color:white;">Sign Up</a>
                 </li>
                 <li id="navGrade" title="Log in to gradeomatic">
-                    <a href="{{url('auth/login')}}" style="color:white;">Log In</a>
+                    <a href="{{url('login')}}" style="color:white;">Log In</a>
                 </li>
             </ul>
         </div>

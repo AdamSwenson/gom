@@ -6,7 +6,6 @@ use App\Events\NewUserSignedUpEvent;
 use App\Jobs\NewUser\NotifyTeamOfNewSignup;
 use App\Jobs\NewUser\SendWelcomeEmail;
 use App\User;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;

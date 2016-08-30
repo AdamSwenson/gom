@@ -4,7 +4,7 @@ namespace App\Jobs\UserActivityLogging;
 
 use App\Jobs\Job;
 use App\User;
-use Illuminate\Contracts\Bus\SelfHandling;
+
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Log;
  *
  * @package App\Jobs
  */
-class RecordUserLogin extends Job implements SelfHandling, ShouldQueue
+class RecordUserLogin extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

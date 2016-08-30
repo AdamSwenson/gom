@@ -16,7 +16,7 @@ public static $studentsPerQuestion = 5;
 
         DB::table('question_scores')->delete();
         $assigns = DB::table('question_assignments')->get();
-        $studentIds = \App\Student::lists('id')->toArray();
+        $studentIds = \App\Student::pluck('id')->toArray();
 
         $faker = Faker\Factory::create();
 

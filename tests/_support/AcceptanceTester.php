@@ -21,10 +21,10 @@ class AcceptanceTester extends \Codeception\Actor
 {
     use _generated\AcceptanceTesterActions;
 public static $started = false;
-    public $loginPageRoute = '/auth/login';
+    public $loginPageRoute = '/login';
     public $loginEmail = 'test2@gradeomatic.net';
     public $loginPassword = 'testtest';
-    public $logoutRoute = '/auth/logout';
+    public $logoutRoute = '/logout';
 
 
     public function init($loginUsingId = null)

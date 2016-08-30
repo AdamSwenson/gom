@@ -21,7 +21,7 @@ use Mockery\Mock;
 
 class StudentControllerTest extends \TestCase
 {
-    use WithoutMiddleware;
+//    use WithoutMiddleware;
 
     public $expectedDbEntries = [];
 
@@ -73,9 +73,10 @@ class StudentControllerTest extends \TestCase
         //TODO Improve this test by testing for the values being passed around
 
         $numStudents = 3;
+        $this->exam = factory(Exam::class)->create();
         $processor_mock = $this->createMock('App\Jobs\StudentImport\IImportStudentsFromCsv');
         $processor_mock->shouldReceive('handle')
-            ->andReturn(Student::all()->random($numStudents));
+            ->andReturn(factory(Student::class, $numStudents)->create());
 
         $kumi_repository_processor_mock = $this->createMock('App\Repositories\Student\IKumiRepository');
         $kumi_repository_processor_mock
@@ -84,10 +85,10 @@ class StudentControllerTest extends \TestCase
         $dao = $this->createMock('App\Repositories\Student\IStudentRepository');
         $dao->shouldReceive('create_student')
             ->times($numStudents)
-            ->andReturn(Student::all()->random());
+            ->andReturn(factory(Student::class)->create());
 
         $data = [
-            'exam_id' => 1,
+            'exam_id' => $this->exam->id,
             'lastName' => $this->faker->lastName(),
             'firstName' => $this->faker->firstName(),
             'studentId' => $this->faker->randomNumber(9),

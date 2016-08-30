@@ -2,55 +2,32 @@
 
 /*
 |--------------------------------------------------------------------------
-| Application Routes
+| Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register all of the routes for an application.
-| It's a breeze. Simply tell Laravel the URIs it should respond to
-| and give it the controller to call when that URI is requested.
+| This file is where you may define all of the routes that are handled
+| by your application. Just tell Laravel the URIs it should respond
+| to using a Closure or controller method. Build something great!
 |
 */
 
-Route::get('info/instructions', 'InfoController@showInstructions');
-Route::get('info/faq', 'InfoController@showFaq');
-Route::get('info/tutorials', 'InfoController@showTutorials');
-
-/* Authentication and registration */
+/* ---------------------------- Authentication and registration ------------------------------------------------------*/
 Route::auth();
 //temp until convert everything to use the post
 Route::get('/logout', 'Auth\LoginController@logout');
-//Route::controllers([
-//    'auth' => 'Auth\AuthController',
-//    'password' => 'Auth\PasswordController'
-//]);
-
-/* Home page - now called 'landing' */
-Route::get('/', 'LandingController@showLanding');
-Route::get('index', 'LandingController@showLanding'); //re-added since stuff may redirect here
-Route::get('landing', 'LandingController@showLanding'); //re-added since stuff seems to redirect here
-
 
 /* Temporary: Limitations on registration */
 Route::get('registrationRestrictions', 'RestrictedRegistrationController@showRestrictedAccessPage');
 Route::post('registrationRestrictions', 'RestrictedRegistrationController@recordInterestToWaitlist');
 
+//Route::controllers([
+//    'auth' => 'Auth\AuthController',
+//    'password' => 'Auth\PasswordController'
+//]);
+
 
 /* --------------------------------------------- Account -------------------------------------------------------------*/
 Route::get('account', 'LandingController@loggedIn');
-
-
-/* --------------------------------------------- Help ----------------------------------------------------------------*/
-Route::get('help', 'InfoController@showInstructions');
-Route::get('faq', 'InfoController@showFaq');
-Route::get('tutorials', 'InfoController@showTutorials');
-Route::get('gettingStarted', 'InfoController@showGettingStarted');
-
-/* --------------------------------------------- About ---------------------------------------------------------------*/
-Route::get('about', 'InfoController@showAbout');
-
-/* --------------------------------------------- Contact -------------------------------------------------------------*/
-Route::get('contact', 'InfoController@showContact');
-
 
 /* ----------------------------------------------- Exam set up  ----------------------------------------------------- */
 /* Routes for exam */
@@ -94,6 +71,31 @@ Route::post('grade/exam/{exam}', 'Api\ScoreController@recordScore');
 Route::post('grade/exam/{exam}/time', 'Api\TimeController@recordTime');
 // delete a question or element score
 Route::delete('grade/exam/{exam}', 'Api\ScoreController@removeScore');
+
+/* -----------------------------------------------  Home   ---------------------------------------------------------- */
+/* Home page - now called 'landing' */
+Route::get('/', 'LandingController@showLanding');
+Route::get('index', 'LandingController@showLanding'); //re-added since stuff may redirect here
+Route::get('landing', 'LandingController@showLanding'); //re-added since stuff seems to redirect here
+
+
+/* -----------------------------------------------  Info   ---------------------------------------------------------- */
+//about
+Route::get('about', 'InfoController@showAbout');
+//contact
+Route::get('contact', 'InfoController@showContact');
+//faq
+Route::get('info/faq', 'InfoController@showFaq');
+Route::get('faq', 'InfoController@showFaq');
+//instructions
+Route::get('info/instructions', 'InfoController@showInstructions');
+Route::get('help', 'InfoController@showInstructions');
+//tutorials
+Route::get('info/tutorials', 'InfoController@showTutorials');
+Route::get('tutorials', 'InfoController@showTutorials');
+Route::get('gettingStarted', 'InfoController@showGettingStarted');
+
+
 
 /* ----------------------------------------------- Reports ---------------------------------------------------------- */
 /* Reporting and analytics pages */

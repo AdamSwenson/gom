@@ -33,8 +33,8 @@ class AuthController extends Controller
     protected $redirectPath = '/exam';
 
     /** @var string Redirect on unsuccessful login */
-    protected $loginPath = '/auth/login';
-
+    protected $loginPath = '/login';
+//    protected $loginPath = '/auth/login';
     protected $redirectAfterLogout = '/';
 
     /**

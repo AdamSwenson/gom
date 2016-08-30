@@ -119,7 +119,7 @@ class ElementScore extends BaseModelNoUser
      */
     public function scopeOnElementAssignment($query, $elementAssignmentId)
     {
-        return $query->whereElementAssignmentId($elementAssignmentId);
+        return $query->where('element_assignment_id', $elementAssignmentId);
     }
 
     public function scopeOnStudentElementAssignment($query, $studentId, $elementAssignmentId)

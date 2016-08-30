@@ -4,10 +4,10 @@ namespace App\Jobs\AsyncStorage;
 
 use App\Exam;
 use App\Jobs\Job;
-use Illuminate\Contracts\Bus\SelfHandling;
+
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
-class UpdateAllStoredNumGraded extends Job implements SelfHandling
+class UpdateAllStoredNumGraded extends Job
 {
     use DispatchesJobs;
     /**

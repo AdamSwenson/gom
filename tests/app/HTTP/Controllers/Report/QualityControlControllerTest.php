@@ -31,7 +31,7 @@ namespace App\HTTP\Controllers\Report;
 
 class QualityControlControllerTest  extends \TestCase
 {
-    use WithoutMiddleware;
+//    use WithoutMiddleware;
 
     public $student;
     public $exam;

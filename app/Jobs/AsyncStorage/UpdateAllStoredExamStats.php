@@ -4,7 +4,7 @@ namespace App\Jobs\AsyncStorage;
 
 use App\Exam;
 use App\Jobs\Job;
-use Illuminate\Contracts\Bus\SelfHandling;
+
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
@@ -14,7 +14,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
  * once the storedExamStatsRepository features are added
  * @package App\Jobs\AsyncStorage
  */
-class UpdateAllStoredExamStats extends Job implements SelfHandling
+class UpdateAllStoredExamStats extends Job
 {
     use DispatchesJobs;
 

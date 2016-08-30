@@ -15,7 +15,7 @@ class ElementScoresTableSeeder extends Seeder
         DB::table('element_scores')->delete();
 
         $assigns = DB::table('element_assignments')->get();
-        $studentIds = \App\Student::lists('id')->toArray();
+        $studentIds = \App\Student::pluck('id')->toArray();
 
         $faker = Faker\Factory::create();
 

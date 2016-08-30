@@ -12,11 +12,10 @@ use App\Exam;
 use App\Jobs\Job;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Auth;
 
-class NotifyAllStudents extends Job implements SelfHandling, ShouldQueue
+class NotifyAllStudents extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

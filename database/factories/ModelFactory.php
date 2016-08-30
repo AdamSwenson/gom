@@ -59,7 +59,8 @@ $factory->define(App\Kumi::class, function (Faker\Generator $faker)
         'nickname' => $faker->text(30),
     ];
 });
-$factory->defineAs(App\Kumi::class, 'with_exam', function (Faker\Generator $faker) use ($factory){
+$factory->defineAs(App\Kumi::class, 'with_exam', function (Faker\Generator $faker) use ($factory)
+{
     return [
         'year'     => $faker->year,
         'nickname' => $faker->text(30),
@@ -218,7 +219,7 @@ $factory->define(App\ElementScore::class, function (Faker\Generator $faker)
         'element_assignment_id' => $assignmentId,
         'student_id'            => $studentId,
         'score'                 => $faker->randomFloat(2),
-        'comment_text' => $faker->paragraph
+        'comment_text'          => $faker->paragraph,
     ];
 });
 $factory->defineAs(App\ElementScore::class, 'preexisting', function (Faker\Generator $faker) use ($factory)
@@ -337,15 +338,16 @@ $factory->defineAs(App\Feedback::class, 'preexisting', function (Faker\Generator
 
 
 /* ---------------------------------- Stats -------------------------------- */
-$factory->define(App\GradingTime::class, function (Faker\Generator $faker){
+$factory->define(App\GradingTime::class, function (Faker\Generator $faker)
+{
     $examId = factory(App\Exam::class)->create()->id;
     $studentId = factory(App\Student::class)->create()->id;
     $seconds = $faker->randomFloat(2, 0, 1000);
-    
+
     return [
-        'exam_id' => $examId,
+        'exam_id'    => $examId,
         'student_id' => $studentId,
-        'seconds' => $seconds
+        'seconds'    => $seconds,
     ];
 });
 

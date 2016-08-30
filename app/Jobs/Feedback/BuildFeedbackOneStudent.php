@@ -15,7 +15,6 @@ use App\Jobs\Job;
 use App\Student;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,7 +23,7 @@ use Illuminate\Support\Facades\Auth;
  *
  * @package App\Jobs\Feedback
  */
-class BuildFeedbackOneStudent extends Job implements SelfHandling, ShouldQueue
+class BuildFeedbackOneStudent extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
