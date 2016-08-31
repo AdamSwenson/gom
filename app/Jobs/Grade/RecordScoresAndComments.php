@@ -1,17 +1,26 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Grade;
 
 use App\Exam;
 use App\Http\Requests\GradingRequest;
+use App\Repositories\Element\IElementAssignmentRepository;
+use App\Repositories\Element\IElementRepository;
+use App\Repositories\Exam\IExamRepository;
+use App\Repositories\Grade\IGradeAssignmentRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
+use App\Repositories\Score\IElementScoreRepository;
 use App\Repositories\Score\IQuestionScoreRepository;
+use App\Repositories\Student\IStudentRepository;
+use App\Repositories\Time\IGradingTimeRepository;
+use App\Repositories\Utilities\IJsDataPreparation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Auth;
 
-class RecordQuestionScores implements ShouldQueue
+class RecordScoresAndComments implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels;
 
@@ -73,6 +82,24 @@ class RecordQuestionScores implements ShouldQueue
     /**
      * Create a new job instance.
      *
+     * @param Exam $exam
+     * @param GradingRequest $request
+     */
+    public function __construct(Exam $exam, GradingRequest $request)
+    {
+        $this->exam = $exam;
+        $this->request = $request;
+
+        //make sure the user is stored for re-login on hydration
+        if ( empty($this->userId) )
+        {
+            $this->userId = Auth::user()->id;
+        }
+    }
+
+    /**
+     * Execute the job.
+     *
      * @param IExamRepository $IExamRepository
      * @param IElementRepository $elementRepository
      * @param IElementAssignmentRepository $elementAssignmentRepository
@@ -83,25 +110,19 @@ class RecordQuestionScores implements ShouldQueue
      * @param IStudentRepository $studentRepository
      * @param IGradeAssignmentRepository $gradeAssignmentRepository
      * @param IJsDataPreparation $jsonPrep
+     * @throws \Exception
      */
-    public function __construct(IExamRepository $IExamRepository,
-                                IElementRepository $elementRepository,
-                                IElementAssignmentRepository $elementAssignmentRepository,
-                                IElementScoreRepository $elementScoreRepository,
-                                IQuestionAssignmentRepository $questionAssignmentRepository,
-                                IQuestionScoreRepository $questionScoreRepository,
-                                IGradingTimeRepository $gradingTimeRepository,
-                                IStudentRepository $studentRepository,
-                                IGradeAssignmentRepository $gradeAssignmentRepository,
-                                IJsDataPreparation $jsonPrep)
+    public function handle(IExamRepository $IExamRepository,
+                           IElementRepository $elementRepository,
+                           IElementAssignmentRepository $elementAssignmentRepository,
+                           IElementScoreRepository $elementScoreRepository,
+                           IQuestionAssignmentRepository $questionAssignmentRepository,
+                           IQuestionScoreRepository $questionScoreRepository,
+                           IGradingTimeRepository $gradingTimeRepository,
+                           IStudentRepository $studentRepository,
+                           IGradeAssignmentRepository $gradeAssignmentRepository,
+                           IJsDataPreparation $jsonPrep)
     {
-        //make sure the user is stored for re-login on hydration
-        if ( empty($this->userId) )
-        {
-            $this->userId = Auth::user()->id;
-        }
-
-
         $this->IExamRepository = $IExamRepository;
         $this->elementRepository = $elementRepository;
         $this->elementAssignmentRepository = $elementAssignmentRepository;
@@ -112,22 +133,13 @@ class RecordQuestionScores implements ShouldQueue
         $this->studentRepository = $studentRepository;
         $this->gradeAssignmentRepository = $gradeAssignmentRepository;
         $this->jsonPrep = $jsonPrep;
-    }
 
-    /**
-     * Execute the job.
-     *
-     * @param Exam $exam
-     * @param GradingRequest $request
-     * @throws \Exception
-     */
-    public function handle(Exam $exam, GradingRequest $request)
-    {
         //Check that user owns the exam
-        $this->authorize('access-object', $exam);
+        $this->authorize('access-object', $this->exam);
         try
         {
-            $this->recordTime($exam, $request);
+
+            $this->recordTime($this->exam, $this->request);
             //
         } catch ( \Exception $e )
         {

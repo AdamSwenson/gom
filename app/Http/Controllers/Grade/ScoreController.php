@@ -1,23 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Grade;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Jobs\Grade\RecordScoresAndComments;
 
-use App\Http\Requests;
-
-use App\Comment;
-use App\Http\Requests\GradeAssignmentRequest;
 use App\Http\Requests\GradingRequest;
 
 use App\Exam;
-use App\Jobs\AsyncStorage\UpdateAllStoredExamStats;
-use App\Jobs\AsyncStorage\UpdateAllStoredNumGraded;
-use App\Jobs\AsyncStorage\UpdateStoredExamStats;
 use App\Jobs\AsyncStorage\UpdateStoredNumGraded;
 use App\Repositories\Exam\IExamRepository;
-use App\Repositories\Grade\GradeFactory;
 use App\Repositories\Grade\IGradeAssignmentRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
@@ -30,8 +22,6 @@ use App\Repositories\Time\IGradingTimeRepository;
 use App\Repositories\Utilities\IJsDataPreparation;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\View;
 
 use JavaScript;
 
@@ -138,6 +128,9 @@ class ScoreController extends Controller
         $this->authorize('access-object', $exam);
         try
         {
+
+//            $this->dispatch(new RecordScoresAndComments($exam, $request));
+
             //Don't even get started if there's no student id
             if ( ! $request->has('student_id') )
             {

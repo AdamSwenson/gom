@@ -340,7 +340,8 @@ var Data = function () {
         }
 
         /**
-         * Mainly used for testing. This gets the stored comment, which might be
+         * Mainly used for testing. Though is used by gradeVue currently.
+         * This gets the stored comment, which might be
          * an empty string if the exam hasn't been graded.
          * (The usual getter will return stock text in those cases)
          * @param studentIndex
@@ -349,8 +350,8 @@ var Data = function () {
          */
 
     }, {
-        key: '_getStoredCommentText',
-        value: function _getStoredCommentText(studentIndex, elementIndex) {
+        key: 'getStoredCommentText',
+        value: function getStoredCommentText(studentIndex, elementIndex) {
             return this.elementComments[studentIndex][elementIndex];
         }
     }, {

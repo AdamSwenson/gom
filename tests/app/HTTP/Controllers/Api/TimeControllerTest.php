@@ -6,7 +6,7 @@
  * Time: 9:03 PM
  */
 
-namespace App\HTTP\Controllers\Api;
+namespace App\HTTP\Controllers\Grade;
 
 use App\ElementScore;
 use App\Exam;
@@ -37,7 +37,7 @@ class TimeControllerTest extends \TestCase
         $mock->shouldReceive('record')
             ->with([$data['examId'], $data['studentId'], $data['time']])
             ->andReturn(GradingTime::all()->random());
-        $result = $this->action('POST', 'Api\TimeController@recordTime', $data);
+        $result = $this->action('POST', 'Grade\TimeController@recordTime', $data);
         $this->assertNotNull($result);
     }
 

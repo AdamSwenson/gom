@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Auth;
 class AcceptanceTester extends \Codeception\Actor
 {
     use _generated\AcceptanceTesterActions;
-public static $started = false;
+    public static $started = false;
     public $loginPageRoute = '/login';
     public $loginEmail = 'test2@gradeomatic.net';
     public $loginPassword = 'testtest';
@@ -33,7 +33,8 @@ public static $started = false;
 
         $this->setCookie('selenium_request', 'true');
 
-        if ($loginUsingId) {
+        if ( $loginUsingId )
+        {
             $this->setCookie('selenium_auth', (string) $loginUsingId);
         }
     }
@@ -42,22 +43,26 @@ public static $started = false;
     /**
      * Define custom actions here
      */
-function start(){
-    if(! self::$started){
-        $scenario = $this->getScenario();
-        switch($scenario->current('env')){
-            case 'chrome':
-                exec('selenium-server -p 4444');
-                exec('chromedriver');
-                break;
-            case 'phantom':
-                exec('phantomjs --webdriver=4444');
-                break;
-            default:
+    function start()
+    {
+        if ( ! self::$started )
+        {
+            $scenario = $this->getScenario();
+            switch ( $scenario->current('env') )
+            {
+                case 'chrome':
+                    exec('selenium-server -p 4444');
+                    exec('chromedriver');
+                    break;
+                case 'phantom':
+                    exec('phantomjs --webdriver=4444');
+                    break;
+                default:
+            }
         }
+
     }
 
-}
     function start_artisan()
     {
         // $this->runShellCommand('APP_ENV=codeceptWorld php artisan up');

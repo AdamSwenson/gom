@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Web;
+namespace App\Http\Controllers\Grade;
 
 use App\Comment;
 use App\Http\Controllers\Controller;

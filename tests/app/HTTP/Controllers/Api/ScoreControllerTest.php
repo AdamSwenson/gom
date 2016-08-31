@@ -6,7 +6,7 @@
  * Time: 8:04 PM
  */
 
-namespace App\HTTP\Controllers\Api;
+namespace App\HTTP\Controllers\Grade;
 
 
 use App\Exam;
@@ -69,7 +69,7 @@ class ScoreControllerTest extends \TestCase
         $mock->shouldReceive('record')
             ->with([$data['question_assignment_id'], $data['student_id'], $data['score']])
             ->andReturn($questionScore);
-        $response = $this->action('POST', 'Api\ScoreController@recordScore', $data);
+        $response = $this->action('POST', 'Grade\ScoreController@recordScore', $data);
         $this->assertNotNull($response);
     }
 

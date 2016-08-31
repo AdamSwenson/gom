@@ -2,7 +2,7 @@
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Grade Routes
 |--------------------------------------------------------------------------
 |
 | This file is where you may define all of the routes that are handled
@@ -61,16 +61,16 @@ Route::get('grade/exam/{exam}', 'GradeController@grade');
 
 /* Grade assignment */
 // launch grade assigner
-Route::get('grade/exam/{exam}/assign', 'Web\GradeAssignmentController@assign');
+Route::get('grade/exam/{exam}/assign', 'Grade\GradeAssignmentController@assign');
 // record grade assignments
-Route::post('grade/exam/{exam}/assign', 'Web\GradeAssignmentController@recordAssignments');
+Route::post('grade/exam/{exam}/assign', 'Grade\GradeAssignmentController@recordAssignments');
 
 /* Api */
 // record a question or element score
-Route::post('grade/exam/{exam}', 'Api\ScoreController@recordScore');
-Route::post('grade/exam/{exam}/time', 'Api\TimeController@recordTime');
+Route::post('grade/exam/{exam}', 'Grade\ScoreController@recordScore');
+Route::post('grade/exam/{exam}/time', 'Grade\TimeController@recordTime');
 // delete a question or element score
-Route::delete('grade/exam/{exam}', 'Api\ScoreController@removeScore');
+Route::delete('grade/exam/{exam}', 'Grade\ScoreController@removeScore');
 
 /* -----------------------------------------------  Home   ---------------------------------------------------------- */
 /* Home page - now called 'landing' */

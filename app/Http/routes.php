@@ -84,9 +84,9 @@ Route::get('grade/exam/{exam}', 'GradeController@grade');
 
 /* Grade assignment */
 // launch grade assigner
-Route::get('grade/exam/{exam}/assign', 'Web\GradeAssignmentController@assign');
+Route::get('grade/exam/{exam}/assign', 'Grade\GradeAssignmentController@assign');
 // record grade assignments
-Route::post('grade/exam/{exam}/assign', 'Web\GradeAssignmentController@recordAssignments');
+Route::post('grade/exam/{exam}/assign', 'Grade\GradeAssignmentController@recordAssignments');
 
 /* Api */
 // record a question or element score

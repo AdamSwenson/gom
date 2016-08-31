@@ -9,6 +9,7 @@ window.jQuery = jQuery;
 
 var template = require( "../templates/element-input.template.html" );
 var Slider = require( "../../libraries/bootstrap-slider-modified.js" );
+var Requests = require('./requests.tools');
 
 module.exports = {
 
@@ -292,17 +293,16 @@ module.exports = {
          * we just need to tell the observer which element needs updating.
          */
         notifyStoreElementScore: function ( score ) {
-            let obj = {};
-            obj.elementIndex = this.elementIndex;
-            obj.score = score;
-            this.$dispatch( 'store-element-score-request', obj );
+            let request = new Requests.ElementScoreRequest(this.activeStudent, this.elementIndex, score, this.elementId);
+            this.$dispatch( 'store-element-score-request', request );
         },
 
         /**
          * Requests that the db be updated with comment text
          */
         notifyStoreCommentText: function () {
-            this.$dispatch( 'store-comment-text-request', { elementIndex: this.elementIndex } );
+            let obj = new Requests.CommentRequest(this.activeStudent, this.elementIndex, this.elementId);
+            this.$dispatch( 'store-comment-text-request', obj);
         },
 
         /**

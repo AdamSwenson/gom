@@ -37,7 +37,7 @@
                         while ($eNumber <= count($elements) ) {?>
                         <element-input :element-number="{{$eNumber}}"
                                        :element-index="{{$elementIndex}}"
-                                       element-id="{{ $elements[$elementIndex]->getId() }}"
+                                       :element-id="{{ $elements[$elementIndex]->getId() }}"
                                        element-name="{{ $elements[$elementIndex]->getElementName() }}"
                                        :question-number="{{ $qNumber }}"></element-input>
                         <?php $elementIndex++; $eNumber++; } ?>

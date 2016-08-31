@@ -254,7 +254,7 @@ describe( "elementInput.js | ", function () {
             moveSlider( this.$slider, newVal );
             //check
             expect( store.getElementScore( activeStudent, elementIndex ) ).toBe( newVal );
-            expect( store._getStoredCommentText( activeStudent, elementIndex ) ).toBe( 'e1 excellent' );
+            expect( store.getStoredCommentText( activeStudent, elementIndex ) ).toBe( 'e1 excellent' );
         } );
 
 
@@ -266,7 +266,7 @@ describe( "elementInput.js | ", function () {
 
             //check
             expect( store.getElementScore( activeStudent, elementIndex ) ).toBe( newVal );
-            expect( store._getStoredCommentText( activeStudent, elementIndex ) ).toBe( 'e1 fair' );
+            expect( store.getStoredCommentText( activeStudent, elementIndex ) ).toBe( 'e1 fair' );
         } );
 
         it( "case: poor", function () {
@@ -277,7 +277,7 @@ describe( "elementInput.js | ", function () {
 
             //check
             expect( store.getElementScore( activeStudent, elementIndex ) ).toBe( newVal );
-            expect( store._getStoredCommentText( activeStudent, elementIndex ) ).toBe( 'e1 poor' );
+            expect( store.getStoredCommentText( activeStudent, elementIndex ) ).toBe( 'e1 poor' );
         } );
 
 
@@ -287,7 +287,7 @@ describe( "elementInput.js | ", function () {
 
             //check
             expect( store.getElementScore( activeStudent, elementIndex ) ).toBe( newVal );
-            expect( store._getStoredCommentText( activeStudent, elementIndex ) ).toBe( 'e1 missing' );
+            expect( store.getStoredCommentText( activeStudent, elementIndex ) ).toBe( 'e1 missing' );
         } );
     } );
 

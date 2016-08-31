@@ -275,9 +275,8 @@ export default class Store {
      * @param studentIndex
      * @param elementIndex
      * @param valence
-     * @private
      */
-    _getStoredCommentText( studentIndex, elementIndex ) {
+    getStoredCommentText( studentIndex, elementIndex ) {
         return this.elementComments[ studentIndex ][ elementIndex ];
     }
 
@@ -337,11 +336,11 @@ export default class Store {
 
     /**
      * Original: data.this.examGradingTimes[ Roster.activeStudent ]
-     * @param activeStudent
+     * @param studentIndex
      * @returns {*}
      */
-    getStudentGradingTime( activeStudent ) {
-        return this.examGradingTimes[ activeStudent ];
+    getStudentGradingTime( studentIndex ) {
+        return this.examGradingTimes[ studentIndex];
     }
 
     /**
