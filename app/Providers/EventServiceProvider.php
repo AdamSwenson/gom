@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\PleaseRecordGradingTime;
 use App\Events\UserLoginEvent;
+use App\Jobs\RecordGradingTime;
 use App\Listeners\FlagForDatabaseBackupListener;
 use App\Listeners\UserLoginListener;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
@@ -46,25 +48,45 @@ class EventServiceProvider extends ServiceProvider
         UserLoginEvent::class =>
             [
                 UserLoginListener::class,
-        ]
+        ],
+
+        //Grade
+        PleaseRecordGradingTime::class => [GradingRecordListener::class],
+
     ];
 
     /**
      * Register any other events for your application.
      *
-     * @param  \Illuminate\Contracts\Events\Dispatcher $events
      * @return void
      */
-    public function boot(DispatcherContract $events)
+    public function boot()
     {
-        parent::boot($events);
+        parent::boot();
 
         // Fired on successful logins...
-        $events->listen('auth.login', function ($user, $remember) {
+        Event::listen('auth.login', function ($user, $remember)
+        {
             Event::fire(new UserLoginEvent());
         });
-
+    }
+//
+//    /**
+//     * Register any other events for your application.
+//     *
+//     * @param  \Illuminate\Contracts\Events\Dispatcher $events
+//     * @return void
+//     */
+//    public function boot(DispatcherContract $events)
+//    {
+//        parent::boot($events);
+//
+//        // Fired on successful logins...
+//        $events->listen('auth.login', function ($user, $remember) {
+//            Event::fire(new UserLoginEvent());
+//        });
+//
 
         //
-    }
+
 }

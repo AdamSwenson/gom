@@ -25112,6 +25112,34 @@ module.exports = {
 
         return wasSuccessful;
     },
+    /**
+     * Pass request to record time to server.
+     * Not for use with deletion requests
+     * @param request
+     */
+    sendTimeRequest: function sendTimeRequest(examId, request) {
+        var wasSuccessful = false;
+        var me = this;
+
+        if (typeof examId != 'undefined' && typeof request != 'undefined' && examId !== null && request !== null) {
+            $.ajax({
+                url: examId + '/time',
+                data: request,
+                type: 'POST',
+                success: function success() {
+                    wasSuccessful = true;
+                },
+                error: function error() {
+                    me.showWarningMessage(me.messages.serverErrorTitle, me.messages.serverErrorText);
+                },
+                timeout: function timeout() {
+                    me.showWarningMessage(me.messages.serverTimeoutTitle, me.messages.serverTimeoutText);
+                }
+            });
+        }
+
+        return wasSuccessful;
+    },
 
     /**
      * Sends a request to delete a score
@@ -25706,6 +25734,7 @@ window.jQuery = jQuery;
 
 var template = require("../templates/element-input.template.html");
 var Slider = require("../../libraries/bootstrap-slider-modified.js");
+var Requests = require('./requests.tools');
 
 module.exports = {
 
@@ -25979,17 +26008,16 @@ module.exports = {
          * we just need to tell the observer which element needs updating.
          */
         notifyStoreElementScore: function notifyStoreElementScore(score) {
-            var obj = {};
-            obj.elementIndex = this.elementIndex;
-            obj.score = score;
-            this.$dispatch('store-element-score-request', obj);
+            var request = new Requests.ElementScoreRequest(this.activeStudent, this.elementIndex, score, this.elementId);
+            this.$dispatch('store-element-score-request', request);
         },
 
         /**
          * Requests that the db be updated with comment text
          */
         notifyStoreCommentText: function notifyStoreCommentText() {
-            this.$dispatch('store-comment-text-request', { elementIndex: this.elementIndex });
+            var obj = new Requests.CommentRequest(this.activeStudent, this.elementIndex, this.elementId);
+            this.$dispatch('store-comment-text-request', obj);
         },
 
         /**
@@ -26056,7 +26084,7 @@ module.exports = {
     }
 };
 
-},{"../../libraries/bootstrap-slider-modified.js":47,"../templates/element-input.template.html":42,"jquery":23}],33:[function(require,module,exports){
+},{"../../libraries/bootstrap-slider-modified.js":47,"../templates/element-input.template.html":42,"./requests.tools":35,"jquery":23}],33:[function(require,module,exports){
 'use strict';
 
 /**
@@ -26464,8 +26492,16 @@ module.exports = {
         this.questionAssignmentId = questionAssignmentId;
     },
 
-    ElementScoreRequest: function ElementScoreRequest(studentIndex, elementId) {
+    CommentRequest: function CommentRequest(studentIndex, elementIndex, elementId) {
+        this.elementId = elementId;
+        this.elementIndex = elementIndex;
         this.studentIndex = studentIndex;
+    },
+
+    ElementScoreRequest: function ElementScoreRequest(studentIndex, elementIndex, score, elementId) {
+        this.studentIndex = studentIndex;
+        this.elementIndex = elementIndex;
+        this.score = score;
         this.elementId = elementId;
     },
 
@@ -26994,15 +27030,17 @@ new Vue({
          * @param score Associated score to save (can be left null)
          * @returns boolean
          */
-        saveCommentWithTime: function saveCommentWithTime(elementId, commentText, score) {
+        saveCommentWithTime: function saveCommentWithTime(studentIndex, elementId, commentText) {
             var me = this;
 
-            var studentId = this.store.getActiveStudentId();
+            var student = this.store.getStudent(studentIndex);
             var examId = this.store.getExamId();
-            var time = this.store.getActiveStudentGradingTime();
+            var time = this.store.getStudentGradingTime(studentIndex);
+            var score = false;
 
-            var request = new this.ajaxTools.requests.commentRequest(studentId, elementId, commentText, score, time);
+            var request = new this.ajaxTools.requests.commentRequest(student.studentId, elementId, commentText, score, time);
 
+            window.console.log('saveCommentWTime', request);
             return this.ajaxTools.sendRequest(examId, request);
         },
 
@@ -27015,6 +27053,7 @@ new Vue({
             var time = this.store.getActiveStudentGradingTime();
 
             var request = new this.ajaxTools.requests.timeRequest(studentId, time);
+            window.console.log('saveTime', request);
             return this.ajaxTools.sendRequest(examId, request);
         },
 
@@ -27032,7 +27071,7 @@ new Vue({
             var time = this.store.getStudentGradingTime(studentIndex);
 
             var request = new this.ajaxTools.requests.elementScoreRequest(student.studentId, elementId, score, time);
-
+            window.console.log('saveElementScoreWTime', request);
             return this.ajaxTools.sendRequest(examId, request);
         },
 
@@ -27051,7 +27090,7 @@ new Vue({
             var time = this.store.getStudentGradingTime(studentIndex);
             var score = this.store.getQuestionScore(studentIndex, questionIndex);
             var request = new this.ajaxTools.requests.questionScoreRequest(student.studentId, questionAssignmentId, score, time);
-
+            window.console.log('saveQuestionScoreWTime', request);
             return this.ajaxTools.sendRequest(examId, request);
         },
 
@@ -27064,7 +27103,7 @@ new Vue({
         deleteScore: function deleteScore(studentIndex, questionAssignmentId) {
             var student = this.store.getStudent(studentIndex);
             var examId = this.store.getExamId();
-
+            // window.console.log('deleteQuestionScore', );
             return this.ajaxTools.deleteScoreRequest(examId, student.studentId, questionAssignmentId);
         },
 
@@ -27109,6 +27148,8 @@ new Vue({
         'letter-grade-selected': function letterGradeSelected(obj) {
             window.console.log('gradeVue', 'letter-grade-selected', obj);
             this.store.storeQuestionScoreForActiveStudent(obj.questionIndex, obj.score);
+            //save to server
+
             this.$broadcast('letter-grade-selected', obj);
         },
 
@@ -27142,9 +27183,10 @@ new Vue({
          * Accompanying object should contain:
          *      obj.elementIndex: Index of the element whose score needs updating
          */
-        'store-comment-text-request': function storeCommentTextRequest(obj) {
-            var elementIndex = obj.elementIndex;
-            window.console.log('gradeVue', 'store-comment-text-request', obj);
+        'store-comment-text-request': function storeCommentTextRequest(commentRequestObj) {
+            window.console.log('gradeVue', 'store-comment-text-request', commentRequestObj);
+            var commentText = this.store.getStoredCommentText(commentRequestObj.studentIndex, commentRequestObj.elementIndex);
+            this.saveCommentWithTime(commentRequestObj.studentIndex, commentRequestObj.elementId, commentText);
         },
 
         /**
@@ -27152,9 +27194,12 @@ new Vue({
          * Accompanying object should contain:
          *      obj.elementIndex: Index of the element whose score needs updating
          */
-        'store-element-score-request': function storeElementScoreRequest(obj) {
-            var elementIndex = obj.elementIndex;
-            window.console.log('gradeVue', 'store-element-score-request', obj);
+        'store-element-score-request': function storeElementScoreRequest(elementScoreRequestObj) {
+            window.console.log('gradeVue', 'caught store-element-score-request', elementScoreRequestObj);
+            var elementId = elementScoreRequestObj.elementId;
+            var studentIndex = elementScoreRequestObj.studentIndex;
+            //store on server
+            this.saveElementScoreWithTime(studentIndex, elementId, elementScoreRequestObj.score);
         },
 
         /**

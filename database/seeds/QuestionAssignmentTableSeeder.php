@@ -17,7 +17,7 @@ class QuestionAssignmentTableSeeder extends Seeder
         DB::table('question_assignments')->delete();
 
         $exams = DB::table('exams')->get();
-        $questionIds = \App\Question::lists('id')->toArray();
+        $questionIds = \App\Question::pluck('id')->toArray();
         $faker = Faker\Factory::create();
 
         $qid = 0;

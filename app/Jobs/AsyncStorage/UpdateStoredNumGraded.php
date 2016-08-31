@@ -6,7 +6,7 @@ use App\Exam;
 use App\Jobs\Job;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Student\IStudentRepository;
-use Illuminate\Contracts\Bus\SelfHandling;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Log;
  * Updates the count of how many students have been graded in redis
  * @package App\Jobs\AsyncStorage
  */
-class UpdateStoredNumGraded extends Job implements SelfHandling
+class UpdateStoredNumGraded extends Job
 {
     /** @var INumberGradedStatsRepository */
     protected $numberGradedRepository;

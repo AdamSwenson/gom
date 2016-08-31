@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -23,9 +24,10 @@ class AuthServiceProvider extends ServiceProvider
      * @param  \Illuminate\Contracts\Auth\Access\Gate  $gate
      * @return void
      */
-    public function boot(GateContract $gate)
+//    public function boot(GateContract $gate)
+    public function boot()
     {
-        $this->registerPolicies($gate);
+        $this->registerPolicies();
 
         /*
        * Since there are not yet roles (e.g., teacher, TA) we don't yet need
@@ -34,17 +36,35 @@ class AuthServiceProvider extends ServiceProvider
        * Thus these are just generic checks which can be used on any of the non-junction
        * based objects (i.e., exams, questions, elements, students, etc
        */
-        $gate->define('access-object', function($user, $object){
+
+        Gate::define('access-object', function($user, $object){
+//            var_dump($user->id);
+//            var_dump($object->user_id);
+//            var_dump($user->owns($object));
+//            var_dump($object);
+
             return $user->owns($object);
         });
 
-        $gate->define('alter-object', function($user, $object){
+        Gate::define('alter-object', function($user, $object){
             return $user->owns($object);
         });
 
-        $gate->define('destroy-object', function($user, $object){
+        Gate::define('destroy-object', function($user, $object){
             return $user->owns($object);
         });
+
+//        $gate->define('access-object', function($user, $object){
+//            return $user->owns($object);
+//        });
+//
+//        $gate->define('alter-object', function($user, $object){
+//            return $user->owns($object);
+//        });
+//
+//        $gate->define('destroy-object', function($user, $object){
+//            return $user->owns($object);
+//        });
 
     }
 }

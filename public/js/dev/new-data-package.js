@@ -320,12 +320,11 @@ var Store = function () {
          * @param studentIndex
          * @param elementIndex
          * @param valence
-         * @private
          */
 
     }, {
-        key: '_getStoredCommentText',
-        value: function _getStoredCommentText(studentIndex, elementIndex) {
+        key: 'getStoredCommentText',
+        value: function getStoredCommentText(studentIndex, elementIndex) {
             return this.elementComments[studentIndex][elementIndex];
         }
     }, {
@@ -395,14 +394,14 @@ var Store = function () {
 
         /**
          * Original: data.this.examGradingTimes[ Roster.activeStudent ]
-         * @param activeStudent
+         * @param studentIndex
          * @returns {*}
          */
 
     }, {
         key: 'getStudentGradingTime',
-        value: function getStudentGradingTime(activeStudent) {
-            return this.examGradingTimes[activeStudent];
+        value: function getStudentGradingTime(studentIndex) {
+            return this.examGradingTimes[studentIndex];
         }
 
         /**

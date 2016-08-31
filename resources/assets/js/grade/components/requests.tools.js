@@ -21,8 +21,17 @@ module.exports = {
         this.questionAssignmentId = questionAssignmentId;
     },
 
-    ElementScoreRequest: function(studentIndex, elementId){
+
+    CommentRequest: function(studentIndex, elementIndex, elementId){
+        this.elementId = elementId;
+        this.elementIndex = elementIndex;
         this.studentIndex = studentIndex;
+    },
+
+    ElementScoreRequest: function(studentIndex, elementIndex, score, elementId){
+        this.studentIndex = studentIndex;
+        this.elementIndex= elementIndex;
+        this.score = score;
         this.elementId = elementId;
     },
 

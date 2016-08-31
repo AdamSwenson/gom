@@ -16,7 +16,7 @@ class ElementAssignmentTableSeeder extends Seeder
 
         $questionAssigns = DB::table('question_assignments')->get();
 //        $questionAssigns = DB::table('question_assignments')->get();
-        $elementIds = \App\Element::lists('id')->toArray();
+        $elementIds = \App\Element::pluck('id')->toArray();
         $faker = Faker\Factory::create();
 
         $eid = 0;

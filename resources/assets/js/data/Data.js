@@ -287,14 +287,15 @@ export default class Data {
 
 
     /**
-     * Mainly used for testing. This gets the stored comment, which might be
+     * Mainly used for testing. Though is used by gradeVue currently.
+     * This gets the stored comment, which might be
      * an empty string if the exam hasn't been graded.
      * (The usual getter will return stock text in those cases)
      * @param studentIndex
      * @param elementIndex
      * @private
      */
-    _getStoredCommentText( studentIndex, elementIndex ) {
+    getStoredCommentText( studentIndex, elementIndex ) {
         return this.elementComments[ studentIndex ][ elementIndex ];
     }
 

@@ -1,7 +1,7 @@
 // <--- --------------------------------------------------------------------------------------- ----
 	
 // 	Blog Entry:
-// 	Ask Ben: Print Part Of A Web Page With jQuery
+// 	Ask Ben: Print Part Of A Grade Page With jQuery
 	
 // 	Author:
 // 	Ben Nadel / Kinky Solutions

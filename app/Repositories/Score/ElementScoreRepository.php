@@ -32,15 +32,13 @@ class ElementScoreRepository implements IElementScoreRepository
      */
     public function load($elementAssignmentId, $studentId)
     {
-        $this->score_object = ElementScore::firstOrNew([
-                                                           'element_assignment_id' => $elementAssignmentId,
-                                                           'student_id' => $studentId
-                                                       ]);
+        $this->score_object = ElementScore::onElementAssignment($elementAssignmentId)->onStudent($studentId)->first();
+        $this->score_object = isset($this->score_object) ? $this->score_object : new ElementScore(['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId]);
+
+//TODO unclear why firstOrCreate stopped working on upgrade to 5.3
+//        $this->score_object = ElementScore::firstOrCreate(['element_assignment_id' => $elementAssignmentId, 'student_id' => $studentId]);
 
         return $this->score_object;
-
-//        ElementScore::where('element_assignment_id', $elementAssignmentId)->where('student_id', $studentId)->
-//        $this->score_object = ElementScore::onStudentElementAssignment($studentId, $elementAssignmentId)->first();
     }
 
 

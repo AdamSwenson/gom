@@ -7,7 +7,7 @@ use App\Feedback;
 use App\Jobs\Job;
 use App\Repositories\Student\StudentsForExamGenerator;
 use App\Student;
-use Illuminate\Contracts\Bus\SelfHandling;
+
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
  *
  * @package App\Jobs\Export
  */
-class ExportScores extends Job implements SelfHandling
+class ExportScores extends Job
 {
 
     /** @var  $exam Exam */

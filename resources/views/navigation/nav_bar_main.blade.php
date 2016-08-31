@@ -81,7 +81,7 @@
                 </li>
 
                 <li id="navLogout">
-                    <a href="{{url('auth/logout')}}"
+                    <a href="{{url('logout')}}"
                        title="Log Out"
                        class="navItem"><span class="glyphicon glyphicon-off"></span></a>
                 </li>

@@ -6,7 +6,7 @@ namespace App\Jobs\UserActivityLogging;
 use App\Jobs\Job;
 use App\Repositories\Utilities\IBackupFlagRepository;
 use App\User;
-use Illuminate\Contracts\Bus\SelfHandling;
+
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Log;
  *
  * @package App\Jobs
  */
-class AddFlagForDatabaseBackup extends Job implements SelfHandling, ShouldQueue
+class AddFlagForDatabaseBackup extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 

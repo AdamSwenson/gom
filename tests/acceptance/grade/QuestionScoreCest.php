@@ -8,8 +8,8 @@ class QuestionScoreCest
 {
     public $numQuestions = 5;
     public $examId = 1;
-public $testStudent = 0;
-public $testQuestion = 1;
+    public $testStudent = 0;
+    public $testQuestion = 1;
 
     public function _before(AcceptanceTester $I)
     {
@@ -47,7 +47,7 @@ public $testQuestion = 1;
     public function newScoreForQuestion(AcceptanceTester $I)
     {
         $I->wantTo("assign a score to a previously ungraded student/question");
-        $testScore = Faker\Factory::create()->numberBetween(0,100);
+        $testScore = Faker\Factory::create()->numberBetween(0, 100);
 
         $I->amGoingTo("type the score into the box");
         $I->fillField(GradingPage::questionScoreFieldLocator($this->testQuestion), $testScore);
@@ -88,7 +88,7 @@ public $testQuestion = 1;
     public function deleteScoreForQuestion(AcceptanceTester $I)
     {
         $I->wantTo("delete a previously assigned score ");
-        $testScore = Factory::create()->numberBetween(0,100);
+        $testScore = Factory::create()->numberBetween(0, 100);
 
         $I->amGoingTo("type the score into the box");
         $I->fillField(GradingPage::questionScoreFieldLocator($this->testQuestion), $testScore);

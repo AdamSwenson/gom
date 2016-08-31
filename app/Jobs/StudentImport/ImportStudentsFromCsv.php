@@ -4,7 +4,6 @@ namespace App\Jobs\StudentImport;
 
 use App\Http\Requests\StudentRequest;
 use App\Jobs\Job;
-use Illuminate\Contracts\Bus\SelfHandling;
 
 /**
  * Class ImportStudentsFromCsv
@@ -15,7 +14,7 @@ use Illuminate\Contracts\Bus\SelfHandling;
  *
  * @package App\Jobs\StudentImport
  */
-class ImportStudentsFromCsv extends Job implements SelfHandling, IImportStudentsFromCsv
+class ImportStudentsFromCsv extends Job implements IImportStudentsFromCsv
 {
     const FILE_TYPE_ERROR = "The file was not a valid .csv file.";
     const ALL_HEADERS_ERROR = "The columns did not have all the correct headers.";

@@ -35,7 +35,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 class AnalyticsControllerTest extends \TestCase
 {
 
-    use WithoutMiddleware;
+   // use WithoutMiddleware;
 
     public $student;
     public $exam;
@@ -44,7 +44,11 @@ class AnalyticsControllerTest extends \TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->exam = factory(Exam::class)->create();
+        \Auth::loginUsingId(1);
+        $this->exam = Exam::all()->first();
+//        $this->exam = factory(Exam::class)->create();
+        $this->exam->save();
+
         $this->student = factory(Student::class)->create();
 
     }

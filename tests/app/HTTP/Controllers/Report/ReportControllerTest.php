@@ -32,7 +32,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class ReportControllerTest extends \TestCase
 {
-    use WithoutMiddleware;
+//    use WithoutMiddleware;
 
     public $student;
     public $exam;

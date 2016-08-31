@@ -1,6 +1,7 @@
 <?php
 
 
+
 return [
     'env' => env('APP_ENV', 'production'),
     /*
@@ -135,6 +136,9 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+        //new in 5.3
+        Illuminate\Notifications\NotificationServiceProvider::class,
+
 
         /*
          * Application Service Providers...
@@ -143,6 +147,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
+        //new in 5.3
+        App\Providers\BroadcastServiceProvider::class,
 
         /*
          * Laravel tools imported
@@ -152,7 +158,7 @@ return [
         /*
          * Third party tools
          */
-        Barryvdh\DomPDF\ServiceProvider::class,
+        //Barryvdh\DomPDF\ServiceProvider::class,
         Laracasts\Flash\FlashServiceProvider::class,
         BackupManager\Laravel\Laravel5ServiceProvider::class,
         Spatie\Tail\TailServiceProvider::class,
@@ -219,6 +225,9 @@ return [
         'URL'       => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View'      => Illuminate\Support\Facades\View::class,
+        //new in 5.3
+        'Notification' => Illuminate\Support\Facades\Notification::class,
+
         //added
 
         'Form' => Collective\Html\FormFacade::class,

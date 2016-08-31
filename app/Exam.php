@@ -80,12 +80,6 @@ class Exam extends BaseModel
         'previously_released' => 'boolean',
     ];
 
-//    public function __construct()
-//    {
-//        parent::boot();
-//    }
-
-
 # -------------------------- Helpful methods
 
     /**
