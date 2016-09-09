@@ -37,8 +37,14 @@ class NotifyStudentsListener
      */
     public function handle(FeedbackCompilationCompleteEvent $event)
     {
-        $job = (new NotifyAllStudents($event->getExam()))->onQueue(self::QUEUE_TO_USE);
-        $this->dispatch($job);
+        if($event->wasForAllStudents()){
+            $job = (new NotifyAllStudents($event->getExam()))->onQueue(self::QUEUE_TO_USE);
+            $this->dispatch($job);
+        }
+        elseif ($event->wasForSingleStudent()){
+            //TODO actions to do if compiled a single student's feedback
+        }
+
     }
 
 

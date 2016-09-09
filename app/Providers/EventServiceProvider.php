@@ -2,10 +2,25 @@
 
 namespace App\Providers;
 
+use App\Events\Ajax\PleaseSendAjaxFail;
+use App\Events\Ajax\PleaseSendAjaxSuccess;
+use App\Events\ExamReleasedEvent;
+use App\Events\FeedbackCompilationCompleteEvent;
+use App\Events\NewUserSignedUpEvent;
 use App\Events\PleaseRecordGradingTime;
+use App\Events\StudentNotificationCompleteEvent;
+use App\Events\UnreleaseExamEvent;
 use App\Events\UserLoginEvent;
 use App\Jobs\RecordGradingTime;
+use App\Listeners\Ajax\PleaseSendAjaxFailListener;
+use App\Listeners\Ajax\PleaseSendAjaxSuccessListener;
+use App\Listeners\FeedbackCompileListener;
 use App\Listeners\FlagForDatabaseBackupListener;
+use App\Listeners\NewUserListener;
+use App\Listeners\NotifyStudentsListener;
+use App\Listeners\RemoveStudentAccessListener;
+use App\Listeners\ReportCompilationComplete;
+use App\Listeners\ReportNotificationComplete;
 use App\Listeners\UserLoginListener;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -19,40 +34,39 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\ExamReleasedEvent' =>
-            [
-                'App\Listeners\FeedbackCompileListener'
-            ],
+        ExamReleasedEvent::class => [
+            FeedbackCompileListener::class,
+        ],
 
-        'App\Events\FeedbackCompilationCompleteEvent' =>
-            [
-                'App\Listeners\ReportCompilationComplete',
-                'App\Listeners\NotifyStudentsListener'
-            ],
+        FeedbackCompilationCompleteEvent::class => [
+            ReportCompilationComplete::class,
+            NotifyStudentsListener::class,
+        ],
 
-        'App\Events\NewUserSignedUpEvent' =>
-            [
-                'App\Listeners\NewUserListener'
-            ],
+        NewUserSignedUpEvent::class => [
+            NewUserListener::class,
+        ],
 
-        'App\Events\StudentNotificationCompleteEvent' =>
-            [
-                'App\Listeners\ReportNotificationComplete'
-            ],
+        StudentNotificationCompleteEvent::class => [
+            ReportNotificationComplete::class,
+        ],
 
-        'App\Events\UnreleaseExamEvent' =>
-            [
-                'App\Listeners\RemoveStudentAccessListener'
-            ],
+        UnreleaseExamEvent::class => [
+            RemoveStudentAccessListener::class,
+        ],
 
-        UserLoginEvent::class =>
-            [
-                UserLoginListener::class,
+        UserLoginEvent::class => [
+            UserLoginListener::class,
         ],
 
         //Grade
-        PleaseRecordGradingTime::class => [GradingRecordListener::class],
+        PleaseRecordGradingTime::class => [
+            GradingRecordListener::class,
+        ],
 
+        //Ajax responses
+        PleaseSendAjaxFail::class      => [PleaseSendAjaxFailListener::class],
+        PleaseSendAjaxSuccess::class   => [PleaseSendAjaxSuccessListener::class],
     ];
 
     /**
@@ -87,6 +101,6 @@ class EventServiceProvider extends ServiceProvider
 //        });
 //
 
-        //
+    //
 
 }

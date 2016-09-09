@@ -6,6 +6,11 @@ use App\Events\FeedbackCompilationCompleteEvent;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
+/**
+ * Class ReportCompilationComplete
+ * Actions to do when the feedback compilation is complete
+ * @package App\Listeners
+ */
 class ReportCompilationComplete
 {
     /**
