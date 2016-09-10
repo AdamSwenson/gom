@@ -30,9 +30,13 @@ class RestrictedRegistrationController extends Controller
      * Displays the restricted access page with information about
      * who may register and a form with which to be wait listed
      */
-    public function showRestrictedAccessPage()
+    public function showRestrictedAccessPage($payload=null)
     {
-        return view(self::REDIRECT_TO_VIEW);
+//        dd($email);
+//        dd($payload);
+//        $email = ! empty($email) ? $email : '';
+        $email = request('email', '');
+        return view(self::REDIRECT_TO_VIEW)->with(['email' => $email]); //($email);
     }
 
     /**

@@ -43,7 +43,11 @@
 
                 <div class="form-group ">
                     <label for="email">Email (required)</label>
-                    <input class="form-control" id="email" type="email" name="email" value="{{ $email or '' }}"
+                    <input class="form-control"
+                           id="email"
+                           type="email"
+                           name="email"
+                           value="{{ $email }}"
                            placeholder="jill@PlaceWherePeopleLearn.edu">
                 </div>
                 <div class="form-group ">

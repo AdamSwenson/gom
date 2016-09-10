@@ -5,7 +5,12 @@
 @section('body')
     <div id="registrationPage" class="row mainBodyLocator">
         <div class="col-xs-3"></div>
-        <form role="form" method="POST" action="{{url('auth/register')}}" accept-charset="UTF-8" class="col-xs-6">
+        <form role="form"
+              id="registrationForm"
+              method="POST"
+              action="{{url('register')}}"
+              accept-charset="UTF-8"
+              class="col-xs-6">
             {!! csrf_field() !!}
             <h3 class="text-left"> Create Account</h3>
 

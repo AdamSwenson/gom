@@ -16,8 +16,9 @@ Route::auth();
 //temp until convert everything to use the post
 Route::get('/logout', 'Auth\LoginController@logout');
 
+
 /* Temporary: Limitations on registration */
-Route::get('registrationRestrictions', 'RestrictedRegistrationController@showRestrictedAccessPage');
+Route::get('registrationRestrictions', 'RestrictedRegistrationController@showRestrictedAccessPage')->name('show-restricted-registration-page');
 Route::post('registrationRestrictions', 'RestrictedRegistrationController@recordInterestToWaitlist');
 
 //Route::controllers([
@@ -77,6 +78,8 @@ Route::delete('grade/exam/{exam}', 'Grade\ScoreController@removeScore');
 Route::get('/', 'LandingController@showLanding');
 Route::get('index', 'LandingController@showLanding'); //re-added since stuff may redirect here
 Route::get('landing', 'LandingController@showLanding'); //re-added since stuff seems to redirect here
+//the place to be redirected after registration etc
+Route::get('home', 'ExamController@index');
 
 
 /* -----------------------------------------------  Info   ---------------------------------------------------------- */

@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Exceptions\UnpermittedDomainException;
 use App\Http\Requests\AuthRequest;
 use Closure;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Validator;
 
@@ -21,8 +22,11 @@ class RestrictToInstitutions
 {
     /** The file holding a list of permitted domains */
     const PERMITTED_DOMAINS_CSV = 'permittedDomains.csv';
-    /** The view to send rejected folks to  */
-    const REDIRECT_VIEW = 'account.permitted_institutions';
+    /** The route to call to send rejected folks to  */
+    const REDIRECT_TO_ROUTE = 'show-restricted-registration-page'; //'registrationRestrictions';
+    //returning a view from middleware creates problems. don't do this
+//    const REDIRECT_VIEW = 'account.permitted_institutions';
+
 
     /** @var array Institutions which are okay */
     public static $permittedDomains = [];
@@ -41,7 +45,7 @@ class RestrictToInstitutions
         $this->readPermittedList();
 
         //Only apply this middleware to registration requests
-        if (! $request->is('auth/register')){ return $next($request); }
+        if (! $request->is('register')){ return $next($request); }
 
         //Only apply to post requests
         if(! $request->isMethod('post')){ return $next($request); }
@@ -75,6 +79,7 @@ class RestrictToInstitutions
 
         } catch (UnpermittedDomainException $e)
         {
+//            Log::info($e->getMessage());
             //If any of the conditions failed, redirect
             return $this->refuseRequest($request);
         }
@@ -115,15 +120,18 @@ class RestrictToInstitutions
     /**
      * Set error message and redirect back to an information page
      * @param $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return $this
      */
     protected function refuseRequest($request)
     {
         //Return the email address to pre populate the form on the waiting list page
         $email = $request->has('email') ? $request->input('email') : '';
 
-        return view(self::REDIRECT_VIEW)->with('email', $email);
-//        return redirect( self::REDIRECT_TO_ROUTE )->with('email', $email);
+//        return redirect()->action('RestrictedRegistrationController@showRestrictedAccessPage', ['email' => $email]);
+return redirect()->route(self::REDIRECT_TO_ROUTE)->withInput(); //['email' => $email] ); //->with();
+
+       // return view(self::REDIRECT_VIEW)->with('email', $email);
+ //f       return redirect( self::REDIRECT_TO_ROUTE )->with(['email' => $email]);
     }
 
 

@@ -17,6 +17,8 @@ class AccountCreatePage
     public static $pageTitleText = 'Sign Up | gradeomatic';
     public static $pageHeadingText = 'Create Account';
 
+    public static $formLocator = ['id' => 'registrationForm'];
+
     #fields
     public static $userNameLocator = ['id' => 'name'];
     public static $emailLocator = ['id' => 'email'];

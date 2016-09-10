@@ -26,66 +26,65 @@ class AuthController extends Controller
     | a simple trait to add these behaviors. Why don't you explore it?
     |
     */
-
-    use AuthenticatesAndRegistersUsers, ThrottlesLogins;
-
-    /** @var string Path to redirect to upon authentication */
-    protected $redirectPath = '/exam';
-
-    /** @var string Redirect on unsuccessful login */
-    protected $loginPath = '/login';
-//    protected $loginPath = '/auth/login';
-    protected $redirectAfterLogout = '/';
-
-    /**
-     * Create a new authentication controller instance.
-     */
-    public function __construct()
-    {
-        $this->middleware('guest', ['except' => 'getLogout']);
-        $this->middleware('restrictRegistration');
-    }
-    
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        $rules = [
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|confirmed|min:6',
-        ];
-
-        $messages = [
-            'email.required' => 'Your email is required',
-            'email.email' => 'Please enter a valid email address',
-        ];
-
-        return Validator::make($data, $rules, $messages);
-    }
-
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array $data
-     * @return User
-     */
-    protected function create(array $data)
-    {
-
-        $user = User::create([
-                                'name' => $data['name'],
-                                'email' => $data['email'],
-                                'password' => bcrypt($data['password']),
-                            ]);
-        //Trigger new registration event
-        event( new NewUserSignedUpEvent($user) );
-
-        //return the user so RegistersUsers Trait can continue logging in
-        return $user;
-    }
+//
+//    use AuthenticatesAndRegistersUsers, ThrottlesLogins;
+//
+//    /** @var string Path to redirect to upon authentication */
+//    protected $redirectPath = '/exam';
+//
+//    /** @var string Redirect on unsuccessful login */
+//    protected $loginPath = '/login';
+//    protected $redirectAfterLogout = '/';
+//
+//    /**
+//     * Create a new authentication controller instance.
+//     */
+//    public function __construct()
+//    {
+//        $this->middleware('guest', ['except' => 'getLogout']);
+//        $this->middleware('restrictRegistration');
+//    }
+//
+//    /**
+//     * Get a validator for an incoming registration request.
+//     *
+//     * @param  array $data
+//     * @return \Illuminate\Contracts\Validation\Validator
+//     */
+//    protected function validator(array $data)
+//    {
+//        $rules = [
+//            'name' => 'required|max:255',
+//            'email' => 'required|email|max:255|unique:users',
+//            'password' => 'required|confirmed|min:6',
+//        ];
+//
+//        $messages = [
+//            'email.required' => 'Your email is required',
+//            'email.email' => 'Please enter a valid email address',
+//        ];
+//
+//        return Validator::make($data, $rules, $messages);
+//    }
+//
+//    /**
+//     * Create a new user instance after a valid registration.
+//     *
+//     * @param  array $data
+//     * @return User
+//     */
+//    protected function create(array $data)
+//    {
+//
+//        $user = User::create([
+//                                'name' => $data['name'],
+//                                'email' => $data['email'],
+//                                'password' => bcrypt($data['password']),
+//                            ]);
+//        //Trigger new registration event
+//        event( new NewUserSignedUpEvent($user) );
+//
+//        //return the user so RegistersUsers Trait can continue logging in
+//        return $user;
+//    }
 }
