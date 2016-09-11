@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\Ajax\PleaseSendAjaxFail;
+use App\Events\Ajax\PleaseSendAjaxSuccess;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
@@ -33,6 +35,7 @@ abstract class Controller extends BaseController
      */
     public function sendAjaxFailure($message = null, $otherItems = null)
     {
+//        event(new PleaseSendAjaxFail(null, $message, $otherItems));
         $sendMessage = $message ? $message : 'failure';
         $response = [
             'status' => 'fail',
@@ -62,6 +65,7 @@ abstract class Controller extends BaseController
      */
     public function sendAjaxSuccess($message = null, $otherItems = null)
     {
+        //event(new PleaseSendAjaxSuccess(null, $message, $otherItems));
         $sendMessage = $message ? $message : 'success';
         $response = [
             'status' => 'success',

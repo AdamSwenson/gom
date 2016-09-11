@@ -5,6 +5,15 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 
+/**
+ * Class ResetPasswordController
+ * This handles the actual resetting of the password. It does not handle
+ * sending the reset email or showing the initial reset form in which
+ * the user enters their email. Those functions are handled by
+ * ForgotPasswordController
+ *
+ * @package App\Http\Controllers\Auth
+ */
 class ResetPasswordController extends Controller
 {
     /*
@@ -20,15 +29,18 @@ class ResetPasswordController extends Controller
 
     use ResetsPasswords;
 
+
+    protected $redirectTo = '/exam';
+
     /**
      * Create a new controller instance.
      *
-     * @return void
      */
     public function __construct()
     {
         $this->middleware('guest');
     }
+
 }
 
 

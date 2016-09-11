@@ -4,7 +4,7 @@ namespace Page\admin;
 class AccountCreatePage
 {
     // include url of current page
-    public static $URL = '/auth/register';
+    public static $URL = '/register';
 
     /**
      * Declare UI map for this page here. CSS or XPath allowed.
@@ -16,6 +16,8 @@ class AccountCreatePage
     public static $mainBodyLocator = ['id' => 'registrationPage'];
     public static $pageTitleText = 'Sign Up | gradeomatic';
     public static $pageHeadingText = 'Register';
+
+    public static $formLocator = ['id' => 'registrationForm'];
 
     #fields
     public static $userNameLocator = ['id' => 'name'];
@@ -37,16 +39,27 @@ class AccountCreatePage
     {
         $I->seeInCurrentUrl(self::$URL);
 
-        $I->seeInTitle(AccountCreatePage::$pageTitleText);
-        $I->see(AccountCreatePage::$pageHeadingText);
+        $I->seeInTitle(self::$pageTitleText);
+        $I->see(self::$pageHeadingText);
 
-        $I->seeElement(AccountCreatePage::$userNameLocator, ['name' => 'name']);
-        $I->seeElement(AccountCreatePage::$emailLocator, ['name' => 'email']);
-        $I->seeElement(AccountCreatePage::$passwordLocator, ['name' => 'password']);
+        $I->seeElement(self::$userNameLocator, ['name' => 'name']);
+        $I->seeElement(self::$emailLocator, ['name' => 'email']);
+        $I->seeElement(self::$passwordLocator, ['name' => 'password']);
 
-        $I->seeElement(AccountCreatePage::$confirmPasswordLocator, ['name' => 'password_confirmation']);
+        $I->seeElement(self::$confirmPasswordLocator, ['name' => 'password_confirmation']);
 
-        $I->seeElement(AccountCreatePage::$submitButtonLocator);
+        $I->seeElement(self::$submitButtonLocator);
+    }
+
+    public static function navigateToPage($I){
+        $I->log_out();
+        $I->amOnPage(self::$URL);
+        $I->waitForElementVisible(self::$mainBodyLocator);
+
+        $I->amGoingTo("Check that the page title and url are correct");
+        $I->seeInCurrentUrl(self::$URL);
+        $I->seeInTitle(self::$pageTitleText);
+        $I->see(self::$pageHeadingText);
     }
 
 

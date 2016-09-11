@@ -12,11 +12,17 @@ use App\Events\FeedbackCompilationCompleteEvent;
 use App\Events\FeedbackCompilationFailureEvent;
 use App\Exam;
 use App\Jobs\Job;
+use App\Repositories\Feedback\IFeedbackBuilder;
 use App\Student;
+
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
+use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\Auth;
+
 
 /**
  * Job which takes care of recompiling student feedback for one student
@@ -25,7 +31,7 @@ use Illuminate\Support\Facades\Auth;
  */
 class BuildFeedbackOneStudent extends Job implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, Queueable, SerializesModels;
 
     /** @var Exam */
     public $exam;
@@ -38,6 +44,8 @@ class BuildFeedbackOneStudent extends Job implements ShouldQueue
 
     /** @var  integer The user's id for rehydration */
     protected $userId;
+    protected $examId;
+    protected $studentId;
 
     /**
      * When the object is hydrated, make sure it logs the user back in.
@@ -46,7 +54,14 @@ class BuildFeedbackOneStudent extends Job implements ShouldQueue
      */
     public function __wakeup()
     {
-        Auth::loginUsingId($this->userId);
+//        if( ! Auth::check() ){
+//            Auth::loginUsingId($this->userId);
+//        }
+//
+//        //Instantiate the class which will actually do the work
+//        $this->feedbackBuilder = app()->make(IFeedbackBuilder::class);
+     //   $this->exam = Exam::find($this->examId);
+      //  $this->student = Student::find($this->studentId);
     }
 
     /**
@@ -56,28 +71,32 @@ class BuildFeedbackOneStudent extends Job implements ShouldQueue
      */
     public function __construct(Exam $exam, Student $student)
     {
+       //   Log::info('construct' . $exam->id . $student->id);
         //make sure the user is stored for re-login on hydration
         if ( empty($this->userId) )
         {
             $this->userId = Auth::user()->id;
         }
-        $this->exam = $exam;
-        $this->student = $student;
-
-        //Instantiate the class which will actually do the work
-        $this->feedbackBuilder = app()->make('App\Repositories\Feedback\IFeedbackBuilder');
+        $this->examId = $exam->id;
+        $this->studentId = $student->id;
     }
 
     /**
      * Execute the build feedback job. Once done, fires a FeedbackCompilationCompleteEvent
+     *
      */
     public function handle()
     {
+
+        //Instantiate the class which will actually do the work
+        $this->feedbackBuilder = app()->make(IFeedbackBuilder::class);
+        Log::info('handling build feedback one student');
+
         /* Loading the exam and student model should be handled automatically, but it was having
         problems (perhaps related to the wake up and BaseModel issues).
         So doing it explicitly for now (and on separate line to help with debugging. */
-        $exam = Exam::findOrFail($this->exam->id);
-        $student = Student::findOrFail($this->student->id);
+        $exam = Exam::findOrFail($this->examId);
+        $student = Student::findOrFail($this->studentId);
 
         //this solves error in feedback compilation caused by
         //inconsistent argument types
@@ -86,7 +105,7 @@ class BuildFeedbackOneStudent extends Job implements ShouldQueue
         if ( ! empty($feedback) )
         {
             //once done, fire the notification that ready for distribution
-            event(new FeedbackCompilationCompleteEvent($exam));
+            event(new FeedbackCompilationCompleteEvent($exam, $student));
         } else
         {
             //Error handling in case fails

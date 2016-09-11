@@ -27173,7 +27173,6 @@ new Vue({
         'student-select-event': function studentSelectEvent(obj) {
             window.console.log('gradeVue', 'caught student-select-event', obj);
             this.showQuestionPanel();
-            this.$broadcast('start-timer-request');
             this.requestTimerStart();
             this.$broadcast('student-select-event', obj);
         },
@@ -27245,8 +27244,9 @@ new Vue({
         'timer-start-event': function timerStartEvent() {
             window.console.log('gradeVue', 'caught timer-start-event');
             this.saveTime();
-            // this.$broadcast('timer-start-event');
+            this.$broadcast('timer-start-event');
         },
+
         /**
          * Handles notification that the timer has stopped
          */

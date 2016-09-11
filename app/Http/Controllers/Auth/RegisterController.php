@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\NewUserSignedUpEvent;
 use App\User;
 use Validator;
 use App\Http\Controllers\Controller;
@@ -27,16 +28,18 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+//    protected $redirectTo = '/home';
+    protected $redirectTo = '/exam';
 
     /**
      * Create a new controller instance.
      *
-     * @return void
      */
     public function __construct()
     {
+
         $this->middleware('guest');
+        $this->middleware('restrictRegistration');
     }
 
     /**
@@ -47,11 +50,20 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        return Validator::make($data, [
+
+        $rules = [
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|min:6|confirmed',
-        ]);
+            'password' => 'required|confirmed|min:6',
+        ];
+
+        $messages = [
+            'email.required' => 'Your email is required',
+            'email.email' => 'Please enter a valid email address',
+        ];
+
+        return Validator::make($data, $rules, $messages);
+
     }
 
     /**
@@ -62,10 +74,15 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-                                'name' => $data['name'],
-                                'email' => $data['email'],
-                                'password' => bcrypt($data['password']),
-                            ]);
+        $user = User::create([
+                                 'name' => $data['name'],
+                                 'email' => $data['email'],
+                                 'password' => bcrypt($data['password']),
+                             ]);
+        //Trigger new registration event
+        event( new NewUserSignedUpEvent($user) );
+
+        //return the user so RegistersUsers Trait can continue logging in
+        return $user;
     }
 }

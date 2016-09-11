@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Grade;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\Feedback\BuildFeedbackOneStudent;
 use App\Jobs\Grade\RecordScoresAndComments;
 
 use App\Http\Requests\GradingRequest;
@@ -20,6 +21,7 @@ use App\Repositories\Student\IStudentRepository;
 use App\Repositories\Time\IGradingTimeRepository;
 
 use App\Repositories\Utilities\IJsDataPreparation;
+use App\Student;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 
@@ -131,6 +133,20 @@ class ScoreController extends Controller
 
 //            $this->dispatch(new RecordScoresAndComments($exam, $request));
 
+//            if ( $exam->getReleased() )
+//            {
+//
+//                //Don't even get started if there's no student id
+//                if ( ! $request->has('student_id') )
+//                {
+//                    throw new \Exception('No student id set in grade request');
+//                }
+//
+//                $student = Student::findOrFail($request->input('student_id'));
+//                $job = new BuildFeedbackOneStudent($exam, $student);
+//                dispatch($job);
+//            }
+
             //Don't even get started if there's no student id
             if ( ! $request->has('student_id') )
             {
@@ -179,8 +195,9 @@ class ScoreController extends Controller
             // A released exam will have its compiled feedback updated  for this student
             if ( $exam->getReleased() )
             {
-                $reportController = app()->make('App\Http\Controllers\Report\ReportController');
-                $reportController->updateFeedbackForStudent($exam, $studentId);
+                $student = Student::findOrFail($studentId);
+                $job = (new BuildFeedbackOneStudent($exam, $student))->onQueue('default');
+                $this->dispatch($job);
             }
 
             $this->recordTime($exam, $request);
@@ -253,7 +270,7 @@ class ScoreController extends Controller
     public function recordTime(Exam $exam, GradingRequest $request)
     {
 
-    //    return redirect()->action('Api\TimeController@recordTime');
+        //    return redirect()->action('Api\TimeController@recordTime');
         //->with(['exam' => $exam, 'request' => $request]);
 
 

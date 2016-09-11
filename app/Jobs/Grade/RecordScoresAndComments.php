@@ -3,7 +3,14 @@
 namespace App\Jobs\Grade;
 
 use App\Exam;
+use App\Student;
+
+use App\Events\Ajax\PleaseSendAjaxFail;
+use App\Events\Ajax\PleaseSendAjaxSuccess;
+
 use App\Http\Requests\GradingRequest;
+use App\Jobs\Feedback\BuildFeedbackOneStudent;
+
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
 use App\Repositories\Exam\IExamRepository;
@@ -14,7 +21,11 @@ use App\Repositories\Score\IQuestionScoreRepository;
 use App\Repositories\Student\IStudentRepository;
 use App\Repositories\Time\IGradingTimeRepository;
 use App\Repositories\Utilities\IJsDataPreparation;
+
+
+use Exception;
 use Illuminate\Bus\Queueable;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -22,10 +33,18 @@ use Illuminate\Support\Facades\Auth;
 
 class RecordScoresAndComments implements ShouldQueue
 {
-    use InteractsWithQueue, Queueable, SerializesModels;
+    use InteractsWithQueue, Queueable, SerializesModels, DispatchesJobs;
 
     /** @var  integer The user's id (for logging again upon hydration) */
     protected $userId;
+    protected $exam;
+    protected $request;
+    protected $questionAssignmentId;
+    protected $elementId;
+    protected $studentId;
+    protected $commentText;
+    protected $score;
+    protected $examId;
     /**
      * @var IExamRepository
      */
@@ -75,7 +94,11 @@ class RecordScoresAndComments implements ShouldQueue
      */
     public function __wakeup()
     {
-        Auth::loginUsingId($this->userId);
+        if ( ! Auth::check() )
+        {
+            Auth::loginUsingId($this->userId);
+        }
+
     }
 
 
@@ -85,10 +108,14 @@ class RecordScoresAndComments implements ShouldQueue
      * @param Exam $exam
      * @param GradingRequest $request
      */
-    public function __construct(Exam $exam, GradingRequest $request)
+    public function __construct(Exam $exam, $request)
     {
-        $this->exam = $exam;
-        $this->request = $request;
+        $this->examId = $exam->id;
+        $this->elementId = $request->has('element_id') ? $request->input('element_id') : null;
+        $this->studentId = $request->has('student_id') ? $request->input('student_id') : null;
+        $this->questionAssignmentId = $request->has('question_assignment_id') ? $request->input('question_assignment_id') : null;
+        $this->commentText = $request->has('comment_text') ? $request->input('comment_text') : null;
+        $this->score = $request->has('score') ? $request->input('score') : null;
 
         //make sure the user is stored for re-login on hydration
         if ( empty($this->userId) )
@@ -100,107 +127,112 @@ class RecordScoresAndComments implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param IExamRepository $IExamRepository
-     * @param IElementRepository $elementRepository
-     * @param IElementAssignmentRepository $elementAssignmentRepository
-     * @param IElementScoreRepository $elementScoreRepository
-     * @param IQuestionAssignmentRepository $questionAssignmentRepository
-     * @param IQuestionScoreRepository $questionScoreRepository
-     * @param IGradingTimeRepository $gradingTimeRepository
-     * @param IStudentRepository $studentRepository
-     * @param IGradeAssignmentRepository $gradeAssignmentRepository
-     * @param IJsDataPreparation $jsonPrep
-     * @throws \Exception
+     * @throws Exception
      */
-    public function handle(IExamRepository $IExamRepository,
-                           IElementRepository $elementRepository,
-                           IElementAssignmentRepository $elementAssignmentRepository,
-                           IElementScoreRepository $elementScoreRepository,
-                           IQuestionAssignmentRepository $questionAssignmentRepository,
-                           IQuestionScoreRepository $questionScoreRepository,
-                           IGradingTimeRepository $gradingTimeRepository,
-                           IStudentRepository $studentRepository,
-                           IGradeAssignmentRepository $gradeAssignmentRepository,
-                           IJsDataPreparation $jsonPrep)
+    public function handle()
     {
-        $this->IExamRepository = $IExamRepository;
-        $this->elementRepository = $elementRepository;
-        $this->elementAssignmentRepository = $elementAssignmentRepository;
-        $this->elementScoreRepository = $elementScoreRepository;
-        $this->questionAssignmentRepository = $questionAssignmentRepository;
-        $this->questionScoreRepository = $questionScoreRepository;
-        $this->gradingTimeRepository = $gradingTimeRepository;
-        $this->studentRepository = $studentRepository;
-        $this->gradeAssignmentRepository = $gradeAssignmentRepository;
-        $this->jsonPrep = $jsonPrep;
+
+        $this->exam = Exam::find($this->examId);
 
         //Check that user owns the exam
-        $this->authorize('access-object', $this->exam);
+//        $this->authorize('access-object', $this->exam);
         try
         {
 
-            $this->recordTime($this->exam, $this->request);
-            //
-        } catch ( \Exception $e )
+            //Don't even get started if there's no student id
+            if ( empty($this->studentId) )
+            {
+                throw new Exception('No student id set in grade request');
+            }
+
+            //If the request is to record a question score, it follows this path
+            if ( ! empty($this->questionAssignmentId) && ! empty($this->score) )
+            {
+                $this->recordQuestion();
+                event(new PleaseSendAjaxSuccess(self::class));
+            }
+
+            //If it is to record an element score, it follows this path
+            if ( ! empty($this->elementId) )
+            {
+                $this->recordElement();
+                event(new PleaseSendAjaxSuccess(self::class));
+            }
+
+            // Check if the exam has been released.
+            // A released exam will need to have its compiled feedback updated for this student
+            if ( $this->exam->getReleased() )
+            {
+                $student = Student::findOrFail($this->studentId);
+                $job = new BuildFeedbackOneStudent($this->exam, $student);
+                $this->dispatch($job);
+            }
+
+
+
+//                $this->dao = app()->make(IElementScoreRepository::class);
+//                //item is an element assignment. this is its id
+//                $itemId = $this->elementAssignmentRepository
+//                    ->load_element_assignment_by_element($this->exam->getId(), $this->elementId)
+//                    ->getId();
+//
+//                // if an element has comment text with it, record it.
+//                if ( ! empty($this->commentText) )
+//                {
+//                    $this->dao->recordCommentText($itemId, $this->studentId, $this->commentText);
+//                }
+
+
+            // record score fot the question or element
+//            if ( ! empty($this->score) )
+//            {
+//                // if the score returns as 'NaN' that item's score has been removed, so delete from DB
+//                $score = $this->score;
+//                if ( $score == NAN )
+//                {
+//                    //todo Decide whether to re-enable this (it is handled on a separate route)
+//                    //$this->dao->deleteScore
+//                } else
+//                {
+//                    $this->dao->record($itemId, $this->studentId, $score);
+//                }
+//            }
+//
+//
+        } catch ( Exception $e )
         {
+            event(new PleaseSendAjaxFail(self::class));
+
             throw $e;
         }
     }
 
-
-    public function recordTime(Exam $exam, GradingRequest $request)
+    public function recordElement()
     {
-        //Don't even get started if there's no student id
-        if ( ! $request->has('student_id') )
+        $this->elementAssignmentRepository = app()->make(IElementAssignmentRepository::class);
+        $this->dao = app()->make(IElementScoreRepository::class);
+
+        //item is an element assignment. this is its id
+        $itemId = $this->elementAssignmentRepository
+            ->load_element_assignment_by_element($this->exam->getId(), $this->elementId)
+            ->getId();
+        // record score fot the question or element
+        if ( ! empty($this->score) )
         {
-            throw new \Exception('No student id set in grade request');
+            $this->dao->record($itemId, $this->studentId, $this->score);
         }
 
-        $studentId = $request->input('student_id');
-
-        $itemId = null;
-
-        //If the request is to record a question score, it follows this path
-        if ( $request->has('question_assignment_id') )
+        // if an element has comment text with it, record it.
+        if ( ! empty($this->commentText) )
         {
-            $this->dao = app()->make('App\Repositories\Score\IQuestionScoreRepository');
-            $itemId = $request->input('question_assignment_id');
-        }
-        //If it is to record an element score, it follows this path
-        if ( $request->has('element_id') )
-        {
-            $this->dao = app()->make('App\Repositories\Score\IElementScoreRepository');
-            $itemId = $this->elementAssignmentDao->load_element_assignment_by_element($exam->getId(),
-                                                                                      $request->input('element_id'))->getId();
-
-            // if a comment has text with it, record that as well.
-            if ( $request->exists('comment_text') )
-            {
-                $this->dao->recordCommentText($itemId, $studentId, $request->input('comment_text'));
-            }
+            $this->dao->recordCommentText($itemId, $this->studentId, $this->commentText);
         }
 
-        // record score fot the question or comment
-        if ( $request->exists('score') )
-        {
-            // if the score returns as 'NaN' that item's score has been removed, so delete from DB
-            $score = $request->input('score');
-            if ( $score == NAN )
-            {
-                //$this->dao->deleteScore
-            } else
-            {
-                $this->dao->record($itemId, $studentId, $score);
-            }
-        }
+    }
 
-        // Check if the exam has been released.
-        // A released exam will have its compiled feedback updated  for this student
-        if ( $exam->getReleased() )
-        {
-            $reportController = app()->make('App\Http\Controllers\Report\ReportController');
-            $reportController->updateFeedbackForStudent($exam, $studentId);
-        }
-
+    public function recordQuestion()
+    {
+        $this->dao = app()->make(IQuestionScoreRepository::class);
+        $this->dao->record($this->questionAssignmentId, $this->studentId, $this->score);
     }
 }
