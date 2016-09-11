@@ -42,7 +42,7 @@ public static $resetFormLocator = ['id' => 'password-reset-form'];
     /* --------------------------------- Utilities ------------------- */
     public static function navigateToPage($I){
         if(Auth::check()){
-            $I->amOnPage('/auth/logout');
+            $I->amOnPage('logout');
         }
 
         $I->amOnPage(self::$URL);
