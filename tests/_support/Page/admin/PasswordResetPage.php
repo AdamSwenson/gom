@@ -19,6 +19,7 @@ class PasswordResetPage
     public static $pageTitleText = 'Reset Password | gradeomatic';
     public static $pageHeadingText = 'Reset Password';
 
+public static $resetFormLocator = ['id' => 'password-reset-form'];
 
     //fields
     public static $emailFieldLocator = ['id' => 'email'];
