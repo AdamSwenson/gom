@@ -60,7 +60,7 @@
                         <div class="form-group">
                             <div class="col-md-8 col-md-offset-4">
                                 <button type="submit"
-                                        id="submit"
+                                        id="login"
                                         class="btn btn-primary">
                                     Login
                                 </button>

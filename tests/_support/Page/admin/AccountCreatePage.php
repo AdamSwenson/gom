@@ -15,17 +15,17 @@ class AccountCreatePage
     #common
     public static $mainBodyLocator = ['id' => 'registrationPage'];
     public static $pageTitleText = 'Sign Up | gradeomatic';
-    public static $pageHeadingText = 'Create Account';
+    public static $pageHeadingText = 'Register';
 
     public static $formLocator = ['id' => 'registrationForm'];
 
     #fields
     public static $userNameLocator = ['id' => 'name'];
     public static $emailLocator = ['id' => 'email'];
-    public static $passwordLocator = ['id' => 'pwd'];
-    public static $confirmPasswordLocator = ['id' => 'pwd_conf'];
-    public static $submitButtonLocator = ['id' => 'submit'];
-    public static $submitButtonText = 'Create Account';
+    public static $passwordLocator = ['id' => 'password'];
+    public static $confirmPasswordLocator = ['id' => 'password-confirm'];
+    public static $submitButtonLocator = ['id' => 'login'];
+    public static $submitButtonText = 'Sign Up';
 
     //error messages
     public static $mismatchMessage = "The password confirmation does not match.";

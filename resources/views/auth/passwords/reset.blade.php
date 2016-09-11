@@ -10,7 +10,8 @@
                 <div class="panel-heading">Reset Password</div>
 
                 <div class="panel-body">
-                    <form class="form-horizontal"
+                    <form id="password-reset-form"
+                          class="form-horizontal"
                           role="form"
                           method="POST"
                           action="{{ url('/password/reset') }}">
@@ -23,7 +24,11 @@
                             <label for="email" class="col-md-4 control-label">E-Mail Address</label>
 
                             <div class="col-md-6">
-                                <input id="email" type="email" class="form-control" name="email" value="{{ $email or old('email') }}" required autofocus>
+                                <input id="email"
+                                       type="email"
+                                       class="form-control"
+                                       name="email"
+                                       value="{{ $email or old('email') }}" required autofocus>
 
                                 @if ($errors->has('email'))
                                     <span class="help-block">

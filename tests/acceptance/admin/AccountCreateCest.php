@@ -90,15 +90,22 @@ class AccountCreateCest
     {
         $I->amGoingTo("fill in fields but omit the email field");
 
-        $I->fillField(AccountCreatePage::$userNameLocator, $this->faker->username);
         $password1 = $this->faker->password;
-        $I->fillField(AccountCreatePage::$passwordLocator, $password1);
-        $I->fillField(AccountCreatePage::$confirmPasswordLocator, $password1);
-
-        $I->click(AccountCreatePage::$submitButtonLocator);
+        $I->amGoingTo("submit the form (bypassing the html validation)");
+        $I->submitForm(AccountCreatePage::$formLocator, [
+            'name'                  => $this->faker->username,
+            'password'              => $password1,
+            'password_confirmation' => $password1,
+        ]);
+//        $I->fillField(AccountCreatePage::$userNameLocator, $this->faker->username);
+//        $password1 = $this->faker->password;
+//        $I->fillField(AccountCreatePage::$passwordLocator, $password1);
+//        $I->fillField(AccountCreatePage::$confirmPasswordLocator, $password1);
+//
+//        $I->click(AccountCreatePage::$submitButtonLocator);
 
         $I->expect("to see the error message for email missing");
-        $I->wait(3);
+        $I->wait(1);
         $I->see(AccountCreatePage::$emailMissingMessage);
     }
 
@@ -121,7 +128,7 @@ class AccountCreateCest
         ]);
 
         $I->expect("to see the error message for email missing");
-        $I->wait(3);
+        $I->wait(1);
         $I->see(AccountCreatePage::$emailInvalidMessage);
     }
 
@@ -134,14 +141,22 @@ class AccountCreateCest
     {
         $I->amGoingTo("submit the form leaving the username field blank. ");
 
-        $I->fillField(AccountCreatePage::$emailLocator, $this->validEmail);
         $password1 = $this->faker->password;
-        $I->fillField(AccountCreatePage::$passwordLocator, $password1);
-        $I->fillField(AccountCreatePage::$confirmPasswordLocator, $password1);
+        $I->amGoingTo("submit the form (bypassing the html validation)");
+        $I->submitForm(AccountCreatePage::$formLocator, [
+            'email' =>  $this->validEmail,
+            'password'              => $password1,
+            'password_confirmation' => $password1,
+        ]);
 
-        $I->amGoingTo("submit the form");
-        $I->click(AccountCreatePage::$submitButtonLocator);
-        $I->wait(3);
+//        $I->fillField(AccountCreatePage::$emailLocator, $this->validEmail);
+//        $password1 = $this->faker->password;
+//        $I->fillField(AccountCreatePage::$passwordLocator, $password1);
+//        $I->fillField(AccountCreatePage::$confirmPasswordLocator, $password1);
+//
+//        $I->amGoingTo("submit the form");
+//        $I->click(AccountCreatePage::$submitButtonLocator);
+        $I->wait(1);
 
         $I->expect("to see the error message for username");
         $I->see(AccountCreatePage::$usernameMessage);
@@ -159,12 +174,20 @@ class AccountCreateCest
         $I->fillField(AccountCreatePage::$emailLocator, $this->validEmail);
         $password1 = $this->faker->password;
         $password2 = $this->faker->password;
-        $I->fillField(AccountCreatePage::$passwordLocator, $password1);
-        $I->fillField(AccountCreatePage::$confirmPasswordLocator, $password2);
 
-        $I->amGoingTo("submit the form");
-        $I->click(AccountCreatePage::$submitButtonLocator);
-        $I->wait(3);
+        $I->submitForm(AccountCreatePage::$formLocator, [
+            'name'                  => $this->faker->username,
+            'email' =>  $this->validEmail,
+            'password'              => $password1,
+            'password_confirmation' => $password2,
+        ]);
+
+//        $I->fillField(AccountCreatePage::$passwordLocator, $password1);
+//        $I->fillField(AccountCreatePage::$confirmPasswordLocator, $password2);
+//
+//        $I->amGoingTo("submit the form");
+//        $I->click(AccountCreatePage::$submitButtonLocator);
+        $I->wait(1);
 
         $I->expectTo("see the error message for bad confirmation ");
         $I->see("The password confirmation does not match.");
@@ -179,15 +202,23 @@ class AccountCreateCest
     public function submitInvalidPasswordEmpty(AcceptanceTester $I)
     {
         $I->amGoingTo("fill in fields");
-        $I->fillField(AccountCreatePage::$userNameLocator, $this->faker->username);
-        $I->fillField(AccountCreatePage::$emailLocator, $this->validEmail);
         $password1 = $this->faker->password;
 
-        $I->fillField(AccountCreatePage::$confirmPasswordLocator, $password1);
+        $I->submitForm(AccountCreatePage::$formLocator, [
+            'name'                  => $this->faker->username,
+            'email' =>  $this->validEmail,
+            'password_confirmation' => $password1,
+        ]);
 
-        $I->amGoingTo("submit the form");
-        $I->click(AccountCreatePage::$submitButtonLocator);
-        $I->wait(3);
+//        $I->fillField(AccountCreatePage::$userNameLocator, $this->faker->username);
+//        $I->fillField(AccountCreatePage::$emailLocator, $this->validEmail);
+//        $password1 = $this->faker->password;
+//
+//        $I->fillField(AccountCreatePage::$confirmPasswordLocator, $password1);
+//
+//        $I->amGoingTo("submit the form");
+//        $I->click(AccountCreatePage::$submitButtonLocator);
+        $I->wait(1);
 
         $I->expectTo("see the error message for missing credentials");
         $I->see(AccountCreatePage::$passwordMissingMessage);
@@ -203,14 +234,21 @@ class AccountCreateCest
     public function submitInvalidPasswordConfirmEmpty(AcceptanceTester $I)
     {
         $I->amGoingTo("fill in fields and leave the password confirmation field empty");
-        $I->fillField(AccountCreatePage::$userNameLocator, $this->faker->username);
-        $I->fillField(AccountCreatePage::$emailLocator, $this->validEmail);
+//        $I->fillField(AccountCreatePage::$userNameLocator, $this->faker->username);
+//        $I->fillField(AccountCreatePage::$emailLocator, $this->validEmail);
         $password1 = $this->faker->password;
-        $I->fillField(AccountCreatePage::$passwordLocator, $password1);
 
-        $I->amGoingTo("submit the form");
-        $I->click(AccountCreatePage::$submitButtonLocator);
-        $I->wait(3);
+        $I->submitForm(AccountCreatePage::$formLocator, [
+            'name'                  => $this->faker->username,
+            'email' =>  $this->validEmail,
+            'password'              => $password1
+        ]);
+//
+//        $I->fillField(AccountCreatePage::$passwordLocator, $password1);
+//
+//        $I->amGoingTo("submit the form");
+//        $I->click(AccountCreatePage::$submitButtonLocator);
+        $I->wait(1);
 
         $I->expectTo("see the error message for bad credentials");
         $I->see(AccountCreatePage::$mismatchMessage);
