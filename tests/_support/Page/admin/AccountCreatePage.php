@@ -24,7 +24,7 @@ class AccountCreatePage
     public static $emailLocator = ['id' => 'email'];
     public static $passwordLocator = ['id' => 'password'];
     public static $confirmPasswordLocator = ['id' => 'password-confirm'];
-    public static $submitButtonLocator = ['id' => 'login'];
+    public static $submitButtonLocator = ['id' => 'submit'];
     public static $submitButtonText = 'Sign Up';
 
     //error messages
