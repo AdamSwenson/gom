@@ -9,12 +9,15 @@
 namespace App\Jobs\Feedback;
 
 use App\Exam;
+use App\Mail\FeedbackReadyNotificationToStudent;
+use App\Mail\FeedbackRecompiledNotificationToStudent;
 use App\Repositories\Feedback\IAccessKeyRepository;
 use App\Repositories\Student\IStudentRepository;
 use App\Repositories\Utilities\IMailSender;
 use App\Student;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Mockery\CountValidator\Exception;
 
 /**
@@ -26,13 +29,13 @@ use Mockery\CountValidator\Exception;
 class NotifyStudentsHelper implements INotifyStudentsHelper
 {
     /** The text of the email sent the first time a student is notified */
-    const INITIAL_EMAIL_VIEW = 'emails.studentNotification.initial';
+  //  const INITIAL_EMAIL_VIEW = 'emails.studentNotification.initial';
 
     /** The text of the email on any additional notification  */
-    const SECOND_EMAIL_VIEW = 'emails.studentNotification.additional';
+//    const SECOND_EMAIL_VIEW = 'emails.studentNotification.additional';
 
     /** The route to which the link in the email will direct  */
-    const FEEDBACK_PAGE_LINK = 'https://www.gradeomatic.net/feedback';
+//    const FEEDBACK_PAGE_LINK = 'https://www.gradeomatic.net/feedback';
 
     /** @var  \App\Repositories\Feedback\IAccessKeyRepository */
     protected $accessKeyRepository;
@@ -67,19 +70,29 @@ class NotifyStudentsHelper implements INotifyStudentsHelper
             $accessKey = $this->loadAccessKey($exam, $student);
             if ( ! empty($accessKey) )
             {
-                $data = [
-                    'studentName'  => $student->getFullName(),
-                    'examName'     => $exam->getName(),
-                    'feedbackLink' => $this->buildLink($accessKey),
-                    'siteLink'     => self::FEEDBACK_PAGE_LINK . '/login',
-                    'accessKey'    => $accessKey,
-                ];
+//                $data = [
+//                    'studentName'  => $student->getFullName(),
+//                    'examName'     => $exam->getName(),
+//                    'feedbackLink' => $this->buildLink($accessKey),
+//                    'siteLink'     => self::FEEDBACK_PAGE_LINK . '/login',
+//                    'accessKey'    => $accessKey,
+//                ];
 
                 //Pick which email to send
-                $view = $initial ? self::INITIAL_EMAIL_VIEW : self::SECOND_EMAIL_VIEW;
+//                $view = $initial ? self::INITIAL_EMAIL_VIEW : self::SECOND_EMAIL_VIEW;
+//
+//                //Handle the send
+//                $this->send($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam));
 
-                //Handle the send
-                $this->send($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam));
+
+                if($initial){
+                    Mail::to($student->email)
+                        ->queue(new FeedbackReadyNotificationToStudent($student, $exam, $accessKey));
+
+                }else{
+                 Mail::to($student->email)
+                        ->queue(new FeedbackRecompiledNotificationToStudent($student, $exam, $accessKey));
+                }
 
                 return true;
             }
@@ -125,26 +138,26 @@ class NotifyStudentsHelper implements INotifyStudentsHelper
         $this->sendEmailToEveryone($exam, $initial);
     }
 
-
-    /**
-     * Constructs the link that the student will click to access feedback
-     * @param $accessKey
-     * @return string
-     */
-    protected function buildLink($accessKey)
-    {
-        return self::FEEDBACK_PAGE_LINK . '?accessKey=' . $accessKey;
-    }
-
-    /**
-     * Prepares the subject line for the notification email
-     * @param $exam
-     * @return string
-     */
-    protected function buildSubject($exam)
-    {
-        return "Your feedback for " . $exam->getName();
-    }
+//
+//    /**
+//     * Constructs the link that the student will click to access feedback
+//     * @param $accessKey
+//     * @return string
+//     */
+//    protected function buildLink($accessKey)
+//    {
+//        return self::FEEDBACK_PAGE_LINK . '?accessKey=' . $accessKey;
+//    }
+//
+//    /**
+//     * Prepares the subject line for the notification email
+//     * @param $exam
+//     * @return string
+//     */
+//    protected function buildSubject($exam)
+//    {
+//        return "Your feedback for " . $exam->getName();
+//    }
 
     /**
      * Checks that there is an email address for the student and that
@@ -169,24 +182,26 @@ class NotifyStudentsHelper implements INotifyStudentsHelper
 
         return false;
     }
-
-    /**
-     * Actually sends the email to the student.
-     *
-     * @param string $to_address Recipient's email address
-     * @param string $to_name Recipient's name
-     * @param array $data Data to be passed to the view
-     * @param string $emailView Which email text to use
-     * @param string $subject Subject line of the email
-     */
-    protected function send($to_address, $to_name, $data, $emailView, $subject)
-    {
-        $this->mailer->send($to_address, $to_name, $data, $emailView, $subject);
-//        \Mail::send($emailView, $data, function ($message) use ($to_address, $to_name, $subject)
-//        {
-//            $message->to($to_address, $to_name)->subject($subject);
-//        });
-    }
+//
+//    /**
+//     * Actually sends the email to the student.
+//     *
+//     * @param string $to_address Recipient's email address
+//     * @param string $to_name Recipient's name
+//     * @param array $data Data to be passed to the view
+//     * @param string $emailView Which email text to use
+//     * @param string $subject Subject line of the email
+//     */
+//    protected function send($to_address, $to_name, $data, $emailView, $subject)
+//    {
+//
+//
+//        $this->mailer->send($to_address, $to_name, $data, $emailView, $subject);
+////        \Mail::send($emailView, $data, function ($message) use ($to_address, $to_name, $subject)
+////        {
+////            $message->to($to_address, $to_name)->subject($subject);
+////        });
+//    }
 
     /**
      * NOT YET WORKING

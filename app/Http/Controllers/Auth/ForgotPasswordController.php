@@ -36,7 +36,6 @@ class ForgotPasswordController extends Controller
         $this->middleware('guest');
     }
 
-
     /**
      * Validate the request of sending reset link.
      * This replaces the validation method in the laravel package trait.
@@ -45,7 +44,7 @@ class ForgotPasswordController extends Controller
      * to the trait which contains the package logic. That way, this will override it
      * @param Request $request
      */
-    protected function validateSendResetLinkEmail(Request $request)
+    public function validateEmail(Request $request)
     {
         $this->validate($request, ['email' => 'required|email'], ['email' => "We can't find a user with that e-mail address."]);
     }

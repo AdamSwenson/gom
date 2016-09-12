@@ -36,6 +36,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     use Authenticatable, Authorizable, CanResetPassword, Notifiable;
 
+
     /**
      * The database table used by the model.
      *
@@ -143,5 +144,17 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return $this->id == $related->user_id;
     }
 
+
+    /* -------------------------- Notifications --------------------- */
+
+    /**
+     * Route notifications for the Slack channel.
+     *
+     * @return string
+     */
+    public function routeNotificationForSlack()
+    {
+        return env('SLACK_HOOK_NEW_USER', '');
+    }
 
 }

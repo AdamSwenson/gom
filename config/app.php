@@ -4,6 +4,9 @@
 
 return [
     'env' => env('APP_ENV', 'production'),
+
+    'name' => 'Gradeomatic',
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode

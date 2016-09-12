@@ -137,10 +137,16 @@ class ExamController extends Controller
         try
         {
             $exam = $this->examDao->save_new_exam($request->input('examYear'), $request->input('examTerm'), $request->input('name'));
-            $this->dispatch(new UpdateAllStoredExamStats());
-            Flash::success(self::CREATE_SUCCESS . $exam->getName());
 
-            return redirect()->route('editAllQuestions', $exam);
+            if($exam){
+                $this->dispatch(new UpdateAllStoredExamStats());
+
+                Flash::success(self::CREATE_SUCCESS . $exam->getName());
+
+                return redirect()->route('editAllQuestions', $exam);
+            }
+            throw new \Exception('could not create exam');
+
         } catch ( \Exception $e )
         {
             Session::error(self::CREATE_FAIL);

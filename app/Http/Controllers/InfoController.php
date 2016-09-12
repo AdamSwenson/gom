@@ -30,7 +30,9 @@ class InfoController extends Controller
      * Directs to the page which gives info about the company
      */
     public function showAboutCompany()
-    {}
+    {
+        abor(404);
+    }
 
     /**
      * Show contact information page
@@ -44,7 +46,7 @@ class InfoController extends Controller
 
     public function showGettingStarted()
     {
-        abort(404);
+        return view('help.instructions');
     }
 
 

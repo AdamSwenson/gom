@@ -8,6 +8,7 @@
 
 namespace App\Jobs\NewUser;
 
+use App\Mail\NewUserWelcome;
 use App\User;
 use App\Jobs\Job;
 use Illuminate\Contracts\Mail\Mailer;
@@ -26,11 +27,7 @@ class SendWelcomeEmail extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
-    /** Email template to use for welcome email */
-    const EMAIL_TEMPLATE = 'emails.welcome';
 
-    /** Subject of the email sent to the new user */
-    const SUBJECT_LINE = 'Welcome to the Gradeomatic!';
 
     /** @var User  */
     protected $user;
@@ -52,12 +49,12 @@ class SendWelcomeEmail extends Job implements ShouldQueue
     public function handle()
     {
         $to_address = $this->user->email;
-        $to_name = $this->user->name;
-        $user = $this->user;
+        Mail::to($to_address)
+            ->queue(new NewUserWelcome($this->user));
 
-        Mail::send(self::EMAIL_TEMPLATE, ['user' => $user], function ($message) use($to_address, $to_name)
-        {
-            $message->to($to_address, $to_name)->subject(self::SUBJECT_LINE);
-        });
+//        Mail::send(self::EMAIL_TEMPLATE, ['user' => $user], function ($message) use($to_address, $to_name)
+//        {
+//            $message->to($to_address, $to_name)->subject(self::SUBJECT_LINE);
+//        });
     }
 }
