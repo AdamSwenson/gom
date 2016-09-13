@@ -8,5 +8,5 @@
 @extends('emails.studentNotification.base')
 
 @section('notificationText')
-    Your instructor has graded your {{ $examName }}. Your feedback is ready to be viewed.
+    Your instructor has graded your {{ $examName }}. You may view your feedback by clicking the button below.
 @endsection
