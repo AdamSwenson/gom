@@ -51,8 +51,8 @@ module.exports = function ( config ) {
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
         //reporters: ['progress'],
-    reporters : ['dots', 'junit'],
-    junitReporter : {
+    reporters : ['dots', 'jenkins'],
+    jenkinsReporter : {
         outputFile: 'build/testsjs/karma-test-results.xml'
     },
         // // the default configuration
