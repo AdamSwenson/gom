@@ -7,6 +7,7 @@ Homestead.yaml
 vendor
 
 vendor/
+!resources/views/vendor
 
 vendor/.DS_Store
 build
