@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\UserLoginEvent;
 use App\Jobs\UserActivityLogging\AddFlagForDatabaseBackup;
 use App\Jobs\UserActivityLogging\RecordUserLogin;
+use App\Notifications\UserLoginNotification;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -45,6 +46,8 @@ class UserLoginListener
 
         if ( ! empty($this->user) )
         {
+          //  $this->user->notify(new UserLoginNotification($this->user));
+
             //This will log the user's log in
             $this->dispatch(new RecordUserLogin($this->user));
 
