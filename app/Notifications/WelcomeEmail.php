@@ -72,14 +72,15 @@ class WelcomeEmail extends Notification
     {
         return [
             'user_id' => $this->user->id,
-            'name' => $this->user->name
+            'name'    => $this->user->name,
         ];
     }
 
     public function toSlack($notifiable)
     {
+        $prefix = env("APP_ENV") != "production" ? '[DEV] ' : '';
         return (new SlackMessage)
-            ->content('New user signed up. ' . $this->user->name);
+            ->content($prefix . 'New user signed up. ' . $this->user->name);
     }
 
 
