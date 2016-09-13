@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\NewUserSignedUpEvent;
 use App\Jobs\NewUser\NotifyTeamOfNewSignup;
 use App\Jobs\NewUser\SendWelcomeEmail;
+use App\Notifications\WelcomeEmail;
 use App\User;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\InteractsWithQueue;
@@ -49,8 +50,9 @@ class NewUserListener
         $this->user = $event->user;
 
         //Send welcome email
-        $job = ( new SendWelcomeEmail($this->user) )->onQueue(self::QUEUE_TO_USE);
-        $this->dispatch($job);
+        $this->user->notify(new WelcomeEmail($this->user));
+//        $job = ( new SendWelcomeEmail($this->user) )->onQueue(self::QUEUE_TO_USE);
+//        $this->dispatch($job);
 
         //Notify team of new sign up
         $job = (new NotifyTeamOfNewSignup($this->user))->onQueue(self::QUEUE_TO_USE);

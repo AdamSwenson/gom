@@ -8,5 +8,5 @@
 @extends('emails.studentNotification.base')
 
 @section('notificationText')
-    <p>Your instructor has updated the feedback for {{ $examName }}. Your feedback may have changed. </p>
+    Your instructor has updated the feedback for {{ $examName }}. Your feedback may have changed. You may view your feedback by clicking the button below
 @endsection

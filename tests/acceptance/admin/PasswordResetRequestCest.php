@@ -22,6 +22,8 @@ class PasswordResetRequestCest
 
         $I->haveInDatabase('password_resets', ['email' => $this->email, 'token' => $this->token]);
 //        DB::insert("INSERT INTO password_resets (email, token) VALUES ('" . $this->email . "', '" . $this->token . "') ");
+
+        PasswordResetPage::navigateToResetPage($I, $this->token);
     }
 
     public function _after(AcceptanceTester $I)
@@ -47,22 +49,23 @@ class PasswordResetRequestCest
      * @param AcceptanceTester $I
      */
     public function assertResetPageIntact(AcceptanceTester $I){
-        PasswordResetPage::navigateToResetPage($I, $this->token);
+//        PasswordResetPage::navigateToResetPage($I, $this->token);
         PasswordResetPage::assertResetPageIntact($I);
     }
 
     /**
+     * @group aaaa
      * @group admin
      * @group reset_password
      * @group reset_password_reset
      * @param AcceptanceTester $I
      */
     public function submitValidReset(AcceptanceTester $I){
-        PasswordResetPage::navigateToResetPage($I, $this->token);
+//        PasswordResetPage::navigateToResetPage($I, $this->token);
 
         $I->amGoingTo("Fill in a new password and submit");
         $newPass = Factory::create()->password();
-        $I->seeElement(PasswordResetPage::$resetFormLocator);
+        //$I->seeElement(PasswordResetPage::$resetFormLocator);
         $I->fillField(PasswordResetPage::$emailFieldLocator, $this->email);
         $I->fillField(PasswordResetPage::$passwordFieldLocator, $newPass);
         $I->fillField(PasswordResetPage::$passwordConfirmFieldLocator, $newPass);

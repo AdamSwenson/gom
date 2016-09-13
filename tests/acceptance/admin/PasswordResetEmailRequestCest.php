@@ -11,7 +11,8 @@ class PasswordResetEmailRequestCest
 
     public function _before(AcceptanceTester $I)
     {
-
+        $I->log_out();
+        PasswordResetPage::navigateToEmailRequestPage($I);
     }
 
     public function _after(AcceptanceTester $I)
@@ -27,7 +28,7 @@ class PasswordResetEmailRequestCest
      */
     public function assertEmailPageIntact(AcceptanceTester $I)
     {
-        PasswordResetPage::navigateToEmailRequestPage($I);
+//        PasswordResetPage::navigateToEmailRequestPage($I);
         PasswordResetPage::assertEmailPageIntact($I);
     }
 
@@ -39,7 +40,7 @@ class PasswordResetEmailRequestCest
      */
     public function submitRequestValidEmail(AcceptanceTester $I)
     {
-        PasswordResetPage::navigateToEmailRequestPage($I);
+//        PasswordResetPage::navigateToEmailRequestPage($I);
         $I->fillField(PasswordResetPage::$emailFieldLocator, "test2@gradeomatic.net");
         $I->click(PasswordResetPage::$submitButtonLocator);
 
@@ -57,7 +58,7 @@ class PasswordResetEmailRequestCest
      */
     public function submitRequestValidEmailNoExistingAccount(AcceptanceTester $I)
     {
-        PasswordResetPage::navigateToEmailRequestPage($I);
+//        PasswordResetPage::navigateToEmailRequestPage($I);
         $I->amGoingTo("enter a valid email address which does not match an existing account and submit the form");
         $I->fillField(PasswordResetPage::$emailFieldLocator, 'taco@taco.net');
         $I->click(PasswordResetPage::$submitButtonLocator);
@@ -74,7 +75,7 @@ class PasswordResetEmailRequestCest
      */
     public function submitRequestInvalidEmail(AcceptanceTester $I)
     {
-        PasswordResetPage::navigateToEmailRequestPage($I);
+//        PasswordResetPage::navigateToEmailRequestPage($I);
         $I->amGoingTo("enter an invalidly formatted email address and submit the form");
         $I->fillField(PasswordResetPage::$emailFieldLocator, 'taco@taco');
         $I->click(PasswordResetPage::$submitButtonLocator);

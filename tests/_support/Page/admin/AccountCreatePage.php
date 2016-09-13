@@ -55,11 +55,11 @@ class AccountCreatePage
         $I->log_out();
         $I->amOnPage(self::$URL);
         $I->waitForElementVisible(self::$mainBodyLocator);
-
-        $I->amGoingTo("Check that the page title and url are correct");
-        $I->seeInCurrentUrl(self::$URL);
-        $I->seeInTitle(self::$pageTitleText);
-        $I->see(self::$pageHeadingText);
+//
+//        $I->amGoingTo("Check that the page title and url are correct");
+//        $I->seeInCurrentUrl(self::$URL);
+//        $I->seeInTitle(self::$pageTitleText);
+//        $I->see(self::$pageHeadingText);
     }
 
 

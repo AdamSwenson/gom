@@ -10,10 +10,13 @@ namespace App\Jobs\Feedback;
 
 
 use App\Exam;
+use App\Mail\FeedbackReadyNotificationToStudent;
+use App\Mail\FeedbackRecompiledNotificationToStudent;
 use App\Repositories\Feedback\IAccessKeyRepository;
 use App\Repositories\Student\IStudentRepository;
 use App\Repositories\Utilities\IMailSender;
 use App\Student;
+use Illuminate\Support\Facades\Mail;
 
 class NotifyStudentsHelperTest extends \TestCase
 {
@@ -72,7 +75,7 @@ class NotifyStudentsHelperTest extends \TestCase
         $exam = factory(Exam::class)->create();
         $student = factory(Student::class)->create();
         $accessKey = $this->faker->sha1();
-        $view = NotifyStudentsHelper::INITIAL_EMAIL_VIEW;
+     //   $view = NotifyStudentsHelper::INITIAL_EMAIL_VIEW;
         $data =[
             'studentName' => $student->getFullName(),
             'examName' => $exam->getName(),
@@ -87,14 +90,18 @@ class NotifyStudentsHelperTest extends \TestCase
             ->with($exam->id, $student->id)
             ->andReturn($accessKey);
 
-        $mailer = $this->createMock(IMailSender::class);
-        $mailer->shouldReceive('send')
-            ->once()
-            ->with($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam));
+        Mail::fake();
 
         #call
         $object = new NotifyStudentsHelper;
         $object->sendEmailToStudent($exam, $student, true);
+
+        Mail::assertSentTo([$student], FeedbackReadyNotificationToStudent::class);
+//        $mailer = $this->createMock(IMailSender::class);
+//        $mailer->shouldReceive('send')
+//            ->once();
+//            //->with($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam));
+
     }
 
     /** @test */
@@ -103,7 +110,7 @@ class NotifyStudentsHelperTest extends \TestCase
         $exam = factory(Exam::class)->create();
         $student = factory(Student::class)->create();
         $accessKey = $this->faker->sha1();
-        $view = NotifyStudentsHelper::SECOND_EMAIL_VIEW;
+        //$view = NotifyStudentsHelper::SECOND_EMAIL_VIEW;
         $data =[
             'studentName' => $student->getFullName(),
             'examName' => $exam->getName(),
@@ -117,14 +124,15 @@ class NotifyStudentsHelperTest extends \TestCase
             ->once()
             ->with($exam->id, $student->id)
             ->andReturn($accessKey);
-
-        $mailer = $this->createMock(IMailSender::class);
-        $mailer->shouldReceive('send')->once()
-            ->with($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam));
+Mail::fake();
+//        $mailer = $this->createMock(IMailSender::class);
+//        $mailer->shouldReceive('send')->once();
+            //->with($student->email, $student->getFullName(), $data, $view, $this->buildSubject($exam));
 
         #call
         $object = new NotifyStudentsHelper;
         $object->sendEmailToStudent($exam, $student, false);
+        Mail::assertSentTo([$student], FeedbackRecompiledNotificationToStudent::class);
     }
 
 
@@ -158,7 +166,7 @@ class NotifyStudentsHelperTest extends \TestCase
         $exam = factory(Exam::class)->create();
         $students = factory(Student::class, 5)->create();
         $accessKey = $this->faker->sha1();
-        $view = NotifyStudentsHelper::INITIAL_EMAIL_VIEW;
+        //$view = NotifyStudentsHelper::INITIAL_EMAIL_VIEW;
 
         $studentDao = $this->createMock(IStudentRepository::class);
         $studentDao->shouldReceive('load_students_by_exam')
@@ -167,16 +175,20 @@ class NotifyStudentsHelperTest extends \TestCase
             ->andReturn($students);
 
         $accessKeyDao = $this->createMock(IAccessKeyRepository::class);
-        $mailer = $this->createMock(IMailSender::class);
+        //$mailer = $this->createMock(IMailSender::class);
 
+        Mail::fake();
         $accessKeyDao->shouldReceive('getAccessKeyForStudent')->times($numberStudents)->andReturn($accessKey);
-        $mailer->shouldReceive('send')->times($numberStudents);
+        //$mailer->shouldReceive('send')->times($numberStudents);
 
         #call
         $object = new NotifyStudentsHelper;
         $object->sendEmailToAllGradedStudents($exam);
 
 //foreach($students as $student){
+    Mail::assertSentTo($students, FeedbackReadyNotificationToStudent::class);
+//}
+
 //    $mock->shouldReceive('getAccessKeyForStudent')
 //        ->once()
 //        ->with($exam->id, $student->id)

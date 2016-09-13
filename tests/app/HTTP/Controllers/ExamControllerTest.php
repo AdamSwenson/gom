@@ -12,6 +12,8 @@ namespace App\Http\Controllers;
 use App\Exam;
 use App\Http\Controllers\ExamController;
 use App\Http\Requests\ExamRequest;
+use App\Repositories\Exam\IExamRepository;
+use App\Repositories\Exam\IStoredExamStatsRepository;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
@@ -37,7 +39,7 @@ class ExamControllerTest extends \TestCase
 
         parent::setUp();
 //        $this->mock = $this->createMock('\App\Repositories\Exam\IExamRepository');
-        $this->exam = Exam::all()->random();
+        $this->exam = factory(Exam::class)->create();
 //        $mock = Mockery::mock('\App\Repositories\Exam\IExamRepository');
 //        $this->app->instance('\App\Repositories\Exam\IExamRepository', $mock);
         $this->eid = $this->faker->randomNumber(3);
@@ -57,15 +59,23 @@ class ExamControllerTest extends \TestCase
     public function tearDown()
     {
         \Mockery::close();
+        parent::tearDown();
     }
 
     public function testIndex()
     {
-        $mock = $this->createMock('App\Repositories\Exam\IExamRepository');
+        $exams = Exam::all();
+        $mock = $this->createMock(IExamRepository::class);
         $mock->shouldReceive('load_all_exams')
             ->once()
-            ->andReturn(Exam::all());
-        $response = $this->action('GET', 'ExamController@index');
+            ->andReturn($exams);
+
+        $storedExamStatsDaoMock = $this->createMock(IStoredExamStatsRepository::class);
+        $storedExamStatsDaoMock->shouldReceive('getNumberStudents')->times(count($exams));
+        $storedExamStatsDaoMock->shouldReceive('getNumberQuestions')->times(count($exams));
+
+        $response = $this->call('GET', '/exam');
+//        $response = $this->action('GET', 'ExamController@index');
         $this->assertNotNull($response);
     }
 
@@ -123,8 +133,16 @@ class ExamControllerTest extends \TestCase
 
     public function testEdit()
     {
-        $response = $this->action('GET', 'ExamController@edit', $this->eid);
+//        $response = $this->call('Get', "exam/{$this->exam->id}/edit");
+        $response = $this->action('GET', 'ExamController@edit', $this->exam);
         $this->assertNotEmpty($response);
+//TODO This isn't actually working
+//        $this->assertViewHas('exam', $this->exam);
+//        $this->assertViewHas('terms', ExamController::$terms);
+
+//        $years[] = date('Y');
+//        $years[] = strval($years[ $offset ] + 1);
+//        $this->assertViewHas('years', [$value = null);
 //        $this->call('GET', "exam/$eid/edit");
 //        $this->assertViewHas('exam');
     }

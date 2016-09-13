@@ -16,15 +16,9 @@ Route::auth();
 //temp until convert everything to use the post
 Route::get('/logout', 'Auth\LoginController@logout');
 
-
 /* Temporary: Limitations on registration */
 Route::get('registrationRestrictions', 'RestrictedRegistrationController@showRestrictedAccessPage')->name('show-restricted-registration-page');
 Route::post('registrationRestrictions', 'RestrictedRegistrationController@recordInterestToWaitlist');
-
-//Route::controllers([
-//    'auth' => 'Auth\AuthController',
-//    'password' => 'Auth\PasswordController'
-//]);
 
 
 /* --------------------------------------------- Account -------------------------------------------------------------*/
@@ -99,7 +93,6 @@ Route::get('tutorials', 'InfoController@showTutorials');
 Route::get('gettingStarted', 'InfoController@showGettingStarted');
 
 
-
 /* ----------------------------------------------- Reports ---------------------------------------------------------- */
 /* Reporting and analytics pages */
 // Report index page
@@ -149,12 +142,10 @@ Route::get('utilities/updateExamCounts', 'UtilityController@updateExamCounts');
 
 
 /* ---------------------------------------------- Testing ----------------------------------------------------------- */
-Route::get('testing/gradingSliders', 'TestController@gradingSlidersTest');
-Route::get('dev/newgrading', 'TestController@newGrading');
-Auth::routes();
+#Route::get('testing/gradingSliders', 'TestController@gradingSlidersTest');
+#Route::get('dev/newgrading', 'TestController@newGrading');
 
-Route::get('/home', 'HomeController@index');
 
-Auth::routes();
 
-Route::get('/home', 'HomeController@index');
+//Auth::routes();
+

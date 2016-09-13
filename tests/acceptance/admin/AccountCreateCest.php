@@ -12,8 +12,8 @@ class AccountCreateCest
 
     public function _before(AcceptanceTester $I)
     {
-        AccountCreatePage::navigateToPage($I);
         $this->faker = Faker\Factory::create();
+        AccountCreatePage::navigateToPage($I);
     }
 
     public function _after(AcceptanceTester $I)
@@ -53,7 +53,6 @@ class AccountCreateCest
 
     /**
      * @group admin
-     * @group aaaa
      * @group registration
      * @param AcceptanceTester $I \
      */
