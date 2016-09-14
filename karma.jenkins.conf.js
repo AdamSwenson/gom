@@ -18,10 +18,7 @@ module.exports = function ( config ) {
             'data/Data.js',
             'tests/spec/tests/**/*.spec.js',
             { pattern: 'tests/spec/helpers/*.helper.js', included: false },
-            { pattern: 'tests/spec/fixtures/*.fixture.html', included: false },
-            { pattern: 'node_modules/karma-jasmine-html-reporter/src/css/jasmine.css' },
-            { pattern: 'node_modules/karma-jasmine-html-reporter/src/lib/html.jasmine.reporter.js' },
-            { pattern: 'node_modules/karma-jasmine-html-reporter/src/lib/adapter.js' },
+            { pattern: 'tests/spec/fixtures/*.fixture.html', included: false }
         ],
 
         // list of files to exclude
