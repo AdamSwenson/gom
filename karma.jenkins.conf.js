@@ -15,7 +15,7 @@ module.exports = function ( config ) {
         // list of files / patterns to load in the browser
         files: [
             // 'resources/assets/js/data/Store.js',
-            'data/Data.js',
+            // 'data/Data.js',
             'tests/spec/tests/**/*.spec.js',
             { pattern: 'tests/spec/helpers/*.helper.js', included: false },
             { pattern: 'tests/spec/fixtures/*.fixture.html', included: false }
