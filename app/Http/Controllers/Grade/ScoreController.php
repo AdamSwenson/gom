@@ -10,6 +10,7 @@ use App\Http\Requests\GradingRequest;
 
 use App\Exam;
 use App\Jobs\AsyncStorage\UpdateStoredNumGraded;
+use App\Jobs\RecordGradingTime;
 use App\Repositories\Exam\IExamRepository;
 use App\Repositories\Grade\IGradeAssignmentRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
@@ -131,74 +132,76 @@ class ScoreController extends Controller
         try
         {
 
+            $recordScoresAndCommentsJob = new RecordScoresAndComments($exam, $request);
+            $recordScoresAndCommentsJob->handle();
 //            $this->dispatch(new RecordScoresAndComments($exam, $request));
-
+//
+////            if ( $exam->getReleased() )
+////            {
+////
+////                //Don't even get started if there's no student id
+////                if ( ! $request->has('student_id') )
+////                {
+////                    throw new \Exception('No student id set in grade request');
+////                }
+////
+////                $student = Student::findOrFail($request->input('student_id'));
+////                $job = new BuildFeedbackOneStudent($exam, $student);
+////                dispatch($job);
+////            }
+//
+//            //Don't even get started if there's no student id
+//            if ( ! $request->has('student_id') )
+//            {
+//                throw new \Exception('No student id set in grade request');
+//            }
+//
+//            $studentId = $request->input('student_id');
+//
+//            $itemId = null;
+//
+//            //If the request is to record a question score, it follows this path
+//            if ( $request->has('question_assignment_id') )
+//            {
+//                $this->dao = app()->make('App\Repositories\Score\IQuestionScoreRepository');
+//                $itemId = $request->input('question_assignment_id');
+//            }
+//            //If it is to record an element score, it follows this path
+//            if ( $request->has('element_id') )
+//            {
+//                $this->dao = app()->make('App\Repositories\Score\IElementScoreRepository');
+//                $itemId = $this->elementAssignmentDao->load_element_assignment_by_element($exam->getId(),
+//                                                                                          $request->input('element_id'))->getId();
+//
+//                // if a comment has text with it, record that as well.
+//                if ( $request->exists('comment_text') )
+//                {
+//                    $this->dao->recordCommentText($itemId, $studentId, $request->input('comment_text'));
+//                }
+//            }
+//
+//            // record score fot the question or comment
+//            if ( $request->exists('score') )
+//            {
+//                // if the score returns as 'NaN' that item's score has been removed, so delete from DB
+//                $score = $request->input('score');
+//                if ( $score == NAN )
+//                {
+//                    //$this->dao->deleteScore
+//                } else
+//                {
+//                    $this->dao->record($itemId, $studentId, $score);
+//                }
+//            }
+//
+//            // Check if the exam has been released.
+//            // A released exam will have its compiled feedback updated  for this student
 //            if ( $exam->getReleased() )
 //            {
-//
-//                //Don't even get started if there's no student id
-//                if ( ! $request->has('student_id') )
-//                {
-//                    throw new \Exception('No student id set in grade request');
-//                }
-//
-//                $student = Student::findOrFail($request->input('student_id'));
-//                $job = new BuildFeedbackOneStudent($exam, $student);
-//                dispatch($job);
+//                $student = Student::findOrFail($studentId);
+//                $job = (new BuildFeedbackOneStudent($exam, $student))->onQueue('default');
+//                $this->dispatch($job);
 //            }
-
-            //Don't even get started if there's no student id
-            if ( ! $request->has('student_id') )
-            {
-                throw new \Exception('No student id set in grade request');
-            }
-
-            $studentId = $request->input('student_id');
-
-            $itemId = null;
-
-            //If the request is to record a question score, it follows this path
-            if ( $request->has('question_assignment_id') )
-            {
-                $this->dao = app()->make('App\Repositories\Score\IQuestionScoreRepository');
-                $itemId = $request->input('question_assignment_id');
-            }
-            //If it is to record an element score, it follows this path
-            if ( $request->has('element_id') )
-            {
-                $this->dao = app()->make('App\Repositories\Score\IElementScoreRepository');
-                $itemId = $this->elementAssignmentDao->load_element_assignment_by_element($exam->getId(),
-                                                                                          $request->input('element_id'))->getId();
-
-                // if a comment has text with it, record that as well.
-                if ( $request->exists('comment_text') )
-                {
-                    $this->dao->recordCommentText($itemId, $studentId, $request->input('comment_text'));
-                }
-            }
-
-            // record score fot the question or comment
-            if ( $request->exists('score') )
-            {
-                // if the score returns as 'NaN' that item's score has been removed, so delete from DB
-                $score = $request->input('score');
-                if ( $score == NAN )
-                {
-                    //$this->dao->deleteScore
-                } else
-                {
-                    $this->dao->record($itemId, $studentId, $score);
-                }
-            }
-
-            // Check if the exam has been released.
-            // A released exam will have its compiled feedback updated  for this student
-            if ( $exam->getReleased() )
-            {
-                $student = Student::findOrFail($studentId);
-                $job = (new BuildFeedbackOneStudent($exam, $student))->onQueue('default');
-                $this->dispatch($job);
-            }
 
             $this->recordTime($exam, $request);
 
@@ -269,7 +272,6 @@ class ScoreController extends Controller
      */
     public function recordTime(Exam $exam, GradingRequest $request)
     {
-
         //    return redirect()->action('Api\TimeController@recordTime');
         //->with(['exam' => $exam, 'request' => $request]);
 
@@ -279,10 +281,15 @@ class ScoreController extends Controller
 
         if ( $request->has('student_id') && $request->has('time') )
         {
-            $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
-            $time = $dao->record($exam->getId(), $request->input('student_id'), $request->input('time'));
-
-            return $time;
+            $recordGradingTimeJob = new RecordGradingTime($exam, $request);
+            return $recordGradingTimeJob->handle();
         }
+//            if ( $request->has('student_id') && $request->has('time') )
+//            {
+//            $dao = app()->make('App\Repositories\Time\IGradingTimeRepository');
+//            $time = $dao->record($exam->getId(), $request->input('student_id'), $request->input('time'));
+//
+//            return $time;
+//        }
     }
 }
