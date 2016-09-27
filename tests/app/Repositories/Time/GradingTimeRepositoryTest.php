@@ -24,8 +24,6 @@ class GradingTimeRepositoryTest extends \TestCase
         $this->object = new GradingTimeRepository;
         $this->gt = factory(GradingTime::class)->create();
         $this->exam = $this->gt->exam;
-        //Exam::where('id', self::$examId)->first();
-
     }
 
     public function testLoad()
@@ -42,7 +40,6 @@ class GradingTimeRepositoryTest extends \TestCase
     public function testRecord()
     {
         $newTime = $this->faker->randomFloat(3, 0, 100);
-        //$this->gt = GradingTime::all()->random();
         $result = $this->object->record($this->gt->exam_id, $this->gt->student_id, $newTime);
 
         $db = GradingTime::where('exam_id', $this->gt->exam_id)->where('student_id', $this->gt->student_id)->first();
@@ -52,8 +49,6 @@ class GradingTimeRepositoryTest extends \TestCase
 
     public function testUpdate()
     {
-        //$this->gt = factory(GradingTime::class)->create();
-//        $this->gt = GradingTime::all()->random();
         $newTime = $this->gt->seconds + $this->faker->randomFloat(2, 0, 100);
 
         $result = $this->object->update($this->gt->exam_id, $this->gt->student_id, $newTime);

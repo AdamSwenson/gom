@@ -14,7 +14,10 @@ use App\GradingTime;
 use App\Http\Requests\GradingRequest;
 use App\Jobs\RecordGradingTime;
 use App\Student;
+use App\User;
 use Faker\Factory;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\UnauthorizedException;
 
 class RecordGradingTimeTest extends \TestCase
 {
@@ -82,5 +85,21 @@ class RecordGradingTimeTest extends \TestCase
 
         $this->assertFalse($result);
         $this->assertNotInstanceOf(GradingTime::class, $result, "returns instance of grading time");
+    }
+
+
+    /** @test
+     @expectedException Illuminate\Auth\Access\AuthorizationException */
+    public function unauthorizedUser()
+    {
+        $newUser = factory(User::class)->create();
+        Auth::logInUsingId($newUser->id);
+
+        $request = new GradingRequest();
+        $request['student_id'] = $this->studentId;
+        $request['time'] = null;
+
+        $this->object = new RecordGradingTime($this->exam, $request);
+        $this->object->handle();
     }
 }

@@ -3,29 +3,31 @@
 namespace App\Jobs;
 
 use App\Exam;
-use App\Http\Requests\GradingRequest;
+use App\Http\Requests\Request;
 use App\Repositories\Time\IGradingTimeRepository;
 use Illuminate\Bus\Queueable;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class RecordGradingTime implements ShouldQueue
 {
-    use InteractsWithQueue, Queueable, SerializesModels;
+    use InteractsWithQueue, Queueable, SerializesModels, AuthorizesRequests;
     protected $examId;
     protected $studentId;
     protected $time;
 
     /**
      * Create a new job instance.
+     * NB. request will normally be a GradingRequest object, but don't want to be tied to that
      * @param Exam $exam
-     * @param GradingRequest $request
+     * @param Request $request
      */
-    public function __construct(Exam $exam, GradingRequest $request)
+    public function __construct(Exam $exam, Request $request)
     {
         //Check that user owns the exam
-        //$this->authorize('access-object', $exam);
+        $this->authorize('access-object', $exam);
 
         $this->examId = $exam->id;
         $this->studentId = $request->has('student_id') ? $request->input('student_id') : null;
