@@ -51,6 +51,7 @@ class NewUserListener
 
         //Send welcome email
         $this->user->notify(new WelcomeEmail($this->user));
+
 //        $job = ( new SendWelcomeEmail($this->user) )->onQueue(self::QUEUE_TO_USE);
 //        $this->dispatch($job);
 
