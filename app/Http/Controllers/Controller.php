@@ -42,14 +42,17 @@ abstract class Controller extends BaseController
             'message' => $sendMessage
         ];
 
-        if ( ! is_null($otherItems) && is_array($otherItems) )
-        {
-            foreach ( $otherItems as $k => $v )
-            {
-                $response[ $k ] = $v;
-            }
-        }
+        $response = $this->addItemsToResponse($otherItems, $response);
+//
+//        if ( ! is_null($otherItems) && is_array($otherItems) )
+//        {
+//            foreach ( $otherItems as $k => $v )
+//            {
+//                $response[ $k ] = $v;
+//            }
+//        }
 
+        //TODO Is there a case in which we would want to send an ajax response but not in reply to an ajax request?
         if ( Request::ajax() )
         {
             return Response::json($response);
@@ -72,13 +75,14 @@ abstract class Controller extends BaseController
             'message' => $sendMessage
         ];
 
-        if ( ! is_null($otherItems) && is_array($otherItems) )
-        {
-            foreach ( $otherItems as $k => $v )
-            {
-                $response[ $k ] = $v;
-            }
-        }
+        $response = $this->addItemsToResponse($otherItems, $response);
+//        if ( ! is_null($otherItems) && is_array($otherItems) )
+//        {
+//            foreach ( $otherItems as $k => $v )
+//            {
+//                $response[ $k ] = $v;
+//            }
+//        }
         if ( Request::ajax() )
         {
             return Response::json($response);
@@ -100,6 +104,24 @@ abstract class Controller extends BaseController
         {
             abort(403);
         }
+    }
+
+    /**
+     * @param $otherItems
+     * @param $response
+     * @return mixed
+     */
+    public function addItemsToResponse($otherItems, $response)
+    {
+        if ( ! is_null($otherItems) && is_array($otherItems) )
+        {
+            foreach ( $otherItems as $k => $v )
+            {
+                $response[ $k ] = $v;
+            }
+        }
+
+        return $response;
     }
 
 //    protected function checkAuthorizationAndSmiteEvilDoers($objectOrArrayOfObjectsWhichIsOwned)

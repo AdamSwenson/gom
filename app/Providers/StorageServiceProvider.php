@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Jobs\Grade\RecordScoresAndComments;
 use App\Repositories\Utilities\IJsDataPreparation;
 use App\Repositories\Utilities\JsDataPreparation;
 use Illuminate\Support\ServiceProvider;
@@ -81,6 +82,8 @@ class StorageServiceProvider extends ServiceProvider
         $this->app->bind('App\Jobs\Feedback\INotifyStudentsHelper', 'App\Jobs\Feedback\NotifyStudentsHelper');
         //Backup
         $this->app->bind('ExportScores', '\App\Jobs\Export\ExportScores');
+        //Scores
+        $this->app->bind(RecordScoresAndComments::class, RecordScoresAndComments::class);
 
         /* ------------------------------------------------ Tools ----------------------------------------------------- */
         $this->app->bind('App\HTTP\Controllers\helpers\cleaning\ICleanerFactory', 'App\HTTP\Controllers\helpers\cleaning\CleanerFactory');

@@ -18,6 +18,7 @@ class GradingTimeRepository implements IGradingTimeRepository
      * Loads the time already spent grade a particular student's exam
      * @param $examId
      * @param $studentId
+     * @return \Illuminate\Database\Eloquent\Model|null|static
      */
     public function load($examId, $studentId)
     {
@@ -31,6 +32,7 @@ class GradingTimeRepository implements IGradingTimeRepository
      * @param integer $examId
      * @param integer $studentId
      * @param float $totalGradingTime
+     * @return GradingTimeRepository|\Illuminate\Database\Eloquent\Model|null
      */
     public function record($examId, $studentId, $totalGradingTime)
     {
@@ -44,6 +46,7 @@ class GradingTimeRepository implements IGradingTimeRepository
      * @param integer $examId
      * @param integer $studentId
      * @param float $timeToAdd
+     * @return GradingTimeRepository|\Illuminate\Database\Eloquent\Model|null
      */
     public function update($examId, $studentId, $timeToAdd)
     {

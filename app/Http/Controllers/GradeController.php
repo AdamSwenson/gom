@@ -156,7 +156,7 @@ class GradeController extends Controller
     }
 
     /**
-     * Presents the exam for grade
+     * Presents the exam for grading
      * @param Exam $exam
      * @return View
      */

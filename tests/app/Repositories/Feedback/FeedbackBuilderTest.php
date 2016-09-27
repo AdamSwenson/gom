@@ -71,10 +71,13 @@ class FeedbackBuilderTest extends \TestCase
 
     public function testLoadStudents()
     {
-        $examId = 1;
-        $number = $this->faker->randomDigit();
+        $exam = factory(Exam::class)->create();
+        $examId = $exam->id;
+        $number = 5;
+
+        //$number = $this->faker->randomNumber();
         $this->assertEmpty($this->object->students);
-        $students = factory('App\Student', $number)->make();
+        $students = factory(Student::class, $number)->make();
         $this->studentRepository->shouldReceive('load_students_by_exam')
             ->with($examId)
             ->andReturn($students);
@@ -120,7 +123,9 @@ class FeedbackBuilderTest extends \TestCase
         $elementScores = factory('App\ElementScore', 3)->make();
         $questionScores = factory('App\QuestionScore', 3)->make();
 
-        $examId = 1;
+        $exam = factory(Exam::class)->create();
+        $examId = $exam->id;
+//        $examId = 1;
         $this->questionAssignmentRepository->shouldReceive('load_all_for_exam')
             ->with($examId)
             ->andReturn($questionAssignments);

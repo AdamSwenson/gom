@@ -168,6 +168,8 @@ class RecordScoresAndComments implements ShouldQueue
                 $this->dispatch($job);
             }
 
+            return true;
+
 
 
 //                $this->dao = app()->make(IElementScoreRepository::class);

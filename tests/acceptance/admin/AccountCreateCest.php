@@ -2,6 +2,7 @@
 
 
 use Page\admin\AccountCreatePage;
+use Page\setup\ExamEditPage;
 use Page\setup\SetupExamSelectPage;
 
 
@@ -48,7 +49,8 @@ class AccountCreateCest
         $I->click(AccountCreatePage::$submitButtonLocator);
 
         $I->expect("to see the successful redirected page");
-        $I->seeInCurrentUrl(SetupExamSelectPage::$URL);
+        $I->seeInCurrentUrl(ExamEditPage::$URL);
+   //     $I->seeCurrentUrlEquals(SetupExamSelectPage::$URL);
     }
 
     /**

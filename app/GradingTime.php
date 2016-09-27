@@ -35,6 +35,13 @@ class GradingTime extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
+    public function exam(){
+        return $this->belongsTo(Exam::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function student()
     {
         return $this->belongsTo(Student::class);
