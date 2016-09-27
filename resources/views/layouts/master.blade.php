@@ -17,6 +17,10 @@
     {{--@include('layouts.js_jquery_loader')--}}
     {{--@include('layouts.js_bootstrap_loader')--}}
     {{--@include('layouts.js_additional_libs')--}}
+
+    @if(env('APP_ENV') == 'production')
+        @include('other.google_analytics_include')
+    @endif
 </head>
 
 <body>
@@ -60,9 +64,7 @@
     </script>
 
     @yield('jsArea')
-    @if(env('APP_ENV') == 'production')
-        @include('other.google_analytics_include')
-    @endif
+
 </div>
 </body>
 </html>
