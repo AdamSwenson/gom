@@ -4,9 +4,12 @@
         <!-- name input -->
         <div class="input-group">
             <span class="input-group-addon" id="basic-addon1">Exam Name</span>
-            <input type="text" class="form-control input-lg" id="name" name="name" value="{{ isset($exam) ?
-            $exam->getName() : '' }}"
-                   placeholder="Enter a descriptive name for this test (i.e. English 101 Exam #1)"
+            <input type="text"
+                   class="form-control input-lg"
+                   id="name"
+                   name="name"
+                   value="{{ isset($exam) ? $exam->getName() : '' }}"
+                   placeholder="Enter a descriptive name for this test (e.g., English 101 Exam #1)"
                    aria-describedby="basic-addon1">
         </div>
         <br/>
