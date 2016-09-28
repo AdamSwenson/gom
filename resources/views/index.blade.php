@@ -1,4 +1,6 @@
 @extends('layouts.master')
+@section('pageTitle', "Gradeomatic | Grade faster. Teach better")
+@section('description', "Give personalized feedback. Collect detailed data. Finish grading faster.")
 
 @section('otherCss')
     {{--<link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet" type="text/css">--}}
