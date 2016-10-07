@@ -53,11 +53,11 @@ abstract class Controller extends BaseController
 //        }
 
         //TODO Is there a case in which we would want to send an ajax response but not in reply to an ajax request?
-        if ( Request::ajax() )
-        {
+//        if ( Request::ajax() )
+//        {
             return Response::json($response);
-        }
-        return false;
+//        }
+//        return false;
     }
 
     /**
@@ -83,11 +83,11 @@ abstract class Controller extends BaseController
 //                $response[ $k ] = $v;
 //            }
 //        }
-        if ( Request::ajax() )
-        {
+//        if ( Request::ajax() )
+//        {
             return Response::json($response);
-        }
-        return false;
+//        }
+//        return false;
     }
 
 

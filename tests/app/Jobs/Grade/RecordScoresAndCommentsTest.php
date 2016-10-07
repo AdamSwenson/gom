@@ -57,11 +57,6 @@ class RecordScoresAndCommentsTest extends \TestCase
         \Mockery::close();
     }
 
-//    /** @test */
-//    public function checkConstructPutsThingsInRightPlaces()
-//    {
-//
-//    }
 
     /** @test */
     public function happyPathElementScoreWComment()

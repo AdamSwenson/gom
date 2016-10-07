@@ -8,6 +8,7 @@
 
 namespace App\Jobs\Feedback;
 
+use App\Events\AsyncJobCompleteEvent;
 use App\Events\FeedbackCompilationCompleteEvent;
 use App\Events\FeedbackCompilationFailureEvent;
 use App\Exam;
@@ -106,10 +107,12 @@ class BuildFeedbackOneStudent extends Job implements ShouldQueue
         {
             //once done, fire the notification that ready for distribution
             event(new FeedbackCompilationCompleteEvent($exam, $student));
+            event(new AsyncJobCompleteEvent($this, true, [$exam, $student]));
         } else
         {
             //Error handling in case fails
             event(new FeedbackCompilationFailureEvent($exam));
+            event(new AsyncJobCompleteEvent($this, false, [$exam, $student]));
         }
 
     }

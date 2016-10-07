@@ -2,10 +2,12 @@
 
 namespace App\Jobs\Feedback;
 
+use App\Events\AsyncJobCompleteEvent;
 use App\Events\FeedbackCompilationCompleteEvent;
 use App\Events\FeedbackCompilationFailureEvent;
 use App\Exam;
 use App\Jobs\Job;
+use App\Repositories\Feedback\IFeedbackBuilder;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -54,7 +56,7 @@ class BuildFeedbackAllStudents extends Job implements ShouldQueue
         $this->exam = $exam;
 
         //Instantiate the class which will actually do the work
-        $this->feedbackBuilder = app()->make('App\Repositories\Feedback\IFeedbackBuilder');
+        $this->feedbackBuilder = app()->make(IFeedbackBuilder::class);
     }
 
     /**
@@ -71,11 +73,13 @@ class BuildFeedbackAllStudents extends Job implements ShouldQueue
         {
             //once done, fire the notification that ready for distribution
             event(new FeedbackCompilationCompleteEvent($exam));
+            event(new AsyncJobCompleteEvent($this, true));
         }
         else
         {
             //Error handling in case fails
             event(new FeedbackCompilationFailureEvent($exam));
+            event(new AsyncJobCompleteEvent($this, false));
         }
     }
 

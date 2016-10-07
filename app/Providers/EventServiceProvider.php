@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Events\Ajax\PleaseSendAjaxFail;
 use App\Events\Ajax\PleaseSendAjaxSuccess;
+use App\Events\AsyncJobCompleteEvent;
 use App\Events\ExamReleasedEvent;
 use App\Events\FeedbackCompilationCompleteEvent;
 use App\Events\NewUserSignedUpEvent;
@@ -14,6 +15,7 @@ use App\Events\UserLoginEvent;
 use App\Jobs\RecordGradingTime;
 use App\Listeners\Ajax\PleaseSendAjaxFailListener;
 use App\Listeners\Ajax\PleaseSendAjaxSuccessListener;
+use App\Listeners\AsyncJobCompleteListener;
 use App\Listeners\FeedbackCompileListener;
 use App\Listeners\FlagForDatabaseBackupListener;
 use App\Listeners\NewUserListener;
@@ -34,6 +36,10 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
+        AsyncJobCompleteEvent::class => [
+            AsyncJobCompleteListener::class,
+        ],
+
         ExamReleasedEvent::class => [
             FeedbackCompileListener::class,
         ],
@@ -55,7 +61,7 @@ class EventServiceProvider extends ServiceProvider
             RemoveStudentAccessListener::class,
         ],
 
-        UserLoginEvent::class => [
+        UserLoginEvent::class          => [
             UserLoginListener::class,
         ],
 

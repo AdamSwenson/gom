@@ -36,24 +36,26 @@ class PleaseSendAjaxFailListener
      */
     public function handle(PleaseSendAjaxFail $event)
     {
+        Log::info('PleaseSendAjaxFailListener called | ' . $event->source  );
 
-
-        $sendMessage = $event->message ? $event->message : 'failure';
-        $response = [
-            'status'  => 'fail',
-            'message' => $sendMessage,
-        ];
-
-        if ( ! is_null($event->jsonCargo) && is_array($event->jsonCargo) )
-        {
-            foreach ( $event->jsonCargo as $k => $v )
-            {
-                $response[ $k ] = $v;
-            }
-        }
-
-        Log::info('PleaseSendAjaxFailListener called | ' . $event->source . '  | ' . json_encode($response));
-        return Response::json($response);
+        return redirect()->action('ScoreController@sendAjaxFailure');;
+//
+//        $sendMessage = $event->message ? $event->message : 'failure';
+//        $response = [
+//            'status'  => 'fail',
+//            'message' => $sendMessage,
+//        ];
+//
+//        if ( ! is_null($event->jsonCargo) && is_array($event->jsonCargo) )
+//        {
+//            foreach ( $event->jsonCargo as $k => $v )
+//            {
+//                $response[ $k ] = $v;
+//            }
+//        }
+//
+//        Log::info('PleaseSendAjaxFailListener called | ' . $event->source . '  | ' . json_encode($response));
+//        return Response::json($response);
 
     }
 }

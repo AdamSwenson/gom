@@ -8,6 +8,7 @@
 
 namespace App\Jobs\Feedback;
 
+use App\Events\AsyncJobCompleteEvent;
 use App\Events\StudentNotificationCompleteEvent;
 use App\Exam;
 use App\Jobs\Job;
@@ -82,6 +83,7 @@ class NotifySingleStudent extends Job implements ShouldQueue
         if($this->helper->sendEmailToStudent($exam, $student)){
             //Signal that the emails have been sent (or, more correctly, been pushed to mailgun)
             event(new StudentNotificationCompleteEvent());
+            event(new AsyncJobCompleteEvent($this, true));
         }
         
     }
