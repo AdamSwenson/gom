@@ -160,6 +160,7 @@ elixir( function ( mix ) {
 mix.browserify('data/Store.js', 'public/js/dev/new-data-package.js');
     mix.browserify( 'grade/gradeVue.js', 'public/js/dev/grade-vue.js' );
 
+    mix.browserify('data/vuex.Data.js', 'public/js/dev/test-package.js')
 
 //
 //     var gulpNSP = require('gulp-nsp');

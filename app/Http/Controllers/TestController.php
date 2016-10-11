@@ -32,4 +32,10 @@ class TestController extends Controller
         return view('development.newGrading');
     }
 
+    public function test()
+    {
+        return view('development.test');
+
+    }
+
 }
