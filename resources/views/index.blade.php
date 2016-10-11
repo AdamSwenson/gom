@@ -8,7 +8,7 @@
 @endsection
 @section('body')
 <div id="homePage" class="row mainBodyLocator">
-    <div class="col-xs-1 col-md-2 col-lg-2"></div>
+    <div class="row"><div class="col-xs-1 col-md-2 col-lg-2"></div>
     <div class="col-xs-10 col-md-8 col-lg-8">
         <img
                 class="img-responsive"
@@ -16,6 +16,17 @@
              alt="Picture of a student's exam, ready for grading.">
     </div>
     <div class="col-xs-1 col-md-2 col-lg-2"></div>
+    </div>
+    <div class="row">
+    <div class="col-xs-1 col-md-2 col-lg-2"></div>
+    <div class="col-xs-10 col-md-8 col-lg-8">
+        <img
+                class="img-responsive"
+                src="{{asset('images/home/greenbookSmall.jpeg')}}"
+                alt="Picture of a student's exam, ready for grading.">
+    </div>
+    <div class="col-xs-1 col-md-2 col-lg-2"></div>
+    </div>
 </div>
 @endsection
 
