@@ -14685,7 +14685,7 @@ var delayTime = 5000;
  */
 module.exports = function () {
   //Automatically hide non-important flash message
-  $('div.alert').not('alert-important').delay(delayTime).slideUp(300);
+  $('div.alert').not('.alert-important').delay(delayTime).slideUp(300);
 };
 
 },{"jquery":15}],22:[function(require,module,exports){
