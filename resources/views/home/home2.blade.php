@@ -85,25 +85,28 @@
                 @include('home.partials.signup_area')
             </div>
         </div>
-<div class="row"></div>
+        <div class="row"></div>
 
         <div id="studentTestimonials" class="row">
             {{--<div class="col-lg-2"></div>--}}
 
-                @include('home.text.be_adored_textonly')
-                {{----}}
-                {{--class="col-lg-8 col-md-6 col-sm-12 ">--}}
-                {{--<div class="panel-heading secHead text-center">--}}
-                   {{--<h1>Help More</h1>--}}
-                    {{--<h1>Learn Better</h1>--}}
-                {{--</div>--}}
-                {{--<div class="panel-body secBody">--}}
-                    {{--@include('home.text.be_adored_textonly')--}}
-                {{--</div>--}}
+            <div class="col-lg-12 col-md-12 text-center ">
+                <a id="testimonialsLink" class="" href="#">Testimonials</a>
+            </div>
+            {{--@include('home.text.be_adored_textonly')--}}
+            {{----}}
+
+            {{--class="col-lg-8 col-md-6 col-sm-12 ">--}}
+            {{--<div class="panel-heading secHead text-center">--}}
+            {{--<h1>Help More</h1>--}}
+            {{--<h1>Learn Better</h1>--}}
+            {{--</div>--}}
+            {{--<div class="panel-body secBody">--}}
+            {{--@include('home.text.be_adored_textonly')--}}
+            {{--</div>--}}
 
             {{--<div class="col-lg-2"></div>--}}
         </div>
-
 
 
     </div>
@@ -115,6 +118,6 @@
     </script>
     <script type='text/javascript' src="{{ asset('js/common-package.js') }}"></script>
     <script>
-      //  $( ".affix-bottom" ).affix();
+        //  $( ".affix-bottom" ).affix();
     </script>
 @endsection
