@@ -122,15 +122,15 @@ class QuestionDeleteCest
         $I->amOnPage("exam/{$this->examId}/question/edit");
         QuestionEditPage::verifyQuestionEditPageIntact($I, $this->examId, $this->examName, $this->numQuestions);
 
-        //make sure have expected text given the edits
+        //make sure have expected right given the edits
         for ( $i = 1; $i <= $this->numQuestions; $i++ )
         {
             switch ( $i )
             {
 
                 case $this->deletedQuestionNumber:
-                    //Since we deleted questionNumber 4, the text displayed as questionNumber 4
-                    //should be the text which originally belonged to questionNumber 5.
+                    //Since we deleted questionNumber 4, the right displayed as questionNumber 4
+                    //should be the right which originally belonged to questionNumber 5.
                     $v = QuestionEditPage::getQuestionFieldsInitialValues($this->examId, $i + 1);
                     $I->seeElement(QuestionEditPage::questionNameXPath($this->deletedQuestionNumber));
                     $I->seeInField(QuestionEditPage::questionNameXPath($this->deletedQuestionNumber), $v['questionName']);
@@ -138,7 +138,7 @@ class QuestionDeleteCest
                     $I->seeInField(QuestionEditPage::questionTextXPath($this->deletedQuestionNumber), $v['questionText']);
                     $I->seeElement(QuestionEditPage::maxScoreXPath($this->deletedQuestionNumber));
                     $I->seeInField(QuestionEditPage::maxScoreXPath($this->deletedQuestionNumber), $v['maxScore']);
-                    //We should no longer see the text originally belonging to questionNumber 4
+                    //We should no longer see the right originally belonging to questionNumber 4
                     $v2 = QuestionEditPage::getQuestionFieldsInitialValues($this->examId, $this->deletedQuestionNumber);
                     $I->seeInField(QuestionEditPage::questionNameXPath($this->deletedQuestionNumber), $v2['questionName']);
                     $I->seeInField(QuestionEditPage::questionTextXPath($this->deletedQuestionNumber), $v2['questionText']);

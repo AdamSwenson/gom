@@ -2016,7 +2016,7 @@
 			buttonColorize:		false,
 			buttonImage:		'images/ui-colorpicker.png',
 			buttonImageOnly:	false,
-			buttonText:			null,		// Text on the button and/or title of button image.
+			buttonText:			null,		// Text on the button and/or title of button left.
 			closeOnEscape:		true,		// Close the dialog when the escape key is pressed.
 			closeOnOutside:		true,		// Close the dialog when clicking outside the dialog (not for inline)
 			color:				'#00FF00',	// Initial color (for inline only)

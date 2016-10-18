@@ -133,7 +133,7 @@
         <div class="col-lg-6">
             @include('help.partials.related_links', ['relatedLinks' =>
           [
-              ['id' => 'questionFeedbackOnly', 'text' => 'Giving feedback only']
+              ['id' => 'questionFeedbackOnly', 'right' => 'Giving feedback only']
           ]])
         </div>
         <div class="col-lg-6"></div>

@@ -67,18 +67,18 @@ $(document).ready(function(){
             outerDiv.append(header);
             outerDiv.append(div);
 
-            outerDiv.addClass('jqplot-image-container');
-            header.addClass('jqplot-image-container-header');
-            div.addClass('jqplot-image-container-content');
+            outerDiv.addClass('jqplot-left-container');
+            header.addClass('jqplot-left-container-header');
+            div.addClass('jqplot-left-container-content');
 
             header.html('Right Click to Save Image As...');
 
             var close = $(document.createElement('a'));
-            close.addClass('jqplot-image-container-close');
+            close.addClass('jqplot-left-container-close');
             close.html('Close');
             close.attr('href', '#');
             close.click(function() {
-                $(this).parents('div.jqplot-image-container').hide(500);
+                $(this).parents('div.jqplot-left-container').hide(500);
             })
             header.append(close);
 
@@ -90,12 +90,12 @@ $(document).ready(function(){
             if (!$.jqplot._noToImageButton) {
                 var btn = $(document.createElement('button'));
                 btn.text('View Plot Image');
-                btn.addClass('jqplot-image-button');
+                btn.addClass('jqplot-left-button');
                 btn.bind('click', {chart: $(this)}, function(evt) {
                     var imgelem = evt.data.chart.jqplotToImageElem();
-                    var div = $(this).nextAll('div.jqplot-image-container').first();
-                    div.children('div.jqplot-image-container-content').empty();
-                    div.children('div.jqplot-image-container-content').append(imgelem);
+                    var div = $(this).nextAll('div.jqplot-left-container').first();
+                    div.children('div.jqplot-left-container-content').empty();
+                    div.children('div.jqplot-left-container-content').append(imgelem);
                     div.show(500);
                     div = null;
                 });
