@@ -1,5 +1,12 @@
+@import url("https://fonts.googleapis.com/css?family=Cinzel|Francois+One|Lalezar|Lato|Maitree|Open+Sans|Patua+One|Roboto");
+.navbar {
+  font-family: 'Roboto', sans-serif;
+  font-style: italic; }
+
 .secHead h1 {
   font-family: 'Roboto', sans-serif;
+  font-style: italic;
+  font-weight: 500;
   /*font-family: 'Oswald', sans-serif;*/
   /*font-family: 'Lalezar', cursive;*/
   /*font-family: 'Francois One', sans-serif;*/

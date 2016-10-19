@@ -25,5 +25,5 @@ Sixty exams steal an hour of your life with each unnecessary minute you spend pe
 ?>
 
 <p class="bodyText">
-    By simultaneously creating feedback, recording scores, and building assessment data the gradeomatic has cut its creator's grading time by more than half. Life is short. Don't spend it grading.
+    By simultaneously creating feedback, recording scores, and building assessment data behind the scenes the gradeomatic has cut its creator's grading time by more than half. Life is short. Don't spend it grading.
 </p>

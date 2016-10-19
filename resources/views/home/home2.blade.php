@@ -4,10 +4,10 @@
 
 @section('otherCss')
 
-    <link
-            href="https://fonts.googleapis.com/css?family=Cabin+Condensed|Lato|Cinzel|Francois+One|Roboto:700i|Lalezar|Patua+One|Lobster|Oswald"
-          rel="stylesheet"
-    >
+    {{--<link--}}
+            {{--href="https://fonts.googleapis.com/css?family=Cabin+Condensed|Lato|Cinzel|Francois+One|Roboto:700i|Lalezar|Patua+One|Lobster|Oswald"--}}
+          {{--rel="stylesheet"--}}
+    {{-->--}}
 
     <link rel="stylesheet" href="{{ asset("css/dev-home.css")}}">
 
