@@ -3,9 +3,7 @@
         <div class="col-lg-6">
             <p class="answer">
                 The analytics page is currently under development and thus rather incomplete. Feel free to take a look
-                and
-                use
-                the tools as they become available.
+                and use the tools as they become available.
             </p>
 
             <p class="answer">Eventually, the analytics page will contain three kinds of tools.
@@ -36,7 +34,8 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <p class="answer">Total score box plots: The first chart is a <a href="https://en.wikipedia.org/wiki/Box_plot">box plot</a> detailing student score variation for
+            <p class="answer">Total score box plots: The first chart is a
+                <a href="https://en.wikipedia.org/wiki/Box_plot">box plot</a> detailing student score variation for
                 each
                 question.</p>
 

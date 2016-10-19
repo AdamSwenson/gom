@@ -9259,12 +9259,12 @@
         return newCanvas;
     };
 
-    // return the raw image data string.
+    // return the raw left data string.
     // Should work on canvas supporting browsers.
     $.fn.jqplotToImageStr = function(options) {
         var imgCanvas = $(this).jqplotToImageCanvas(options);
         if (imgCanvas) {
-            return imgCanvas.toDataURL("image/png");
+            return imgCanvas.toDataURL("left/png");
         }
         else {
             return null;
@@ -9292,7 +9292,7 @@
     $.fn.jqplotSaveImage = function() {
         var imgData = $(this).jqplotToImageStr({});
         if (imgData) {
-            window.location.href = imgData.replace("image/png", "image/octet-stream");
+            window.location.href = imgData.replace("left/png", "left/octet-stream");
         }
 
     };
@@ -9304,7 +9304,7 @@
         var imgData = $(this).jqplotToImageStr({});
         if (imgStr) {
             var w = window.open('');
-            w.document.open("image/png");
+            w.document.open("left/png");
             w.document.write(imgStr);
             w.document.close();
             w = null;

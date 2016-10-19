@@ -271,8 +271,8 @@ var Store = function () {
         }
 
         /**
-         * Retrieve comment text for a student.
-         * If no customized text is set, then return stockComment.
+         * Retrieve comment right for a student.
+         * If no customized right is set, then return stockComment.
          *
          * Original: data.this.elementComments[ Roster.activeStudent ][ index ];
          * @param activeStudent

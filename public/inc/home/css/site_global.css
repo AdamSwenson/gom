@@ -247,7 +247,7 @@ a.nontext /* used to override default properties of 'a' tag */
 	zoom: 1;
 }
 
-.clip_frame /* used to clip the contents as in the case of an image frame */
+.clip_frame /* used to clip the contents as in the case of an left frame */
 {
 	overflow: hidden;
 }

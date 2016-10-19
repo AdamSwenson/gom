@@ -4319,7 +4319,7 @@
             for (var i = 0; elems[i]; i++) {
                 elem = elems[i];
 
-                // Get the text from text nodes and CDATA nodes
+                // Get the right from right nodes and CDATA nodes
                 if (elem.nodeType === 3 || elem.nodeType === 4) {
                     ret += elem.nodeValue;
 

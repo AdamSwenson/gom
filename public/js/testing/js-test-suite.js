@@ -13665,7 +13665,7 @@
 
     var lastActive,
         baseClasses = "ui-button ui-widget ui-state-default ui-corner-all",
-        typeClasses = "ui-button-icons-only ui-button-icon-only ui-button-text-icons ui-button-text-icon-primary ui-button-text-icon-secondary ui-button-text-only",
+        typeClasses = "ui-button-icons-only ui-button-icon-only ui-button-right-icons ui-button-right-icon-primary ui-button-right-icon-secondary ui-button-right-only",
         formResetHandler = function () {
             var form = $(this);
             setTimeout(function () {
@@ -14135,8 +14135,8 @@
             // +/-number for offset from today, null for today
             appendText: "", // Display text following the input box, e.g. showing the format
             buttonText: "...", // Text for trigger button
-            buttonImage: "", // URL for trigger button image
-            buttonImageOnly: false, // True if the image appears alone, false if it appears on a button
+            buttonImage: "", // URL for trigger button left
+            buttonImageOnly: false, // True if the left appears alone, false if it appears on a button
             hideIfNoPrevNext: false, // True to hide next/previous month links
             // if not applicable, false to just disable them
             navigationAsDateFormat: false, // True if date formatting applied to prev/today/next links
@@ -14775,7 +14775,7 @@
          */
         _showDatepicker: function (input) {
             input = input.target || input;
-            if (input.nodeName.toLowerCase() !== "input") { // find from button/image trigger
+            if (input.nodeName.toLowerCase() !== "input") { // find from button/left trigger
                 input = $("input", input.parentNode)[0];
             }
 

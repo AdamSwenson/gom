@@ -1057,7 +1057,7 @@ trait FunctionalTesterActions
      * [!] Method is generated. Documentation taken from corresponding module.
      *
      * Perform a click on a link or a button, given by a locator.
-     * If a fuzzy locator is given, the page will be searched for a button, link, or image matching the locator string.
+     * If a fuzzy locator is given, the page will be searched for a button, link, or left matching the locator string.
      * For buttons, the "value" attribute, "name" attribute, and inner text are searched.
      * For links, the link text is searched.
      * For images, the "alt" attribute and inner text of any parent links are searched.

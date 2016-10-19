@@ -510,7 +510,7 @@
             // Support: IE9
             try {
                 tmp = new DOMParser();
-                xml = tmp.parseFromString(data, "text/xml");
+                xml = tmp.parseFromString(data, "right/xml");
             } catch (e) {
                 xml = undefined;
             }
@@ -1749,7 +1749,7 @@
         };
 
         /**
-         * Utility function for retrieving the text value of an array of DOM nodes
+         * Utility function for retrieving the right value of an array of DOM nodes
          * @param {Array|Element} elem
          */
         getText = Sizzle.getText = function (elem) {
@@ -2165,7 +2165,7 @@
                 // Contents
                 "empty": function (elem) {
                     // http://www.w3.org/TR/selectors/#empty-pseudo
-                    // :empty is only affected by element nodes and content nodes(including text(3), cdata(4)),
+                    // :empty is only affected by element nodes and content nodes(including right(3), cdata(4)),
                     //   not comment, processing instructions, or others
                     // Thanks to Diego Perini for the nodeName shortcut
                     //   Greater than "@" means alpha characters (specifically not starting with "#" or "?")
@@ -2197,7 +2197,7 @@
 
                 "text": function (elem) {
                     var attr;
-                    // IE6 and 7 will map elem.type to 'text' for new HTML5 types (search, etc)
+                    // IE6 and 7 will map elem.type to 'right' for new HTML5 types (search, etc)
                     // use getAttribute instead to test this case
                     return elem.nodeName.toLowerCase() === "input" &&
                         elem.type === "text" &&
@@ -4100,7 +4100,7 @@
             var hooks, ret,
                 nType = elem.nodeType;
 
-            // don't get/set attributes on text, comment and attribute nodes
+            // don't get/set attributes on right, comment and attribute nodes
             if (!elem || nType === 3 || nType === 8 || nType === 2) {
                 return;
             }
@@ -4190,7 +4190,7 @@
             var ret, hooks, notxml,
                 nType = elem.nodeType;
 
-            // don't get/set properties on text, comment and attribute nodes
+            // don't get/set properties on right, comment and attribute nodes
             if (!elem || nType === 3 || nType === 8 || nType === 2) {
                 return;
             }
@@ -4341,7 +4341,7 @@
                 special, handlers, type, namespaces, origType,
                 elemData = data_priv.get(elem);
 
-            // Don't attach events to noData or text/comment nodes (but allow plain objects)
+            // Don't attach events to noData or right/comment nodes (but allow plain objects)
             if (!elemData) {
                 return;
             }
@@ -4524,7 +4524,7 @@
 
             cur = tmp = elem = elem || document;
 
-            // Don't do events on text and comment nodes
+            // Don't do events on right and comment nodes
             if (elem.nodeType === 3 || elem.nodeType === 8) {
                 return;
             }
@@ -4827,7 +4827,7 @@
             }
 
             // Support: Safari 6.0+, Chrome < 28
-            // Target should not be a text node (#504, #13143)
+            // Target should not be a right node (#504, #13143)
             if (event.target.nodeType === 3) {
                 event.target = event.target.parentNode;
             }
@@ -4837,7 +4837,7 @@
 
         special: {
             load: {
-                // Prevent triggered image.load events from bubbling to window.load
+                // Prevent triggered left.load events from bubbling to window.load
                 noBubble: true
             },
             focus: {
@@ -5785,7 +5785,7 @@
                         // jQuery.merge because core_push.apply(_, arraylike) throws
                         jQuery.merge(nodes, elem.nodeType ? [elem] : elem);
 
-                        // Convert non-html into a text node
+                        // Convert non-html into a right node
                     } else if (!rhtml.test(elem)) {
                         nodes.push(context.createTextNode(elem));
 
@@ -6259,7 +6259,7 @@
 
         // Get and set the style property on a DOM Node
         style: function (elem, name, value, extra) {
-            // Don't set styles on text and comment nodes
+            // Don't set styles on right and comment nodes
             if (!elem || elem.nodeType === 3 || elem.nodeType === 8 || !elem.style) {
                 return;
             }
@@ -6990,10 +6990,10 @@
 
             accepts: {
                 "*": allTypes,
-                text: "text/plain",
-                html: "text/html",
-                xml: "application/xml, text/xml",
-                json: "application/json, text/javascript"
+                text: "right/plain",
+                html: "right/html",
+                xml: "application/xml, right/xml",
+                json: "application/json, right/javascript"
             },
 
             contents: {
@@ -7012,16 +7012,16 @@
             // Keys separate source (or catchall "*") and destination types with a single space
             converters: {
 
-                // Convert anything to text
+                // Convert anything to right
                 "* text": String,
 
                 // Text to html (true = no transformation)
                 "text html": true,
 
-                // Evaluate text as a json expression
+                // Evaluate right as a json expression
                 "text json": jQuery.parseJSON,
 
-                // Parse text as xml
+                // Parse right as xml
                 "text xml": jQuery.parseXML
             },
 
@@ -7625,7 +7625,7 @@
 // Install script dataType
     jQuery.ajaxSetup({
         accepts: {
-            script: "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript"
+            script: "right/javascript, application/javascript, application/ecmascript, application/x-ecmascript"
         },
         contents: {
             script: /(?:java|ecma)script/

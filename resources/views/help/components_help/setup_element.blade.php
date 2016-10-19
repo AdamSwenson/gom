@@ -105,7 +105,7 @@
         <div class="col-lg-6">
             @include('help.partials.picture_container',
          ['imageFile' => 'element/element_edit_name_filled_in.jpg',
-         'altText' =>"The element name field has been filled in with text",
+         'altText' =>"right",
          'caption' => 'Name the element'])
         </div>
     </div>
@@ -265,8 +265,8 @@
         <div class="col-lg-6">
             @include('help.partials.picture_container',
 ['imageFile' => 'element/element_edit_response_modal_poor.jpg',
-'altText' =>"Altering the stock text through the modal window for poor",
-'caption' => "Alter the feedback text for students who did a poor job"])
+'altText' =>"right",
+'caption' => "right"])
 
         </div>
     </div>

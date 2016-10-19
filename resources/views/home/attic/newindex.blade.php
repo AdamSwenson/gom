@@ -9,9 +9,9 @@
     <meta name="description" content="Gradeomatic home page">
 
     <link href='{{ asset('inc/images/favicon.ico') }}' rel='icon' type='image/x-icon'/>
-    {{--<link href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" type="text/css">--}}
-    {{--<link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet" type="text/css">--}}
-    {{--<link href="{{ asset('css/grade-styles.css') }}" rel="stylesheet" type="text/css">--}}
+    {{--<link href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" type="right/css">--}}
+    {{--<link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet" type="right/css">--}}
+    {{--<link href="{{ asset('css/grade-styles.css') }}" rel="stylesheet" type="right/css">--}}
 
     <link href="{{ asset('css/home-styles.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet" type="text/css">
@@ -154,7 +154,7 @@
         google.load('visualization', '1', {'packages': ['corechart']});
     </script>
 
-    {{--<script type="text/javascript" src="{{ asset('js/commonScripts.js') }}"></script>--}}
+    {{--<script type="right/javascript" src="{{ asset('js/commonScripts.js') }}"></script>--}}
     <script src="{{ asset('js/home-package.js') }}"></script>
 
 
