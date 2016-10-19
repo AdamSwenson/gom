@@ -12283,6 +12283,15 @@ button.close {
 .pager {
   margin-top: 0; }
 
+#topNavbar a:link {
+  color: white; }
+
+#topNavbar .nav-item-text {
+  color: white; }
+
+#topNavbar .navItem {
+  color: white; }
+
 #topNavbar .underlined {
   font-weight: 900; }
 

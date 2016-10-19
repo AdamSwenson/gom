@@ -146,7 +146,7 @@ Route::get('utilities/updateExamCounts', 'UtilityController@updateExamCounts');
 /* ---------------------------------------------- Testing ----------------------------------------------------------- */
 #Route::get('testing/gradingSliders', 'TestController@gradingSlidersTest');
 #Route::get('dev/newgrading', 'TestController@newGrading');
-Route::get('dev/home', 'TestController@home');
+//Route::get('dev/home', 'TestController@home');
 
 
 //Auth::routes();
