@@ -1,1 +1,26 @@
-a{cursor:pointer}.chart{max-width:700px;max-height:500px}.chartDiv{margin-bottom:2em}.elementChartWrapperDiv{outline-style:solid;outline-color:#000;margin-bottom:1em}p .chartClose{padding-right:2em;padding-top:1em}.elementBoxplotButton{margin-left:1em}.bootbox-body p{text-align:justify}
+a {
+  cursor: pointer; }
+
+.chart {
+  max-width: 700px;
+  max-height: 500px; }
+
+.chartDiv {
+  margin-bottom: 2em; }
+
+.elementChartWrapperDiv {
+  outline-style: solid;
+  outline-color: black;
+  margin-bottom: 1em; }
+
+p .chartClose {
+  padding-right: 2em;
+  padding-top: 1em; }
+
+.elementBoxplotButton {
+  margin-left: 1em; }
+
+.bootbox-body p {
+  text-align: justify; }
+
+/*# sourceMappingURL=exam-analytics-package.css.map */

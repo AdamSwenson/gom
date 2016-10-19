@@ -4,31 +4,12 @@
 
 @section('otherCss')
 
-    <link href="https://fonts.googleapis.com/css?family=Cabin+Condensed|            Cinzel|Francois+One|Lalezar|Patua+One|Lobster|Oswald"
-          rel="stylesheet">
-    <style>
-        .secHead h1 {
-            /*font-family: 'Oswald', sans-serif;*/
-            /*font-family: 'Lalezar', cursive;*/
+    <link
+            href="https://fonts.googleapis.com/css?family=Cabin+Condensed|Lato|Cinzel|Francois+One|Roboto:700i|Lalezar|Patua+One|Lobster|Oswald"
+          rel="stylesheet"
+    >
 
-            /*font-family: 'Francois One', sans-serif;*/
-
-            /*font-family: 'Patua One', cursive;*/
-
-            font-family: 'Cinzel', serif;
-
-            /*font-family: 'Lobster', cursive;*/
-            /*font-family: 'Dancing Script', cursive;*/
-        }
-
-        .bodyText {
-
-            /*font-family: 'Cabin Condensed', sans-serif;*/
-            font-family: 'Cinzel', serif;
-
-            font-size: 14px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset("css/dev-home.css")}}">
 
 @endsection
 
@@ -37,21 +18,21 @@
 
         <div class="row">
             <div class="col-lg-2"></div>
-            <div id="gradeFaster" class="col-lg-4 col-md-6 col-sm-12 ">
+            <div id="gradeFaster" class="col-lg-4 col-sm-6 col-xs-12 ">
                 <div class="panel-heading secHead text-center">
                     <h1>Grade Faster</h1>
                 </div>
 
-                <div class="panel-body secBody">
+                <div class="panel-body secBody text-justify">
                     @include('home.text.grade_faster')
                 </div>
             </div>
 
-            <div id="commentBetter" class="col-lg-4 col-md-6 col-sm-12 ">
+            <div id="commentBetter" class="mainSection col-lg-4 col-sm-6 col-xs-12 ">
                 <div class="panel-heading secHead text-center">
                     <h1>Comment Better</h1>
                 </div>
-                <div class="panel-body secBody">
+                <div class="panel-body secBody text-justify">
                     @include('home.text.comment_better')
                 </div>
             </div>
@@ -60,53 +41,61 @@
 
         <div class="row">
             <div class="col-lg-2"></div>
-            <div id="teachBetter" class="col-lg-4 col-md-6 col-sm-12 ">
-                <div class="panel-heading secHead  text-center">
+
+            <div id="teachBetter"
+                 class="mainSection col-lg-4 col-sm-6 col-xs-12 "
+            >
+                <div class="panel-heading secHead text-center">
                     <h1>Teach Better</h1>
                 </div>
-                <div class="panel-body secBody">
+                <div class="panel-body secBody text-justify">
                     @include('home.text.teach_better')
                 </div>
             </div>
 
-            <div id="gradeBetter" class="col-lg-4 col-md-6 col-sm-12 ">
+            <div id="gradeBetter"
+                 class="mainSection col-lg-4 col-sm-6 col-xs-12"
+            >
                 <div class="panel-heading secHead text-center">
                     <h1>Grade Better</h1>
                 </div>
-                <div class="panel-body secBody">
+                <div class="panel-body secBody text-justify">
                     @include('home.text.grade_better')
                 </div>
             </div>
             <div class="col-lg-2"></div>
         </div>
 
-        <div id="signUpArea" class="row">
-            <div class="col-lg-12 col-md-12 text-center ">
+        <div class="row">
+            <div id="signUpArea"
+                 class="col-lg-12 col-xs-12 text-center "
+            >
                 @include('home.partials.signup_area')
             </div>
         </div>
-        <div class="row"></div>
 
-        <div id="studentTestimonials" class="row">
-            {{--<div class="col-lg-2"></div>--}}
+        {{--<div class="row"></div>--}}
 
-            <div class="col-lg-12 col-md-12 text-center ">
-                <a id="testimonialsLink" class="" href="#">Testimonials</a>
-            </div>
-            {{--@include('home.text.be_adored_textonly')--}}
-            {{----}}
+        {{--<div id="studentTestimonials" class="row">--}}
+        {{--<div class="col-lg-2"></div>--}}
 
-            {{--class="col-lg-8 col-md-6 col-sm-12 ">--}}
-            {{--<div class="panel-heading secHead text-center">--}}
-            {{--<h1>Help More</h1>--}}
-            {{--<h1>Learn Better</h1>--}}
-            {{--</div>--}}
-            {{--<div class="panel-body secBody">--}}
-            {{--@include('home.text.be_adored_textonly')--}}
-            {{--</div>--}}
+        {{--<div class="col-lg-12 col-md-12 text-center ">--}}
+        {{--<a id="testimonialsLink" class="" href="#">Testimonials</a>--}}
+        {{--</div>--}}
+        {{--@include('home.text.be_adored_textonly')--}}
+        {{----}}
 
-            {{--<div class="col-lg-2"></div>--}}
-        </div>
+        {{--class="col-lg-8 col-md-6 col-sm-12 ">--}}
+        {{--<div class="panel-heading secHead text-center">--}}
+        {{--<h1>Help More</h1>--}}
+        {{--<h1>Learn Better</h1>--}}
+        {{--</div>--}}
+        {{--<div class="panel-body secBody">--}}
+        {{--@include('home.text.be_adored_textonly')--}}
+        {{--</div>--}}
+
+        {{--<div class="col-lg-2"></div>--}}
+        {{--</div>--}}
 
 
     </div>

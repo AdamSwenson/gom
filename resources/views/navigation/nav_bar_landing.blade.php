@@ -7,14 +7,16 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url('/') }}">
-                <span class="standard" style="color: white;">
-                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> gradeomatic |
-                <small>
-                    grade faster. teach better.
-                </small>
-                </span>
-            </a>
+
+            @include('navigation.partials.brand')
+            {{--<a class="navbar-brand" href="{{ url('/') }}">--}}
+                {{--<span class="standard" style="color: white;">--}}
+                {{--<span class="glyphicon glyphicon-cog" aria-hidden="true"></span> gradeomatic |--}}
+                {{--<small>--}}
+                    {{--grade faster. teach better.--}}
+                {{--</small>--}}
+                {{--</span>--}}
+            {{--</a>--}}
         </div>
         <div class="collapse navbar-collapse" id="navbar-ex-collapse">
             <ul class="nav navbar-nav navbar-right">

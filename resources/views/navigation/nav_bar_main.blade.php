@@ -12,13 +12,15 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand navItem"
-               href="{{ url('/') }}">
-                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> gradeomatic</span>
-                |
-                <small>grade faster. teach better.</small>
-            </a>
+
+            @include('navigation.partials.brand')
+            {{--<a class="navbar-brand navItem"--}}
+               {{--href="{{ url('/') }}">--}}
+                {{--<p class="navbar-text">--}}
+                {{--<span class="glyphicon glyphicon-cog" aria-hidden="true"></span> gradeomatic</span> | <small>grade faster. teach better.</small></p>--}}
+            {{--</a>--}}
         </div>
+
         <div class="collapse navbar-collapse"
              id="navbar-ex-collapse">
 
