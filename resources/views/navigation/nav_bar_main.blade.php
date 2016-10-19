@@ -2,23 +2,10 @@
 <nav id="topNavbar"
      class="navbar navbar-inverse navbar-static-top">
     <div class="container-fluid">
-        <div class="navbar-header">
-            <button type="button"
-                    class="navbar-toggle"
-                    data-toggle="collapse"
-                    data-target="#navbar-ex-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
 
+        <div class="navbar-header">
+            @include('navigation.partials.navigation_toggle')
             @include('navigation.partials.brand')
-            {{--<a class="navbar-brand navItem"--}}
-               {{--href="{{ url('/') }}">--}}
-                {{--<p class="navbar-text">--}}
-                {{--<span class="glyphicon glyphicon-cog" aria-hidden="true"></span> gradeomatic</span> | <small>grade faster. teach better.</small></p>--}}
-            {{--</a>--}}
         </div>
 
         <div class="collapse navbar-collapse"
@@ -83,9 +70,7 @@
                 </li>
 
                 <li id="navLogout">
-                    <a href="{{url('logout')}}"
-                       title="Log Out"
-                       class="navItem"><span class="glyphicon glyphicon-off"></span></a>
+                    @include('navigation.partials.logout')
                 </li>
             </ul>
         </div>

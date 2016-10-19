@@ -34,10 +34,10 @@
             </div>
             <div class="row secBody">
                 <div class="col-md-6 col-sm-12 secText">
-                    @include('home.left.grade_faster')
+                    @include('home.attic.left.grade_faster')
                 </div>
                 <div class="col-md-6 col-sm-12 secImage">
-                    @include('home.right.grade_faster')
+                    @include('home.attic.right.grade_faster')
                 </div>
             </div>
         </div>
@@ -50,10 +50,10 @@
             </div>
             <div class="row secBody">
                 <div class="col-md-6 col-sm-12 secText">
-                    @include('home.left.comment_better')
+                    @include('home.attic.left.comment_better')
                 </div>
                 <div class="col-md-6 col-sm-12 secImage">
-                    @include('home.right.comment_better')
+                    @include('home.attic.right.comment_better')
                 </div>
             </div>
         </div>
@@ -66,10 +66,10 @@
             </div>
             <div class="row secBody">
                 <div class="col-md-6 col-sm-12 secText">
-                    @include('home.left.teach_better')
+                    @include('home.attic.left.teach_better')
                 </div>
                 <div class="col-md-6 col-sm-12 secImage">
-                    @include('home.right.teach_better')
+                    @include('home.attic.right.teach_better')
                 </div>
             </div>
         </div>
@@ -82,10 +82,10 @@
             </div>
             <div class="row secBody">
                 <div class="col-md-6 col-sm-12 secText">
-                    @include('home.left.grade_better')
+                    @include('home.attic.left.grade_better')
                 </div>
                 <div class="col-md-6 col-sm-12 secImage">
-                    @include('home.right.grade_better')
+                    @include('home.attic.right.grade_better')
                 </div>
             </div>
         </div>
@@ -97,7 +97,7 @@
                 </div>
             </div>
             <div class="row secBody">
-                @include('home.left.be_adored')
+                @include('home.attic.left.be_adored')
             </div>
         </div>
 
