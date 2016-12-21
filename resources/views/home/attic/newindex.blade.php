@@ -8,7 +8,7 @@
     <title>Welcome to the Gradeomatic</title>
     <meta name="description" content="Gradeomatic home page">
 
-    <link href='{{ asset('inc/images/favicon.ico') }}' rel='icon' type='image/x-icon'/>
+    <link href='{{ asset('img') }}' rel='icon' type='image/x-icon'/>
     {{--<link href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" type="right/css">--}}
     {{--<link href="{{ asset('inc/css/bootstrap-slider.css') }}" rel="stylesheet" type="right/css">--}}
     {{--<link href="{{ asset('css/grade-styles.css') }}" rel="stylesheet" type="right/css">--}}

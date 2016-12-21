@@ -1060,7 +1060,7 @@ trait FunctionalTesterActions
      * If a fuzzy locator is given, the page will be searched for a button, link, or left matching the locator string.
      * For buttons, the "value" attribute, "name" attribute, and inner text are searched.
      * For links, the link text is searched.
-     * For images, the "alt" attribute and inner text of any parent links are searched.
+     * For img, the "alt" attribute and inner text of any parent links are searched.
      *
      * The second parameter is a context (CSS or XPath locator) to narrow the search.
      *

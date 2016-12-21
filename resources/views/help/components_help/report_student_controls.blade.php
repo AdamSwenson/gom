@@ -52,7 +52,7 @@
                 ['imageFile' => 'feedback/partial_example_of_feedback.jpg',
                 'altText' =>"Partial example of some sample feedback given to students",
                 'caption' => "Part of a student's feedback"])
-                <p class="answer"><a href="{{asset('images/feedback/feedback_sample.pdf')}}">Sample feedback for student (.pdf)</a></p>
+                <p class="answer"><a href="{{asset('img')}}">Sample feedback for student (.pdf)</a></p>
             </div>
         </div>
     </div>

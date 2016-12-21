@@ -5,7 +5,7 @@
         <p class="bodyText">
             <img
                 class="img-responsive"
-                src="{{asset('images/home/partial_example_of_feedback_small.jpeg')}}"
+                src="{{asset('img')}}"
                 alt="[TODO Add text version]">
         </p>
         <p class="bodyText">

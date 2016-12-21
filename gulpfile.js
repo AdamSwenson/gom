@@ -162,6 +162,20 @@ mix.browserify('data/Store.js', 'public/js/dev/new-data-package.js');
 
     mix.sass(['common/common.sass', 'home/body-styles.sass'], 'public/css/dev-home.css' )
 
+
+    require('laravel-elixir-imagemin');
+
+    elixir.config.images = {
+        folder: 'img',
+        outputFolder: 'img'
+    };
+
+    elixir(function(mix) {
+        mix.imagemin();
+    });
+
+
+
     // mix.browserSync({
     //     proxy: 'project.dev'
     // });

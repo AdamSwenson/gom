@@ -6,7 +6,7 @@
         <p class="bodyText">
             <img
                     class="img-responsive"
-                    src="{{asset('images/home/StudentThankYou1.jpeg')}}"
+                    src="{{asset('img')}}"
                     alt="[TODO Add text version]">
         </p>
     </div>
@@ -16,7 +16,7 @@
         <p class="bodyText">
             <img
                     class="img-responsive"
-                    src="{{asset('images/home/StudentThankYou2.jpeg')}}"
+                    src="{{asset('img')}}"
                     alt="[TODO Add text version]"
             >
         </p>

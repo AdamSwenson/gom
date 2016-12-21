@@ -12,7 +12,7 @@
         <div class="item active">
             <img
                     class="img-responsive"
-                    src="{{asset('images/home/greenbookSmall.jpeg')}}"
+                    src="{{asset('img')}}"
                     alt="Picture of a student's exam, ready for grading.">
             <div class="carousel-caption">
                 <p>....a good exam is a graded exam</p>
@@ -22,7 +22,7 @@
         <div class="item">
             <img
                     class="img-responsive"
-                    src="{{asset('images/home/StudentThankYou1.jpeg')}}"
+                    src="{{asset('img')}}"
                     alt="[TODO Add text version]">
             <div class="carousel-caption">
                 <p>Actual student response!</p>
@@ -32,7 +32,7 @@
         <div class="item">
             <img
                     class="img-responsive"
-                    src="{{asset('images/home/StudentThankYou2.jpeg')}}"
+                    src="{{asset('img')}}"
                     alt="[TODO Add text version]">
             <div class="carousel-caption">
                 <p>Actual student response!</p>

@@ -54,7 +54,7 @@ return array(
          * The location of a temporary directory.
          *
          * The directory specified must be writeable by the webserver process.
-         * The temporary directory is required to download remote images and when
+         * The temporary directory is required to download remote img and when
          * using the PFDLib back end.
          */
         "DOMPDF_TEMP_DIR" => sys_get_temp_dir(),
@@ -165,12 +165,12 @@ return array(
         /**
          * Image DPI setting
          *
-         * This setting determines the default DPI setting for images and fonts.  The
-         * DPI may be overridden for inline images by explictly setting the
+         * This setting determines the default DPI setting for img and fonts.  The
+         * DPI may be overridden for inline img by explictly setting the
          * left's width & height style attributes (i.e. if the left's native
          * width is 600 pixels and you specify the left's width as 72 points,
          * the left will have a DPI of 600 in the rendered PDF.  The DPI of
-         * background images can not be overridden and is controlled entirely
+         * background img can not be overridden and is controlled entirely
          * via this parameter.
          *
          * For the purposes of DOMPDF, pixels per inch (PPI) = dots per inch (DPI).
@@ -190,7 +190,7 @@ return array(
          *
          * Take care about extra font/left zoom factor of browser.
          *
-         * In images, <img> size in pixel attribute, img css style, are overriding
+         * In img, <img> size in pixel attribute, img css style, are overriding
          * the real left dimension in px for rendering.
          *
          * @var int
@@ -225,7 +225,7 @@ return array(
          * Enable remote file access
          *
          * If this setting is set to true, DOMPDF will access remote sites for
-         * images and CSS files as required.
+         * img and CSS files as required.
          * This is required for part of test case www/test/image_variants.html through www/examples.php
          *
          * Attention!

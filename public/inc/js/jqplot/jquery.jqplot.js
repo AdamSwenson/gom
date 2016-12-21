@@ -9057,7 +9057,7 @@
             return null;
         }
 
-        // excanvas and hence IE < 9 do not support toDataURL and cannot export images.
+        // excanvas and hence IE < 9 do not support toDataURL and cannot export img.
         if ($.jqplot.use_excanvas) {
             return null;
         }
