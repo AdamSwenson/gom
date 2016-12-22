@@ -165,12 +165,12 @@ return array(
         /**
          * Image DPI setting
          *
-         * This setting determines the default DPI setting for img and fonts.  The
-         * DPI may be overridden for inline img by explictly setting the
+         * This setting determines the default DPI setting for images and fonts.  The
+         * DPI may be overridden for inline images by explictly setting the
          * left's width & height style attributes (i.e. if the left's native
          * width is 600 pixels and you specify the left's width as 72 points,
          * the left will have a DPI of 600 in the rendered PDF.  The DPI of
-         * background img can not be overridden and is controlled entirely
+         * background images can not be overridden and is controlled entirely
          * via this parameter.
          *
          * For the purposes of DOMPDF, pixels per inch (PPI) = dots per inch (DPI).
@@ -190,7 +190,7 @@ return array(
          *
          * Take care about extra font/left zoom factor of browser.
          *
-         * In img, <img> size in pixel attribute, img css style, are overriding
+         * In images, <images> size in pixel attribute, images css style, are overriding
          * the real left dimension in px for rendering.
          *
          * @var int

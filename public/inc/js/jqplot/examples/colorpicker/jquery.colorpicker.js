@@ -8,7 +8,7 @@
  * Licensed under the MIT.
  *
  * Full-featured colorpicker for jQueryUI with full theming support.
- * Most img from jPicker by Christopher T. Tillman.
+ * Most images from jPicker by Christopher T. Tillman.
  * Sourcecode created from scratch by Martijn W. van der Lee.
  */
 
@@ -2014,7 +2014,7 @@
 			altProperties:		'background-color',	// comma separated list of any of 'background-color', 'color', 'border-color', 'outline-color'
 			autoOpen:			false,		// Open dialog automatically upon creation
 			buttonColorize:		false,
-			buttonImage:		'img/ui-colorpicker.png',
+			buttonImage:		'images/ui-colorpicker.png',
 			buttonImageOnly:	false,
 			buttonText:			null,		// Text on the button and/or title of button left.
 			closeOnEscape:		true,		// Close the dialog when the escape key is pressed.
@@ -2134,7 +2134,7 @@
 					if (that.options.buttonImage !== '') {
 						text = that.options.buttonText || that._getRegional('button');
 
-						that.image = $('<img/>').attr({
+						that.image = $('<images/>').attr({
 							'src':		that.options.buttonImage,
 							'alt':		text,
 							'title':	text

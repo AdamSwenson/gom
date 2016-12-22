@@ -195,7 +195,7 @@
                 draggable: /[uo]l/i.test( el.nodeName ) ? 'li' : '>*',
                 ghostClass: 'sortable-ghost',
                 chosenClass: 'sortable-chosen',
-                ignore: 'a, img',
+                ignore: 'a, images',
                 filter: null,
                 animation: 0,
                 setData: function ( dataTransfer, dragEl ) {

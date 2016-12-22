@@ -1,5 +1,5 @@
 <?php
-$imageFile = asset('img/' . $imageFile)
+$imageFile = asset('images/' . $imageFile)
 ?>
 <figure class="figure">
 

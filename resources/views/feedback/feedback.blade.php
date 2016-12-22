@@ -32,7 +32,7 @@ $encodedStudentData = json_encode($r, JSON_FORCE_OBJECT);
     <title>Your feedback</title>
     <meta name="description" content="Feedback for your exam">
 
-    <link href='{{ asset('img') }}' rel='icon' type='image/x-icon'/>
+    <link href='{{ asset('images') }}' rel='icon' type='image/x-icon'/>
 
     @include('layouts.css.css_bootstrap')
     <style type="text/css">

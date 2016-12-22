@@ -18,9 +18,9 @@
     {{--<div class="row">--}}
                 {{--<div class="col-xs-1 col-md-2 col-lg-2"></div>--}}
                 {{--<div class="col-xs-10 col-md-8 col-lg-8">--}}
-                    {{--<img--}}
-                            {{--class="img-responsive"--}}
-                            {{--src="{{asset('img/home/greenbookSmall.jpeg')}}"--}}
+                    {{--<images--}}
+                            {{--class="images-responsive"--}}
+                            {{--src="{{asset('images/home/greenbookSmall.jpeg')}}"--}}
                             {{--alt="Picture of a student's exam, ready for grading.">--}}
                 {{--</div>--}}
                 {{--<div class="col-xs-1 col-md-2 col-lg-2"></div>--}}
@@ -28,20 +28,9 @@
             {{--<div class="row">--}}
                 {{--<div class="col-xs-1 col-md-2 col-lg-2"></div>--}}
                 {{--<div class="col-xs-10 col-md-8 col-lg-8">--}}
-                    {{--<img--}}
-                            {{--class="img-responsive"--}}
-                            {{--src="{{asset('img/home/partial_example_of_feedback_small.jpeg')}}"--}}
-                            {{--alt="Picture of a student's exam, ready for grading.">--}}
-                {{--</div>--}}
-                {{--<div class="col-xs-1 col-md-2 col-lg-2"></div>--}}
-            {{--</div>--}}
-
-            {{--<div class="row">--}}
-                {{--<div class="col-xs-1 col-md-2 col-lg-2"></div>--}}
-                {{--<div class="col-xs-10 col-md-8 col-lg-8">--}}
-                    {{--<img--}}
-                            {{--class="img-responsive"--}}
-                            {{--src="{{asset('img/home/StudentThankYou1.jpeg')}}"--}}
+                    {{--<images--}}
+                            {{--class="images-responsive"--}}
+                            {{--src="{{asset('images/home/partial_example_of_feedback_small.jpeg')}}"--}}
                             {{--alt="Picture of a student's exam, ready for grading.">--}}
                 {{--</div>--}}
                 {{--<div class="col-xs-1 col-md-2 col-lg-2"></div>--}}
@@ -50,9 +39,20 @@
             {{--<div class="row">--}}
                 {{--<div class="col-xs-1 col-md-2 col-lg-2"></div>--}}
                 {{--<div class="col-xs-10 col-md-8 col-lg-8">--}}
-                    {{--<img--}}
-                            {{--class="img-responsive"--}}
-                            {{--src="{{asset('img/home/StudentThankYou2.jpeg')}}"--}}
+                    {{--<images--}}
+                            {{--class="images-responsive"--}}
+                            {{--src="{{asset('images/home/StudentThankYou1.jpeg')}}"--}}
+                            {{--alt="Picture of a student's exam, ready for grading.">--}}
+                {{--</div>--}}
+                {{--<div class="col-xs-1 col-md-2 col-lg-2"></div>--}}
+            {{--</div>--}}
+
+            {{--<div class="row">--}}
+                {{--<div class="col-xs-1 col-md-2 col-lg-2"></div>--}}
+                {{--<div class="col-xs-10 col-md-8 col-lg-8">--}}
+                    {{--<images--}}
+                            {{--class="images-responsive"--}}
+                            {{--src="{{asset('images/home/StudentThankYou2.jpeg')}}"--}}
                             {{--alt="Picture of a student's exam, ready for grading.">--}}
                 {{--</div>--}}
                 {{--<div class="col-xs-1 col-md-2 col-lg-2"></div>--}}
