@@ -20,7 +20,7 @@ $('body').scrollspy({
 $(document).ready(function () {
     $('figure').on('click', function () {
         var src = $("img", this).attr('src');
-        var img = '<img src="' + src + '" class="img-responsive"/>';
+        var img = '<images src="' + src + '" class="images-responsive"/>';
         $('#myModal').modal();
         $('#myModal').on('shown.bs.modal', function () {
             $('#myModal .modal-body').html(img);

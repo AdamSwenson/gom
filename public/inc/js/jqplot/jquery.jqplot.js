@@ -9271,7 +9271,7 @@
         }
     };
 
-    // return a DOM <img> element and return it.
+    // return a DOM <images> element and return it.
     // Should work on canvas supporting browsers.
     $.fn.jqplotToImageElem = function(options) {
         var elem = document.createElement("img");
@@ -9280,10 +9280,10 @@
         return elem;
     };
 
-    // return a string for an <img> element and return it.
+    // return a string for an <images> element and return it.
     // Should work on canvas supporting browsers.
     $.fn.jqplotToImageElemStr = function(options) {
-        var str = '<img src='+$(this).jqplotToImageStr(options)+' />';
+        var str = '<images src='+$(this).jqplotToImageStr(options)+' />';
         return str;
     };
 

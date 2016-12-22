@@ -1,5 +1,10 @@
 var elixir = require( 'laravel-elixir' );
 
+// require( 'laravel-elixir-imagemin' );
+// const imagemin = require('gulp-imagemin');
+
+require('laravel-elixir-images');
+
 /*
  |--------------------------------------------------------------------------
  | Elixir Asset Management
@@ -157,10 +162,13 @@ elixir( function ( mix ) {
         "libraries/unitTestHelpers/jquery.cookie.js"
     ], 'public/js/testing/js-test-suite.js' );
 
-mix.browserify('data/Store.js', 'public/js/dev/new-data-package.js');
+    mix.browserify( 'data/Store.js', 'public/js/dev/new-data-package.js' );
     mix.browserify( 'grade/gradeVue.js', 'public/js/dev/grade-vue.js' );
 
-    mix.sass(['common/common.sass', 'home/body-styles.sass'], 'public/css/dev-home.css' )
+    mix.sass( [ 'common/common.sass', 'home/body-styles.sass' ], 'public/css/dev-home.css' )
+
+
+    mix.images(null, 'public/images');
 
     // mix.browserSync({
     //     proxy: 'project.dev'

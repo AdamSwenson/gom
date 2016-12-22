@@ -2134,7 +2134,7 @@
 					if (that.options.buttonImage !== '') {
 						text = that.options.buttonText || that._getRegional('button');
 
-						that.image = $('<img/>').attr({
+						that.image = $('<images/>').attr({
 							'src':		that.options.buttonImage,
 							'alt':		text,
 							'title':	text

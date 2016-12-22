@@ -54,7 +54,7 @@ return array(
          * The location of a temporary directory.
          *
          * The directory specified must be writeable by the webserver process.
-         * The temporary directory is required to download remote images and when
+         * The temporary directory is required to download remote img and when
          * using the PFDLib back end.
          */
         "DOMPDF_TEMP_DIR" => sys_get_temp_dir(),
@@ -190,7 +190,7 @@ return array(
          *
          * Take care about extra font/left zoom factor of browser.
          *
-         * In images, <img> size in pixel attribute, img css style, are overriding
+         * In images, <images> size in pixel attribute, images css style, are overriding
          * the real left dimension in px for rendering.
          *
          * @var int
@@ -225,7 +225,7 @@ return array(
          * Enable remote file access
          *
          * If this setting is set to true, DOMPDF will access remote sites for
-         * images and CSS files as required.
+         * img and CSS files as required.
          * This is required for part of test case www/test/image_variants.html through www/examples.php
          *
          * Attention!

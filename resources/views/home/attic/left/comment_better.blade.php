@@ -5,7 +5,7 @@
         <p class="bodyText">
             <img
                     class="img-responsive"
-                    src="{{asset('images/grade/grade_element_sliders_moved.jpg')}}"
+                    src="{{asset('images')}}"
                     alt="[TODO Add text version]">
         </p>
         <p class="bodyText">

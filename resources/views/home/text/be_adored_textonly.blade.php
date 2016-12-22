@@ -22,7 +22,7 @@
             and think that it all will definitely help me on future exams since I know exactly the type of answer you
             are looking for. Thank you so much for all the feedback. I hope every class I take in the future can be more
             like that.</p>
-        <footer><a href="{{asset('images/home/StudentThankYou1.jpeg')}}">Unsolicited student praise</a></footer>
+        <footer><a href="{{asset('images')}}">Unsolicited student praise</a></footer>
     </blockquote>
 
 </div>

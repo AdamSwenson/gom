@@ -9,7 +9,7 @@
     <title>Welcome to the Gradeomatic </title>
     <meta name="description" content="Welcome to the Gradeomatic">
 
-    <link href='{{asset('inc/images/favicon.ico')}}' rel='icon' type='image/x-icon'/>
+    <link href='{{asset('images')}}' rel='icon' type='image/x-icon'/>
 
     <style type="text/css">
         .carousel-inner > .item > img,
@@ -41,7 +41,7 @@
         <!-- Wrapper for slides -->
         <div class="carousel-inner" role="listbox">
             <div class="item active">
-                <img src="{{asset('inc/home/images/grading_shoulder.jpeg', env('APP_ENV') == 'production')}}"
+                <img src="{{asset('images', env('APP_ENV') == 'production')}}"
                     alt="Grade">
                 <div class="carousel-caption">
                     <h2>Grade Faster</h2>
@@ -59,7 +59,7 @@
             </div>
 
             <div class="item">
-                <img src="{{asset('inc/home/images/teacher_and_student.jpeg', env('APP_ENV') == 'production')}}"
+                <img src="{{asset('images', env('APP_ENV') == 'production')}}"
                      alt="Feedback">
                 <div class="carousel-caption">
                     <h2>More Feedback</h2>
@@ -68,7 +68,7 @@
             </div>
 
             <div class="item">
-                <img src="{{asset('inc/home/images/analytics.png', env('APP_ENV') == 'production')}}" alt="analytics">
+                <img src="{{asset('images', env('APP_ENV') == 'production')}}" alt="analytics">
                 <div class="carousel-caption">
                     <h2>Analytics</h2>
                     <p>Stats let you see your results in-depth.</p>

@@ -30,7 +30,7 @@
 /* Icons
 ----------------------------------*/
 
-/* states and images */
+/* states and img */
 .ui-icon { display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
 
 
@@ -88,7 +88,7 @@
 /* Icons
 ----------------------------------*/
 
-/* states and images */
+/* states and img */
 .ui-icon { width: 16px; height: 16px; background-image: url(images/ui-icons_222222_256x240.png); }
 .ui-widget-content .ui-icon {background-image: url(images/ui-icons_222222_256x240.png); }
 .ui-widget-header .ui-icon {background-image: url(images/ui-icons_ffffff_256x240.png); }
