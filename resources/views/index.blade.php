@@ -11,7 +11,9 @@
     <div id="homePage" class="mainBodyLocator">
 
         <div class="row">
+
             <div class="col-lg-2"></div>
+
             <div id="gradeFaster" class="col-lg-4 col-sm-6 col-xs-12 ">
                 <div class="panel-heading secHead text-center">
                     <h1 class="sectionHeading">Grade Faster</h1>
@@ -30,7 +32,9 @@
                     @include('home.text.comment_better')
                 </div>
             </div>
+
             <div class="col-lg-2"></div>
+
         </div>
 
         <div class="row">
