@@ -29,5 +29,5 @@ Sixty exams steal an hour of your life with each unnecessary minute you spend pe
 <p class="body-text">
     The gradeomatic has cut its creator's grading time by more than half. </p>
 
-<p class="body-text">In the time it takes to pick up a pen and write a score, the gradeomatic simultaneously creates bespoke feedback, records scores, calculates grades, and compiles assessment data and analytics.
+<p class="body-text">In the time it takes to pick up a pen and write a score, the gradeomatic creates bespoke feedback, records scores, calculates grades, and compiles assessment data and analytics.
 </p>
