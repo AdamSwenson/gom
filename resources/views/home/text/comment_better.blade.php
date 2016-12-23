@@ -14,13 +14,15 @@
  */
 ?>
 
-<p class="body-text">Your ability to give each student the detailed and personalized feedback they need to succeed usually depends on class size. The gradeomatic's speed and efficiency free you to pinpoint the strengths and weaknesses of as many students as your eyes can handle.
-</p>
+<p class="body-text">Class size limits your ability to give each student the detailed and personalized feedback they
+    need to succeed.</p>
 
-<p class="body-text">
-<a id="testimonialsLink"
-   data-toggle="modal"
-   data-target=".student-praise-example-modal-lg"
-   class="body-text-link"
-   href="#">Some unsolicited student praise</a>
+<p class="body-text">The gradeomatic's speed and efficiency free you to pinpoint the strengths and weaknesses of as many
+    students as your eyes can handle.</p>
+
+<p class="body-text"><a id="testimonialsLink"
+                        data-toggle="modal"
+                        data-target=".student-praise-example-modal-lg"
+                        class="body-text-link"
+                        href="#">Some unsolicited student praise</a>
 </p>

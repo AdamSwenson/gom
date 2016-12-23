@@ -13,5 +13,9 @@
 ?>
 
 <p class="body-text">
-    Grading is hard, boring, and important. Mistakes hurt our students. The gradeomatic helps you catch grading errors before your students do.
+    Grading is hard, boring, and important. </p>
+
+<p class="body-text">Mistakes hurt your students. </p>
+
+<p class="body-text">The gradeomatic helps you catch grading errors before your students do.
 </p>

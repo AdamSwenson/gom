@@ -54,17 +54,23 @@
             <div id="gradeBetter"
                  class="mainSection col-lg-4 col-sm-6 col-xs-12"
             >
+
                 <div class="panel-heading text-center">
                     <h1 class="sectionHeading">Grade Better</h1>
                 </div>
+
                 <div class="panel-body secBody text-justify">
                     @include('home.text.grade_better')
                 </div>
+
             </div>
+
             <div class="col-lg-2"></div>
+
         </div>
 
         <div class="row">
+
             <div id="signUpArea"
                  class="col-lg-12 col-xs-12 text-center "
             >
