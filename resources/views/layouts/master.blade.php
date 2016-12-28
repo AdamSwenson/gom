@@ -6,6 +6,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <meta name="google-site-verification" content="DCGG7JLvksNEN9XdkbV0IUENjMa5cOMopPQaB3dYzLc"/>
     <meta name="description" content="@yield('description')">
+    <meta name="theme-color" content="#db5945">
+
 
     <title>@yield('pageTitle')</title>
 

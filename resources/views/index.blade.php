@@ -5,6 +5,16 @@
 @section('otherCss')
     {{--<link href="https://fonts.googleapis.com/css?family=Open+Sans:300|Roboto" rel="stylesheet">--}}
     <link rel="stylesheet" href="{{ asset("css/home-package.css")}}">
+    <style>
+        {{--body {--}}
+            {{--background-image: url({{asset('images/home/greenbookSmallBck.jpg')}});--}}
+        {{--}--}}
+
+        .secHead {
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+    </style>
 @endsection
 
 @section('body')
@@ -14,20 +24,21 @@
 
             <div class="col-lg-2"></div>
 
-            <div id="gradeFaster" class="col-lg-4 col-sm-6 col-xs-12 ">
-                <div class="panel-heading secHead text-center">
-                    <h1 class="sectionHeading">Grade Faster</h1>
-                </div>
+            <div id="gradeFaster"
+                 class="col-lg-4 col-sm-6 col-xs-12 ">
+
+                <h1 class="panel-heading secHead text-center sectionHeading">Grade Faster</h1>
 
                 <div class="panel-body secBody text-justify">
                     @include('home.text.grade_faster')
                 </div>
             </div>
 
-            <div id="commentBetter" class="mainSection col-lg-4 col-sm-6 col-xs-12 ">
-                <div class="panel-heading secHead text-center">
-                    <h1 class="sectionHeading">Comment Better</h1>
-                </div>
+            <div id="commentBetter"
+                 class="mainSection col-lg-4 col-sm-6 col-xs-12 ">
+
+                <h1 class="panel-heading secHead text-center sectionHeading">Comment Better</h1>
+
                 <div class="panel-body secBody text-justify">
                     @include('home.text.comment_better')
                 </div>
@@ -41,28 +52,23 @@
             <div class="col-lg-2"></div>
 
             <div id="teachBetter"
-                 class="mainSection col-lg-4 col-sm-6 col-xs-12 "
-            >
-                <div class="panel-heading secHead text-center">
-                    <h1 class="sectionHeading">Teach Better</h1>
-                </div>
+                 class="mainSection col-lg-4 col-sm-6 col-xs-12 ">
+
+                <h1 class="panel-heading secHead text-center sectionHeading">Teach Better</h1>
+
                 <div class="panel-body secBody text-justify">
                     @include('home.text.teach_better')
                 </div>
             </div>
 
             <div id="gradeBetter"
-                 class="mainSection col-lg-4 col-sm-6 col-xs-12"
-            >
+                 class="mainSection col-lg-4 col-sm-6 col-xs-12">
 
-                <div class="panel-heading text-center">
-                    <h1 class="sectionHeading">Grade Better</h1>
-                </div>
+                <h1 class="panel-heading secHead text-center sectionHeading">Grade Better</h1>
 
                 <div class="panel-body secBody text-justify">
                     @include('home.text.grade_better')
                 </div>
-
             </div>
 
             <div class="col-lg-2"></div>
