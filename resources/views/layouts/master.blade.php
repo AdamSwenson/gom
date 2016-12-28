@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    {{--<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>--}}
     <meta name=viewport content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <meta name="google-site-verification" content="DCGG7JLvksNEN9XdkbV0IUENjMa5cOMopPQaB3dYzLc"/>
@@ -11,8 +10,6 @@
     <title>@yield('pageTitle')</title>
 
     <link href='{{ asset('inc/images/favicon.ico') }}' rel='icon' type='image/x-icon'/>
-
-    @include('layouts.css.css_bootstrap')
 
     @yield('otherCss')
 
@@ -27,8 +24,8 @@
     @else
         @include('navigation.nav_bar_landing')
     @endif
+
     @if(env('APP_ENV') == 'production')
-        {{--@include('temp.warning_not_to_use_student_data')--}}
     @endif
 
     <div class="container-fluid">
@@ -43,11 +40,9 @@
     <div id="scriptBox">
         <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
 
-        @include('layouts.jsData')
-
         <script type="text/javascript">
             var routeRoot = '{{ url('') }}';
-            window.console.log( routeRoot );
+
             if ( typeof jQuery != 'undefined' ) {
                 $.ajaxSetup( {
                     headers: {
@@ -55,10 +50,10 @@
                     }
                 } );
             }
-
         </script>
 
         @yield('jsArea')
+
     </div>
 </body>
 </html>

@@ -3,8 +3,8 @@
 @section('description', "Give personalized feedback. Collect detailed data. Finish grading faster.")
 
 @section('otherCss')
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300|Roboto" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset("css/dev-home.css")}}">
+    {{--<link href="https://fonts.googleapis.com/css?family=Open+Sans:300|Roboto" rel="stylesheet">--}}
+    <link rel="stylesheet" href="{{ asset("css/home-package.css")}}">
 @endsection
 
 @section('body')
@@ -88,7 +88,4 @@
         var activeTab = '';
     </script>
     <script type='text/javascript' src="{{ asset('js/common-package.js') }}"></script>
-    <script>
-        //  $( ".affix-bottom" ).affix();
-    </script>
 @endsection
