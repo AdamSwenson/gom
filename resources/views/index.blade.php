@@ -3,13 +3,9 @@
 @section('description', "Give personalized feedback. Collect detailed data. Finish grading faster.")
 
 @section('otherCss')
-    {{--<link href="https://fonts.googleapis.com/css?family=Open+Sans:300|Roboto" rel="stylesheet">--}}
+
     <link rel="stylesheet" href="{{ asset("css/home-package.css")}}">
     <style>
-        {{--body {--}}
-            {{--background-image: url({{asset('images/home/greenbookSmallBck.jpg')}});--}}
-        {{--}--}}
-
         .secHead {
             padding-bottom: 0;
             margin-bottom: 0;
