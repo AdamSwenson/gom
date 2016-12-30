@@ -5,7 +5,6 @@
 @section('description', 'Assign letter grades for the exam')
 
 @section('otherCss')
-
     <link rel="stylesheet" href="{{ asset("css/common-package.css")}}">
 @endsection
 
