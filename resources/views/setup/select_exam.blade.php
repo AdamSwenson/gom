@@ -6,7 +6,7 @@
 
 @section('description', 'Create, edit, clone or delete an exam')
 
-@section('cssLinks')
+@section('otherCss')
     <link rel="stylesheet" href="{{ asset('css/select-exam-package.css') }}">
 @endsection
 

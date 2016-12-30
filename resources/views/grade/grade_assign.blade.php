@@ -4,7 +4,9 @@
 @section('pageTitle', 'Assign Grades | gradeomatic')
 @section('description', 'Assign letter grades for the exam')
 
-@section('cssLinks')
+@section('otherCss')
+
+    <link rel="stylesheet" href="{{ asset("css/common-package.css")}}">
 @endsection
 
 @section('body')

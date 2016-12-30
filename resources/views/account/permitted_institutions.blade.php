@@ -9,7 +9,7 @@
 @extends('layouts.master')
 
 @section('pageTitle', 'Get notified')
-@section('cssLinks')
+@section('otherCss')
 
 @endsection
 

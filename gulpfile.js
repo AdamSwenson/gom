@@ -138,7 +138,7 @@ elixir( function ( mix ) {
      lossy: options && options.lossy || config.images.lossy,
      webp: options && options.webp || config.images.webp
      */
-    mix.images(null, 'public/images', {
+    mix.images(null, 'public/images', {});
         // extensions: {
         //     lossy: {
         //
@@ -152,7 +152,7 @@ elixir( function ( mix ) {
         // optimizers: {
         //     jpg: require('imagemin-jpegoptim')
         // }
-    });
+    // });
 
 
 

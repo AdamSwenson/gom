@@ -8,8 +8,9 @@
 
 @extends('layouts.master')
 @section('pageTitle', 'Quality control | gradeomatic')
-@section('cssLinks')
+@section('otherCss')
 
+    <link rel="stylesheet" href="{{ asset("css/common-package.css")}}">
 @endsection
 @section('body')
     <div id="qualityControlPage" class="mainBodyLocator">

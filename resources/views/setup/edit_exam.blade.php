@@ -4,7 +4,7 @@
 @section('pageTitle', 'Edit Exam | gradeomatic')
 @section('description', 'Edit an exam')
 
-@section('cssLinks')
+@section('otherCss')
     <link rel="stylesheet" href="{{ asset('css/common-package.css') }}">
 @endsection
 

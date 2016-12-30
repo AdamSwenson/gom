@@ -4,7 +4,7 @@
 @extends('layouts.master')
 @section('pageTitle', 'Edit Questions | gradeomatic')
 @section('description', 'Add or edit questions')
-@section('cssLinks')
+@section('otherCss')
     <link rel="stylesheet" href="{{ asset('css/common-package.css') }}">
 @endsection
 

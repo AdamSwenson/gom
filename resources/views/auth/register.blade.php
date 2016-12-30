@@ -1,7 +1,10 @@
-
 @extends('layouts.master')
 @section('pageTitle', 'Sign Up | gradeomatic')
 @section('description', 'Sign up for gradeomatic')
+
+@section('otherCss')
+    <link rel="stylesheet" href="{{ asset("css/common-package.css")}}">
+@endsection
 
 @section('body')
     <div id="registrationPage" class="row mainBodyLocator">

@@ -8,7 +8,7 @@
 @extends('layouts.master')
 
 @section('pageTitle', 'Feedback progress')
-@section('cssLinks')
+@section('otherCss')
     <link href="{{ asset('inc/css/outputStyles.css')}}" type="text/css" rel="stylesheet"/>
 @endsection
 

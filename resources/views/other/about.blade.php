@@ -9,8 +9,8 @@
 
 @section('pageTitle', 'About | gradeomatic')
 
-@section('cssLinks')
-
+@section('otherCss')
+    <link rel="stylesheet" href="{{ asset("css/common-package.css")}}">
 @endsection
 
 @section('body')

@@ -8,7 +8,7 @@ Just an empty blade, waiting for a purpose.
 
 @endsection
 
-@section('cssLinks')
+@section('otherCss')
 
 @endsection
 

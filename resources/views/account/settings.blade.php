@@ -2,7 +2,7 @@
 
 @section('pageTitle', 'Settings | gradeomatic')
 
-@section('cssLinks')
+@section('otherCss')
 
 @endsection
 
