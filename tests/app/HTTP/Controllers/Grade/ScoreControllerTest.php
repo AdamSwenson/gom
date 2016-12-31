@@ -16,8 +16,10 @@ use App\Http\Controllers\ExamController;
 use App\Http\Requests\ExamRequest;
 use App\Jobs\Grade\RecordScoresAndComments;
 use App\Jobs\RecordGradingTime;
+use App\QuestionAssignment;
 use App\QuestionScore;
 use App\Repositories\Score\IQuestionScoreRepository;
+use App\Student;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
@@ -42,19 +44,24 @@ class ScoreControllerTest extends \TestCase
     public function setUp()
     {
         parent::setUp();
+
+        Auth::loginUsingId(1);
+        $this->mock = $this->createMock(IQuestionScoreRepository::class);
+
         $this->exam = factory(Exam::class)->create();
-        $this->eid = $this->faker->randomNumber(3);
+        $this->questionScore = factory(QuestionScore::class)->create();
         $this->examName = $this->faker->text(5);
         $this->examTerm = $this->faker->text(5);
         $this->examYear = $this->faker->year();
-
-        $eid = $this->exam->getId();
+        $this->eid = $this->exam->getId();
         $this->examData = [
-            'exam_id'  => $eid,
+            'exam_id'  => $this->eid,
             'name'     => $this->examName,
             'examTerm' => $this->examTerm,
             'examYear' => $this->examYear,
         ];
+
+
     }
 
     public function tearDown()
@@ -65,7 +72,7 @@ class ScoreControllerTest extends \TestCase
 
     public function testRecordScoreQuestion()
     {
-        $questionScore = factory(QuestionScore::class)->create();
+
         $data = ['examId' => 1, 'question_assignment_id' => 1, 'student_id' => 2, 'score' => 3.4];
 
         $this->expectsJobs(RecordScoresAndComments::class);
@@ -129,13 +136,13 @@ class ScoreControllerTest extends \TestCase
      */
     public function removeQuestionScore(){
         $exam = factory(Exam::class)->create();
-        $data = ['examId' => $exam->id, 'question_assignment_id' => 1, 'student_id' => 2, 'score' => 3.4];
+        $qa = factory(QuestionAssignment::class)->create();
+        $student = factory(Student::class)->create();
+        $data = ['examId' => $exam->id, 'question_assignment_id' => $qa->id, 'student_id' => $student->id, 'score' => 3.5];
 
-        $mock = $this->createMock(IQuestionScoreRepository::class);
-
-        $mock->shouldReceive('deleteScore')
-            ->once()
-            ->with([$data['question_assignment_id'], $data['student_id']]);
+        $this->mock->shouldReceive('deleteScore')
+            ->once();
+//            ->with([$data['question_assignment_id'], $data['student_id']]);
 
         $response = $this->action('POST', 'Grade\ScoreController@removeScore', $data);
         $this->assertNotNull($response);
