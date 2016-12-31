@@ -131,9 +131,23 @@ class ScoreController extends Controller
         $this->authorize('access-object', $exam);
         try
         {
-
             $recordScoresAndCommentsJob = new RecordScoresAndComments($exam, $request);
+
             $recordScoresAndCommentsJob->handle();
+
+            $this->recordTime($exam, $request);
+
+            $this->dispatch(new UpdateStoredNumGraded($exam));
+
+            return $this->sendAjaxSuccess();
+
+        } catch ( \Exception $e )
+        {
+            throw $e;
+
+            return $this->sendAjaxFailure();
+        }
+
 //            $this->dispatch(new RecordScoresAndComments($exam, $request));
 //
 ////            if ( $exam->getReleased() )
@@ -203,19 +217,6 @@ class ScoreController extends Controller
 //                $this->dispatch($job);
 //            }
 
-            $this->recordTime($exam, $request);
-
-            $this->dispatch(new UpdateStoredNumGraded($exam));
-
-            return $this->sendAjaxSuccess();
-
-        } catch ( \Exception $e )
-        {
-            throw $e;
-
-            return $this->sendAjaxFailure();
-
-        }
     }
 
 
