@@ -5,7 +5,10 @@
 
     <!-- Uncomment the following when the tools are in ${basedir}/vendor/bin -->
     <property name="toolsdir" value="${basedir}/vendor/bin/"/>
-<!--removed phpcb-->
+    <property name="logdir" value="${basedir}/build/logs/"/>
+
+
+    <!--removed phpcb-->
 <!--phpdox not included because confilict in dependencies-->
 
     <target name="build"
@@ -26,6 +29,7 @@
             <antcall target="phpcpd-ci"/>
             <antcall target="phpcs-ci"/>
             <antcall target="phploc-ci"/>
+            <antcall target="cloc"/>
         </parallel>
     </target>
 
@@ -153,6 +157,17 @@
             <arg path="${basedir}/build/logs/phploc.xml"/>
             <arg path="${basedir}/app"/>
             <arg path="${basedir}/tests"/>
+        </exec>
+    </target>
+
+    <target name="cloc"
+            depends="prepare"
+            description="Measure project size using Cloc and log result in CSV and XML format. ">
+        <exec executable="cloc">
+            <arg value="--by-file"/>
+            <arg value="--xml"/>
+            <arg value="--out=${logdir}/cloc.xml"/>
+            <arg path="${basedir}/app"/>
         </exec>
     </target>
 
