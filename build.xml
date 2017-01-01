@@ -29,7 +29,7 @@
             <antcall target="phpcpd-ci"/>
             <antcall target="phpcs-ci"/>
             <antcall target="phploc-ci"/>
-            <antcall target="cloc"/>
+            <antcall target="sloccount"/>
         </parallel>
     </target>
 
@@ -170,6 +170,19 @@
             <arg path="${basedir}/app"/>
         </exec>
     </target>
+
+    <target name="sloccount"
+            depends="prepare"
+            description="Measure project size using sloccount and log resuls. ">
+        <exec executable="sloccount">
+            <arg value="--duplicates"/>
+            <arg value="--wide"/>
+            <arg value="--details"/>
+            <env key="SLOCCOUNT_SOURCE_DIR" value="${basedir}/app" />
+            <env key="SLOCCOUNT_OUTPUT_DIR" value="${logdir}" />
+        </exec>
+    </target>
+
 
     <target name="pdepend"
             depends="prepare"
