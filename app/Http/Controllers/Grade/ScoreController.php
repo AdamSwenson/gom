@@ -230,7 +230,7 @@ class ScoreController extends Controller
     public function removeScore(Exam $exam, GradingRequest $request)
     {
         //Check that user owns the exam
-        $this->authorize('access-object', $exam);
+//        $this->authorize('access-object', $exam);
         try
         {
             //Don't even get started if there's no student id
