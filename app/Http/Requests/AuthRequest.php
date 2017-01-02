@@ -31,6 +31,7 @@ class AuthRequest extends Request
     }
     public function messages() {
         return [
+            'validation.email' =>'Please enter a valid email address',
             'email' => "We can't find a user with that e-mail address",
             'email.required' => 'Your email is required',
             'email.valid' => 'Please enter a valid email address'

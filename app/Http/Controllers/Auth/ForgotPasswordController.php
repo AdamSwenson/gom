@@ -26,7 +26,9 @@ class ForgotPasswordController extends Controller
     |
     */
 
-    use SendsPasswordResetEmails;
+    use SendsPasswordResetEmails{
+        sendResetLinkEmail as trait_sendResetLinkEmail;
+    }
 
     /**
      * Create a new controller instance.
@@ -46,6 +48,13 @@ class ForgotPasswordController extends Controller
      */
     public function validateEmail(Request $request)
     {
+        $this->validate($request, ['email' => 'required|email'], ['validation.email' => "We can't find a user with that e-mail address."]);
+    }
+
+
+    public function sendResetLinkEmail(Request $request)
+    {
         $this->validate($request, ['email' => 'required|email'], ['email' => "We can't find a user with that e-mail address."]);
+        $this->trait_validateSendResetLinkEmail($request);
     }
 }
