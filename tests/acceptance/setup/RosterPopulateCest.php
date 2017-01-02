@@ -18,7 +18,7 @@ public $examId;
         $I->wait(2);
 # Go to page
         $I->amOnPage("/exam/{$this->examId}/student/edit");
-        $I->wait(3);
+        $I->wait(2);
     }
 
     public function _after(AcceptanceTester $I)
@@ -45,7 +45,7 @@ public $examId;
         //Submit file
         $I->amGoingTo("Simulate uploading a file");
         $I->attachFile(RosterEditPage::$importRosterButton, 'acceptance_test_roster.csv');
-        $I->click(RosterEditPage::$importRosterButton);
+        $I->wait(2);
 
         $I->amGoingTo("Check that all the data in the spreadsheet are represented on the page");
         $I->seeInField("form input[type=text]", "student1last");
@@ -68,6 +68,7 @@ public $examId;
         $I->seeInField("form input[type=text]", "student2@email.com");
         $I->seeInField("form input[type=text]", "student4@email.com");
 
+//        $I->submitForm(RosterEditPage::$formLocator, []);
     }
 
     /**

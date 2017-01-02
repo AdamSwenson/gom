@@ -14,6 +14,7 @@ class RosterEditPage
     #common
     public static $mainBodyLocator = ['id' => 'rosterEditPage'];
     public static $pageTitleText = 'Edit Roster | gradeomatic';
+    public static $formLocator = ['id' => 'rosterData'];
 
 
     # buttons

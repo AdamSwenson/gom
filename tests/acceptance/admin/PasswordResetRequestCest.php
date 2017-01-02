@@ -76,7 +76,7 @@ class PasswordResetRequestCest
 //        $I->submitForm(PasswordResetPage::$resetFormLocator, ['token' => $this->token]);
         $I->submitForm(PasswordResetPage::$resetFormLocator, ['email'=>$this->email, 'password' => $newPass, 'password_confirmation' => $newPass, 'token' => $this->token]);
         $I->expectTo('be redirected to exam page');
-        $I->wait(3);
+        $I->wait(2);
         $I->seeInCurrentUrl('/exam');
 
     }
