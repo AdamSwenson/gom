@@ -14,6 +14,10 @@
     <target name="build"
             depends="composer,prepare,lint,phpunit,codeceptAccept,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci"
             description=""/>
+
+    <target name="build_only"
+            depends="composer,prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci"
+            description="No tests, just setup"/>
     
     <target name="build-parallel"
             depends="prepare,lint,tools-parallel"
