@@ -165,10 +165,12 @@ class SliderAndCommentsCest
 
 
     /**
+     * @incomplete
      * @param AcceptanceTester $I
      * @group grade
      * @group sliders
      * @group elementInput
+     *
      *
      */
     public function moveSliderSameValence(AcceptanceTester $I)
@@ -261,6 +263,7 @@ class SliderAndCommentsCest
 
 
     /**
+     * @incomplete
      * @param AcceptanceTester $I
      * @group grade
      * @group sliders
