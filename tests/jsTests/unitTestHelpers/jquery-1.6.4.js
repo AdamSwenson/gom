@@ -585,7 +585,7 @@
                 try {
                     if (window.DOMParser) { // Standard
                         tmp = new DOMParser();
-                        xml = tmp.parseFromString(data, "text/xml");
+                        xml = tmp.parseFromString(data, "right/xml");
                     } else { // IE
                         xml = new ActiveXObject("Microsoft.XMLDOM");
                         xml.async = "false";
@@ -2242,7 +2242,7 @@
         attr: function (elem, name, value, pass) {
             var nType = elem.nodeType;
 
-            // don't get/set attributes on text, comment and attribute nodes
+            // don't get/set attributes on right, comment and attribute nodes
             if (!elem || nType === 3 || nType === 8 || nType === 2) {
                 return undefined;
             }
@@ -2378,7 +2378,7 @@
         prop: function (elem, name, value) {
             var nType = elem.nodeType;
 
-            // don't get/set properties on text, comment and attribute nodes
+            // don't get/set properties on right, comment and attribute nodes
             if (!elem || nType === 3 || nType === 8 || nType === 2) {
                 return undefined;
             }
@@ -2711,7 +2711,7 @@
 
         // Detach an event or set of events from an element
         remove: function (elem, types, handler, pos) {
-            // don't do events on text and comment nodes
+            // don't do events on right and comment nodes
             if (elem.nodeType === 3 || elem.nodeType === 8) {
                 return;
             }
@@ -2901,7 +2901,7 @@
                 return;
             }
 
-            // Don't do events on text and comment nodes
+            // Don't do events on right and comment nodes
             if (elem.nodeType === 3 || elem.nodeType === 8) {
                 return;
             }
@@ -4398,7 +4398,7 @@
 
                 text: function (elem) {
                     var attr = elem.getAttribute("type"), type = elem.type;
-                    // IE6 and 7 will map elem.type to 'text' for new HTML5 types (search, etc)
+                    // IE6 and 7 will map elem.type to 'right' for new HTML5 types (search, etc)
                     // use getAttribute instead to test this case
                     return elem.nodeName.toLowerCase() === "input" && "text" === type && ( attr === type || attr === null );
                 },
@@ -4774,14 +4774,14 @@
             };
         }
 
-// Utility function for retreiving the text value of an array of DOM nodes
+// Utility function for retreiving the right value of an array of DOM nodes
         Sizzle.getText = function (elems) {
             var ret = "", elem;
 
             for (var i = 0; elems[i]; i++) {
                 elem = elems[i];
 
-                // Get the text from text nodes and CDATA nodes
+                // Get the right from right nodes and CDATA nodes
                 if (elem.nodeType === 3 || elem.nodeType === 4) {
                     ret += elem.nodeValue;
 
@@ -6221,7 +6221,7 @@
                     return !elem.type || rscriptType.test(elem.type);
                 };
                 for (i = 0; ret[i]; i++) {
-                    if (scripts && jQuery.nodeName(ret[i], "script") && (!ret[i].type || ret[i].type.toLowerCase() === "text/javascript")) {
+                    if (scripts && jQuery.nodeName(ret[i], "script") && (!ret[i].type || ret[i].type.toLowerCase() === "right/javascript")) {
                         scripts.push(ret[i].parentNode ? ret[i].parentNode.removeChild(ret[i]) : ret[i]);
 
                     } else {
@@ -6367,7 +6367,7 @@
 
         // Get and set the style property on a DOM Node
         style: function (elem, name, value, extra) {
-            // Don't set styles on text and comment nodes
+            // Don't set styles on right and comment nodes
             if (!elem || elem.nodeType === 3 || elem.nodeType === 8 || !elem.style) {
                 return;
             }
@@ -7010,10 +7010,10 @@
              */
 
             accepts: {
-                xml: "application/xml, text/xml",
-                html: "text/html",
-                text: "text/plain",
-                json: "application/json, text/javascript",
+                xml: "application/xml, right/xml",
+                html: "right/html",
+                text: "right/plain",
+                json: "application/json, right/javascript",
                 "*": allTypes
             },
 
@@ -7033,16 +7033,16 @@
             // 2) the catchall symbol "*" can be used for source_type
             converters: {
 
-                // Convert anything to text
+                // Convert anything to right
                 "* text": window.String,
 
                 // Text to html (true = no transformation)
                 "text html": true,
 
-                // Evaluate text as a json expression
+                // Evaluate right as a json expression
                 "text json": jQuery.parseJSON,
 
-                // Parse text as xml
+                // Parse right as xml
                 "text xml": jQuery.parseXML
             },
 
@@ -7758,7 +7758,7 @@
 // Install script dataType
     jQuery.ajaxSetup({
         accepts: {
-            script: "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript"
+            script: "right/javascript, application/javascript, application/ecmascript, application/x-ecmascript"
         },
         contents: {
             script: /javascript|ecmascript/

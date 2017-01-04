@@ -3,6 +3,8 @@
 @section('description', 'Login to gradeomatic')
 
 @section('otherCss')
+
+    <link rel="stylesheet" href="{{ asset("css/common-package.css")}}">
     <style>
         .verticallyAligned {
             height: 21px;
@@ -10,6 +12,7 @@
         }
     </style>
 @endsection
+
 @section('body')
     <div class="row">
         <div class="col-md-8 col-md-offset-2">

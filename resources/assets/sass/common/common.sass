@@ -1,17 +1,20 @@
-//Stuff used on every page
+//This stylesheet will be bundled with the styles for every page
 
-//@import bootstrap-sass
-//@import "../libraries/_bootstrap"
+//Custom font imports
+//Font override variables are defined in this file, so it
+//needs to be loaded before bootswatch brings in bootstrap
+@import remote_font_includes
 
-@import node_modules/bootstrap-sass/assets/stylesheets/bootstrap
-
+//Load the bootstrap theme
+//this also brings in bootstrap styles
 @import ../libraries/bootswatch-spacelab.scss
 
+//Customize certain stuff in bootstrap
 @import bootstrap_overrides
 
-@import topNavbar
+//Styling for every page
+@import universal-styles
 
+//Styling for components present on every page
+@import "../navigation/topNavbar"
 @import errorMessages
-
-.startHidden
-  display: none

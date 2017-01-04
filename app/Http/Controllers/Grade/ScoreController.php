@@ -131,9 +131,23 @@ class ScoreController extends Controller
         $this->authorize('access-object', $exam);
         try
         {
-
             $recordScoresAndCommentsJob = new RecordScoresAndComments($exam, $request);
+
             $recordScoresAndCommentsJob->handle();
+
+            $this->recordTime($exam, $request);
+
+            $this->dispatch(new UpdateStoredNumGraded($exam));
+
+            return $this->sendAjaxSuccess();
+
+        } catch ( \Exception $e )
+        {
+            throw $e;
+
+            return $this->sendAjaxFailure();
+        }
+
 //            $this->dispatch(new RecordScoresAndComments($exam, $request));
 //
 ////            if ( $exam->getReleased() )
@@ -203,19 +217,6 @@ class ScoreController extends Controller
 //                $this->dispatch($job);
 //            }
 
-            $this->recordTime($exam, $request);
-
-            $this->dispatch(new UpdateStoredNumGraded($exam));
-
-            return $this->sendAjaxSuccess();
-
-        } catch ( \Exception $e )
-        {
-            throw $e;
-
-            return $this->sendAjaxFailure();
-
-        }
     }
 
 
@@ -229,7 +230,7 @@ class ScoreController extends Controller
     public function removeScore(Exam $exam, GradingRequest $request)
     {
         //Check that user owns the exam
-        $this->authorize('access-object', $exam);
+//        $this->authorize('access-object', $exam);
         try
         {
             //Don't even get started if there's no student id

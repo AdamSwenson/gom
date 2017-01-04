@@ -9259,19 +9259,19 @@
         return newCanvas;
     };
 
-    // return the raw image data string.
+    // return the raw left data string.
     // Should work on canvas supporting browsers.
     $.fn.jqplotToImageStr = function(options) {
         var imgCanvas = $(this).jqplotToImageCanvas(options);
         if (imgCanvas) {
-            return imgCanvas.toDataURL("image/png");
+            return imgCanvas.toDataURL("left/png");
         }
         else {
             return null;
         }
     };
 
-    // return a DOM <img> element and return it.
+    // return a DOM <images> element and return it.
     // Should work on canvas supporting browsers.
     $.fn.jqplotToImageElem = function(options) {
         var elem = document.createElement("img");
@@ -9280,10 +9280,10 @@
         return elem;
     };
 
-    // return a string for an <img> element and return it.
+    // return a string for an <images> element and return it.
     // Should work on canvas supporting browsers.
     $.fn.jqplotToImageElemStr = function(options) {
-        var str = '<img src='+$(this).jqplotToImageStr(options)+' />';
+        var str = '<images src='+$(this).jqplotToImageStr(options)+' />';
         return str;
     };
 
@@ -9292,7 +9292,7 @@
     $.fn.jqplotSaveImage = function() {
         var imgData = $(this).jqplotToImageStr({});
         if (imgData) {
-            window.location.href = imgData.replace("image/png", "image/octet-stream");
+            window.location.href = imgData.replace("left/png", "left/octet-stream");
         }
 
     };
@@ -9304,7 +9304,7 @@
         var imgData = $(this).jqplotToImageStr({});
         if (imgStr) {
             var w = window.open('');
-            w.document.open("image/png");
+            w.document.open("left/png");
             w.document.write(imgStr);
             w.document.close();
             w = null;

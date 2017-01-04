@@ -2,21 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name=viewport content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
-    <meta name="google-site-verification" content="DCGG7JLvksNEN9XdkbV0IUENjMa5cOMopPQaB3dYzLc" />
+    <meta name="google-site-verification" content="DCGG7JLvksNEN9XdkbV0IUENjMa5cOMopPQaB3dYzLc"/>
     <meta name="description" content="@yield('description')">
+
 
     <title>@yield('pageTitle')</title>
 
     <link href='{{ asset('inc/images/favicon.ico') }}' rel='icon' type='image/x-icon'/>
 
-    @include('layouts.css.css_bootstrap')
     @yield('otherCss')
-    {{--@include('layouts.js_jquery_loader')--}}
-    {{--@include('layouts.js_bootstrap_loader')--}}
-    {{--@include('layouts.js_additional_libs')--}}
 
     @if(env('APP_ENV') == 'production')
         @include('other.google_analytics_include')
@@ -24,47 +20,41 @@
 </head>
 
 <body>
-@if( Auth::check() )
-    @include('navigation.nav_bar_main')
-@else
-    @include('navigation.nav_bar_landing')
-@endif
-@if(env('APP_ENV') == 'production')
-    {{--@include('temp.warning_not_to_use_student_data')--}}
-@endif
-
-<div class="container-fluid">
-    @include('flash::message')
-    @include('errors.list')
-    @yield('body')
-    @include('layouts.footer')
-</div>
-
-
-<input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
-
-<div id="scriptBox">
-    @include('layouts.jsData')
-
-    @if(env('APP_DEBUG') == true)
-        <script type="text/javascript" src="{{ asset('js/debug.js') }}"></script>
+    @if( Auth::check() )
+        @include('navigation.nav_bar_main')
+    @else
+        @include('navigation.nav_bar_landing')
     @endif
 
-    <script type="text/javascript">
-        var routeRoot = '{{ url('') }}';
-        window.console.log( routeRoot );
-        if ( typeof jQuery != 'undefined' ) {
-            $.ajaxSetup( {
-                headers: {
-                    'X-CSRF-TOKEN': $( 'meta[name="csrf-token"]' ).attr( 'content' )
-                }
-            } );
-        }
+    @if(env('APP_ENV') == 'production')
+    @endif
 
-    </script>
+    <div class="container-fluid">
+        @include('flash::message')
+        @include('errors.list')
 
-    @yield('jsArea')
+        @yield('body')
 
-</div>
+        @include('layouts.footer')
+    </div>
+    
+    <div id="scriptBox">
+        <input type="hidden" name="_token" id="nonce" value="{{ csrf_token() }}">
+
+        <script type="text/javascript">
+            var routeRoot = '{{ url('') }}';
+
+            if ( typeof jQuery != 'undefined' ) {
+                $.ajaxSetup( {
+                    headers: {
+                        'X-CSRF-TOKEN': $( 'meta[name="csrf-token"]' ).attr( 'content' )
+                    }
+                } );
+            }
+        </script>
+
+        @yield('jsArea')
+
+    </div>
 </body>
 </html>

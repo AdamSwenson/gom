@@ -40,20 +40,24 @@ class UserLoginListener
      * @param  UserLoginEvent $event
      * @return void
      */
-    public function handle(UserLoginEvent $event)
+    public function handle( $event)
     {
         $this->user = Auth::user();
 
         if ( ! empty($this->user) )
         {
           //  $this->user->notify(new UserLoginNotification($this->user));
-
+            
             //This will log the user's log in
             $this->dispatch(new RecordUserLogin($this->user));
 
             //This will tell the backup system that the db has likely changed
             //and so should be backed up on the next run.
             $this->dispatch(new AddFlagForDatabaseBackup($this->user));
+
+        $message = "<p>We'd love to hear what you think about the gradeomatic. Please fill out this short survey: <br/><a href='https://docs.google.com/forms/d/e/1FAIpQLSdJBXiK_lmWtT15BrXLpFBiFR5Qly9ab2bgZoy3Wlpu_qDgtw/viewform'>https://docs.google.com/forms/d/e/1FAIpQLSdJBXiK_lmWtT15BrXLpFBiFR5Qly9ab2bgZoy3Wlpu_qDgtw/viewform</a></p>";
+            //Push message for login into session
+            flash()->info($message)->important();
         }
     }
 

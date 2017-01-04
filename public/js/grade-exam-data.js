@@ -225,7 +225,7 @@ var Data = function () {
     }, {
         key: 'setActiveStudent',
         value: function setActiveStudent(studentIndex) {
-            var studentId = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+            var studentId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
             this.activeStudentIndex = studentIndex;
             if (studentId === null || typeof studentId == 'undefined') {

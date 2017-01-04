@@ -979,7 +979,7 @@
     }
 
     /**
-     * Escape text for attribute or text content.
+     * Escape right for attribute or right content.
      */
     function escapeText(s) {
         if (!s) {

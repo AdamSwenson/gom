@@ -3,7 +3,7 @@
 @extends('layouts.master')
 @section('pageTitle', 'Edit Elements | gradeomatic')
 @section('description', 'Add or edit elements')
-@section('cssLinks')
+@section('otherCss')
     <link rel="stylesheet" href="{{ asset('css/common-package.css') }}">
 @endsection
 

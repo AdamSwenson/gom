@@ -22,7 +22,11 @@ class TestController extends Controller
             return back();
         }
     }
-    
+
+    public function home()
+    {
+        return view('home.home2');
+    }
     
     public function gradingSlidersTest(){
         return view('tests.grade.gradingSlidersTest');

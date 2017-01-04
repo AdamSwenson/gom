@@ -9,8 +9,9 @@
 @extends('layouts.master')
 
 @section('pageTitle', 'Get notified')
-@section('cssLinks')
 
+@section('otherCss')
+    <link rel="stylesheet" href="{{ asset("css/common-package.css")}}">
 @endsection
 
 @section('body')

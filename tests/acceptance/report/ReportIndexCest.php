@@ -47,6 +47,8 @@ class ReportIndexCest
         {
             if ( ! in_array($i, $this->examIdsToSkip) )
             {
+                $I->click('body');
+                $I->wait(1);
                 $I->click(ReportIndexPage::dropdownButtonLocator($i));
                 $I->wait(1);
                 $I->seeElement(['class' => 'analyticsLink']);

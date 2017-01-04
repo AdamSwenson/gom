@@ -3,6 +3,10 @@
 @section('pageTitle', 'Reset Password | gradeomatic')
 @section('description', 'Reset your password')
 
+@section('otherCss')
+    <link rel="stylesheet" href="{{ asset("css/common-package.css")}}">
+@endsection
+
 @section('body')
     <div id="resetPassEmailPage" class="row mainBodyLocator">
         <div class="col-md-8 col-md-offset-2">

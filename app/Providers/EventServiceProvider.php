@@ -36,6 +36,32 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
+        //authentication and authorization events
+        Illuminate\Auth\Events\Registered::class => [
+        ],
+
+        Illuminate\Auth\Events\Attempting::class => [
+        ],
+
+        Illuminate\Auth\Events\Authenticated::class => [
+        ],
+
+        Illuminate\Auth\Events\Login::class => [
+            UserLoginListener::class
+         ],
+
+        Illuminate\Auth\Events\Logout::class => [
+         ],
+
+        Illuminate\Auth\Events\Lockout::class => [
+        ],
+
+        //this event seems not to fire
+        UserLoginEvent::class          => [
+            UserLoginListener::class,
+        ],
+
+
         AsyncJobCompleteEvent::class => [
             AsyncJobCompleteListener::class,
         ],
@@ -61,9 +87,7 @@ class EventServiceProvider extends ServiceProvider
             RemoveStudentAccessListener::class,
         ],
 
-        UserLoginEvent::class          => [
-            UserLoginListener::class,
-        ],
+
 
         //Grade
         PleaseRecordGradingTime::class => [

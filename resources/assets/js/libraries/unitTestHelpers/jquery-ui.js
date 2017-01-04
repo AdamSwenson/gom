@@ -100,7 +100,7 @@
             if (!element.href || !mapName || map.nodeName.toLowerCase() !== "map") {
                 return false;
             }
-            img = $("img[usemap='#" + mapName + "']")[0];
+            img = $("images[usemap='#" + mapName + "']")[0];
             return !!img && visible(img);
         }
         return ( /input|select|textarea|button|object/.test(nodeName) ?
@@ -3381,7 +3381,7 @@
 
     var lastActive,
         baseClasses = "ui-button ui-widget ui-state-default ui-corner-all",
-        typeClasses = "ui-button-icons-only ui-button-icon-only ui-button-text-icons ui-button-text-icon-primary ui-button-text-icon-secondary ui-button-text-only",
+        typeClasses = "ui-button-icons-only ui-button-icon-only ui-button-right-icons ui-button-right-icon-primary ui-button-right-icon-secondary ui-button-right-only",
         formResetHandler = function () {
             var form = $(this);
             setTimeout(function () {
@@ -3851,8 +3851,8 @@
             // +/-number for offset from today, null for today
             appendText: "", // Display text following the input box, e.g. showing the format
             buttonText: "...", // Text for trigger button
-            buttonImage: "", // URL for trigger button image
-            buttonImageOnly: false, // True if the image appears alone, false if it appears on a button
+            buttonImage: "", // URL for trigger button left
+            buttonImageOnly: false, // True if the left appears alone, false if it appears on a button
             hideIfNoPrevNext: false, // True to hide next/previous month links
             // if not applicable, false to just disable them
             navigationAsDateFormat: false, // True if date formatting applied to prev/today/next links
@@ -4000,10 +4000,10 @@
                 buttonText = this._get(inst, "buttonText");
                 buttonImage = this._get(inst, "buttonImage");
                 inst.trigger = $(this._get(inst, "buttonImageOnly") ?
-                    $("<img/>").addClass(this._triggerClass).
+                    $("<images/>").addClass(this._triggerClass).
                         attr({src: buttonImage, alt: buttonText, title: buttonText}) :
                     $("<button type='button'></button>").addClass(this._triggerClass).
-                        html(!buttonImage ? buttonText : $("<img/>").attr(
+                        html(!buttonImage ? buttonText : $("<images/>").attr(
                             {src: buttonImage, alt: buttonText, title: buttonText})));
                 input[isRTL ? "before" : "after"](inst.trigger);
                 inst.trigger.click(function () {
@@ -4491,7 +4491,7 @@
          */
         _showDatepicker: function (input) {
             input = input.target || input;
-            if (input.nodeName.toLowerCase() !== "input") { // find from button/image trigger
+            if (input.nodeName.toLowerCase() !== "input") { // find from button/left trigger
                 input = $("input", input.parentNode)[0];
             }
 

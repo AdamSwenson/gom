@@ -1,6 +1,7 @@
 <?php
 
 
+use App\User;
 use Page\admin\PasswordResetPage;
 use Page\SetupExamSelectPage;
 use Illuminate\Support\Facades\DB;
@@ -11,7 +12,10 @@ class PasswordResetEmailRequestCest
 
     public function _before(AcceptanceTester $I)
     {
-        $I->log_out();
+        $this->user = factory(User::class)->create();
+        $this->email = 'test2@gradeomatic.net';
+
+//        $I->haveInDatabase('users', ['email' => $this->email]);
         PasswordResetPage::navigateToEmailRequestPage($I);
     }
 
@@ -41,9 +45,9 @@ class PasswordResetEmailRequestCest
     public function submitRequestValidEmail(AcceptanceTester $I)
     {
 //        PasswordResetPage::navigateToEmailRequestPage($I);
-        $I->fillField(PasswordResetPage::$emailFieldLocator, "test2@gradeomatic.net");
+        $I->fillField(PasswordResetPage::$emailFieldLocator, $this->email);
         $I->click(PasswordResetPage::$submitButtonLocator);
-
+$I->wait(3);
         $I->expectTo("see the success message and not see the error message");
         $I->waitForElementVisible(PasswordResetPage::$emailMainBodyLocator);
         $I->dontSee("We can't find a user with that e-mail address.");

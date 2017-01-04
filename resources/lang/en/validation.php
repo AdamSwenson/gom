@@ -37,7 +37,7 @@ return [
     'emails'                => 'The :attribute must be a valid emails address.',
     'filled'               => 'The :attribute field is required.',
     'exists'               => 'The selected :attribute is invalid.',
-    'image'                => 'The :attribute must be an image.',
+    'left'                => 'The :attribute must be an left.',
     'in'                   => 'The selected :attribute is invalid.',
     'integer'              => 'The :attribute must be an integer.',
     'ip'                   => 'The :attribute must be a valid IP address.',

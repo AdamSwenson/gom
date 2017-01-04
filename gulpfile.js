@@ -1,5 +1,7 @@
 var elixir = require( 'laravel-elixir' );
 
+require('laravel-elixir-images');
+
 /*
  |--------------------------------------------------------------------------
  | Elixir Asset Management
@@ -11,66 +13,26 @@ var elixir = require( 'laravel-elixir' );
  |
  */
 
-<!-- Other scripts -->
 elixir( function ( mix ) {
 
-    //mix.browserSync();
-    /* ---------------------------------------------- styles ----------------------------------------------------*/
-    mix.sass( [ 'libraries/bootswatch-spacelab.scss' ], 'public/css/bootstrap-spacelab.css' );
-
-    mix.sass( [
-        'help/pictureStyling.scss',
-        'help/sideNav.scss',
-        'help/bodyText.scss'
-    ], 'public/css/help-styles.css' );
-
-    mix.styles( [
-        'libraries/bootstrap.min.css',
-        'libraries/bootstrap-theme.min.css',
-        'libraries/bootstrap-slider.css',
-        'libraries/jquery-ui-1.11.4.css',
-        'pages/homepage.css'
-    ], 'public/css/home-styles.css' );
-
-//mix.sass('../../../node_modules/bootstrap/dist/css/bootstrap.css', 'public/css/bootstrap.css');
-//
-//    mix.sass('../../../node_modules/bootstrap-sass/dist/css/bootstrap.css', 'public/css/bootstrap.css');
-
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ styles ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     mix.sass( [
         'common/common.sass'
     ], 'public/css/common-package.css' );
 
-    /* ------------ grade pages -------------- */
-    mix.sass( [
-        'grade/mainGrading.scss',
-        "../../../node_modules/typeahead/style.css"
-    ], 'public/css/grade-package.css' );
-
+    /* ------------ Landing and admin pages -------------- */
     mix.sass( [
         'common/common.sass',
-        'grade/examSelectTable.scss'
-    ], 'public/css/exam-table-package.css' );
+        'home/body-styles.sass'
+    ], 'public/css/home-package.css' )
 
-
+    /* ------------ Instruction pages -------------- */
     mix.sass( [
         'common/common.sass',
-        'grade/examSelectTable.scss'
-    ], 'public/css/exam-table-package.css' );
-
-    /* ------------ reports pages -------------- */
-    //main index page
-    mix.sass( [
-        'common/common.sass',
-        'reports/examControls.sass'
-    ], 'public/css/report-index-package.css' );
-
-    mix.sass( [
-        'reports/examControls.sass'
-    ], 'public/css/exam-controls-package.css' );
-
-    mix.sass( [
-        'reports/examAnalytics.scss'
-    ], 'public/css/exam-analytics-package.css' );
+        'help/pictureStyling.scss',
+        'help/sideNav.scss',
+        'help/bodyText.scss'
+    ], 'public/css/help-styles.css' );
 
     /* ------------ Setup pages -------------- */
     mix.sass( [
@@ -83,25 +45,61 @@ elixir( function ( mix ) {
         'setup/selectExam.scss'
     ], 'public/css/select-exam-package.css' );
 
+    /* ------------ Grade pages -------------- */
+    mix.sass( [
+        'common/common.sass',
+        'grade/mainGrading.scss',
+        "../../../node_modules/typeahead/style.css"
+    ], 'public/css/grade-package.css' );
 
-    /* ---------------------------------------------- scripts ----------------------------------------------------*/
+    mix.sass( [
+        'common/common.sass',
+        'grade/examSelectTable.scss'
+    ], 'public/css/exam-table-package.css' );
 
+    mix.sass( [
+        'common/common.sass',
+        'grade/examSelectTable.scss'
+    ], 'public/css/exam-table-package.css' );
+
+    /* ------------ Report pages -------------- */
+    //main index page
+    mix.sass( [
+        'common/common.sass',
+        'reports/examControls.sass'
+    ], 'public/css/report-index-package.css' );
+
+    mix.sass( [
+        'common/common.sass',
+        'reports/examControls.sass'
+    ], 'public/css/exam-controls-package.css' );
+
+    mix.sass( [
+        'common/common.sass',
+        'reports/examAnalytics.scss'
+    ], 'public/css/exam-analytics-package.css' );
+
+
+
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ scripts ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     //Include in development
     mix.browserify( [ 'utilities/vueDebug.js' ], 'public/js/debug.js' );
 
-    // mix.browserify( [
-    //         //'https://code.jquery.com/jquery-2.2.0.js',
-    //         //'https://code.jquery.com/ui/1.11.3/jquery-ui.js',
-    //         //'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js',
-    //         'interactiveHome/home.js' ],
-    //     'public/js/home-package.js' );
 
     //Normally this stuff will be integrated with another package. This is just for pages
     //which have no other js.
     mix.browserify( 'common.js', 'public/js/common-package.js' );
 
+    /* ------------ Landing and admin pages -------- */
+    mix.browserify( [ 'admin/restrictedRegistration.js' ], 'public/js/restricted-registration-package.js' );
 
-    /* --------------------- Setup ---------------------- */
+
+    /* ------------ Instruction pages -------------- */
+    //help
+    mix.browserify( 'help/help.js', 'public/js/help-package.js' );
+
+
+    /* --------------------- Setup ----------------- */
     mix.browserify( 'setupPages/examForm.js', 'public/js/exam-setup-package.js' );
     mix.browserify( 'setupPages/editElement.js', 'public/js/element-edit-package.js' );
     mix.browserify( 'setupPages/editQuestion.js', 'public/js/question-edit-package.js' );
@@ -130,23 +128,39 @@ elixir( function ( mix ) {
     mix.browserify( 'feedback/feedbackCharts.js', 'public/js/feedback-package.js' );
 
 
-    //help
-    mix.browserify( 'help/help.js', 'public/js/help-package.js' );
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Images ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+    /*
+    The horribly documented package will evaluate the options object as follows:
+     responsive: options && options.responsive || config.images.responsive,
+     optimizers: options && options.optimizers || config.images.optimizers,
+     extensions: options && options.extensions || config.images.extensions,
+     sizes: options && options.sizes || config.images.sizes,
+     lossy: options && options.lossy || config.images.lossy,
+     webp: options && options.webp || config.images.webp
+     */
+    mix.images(null, 'public/images', {});
+        // extensions: {
+        //     lossy: {
+        //
+        //         jpg: {
+        //             progressive: true,
+        //             max: 50
+        //         }
+        //     }
+        // }
+        // }
+        // optimizers: {
+        //     jpg: require('imagemin-jpegoptim')
+        // }
+    // });
 
+
+
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Dev and testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+    /* ------ Scripts and styles under development go here ------------------------- */
     //testing
     mix.browserify( [ 'libraries/jquery-1.11.3.min.js' ], 'public/js/jquery.js' );
 
-
-    /* --------------------- Admin ---------------------- */
-    mix.browserify( [ 'admin/restrictedRegistration.js' ], 'public/js/restricted-registration-package.js' );
-
-    //
-    // elixir(function(mix) {
-    //     mix.browserSync({
-    //         proxy: "localhost:8000"
-    //     });
-    // });
-    /* ------------------------- Dev and testing -------------------------- */
     mix.scripts( [
         "libraries/unitTestHelpers/jquery-1.11.1.js",
         "libraries/unitTestHelpers/jquery-ui.js",
@@ -157,10 +171,23 @@ elixir( function ( mix ) {
         "libraries/unitTestHelpers/jquery.cookie.js"
     ], 'public/js/testing/js-test-suite.js' );
 
-mix.browserify('data/Store.js', 'public/js/dev/new-data-package.js');
+    mix.browserify( 'data/Store.js', 'public/js/dev/new-data-package.js' );
     mix.browserify( 'grade/gradeVue.js', 'public/js/dev/grade-vue.js' );
 
     mix.browserify('data/vuex.Data.js', 'public/js/dev/test-package.js')
+
+
+
+    //
+    // elixir(function(mix) {
+    //     mix.browserSync({
+    //         proxy: "localhost:8000"
+    //     });
+    // });
+
+    // mix.browserSync({
+    //     proxy: 'project.dev'
+    // });
 
 //
 //     var gulpNSP = require('gulp-nsp');

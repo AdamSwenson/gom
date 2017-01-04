@@ -3546,7 +3546,7 @@ DataTable.ext.renderer.pageButton.bootstrap = function ( settings, host, idx, bu
 		buttons
 	);
 
-	if ( activeEl ) {
+	if ( activeEl !== undefined ) {
 		$(host).find( '[data-dt-idx='+activeEl+']' ).focus();
 	}
 };
@@ -3554,19 +3554,20 @@ DataTable.ext.renderer.pageButton.bootstrap = function ( settings, host, idx, bu
 
 return DataTable;
 }));
+
 },{"datatables.net":16}],16:[function(require,module,exports){
-/*! DataTables 1.10.12
- * ©2008-2015 SpryMedia Ltd - datatables.net/license
+/*! DataTables 1.10.13
+ * ©2008-2016 SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     DataTables
  * @description Paginate, search and order HTML tables
- * @version     1.10.12
+ * @version     1.10.13
  * @file        jquery.dataTables.js
- * @author      SpryMedia Ltd (www.sprymedia.co.uk)
- * @contact     www.sprymedia.co.uk/contact
- * @copyright   Copyright 2008-2015 SpryMedia Ltd.
+ * @author      SpryMedia Ltd
+ * @contact     www.datatables.net
+ * @copyright   Copyright 2008-2016 SpryMedia Ltd.
  *
  * This source file is free software, available under the following license:
  *   MIT license - http://datatables.net/license
@@ -3836,7 +3837,7 @@ return DataTable;
 		 *        "bPaginate": false
 		 *      } );
 		 *
-		 *      $(window).bind('resize', function () {
+		 *      $(window).on('resize', function () {
 		 *        oTable.fnAdjustColumnSizing();
 		 *      } );
 		 *    } );
@@ -4658,7 +4659,7 @@ return DataTable;
 			var oLanguage = oSettings.oLanguage;
 			$.extend( true, oLanguage, oInit.oLanguage );
 			
-			if ( oLanguage.sUrl !== "" )
+			if ( oLanguage.sUrl )
 			{
 				/* Get the language definitions from a file - because this Ajax call makes the language
 				 * get async to the remainder of this function we use bInitHandedOff to indicate that
@@ -4770,131 +4771,125 @@ return DataTable;
 			}
 			
 			var features = oSettings.oFeatures;
+			var loadedInit = function () {
+				/*
+				 * Sorting
+				 * @todo For modularisation (1.11) this needs to do into a sort start up handler
+				 */
+			
+				// If aaSorting is not defined, then we use the first indicator in asSorting
+				// in case that has been altered, so the default sort reflects that option
+				if ( oInit.aaSorting === undefined ) {
+					var sorting = oSettings.aaSorting;
+					for ( i=0, iLen=sorting.length ; i<iLen ; i++ ) {
+						sorting[i][1] = oSettings.aoColumns[ i ].asSorting[0];
+					}
+				}
+			
+				/* Do a first pass on the sorting classes (allows any size changes to be taken into
+				 * account, and also will apply sorting disabled classes if disabled
+				 */
+				_fnSortingClasses( oSettings );
+			
+				if ( features.bSort ) {
+					_fnCallbackReg( oSettings, 'aoDrawCallback', function () {
+						if ( oSettings.bSorted ) {
+							var aSort = _fnSortFlatten( oSettings );
+							var sortedColumns = {};
+			
+							$.each( aSort, function (i, val) {
+								sortedColumns[ val.src ] = val.dir;
+							} );
+			
+							_fnCallbackFire( oSettings, null, 'order', [oSettings, aSort, sortedColumns] );
+							_fnSortAria( oSettings );
+						}
+					} );
+				}
+			
+				_fnCallbackReg( oSettings, 'aoDrawCallback', function () {
+					if ( oSettings.bSorted || _fnDataSource( oSettings ) === 'ssp' || features.bDeferRender ) {
+						_fnSortingClasses( oSettings );
+					}
+				}, 'sc' );
+			
+			
+				/*
+				 * Final init
+				 * Cache the header, body and footer as required, creating them if needed
+				 */
+			
+				// Work around for Webkit bug 83867 - store the caption-side before removing from doc
+				var captions = $this.children('caption').each( function () {
+					this._captionSide = $(this).css('caption-side');
+				} );
+			
+				var thead = $this.children('thead');
+				if ( thead.length === 0 ) {
+					thead = $('<thead/>').appendTo($this);
+				}
+				oSettings.nTHead = thead[0];
+			
+				var tbody = $this.children('tbody');
+				if ( tbody.length === 0 ) {
+					tbody = $('<tbody/>').appendTo($this);
+				}
+				oSettings.nTBody = tbody[0];
+			
+				var tfoot = $this.children('tfoot');
+				if ( tfoot.length === 0 && captions.length > 0 && (oSettings.oScroll.sX !== "" || oSettings.oScroll.sY !== "") ) {
+					// If we are a scrolling table, and no footer has been given, then we need to create
+					// a tfoot element for the caption element to be appended to
+					tfoot = $('<tfoot/>').appendTo($this);
+				}
+			
+				if ( tfoot.length === 0 || tfoot.children().length === 0 ) {
+					$this.addClass( oClasses.sNoFooter );
+				}
+				else if ( tfoot.length > 0 ) {
+					oSettings.nTFoot = tfoot[0];
+					_fnDetectHeader( oSettings.aoFooter, oSettings.nTFoot );
+				}
+			
+				/* Check if there is data passing into the constructor */
+				if ( oInit.aaData ) {
+					for ( i=0 ; i<oInit.aaData.length ; i++ ) {
+						_fnAddData( oSettings, oInit.aaData[ i ] );
+					}
+				}
+				else if ( oSettings.bDeferLoading || _fnDataSource( oSettings ) == 'dom' ) {
+					/* Grab the data from the page - only do this when deferred loading or no Ajax
+					 * source since there is no point in reading the DOM data if we are then going
+					 * to replace it with Ajax data
+					 */
+					_fnAddTr( oSettings, $(oSettings.nTBody).children('tr') );
+				}
+			
+				/* Copy the data index array */
+				oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
+			
+				/* Initialisation complete - table can be drawn */
+				oSettings.bInitialised = true;
+			
+				/* Check if we need to initialise the table (it might not have been handed off to the
+				 * language processor)
+				 */
+				if ( bInitHandedOff === false ) {
+					_fnInitialise( oSettings );
+				}
+			};
 			
 			/* Must be done after everything which can be overridden by the state saving! */
 			if ( oInit.bStateSave )
 			{
 				features.bStateSave = true;
-				_fnLoadState( oSettings, oInit );
 				_fnCallbackReg( oSettings, 'aoDrawCallback', _fnSaveState, 'state_save' );
+				_fnLoadState( oSettings, oInit, loadedInit );
+			}
+			else {
+				loadedInit();
 			}
 			
-			
-			/*
-			 * Sorting
-			 * @todo For modularisation (1.11) this needs to do into a sort start up handler
-			 */
-			
-			// If aaSorting is not defined, then we use the first indicator in asSorting
-			// in case that has been altered, so the default sort reflects that option
-			if ( oInit.aaSorting === undefined )
-			{
-				var sorting = oSettings.aaSorting;
-				for ( i=0, iLen=sorting.length ; i<iLen ; i++ )
-				{
-					sorting[i][1] = oSettings.aoColumns[ i ].asSorting[0];
-				}
-			}
-			
-			/* Do a first pass on the sorting classes (allows any size changes to be taken into
-			 * account, and also will apply sorting disabled classes if disabled
-			 */
-			_fnSortingClasses( oSettings );
-			
-			if ( features.bSort )
-			{
-				_fnCallbackReg( oSettings, 'aoDrawCallback', function () {
-					if ( oSettings.bSorted ) {
-						var aSort = _fnSortFlatten( oSettings );
-						var sortedColumns = {};
-			
-						$.each( aSort, function (i, val) {
-							sortedColumns[ val.src ] = val.dir;
-						} );
-			
-						_fnCallbackFire( oSettings, null, 'order', [oSettings, aSort, sortedColumns] );
-						_fnSortAria( oSettings );
-					}
-				} );
-			}
-			
-			_fnCallbackReg( oSettings, 'aoDrawCallback', function () {
-				if ( oSettings.bSorted || _fnDataSource( oSettings ) === 'ssp' || features.bDeferRender ) {
-					_fnSortingClasses( oSettings );
-				}
-			}, 'sc' );
-			
-			
-			/*
-			 * Final init
-			 * Cache the header, body and footer as required, creating them if needed
-			 */
-			
-			// Work around for Webkit bug 83867 - store the caption-side before removing from doc
-			var captions = $this.children('caption').each( function () {
-				this._captionSide = $this.css('caption-side');
-			} );
-			
-			var thead = $this.children('thead');
-			if ( thead.length === 0 )
-			{
-				thead = $('<thead/>').appendTo(this);
-			}
-			oSettings.nTHead = thead[0];
-			
-			var tbody = $this.children('tbody');
-			if ( tbody.length === 0 )
-			{
-				tbody = $('<tbody/>').appendTo(this);
-			}
-			oSettings.nTBody = tbody[0];
-			
-			var tfoot = $this.children('tfoot');
-			if ( tfoot.length === 0 && captions.length > 0 && (oSettings.oScroll.sX !== "" || oSettings.oScroll.sY !== "") )
-			{
-				// If we are a scrolling table, and no footer has been given, then we need to create
-				// a tfoot element for the caption element to be appended to
-				tfoot = $('<tfoot/>').appendTo(this);
-			}
-			
-			if ( tfoot.length === 0 || tfoot.children().length === 0 ) {
-				$this.addClass( oClasses.sNoFooter );
-			}
-			else if ( tfoot.length > 0 ) {
-				oSettings.nTFoot = tfoot[0];
-				_fnDetectHeader( oSettings.aoFooter, oSettings.nTFoot );
-			}
-			
-			/* Check if there is data passing into the constructor */
-			if ( oInit.aaData )
-			{
-				for ( i=0 ; i<oInit.aaData.length ; i++ )
-				{
-					_fnAddData( oSettings, oInit.aaData[ i ] );
-				}
-			}
-			else if ( oSettings.bDeferLoading || _fnDataSource( oSettings ) == 'dom' )
-			{
-				/* Grab the data from the page - only do this when deferred loading or no Ajax
-				 * source since there is no point in reading the DOM data if we are then going
-				 * to replace it with Ajax data
-				 */
-				_fnAddTr( oSettings, $(oSettings.nTBody).children('tr') );
-			}
-			
-			/* Copy the data index array */
-			oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
-			
-			/* Initialisation complete - table can be drawn */
-			oSettings.bInitialised = true;
-			
-			/* Check if we need to initialise the table (it might not have been handed off to the
-			 * language processor)
-			 */
-			if ( bInitHandedOff === false )
-			{
-				_fnInitialise( oSettings );
-			}
 		} );
 		_that = null;
 		return this;
@@ -4925,8 +4920,10 @@ return DataTable;
 	var _re_dic = {};
 	var _re_new_lines = /[\r\n]/g;
 	var _re_html = /<.*?>/g;
-	var _re_date_start = /^[\w\+\-]/;
-	var _re_date_end = /[\w\+\-]$/;
+	
+	// This is not strict ISO8601 - Date.parse() is quite lax, although
+	// implementations differ between browsers.
+	var _re_date = /^\d{2,4}[\.\/\-]\d{1,2}[\.\/\-]\d{1,2}([T ]{1}\d{1,2}[:\.]\d{2}([\.:]\d{2})?)?$/;
 	
 	// Escape regular expression special characters
 	var _re_escape_regex = new RegExp( '(\\' + [ '/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\', '$', '^', '-' ].join('|\\') + ')', 'g' );
@@ -5408,7 +5405,7 @@ return DataTable;
 				.css( {
 					position: 'fixed',
 					top: 0,
-					left: 0,
+					left: $(window).scrollLeft()*-1, // allow for scrolling
 					height: 1,
 					width: 1,
 					overflow: 'hidden'
@@ -6101,7 +6098,7 @@ return DataTable;
 	function _fnSplitObjNotation( str )
 	{
 		return $.map( str.match(/(\\.|[^\.])+/g) || [''], function ( s ) {
-			return s.replace(/\\./g, '.');
+			return s.replace(/\\\./g, '.');
 		} );
 	}
 	
@@ -7759,13 +7756,13 @@ return DataTable;
 		var jqFilter = $('input', filter)
 			.val( previousSearch.sSearch )
 			.attr( 'placeholder', language.sSearchPlaceholder )
-			.bind(
+			.on(
 				'keyup.DT search.DT input.DT paste.DT cut.DT',
 				searchDelay ?
 					_fnThrottle( searchFn, searchDelay ) :
 					searchFn
 			)
-			.bind( 'keypress.DT', function(e) {
+			.on( 'keypress.DT', function(e) {
 				/* Prevent form submission */
 				if ( e.keyCode == 13 ) {
 					return false;
@@ -7895,16 +7892,19 @@ return DataTable;
 		}
 	
 		var data;
+		var out = [];
 		var display = settings.aiDisplay;
 		var rpSearch = _fnFilterCreateSearch( searchStr, regex, smart, caseInsensitive );
 	
-		for ( var i=display.length-1 ; i>=0 ; i-- ) {
+		for ( var i=0 ; i<display.length ; i++ ) {
 			data = settings.aoData[ display[i] ]._aFilterData[ colIdx ];
 	
-			if ( ! rpSearch.test( data ) ) {
-				display.splice( i, 1 );
+			if ( rpSearch.test( data ) ) {
+				out.push( display[i] );
 			}
 		}
+	
+		settings.aiDisplay = out;
 	}
 	
 	
@@ -7924,6 +7924,7 @@ return DataTable;
 		var prevSearch = settings.oPreviousSearch.sSearch;
 		var displayMaster = settings.aiDisplayMaster;
 		var display, invalidated, i;
+		var filtered = [];
 	
 		// Need to take account of custom filtering functions - always filter
 		if ( DataTable.ext.search.length !== 0 ) {
@@ -7952,11 +7953,13 @@ return DataTable;
 			// Search the display array
 			display = settings.aiDisplay;
 	
-			for ( i=display.length-1 ; i>=0 ; i-- ) {
-				if ( ! rpSearch.test( settings.aoData[ display[i] ]._sFilterRow ) ) {
-					display.splice( i, 1 );
+			for ( i=0 ; i<display.length ; i++ ) {
+				if ( rpSearch.test( settings.aoData[ display[i] ]._sFilterRow ) ) {
+					filtered.push( display[i] );
 				}
 			}
+	
+			settings.aiDisplay = filtered;
 		}
 	}
 	
@@ -8369,13 +8372,13 @@ return DataTable;
 		// reference is broken by the use of outerHTML
 		$('select', div)
 			.val( settings._iDisplayLength )
-			.bind( 'change.DT', function(e) {
+			.on( 'change.DT', function(e) {
 				_fnLengthChange( settings, $(this).val() );
 				_fnDraw( settings );
 			} );
 	
 		// Update node value whenever anything changes the table's length
-		$(settings.nTable).bind( 'length.dt.DT', function (e, s, len) {
+		$(settings.nTable).on( 'length.dt.DT', function (e, s, len) {
 			if ( settings === s ) {
 				$('select', div).val( len );
 			}
@@ -9240,7 +9243,7 @@ return DataTable;
 	
 		if ( (tableWidthAttr || scrollX) && ! oSettings._reszEvt ) {
 			var bindResize = function () {
-				$(window).bind('resize.DT-'+oSettings.sInstance, _fnThrottle( function () {
+				$(window).on('resize.DT-'+oSettings.sInstance, _fnThrottle( function () {
 					_fnAdjustColumnSizing( oSettings );
 				} ) );
 			};
@@ -9851,86 +9854,102 @@ return DataTable;
 	 * Attempt to load a saved table state
 	 *  @param {object} oSettings dataTables settings object
 	 *  @param {object} oInit DataTables init object so we can override settings
+	 *  @param {function} callback Callback to execute when the state has been loaded
 	 *  @memberof DataTable#oApi
 	 */
-	function _fnLoadState ( settings, oInit )
+	function _fnLoadState ( settings, oInit, callback )
 	{
 		var i, ien;
 		var columns = settings.aoColumns;
+		var loaded = function ( s ) {
+			if ( ! s || ! s.time ) {
+				callback();
+				return;
+			}
 	
-		if ( ! settings.oFeatures.bStateSave ) {
-			return;
-		}
+			// Allow custom and plug-in manipulation functions to alter the saved data set and
+			// cancelling of loading by returning false
+			var abStateLoad = _fnCallbackFire( settings, 'aoStateLoadParams', 'stateLoadParams', [settings, state] );
+			if ( $.inArray( false, abStateLoad ) !== -1 ) {
+				callback();
+				return;
+			}
 	
-		var state = settings.fnStateLoadCallback.call( settings.oInstance, settings );
-		if ( ! state || ! state.time ) {
-			return;
-		}
+			// Reject old data
+			var duration = settings.iStateDuration;
+			if ( duration > 0 && s.time < +new Date() - (duration*1000) ) {
+				callback();
+				return;
+			}
 	
-		/* Allow custom and plug-in manipulation functions to alter the saved data set and
-		 * cancelling of loading by returning false
-		 */
-		var abStateLoad = _fnCallbackFire( settings, 'aoStateLoadParams', 'stateLoadParams', [settings, state] );
-		if ( $.inArray( false, abStateLoad ) !== -1 ) {
-			return;
-		}
+			// Number of columns have changed - all bets are off, no restore of settings
+			if ( s.columns && columns.length !== s.columns.length ) {
+				callback();
+				return;
+			}
 	
-		/* Reject old data */
-		var duration = settings.iStateDuration;
-		if ( duration > 0 && state.time < +new Date() - (duration*1000) ) {
-			return;
-		}
+			// Store the saved state so it might be accessed at any time
+			settings.oLoadedState = $.extend( true, {}, state );
 	
-		// Number of columns have changed - all bets are off, no restore of settings
-		if ( columns.length !== state.columns.length ) {
-			return;
-		}
+			// Restore key features - todo - for 1.11 this needs to be done by
+			// subscribed events
+			if ( s.start !== undefined ) {
+				settings._iDisplayStart    = s.start;
+				settings.iInitDisplayStart = s.start;
+			}
+			if ( s.length !== undefined ) {
+				settings._iDisplayLength   = s.length;
+			}
 	
-		// Store the saved state so it might be accessed at any time
-		settings.oLoadedState = $.extend( true, {}, state );
-	
-		// Restore key features - todo - for 1.11 this needs to be done by
-		// subscribed events
-		if ( state.start !== undefined ) {
-			settings._iDisplayStart    = state.start;
-			settings.iInitDisplayStart = state.start;
-		}
-		if ( state.length !== undefined ) {
-			settings._iDisplayLength   = state.length;
-		}
-	
-		// Order
-		if ( state.order !== undefined ) {
-			settings.aaSorting = [];
-			$.each( state.order, function ( i, col ) {
-				settings.aaSorting.push( col[0] >= columns.length ?
-					[ 0, col[1] ] :
-					col
-				);
-			} );
-		}
-	
-		// Search
-		if ( state.search !== undefined ) {
-			$.extend( settings.oPreviousSearch, _fnSearchToHung( state.search ) );
-		}
-	
-		// Columns
-		for ( i=0, ien=state.columns.length ; i<ien ; i++ ) {
-			var col = state.columns[i];
-	
-			// Visibility
-			if ( col.visible !== undefined ) {
-				columns[i].bVisible = col.visible;
+			// Order
+			if ( s.order !== undefined ) {
+				settings.aaSorting = [];
+				$.each( s.order, function ( i, col ) {
+					settings.aaSorting.push( col[0] >= columns.length ?
+						[ 0, col[1] ] :
+						col
+					);
+				} );
 			}
 	
 			// Search
-			if ( col.search !== undefined ) {
-				$.extend( settings.aoPreSearchCols[i], _fnSearchToHung( col.search ) );
+			if ( s.search !== undefined ) {
+				$.extend( settings.oPreviousSearch, _fnSearchToHung( s.search ) );
 			}
+	
+			// Columns
+			// 
+			if ( s.columns ) {
+				for ( i=0, ien=s.columns.length ; i<ien ; i++ ) {
+					var col = s.columns[i];
+	
+					// Visibility
+					if ( col.visible !== undefined ) {
+						columns[i].bVisible = col.visible;
+					}
+	
+					// Search
+					if ( col.search !== undefined ) {
+						$.extend( settings.aoPreSearchCols[i], _fnSearchToHung( col.search ) );
+					}
+				}
+			}
+	
+			_fnCallbackFire( settings, 'aoStateLoaded', 'stateLoaded', [settings, state] );
+			callback();
 		}
 	
-		_fnCallbackFire( settings, 'aoStateLoaded', 'stateLoaded', [settings, state] );
+		if ( ! settings.oFeatures.bStateSave ) {
+			callback();
+			return;
+		}
+	
+		var state = settings.fnStateLoadCallback.call( settings.oInstance, settings, loaded );
+	
+		if ( state !== undefined ) {
+			loaded( state );
+		}
+		// otherwise, wait for the loaded callback to be executed
 	}
 	
 	
@@ -10083,17 +10102,17 @@ return DataTable;
 	function _fnBindAction( n, oData, fn )
 	{
 		$(n)
-			.bind( 'click.DT', oData, function (e) {
+			.on( 'click.DT', oData, function (e) {
 					n.blur(); // Remove focus outline for mouse users
 					fn(e);
 				} )
-			.bind( 'keypress.DT', oData, function (e){
+			.on( 'keypress.DT', oData, function (e){
 					if ( e.which === 13 ) {
 						e.preventDefault();
 						fn(e);
 					}
 				} )
-			.bind( 'selectstart.DT', function () {
+			.on( 'selectstart.DT', function () {
 					/* Take the brutal approach to cancelling text selection */
 					return false;
 				} );
@@ -11221,7 +11240,8 @@ return DataTable;
 		}
 	
 		for ( i=0, ien=selector.length ; i<ien ; i++ ) {
-			a = selector[i] && selector[i].split ?
+			// Only split on simple strings - complex expressions will be jQuery selectors
+			a = selector[i] && selector[i].split && ! selector[i].match(/[\[\(:]/) ?
 				selector[i].split(',') :
 				[ selector[i] ];
 	
@@ -11361,6 +11381,7 @@ return DataTable;
 	
 	var __row_selector = function ( settings, selector, opts )
 	{
+		var rows;
 		var run = function ( sel ) {
 			var selInt = _intVal( sel );
 			var i, ien;
@@ -11372,13 +11393,15 @@ return DataTable;
 				return [ selInt ];
 			}
 	
-			var rows = _selector_row_indexes( settings, opts );
+			if ( ! rows ) {
+				rows = _selector_row_indexes( settings, opts );
+			}
 	
 			if ( selInt !== null && $.inArray( selInt, rows ) !== -1 ) {
 				// Selector - integer
 				return [ selInt ];
 			}
-			else if ( ! sel ) {
+			else if ( sel === null || sel === undefined || sel === '' ) {
 				// Selector - none
 				return rows;
 			}
@@ -11691,7 +11714,7 @@ return DataTable;
 		addRow( data, klass );
 	
 		if ( row._details ) {
-			row._details.remove();
+			row._details.detach();
 		}
 	
 		row._details = $(rows);
@@ -11892,7 +11915,7 @@ return DataTable;
 	// can be an array of these items, comma separated list, or an array of comma
 	// separated lists
 	
-	var __re_column_selector = /^(.+):(name|visIdx|visible)$/;
+	var __re_column_selector = /^([^:]+):(name|visIdx|visible)$/;
 	
 	
 	// r1 and r2 are redundant - but it means that the parameters match for the
@@ -12639,6 +12662,10 @@ return DataTable;
 		var t = $(table).get(0);
 		var is = false;
 	
+		if ( table instanceof DataTable.Api ) {
+			return true;
+		}
+	
 		$.each( DataTable.settings, function (i, o) {
 			var head = o.nScrollHead ? $('table', o.nScrollHead)[0] : null;
 			var foot = o.nScrollFoot ? $('table', o.nScrollFoot)[0] : null;
@@ -12727,9 +12754,11 @@ return DataTable;
 			var args = Array.prototype.slice.call(arguments);
 	
 			// Add the `dt` namespace automatically if it isn't already present
-			if ( ! args[0].match(/\.dt\b/) ) {
-				args[0] += '.dt';
-			}
+			args[0] = $.map( args[0].split( /\s/ ), function ( e ) {
+				return ! e.match(/\.dt\b/) ?
+					e+'.dt' :
+					e;
+				} ).join( ' ' );
 	
 			var inst = $( this.tables().nodes() );
 			inst[key].apply( inst, args );
@@ -12794,8 +12823,8 @@ return DataTable;
 			// Blitz all `DT` namespaced events (these are internal events, the
 			// lowercase, `dt` events are user subscribed and they are responsible
 			// for removing them
-			jqWrapper.unbind('.DT').find(':not(tbody *)').unbind('.DT');
-			$(window).unbind('.DT-'+settings.sInstance);
+			jqWrapper.off('.DT').find(':not(tbody *)').off('.DT');
+			$(window).off('.DT-'+settings.sInstance);
 	
 			// When scrolling we had to break the table up - restore it
 			if ( table != thead.parentNode ) {
@@ -12924,7 +12953,7 @@ return DataTable;
 	 *  @type string
 	 *  @default Version number
 	 */
-	DataTable.version = "1.10.12";
+	DataTable.version = "1.10.13";
 
 	/**
 	 * Private data store, containing all of the settings objects that are
@@ -14432,6 +14461,8 @@ return DataTable;
 		 *  @type function
 		 *  @member
 		 *  @param {object} settings DataTables settings object
+		 *  @param {object} callback Callback that can be executed when done. It
+		 *    should be passed the loaded state object.
 		 *  @return {object} The DataTables state object to be loaded
 		 *
 		 *  @dtopt Callbacks
@@ -14441,21 +14472,14 @@ return DataTable;
 		 *    $(document).ready( function() {
 		 *      $('#example').dataTable( {
 		 *        "stateSave": true,
-		 *        "stateLoadCallback": function (settings) {
-		 *          var o;
-		 *
-		 *          // Send an Ajax request to the server to get the data. Note that
-		 *          // this is a synchronous request.
+		 *        "stateLoadCallback": function (settings, callback) {
 		 *          $.ajax( {
 		 *            "url": "/state_load",
-		 *            "async": false,
 		 *            "dataType": "json",
 		 *            "success": function (json) {
-		 *              o = json;
+		 *              callback( json );
 		 *            }
 		 *          } );
-		 *
-		 *          return o;
 		 *        }
 		 *      } );
 		 *    } );
@@ -15394,14 +15418,15 @@ return DataTable;
 	
 	
 		/**
-		 * DataTables features four different built-in options for the buttons to
+		 * DataTables features six different built-in options for the buttons to
 		 * display for pagination control:
 		 *
+		 * * `numbers` - Page number buttons only
 		 * * `simple` - 'Previous' and 'Next' buttons only
 		 * * 'simple_numbers` - 'Previous' and 'Next' buttons, plus page numbers
 		 * * `full` - 'First', 'Previous', 'Next' and 'Last' buttons
-		 * * `full_numbers` - 'First', 'Previous', 'Next' and 'Last' buttons, plus
-		 *   page numbers
+		 * * `full_numbers` - 'First', 'Previous', 'Next' and 'Last' buttons, plus page numbers
+		 * * `first_last_numbers` - 'First' and 'Last' buttons, plus page numbers
 		 *  
 		 * Further methods can be added using {@link DataTable.ext.oPagination}.
 		 *  @type string
@@ -18050,6 +18075,10 @@ return DataTable;
 		full_numbers: function ( page, pages ) {
 			return [ 'first', 'previous', _numbers(page, pages), 'next', 'last' ];
 		},
+		
+		first_last_numbers: function (page, pages) {
+	 		return ['first', _numbers(page, pages), 'last'];
+	 	},
 	
 		// For testing and plug-ins to use
 		_numbers: _numbers,
@@ -18161,7 +18190,7 @@ return DataTable;
 	
 				attach( $(host).empty(), buttons );
 	
-				if ( activeEl ) {
+				if ( activeEl !== undefined ) {
 					$(host).find( '[data-dt-idx='+activeEl+']' ).focus();
 				}
 			}
@@ -18184,10 +18213,10 @@ return DataTable;
 		// Dates (only those recognised by the browser's Date.parse)
 		function ( d, settings )
 		{
-			// V8 will remove any unknown characters at the start and end of the
-			// expression, leading to false matches such as `$245.12` or `10%` being
-			// a valid date. See forum thread 18941 for detail.
-			if ( d && !(d instanceof Date) && ( ! _re_date_start.test(d) || ! _re_date_end.test(d) ) ) {
+			// V8 tries _very_ hard to make a string passed into `Date.parse()`
+			// valid, so we need to use a regex to restrict date formats. Use a
+			// plug-in for anything other than ISO8601 style strings
+			if ( d && !(d instanceof Date) && ! _re_date.test(d) ) {
 				return null;
 			}
 			var parsed = Date.parse(d);
@@ -18324,7 +18353,7 @@ return DataTable;
 	$.extend( _ext.type.order, {
 		// Dates
 		"date-pre": function ( d ) {
-			return Date.parse( d ) || 0;
+			return Date.parse( d ) || -Infinity;
 		},
 	
 		// html
@@ -18495,6 +18524,7 @@ return DataTable;
 						return __htmlEscapeEntities( d );
 					}
 	
+					flo = flo.toFixed( precision );
 					d = Math.abs( flo );
 	
 					var intPart = parseInt( d, 10 );
@@ -28812,9 +28842,9 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],19:[function(require,module,exports){
-(function (process,global){
+(function (process){
 /*!
- * Vue.js v1.0.26
+ * Vue.js v1.0.28
  * (c) 2016 Evan You
  * Released under the MIT License.
  */
@@ -28970,7 +29000,7 @@ function stripQuotes(str) {
 }
 
 /**
- * Camelize a hyphen-delmited string.
+ * Camelize a hyphen-delimited string.
  *
  * @param {String} str
  * @return {String}
@@ -28993,10 +29023,10 @@ function toUpper(_, c) {
  * @return {String}
  */
 
-var hyphenateRE = /([a-z\d])([A-Z])/g;
+var hyphenateRE = /([^-])([A-Z])/g;
 
 function hyphenate(str) {
-  return str.replace(hyphenateRE, '$1-$2').toLowerCase();
+  return str.replace(hyphenateRE, '$1-$2').replace(hyphenateRE, '$1-$2').toLowerCase();
 }
 
 /**
@@ -29216,12 +29246,7 @@ var UA = inBrowser && window.navigator.userAgent.toLowerCase();
 var isIE = UA && UA.indexOf('trident') > 0;
 var isIE9 = UA && UA.indexOf('msie 9.0') > 0;
 var isAndroid = UA && UA.indexOf('android') > 0;
-var isIos = UA && /(iphone|ipad|ipod|ios)/i.test(UA);
-var iosVersionMatch = isIos && UA.match(/os ([\d_]+)/);
-var iosVersion = iosVersionMatch && iosVersionMatch[1].split('_');
-
-// detecting iOS UIWebView by indexedDB
-var hasMutationObserverBug = iosVersion && Number(iosVersion[0]) >= 9 && Number(iosVersion[1]) >= 3 && !window.indexedDB;
+var isIOS = UA && /iphone|ipad|ipod|ios/.test(UA);
 
 var transitionProp = undefined;
 var transitionEndEvent = undefined;
@@ -29238,6 +29263,12 @@ if (inBrowser && !isIE9) {
   animationEndEvent = isWebkitAnim ? 'webkitAnimationEnd' : 'animationend';
 }
 
+/* istanbul ignore next */
+function isNative(Ctor) {
+  return (/native code/.test(Ctor.toString())
+  );
+}
+
 /**
  * Defer a task to execute it asynchronously. Ideally this
  * should be executed as a microtask, so we leverage
@@ -29251,35 +29282,55 @@ if (inBrowser && !isIE9) {
 var nextTick = (function () {
   var callbacks = [];
   var pending = false;
-  var timerFunc;
+  var timerFunc = undefined;
+
   function nextTickHandler() {
     pending = false;
     var copies = callbacks.slice(0);
-    callbacks = [];
+    callbacks.length = 0;
     for (var i = 0; i < copies.length; i++) {
       copies[i]();
     }
   }
 
+  // the nextTick behavior leverages the microtask queue, which can be accessed
+  // via either native Promise.then or MutationObserver.
+  // MutationObserver has wider support, however it is seriously bugged in
+  // UIWebView in iOS >= 9.3.3 when triggered in touch event handlers. It
+  // completely stops working after triggering a few times... so, if native
+  // Promise is available, we will use it:
   /* istanbul ignore if */
-  if (typeof MutationObserver !== 'undefined' && !hasMutationObserverBug) {
+  if (typeof Promise !== 'undefined' && isNative(Promise)) {
+    var p = Promise.resolve();
+    var noop = function noop() {};
+    timerFunc = function () {
+      p.then(nextTickHandler);
+      // in problematic UIWebViews, Promise.then doesn't completely break, but
+      // it can get stuck in a weird state where callbacks are pushed into the
+      // microtask queue but the queue isn't being flushed, until the browser
+      // needs to do some other work, e.g. handle a timer. Therefore we can
+      // "force" the microtask queue to be flushed by adding an empty timer.
+      if (isIOS) setTimeout(noop);
+    };
+  } else if (typeof MutationObserver !== 'undefined') {
+    // use MutationObserver where native Promise is not available,
+    // e.g. IE11, iOS7, Android 4.4
     var counter = 1;
     var observer = new MutationObserver(nextTickHandler);
-    var textNode = document.createTextNode(counter);
+    var textNode = document.createTextNode(String(counter));
     observer.observe(textNode, {
       characterData: true
     });
     timerFunc = function () {
       counter = (counter + 1) % 2;
-      textNode.data = counter;
+      textNode.data = String(counter);
     };
   } else {
-    // webpack attempts to inject a shim for setImmediate
-    // if it is used as a global, so we have to work around that to
-    // avoid bundling unnecessary code.
-    var context = inBrowser ? window : typeof global !== 'undefined' ? global : {};
-    timerFunc = context.setImmediate || setTimeout;
+    // fallback to setTimeout
+    /* istanbul ignore next */
+    timerFunc = setTimeout;
   }
+
   return function (cb, ctx) {
     var func = ctx ? function () {
       cb.call(ctx);
@@ -29293,7 +29344,7 @@ var nextTick = (function () {
 
 var _Set = undefined;
 /* istanbul ignore if */
-if (typeof Set !== 'undefined' && Set.toString().match(/native code/)) {
+if (typeof Set !== 'undefined' && isNative(Set)) {
   // use native Set when available.
   _Set = Set;
 } else {
@@ -29414,7 +29465,6 @@ p.get = function (key, returnEntry) {
 };
 
 var cache$1 = new Cache(1000);
-var filterTokenRE = /[^\s'"]+|'[^']*'|"[^"]*"/g;
 var reservedArgRE = /^in$|^-?\d+/;
 
 /**
@@ -29423,35 +29473,167 @@ var reservedArgRE = /^in$|^-?\d+/;
 
 var str;
 var dir;
-var c;
-var prev;
-var i;
-var l;
-var lastFilterIndex;
-var inSingle;
-var inDouble;
-var curly;
-var square;
-var paren;
-/**
- * Push a filter to the current directive object
- */
+var len;
+var index;
+var chr;
+var state;
+var startState = 0;
+var filterState = 1;
+var filterNameState = 2;
+var filterArgState = 3;
 
-function pushFilter() {
-  var exp = str.slice(lastFilterIndex, i).trim();
-  var filter;
-  if (exp) {
-    filter = {};
-    var tokens = exp.match(filterTokenRE);
-    filter.name = tokens[0];
-    if (tokens.length > 1) {
-      filter.args = tokens.slice(1).map(processFilterArg);
+var doubleChr = 0x22;
+var singleChr = 0x27;
+var pipeChr = 0x7C;
+var escapeChr = 0x5C;
+var spaceChr = 0x20;
+
+var expStartChr = { 0x5B: 1, 0x7B: 1, 0x28: 1 };
+var expChrPair = { 0x5B: 0x5D, 0x7B: 0x7D, 0x28: 0x29 };
+
+function peek() {
+  return str.charCodeAt(index + 1);
+}
+
+function next() {
+  return str.charCodeAt(++index);
+}
+
+function eof() {
+  return index >= len;
+}
+
+function eatSpace() {
+  while (peek() === spaceChr) {
+    next();
+  }
+}
+
+function isStringStart(chr) {
+  return chr === doubleChr || chr === singleChr;
+}
+
+function isExpStart(chr) {
+  return expStartChr[chr];
+}
+
+function isExpEnd(start, chr) {
+  return expChrPair[start] === chr;
+}
+
+function parseString() {
+  var stringQuote = next();
+  var chr;
+  while (!eof()) {
+    chr = next();
+    // escape char
+    if (chr === escapeChr) {
+      next();
+    } else if (chr === stringQuote) {
+      break;
     }
   }
-  if (filter) {
-    (dir.filters = dir.filters || []).push(filter);
+}
+
+function parseSpecialExp(chr) {
+  var inExp = 0;
+  var startChr = chr;
+
+  while (!eof()) {
+    chr = peek();
+    if (isStringStart(chr)) {
+      parseString();
+      continue;
+    }
+
+    if (startChr === chr) {
+      inExp++;
+    }
+    if (isExpEnd(startChr, chr)) {
+      inExp--;
+    }
+
+    next();
+
+    if (inExp === 0) {
+      break;
+    }
   }
-  lastFilterIndex = i + 1;
+}
+
+/**
+ * syntax:
+ * expression | filterName  [arg  arg [| filterName arg arg]]
+ */
+
+function parseExpression() {
+  var start = index;
+  while (!eof()) {
+    chr = peek();
+    if (isStringStart(chr)) {
+      parseString();
+    } else if (isExpStart(chr)) {
+      parseSpecialExp(chr);
+    } else if (chr === pipeChr) {
+      next();
+      chr = peek();
+      if (chr === pipeChr) {
+        next();
+      } else {
+        if (state === startState || state === filterArgState) {
+          state = filterState;
+        }
+        break;
+      }
+    } else if (chr === spaceChr && (state === filterNameState || state === filterArgState)) {
+      eatSpace();
+      break;
+    } else {
+      if (state === filterState) {
+        state = filterNameState;
+      }
+      next();
+    }
+  }
+
+  return str.slice(start + 1, index) || null;
+}
+
+function parseFilterList() {
+  var filters = [];
+  while (!eof()) {
+    filters.push(parseFilter());
+  }
+  return filters;
+}
+
+function parseFilter() {
+  var filter = {};
+  var args;
+
+  state = filterState;
+  filter.name = parseExpression().trim();
+
+  state = filterArgState;
+  args = parseFilterArguments();
+
+  if (args.length) {
+    filter.args = args;
+  }
+  return filter;
+}
+
+function parseFilterArguments() {
+  var args = [];
+  while (!eof() && state !== filterState) {
+    var arg = parseExpression();
+    if (!arg) {
+      break;
+    }
+    args.push(processFilterArg(arg));
+  }
+
+  return args;
 }
 
 /**
@@ -29503,56 +29685,22 @@ function parseDirective(s) {
 
   // reset parser state
   str = s;
-  inSingle = inDouble = false;
-  curly = square = paren = 0;
-  lastFilterIndex = 0;
   dir = {};
+  len = str.length;
+  index = -1;
+  chr = '';
+  state = startState;
 
-  for (i = 0, l = str.length; i < l; i++) {
-    prev = c;
-    c = str.charCodeAt(i);
-    if (inSingle) {
-      // check single quote
-      if (c === 0x27 && prev !== 0x5C) inSingle = !inSingle;
-    } else if (inDouble) {
-      // check double quote
-      if (c === 0x22 && prev !== 0x5C) inDouble = !inDouble;
-    } else if (c === 0x7C && // pipe
-    str.charCodeAt(i + 1) !== 0x7C && str.charCodeAt(i - 1) !== 0x7C) {
-      if (dir.expression == null) {
-        // first filter, end of expression
-        lastFilterIndex = i + 1;
-        dir.expression = str.slice(0, i).trim();
-      } else {
-        // already has filter
-        pushFilter();
-      }
-    } else {
-      switch (c) {
-        case 0x22:
-          inDouble = true;break; // "
-        case 0x27:
-          inSingle = true;break; // '
-        case 0x28:
-          paren++;break; // (
-        case 0x29:
-          paren--;break; // )
-        case 0x5B:
-          square++;break; // [
-        case 0x5D:
-          square--;break; // ]
-        case 0x7B:
-          curly++;break; // {
-        case 0x7D:
-          curly--;break; // }
-      }
+  var filters;
+
+  if (str.indexOf('|') < 0) {
+    dir.expression = str.trim();
+  } else {
+    dir.expression = parseExpression().trim();
+    filters = parseFilterList();
+    if (filters.length) {
+      dir.filters = filters;
     }
-  }
-
-  if (dir.expression == null) {
-    dir.expression = str.slice(0, i).trim();
-  } else if (lastFilterIndex !== 0) {
-    pushFilter();
   }
 
   cache$1.put(s, dir);
@@ -31141,10 +31289,7 @@ var util = Object.freeze({
 	isIE: isIE,
 	isIE9: isIE9,
 	isAndroid: isAndroid,
-	isIos: isIos,
-	iosVersionMatch: iosVersionMatch,
-	iosVersion: iosVersion,
-	hasMutationObserverBug: hasMutationObserverBug,
+	isIOS: isIOS,
 	get transitionProp () { return transitionProp; },
 	get transitionEndEvent () { return transitionEndEvent; },
 	get animationProp () { return animationProp; },
@@ -31244,7 +31389,7 @@ function initMixin (Vue) {
 
     // fragment:
     // if this instance is compiled inside a Fragment, it
-    // needs to reigster itself as a child of that fragment
+    // needs to register itself as a child of that fragment
     // for attach/detach to work properly.
     this._frag = options._frag;
     if (this._frag) {
@@ -31549,7 +31694,7 @@ function parsePath(path) {
  */
 
 function getPath(obj, path) {
-  return parseExpression(path).get(obj);
+  return parseExpression$1(path).get(obj);
 }
 
 /**
@@ -31584,7 +31729,7 @@ function setPath(obj, path, val) {
     last = obj;
     key = path[i];
     if (key.charAt(0) === '*') {
-      key = parseExpression(key.slice(1)).get.call(original, original);
+      key = parseExpression$1(key.slice(1)).get.call(original, original);
     }
     if (i < l - 1) {
       obj = obj[key];
@@ -31628,7 +31773,7 @@ var improperKeywordsRE = new RegExp('^(' + improperKeywords.replace(/,/g, '\\b|'
 
 var wsRE = /\s/g;
 var newlineRE = /\n/g;
-var saveRE = /[\{,]\s*[\w\$_]+\s*:|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*\$\{|\}(?:[^`\\]|\\.)*`|`(?:[^`\\]|\\.)*`)|new |typeof |void /g;
+var saveRE = /[\{,]\s*[\w\$_]+\s*:|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*\$\{|\}(?:[^`\\"']|\\.)*`|`(?:[^`\\]|\\.)*`)|new |typeof |void /g;
 var restoreRE = /"(\d+)"/g;
 var pathTestRE = /^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['.*?'\]|\[".*?"\]|\[\d+\]|\[[A-Za-z_$][\w$]*\])*$/;
 var identRE = /[^\w$\.](?:[A-Za-z_$][\w$]*)/g;
@@ -31775,7 +31920,7 @@ function compileSetter(exp) {
  * @return {Function}
  */
 
-function parseExpression(exp, needSet) {
+function parseExpression$1(exp, needSet) {
   exp = exp.trim();
   // try cache
   var hit = expressionCache.get(exp);
@@ -31814,7 +31959,7 @@ function isSimplePath(exp) {
 }
 
 var expression = Object.freeze({
-  parseExpression: parseExpression,
+  parseExpression: parseExpression$1,
   isSimplePath: isSimplePath
 });
 
@@ -31966,7 +32111,7 @@ function Watcher(vm, expOrFn, cb, options) {
     this.getter = expOrFn;
     this.setter = undefined;
   } else {
-    var res = parseExpression(expOrFn, this.twoWay);
+    var res = parseExpression$1(expOrFn, this.twoWay);
     this.getter = res.get;
     this.setter = res.set;
   }
@@ -32810,6 +32955,10 @@ var vFor = {
   params: ['track-by', 'stagger', 'enter-stagger', 'leave-stagger'],
 
   bind: function bind() {
+    if (process.env.NODE_ENV !== 'production' && this.el.hasAttribute('v-if')) {
+      warn('<' + this.el.tagName.toLowerCase() + ' v-for="' + this.expression + '" v-if="' + this.el.getAttribute('v-if') + '">: ' + 'Using v-if and v-for on the same element is not recommended - ' + 'consider filtering the source Array instead.', this.vm);
+    }
+
     // support "item in/of items" syntax
     var inMatch = this.expression.match(/(.*) (?:in|of) (.*)/);
     if (inMatch) {
@@ -32920,7 +33069,7 @@ var vFor = {
           });
         }
       } else {
-        // new isntance
+        // new instance
         frag = this.create(value, alias, i, key);
         frag.fresh = !init;
       }
@@ -33355,24 +33504,6 @@ function findPrevFrag(frag, anchor, id) {
 }
 
 /**
- * Find a vm from a fragment.
- *
- * @param {Fragment} frag
- * @return {Vue|undefined}
- */
-
-function findVmFromFrag(frag) {
-  var node = frag.node;
-  // handle multi-node frag
-  if (frag.end) {
-    while (!node.__vue__ && node !== frag.end && node.nextSibling) {
-      node = node.nextSibling;
-    }
-  }
-  return node.__vue__;
-}
-
-/**
  * Create a range array from given number.
  *
  * @param {Number} n
@@ -33405,6 +33536,24 @@ if (process.env.NODE_ENV !== 'production') {
   vFor.warnDuplicate = function (value) {
     warn('Duplicate value found in v-for="' + this.descriptor.raw + '": ' + JSON.stringify(value) + '. Use track-by="$index" if ' + 'you are expecting duplicate values.', this.vm);
   };
+}
+
+/**
+ * Find a vm from a fragment.
+ *
+ * @param {Fragment} frag
+ * @return {Vue|undefined}
+ */
+
+function findVmFromFrag(frag) {
+  var node = frag.node;
+  // handle multi-node frag
+  if (frag.end) {
+    while (!node.__vue__ && node !== frag.end && node.nextSibling) {
+      node = node.nextSibling;
+    }
+  }
+  return node.__vue__;
 }
 
 var vIf = {
@@ -33804,15 +33953,16 @@ var checkbox = {
     }
 
     this.listener = function () {
-      var model = self._watcher.value;
+      var model = self._watcher.get();
       if (isArray(model)) {
         var val = self.getValue();
+        var i = indexOf(model, val);
         if (el.checked) {
-          if (indexOf(model, val) < 0) {
-            model.push(val);
+          if (i < 0) {
+            self.set(model.concat(val));
           }
-        } else {
-          model.$remove(val);
+        } else if (i > -1) {
+          self.set(model.slice(0, i).concat(model.slice(i + 1)));
         }
       } else {
         self.set(getBooleanValue());
@@ -34329,6 +34479,12 @@ var cloak = {
   }
 };
 
+// logic control
+// two-way binding
+// event handling
+// attributes
+// ref & el
+// cloak
 // must export plain object
 var directives = {
   text: text$1,
@@ -34820,6 +34976,7 @@ var settablePathRE = /^[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*|\[[^\[\]]+\])*$/;
 
 function compileProps(el, propOptions, vm) {
   var props = [];
+  var propsData = vm.$options.propsData;
   var names = Object.keys(propOptions);
   var i = names.length;
   var options, name, attr, value, path, parsed, prop;
@@ -34887,13 +35044,16 @@ function compileProps(el, propOptions, vm) {
     } else if ((value = getAttr(el, attr)) !== null) {
       // has literal binding!
       prop.raw = value;
+    } else if (propsData && (value = propsData[name] || propsData[path]) !== null) {
+      // has propsData
+      prop.raw = value;
     } else if (process.env.NODE_ENV !== 'production') {
       // check possible camelCase prop usage
       var lowerCaseName = path.toLowerCase();
       value = /[A-Z\-]/.test(name) && (el.getAttribute(lowerCaseName) || el.getAttribute(':' + lowerCaseName) || el.getAttribute('v-bind:' + lowerCaseName) || el.getAttribute(':' + lowerCaseName + '.once') || el.getAttribute('v-bind:' + lowerCaseName + '.once') || el.getAttribute(':' + lowerCaseName + '.sync') || el.getAttribute('v-bind:' + lowerCaseName + '.sync'));
       if (value) {
         warn('Possible usage error for prop `' + lowerCaseName + '` - ' + 'did you mean `' + attr + '`? HTML is case-insensitive, remember to use ' + 'kebab-case for props in templates.', vm);
-      } else if (options.required) {
+      } else if (options.required && (!propsData || !(name in propsData) && !(path in propsData))) {
         // warn missing required
         warn('Missing required prop: ' + name, vm);
       }
@@ -35738,7 +35898,7 @@ function linkAndCapture(linker, vm) {
   var originalDirCount = vm._directives.length;
   linker();
   var dirs = vm._directives.slice(originalDirCount);
-  dirs.sort(directiveComparator);
+  sortDirectives(dirs);
   for (var i = 0, l = dirs.length; i < l; i++) {
     dirs[i]._bind();
   }
@@ -35746,16 +35906,37 @@ function linkAndCapture(linker, vm) {
 }
 
 /**
- * Directive priority sort comparator
+ * sort directives by priority (stable sort)
  *
- * @param {Object} a
- * @param {Object} b
+ * @param {Array} dirs
  */
+function sortDirectives(dirs) {
+  if (dirs.length === 0) return;
 
-function directiveComparator(a, b) {
-  a = a.descriptor.def.priority || DEFAULT_PRIORITY;
-  b = b.descriptor.def.priority || DEFAULT_PRIORITY;
-  return a > b ? -1 : a === b ? 0 : 1;
+  var groupedMap = {};
+  var i, j, k, l;
+  var index = 0;
+  var priorities = [];
+  for (i = 0, j = dirs.length; i < j; i++) {
+    var dir = dirs[i];
+    var priority = dir.descriptor.def.priority || DEFAULT_PRIORITY;
+    var array = groupedMap[priority];
+    if (!array) {
+      array = groupedMap[priority] = [];
+      priorities.push(priority);
+    }
+    array.push(dir);
+  }
+
+  priorities.sort(function (a, b) {
+    return a > b ? -1 : a === b ? 0 : 1;
+  });
+  for (i = 0, j = priorities.length; i < j; i++) {
+    var group = groupedMap[priorities[i]];
+    for (k = 0, l = group.length; k < l; k++) {
+      dirs[index++] = group[k];
+    }
+  }
 }
 
 /**
@@ -35873,7 +36054,13 @@ function compileRoot(el, options, contextOptions) {
     });
     if (names.length) {
       var plural = names.length > 1;
-      warn('Attribute' + (plural ? 's ' : ' ') + names.join(', ') + (plural ? ' are' : ' is') + ' ignored on component ' + '<' + options.el.tagName.toLowerCase() + '> because ' + 'the component is a fragment instance: ' + 'http://vuejs.org/guide/components.html#Fragment-Instance');
+
+      var componentName = options.el.tagName.toLowerCase();
+      if (componentName === 'component' && options.name) {
+        componentName += ':' + options.name;
+      }
+
+      warn('Attribute' + (plural ? 's ' : ' ') + names.join(', ') + (plural ? ' are' : ' is') + ' ignored on component ' + '<' + componentName + '> because ' + 'the component is a fragment instance: ' + 'http://vuejs.org/guide/components.html#Fragment-Instance');
     }
   }
 
@@ -35932,6 +36119,10 @@ function compileElement(el, options) {
   // textarea treats its text content as the initial value.
   // just bind it as an attr directive for value.
   if (el.tagName === 'TEXTAREA') {
+    // a textarea which has v-pre attr should skip complie.
+    if (getAttr(el, 'v-pre') !== null) {
+      return skip;
+    }
     var tokens = parseText(el.value);
     if (tokens) {
       el.setAttribute(':value', tokensToExp(tokens));
@@ -36258,7 +36449,7 @@ function makeTerminalNodeLinkFn(el, dirName, value, options, def, rawName, arg, 
     modifiers: modifiers,
     def: def
   };
-  // check ref for v-for and router-view
+  // check ref for v-for, v-if and router-view
   if (dirName === 'for' || dirName === 'router-view') {
     descriptor.ref = findRef(el);
   }
@@ -36498,6 +36689,9 @@ function transcludeTemplate(el, options) {
   var frag = parseTemplate(template, true);
   if (frag) {
     var replacer = frag.firstChild;
+    if (!replacer) {
+      return frag;
+    }
     var tag = replacer.tagName && replacer.tagName.toLowerCase();
     if (options.replace) {
       /* istanbul ignore if */
@@ -37250,7 +37444,7 @@ Directive.prototype._setupParamWatcher = function (key, expression) {
 Directive.prototype._checkStatement = function () {
   var expression = this.expression;
   if (expression && this.acceptStatement && !isSimplePath(expression)) {
-    var fn = parseExpression(expression).get;
+    var fn = parseExpression$1(expression).get;
     var scope = this._scope || this.vm;
     var handler = function handler(e) {
       scope.$event = e;
@@ -37698,7 +37892,7 @@ function dataAPI (Vue) {
    */
 
   Vue.prototype.$get = function (exp, asStatement) {
-    var res = parseExpression(exp);
+    var res = parseExpression$1(exp);
     if (res) {
       if (asStatement) {
         var self = this;
@@ -37726,7 +37920,7 @@ function dataAPI (Vue) {
    */
 
   Vue.prototype.$set = function (exp, val) {
-    var res = parseExpression(exp, true);
+    var res = parseExpression$1(exp, true);
     if (res && res.set) {
       res.set.call(this, this, val);
     }
@@ -38489,7 +38683,7 @@ function filterBy(arr, search, delimiter) {
 }
 
 /**
- * Filter filter for arrays
+ * Order filter for arrays
  *
  * @param {String|Array<String>|Function} ...sortKeys
  * @param {Number} [order]
@@ -38872,7 +39066,7 @@ function installGlobalAPI (Vue) {
 
 installGlobalAPI(Vue);
 
-Vue.version = '1.0.26';
+Vue.version = '1.0.28';
 
 // devtools global hook
 /* istanbul ignore next */
@@ -38887,7 +39081,7 @@ setTimeout(function () {
 }, 0);
 
 module.exports = Vue;
-}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+}).call(this,require('_process'))
 },{"_process":18}],20:[function(require,module,exports){
 'use strict';
 
@@ -39475,7 +39669,7 @@ var delayTime = 5000;
  */
 module.exports = function () {
   //Automatically hide non-important flash message
-  $('div.alert').not('alert-important').delay(delayTime).slideUp(300);
+  $('div.alert').not('.alert-important').delay(delayTime).slideUp(300);
 };
 
 },{"jquery":17}],30:[function(require,module,exports){

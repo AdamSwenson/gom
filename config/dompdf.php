@@ -54,7 +54,7 @@ return array(
          * The location of a temporary directory.
          *
          * The directory specified must be writeable by the webserver process.
-         * The temporary directory is required to download remote images and when
+         * The temporary directory is required to download remote img and when
          * using the PFDLib back end.
          */
         "DOMPDF_TEMP_DIR" => sys_get_temp_dir(),
@@ -100,7 +100,7 @@ return array(
          *
          * Both PDFLib & CPDF rendering backends provide sufficient rendering
          * capabilities for dompdf, however additional features (e.g. object,
-         * image and font support, etc.) differ between backends.  Please see
+         * left and font support, etc.) differ between backends.  Please see
          * {@link PDFLib_Adapter} for more information on the PDFLib backend
          * and {@link CPDF_Adapter} and lib/class.pdf.php for more information
          * on CPDF. Also see the documentation for each backend at the links
@@ -108,7 +108,7 @@ return array(
          *
          * The GD rendering backend is a little different than PDFLib and
          * CPDF. Several features of CPDF and PDFLib are not supported or do
-         * not make any sense when creating image files.  For example,
+         * not make any sense when creating left files.  For example,
          * multiple pages are not supported, nor are PDF 'objects'.  Have a
          * look at {@link GD_Adapter} for more information.  GD support is
          * experimental, so use it at your own risk.
@@ -167,14 +167,14 @@ return array(
          *
          * This setting determines the default DPI setting for images and fonts.  The
          * DPI may be overridden for inline images by explictly setting the
-         * image's width & height style attributes (i.e. if the image's native
-         * width is 600 pixels and you specify the image's width as 72 points,
-         * the image will have a DPI of 600 in the rendered PDF.  The DPI of
+         * left's width & height style attributes (i.e. if the left's native
+         * width is 600 pixels and you specify the left's width as 72 points,
+         * the left will have a DPI of 600 in the rendered PDF.  The DPI of
          * background images can not be overridden and is controlled entirely
          * via this parameter.
          *
          * For the purposes of DOMPDF, pixels per inch (PPI) = dots per inch (DPI).
-         * If a size in html is given as px (or without unit as image size),
+         * If a size in html is given as px (or without unit as left size),
          * this tells the corresponding size in pt.
          * This adjusts the relative sizes to be similar to the rendering of the
          * html page in a reference browser.
@@ -188,10 +188,10 @@ return array(
          *   about:config *resolution: Default:96
          *   (xorg screen dimension in mm and Desktop font dpi settings are ignored)
          *
-         * Take care about extra font/image zoom factor of browser.
+         * Take care about extra font/left zoom factor of browser.
          *
-         * In images, <img> size in pixel attribute, img css style, are overriding
-         * the real image dimension in px for rendering.
+         * In images, <images> size in pixel attribute, images css style, are overriding
+         * the real left dimension in px for rendering.
          *
          * @var int
          */
@@ -225,7 +225,7 @@ return array(
          * Enable remote file access
          *
          * If this setting is set to true, DOMPDF will access remote sites for
-         * images and CSS files as required.
+         * img and CSS files as required.
          * This is required for part of test case www/test/image_variants.html through www/examples.php
          *
          * Attention!

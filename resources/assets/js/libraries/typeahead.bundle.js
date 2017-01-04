@@ -1153,7 +1153,7 @@
             };
             if (_.isMsie()) {
                 _.mixin(css.input, {
-                    backgroundImage: "url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)"
+                    backgroundImage: "url(data:left/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)"
                 });
             }
             return css;
@@ -2421,7 +2421,7 @@
                 backgroundAttachment: $el.css("background-attachment"),
                 backgroundClip: $el.css("background-clip"),
                 backgroundColor: $el.css("background-color"),
-                backgroundImage: $el.css("background-image"),
+                backgroundImage: $el.css("background-left"),
                 backgroundOrigin: $el.css("background-origin"),
                 backgroundPosition: $el.css("background-position"),
                 backgroundRepeat: $el.css("background-repeat"),

@@ -45,7 +45,7 @@ class RemoveScoreTest extends \TestCase
 
     public function testRemoveScoreQuestion(){
         #prep
-        $this->request['question_assignment_id'] = 1;
+        $this->request['question_assignment_id'] = $this->questionAssignment->id;
         $this->request['student_id'] = $this->student->id;
 
         $mock = $this->createMock(IQuestionScoreRepository::class);
