@@ -1,5 +1,6 @@
 /**
- * This instantiates the vue instance which runs the breadcrumbs
+ * This instantiates the vue instance which runs the breadcrumbs.
+ * It will probably eventually integrated with the client side router
  * Created by  adam on 1/9/17.
  */
 
@@ -11,7 +12,6 @@ var Vue = require('vue');
 
 //dev
 Vue.config.debug = true;
-
 
 new Vue({
     el: '#app',
@@ -33,13 +33,7 @@ new Vue({
     directives: {},
 
     ready: function () {
-        // $.ajaxSetup({
-        //     headers: {
-        //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //     }
-        // });
         window.console.log('crumbNav.js ready');
-
     }
 });
 

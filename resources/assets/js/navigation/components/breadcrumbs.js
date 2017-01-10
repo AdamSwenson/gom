@@ -1,95 +1,87 @@
 /**
  * Created by adam on 1/9/17.
  */
-//var $ = require('jquery');
-//window.$ = $;
-// let crumbLink = require('./components/crumbLink');
 
 module.exports = {
 
     template: require('../templates/breadcrumbs.template.html'),
 
     props: [
+        //The base url to add to all the links
         'route-root',
+
+        //The index of the page we are currently on.
+        //This will be used to highlight the current link
+        //with an active class
         'active-index',
+
+        //Either: 'main' or 'setup'
         'group'
     ],
 
 
     data: function () {
         return {
-
             //Dictionary of links by group
             linkMap: {
                 'main': [
                     {
-                        label: 'Setup', target: '/setup'
+                        label: 'Setup', target: this.routeRoot + '/exam'
                     },
                     {
-                        label: 'Grade', target: '/grade'
+                        label: 'Grade', target: this.routeRoot + '/grade'
                     },
                     {
-                        label: 'Report', target: '/report'
+                        label: 'Report', target: this.routeRoot + '/report'
                     }],
 
                 'setup': [
                     {
-                        label: 'Exam', target: '/setup/exam'
+                        label: 'Exam', target: this.routeRoot + '/setup/exam'
                     },
                     {
-                        label: 'Questions', target: '/setup/questions'
+                        label: 'Questions', target: this.routeRoot + '/setup/questions'
                     },
                     {
-                        label: 'Elements', target: '/setup/elements'
+                        label: 'Elements', target: this.routeRoot + '/setup/elements'
                     },
                     {
-                        label: 'Students', target: '/setup/students'
-                    }]
+                        label: 'Students', target: this.routeRoot + '/setup/students'
+                    }
+                ]
             }
         };
     },
 
     computed: {
-        links:function(){
+        links: function () {
             return this.linkMap[this.group];
-        }
+        },
+
+        //The valid values of 'group' for the prop
+        groups: function () {
+            this.linkMap.keys()
+        },
+
+
     },
 
     methods: {
-        //   load: (group, position) =>{
-        //       return this.links[group][position];
-        //   },
-        //
-        //   setActive: (group, position) =>{
-        //   //set all other active values to empty first
-        //
-        //       //update to be active
-        //       let a = this.load(group, position);
-        //       a.active = 'active';
-        //   },
-        //
-        //   /**
-        //    * Returns the text to display as a label for the link
-        //    * @param group
-        //    * @param position
-        //    * @returns {*}
-        //    */
-        // getLabel: (group, position) => {
-        //     let a = this.load(group,position);
-        //     return a.label;
-        // },
-        //
-        //   /**
-        //    * Returns the url which the link should reference
-        //    * @param group
-        //    * @param position
-        //    * @returns {*}
-        //    */
-        //   getTarget: (group, position) => {
-        //       let a = this.load(group, position);
-        //       return a.target;
-        //   }
-    },
+
+        isActive: function($index) {
+            return this.activeIndex == $index ? 'active' : '';
+        },
+
+        //Returns the link body
+        getLink:function($index){
+            if(this.activeIndex == $index){
+                return this.label;
+            }
+            return `<a href="${this.target}">${this.label}</a>`;
+            }
+
+
+        },
 
     directives: {},
 
@@ -98,9 +90,3 @@ module.exports = {
     ready: function () {
     },
 };
-
-// const v = new Vue({
-//     components: {
-//         'breadcrumbs' :
-//     }}
-// )

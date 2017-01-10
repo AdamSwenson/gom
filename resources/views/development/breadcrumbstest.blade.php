@@ -14,7 +14,7 @@
     <div id="app">
 
 <breadcrumbs
-        :active-index="2"
+        :active-index="1"
         route-root="{{ url('') }}"
         group="main">
 </breadcrumbs>

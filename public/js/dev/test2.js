@@ -22609,37 +22609,43 @@ module.exports = Vue;
 /**
  * Created by adam on 1/9/17.
  */
-//var $ = require('jquery');
-//window.$ = $;
-// let crumbLink = require('./components/crumbLink');
 
 module.exports = {
 
     template: require('../templates/breadcrumbs.template.html'),
 
-    props: ['route-root', 'active-index', 'group'],
+    props: [
+    //The base url to add to all the links
+    'route-root',
+
+    //The index of the page we are currently on.
+    //This will be used to highlight the current link
+    //with an active class
+    'active-index',
+
+    //Either: 'main' or 'setup'
+    'group'],
 
     data: function data() {
         return {
-
             //Dictionary of links by group
             linkMap: {
                 'main': [{
-                    label: 'Setup', target: '/setup'
+                    label: 'Setup', target: this.routeRoot + '/exam'
                 }, {
-                    label: 'Grade', target: '/grade'
+                    label: 'Grade', target: this.routeRoot + '/grade'
                 }, {
-                    label: 'Report', target: '/report'
+                    label: 'Report', target: this.routeRoot + '/report'
                 }],
 
                 'setup': [{
-                    label: 'Exam', target: '/setup/exam'
+                    label: 'Exam', target: this.routeRoot + '/setup/exam'
                 }, {
-                    label: 'Questions', target: '/setup/questions'
+                    label: 'Questions', target: this.routeRoot + '/setup/questions'
                 }, {
-                    label: 'Elements', target: '/setup/elements'
+                    label: 'Elements', target: this.routeRoot + '/setup/elements'
                 }, {
-                    label: 'Students', target: '/setup/students'
+                    label: 'Students', target: this.routeRoot + '/setup/students'
                 }]
             }
         };
@@ -22648,43 +22654,29 @@ module.exports = {
     computed: {
         links: function links() {
             return this.linkMap[this.group];
+        },
+
+        //The valid values of 'group' for the prop
+        groups: function groups() {
+            this.linkMap.keys();
         }
+
     },
 
     methods: {
-        //   load: (group, position) =>{
-        //       return this.links[group][position];
-        //   },
+
+        isActive: function isActive($index) {
+            return this.activeIndex == $index ? 'active' : '';
+        },
+
         //
-        //   setActive: (group, position) =>{
-        //   //set all other active values to empty first
-        //
-        //       //update to be active
-        //       let a = this.load(group, position);
-        //       a.active = 'active';
-        //   },
-        //
-        //   /**
-        //    * Returns the text to display as a label for the link
-        //    * @param group
-        //    * @param position
-        //    * @returns {*}
-        //    */
-        // getLabel: (group, position) => {
-        //     let a = this.load(group,position);
-        //     return a.label;
-        // },
-        //
-        //   /**
-        //    * Returns the url which the link should reference
-        //    * @param group
-        //    * @param position
-        //    * @returns {*}
-        //    */
-        //   getTarget: (group, position) => {
-        //       let a = this.load(group, position);
-        //       return a.target;
-        //   }
+        getLink: function getLink($index) {
+            if (this.activeIndex == $index) {
+                return this.label;
+            }
+            return '<a href="' + this.target + '">' + this.label + '</a>';
+        }
+
     },
 
     directives: {},
@@ -22694,17 +22686,12 @@ module.exports = {
     ready: function ready() {}
 };
 
-// const v = new Vue({
-//     components: {
-//         'breadcrumbs' :
-//     }}
-// )
-
 },{"../templates/breadcrumbs.template.html":19}],18:[function(require,module,exports){
 'use strict';
 
 /**
- * This instantiates the vue instance which runs the breadcrumbs
+ * This instantiates the vue instance which runs the breadcrumbs.
+ * It will probably eventually integrated with the client side router
  * Created by  adam on 1/9/17.
  */
 
@@ -22735,17 +22722,12 @@ new Vue({
     directives: {},
 
     ready: function ready() {
-        // $.ajaxSetup({
-        //     headers: {
-        //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //     }
-        // });
         window.console.log('crumbNav.js ready');
     }
 });
 
 },{"./components/breadcrumbs":17,"bootstrap":1,"jquery":14,"vue":16}],19:[function(require,module,exports){
-module.exports = '\n<ol id="crumbNav"\n    class="breadcrumb">\n    <li v-for="item in links" class="{{ active-index == $index ? active : \'\' }}">\n        <a href="{{item.target}}">{{item.label}}</a>\n    </li>\n\n</ol>';
+module.exports = '<nav>\n    <ol class="breadcrumb"\n            id="crumbNav"\n    >\n\n        <li\n                v-for="item in links"\n                class="{{ isActive($index)}}"\n        >\n            <a href="{{item.target}}">{{item.label}}</a>\n        </li>\n\n    </ol>\n</nav>';
 },{}]},{},[18]);
 
 //# sourceMappingURL=test2.js.map
