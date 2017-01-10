@@ -176,6 +176,7 @@ elixir( function ( mix ) {
 
     mix.browserify('data/vuex.Data.js', 'public/js/dev/test-package.js')
 
+    mix.browserify('store/index.js', 'public/js/dev/test2-package.js')
 
 
     //

@@ -1,10 +1,12 @@
 @extends('layouts.master')
 
 @section('body')
-j
+    Test template
+
     <div id="app"></div>
-    @endsection
+@endsection
 
 @section('jsArea')
     <script src="{{ asset('/js/dev/test-package.js') }}"></script>
-    @endsection
+    <script src="{{ asset('/js/dev/test2-package.js') }}"></script>
+@endsection
