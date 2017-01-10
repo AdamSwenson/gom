@@ -38,7 +38,8 @@ class TestController extends Controller
 
     public function test()
     {
-        return view('development.test');
+        return view('development.breadcrumbstest');
+//        return view('development.test');
 
     }
 

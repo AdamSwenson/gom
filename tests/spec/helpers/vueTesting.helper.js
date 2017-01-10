@@ -57,11 +57,11 @@ module.exports = {
     },
 
     /**
-     * Creates and mounts a vue component. Returns the instance.
+     * Creates and mounts a vue components. Returns the instance.
      *
-     * When instantiating the component in a fixture, make sure to include
+     * When instantiating the components in a fixture, make sure to include
      * v-ref:test-object
-     * so that can access the component through the vm with vm.$refs.testObject
+     * so that can access the components through the vm with vm.$refs.testObject
      *
      * @param testedComponent
      * @param componentName
