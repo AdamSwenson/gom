@@ -22669,7 +22669,7 @@ module.exports = {
             return this.activeIndex == $index ? 'active' : '';
         },
 
-        //
+        //Returns the link body
         getLink: function getLink($index) {
             if (this.activeIndex == $index) {
                 return this.label;
