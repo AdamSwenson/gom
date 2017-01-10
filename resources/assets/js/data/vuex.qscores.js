@@ -9,8 +9,8 @@ export const questionScores = {
          * Object containing empty slots and actual scores for each
          * student on the exam. Structure of items:
          *      {studentIndex : {questionIndex: score}]
-     * Use getters and setters to access
-     */
+         * Use getters and setters to access
+         * */
         questionScores: {},
 
 
@@ -20,7 +20,7 @@ export const questionScores = {
          * Loads a json object of question scores.
          * @param questionScoresJSON
          */
-        loadQuestionScores( state,  rootState, questionScoresJSON ) {
+        loadQuestionScores(state, rootState, questionScoresJSON) {
             state.questionScores = questionScoresJSON;
         },
 
@@ -31,18 +31,18 @@ export const questionScores = {
          * @param questionIndex 0-based index of the question (i.e., questionNumber - 1
          * @param score
          */
-        storeQuestionScore( state, rootState,  studentIndex, questionIndex, score ) {
-            state.questionScores[ studentIndex ][ questionIndex ] = score;
+        storeQuestionScore(state, rootState, studentIndex, questionIndex, score) {
+            state.questionScores[studentIndex][questionIndex] = score;
         },
 
-        storeQuestionScoreForActiveStudent( state, rootState,  questionIndex, score ) {
+        storeQuestionScoreForActiveStudent(state, rootState, questionIndex, score) {
             // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
-            state.questionScores[ this.activeStudentIndex ][ questionIndex ] = score;
+            state.questionScores[this.activeStudentIndex][questionIndex] = score;
         }
 
 
     },
-    actions: {  },
+    actions: {},
     getters: {
 
         /**
@@ -51,8 +51,8 @@ export const questionScores = {
          * @param studentIndex
          * @param questionIndex
          */
-        getQuestionScore( state,  getters, rootState, studentIndex, questionIndex ) {
-            return state.questionScores[ studentIndex ][ questionIndex ];
+        getQuestionScore(state, getters, rootState, studentIndex, questionIndex) {
+            return state.questionScores[studentIndex][questionIndex];
         },
 
 
@@ -61,10 +61,10 @@ export const questionScores = {
          * Old way: data.this.questionScores[ Roster.activeStudent ][ index ];
          * @param questionIndex
          */
-        getQuestionScoreForActiveStudent( state,  getters, rootState, questionIndex ) {
+        getQuestionScoreForActiveStudent(state, getters, rootState, questionIndex) {
             // if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set ";
-            if ( state.activeStudentIndex == null ) return '';
-            return state.getQuestionScore( this.activeStudentIndex, questionIndex );
+            if (state.activeStudentIndex == null) return '';
+            return state.getQuestionScore(this.activeStudentIndex, questionIndex);
         }
 
 

@@ -11303,7 +11303,7 @@ var store = new _vuex2.default.Store({
 
 document.body.Data = store;
 
-window.console.log('jjjjj');
+window.console.log('store loaded to document.body.Data', document.body.Data);
 
 (function () {
     window.console.log('kkkkkk');
@@ -11707,8 +11707,8 @@ var questionScores = exports.questionScores = {
          * Object containing empty slots and actual scores for each
          * student on the exam. Structure of items:
          *      {studentIndex : {questionIndex: score}]
-        * Use getters and setters to access
-        */
+         * Use getters and setters to access
+         * */
         questionScores: {}
 
     },
