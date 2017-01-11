@@ -1,0 +1,272 @@
+//test libraries
+require('jasmine-jquery');
+require('sinon');
+
+//Dependencies
+import * as active from '../../../../../resources/assets/js/store/modules/grade.activestudent';
+import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
+import * as aTypes from '../../../../../resources/assets/js/store/action-types'
+
+const makeState = () => {
+    return {Index: null, Id: null, student: null};
+};
+
+const makeRootState = () => {
+    return {Index: null, Id: null, student: null};
+};
+
+/**
+ * helper for testing action with expected mutations
+ * see https://vuex.vuejs.org/en/testing.html
+ */
+
+const testAction = (action, payload, state, expectedMutations, done) => {
+    let count = 0
+
+    // mock commit
+    const commit = (type, payload) => {
+        const mutation = expectedMutations[count]
+        expect(mutation.type).toBe(type)
+        if (payload) {
+            expect(mutation.payload).toBe(payload)
+        }
+        count++
+        if (count >= expectedMutations.length) {
+            // done()
+        }
+    }
+
+    // call the action with mocked store and arguments
+    action({commit, state}, payload)
+
+    // check if no mutations should have been dispatched
+    if (expectedMutations.length === 0) {
+        expect(count).toBe(0)
+        // done()
+    }
+}
+
+console.log(active);
+fdescribe("store | modules | ", () => {
+    describe("grade.activestudent | ", () => {
+
+        describe("mutations | ", () => {
+
+            describe(mTypes.setIndex, () => {
+                describe("happy paths | ", () => {
+                    //happy path cases:
+                    //Number
+                    it("is number | ", () => {
+                    });
+
+                });
+
+                describe("sad paths | ", () => {
+                    //object, even with expected key
+                    it("is object | ", () => {
+                    });
+                    //numeric string
+                    it("is numeric string | ", () => {
+                    });
+                })
+            });
+
+            describe(mTypes.setId, () => {
+                describe("happy paths | ", () => {
+                    //happy path cases:
+                    //Number
+                    it("is number | ", () => {
+                    });
+
+                });
+
+                describe("sad paths | ", () => {
+                    //object, even with expected key
+                    it("is object | ", () => {
+                    });
+                    //numeric string
+                    it("is numeric string | ", () => {
+                    });
+                })
+//cases: integer, object.studentId, objectStudentindex
+            });
+
+            describe(mTypes.setStudentObject, () => {
+                describe("happy paths | ", () => {
+                    //happy path cases:
+                    //Number
+                    it("is number | ", () => {
+                    });
+
+                });
+                describe("sad paths | ", () => {
+                    //object, even with expected key
+                    it("is object | ", () => {
+                    });
+                    //numeric string
+                    it("is numeric string | ", () => {
+                    });
+                })
+            });
+
+            describe(mTypes.setTime, () => {
+                describe("happy paths | ", () => {
+                    //happy path cases:
+                    //Number
+                    it("is number | ", () => {
+                    });
+
+                });
+                describe("sad paths | ", () => {
+                    //object, even with expected key
+                    it("is object | ", () => {
+                    });
+                    //numeric string
+                    it("is numeric string | ", () => {
+                    });
+                })
+            });
+        });
+
+        describe("actions | ", () => {
+            describe(aTypes.setActiveStudent + " | ", () => {
+                //todo
+            });
+
+            describe(aTypes.setActiveStudentId + " | ", () => {
+                describe("is number | ", () => {
+                    it("happy path | ", () => {
+                        let test = 6; //todo make random
+                        let state = makeState(); //{Index: null, Id: null, student: null};
+                        let action = active.default.actions[aTypes.setActiveStudentId];
+
+                        testAction(action, test, state, [
+                            {type: mTypes.setId, payload: test}
+                        ]);
+
+                        expect(state.Index).toBeNull();
+                        // expect(state.Id).toBe(test);
+                        expect(state.student).toBeNull();
+                    });
+
+                });
+
+                describe("is object w expected key | ", () => {
+                    it("happy path | ", () => {
+                        //todo
+                    });
+                });
+
+                describe("is numeric string | ", () => {
+                    it("happy path | ", () => {
+                        //todo
+                    });
+                });
+            });
+
+
+            describe(aTypes.setActiveStudentIndex + " | ", () => {
+                describe("is number | ", () => {
+                    it("happy path | ", () => {
+                        //todo
+                    });
+                });
+
+                describe("is object with expected key | ", () => {
+                    it("happy path | ", () => {
+                        //todo
+                    });
+                });
+
+                describe("is numeric string | ", () => {
+                    it("happy path | ", () => {
+                        //todo
+                    });
+                });
+
+            });
+
+            describe(aTypes.setActiveStudentObject + " | ", () => {
+                describe("is number | ", () => {
+                    xit("happy path | ", () => {
+                        //todo
+                    });
+                });
+
+                describe("is object w expected key | ", () => {
+                    xit("happy path | ", () => {
+                        //todo
+                    });
+                });
+
+                describe("is numeric string | ", () => {
+                    xit("happy path | ", () => {
+                        //todo
+                    });
+                });
+
+            });
+
+            describe(aTypes.setActiveStudentTime + " | ", () => {
+                describe("is number | ", () => {
+                    xit("happy path | ", () => {
+                        //todo
+                    });
+                });
+
+                describe("is object w expected key| ", () => {
+                    xit("happy path | ", () => {
+                        //todo
+                    });
+                });
+
+                describe("is numeric string | ", () => {
+                    xit("happy path | ", () => {
+                        //todo
+                    });
+                });
+
+            });
+
+
+        });
+
+        describe("getters | ", () => {
+
+            describe("getActiveStudentId | ", () => {
+                it("happy path | ", () => {
+                    let test = 5; //todo make random
+                    let state = {Id: test};
+                    // let {getActiveStudentId} = active;
+                    expect(active.default.getters.getActiveStudentId(state, {}, {})).toBe(test);
+                });
+            });
+
+            describe("getActiveStudentIndex", () => {
+                it("happy path | ", () => {
+                    let test = 6; //todo make random
+                    let state = {Index: test};
+                    // let {getActiveStudentIndex} = active;
+                    expect(active.default.getters.getActiveStudentIndex(state)).toBe(test);
+                });
+            });
+
+
+            describe("getActiveStudent", () => {
+                it("happy path | ", () => {
+                    let test = 9; //todo make random
+                    let state = {};
+                    state.student = test;
+                    state.getStudent = (v) => {
+                        return v;
+                    };
+                    // let {getActiveStudent} = active;
+                    expect(active.default.getters.getActiveStudent(state)).toBe(test);
+                });
+            });
+        });
+
+    });
+
+})
+;

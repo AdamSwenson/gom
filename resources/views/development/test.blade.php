@@ -7,6 +7,6 @@
 @endsection
 
 @section('jsArea')
-    <script src="{{ asset('/js/dev/test-package.js') }}"></script>
+{{--    <script src="{{ asset('/js/dev/test-package.js') }}"></script>--}}
     <script src="{{ asset('/js/dev/test2-package.js') }}"></script>
 @endsection

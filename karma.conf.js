@@ -15,7 +15,8 @@ module.exports = function ( config ) {
         // list of files / patterns to load in the browser
         files: [
             // 'resources/assets/js/data/Store.js',
-            'data/Data.js',
+            // 'data/Data.js',
+            'store/index.js',
             'tests/spec/tests/**/*.spec.js',
             { pattern: 'tests/spec/helpers/*.helper.js', included: false },
             { pattern: 'tests/spec/fixtures/*.fixture.html', included: false },
@@ -62,7 +63,8 @@ module.exports = function ( config ) {
 
         // level of logging
         // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-        logLevel: config.LOG_DEBUG,
+        // logLevel: config.LOG_DEBUG,
+        logLevel: config.LOG_ERROR,
 
 
         // enable / disable watching file and executing tests whenever any file changes

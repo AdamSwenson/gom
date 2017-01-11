@@ -13,9 +13,9 @@ var DataHelper = require( '../helpers/dataObject.helper' );
 
 //Dependencies
 // let Data = require( '../../../resources/assets/js/grade/components/Data.js' );
-import Data from '../../../resources/assets/js/data/vuex.Data.js';
 
-describe( "vuex.Data.js | ", function () {
+xdescribe( "vuex.Data.js | ", function () {
+    // import Data from '../../../resources/assets/js/data/vuex.Data.js';
 
     beforeEach( function () {
         this.object = store;

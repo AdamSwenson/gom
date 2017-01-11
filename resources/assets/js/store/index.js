@@ -1,5 +1,36 @@
 /**
  * Created by adam on 1/10/17.
+ *
+ * Notes about how to use
+ * However, this pattern causes the component to rely on the global store singleton. When using a module system, it requires importing the store in every component that uses store state, and also requires mocking when testing the component.
+
+ Vuex provides a mechanism to "inject" the store into all child components from the root component with the store option (enabled by Vue.use(Vuex)):
+
+ const app = new Vue({
+  el: '#app',
+  // provide the store using the "store" option.
+  // this will inject the store instance to all child components.
+  store,
+  components: { Counter },
+  template: `
+    <div class="app">
+      <counter></counter>
+    </div>
+  `
+})
+
+ By providing the store option to the root instance, the store will be injected into all child components of the root and will be available on them as this.$store. Let's update our Counter implementation:
+
+ const Counter = {
+  template: `<div>{{ count }}</div>`,
+  computed: {
+    count () {
+      return this.$store.state.count
+    }
+  }
+}
+
+ *
  */
 
 import Vue from 'vue'
@@ -8,7 +39,18 @@ import * as actions from './actions'
 import * as getters from './getters'
 import * as mutations from './mutations'
 import * as state from './state'
+import * as api from './api'
 
+import  activeStudent from './modules/grade.activestudent.js'
+import  comments from './modules/grade.comments.js'
+import elementScores from './modules/grade.escores.js'
+import grades from './modules/grade.grades.js'
+import questionScores from './modules/grade.qscores.js'
+import questions from './modules/grade.questions.js'
+import students from './modules/grade.students.js'
+import times from './modules/grade.times.js'
+
+// import gradeStateDefault from './modules/grade.defaultstate'
 // import createLogger from '../../../src/plugins/logger'
 
 Vue.use(Vuex)
@@ -16,21 +58,46 @@ Vue.use(Vuex)
 const debug = process.env.NODE_ENV !== 'production'
 
 export default new Vuex.Store({
+    /**
+     * From instances and components where store has been
+     * injected, actions are called
+     * like so: store.dispatch( 'string-action-name' )
+     */
     actions,
     getters,
-    mutations,
+    mutations: {
+        /**
+         * Sets the current exam id
+         *
+         * @todo Extend to set from an exam object
+         *
+         * @param state
+         * @param payload
+         */
+        _setExamId(state, payload) {
+            if (typeof (payload) == Number) {
+                state.examId = payload;
+            }
+
+            window.console.log('setExamId', state);
+        }
+    },
+
     modules: {
-        activeStudent: require('./modules/vuex.active'),
-        comments: require('./modules/vuex.comments'),
-        elementScores: require('./modules/vuex.escores'),
-        grades: require('./modules/vuex.grades'),
-        questionScores: require('./modules/vuex.qscores'),
-        questions: require('./modules/vuex.questions'),
-        students: require('./modules/vuex.students'),
-        times: require('./modules/vuex.times')
+    //     activeStudent,
+    //     // gradeStateDefault,
+    //     comments,
+    //     elementScores,
+    //     grades,
+    //     questionScores,
+    //     questions,
+        students,
+        times
     },
     state,
+    api,
 
-    strict: debug,
+    strict: debug, //letting check determine whether to turn on or off. should be off for production to avoid performance hit
+
     // plugins: debug ? [createLogger()] : []
 })

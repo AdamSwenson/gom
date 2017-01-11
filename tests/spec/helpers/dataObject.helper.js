@@ -5,7 +5,7 @@ import Student from '../../../resources/assets/js/data/Student';
 import Question from '../../../resources/assets/js/data/Question';
 
 
-var Faker = require( 'faker' );
+var Faker = require('faker');
 
 module.exports = {
 
@@ -18,9 +18,9 @@ module.exports = {
      'lastName'
      * @param id
      */
-    makeStudent( id ){
+    makeStudent(id){
         id = id ? id : Faker.random.number();
-        let student = new Student( id );
+        let student = new Student(id);
         student.studentIndex = Faker.random.number();
         student.studentIdentifier = Faker.random.number();
         student.firstName = Faker.name.firstName();
@@ -63,39 +63,39 @@ module.exports = {
             1: 0
         };
     },
-defaultExamGrades(){
-    return {
-        0: 'Letter grade',
-        1: 'Letter grade'
-    };
-},
+    defaultExamGrades(){
+        return {
+            0: 'Letter grade',
+            1: 'Letter grade'
+        };
+    },
     defaultGrades(){
         return {
-            0: { displayValue: 'A+', calcValue: 98 },
-            1: { displayValue: 'A', calcValue: 95 },
-            2: { displayValue: 'A-', calcValue: 92 },
-            3: { displayValue: 'B+', calcValue: 88 },
-            4: { displayValue: 'B', calcValue: 85 },
-            5: { displayValue: 'B-', calcValue: 82 },
-            6: { displayValue: 'C+', calcValue: 78 },
-            7: { displayValue: 'C', calcValue: 75 },
-            8: { displayValue: 'C-', calcValue: 72 },
-            9: { displayValue: 'D+', calcValue: 68 },
-            10: { displayValue: 'D', calcValue: 65 },
-            11: { displayValue: 'D-', calcValue: 62 },
-            12: { displayValue: 'F', calcValue: 55 }
+            0: {displayValue: 'A+', calcValue: 98},
+            1: {displayValue: 'A', calcValue: 95},
+            2: {displayValue: 'A-', calcValue: 92},
+            3: {displayValue: 'B+', calcValue: 88},
+            4: {displayValue: 'B', calcValue: 85},
+            5: {displayValue: 'B-', calcValue: 82},
+            6: {displayValue: 'C+', calcValue: 78},
+            7: {displayValue: 'C', calcValue: 75},
+            8: {displayValue: 'C-', calcValue: 72},
+            9: {displayValue: 'D+', calcValue: 68},
+            10: {displayValue: 'D', calcValue: 65},
+            11: {displayValue: 'D-', calcValue: 62},
+            12: {displayValue: 'F', calcValue: 55}
         };
     },
     defaultQuestionScores(){
         return {
             0: {
-            0: null,
+                0: null,
                 1: null
-        },
+            },
             1: {
-            0: null,
+                0: null,
                 1: null
-        }
+            }
         };
     },
 
@@ -117,9 +117,9 @@ defaultExamGrades(){
         }
     },
 
-    makeQuestion( index ){
+    makeQuestion(index){
         index = index ? index : Faker.random.number();
-        let question = new Question( index );
+        let question = new Question(index);
         question.questionIndex = index;
         question.questionName = Faker.lorem.words();
         question.questionNumber = Faker.random.number();
