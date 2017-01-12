@@ -1,0 +1,42 @@
+/**
+ * Created by adam on 1/11/17.
+ */
+
+export const makeState = () => {
+    return {Index: null, Id: null, student: null};
+};
+
+export const makeRootState = () => {
+    return {Index: null, Id: null, student: null};
+};
+
+/**
+ * helper for testing action with expected mutations
+ * see https://vuex.vuejs.org/en/testing.html
+ */
+
+export const testAction = (action, payload, state, expectedMutations, done) => {
+    let count = 0
+
+    // mock commit
+    const commit = (type, payload) => {
+        const mutation = expectedMutations[count]
+        expect(mutation.type).toBe(type)
+        if (payload) {
+            expect(mutation.payload).toBe(payload)
+        }
+        count++
+        if (count >= expectedMutations.length) {
+            // done()
+        }
+    }
+
+    // call the action with mocked store and arguments
+    action({commit, state}, payload)
+
+    // check if no mutations should have been dispatched
+    if (expectedMutations.length === 0) {
+        expect(count).toBe(0)
+        // done()
+    }
+}

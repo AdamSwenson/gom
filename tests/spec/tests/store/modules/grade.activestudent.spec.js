@@ -7,44 +7,48 @@ import * as active from '../../../../../resources/assets/js/store/modules/grade.
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
 
-const makeState = () => {
-    return {Index: null, Id: null, student: null};
-};
+import {makeState} from './helpers';
+import {makeRootState} from './helpers';
+import {testAction} from './helpers';
 
-const makeRootState = () => {
-    return {Index: null, Id: null, student: null};
-};
-
-/**
- * helper for testing action with expected mutations
- * see https://vuex.vuejs.org/en/testing.html
- */
-
-const testAction = (action, payload, state, expectedMutations, done) => {
-    let count = 0
-
-    // mock commit
-    const commit = (type, payload) => {
-        const mutation = expectedMutations[count]
-        expect(mutation.type).toBe(type)
-        if (payload) {
-            expect(mutation.payload).toBe(payload)
-        }
-        count++
-        if (count >= expectedMutations.length) {
-            // done()
-        }
-    }
-
-    // call the action with mocked store and arguments
-    action({commit, state}, payload)
-
-    // check if no mutations should have been dispatched
-    if (expectedMutations.length === 0) {
-        expect(count).toBe(0)
-        // done()
-    }
-}
+// const makeState = () => {
+//     return {Index: null, Id: null, student: null};
+// };
+//
+// const makeRootState = () => {
+//     return {Index: null, Id: null, student: null};
+// };
+//
+// /**
+//  * helper for testing action with expected mutations
+//  * see https://vuex.vuejs.org/en/testing.html
+//  */
+//
+// const testAction = (action, payload, state, expectedMutations, done) => {
+//     let count = 0
+//
+//     // mock commit
+//     const commit = (type, payload) => {
+//         const mutation = expectedMutations[count]
+//         expect(mutation.type).toBe(type)
+//         if (payload) {
+//             expect(mutation.payload).toBe(payload)
+//         }
+//         count++
+//         if (count >= expectedMutations.length) {
+//             // done()
+//         }
+//     }
+//
+//     // call the action with mocked store and arguments
+//     action({commit, state}, payload)
+//
+//     // check if no mutations should have been dispatched
+//     if (expectedMutations.length === 0) {
+//         expect(count).toBe(0)
+//         // done()
+//     }
+// }
 
 console.log(active);
 fdescribe("store | modules | ", () => {
