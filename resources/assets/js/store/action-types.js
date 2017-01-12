@@ -40,3 +40,6 @@ export const loadMaxQuestionScores = 'loadMaxQuestionScores'
 export const loadQuestions = 'loadQuestions'
 export const loadNumberQuestions = 'loadNumberQuestions'
 export const addQuestion = 'addQuestion'
+
+//grade.students
+export const loadStudents = 'loadStudents'

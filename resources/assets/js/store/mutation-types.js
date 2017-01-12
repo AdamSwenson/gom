@@ -43,7 +43,8 @@ export const populateMaxQuestionScores = 'populateMaxQuestionScores'
 export const setQuestion = 'setQuestion'
 
 //grade.students
-export const loadStudents = 'loadStudents'
+export const populateStudents = 'populateStudents'
+export const setStudent = 'setStudent'
 
 //grade.times
 export const loadGradingTimes = 'loadGradingTimes'

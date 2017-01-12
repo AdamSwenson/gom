@@ -6,7 +6,7 @@
  * Created by adam on 10/7/16.
  */
 import Student from './../models/Student';
-import * as types from '../mutation-types'
+import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
 
 const state = {
@@ -25,20 +25,57 @@ const mutations = {
      * @param state
      * @param payload
      */
-    [types.loadStudents](state, payload) {
-        for (let i = 0; i < Object.keys(payload).length; i++) {
-            let s = payload[Object.keys(payload)[i]];
-            state.students[s.studentIndex] = Student.factory(s);
-        }
+        [mTypes.populateStudents](state, rootState, payload)
+    {
+            state.students = payload;
     },
 
+    /**
+     * Updates a student record in state.students
+     * @param state
+     * @param rootState
+     * @param payload
+     */
+        [mTypes.setStudent](state, rootState, payload)
+    {
+        let {studentIndex, studentObject} = payload;
+        state.students[studentIndex] = studentObject;
+    }
 
 
 };
 
 const actions = {
-    [aTypes.addStudent]({ commit }, studentJson){
-        commit(types.loadStudents, studentJson);
+
+    /**
+     * Consume a json object and populate state.students by overwriting
+     * TODO fix so doesn't just overwrite
+     * @param state
+     * @param payload
+     */
+        [aTypes.loadStudents]({state, commit}, payload)
+    {
+        for (let i = 0; i < Object.keys(payload).length; i++) {
+            let s = payload[Object.keys(payload)[i]];
+            this[aTypes.addStudent]({state, commit}, {index: s.studentIndex, content: s });
+            // state.students[s.studentIndex] = Student.factory(s);
+        }
+    },
+
+    /**
+     * Push a student into the state.students object
+     * @param state
+     * @param commit
+     * @param payload
+     */
+    [aTypes.addStudent]({state, commit}, payload)
+    {
+        let {index, content} = payload;
+        let out = {
+            studentIndex: index,
+            studentObject: Student.factory(content)
+        };
+        commit(mTypes.setStudent, out);
     }
 };
 
