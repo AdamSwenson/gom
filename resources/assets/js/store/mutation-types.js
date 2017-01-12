@@ -25,8 +25,7 @@ export const loadStockComments = 'loadStockComments'
 //grade.escores
 export const loadElementScores = 'loadElementScores'
 export const setElementScore = 'setElementScore'
-export const storeElementScore = 'storeElementScoreForActiveStudent'
-export const storeElementScoreForActiveStudent = 'storeElementScoreForActiveStudent'
+
 
 //grade.grades
 export const loadExamGrades = 'loadExamGrades'

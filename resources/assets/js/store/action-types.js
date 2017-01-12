@@ -21,3 +21,7 @@ export const storeCommentText = 'storeCommentText'
 export const storeStudentGradingTime = 'storeStudentGradingTime'
 export const increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime'
 
+
+//grades.escores
+export const storeElementScore = 'storeElementScore'
+export const storeElementScoreForActiveStudent = 'storeElementScoreForActiveStudent'

@@ -13,7 +13,7 @@ const mutations = {
      * @param rootState
      * @param studentElementScores
      */
-    [mTypes.loadElementScores](state, rootState, studentElementScores)
+        [mTypes.loadElementScores](state, rootState, studentElementScores)
     {
         state.elementScores = studentElementScores;
     },
@@ -24,19 +24,42 @@ const mutations = {
      * @param elementIndex
      * @param score
      */
-        [mTypes.setElementScore](state, rootState, studentIndex, elementIndex, score)
+        [mTypes.setElementScore](state, rootState, {payload})
     {
+        let {studentIndex, elementIndex, score} = payload;
         state.elementScores[studentIndex][elementIndex] = score;
     },
 
 
-
-    [mTypes.storeElementScoreForActiveStudent](state, elementIndex, score) {
-        state.storeElementScore(state.activeStudentIndex, elementIndex, score);
-    }
 };
 
-const actions = {};
+const actions = {
+
+    [aTypes.storeElementScoreForActiveStudent]({state, commit}, payload) {
+        let studentIndex = state.getActiveStudentIndex();
+        let {elementIndex, score} = payload;
+        //type checks
+
+        let out = {
+            studentIndex: studentIndex,
+            elementIndex: elementIndex,
+            score: score
+        };
+
+        commit(mTypes.setElementScore, out);
+    },
+
+    /**
+     * Stores a student's score on a particular element
+     * @param studentIndex
+     * @param elementIndex
+     * @param score
+     */
+        [aTypes.storeElementScore]({state, commit}, payload)
+    {
+        commit(mTypes.setElementScore, payload);
+    },
+};
 
 const getters = {
     /**
@@ -58,16 +81,7 @@ const getters = {
 
 };
 
-const api = {    /**
- * Stores a student's score on a particular element
- * @param studentIndex
- * @param elementIndex
- * @param score
- */
-    [mTypes.storeElementScore](state, rootState, studentIndex, elementIndex, score) {
-    state.elementScores[studentIndex][elementIndex] = score;
-},
-}
+const api = {}
 
 // }
 

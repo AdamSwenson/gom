@@ -36,9 +36,30 @@ fdescribe("store | modules | ", () => {
         });
 
         describe("actions | ", () => {
+            describe(description(aTypes.storeElementScoreForActiveStudent), () => {
+                xit("happy path | ", () => {
+                    //todo
+                });
+            });
+            describe(description(aTypes.storeElementScore), () => {
+                xit("happy path | ", () => {
+                    //todo
+                });
+            });
         });
 
         describe("getters | ", () => {
+            describe("getElementScore | ", () => {
+                xit("happy path | ", () => {
+                    //todo
+                });
+            });
+
+            describe("getElementScoreForActiveStudent | ", () => {
+                xit("happy path | ", () => {
+                    //todo
+                });
+            });
         });
     });
 });
