@@ -38,9 +38,9 @@ export const storeQuestionScore = 'storeQuestionScore'
 
 
 //grade.questions
-export const loadMaxQuestionScores = 'loadMaxQuestionScores'
-export const loadQuestions = 'loadQuestions'
-export const loadNumberQuestions = 'loadNumberQuestions'
+export const populateQuestions = 'populateQuestions'
+export const populateMaxQuestionScores = 'populateMaxQuestionScores'
+export const setQuestion = 'setQuestion'
 
 //grade.students
 export const loadStudents = 'loadStudents'

@@ -34,3 +34,9 @@ export const updateExamGrade = 'updateExamGrade'
 //grade.qscores
 export const loadQuestionScores = 'loadQuestionScores'
 export const storeQuestionScoreForActiveStudent = 'storeQuestionScoreForActiveStudent'
+
+//grade.questions
+export const loadMaxQuestionScores = 'loadMaxQuestionScores'
+export const loadQuestions = 'loadQuestions'
+export const loadNumberQuestions = 'loadNumberQuestions'
+export const addQuestion = 'addQuestion'

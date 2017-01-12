@@ -3,32 +3,75 @@ require('jasmine-jquery');
 require('sinon');
 
 //Dependencies
-import * as active from '../../../../../resources/assets/js/store/modules/grade.questions';
+import * as questions from '../../../../../resources/assets/js/store/modules/grade.questions';
 
-import * as types from '../../../../../resources/assets/js/store/mutation-types'
+import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
+import * as aTypes from '../../../../../resources/assets/js/store/action-types'
+
+import {makeState} from './helpers';
+import {makeRootState} from './helpers';
+import {testAction} from './helpers';
+import {description} from './helpers';
 
 
 describe("store | modules | ", () => {
     describe("grade.questions | ", () => {
-        beforeAll(function () {
-//runs once before all tests
-        });
-        afterEach(function () {
-//runs after each test
-        });
-
-        beforeEach(function () {
-//runs before each test
-        });
-
 
         describe("mutations | ", () => {
+
+            describe(description(mTypes.populateQuestions), () => {
+                xit("happy path | ", () => {
+                    //todo
+                });
+            });
+
+
+            describe(description(mTypes.populateMaxQuestionScores), () => {
+                xit("happy path | ", () => {
+                    //todo
+                });
+            });
+
+            describe(description(mTypes.setQuestion), () => {
+                xit("happy path | ", () => {
+                    //todo
+                });
+            });
         });
 
         describe("actions | ", () => {
+
+            describe(description(aTypes.addQuestion), () => {
+                xit("happy path | ", () => {
+                    //todo
+                });
+            });
+
+            describe(description(aTypes.loadMaxQuestionScores), () => {
+                xit("happy path | ", () => {
+                    //todo
+                });
+            });
+
+            describe(description(aTypes.loadQuestions), () => {
+                xit("happy path | ", () => {
+                    //todo
+                });
+            });
+
+            describe(description(aTypes.loadNumberQuestions), () => {
+                xit("happy path | ", () => {
+                    //todo
+                });
+            });
+
         });
 
         describe("getters | ", () => {
+            describe("getQuestion | ", () => {
+            });
+            describe("getMaxQuestionScore | ", () => {
+            });
         });
     });
 });
