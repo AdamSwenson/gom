@@ -2,9 +2,9 @@
  * Created by adam on 10/7/16.
  */
 
-import * as types from '../mutation-types'
+import * as mTypes from '../mutation-types'
+import * as aTypes from '../action-types'
 
-// export const questionScores = {
 const state = {
 
     /**
@@ -18,12 +18,15 @@ const state = {
 };
 
 const mutations = {
+
     /**
-     * Loads a json object of question scores.
-     * @param questionScoresJSON
+     * Consume a json object and overwrite questionScores with the data
+     * @param state
+     * @param rootState
+     * @param payload
      */
-        [types.loadQuestionScores](state, rootState, questionScoresJSON) {
-        state.questionScores = questionScoresJSON;
+        [mTypes.populateQuestionScores](state, rootState, payload){
+        state.questionScores = payload;
     },
 
     /**
@@ -33,19 +36,42 @@ const mutations = {
      * @param questionIndex 0-based index of the question (i.e., questionNumber - 1
      * @param score
      */
-        [types.storeQuestionScore](state, rootState, studentIndex, questionIndex, score) {
+        [mTypes.storeQuestionScore](state, rootState, payload) {
+        let {studentIndex, questionIndex, score} = payload;
         state.questionScores[studentIndex][questionIndex] = score;
     },
-
-    [types.storeQuestionScoreForActiveStudent](state, rootState, questionIndex, score) {
-        // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
-        state.questionScores[this.activeStudentIndex][questionIndex] = score;
-    }
 
 
 };
 
-const actions = {};
+const actions = {
+    /**
+     * Loads a json object of question scores.
+     * @todo might be better if didn't overwrite but rather iterate the incoming and update
+     * @todo This need not be limited to json objects
+     * @param questionScoresJSON
+     */
+        [aTypes.loadQuestionScores]({state, commit}, questionScoresJSON)
+    {
+        commit(mTypes.populateQuestionScores, questionScoresJSON);
+    },
+
+    /**
+     * Save a question score for the currently active student
+     * @param state
+     * @param commit
+     * @param payload
+     */
+        [aTypes.storeQuestionScoreForActiveStudent]({state, commit}, payload)
+    {
+        // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
+        let {questionIndex, score} = payload;
+        let studentIndex = this.activeStudentIndex;
+        //type checking
+        let out = {questionIndex: questionIndex, studentIndex: studentIndex, score: score};
+        commit(mTypes.storeQuestionScore, out);
+    }
+};
 
 const getters = {
 

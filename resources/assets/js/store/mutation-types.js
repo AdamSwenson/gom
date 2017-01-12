@@ -33,9 +33,9 @@ export const populateStandardGrades = 'populateStandardGrades'
 export const setGrade = 'setGrade'
 
 //grade.qscores
-export const loadQuestionScores = 'loadQuestionScores'
+export const populateQuestionScores = 'populateQuestionScores'
 export const storeQuestionScore = 'storeQuestionScore'
-export const storeQuestionScoreForActiveStudent = 'storeQuestionScoreForActiveStudent'
+
 
 //grade.questions
 export const loadMaxQuestionScores = 'loadMaxQuestionScores'

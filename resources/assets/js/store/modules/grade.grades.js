@@ -1,4 +1,7 @@
 /**
+ * Vuex component dealing with grades
+ *
+ * @todo Consider moving standard grades to its own file
  * Created by adam on 10/7/16.
  */
 
@@ -7,7 +10,6 @@ import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
 
 
-// export const Grades = {
 const state = {
     /**
      * examGrades[] keeps a persistent total of the exam score for each student.

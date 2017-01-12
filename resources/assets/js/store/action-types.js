@@ -30,3 +30,7 @@ export const storeElementScoreForActiveStudent = 'storeElementScoreForActiveStud
 export const loadExamGrades = 'loadExamGrades'
 export const loadStandardGrades = 'loadStandardGrades'
 export const updateExamGrade = 'updateExamGrade'
+
+//grade.qscores
+export const loadQuestionScores = 'loadQuestionScores'
+export const storeQuestionScoreForActiveStudent = 'storeQuestionScoreForActiveStudent'
