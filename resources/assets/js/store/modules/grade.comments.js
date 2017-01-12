@@ -4,6 +4,7 @@
 
 
 import * as types from '../mutation-types'
+import * as aTypes from '../action-types'
 
 const state = {
     elementComments: {},
@@ -11,17 +12,45 @@ const state = {
 };
 
 const mutations = {
-    [types.loadElementComments](state, rootState, elementCommentsJSON) {
+    /**
+     * Update the text of an element comment
+     * @param state
+     * @param rootState
+     * @param payload
+     */
+    [types.setElementComment](state, rootState, payload){
+        let studentIndex = payload.studentIndex;
+        let elementIndex = payload.elementIndex;
+        let commentText = payload.commentText;
+        state.elementComments[studentIndex][elementIndex] = commentText;
+    },
+
+    /**
+     * Consume a json object and populate the elementComments store
+     * @param state
+     * @param rootState
+     * @param elementCommentsJSON
+     */
+    [types.loadElementComments](state, rootState, elementCommentsJSON)
+    {
         state.elementComments = elementCommentsJSON;
     },
 
-
     /**
-     * Takes a json from the server of the stock comments and stores it internally.
+     * Consume a json object and populate the stockComments store.
+     * @param state
+     * @param rootState
+     * @param stockCommentsJSON
      */
-        [types.loadStockComments](state, rootState, stockCommentsJSON) {
+        [types.loadStockComments](state, rootState, stockCommentsJSON)
+    {
         state.stockComments = stockCommentsJSON;
     },
+
+
+};
+
+const actions = {
 
     /**
      * Store the comment text for an element.
@@ -35,7 +64,11 @@ const mutations = {
      * @param elementIndex
      * @param commentText
      */
-        [types.storeCommentText](state, rootState, studentIndex, elementIndex, commentText) {
+        [aTypes.storeCommentText]({state, commit}, payload)
+    {
+        let studentIndex = payload.studentIndex;
+        let elementIndex = payload.elementIndex;
+        let commentText = payload.commentText;
         state.elementComments[studentIndex][elementIndex] = commentText;
     },
 
@@ -44,15 +77,33 @@ const mutations = {
      * @param elementIndex
      * @param commentText
      */
-        [types.storeCommentTextForActiveStudent](state, rootState, elementIndex, commentText) {
+        [aTypes.storeCommentTextForActiveStudent]({state, commit},payload)
+    {
+        let studentIndex = payload.studentIndex;
+        let elementIndex = payload.elementIndex;
+        let commentText = payload.commentText;
         state.elementComments[state.activeStudentIndex][elementIndex] = commentText;
     }
 
+
 };
 
-const actions = {};
-
 const getters = {
+    /**
+     * Retrieves an element comment by student index and element index
+     *
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param studentIndex
+     * @param elementIndex
+     * @returns {*}
+     */
+    getElementComment: (state, getters, rootState, studentIndex, elementIndex)=>{
+        return state.elementComments[studentIndex][elementIndex];
+    },
+
+
     /**
      * Retrieve comment text for a student.
      * If no customized text is set, then return stockComment.
@@ -63,7 +114,7 @@ const getters = {
      * @param valence
      * @returns {*}
      */
-    getCommentText(state, getters, rootState, studentIndex, elementIndex, valence) {
+    getCommentText: (state, getters, rootState, studentIndex, elementIndex, valence) =>{
         //First check for a pre-existing comment. This could be a stock comment
         //or it could be custom.
         let comment = state.elementComments[studentIndex][elementIndex];
@@ -108,11 +159,20 @@ const getters = {
      * @param elementIndex
      * @private
      */
-    getStoredCommentText(state, getters, rootState, studentIndex, elementIndex) {
+    getStoredCommentText: (state, getters, rootState, studentIndex, elementIndex) =>{
         return state.elementComments[studentIndex][elementIndex];
     },
 
-    getCommentTextForActiveStudent(state, getters, rootState, elementIndex, valence) {
+    /**
+     * Gets the comment text for the student
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param elementIndex
+     * @param valence
+     * @returns {*}
+     */
+    getCommentTextForActiveStudent: (state, getters, rootState, elementIndex, valence) =>{
         //If no student is set, the comment field should be blank
         if (state.activeStudentIndex == null) return '';
         return state.getCommentText(state.activeStudentIndex, elementIndex, valence);

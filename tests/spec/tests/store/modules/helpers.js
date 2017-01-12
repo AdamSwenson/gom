@@ -10,6 +10,10 @@ export const makeRootState = () => {
     return {Index: null, Id: null, student: null};
 };
 
+export const description = (text) =>{
+    return `${text} | `;
+};
+
 /**
  * helper for testing action with expected mutations
  * see https://vuex.vuejs.org/en/testing.html

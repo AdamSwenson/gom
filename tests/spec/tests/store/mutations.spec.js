@@ -13,7 +13,7 @@ const { setExam } = mutations.mutations;
 
 
 console.log(mutations);
-fdescribe(" store.mutations | ", function () {
+describe(" store.mutations | ", function () {
 
     beforeEach(function () {
 

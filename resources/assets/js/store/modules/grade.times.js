@@ -2,12 +2,19 @@
  * Created by adam on 10/7/16.
  */
 import * as types from '../mutation-types'
+import * as aTypes from '../action-types'
 // const Times = {
 
 const state = {
     /**
-     * Format:
-     *     { studentIndex : gradingTime, ... }
+     * Key-value store of grading times .
+     *
+     * Each record has the studentIndex as the key and
+     * the gradingTime as the value.
+     * That is:
+     *     { studentIndex : gradingTime, }
+     * Or, if you prefer
+     *      examGradingTimes[ studentIndex] = gradingTime
      */
     examGradingTimes: {},
 
@@ -18,7 +25,8 @@ const mutations = {
      * Add a grading time to the store
      * @param examGradingTimes JSON object
      */
-        [types.addGradingTime](state, payload) {
+        [types.addGradingTime](state, payload)
+    {
         if(typeof(payload.studentIndex) != 'undefined' && typeof(payload.timeToAdd) != 'undefined') {
             let studentIndex = payload.studentIndex;
             let timeToAdd = payload.timeToAdd;
@@ -31,7 +39,8 @@ const mutations = {
      * Removes a grading time data object
      * @param examGradingTimes JSON object
      */
-        [types.removeGradingTime](state, payload) {
+        [types.removeGradingTime](state, payload)
+    {
             //state.examGradingTimes = payload;
 
     },
@@ -40,29 +49,34 @@ const mutations = {
      * Sets the grading time data from the server
      * @param examGradingTimes JSON object
      */
-        [types.loadGradingTimes](state, payload) {
+        [types.loadGradingTimes](state, payload)
+    {
         state.examGradingTimes = payload;
     },
 
+
+
+};
+
+const actions = {
 
     /**
      * Increases the stored time for the student currently being graded by the specified
      * amount.
      * Original: data.this.examGradingTimes[ Roster.activeStudent ];
      */
-        [types.increaseActiveStudentGradingTime](state, payload) {
+        [aTypes.increaseActiveStudentGradingTime]({state, commit}, payload)
+    {
         state.examGradingTimes[state.activeStudentIndex] += payload.timeToAdd;
-    }
+    },
 
-};
 
-const actions = {
     /**
      * Stores a new time for the student.
      * Overwrites any existing value.
      * Original: data.this.examGradingTimes[ Roster.activeStudent ];
      */
-        [types.storeStudentGradingTime]({ commit}, payload) {
+        [aTypes.storeStudentGradingTime]({ commit}, payload) {
         // studentIndex, activeStudentTime
             payload = { studentIndex: 2, timeToAdd: 3.4};
             commit('addGradingTime', payload);

@@ -16,10 +16,11 @@ export const setTime = 'setTime'
 export const setStudentObject  = 'setStudentObject'
 
 //grade.comments
+export const setElementComment = 'setElementComment';
 export const loadElementComments = 'loadElementComments'
 export const loadStockComments = 'loadStockComments'
-export const storeCommentText = 'storeCommentText'
-export const storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent'
+
+
 
 //grade.escores
 export const loadElementScores = 'loadElementScores'
@@ -45,10 +46,9 @@ export const loadNumberQuestions = 'loadNumberQuestions'
 export const loadStudents = 'loadStudents'
 
 //grade.times
-export const storeStudentGradingTime = 'storeStudentGradingTime'
 export const loadGradingTimes = 'loadGradingTimes'
 export const increaseStudentGradingTime = 'increaseStudentGradingTime'
-export const increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime'
+
 
 export const addGradingTime = 'addGradingTime'
 export const removeGradingTime = 'removeGradingTime'

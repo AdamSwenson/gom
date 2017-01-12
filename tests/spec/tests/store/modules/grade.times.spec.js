@@ -9,60 +9,66 @@ import * as types from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
 
 
-describe("store | modules | ", () => {
-    describe("grade.times | ", () => {
+import {makeState} from './helpers';
+import {makeRootState} from './helpers';
+import {testAction} from './helpers';
+import {description} from './helpers';
+
+fdescribe("store | modules | ", () => {
+    describe(description("grade.times"), () => {
         beforeAll(function () { //runs once before all tests
         });
         afterEach(function () {//runs after each test
         });
-
         beforeEach(function () {//runs before each test
         });
 
 
-        describe("mutations | ", () => {
+        describe(description("mutations"), () => {
+            //
+            // if (typeof(payload.studentIndex) != 'undefined' && typeof(payload.timeToAdd) != 'undefined') {
+            //     let studentIndex = payload.studentIndex;
+            //     let timeToAdd = payload.timeToAdd;
+            //     state.examGradingTimes[studentIndex] += timeToAdd;
+            // }
+            // //add processing from other allowed input configs
 
-            if (typeof(payload.studentIndex) != 'undefined' && typeof(payload.timeToAdd) != 'undefined') {
-                let studentIndex = payload.studentIndex;
-                let timeToAdd = payload.timeToAdd;
-                state.examGradingTimes[studentIndex] += timeToAdd;
-            }
-            //add processing from other allowed input configs
+
+            describe(description(types.removeGradingTime), () => {
+            });
+
+            /**
+             * Sets the grading time data from the server
+             * @param examGradingTimes JSON object
+             */
+            describe(description(types.loadGradingTimes), () => {
+            });
+
+
         });
 
-        describe(types.removeGradingTime, () => {
+        describe("actions | ", () => {
+
+            describe(aTypes.increaseActiveStudentGradingTime, () => {
+            });
+            describe(types.storeStudentGradingTime, () => {
+            });
+
+            describe(types.increaseStudentGradingTime, () => {
+            });
         });
 
-        /**
-         * Sets the grading time data from the server
-         * @param examGradingTimes JSON object
-         */
-        describe(types.loadGradingTimes, () => {
+        describe("getters | ", () => {
+
+            describe("getTotalGradingTime", () => {
+            });
+
+            describe("getStudentGradingTime", () => {
+            });
+
+            describe("getActiveStudentGradingTime", () => {
+            });
         });
 
-        describe(types.increaseActiveStudentGradingTime, () => {
-        });
     });
-
-    describe("actions | ", () => {
-
-        describe(types.storeStudentGradingTime, () => {
-        });
-
-        describe(types.increaseStudentGradingTime, () => {
-        });
-    });
-
-    describe("getters | ", () => {
-
-        describe("getTotalGradingTime", () => {
-        });
-
-        describe("getStudentGradingTime", () => {
-        });
-
-        describe("getActiveStudentGradingTime", () => {
-        });
-    });
-
 });

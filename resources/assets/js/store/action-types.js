@@ -12,3 +12,12 @@ export const setActiveStudentId = 'setActiveStudentId'
 export const setActiveStudentIndex = 'setActiveStudentIndex'
 export const setActiveStudentObject = 'setActiveStudentObject'
 export const setActiveStudentTime = 'setActiveStudentTime'
+
+//grades comments
+export const storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent'
+export const storeCommentText = 'storeCommentText'
+
+//grades.times
+export const storeStudentGradingTime = 'storeStudentGradingTime'
+export const increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime'
+

@@ -5,7 +5,7 @@ require('sinon');
 //Dependencies
 import * as getters from '../../../../resources/assets/js/store/getters.js';
 
-fdescribe("store | getters.js | ", function () {
+describe("store | getters.js | ", function () {
 
     describe("getExamId | ", () => {
         it("happy path | ", function () {

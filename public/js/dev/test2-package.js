@@ -11182,6 +11182,14 @@ var setActiveStudentIndex = exports.setActiveStudentIndex = 'setActiveStudentInd
 var setActiveStudentObject = exports.setActiveStudentObject = 'setActiveStudentObject';
 var setActiveStudentTime = exports.setActiveStudentTime = 'setActiveStudentTime';
 
+//grades comments
+var storeCommentTextForActiveStudent = exports.storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent';
+var storeCommentText = exports.storeCommentText = 'storeCommentText';
+
+//grades.times
+var storeStudentGradingTime = exports.storeStudentGradingTime = 'storeStudentGradingTime';
+var increaseActiveStudentGradingTime = exports.increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime';
+
 },{}],5:[function(require,module,exports){
 'use strict';
 
@@ -12012,11 +12020,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _mutations;
+var _mutations, _actions;
 
 var _mutationTypes = require('../mutation-types');
 
 var types = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -12029,19 +12041,50 @@ var state = {
     stockComments: {}
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, types.loadElementComments, function (state, rootState, elementCommentsJSON) {
+var mutations = (_mutations = {}, _defineProperty(_mutations, types.setElementComment, function (state, rootState, payload) {
+    var studentIndex = payload.studentIndex;
+    var elementIndex = payload.elementIndex;
+    var commentText = payload.commentText;
+    state.elementComments[studentIndex][elementIndex] = commentText;
+}), _defineProperty(_mutations, types.loadElementComments, function (state, rootState, elementCommentsJSON) {
     state.elementComments = elementCommentsJSON;
 }), _defineProperty(_mutations, types.loadStockComments, function (state, rootState, stockCommentsJSON) {
     state.stockComments = stockCommentsJSON;
-}), _defineProperty(_mutations, types.storeCommentText, function (state, rootState, studentIndex, elementIndex, commentText) {
-    state.elementComments[studentIndex][elementIndex] = commentText;
-}), _defineProperty(_mutations, types.storeCommentTextForActiveStudent, function (state, rootState, elementIndex, commentText) {
-    state.elementComments[state.activeStudentIndex][elementIndex] = commentText;
 }), _mutations);
 
-var actions = {};
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.storeCommentText, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
+
+    var studentIndex = payload.studentIndex;
+    var elementIndex = payload.elementIndex;
+    var commentText = payload.commentText;
+    state.elementComments[studentIndex][elementIndex] = commentText;
+}), _defineProperty(_actions, aTypes.storeCommentTextForActiveStudent, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+    var studentIndex = payload.studentIndex;
+    var elementIndex = payload.elementIndex;
+    var commentText = payload.commentText;
+    state.elementComments[state.activeStudentIndex][elementIndex] = commentText;
+}), _actions);
 
 var getters = {
+    /**
+     * Retrieves an element comment by student index and element index
+     *
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param studentIndex
+     * @param elementIndex
+     * @returns {*}
+     */
+    getElementComment: function getElementComment(state, getters, rootState, studentIndex, elementIndex) {
+        return state.elementComments[studentIndex][elementIndex];
+    },
+
     /**
      * Retrieve comment text for a student.
      * If no customized text is set, then return stockComment.
@@ -12087,7 +12130,6 @@ var getters = {
         return comment;
     },
 
-
     /**
      * Mainly used for testing. Though is used by gradeVue currently.
      * This gets the stored comment, which might be
@@ -12100,11 +12142,22 @@ var getters = {
     getStoredCommentText: function getStoredCommentText(state, getters, rootState, studentIndex, elementIndex) {
         return state.elementComments[studentIndex][elementIndex];
     },
+
+    /**
+     * Gets the comment text for the student
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param elementIndex
+     * @param valence
+     * @returns {*}
+     */
     getCommentTextForActiveStudent: function getCommentTextForActiveStudent(state, getters, rootState, elementIndex, valence) {
         //If no student is set, the comment field should be blank
         if (state.activeStudentIndex == null) return '';
         return state.getCommentText(state.activeStudentIndex, elementIndex, valence);
     }
+
 };
 
 exports.default = {
@@ -12114,7 +12167,7 @@ exports.default = {
     state: state
 };
 
-},{"../mutation-types":19}],13:[function(require,module,exports){
+},{"../action-types":4,"../mutation-types":19}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12567,6 +12620,10 @@ var _mutationTypes = require('../mutation-types');
 
 var types = _interopRequireWildcard(_mutationTypes);
 
+var _actionTypes = require('../action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
@@ -12578,8 +12635,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var state = {
     /**
-     * Format:
-     *     { studentIndex : gradingTime, ... }
+     * Key-value store of grading times .
+     *
+     * Each record has the studentIndex as the key and
+     * the gradingTime as the value.
+     * That is:
+     *     { studentIndex : gradingTime, }
+     * Or, if you prefer
+     *      examGradingTimes[ studentIndex] = gradingTime
      */
     examGradingTimes: {}
 
@@ -12597,19 +12660,22 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, types.addGradingTi
 
 }), _defineProperty(_mutations, types.loadGradingTimes, function (state, payload) {
     state.examGradingTimes = payload;
-}), _defineProperty(_mutations, types.increaseActiveStudentGradingTime, function (state, payload) {
-    state.examGradingTimes[state.activeStudentIndex] += payload.timeToAdd;
 }), _mutations);
 
-var actions = (_actions = {}, _defineProperty(_actions, types.storeStudentGradingTime, function (_ref, payload) {
-    var commit = _ref.commit;
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.increaseActiveStudentGradingTime, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
+
+    state.examGradingTimes[state.activeStudentIndex] += payload.timeToAdd;
+}), _defineProperty(_actions, aTypes.storeStudentGradingTime, function (_ref2, payload) {
+    var commit = _ref2.commit;
 
     // studentIndex, activeStudentTime
     payload = { studentIndex: 2, timeToAdd: 3.4 };
     commit('addGradingTime', payload);
     //        state.examGradingTimes[studentIndex] = activeStudentTime;
-}), _defineProperty(_actions, types.increaseStudentGradingTime, function (_ref2, payload) {
-    var commit = _ref2.commit;
+}), _defineProperty(_actions, types.increaseStudentGradingTime, function (_ref3, payload) {
+    var commit = _ref3.commit;
 
     // studentIndex, timeToAdd
     payload = { 'studentIndex': 1, 'timeToAdd': 3.2 };
@@ -12661,7 +12727,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../mutation-types":19}],19:[function(require,module,exports){
+},{"../action-types":4,"../mutation-types":19}],19:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12685,10 +12751,9 @@ var setTime = exports.setTime = 'setTime';
 var setStudentObject = exports.setStudentObject = 'setStudentObject';
 
 //grade.comments
+var setElementComment = exports.setElementComment = 'setElementComment';
 var loadElementComments = exports.loadElementComments = 'loadElementComments';
 var loadStockComments = exports.loadStockComments = 'loadStockComments';
-var storeCommentText = exports.storeCommentText = 'storeCommentText';
-var storeCommentTextForActiveStudent = exports.storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent';
 
 //grade.escores
 var loadElementScores = exports.loadElementScores = 'loadElementScores';
@@ -12714,10 +12779,8 @@ var loadNumberQuestions = exports.loadNumberQuestions = 'loadNumberQuestions';
 var loadStudents = exports.loadStudents = 'loadStudents';
 
 //grade.times
-var storeStudentGradingTime = exports.storeStudentGradingTime = 'storeStudentGradingTime';
 var loadGradingTimes = exports.loadGradingTimes = 'loadGradingTimes';
 var increaseStudentGradingTime = exports.increaseStudentGradingTime = 'increaseStudentGradingTime';
-var increaseActiveStudentGradingTime = exports.increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime';
 
 var addGradingTime = exports.addGradingTime = 'addGradingTime';
 var removeGradingTime = exports.removeGradingTime = 'removeGradingTime';
