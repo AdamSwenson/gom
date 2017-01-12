@@ -1,27 +1,37 @@
-import * as types from '../mutation-types'
+import * as mTypes from '../mutation-types'
+import * as aTypes from '../action-types'
 
-// export const elementScores = {
 const state = {
     /** Format: { studentIndex : { elementIndex : elementScore},  ... } */
     elementScores: {},
 };
 
 const mutations = {
-    [types.loadElementScores](state, rootState, studentElementScores) {
+    /**
+     * Consume a json object and populate the elementScores state
+     * @param state
+     * @param rootState
+     * @param studentElementScores
+     */
+    [mTypes.loadElementScores](state, rootState, studentElementScores)
+    {
         state.elementScores = studentElementScores;
     },
 
     /**
-     * Stores a student's score on a particular element
+     * Set a student's score on a particular element
      * @param studentIndex
      * @param elementIndex
      * @param score
      */
-        [types.storeElementScore](state, rootState, studentIndex, elementIndex, score) {
+        [mTypes.setElementScore](state, rootState, studentIndex, elementIndex, score)
+    {
         state.elementScores[studentIndex][elementIndex] = score;
     },
 
-    [types.storeElementScoreForActiveStudent](state, elementIndex, score) {
+
+
+    [mTypes.storeElementScoreForActiveStudent](state, elementIndex, score) {
         state.storeElementScore(state.activeStudentIndex, elementIndex, score);
     }
 };
@@ -47,6 +57,18 @@ const getters = {
 
 
 };
+
+const api = {    /**
+ * Stores a student's score on a particular element
+ * @param studentIndex
+ * @param elementIndex
+ * @param score
+ */
+    [mTypes.storeElementScore](state, rootState, studentIndex, elementIndex, score) {
+    state.elementScores[studentIndex][elementIndex] = score;
+},
+}
+
 // }
 
 export default {

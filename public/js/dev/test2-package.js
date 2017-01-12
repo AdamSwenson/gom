@@ -12178,23 +12178,26 @@ var _mutations;
 
 var _mutationTypes = require('../mutation-types');
 
-var types = _interopRequireWildcard(_mutationTypes);
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-// export const elementScores = {
 var state = {
     /** Format: { studentIndex : { elementIndex : elementScore},  ... } */
     elementScores: {}
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, types.loadElementScores, function (state, rootState, studentElementScores) {
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.loadElementScores, function (state, rootState, studentElementScores) {
     state.elementScores = studentElementScores;
-}), _defineProperty(_mutations, types.storeElementScore, function (state, rootState, studentIndex, elementIndex, score) {
+}), _defineProperty(_mutations, mTypes.setElementScore, function (state, rootState, studentIndex, elementIndex, score) {
     state.elementScores[studentIndex][elementIndex] = score;
-}), _defineProperty(_mutations, types.storeElementScoreForActiveStudent, function (state, elementIndex, score) {
+}), _defineProperty(_mutations, mTypes.storeElementScoreForActiveStudent, function (state, elementIndex, score) {
     state.storeElementScore(state.activeStudentIndex, elementIndex, score);
 }), _mutations);
 
@@ -12216,6 +12219,11 @@ var getters = {
         return state.elementScores[state.activeStudentIndex][elementIndex];
     }
 };
+
+var api = _defineProperty({}, mTypes.storeElementScore, function (state, rootState, studentIndex, elementIndex, score) {
+    state.elementScores[studentIndex][elementIndex] = score;
+});
+
 // }
 
 exports.default = {
@@ -12225,7 +12233,7 @@ exports.default = {
     state: state
 };
 
-},{"../mutation-types":19}],14:[function(require,module,exports){
+},{"../action-types":4,"../mutation-types":19}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12757,6 +12765,7 @@ var loadStockComments = exports.loadStockComments = 'loadStockComments';
 
 //grade.escores
 var loadElementScores = exports.loadElementScores = 'loadElementScores';
+var setElementScore = exports.setElementScore = 'setElementScore';
 var storeElementScore = exports.storeElementScore = 'storeElementScoreForActiveStudent';
 var storeElementScoreForActiveStudent = exports.storeElementScoreForActiveStudent = 'storeElementScoreForActiveStudent';
 
