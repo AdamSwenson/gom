@@ -81,10 +81,6 @@ const getters = {
 
 };
 
-const api = {}
-
-// }
-
 export default {
     actions,
     getters,

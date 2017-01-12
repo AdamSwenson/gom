@@ -139,7 +139,7 @@ var Data = function () {
          */
 
     }, {
-        key: 'loadGrades',
+        key: 'loadStandardGrades',
         value: function loadGrades(gradesJson) {
             if (typeof gradesJson == 'string') {
                 gradesJson = JSON.parse(gradesJson);
@@ -1125,7 +1125,7 @@ var Data = function () {
 //      * Sets the standard grades
 //      * @param gradesJson
 //      */
-//     this.loadGrades = function(gradesJson){
+//     this.loadStandardGrades = function(gradesJson){
 //         this.grades = gradesJson;
 //     };
 //     /**

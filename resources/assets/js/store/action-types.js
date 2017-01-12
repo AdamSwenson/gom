@@ -25,3 +25,8 @@ export const increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTim
 //grades.escores
 export const storeElementScore = 'storeElementScore'
 export const storeElementScoreForActiveStudent = 'storeElementScoreForActiveStudent'
+
+//grade.grades
+export const loadExamGrades = 'loadExamGrades'
+export const loadStandardGrades = 'loadStandardGrades'
+export const updateExamGrade = 'updateExamGrade'

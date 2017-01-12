@@ -3,7 +3,9 @@
  */
 
 
-import * as types from '../mutation-types'
+import * as mTypes from '../mutation-types'
+import * as aTypes from '../action-types'
+
 
 // export const Grades = {
 const state = {
@@ -24,47 +26,70 @@ const state = {
      *  { {calcValue : int, displayValue: string}, .... }
      * @type {{}}
      */
-    grades: {},
+    standardGrades: {},
 
 };
 
 const mutations = {
-    [types.loadExamGrades](state, rootState, studentGrades) {
-        state.examGrades = studentGrades;
+
+    /**
+     * Overwrites the state.examGrades with object containing data
+     * @param state
+     * @param rootState
+     * @param payload
+     */
+    [mTypes.populateExamGrades](state, rootState, payload)
+    {
+        state.examGrades = payload;
     },
 
     /**
-     * Sets the standard grades
-     * @param gradesJson
+     * Overwrites the state.standardGrades with object containing data
+     * @param state
+     * @param rootState
+     * @param payload
      */
-        [types.loadGrades](state, rootState, gradesJson) {
-        if (typeof gradesJson == 'string') {
-            gradesJson = JSON.parse(gradesJson);
-        }
-        state.grades = gradesJson;
+    [mTypes.populateStandardGrades](state, rootState, payload)
+    {
+        state.standardGradesGrades = payload;
     },
+
     /**
-     * Mostly used for testing
+     * Updates the value of a grade in examGrades
      * @param studentIndex
-     * @private
      */
-        [types._setExamGrade](state, rootState, studentIndex, score) {
-        state.examGrades[studentIndex];
+        [mTypes.setGrade](state, rootState, payload)
+    {
+            let {studentIndex, score} = payload;
+        state.examGrades[studentIndex] = score;
     },
 };
 
-const actions = {};
-
-const getters = {
+const actions = {
 
     /**
-     * Mostly used for testing
-     * @param studentIndex
-     * @param score
-     * @private
+     * Consume a json object and populate the grades state
+     * @param state
+     * @param rootState
+     * @param studentGrades
      */
-    _setExamGrade(state, getters, rootState, studentIndex, score) {
-        state.examGrades[studentIndex] = score;
+        [aTypes.loadExamGrades]({state, commit}, studentGrades)
+    {
+        //todo type checks
+        commit(mTypes.populateExamGrades, studentGrades);
+        // state.examGrades = studentGrades;
+    },
+
+    /**
+     * Consume a json object and populate the grades  the standard grade cut offs
+     * @param gradesJson
+     */
+        [aTypes.loadStandardGrades]({state, commit}, gradesJson)
+    {
+        if (typeof gradesJson == 'string') {
+            gradesJson = JSON.parse(gradesJson);
+        }
+        state.standardGrades = gradesJson;
     },
 
     /**
@@ -72,7 +97,7 @@ const getters = {
      * The first time it runs, it will set the total score to 0
      * if no questions have been graded.
      **/
-    updateExamGrade(state, getters, rootState, studentIndex) {
+    [aTypes.updateExamGrade]({state, commit}, studentIndex){
         var totalScore = null;
         // try {
         // state.checkValid( 'state.questionScores' );
@@ -102,10 +127,13 @@ const getters = {
         // } catch ( err ) {
         //     window.console.log( err );
         // }
-    },
+    }
 
+};
 
-    getExamGrade(state, getters, rootState, studentIndex) {
+const getters = {
+
+    getExamGrade: (state, getters, rootState, studentIndex) =>{
         return state.examGrades[studentIndex];
     },
 
@@ -114,17 +142,27 @@ const getters = {
      * NB, state is not the total scores for students
      * @returns {{}}
      */
-    getGrade(state, getters, rootState) {
-        return state.grades;
+    getStandardGrades: (state, getters, rootState) => {
+        return state.standardGrades;
     },
 
-    getExamGradeForActiveStudent(state, getters, rootState) {
+    /**
+     * Returns the standard grades json.
+     * NB, state is not the total scores for students
+     * @deprecated This now wraps the better named method
+     * @returns {{}}
+     */
+    getGrade: (state, getters, rootState) => {
+        return getters.getStandardGrades(state, getters, rootState);
+    },
+
+
+    getExamGradeForActiveStudent: (state, getters, rootState) => {
         if (state.activeStudentIndex == null) return '';
         return state.examGrades[state.activeStudent];
     }
 
 };
-// }
 
 export default {
     actions,

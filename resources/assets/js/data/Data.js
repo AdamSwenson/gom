@@ -1000,7 +1000,7 @@ export default class Data {
 //      * Sets the standard grades
 //      * @param gradesJson
 //      */
-//     this.loadGrades = function(gradesJson){
+//     this.loadStandardGrades = function(gradesJson){
 //         this.grades = gradesJson;
 //     };
 //     /**
