@@ -9,31 +9,24 @@ jasmine.getFixtures().fixturesPath = 'base/tests/spec/fixtures';
 require('sinon');
 var faker = require('faker');
 
-var DataHelper = require('../helpers/dataObject.helper');
+import * as types from '../../../../resources/assets/js/store/mutation-types'
+import * as aTypes from '../../../../resources/assets/js/store/action-types'
 
-import * as types from '../../../resources/assets/js/store/mutation-types'
-import * as aTypes from '../../../resources/assets/js/store/action-types'
 
-//Dependencies
-// var store = require('../../../resources/assets/js/store/index.js')
-// const s = new Vue({});
-// const store = s.$store;
+var DataHelper = require( '../../helpers/dataObject.helper' );
+
 //
-// const mutationTypes = import
-//
+// import {makeState} from './helpers';
+// import {makeRootState} from './helpers';
+// import {testAction} from './helpers';
+// import {description} from './helpers';
 
-// console.log('store type', typeof(store));
-// console.log(store);
-
-
-// import Vuex from 'vuex'
-
-xdescribe("vuex store | index.js | ", function () {
+xdescribe("store | index.js | ", function () {
 
     beforeEach(function () {
 
         this.object = require('../../../../resources/assets/js/store/index.js');
-        console.log(this.object);
+        // console.log(this.object);
         // expect(this.object instanceof Vuex).toBe( true);
         // expect(typeof (this.object)).toBe( 'vuex');
 
