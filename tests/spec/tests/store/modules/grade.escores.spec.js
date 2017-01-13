@@ -9,10 +9,10 @@ import * as mTypes from '../../../../../resources/assets/js/store/mutation-types
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
 
 
-import {makeState} from './helpers';
-import {makeRootState} from './helpers';
-import {testAction} from './helpers';
-import {description} from './helpers';
+import {makeState} from '../../../helpers/vuex.spec.helpers';
+import {makeRootState} from '../../../helpers/vuex.spec.helpers';
+import {testAction} from '../../../helpers/vuex.spec.helpers';
+import {description} from '../../../helpers/vuex.spec.helpers';
 
 const mutations = escores.default.mutations;
 

@@ -7,7 +7,7 @@ import * as active from '../../../../../resources/assets/js/store/modules/grade.
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
 
-import {makeState, makeRootState, testAction, description} from './helpers';
+import {makeState, makeRootState, testAction, description} from '../../../helpers/vuex.spec.helpers';
 // import {makeRootState} from './helpers';
 // import {testAction} from './helpers';
 // import {description} from './helpers';

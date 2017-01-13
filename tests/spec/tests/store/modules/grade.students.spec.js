@@ -4,9 +4,9 @@ require('sinon');
 
 
 // import {PATH_TO_STORE_FROM_TEST_MODULES, makeState} from './helpers';
-import {makeRootState} from './helpers';
-import {testAction} from './helpers';
-import {description} from './helpers';
+import {makeRootState} from '../../../helpers/vuex.spec.helpers';
+import {testAction} from '../../../helpers/vuex.spec.helpers';
+import {description} from '../../../helpers/vuex.spec.helpers';
 
 //Dependencies
 import * as students from '../../../../../resources/assets/js/store/modules/grade.students';

@@ -9,7 +9,7 @@ import * as activeexam from '../../../../../resources/assets/js/store/modules/ac
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
 
-import {makeState, makeRootState, testAction, description} from './helpers';
+import {makeState, makeRootState, testAction, description} from '../../../helpers/vuex.spec.helpers';
 
 
 describe( "store | modules | ", () => {
