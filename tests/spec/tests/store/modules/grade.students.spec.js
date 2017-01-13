@@ -2,17 +2,18 @@
 require('jasmine-jquery');
 require('sinon');
 
+
+// import {PATH_TO_STORE_FROM_TEST_MODULES, makeState} from './helpers';
+import {makeRootState} from './helpers';
+import {testAction} from './helpers';
+import {description} from './helpers';
+
 //Dependencies
 import * as students from '../../../../../resources/assets/js/store/modules/grade.students';
 
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
 
-
-import {makeState} from './helpers';
-import {makeRootState} from './helpers';
-import {testAction} from './helpers';
-import {description} from './helpers';
 
 
 

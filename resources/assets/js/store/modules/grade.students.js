@@ -5,7 +5,7 @@
 /**
  * Created by adam on 10/7/16.
  */
-import Student from './../models/Student';
+import Student from '../models/Student'
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
 
@@ -27,7 +27,7 @@ const mutations = {
      */
         [mTypes.populateStudents](state, rootState, payload)
     {
-            state.students = payload;
+        state.students = payload;
     },
 
     /**
@@ -57,7 +57,7 @@ const actions = {
     {
         for (let i = 0; i < Object.keys(payload).length; i++) {
             let s = payload[Object.keys(payload)[i]];
-            this[aTypes.addStudent]({state, commit}, {index: s.studentIndex, content: s });
+            this[aTypes.addStudent]({state, commit}, {index: s.studentIndex, content: s});
             // state.students[s.studentIndex] = Student.factory(s);
         }
     },
@@ -68,7 +68,7 @@ const actions = {
      * @param commit
      * @param payload
      */
-    [aTypes.addStudent]({state, commit}, payload)
+        [aTypes.addStudent]({state, commit}, payload)
     {
         let {index, content} = payload;
         let out = {

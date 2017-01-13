@@ -16,7 +16,7 @@ import {description} from './helpers';
 
 const mutations = escores.default.mutations;
 
-fdescribe("store | modules | ", () => {
+describe("store | modules | ", () => {
     describe("grade.escores | ", () => {
 
 

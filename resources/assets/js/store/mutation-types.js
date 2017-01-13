@@ -55,3 +55,13 @@ export const addGradingTime = 'addGradingTime'
 export const removeGradingTime = 'removeGradingTime'
 
 export const setExam = 'setExam';
+
+
+//exams
+export const addExam = 'addExam';
+export const addIndexMapping = 'addIndexMapping'
+export const populateExams = 'populateExams'
+
+//active exam
+export const setActiveExam = 'setActiveExam';
+export const clearActiveExam = 'clearActiveExam';

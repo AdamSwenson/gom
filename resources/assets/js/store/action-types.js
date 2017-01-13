@@ -43,3 +43,10 @@ export const addQuestion = 'addQuestion'
 
 //grade.students
 export const loadStudents = 'loadStudents'
+
+//exams
+export const addNewExam = 'addNewExam'
+
+//activeexam
+export const setActiveExam = 'setActiveExam'
+export const clearActiveExam = 'clearActiveExam'

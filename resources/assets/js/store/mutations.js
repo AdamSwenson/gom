@@ -13,16 +13,15 @@ import * as types from './mutation-types';
  */
 export const mutations = {
 
-    [types.setExam]: (state, payload) => {
-        if (Number.isInteger(payload)) {
+    /**
+     * Set the current exam
+     * @param state
+     * @param payload
+     */
+    [types.setExam]( state, payload ) {
+        if ( Number.isInteger( payload ) ) {
             state.examId = payload;
         }
 //other allowed payload types
     }
 };
-
-// }
-//
-// export default {
-//     mutations
-// }

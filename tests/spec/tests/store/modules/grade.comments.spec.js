@@ -14,7 +14,7 @@ import {testAction} from './helpers';
 import {description} from './helpers';
 
 
-fdescribe("store | modules | ", () => {
+describe("store | modules | ", () => {
     describe("grade.comments | ", () => {
 
         describe("mutations | ", () => {

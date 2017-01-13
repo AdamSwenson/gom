@@ -1,23 +1,14 @@
-var $ = require( 'jquery' );
-window.$ = $;
-var jQuery = $;
-window.jQuery = jQuery;
-
 //test libraries
 require( 'jasmine-jquery' );
-jasmine.getFixtures().fixturesPath = 'base/tests/spec/fixtures';
 require( 'sinon' );
 
 var Faker = require( 'faker' );
 
-//helpers
-var DataHelper = require( '../../helpers/dataObject.helper' );
-
 //tested stuff
-import Student from  "../../../../resources/assets/js/data/Student.js" ;
+import Student from  "../../../../../resources/assets/js/store/models/Student" ;
 
 
-describe( "Data.Student | ", function () {
+describe( "store.models.Student | ", function () {
 
     beforeEach( function () {
 //runs before each test

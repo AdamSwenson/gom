@@ -1,6 +1,8 @@
 /**
  * Created by adam on 1/11/17.
  */
+//
+// export const PATH_TO_STORE_FROM_TEST_MODULES = '../../../../../resources/assets/js/store/';
 
 export const makeState = () => {
     return {Index: null, Id: null, student: null};
