@@ -14,7 +14,7 @@ import {makeRootState} from './helpers';
 import {testAction} from './helpers';
 import {description} from './helpers';
 
-fdescribe("store | modules | ", () => {
+describe("store | modules | ", () => {
     describe(description("grade.times"), () => {
         beforeAll(function () { //runs once before all tests
         });

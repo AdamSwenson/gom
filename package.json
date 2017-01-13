@@ -70,6 +70,7 @@
     "imagemin-jpegtran": "^5.0.2",
     "install": "^0.8.1",
     "is-svg": "^2.1.0",
+    "jasmine": "^2.5.3",
     "jquery": "^2.2.0",
     "jquery-ui": "^1.10.5",
     "laravel-elixir": "*",

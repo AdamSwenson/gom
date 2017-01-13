@@ -1,4 +1,4 @@
-import * as types from './mutation-types';
+import * as mTypes from './mutation-types';
 
 //root mutations for vuex instance
 // export default  {
@@ -18,7 +18,7 @@ export const mutations = {
      * @param state
      * @param payload
      */
-    [types.setExam]( state, payload ) {
+    [mTypes.setExam]( state, payload ) {
         if ( Number.isInteger( payload ) ) {
             state.examId = payload;
         }

@@ -28,11 +28,11 @@ import * as aTypes from '../../../resources/assets/js/store/action-types'
 
 // import Vuex from 'vuex'
 
-describe("vuex store | index.js | ", function () {
+xdescribe("vuex store | index.js | ", function () {
 
     beforeEach(function () {
 
-        this.object = require('../../../resources/assets/js/store/index.js');
+        this.object = require('../../../../resources/assets/js/store/index.js');
         console.log(this.object);
         // expect(this.object instanceof Vuex).toBe( true);
         // expect(typeof (this.object)).toBe( 'vuex');
