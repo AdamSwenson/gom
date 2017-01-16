@@ -3,7 +3,7 @@ require('jasmine-jquery');
 require('sinon');
 
 //Dependencies
-import * as active from '../../../../../resources/assets/js/store/modules/grade.activestudent';
+import * as active from '../../../../../resources/assets/js/store/modules/activestudent';
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
 

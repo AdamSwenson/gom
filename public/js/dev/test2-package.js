@@ -11405,31 +11405,31 @@ var _gradeActivestudent = require('./modules/grade.activestudent.js');
 
 var _gradeActivestudent2 = _interopRequireDefault(_gradeActivestudent);
 
-var _gradeComments = require('./modules/grade.comments.js');
+var _gradeComments = require('./modules/comments.js');
 
 var _gradeComments2 = _interopRequireDefault(_gradeComments);
 
-var _gradeEscores = require('./modules/grade.escores.js');
+var _gradeEscores = require('./modules/escores.js');
 
 var _gradeEscores2 = _interopRequireDefault(_gradeEscores);
 
-var _gradeGrades = require('./modules/grade.grades.js');
+var _gradeGrades = require('./modules/grades.js');
 
 var _gradeGrades2 = _interopRequireDefault(_gradeGrades);
 
-var _gradeQscores = require('./modules/grade.qscores.js');
+var _gradeQscores = require('./modules/qscores.js');
 
 var _gradeQscores2 = _interopRequireDefault(_gradeQscores);
 
-var _gradeQuestions = require('./modules/grade.questions.js');
+var _gradeQuestions = require('./modules/questions.js');
 
 var _gradeQuestions2 = _interopRequireDefault(_gradeQuestions);
 
-var _gradeStudents = require('./modules/grade.students.js');
+var _gradeStudents = require('./modules/students.js');
 
 var _gradeStudents2 = _interopRequireDefault(_gradeStudents);
 
-var _gradeTimes = require('./modules/grade.times.js');
+var _gradeTimes = require('./modules/times.js');
 
 var _gradeTimes2 = _interopRequireDefault(_gradeTimes);
 
