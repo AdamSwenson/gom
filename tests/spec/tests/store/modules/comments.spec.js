@@ -58,7 +58,7 @@ let elementIndex = faker.random.number();
 let commentText = faker.hacker.phrase();
 
 
-fdescribe( "store | modules | ", () => {
+describe( "store | modules | ", () => {
     describe( "grade.comments | ", () => {
 
         describe( "mutations | ", () => {
@@ -165,10 +165,13 @@ fdescribe( "store | modules | ", () => {
                     //check
                     expect( result ).toBe( state.elementComments[ pl.studentIndex ][ pl.elementIndex ] );
                     //todo
-                } )
+                } );
+
+                //todo lots of cases
             } );
+
             describe( "getStoredCommentText | ", () => {
-                xit( "happy path | ", () => {
+                it( "happy path | ", () => {
                     //prep
                     let pl = makeTextPayload();//used for random vlue
                     let rootState = makeRootState();
@@ -179,9 +182,9 @@ fdescribe( "store | modules | ", () => {
 
                     //check
                     expect( result ).toBe( state.elementComments[ pl.studentIndex ][ pl.elementIndex ] );
-
                 } )
             } );
+
             describe( "getCommentTextForActiveStudent | ", () => {
                 //todo Requires adding in valence
                 xit( "happy path | ", () => {

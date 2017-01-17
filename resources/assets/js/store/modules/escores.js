@@ -13,9 +13,9 @@ const mutations = {
      * @param rootState
      * @param studentElementScores
      */
-        [mTypes.loadElementScores](state, rootState, studentElementScores)
+        [mTypes.loadElementScores](state, rootState, payload)
     {
-        state.elementScores = studentElementScores;
+        state.elementScores = payload;
     },
 
     /**
@@ -24,13 +24,16 @@ const mutations = {
      * @param elementIndex
      * @param score
      */
-        [mTypes.setElementScore](state, rootState, {payload})
+        [mTypes.setElementScore](state, rootState, payload)
     {
         let {studentIndex, elementIndex, score} = payload;
+        if(typeof (score) == 'undefined'){
+            //score may have been named differently
+            score = payload.elementScore;
+        }
+
         state.elementScores[studentIndex][elementIndex] = score;
     },
-
-
 };
 
 const actions = {
