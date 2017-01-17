@@ -79,24 +79,27 @@ export default class Exam {
         ];
     }
 
-    static factory(params, examIndex){
-        let examId;
-        if(typeof (params.examId) != 'undefined' ){
-            //we don't do this with a ternary because
-            //the constructor checks for undefined too,
-            //so it's best to be explicit
-            examId = params.examId;
-        }
+    /**
+     * Takes the json exam object received from the server and
+     * returns a Exam object
+     * @param examJson
+     * @returns {Exam}
+     */
+    static factory( examJson ) {
+        let examId = typeof (examJson.examId) != 'undefined'  ? examJson.examId : 'undefined';
+        let examIndex = typeof (examJson.examIndex) != 'undefined'  ? examJson.examIndex : 'undefined';
+
+        //instantiate
         let e = new Exam({examId: examId, examIndex: examIndex});
+
         //fill any fillable values
         [this.fillableProps()].forEach(()=>{
-            if(typeof (params[this]) != 'undefined' ){
-                e[this] = params[this];
+            if(typeof (examJson[this]) != 'undefined' ){
+                e[this] = examJson[this];
             }
         });
 
         return e;
-
     }
 
 }

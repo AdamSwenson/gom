@@ -10,4 +10,8 @@ import * as types from './mutation-types'
  */
 export const setExamId = ({commit}, examId) => {
     commit('_setExamId', examId);
-}
+};
+
+export const activeStudentIdGetDecor = ({state, commit}, payload) => {
+
+};

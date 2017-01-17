@@ -18,11 +18,11 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [types.setElementComment](state, rootState, payload){
-        let studentIndex = payload.studentIndex;
-        let elementIndex = payload.elementIndex;
-        let commentText = payload.commentText;
-        state.elementComments[studentIndex][elementIndex] = commentText;
+        [types.setElementComment]( state, rootState, payload )
+    {
+        let {commentText, elementIndex, studentIndex} = payload;
+
+        state.elementComments[ studentIndex ][ elementIndex ] = commentText;
     },
 
     /**
@@ -31,7 +31,7 @@ const mutations = {
      * @param rootState
      * @param elementCommentsJSON
      */
-    [types.loadElementComments](state, rootState, elementCommentsJSON)
+        [types.loadElementComments]( state, rootState, elementCommentsJSON )
     {
         state.elementComments = elementCommentsJSON;
     },
@@ -42,7 +42,7 @@ const mutations = {
      * @param rootState
      * @param stockCommentsJSON
      */
-        [types.loadStockComments](state, rootState, stockCommentsJSON)
+        [types.loadStockComments]( state, rootState, stockCommentsJSON )
     {
         state.stockComments = stockCommentsJSON;
     },
@@ -60,30 +60,34 @@ const actions = {
      * of the comment in the data object is an empty string.
      * So we save it anyway. The stock comment will be
      * retrieved on the call to getCommentText.
-     * @param studentIndex
-     * @param elementIndex
-     * @param commentText
+     * @param state
+     * @param commit
+     * @param payload
      */
-        [aTypes.storeCommentText]({state, commit}, payload)
-    {
-        let studentIndex = payload.studentIndex;
-        let elementIndex = payload.elementIndex;
-        let commentText = payload.commentText;
-        state.elementComments[studentIndex][elementIndex] = commentText;
-    },
-
-    /**
-     * Shortcut to avoid having to look up the active student from elsewhere
-     * @param elementIndex
-     * @param commentText
-     */
-        [aTypes.storeCommentTextForActiveStudent]({state, commit},payload)
-    {
-        let studentIndex = payload.studentIndex;
-        let elementIndex = payload.elementIndex;
-        let commentText = payload.commentText;
-        state.elementComments[state.activeStudentIndex][elementIndex] = commentText;
+    [aTypes.storeCommentText]: ( {state, commit}, payload ) => {
+        commit( types.setElementComment, payload );
+        // let studentIndex = payload.studentIndex;
+        // let elementIndex = payload.elementIndex;
+        // let commentText = payload.commentText;
+        // state.elementComments[studentIndex][elementIndex] = commentText;
     }
+    //
+    // /**
+    //  * Shortcut to avoid having to look up the active student from elsewhere
+    //  * @param elementIndex
+    //  * @param commentText
+    //  */
+    //     [aTypes.storeCommentTextForActiveStudent]( {state, commit}, payload )
+    // {
+    //     //add the student index
+    //     payload.studentIndex = state.activeStudentIndex;
+    //
+    //     commit( types.setElementComment, payload );
+    //
+    //     // let elementIndex = payload.elementIndex;
+    //     // let commentText = payload.commentText;
+    //     // state.elementComments[  ][ elementIndex ] = commentText;
+    // }
 
 
 };
@@ -99,8 +103,8 @@ const getters = {
      * @param elementIndex
      * @returns {*}
      */
-    getElementComment: (state, getters, rootState, studentIndex, elementIndex)=>{
-        return state.elementComments[studentIndex][elementIndex];
+    getElementComment: ( state, getters, rootState, studentIndex, elementIndex ) => {
+        return state.elementComments[ studentIndex ][ elementIndex ];
     },
 
 
@@ -114,13 +118,13 @@ const getters = {
      * @param valence
      * @returns {*}
      */
-    getCommentText: (state, getters, rootState, studentIndex, elementIndex, valence) =>{
+    getCommentText: ( state, getters, rootState, studentIndex, elementIndex, valence ) => {
         //First check for a pre-existing comment. This could be a stock comment
         //or it could be custom.
-        let comment = state.elementComments[studentIndex][elementIndex];
-        if (comment == "") {
+        let comment = state.elementComments[ studentIndex ][ elementIndex ];
+        if ( comment == "" ) {
             //If no comment is set, we're going to go with the stock comment
-            return state.stockComments[elementIndex][valence];
+            return state.stockComments[ elementIndex ][ valence ];
         }
         //now for the fun part. If the user had previously moved the
         //slider, this.elementComments will have a stock text value.
@@ -133,17 +137,17 @@ const getters = {
         let i = 0;
         //loop through the stock comments and look for a match
         //TODO should this be < ?
-        while (isCustom && i <= state.valences.length) {
-            var stock = state.stockComments[elementIndex][i];
-            if (stock == comment) {
+        while ( isCustom && i <= state.valences.length ) {
+            var stock = state.stockComments[ elementIndex ][ i ];
+            if ( stock == comment ) {
                 isCustom = false;
             }
             i++;
         }
         //If it turns out that the previous comment was stock, then return the
         //new stock comment corresponding to the valence
-        if (!isCustom) {
-            return state.stockComments[elementIndex][valence];
+        if ( !isCustom ) {
+            return state.stockComments[ elementIndex ][ valence ];
         }
         //If it was custom, return the custom text
         return comment;
@@ -159,8 +163,8 @@ const getters = {
      * @param elementIndex
      * @private
      */
-    getStoredCommentText: (state, getters, rootState, studentIndex, elementIndex) =>{
-        return state.elementComments[studentIndex][elementIndex];
+    getStoredCommentText: ( state, getters, rootState, studentIndex, elementIndex ) => {
+        return state.elementComments[ studentIndex ][ elementIndex ];
     },
 
     /**
@@ -172,10 +176,11 @@ const getters = {
      * @param valence
      * @returns {*}
      */
-    getCommentTextForActiveStudent: (state, getters, rootState, elementIndex, valence) =>{
+    getCommentTextForActiveStudent: ( state, getters, rootState, elementIndex, valence ) => {
         //If no student is set, the comment field should be blank
-        if (state.activeStudentIndex == null) return '';
-        return state.getCommentText(state.activeStudentIndex, elementIndex, valence);
+        if ( state.activeStudentIndex == null ) return '';
+
+        return getters.getCommentText( state, getters, rootState, state.activeStudentIndex, elementIndex, valence );
     },
 
 

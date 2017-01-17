@@ -35,13 +35,13 @@ export const randomInteger = () =>{
     return faker.random.number();
 };
 
-export const makeState = () => {
-    return {Index: null, Id: null, student: null};
-};
-
-export const makeRootState = () => {
-    return {Index: null, Id: null, student: null};
-};
+// export const makeState = () => {
+//     return {Index: null, Id: null, student: null};
+// };
+//
+// export const makeRootState = () => {
+//     return {Index: null, Id: null, student: null};
+// };
 
 export const description = (text) =>{
     return `${text} | `;

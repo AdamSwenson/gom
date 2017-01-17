@@ -32,7 +32,7 @@ let state = {
 };
 
 
-fdescribe( "store | modules | ", () => {
+describe( "store | modules | ", () => {
     describe( " activeexam | ", () => {
 
         describe( "mutations | ", () => {

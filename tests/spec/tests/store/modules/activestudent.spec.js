@@ -1,16 +1,43 @@
 //test libraries
 require('jasmine-jquery');
 require('sinon');
+let faker = require( 'faker' );
 
 //Dependencies
 import * as active from '../../../../../resources/assets/js/store/modules/activestudent';
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
 
-import {makeState, makeRootState, testAction, description} from '../../../helpers/vuex.spec.helpers';
-// import {makeRootState} from './helpers';
-// import {testAction} from './helpers';
-// import {description} from './helpers';
+
+const makeState = () => {
+    return {Index: null, Id: null, student: null};
+};
+
+const makeRootState = () => {
+    return {Index: null, Id: null, student: null};
+};
+
+
+import {testAction, description, factories} from '../../../helpers/vuex.spec.helpers';
+
+//tested object
+let obj = active.default;
+//tested methods
+let {getters, actions, mutations} = obj;
+
+//test data
+let exam = factories.examFactory();
+let index = exam.examIndex;
+let examId = exam.examId;
+
+//mock store
+let state = {
+    activeExam: {
+        id: examId,
+        index: index
+    }
+};
+
 
 describe("store | modules | ", () => {
     describe("grade.activestudent | ", () => {
