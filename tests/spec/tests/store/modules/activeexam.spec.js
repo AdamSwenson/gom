@@ -23,7 +23,6 @@ let exam = factories.examFactory();
 let index = exam.examIndex;
 let examId = exam.examId;
 
-
 //mock store
 let state = {
     activeExam: {
@@ -32,19 +31,27 @@ let state = {
     }
 };
 
+
 fdescribe( "store | modules | ", () => {
     describe( " activeexam | ", () => {
 
         describe( "mutations | ", () => {
             describe( description( mTypes.setActiveExam ), () => {
-                xit( "happy path | ", () => {
-                    //todo
+
+                it( "happy path | ", () => {
+                    let state2 = {activeExam: null};
+                    let exam2 = factories.examFactory();
+                    mutations[mTypes.setActiveExam](state2, {}, exam2);
+                    expect(state2.activeExam).toBe(exam2);
                 } );
             } );
 
             describe( description( mTypes.clearActiveExam ), () => {
-                xit( "happy path | ", () => {
-                    //todo
+                it( "happy path | ", () => {
+                    let state2 = {activeExam: 'taco'};
+                    let exam2 = factories.examFactory();
+                    mutations[mTypes.clearActiveExam](state2, {}, exam2);
+                    expect(state2.activeExam).toBeNull();
                 } );
             } );
         } );
@@ -62,7 +69,7 @@ fdescribe( "store | modules | ", () => {
                                 payload: index
                             }
                         ])
-                        
+
                     } );
                 });
 
