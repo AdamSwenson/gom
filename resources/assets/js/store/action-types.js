@@ -46,6 +46,7 @@ export const loadStudents = 'loadStudents'
 
 //exams
 export const addNewExam = 'addNewExam'
+export const loadExams = 'loadExams'
 
 //activeexam
 export const setActiveExam = 'setActiveExam'

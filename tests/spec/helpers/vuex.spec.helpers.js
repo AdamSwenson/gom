@@ -68,7 +68,9 @@ export const testAction = (action, payload, state, expectedMutations, done) => {
         }
         count++
         if (count >= expectedMutations.length) {
-            // done()
+            if(typeof done != 'undefined'){
+                done();
+            }
         }
     }
 
@@ -78,6 +80,8 @@ export const testAction = (action, payload, state, expectedMutations, done) => {
     // check if no mutations should have been dispatched
     if (expectedMutations.length === 0) {
         expect(count).toBe(0)
-        // done()
+        if(typeof done != 'undefined'){
+            done();
+        }
     }
 }

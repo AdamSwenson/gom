@@ -60,7 +60,7 @@ export const setExam = 'setExam';
 //exams
 export const addExam = 'addExam';
 export const addIndexMapping = 'addIndexMapping'
-export const populateExams = 'populateExams'
+export const loadExams = 'loadExams'
 
 //active exam
 export const setActiveExam = 'setActiveExam';

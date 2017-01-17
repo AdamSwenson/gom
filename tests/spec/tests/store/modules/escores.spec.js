@@ -46,7 +46,7 @@ let obj = escores.default;
 //tested methods
 let {getters, actions, mutations} = obj;
 
-fdescribe( "store | modules | ", function () {
+describe( "store | modules | ", function () {
     describe( "escores | ", function () {
         beforeEach( function () {
             this.state = makeState();

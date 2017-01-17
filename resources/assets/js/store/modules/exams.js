@@ -31,18 +31,20 @@ const state = {
      * Mapping from older examIndex to new exam id value
      */
  indexMap: {}
+
 };
 
 const mutations = {
 
     /**
      * Push an exam into storage
+     * Payload should have keys: obj
      *
      * @param state
      * @param rootState
-     * @param payload
+     * @param payload Expecting Exam object to be in payload.obj
      */
-    [mTypes.addExam](state, rootState, payload)
+    [mTypes.addExam]: (state, rootState, payload) =>
     {
 
         if(payload.obj instanceof Exam){
@@ -54,11 +56,13 @@ const mutations = {
 
     /**
      * Pushes a mapping of index to id into indexMap
+     * Payload should have keys: examIndex, examId
+     *
      * @param state
      * @param rootState
-     * @param payload Should have keys: examIndex, examId
+     * @param payload Array with keys: examIndex, examId
      */
-    [mTypes.addIndexMapping](state, rootState, payload)
+    [mTypes.addIndexMapping] : (state, rootState, payload) =>
     {
         let { examIndex, examId } = payload;
         state.indexMap[examIndex] = examId;
@@ -71,8 +75,14 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [mTypes.populateExams](state,rootState, payload)
+    [mTypes.loadExams]: ( state, rootState, payload) =>
     {
+        //check if payload has correct structure
+
+        //add exams
+        state.exams = payload;
+
+        //add index mappings
 
     }
 
@@ -86,9 +96,9 @@ const actions = {
      * the id for older components.
      * @param state
      * @param commit
-     * @param payload
+     * @param payload Keys: examId, examIndex, obj
      */
-    [aTypes.addNewExam]({state, commit}, payload)
+    [aTypes.addNewExam] : ({state, commit}, payload) =>
     {
         let { examId, examIndex, obj } = payload;
 
@@ -96,8 +106,10 @@ const actions = {
         if(! obj instanceof Exam){
             //create a new exam
             let { name, year, term } = payload;
-            obj = Exam.factory({ name, year, term }, examIndex );
+            let examJson = {name, year, term, examIndex };
+            obj = Exam.factory( examJson);
         }
+
         //assemble the expected payload
         let out = { examId: examId, examIndex: examIndex, obj: obj };
 
@@ -105,8 +117,33 @@ const actions = {
         commit(mTypes.addExam, out);
 
         //Add to the mapping store
-        commit(mTypes.addIndexMapping, {examId: examId, examIndex: examIndex});
+         commit(mTypes.addIndexMapping, out);
+    },
+
+    /**
+     * Consume a json object and populate the exams store
+     * by pushing exams into it.
+     * @param state
+     * @param rootState
+     * @param payload
+     */
+    [aTypes.loadExams]: ( state, rootState, payload) =>
+    {
+        //check if payload has correct structure
+        //todo
+
+        //push each record from the payload into the store
+        for(let i=0; i<payload.length; i++){
+            let record = payload[i];
+            //check if record has correct structure
+            //todo
+
+            //add exams
+            //add index mappings
+            [aTypes.addNewExam](state, rootState, record);
+        }
     }
+
 };
 
 const getters = {
@@ -125,11 +162,12 @@ const getters = {
  {
      //finds the exam and returns it
      const lookupByExamId = (state, examId) => {
-
+            return state.exams[examId];
      };
+
      //Try looking up first by exam Id
      if(typeof (payload.examId) != 'undefined'){
-            return
+            return lookupByExamId(state, payload.examId);
      }
 
      //other lookup methods
@@ -137,8 +175,21 @@ const getters = {
 
  },
 
+    /**
+     * Return list of exam objects
+     * @param state
+     * @param getters
+     * @param payload
+     * @returns {{}}
+     */
     getAllExams: (state, getters, payload)=>{
-     return state.exams;
+        let out = [];
+        let keys = Object.keys(state.exams);
+        for(let i=0; i<keys.length; i++){
+            out.push(state.exams[keys[i]]);
+        }
+
+        return out;
     }
 };
 
