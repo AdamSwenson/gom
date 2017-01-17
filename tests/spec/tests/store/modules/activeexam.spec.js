@@ -1,7 +1,7 @@
-
 //test libraries
 require( 'jasmine-jquery' );
 require( 'sinon' );
+let faker = require( 'faker' );
 
 //Dependencies
 import * as activeexam from '../../../../../resources/assets/js/store/modules/activeexam';
@@ -11,18 +11,30 @@ import * as aTypes from '../../../../../resources/assets/js/store/action-types'
 
 import {makeState, makeRootState, testAction, description} from '../../../helpers/vuex.spec.helpers';
 
+let {getters} = activeexam.default;
 
-describe( "store | modules | ", () => {
+let index = faker.random.number();
+let examId = faker.random.number();
+
+//mock of the store
+let state = {
+    activeExam: {
+        id: examId,
+        index: index
+    }
+};
+
+fdescribe( "store | modules | ", () => {
     describe( " activeexam | ", () => {
 
         describe( "mutations | ", () => {
-            describe( description( mTypes.setActiveExam), () => {
+            describe( description( mTypes.setActiveExam ), () => {
                 xit( "happy path | ", () => {
                     //todo
                 } );
             } );
 
-            describe( description(mTypes.clearActiveExam), () => {
+            describe( description( mTypes.clearActiveExam ), () => {
                 xit( "happy path | ", () => {
                     //todo
                 } );
@@ -37,7 +49,7 @@ describe( "store | modules | ", () => {
                 } );
             } );
 
-            describe( description(aTypes.clearActiveExam), () => {
+            describe( description( aTypes.clearActiveExam ), () => {
                 it( "happy path | ", () => {
                     //todo
                 } );
@@ -46,18 +58,25 @@ describe( "store | modules | ", () => {
         } );
 
         describe( "getters | ", () => {
-            describe( "getActiveExamId | ", () => {
 
+            describe( "getActiveExamId | ", () => {
+                it( "happy path | ", () => {
+                    expect( getters.getActiveExamId( state ) ).toBe( examId );
+                } );
             } );
 
             describe( "getActiveExamIndex | ", () => {
-
+                it( "happy path | ", () => {
+                    expect( getters.getActiveExamIndex( state ) ).toBe( index );
+                } );
             } );
+
             describe( "getActiveExamObj | ", () => {
+                it( "happy path | ", () => {
 
-            } );
-
-
+                    expect( getters.getActiveExamObj( state ) ).toBe( state.activeExam );
+                } );
+            });
         } );
     } );
 } );

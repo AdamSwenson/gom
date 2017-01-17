@@ -82,15 +82,15 @@ const actions = {
 const getters = {
 
     getActiveExamId: (state, getters, payload)=>{
-      return state.exam.id;
+      return state.activeExam.id;
     },
 
     getActiveExamIndex: (state, getters, payload)=>{
-        return state.exam.index;
+        return state.activeExam.index;
     },
 
     getActiveExamObj: (state, getters) =>{
-        return state.exam;
+        return state.activeExam;
     }
 
 };

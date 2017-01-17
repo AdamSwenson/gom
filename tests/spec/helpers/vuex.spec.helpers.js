@@ -4,6 +4,17 @@
 //
 // export const PATH_TO_STORE_FROM_TEST_MODULES = '../../../../../resources/assets/js/store/';
 
+
+let faker = require('faker');
+
+/**
+ * Wrapper around faker so I don't have to keep remembering
+ * how to call it
+ */
+export const randomInteger = () =>{
+    return faker.random.number();
+};
+
 export const makeState = () => {
     return {Index: null, Id: null, student: null};
 };
