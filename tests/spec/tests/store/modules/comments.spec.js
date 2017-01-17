@@ -60,6 +60,11 @@ let commentText = faker.hacker.phrase();
 
 describe( "store | modules | ", () => {
     describe( "grade.comments | ", () => {
+        beforeEach( function () {
+            this.state = makeState();
+            this.rootState = makeRootState();
+            this.payload = makeTextPayload();
+        } );
 
         describe( "mutations | ", () => {
             describe( description( mTypes.loadElementComments ), () => {

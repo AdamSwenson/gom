@@ -40,8 +40,7 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [mTypes.populateExamGrades](state, rootState, payload)
-    {
+    [mTypes.loadExamGrades]: ( state, rootState, payload ) => {
         state.examGrades = payload;
     },
 
@@ -51,19 +50,17 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [mTypes.populateStandardGrades](state, rootState, payload)
-    {
-        state.standardGradesGrades = payload;
+    [mTypes.loadStandardGrades]: ( state, rootState, payload ) => {
+        state.standardGrades = payload;
     },
 
     /**
      * Updates the value of a grade in examGrades
      * @param studentIndex
      */
-        [mTypes.setGrade](state, rootState, payload)
-    {
-            let {studentIndex, score} = payload;
-        state.examGrades[studentIndex] = score;
+    [mTypes.setGrade]: ( state, rootState, payload ) => {
+        let {studentIndex, score} = payload;
+        state.examGrades[ studentIndex ] = score;
     },
 };
 
@@ -75,10 +72,9 @@ const actions = {
      * @param rootState
      * @param studentGrades
      */
-        [aTypes.loadExamGrades]({state, commit}, studentGrades)
-    {
+    [aTypes.loadExamGrades]: ( {state, commit}, studentGrades ) => {
         //todo type checks
-        commit(mTypes.populateExamGrades, studentGrades);
+        commit( mTypes.loadExamGrades, studentGrades );
         // state.examGrades = studentGrades;
     },
 
@@ -86,10 +82,9 @@ const actions = {
      * Consume a json object and populate the grades  the standard grade cut offs
      * @param gradesJson
      */
-        [aTypes.loadStandardGrades]({state, commit}, gradesJson)
-    {
-        if (typeof gradesJson == 'string') {
-            gradesJson = JSON.parse(gradesJson);
+    [aTypes.loadStandardGrades]: ( {state, commit}, gradesJson ) => {
+        if ( typeof gradesJson == 'string' ) {
+            gradesJson = JSON.parse( gradesJson );
         }
         state.standardGrades = gradesJson;
     },
@@ -99,31 +94,31 @@ const actions = {
      * The first time it runs, it will set the total score to 0
      * if no questions have been graded.
      **/
-    [aTypes.updateExamGrade]({state, commit}, studentIndex){
+    [aTypes.updateExamGrade]: ( {state, commit}, studentIndex ) => {
         var totalScore = null;
         // try {
         // state.checkValid( 'state.questionScores' );
-        if (Object.keys(state.questionScores).length > 0) {
-            for (var i = 0; i < Object.keys(state.questionScores[studentIndex]).length; i++) {
-                var v = state.questionScores[studentIndex][i];
-                if (v != null) {
+        if ( Object.keys( state.questionScores ).length > 0 ) {
+            for ( var i = 0; i < Object.keys( state.questionScores[ studentIndex ] ).length; i++ ) {
+                var v = state.questionScores[ studentIndex ][ i ];
+                if ( v != null ) {
                     //at least one question score is non-null
                     //so the total score should be at least 0
                     //first we check whether the totalScore is still null
                     //and set it to 0 if not
-                    if (totalScore === null) {
+                    if ( totalScore === null ) {
                         totalScore = 0;
                     }
                     //now we can add the question values to it
-                    totalScore += parseFloat(v);
+                    totalScore += parseFloat( v );
                 }
             }
-            if (totalScore != null && totalScore >= 0) {
+            if ( totalScore != null && totalScore >= 0 ) {
                 //push the total score into exam grades as a string
-                state.examGrades[studentIndex] = totalScore.toPrecision(3);
+                state.examGrades[ studentIndex ] = totalScore.toPrecision( 3 );
             } else {
                 //replace 'letter grade' with -1
-                state.examGrades[studentIndex] = -1;
+                state.examGrades[ studentIndex ] = -1;
             }
         }
         // } catch ( err ) {
@@ -135,8 +130,8 @@ const actions = {
 
 const getters = {
 
-    getExamGrade: (state, getters, rootState, studentIndex) =>{
-        return state.examGrades[studentIndex];
+    getExamGrade: ( state, getters, rootState, studentIndex ) => {
+        return state.examGrades[ studentIndex ];
     },
 
     /**
@@ -144,7 +139,7 @@ const getters = {
      * NB, state is not the total scores for students
      * @returns {{}}
      */
-    getStandardGrades: (state, getters, rootState) => {
+    getStandardGrades: ( state, getters, rootState ) => {
         return state.standardGrades;
     },
 
@@ -154,14 +149,14 @@ const getters = {
      * @deprecated This now wraps the better named method
      * @returns {{}}
      */
-    getGrade: (state, getters, rootState) => {
-        return getters.getStandardGrades(state, getters, rootState);
+    getGrade: ( state, getters, rootState ) => {
+        return getters.getStandardGrades( state, getters, rootState );
     },
 
 
-    getExamGradeForActiveStudent: (state, getters, rootState) => {
-        if (state.activeStudentIndex == null) return '';
-        return state.examGrades[state.activeStudent];
+    getExamGradeForActiveStudent: ( state, getters, rootState ) => {
+        if ( state.activeStudentIndex == null ) return '';
+        return state.examGrades[ state.activeStudent ];
     }
 
 };

@@ -47,7 +47,7 @@ let obj = exams.default;
 let {getters, actions, mutations} = obj;
 
 
-fdescribe( "store | modules | ", function () {
+describe( "store | modules | ", function () {
     describe( " exams | ", function () {
         beforeEach( function () {
             this.state = makeState();
@@ -174,8 +174,6 @@ fdescribe( "store | modules | ", function () {
                         expect( typeof result[ i ] ).toBe( 'object' );
                         expect( result[ i ] instanceof Exam ).toBe(true);
                     };
-
-
                 } );
             } );
 

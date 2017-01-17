@@ -28,8 +28,8 @@ export const setElementScore = 'setElementScore'
 
 
 //grade.grades
-export const populateExamGrades = 'populateExamGrades'
-export const populateStandardGrades = 'populateStandardGrades'
+export const loadExamGrades = 'loadExamGrades'
+export const loadStandardGrades = 'loadStandardGrades'
 export const setGrade = 'setGrade'
 
 //grade.qscores
