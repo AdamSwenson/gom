@@ -67,5 +67,36 @@ export default class Exam {
         ]
     }
 
+    /**
+     * Returns a list of strings which are property
+     * names. These fields can be filled from the input
+     * @returns {[string,string]}
+     */
+    static fillableProps(){
+        return [
+            'name',
+            'year'
+        ];
+    }
+
+    static factory(params, examIndex){
+        let examId;
+        if(typeof (params.examId) != 'undefined' ){
+            //we don't do this with a ternary because
+            //the constructor checks for undefined too,
+            //so it's best to be explicit
+            examId = params.examId;
+        }
+        let e = new Exam({examId: examId, examIndex: examIndex});
+        //fill any fillable values
+        [this.fillableProps()].forEach(()=>{
+            if(typeof (params[this]) != 'undefined' ){
+                e[this] = params[this];
+            }
+        });
+
+        return e;
+
+    }
 
 }

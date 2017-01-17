@@ -4,8 +4,28 @@
 //
 // export const PATH_TO_STORE_FROM_TEST_MODULES = '../../../../../resources/assets/js/store/';
 
+import Exam from '../../../resources/assets/js/store/models/Exam';
+
 
 let faker = require('faker');
+
+/**
+ * Generators of fake model objects
+ * @type {{examFactory: (())}}
+ */
+export const factories = {
+    /**
+     * Returns an Exam instance with random id and index
+     * @returns {Exam}
+     */
+    examFactory: ()=>{
+        return new Exam(
+            {
+                examId: faker.random.number(), examIndex: faker.random.number()
+            });
+    }
+};
+
 
 /**
  * Wrapper around faker so I don't have to keep remembering
@@ -30,8 +50,12 @@ export const description = (text) =>{
 /**
  * helper for testing action with expected mutations
  * see https://vuex.vuejs.org/en/testing.html
+ * @param action
+ * @param payload
+ * @param state
+ * @param expectedMutations
+ * @param done Callback
  */
-
 export const testAction = (action, payload, state, expectedMutations, done) => {
     let count = 0
 

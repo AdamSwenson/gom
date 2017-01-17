@@ -9,14 +9,22 @@ import * as activeexam from '../../../../../resources/assets/js/store/modules/ac
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
 
-import {makeState, makeRootState, testAction, description} from '../../../helpers/vuex.spec.helpers';
+import Exam from '../../../../../resources/assets/js/store/models/Exam';
 
-let {getters} = activeexam.default;
+import {makeState, makeRootState, testAction, description, factories} from '../../../helpers/vuex.spec.helpers';
 
-let index = faker.random.number();
-let examId = faker.random.number();
+//tested object
+let obj = activeexam.default;
+//tested methods
+let {getters, actions, mutations} = obj;
 
-//mock of the store
+//test data
+let exam = factories.examFactory();
+let index = exam.examIndex;
+let examId = exam.examId;
+
+
+//mock store
 let state = {
     activeExam: {
         id: examId,
@@ -44,14 +52,46 @@ fdescribe( "store | modules | ", () => {
         describe( "actions | ", () => {
 
             describe( description( aTypes.setActiveExam ), () => {
-                xit( "happy path | ", () => {
-                    //todo
-                } );
+                describe(" payload is Exam | ", ()=>{
+                    it( "happy path | ", () =>{
+                        let action = actions[aTypes.setActiveExam];
+
+                        testAction(action, exam, state, [
+                            {
+                                type: mTypes.setActiveExam,
+                                payload: index
+                            }
+                        ])
+                        
+                    } );
+                });
+
+                describe(" payload Not Exam | ", ()=>{
+                    it( "happy path | ", ()=>{
+                        let action = actions[aTypes.setActiveExam];
+                        let p = {examId: examId, examIndex: index};
+
+                        testAction(action, p, state, [
+                            {
+                                type: mTypes.setActiveExam,
+                                payload: p
+                            }
+                        ] )
+                    } );
+                });
+
             } );
 
-            describe( description( aTypes.clearActiveExam ), () => {
-                it( "happy path | ", () => {
-                    //todo
+            describe( description( aTypes.clearActiveExam ), function(){
+                it( "happy path | ", function(){
+                    let action = actions[aTypes.clearActiveExam];
+
+                    testAction(action, state, state.activeExam,  [
+                        {
+                            type: mTypes.clearActiveExam,
+                            payload: index
+                        }
+                    ] );
                 } );
             } );
 
