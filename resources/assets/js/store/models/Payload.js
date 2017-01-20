@@ -22,6 +22,7 @@ export default class Payload {
 
         /** The timestamp in the payload */
         this._stamp;
+
     }
 
     get id() {
@@ -78,13 +79,13 @@ export default class Payload {
      * names. These fields can be filled from the input
      * @returns {[string,string]}
      */
-    static fillableProps() {
+    static get fillableProps() {
         return [
             'id', 'index', 'num', 'obj', 'str', 'stamp'
         ];
     }
 
-    static aliasMap() {
+    static get aliasMap() {
         return {
             studentId: 'id',
             studentIndex: 'index'
@@ -95,36 +96,33 @@ export default class Payload {
 
     static factory( params ) {
         let p = new Payload();
-        let map = this.aliasMap();
-        let props = this.fillableProps();
+        if ( typeof params != 'undefined' ) {
 
-        //fill any fillable values
-        props.forEach( function ( v ) {
-            if ( typeof params[ v ] != 'undefined' ) {
-                p[ v ] = params[ v ];
+            //fill any fillable values
+            this.fillableProps.forEach( function ( v ) {
+                if ( typeof params[ v ] != 'undefined' ) {
+                    p[ v ] = params[ v ];
+                }
+            } );
+
+            //fill any aliased values
+            for ( let v in this.aliasMap ) {
+                if ( typeof params[ v ] != 'undefined' ) {
+                    // console.log( 'alias', v, map[v] );
+                    p[ this.aliasMap[ v ] ] = params[ v ];
+                }
             }
-        } );
-
-        //fill any aliased values
-        for(let v in map ) {
-        // [ Object.keys( map ) ].forEach( function ( v ) {
-
-            if ( typeof (params[ v ]) != 'undefined' ) {
-                // console.log( 'alias', v, map[v] );
-                p[ map[ v ] ] = params[ v ];
-            }
-        } //);
-
+        }
         return p;
     }
 
-    static checkIfPayload( payload ){
+    static checkIfPayload( payload ) {
         //received payload object case
         if ( payload instanceof Payload ) {
             return true;
         }
-
-        throw new Exception( "Non Payload passed to a Payload requiring method" );
+        return false;
+        // throw new Exception( "Non Payload passed to a Payload requiring method" );
     }
 
 }

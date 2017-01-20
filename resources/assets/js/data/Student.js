@@ -5,8 +5,8 @@
 export default class Student {
     constructor( studentId ) {
         this._email = '';
-        this._studentId = studentId;
-        this._studentIndex = null;
+        this._id = studentId;
+        this._index = null;
         this._studentIdentifier = null;
         this._lastName = '';
         this._firstName = '';
@@ -55,19 +55,19 @@ export default class Student {
     }
 
     get studentId() {
-        return Number( this._studentId )
+        return Number( this._id )
     };
 
     set studentId( val ) {
-        this._studentId = val;
+        this._id = val;
     }
 
     get studentIndex() {
-        return Number( this._studentIndex )
+        return Number( this._index )
     };
 
     set studentIndex( val ) {
-        this._studentIndex = val;
+        this._index = val;
     }
 
     /**

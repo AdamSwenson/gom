@@ -28,23 +28,20 @@ const mutations = {
      * @param payload
      */
     [mTypes.setStudent]: ( state, rootState, payload ) => {
-        //require payload type
-        if(! payload instanceof Payload){
-            //todo other vals
-            let {studentIndex, studentObject} = payload;
-            state.students[ studentIndex ] = studentObject;
-        }
+        Payload.checkIfPayload( payload );
+        state.students[ payload.index ] = payload.obj;
+    },
 
-        else if(payload.obj instanceof Student){
-            state.students[ payload.index ] = payload.obj;
-        }
-
-        else{
-//?
-        }
-
+    /**
+     * Removes a student and their index from state.students
+     * @param state
+     * @param rootState
+     * @param payload
+     */
+    [mTypes.removeStudent]: ( state, rootState, payload ) => {
+        Payload.checkIfPayload( payload );
+        delete state.students[ payload.index ];
     }
-
 
 };
 
@@ -56,9 +53,10 @@ const actions = {
      * @param state
      * @param payload
      */
-    [aTypes.loadStudents] : ( {state, commit}, payload ) => {
+    [aTypes.loadStudents]: ( {state, commit}, payload ) => {
+
         for ( let i = 0; i < Object.keys( payload ).length; i++ ) {
-            actions[ aTypes.addStudent ]( {state, commit}, payload );
+            actions[ aTypes.addStudent ]( {state, commit}, payload[ i ] );
         }
     },
 
@@ -68,20 +66,23 @@ const actions = {
      * @param commit
      * @param payload
      */
-    [aTypes.addStudent] : ( {state, commit}, payload )=>{
+    [aTypes.addStudent]: ( {state, commit}, payload ) => {
         /*
-        create a student object out of the payload.
-        the factory will not require any properties to
-        be set. That lets us use it in very incremental ways.
-        todo the factory will sanitize values
+         create a student object out of the payload.
+         the factory will not require any properties to
+         be set. That lets us use it in very incremental ways.
+         todo the factory will sanitize values
          */
         let student = Student.factory( payload )
-        let pl = new Payload();
-        pl.id = student.id;
-        pl.index = student.index;
-        pl.obj = student;
+        if ( student instanceof Student ) {
+            let pl = new Payload();
+            pl.id = student.id;
+            pl.index = student.index;
+            pl.obj = student;
+            commit( mTypes.setStudent, pl );
+        }
 
-        commit( mTypes.setStudent, pl );
+//todo error handling if a student wasn't returned
     }
 };
 

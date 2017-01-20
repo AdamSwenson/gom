@@ -11597,8 +11597,8 @@ var Student = function () {
         _classCallCheck(this, Student);
 
         this._email = '';
-        this._studentId = studentId;
-        this._studentIndex = null;
+        this._id = studentId;
+        this._index = null;
         this._studentIdentifier = null;
         this._lastName = '';
         this._firstName = '';
@@ -11653,18 +11653,18 @@ var Student = function () {
     }, {
         key: 'studentId',
         get: function get() {
-            return Number(this._studentId);
+            return Number(this._id);
         },
         set: function set(val) {
-            this._studentId = val;
+            this._id = val;
         }
     }, {
         key: 'studentIndex',
         get: function get() {
-            return Number(this._studentIndex);
+            return Number(this._index);
         },
         set: function set(val) {
-            this._studentIndex = val;
+            this._index = val;
         }
 
         /**

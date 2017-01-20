@@ -44,8 +44,9 @@ export const setQuestion = 'setQuestion'
 export const setNumberQuestions = 'setNumberQuestions'
 
 //students
-export const loadStudents = 'loadStudents'
 export const setStudent = 'setStudent'
+export const removeStudent = 'removeStudent'
+
 
 //times
 export const incrementGradingTime = 'incrementGradingTime'
