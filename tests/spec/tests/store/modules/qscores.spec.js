@@ -41,7 +41,7 @@ const makeTestPayload = function () {
 
 const makeMutationPayload = function () {
     let p = new Payload();
-   // let s = factories.studentFactory();
+    // let s = factories.studentFactory();
     p.index = faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
     p.index2 = faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
     p.id = faker.random.number();
@@ -66,17 +66,6 @@ fdescribe( "store | modules | ", function () {
         } );
 
         describe( "mutations | ", function () {
-            // describe( description( mTypes.loadQuestionScores ), function () {
-            //     it( "happy path | ", function () {
-            //         //call
-            //         mutations[ mTypes.loadQuestionScores ]( this.state, this.rootState, this.payload );
-            //
-            //         //check
-            //         //the object will be replaced by test
-            //         expect( this.state.questionScores ).toBe( this.payload );
-            //     } );
-            // } );
-
             describe( description( mTypes.setQuestionScore ), function () {
                 it( "happy path ", function () {
                     // console.log( 'spec.setQuestionScore', this.state, this.mutationPayload );
@@ -86,35 +75,77 @@ fdescribe( "store | modules | ", function () {
 
                     //call
                     mutations[ mTypes.setQuestionScore ]( this.state, this.rootState, this.mutationPayload );
-                    let result = this.state.questionScores[ studentIndex][ questionIndex ];
+                    let result = this.state.questionScores[ studentIndex ][ questionIndex ];
 
                     //check
-                     expect( result ).toBe( this.mutationPayload.num );
+                    expect( result ).toBe( this.mutationPayload.num );
                 } );
             } );
         } );
 
         describe( "actions | ", function () {
-
             describe( description( aTypes.loadQuestionScores ), function () {
-                it( "happy path | ", function () {
-                    let action = actions[ aTypes.loadQuestionScores ];
+                describe( "happy path | ", function () {
+                    it( "1 score to set", function () {
+                        let action = actions[ aTypes.loadQuestionScores ];
+                        let pay1 = makeTestPayload();
+                        console.log( 'pa1', pay1 );
+                        let pl1 = new Payload();
+                        pl1.index = pay1.studentIndex;
+                        pl1.index2 = pay1.questionIndex;
+                        pl1.num = pay1.score;
 
-                    testAction( action, this.payload, this.state, [ {
-                        type: mTypes.loadQuestionScores,
-                        payload: this.payload
-                    } ] );
+                        testAction( action, [pay1], this.state, [ {
+                            type: mTypes.setQuestionScore,
+                            payload: pl1
+                        } ] );
+                    } );
+
+                    it( "multiple scores to set", function () {
+                        let action = actions[ aTypes.loadQuestionScores ];
+
+                        let pay1 = makeTestPayload();
+                        console.log( 'pa1', pay1 );
+                        let pl1 = new Payload();
+                        pl1.index = pay1.studentIndex;
+                        pl1.index2 = pay1.questionIndex;
+                        pl1.num = pay1.score;
+
+                        let pay2 = makeTestPayload();
+                        let pl2 = new Payload();
+                        pl2.index = pay2.studentIndex;
+                        pl2.index2 = pay2.questionIndex;
+                        pl2.num = pay2.score;
+
+                        testAction( action, [pay1, pay2], this.state,
+                            [
+                                {
+                                    type: mTypes.setQuestionScore,
+                                    payload: pl1
+                                },
+                                {
+                                    type: mTypes.setQuestionScore,
+                                    payload: pl2
+                                }
+                            ] );
+                    } );
 
                 } );
+
             } );
 
             describe( description( aTypes.setQuestionScore ), function () {
                 it( "happy path ", function () {
                     let action = actions[ aTypes.setQuestionScore ];
 
+                    let pl = new Payload();
+                    pl.index = this.payload.studentIndex;
+                    pl.index2 = this.payload.questionIndex;
+                    pl.num = this.payload.score;
+
                     testAction( action, this.payload, this.state, [ {
                         type: mTypes.setQuestionScore,
-                        payload: this.payload
+                        payload: pl
                     } ] );
 
                 } );
@@ -130,10 +161,10 @@ fdescribe( "store | modules | ", function () {
         describe( "getters | ", function () {
             describe( "getQuestionScore | ", function () {
                 it( "happy path | ", function () {
-                    let expected = this.state.elementScores[ this.payload.studentIndex ][ this.payload.elementIndex ];
+                    let expected = this.state.questionScores[ this.payload.studentIndex ][ this.payload.questionIndex ];
 
                     //call
-                    let result = getters.getElementScore( this.state, {}, this.rootState, this.payload.studentIndex, this.payload.elementIndex );
+                    let result = getters.getQuestionScore( this.state, {}, this.rootState, this.payload.studentIndex, this.payload.questionIndex );
 
                     //check
                     expect( result ).toBe( expected );

@@ -40,7 +40,7 @@ const mutations = {
      * @param score
      */
     [mTypes.setQuestionScore]: ( state, rootState, payload ) => {
-        console.log( 'mutation.setQuestionScore', payload );
+        // console.log( 'mutation.setQuestionScore', payload );
         Payload.checkIfPayload( payload );
 
         let studentIndex = payload.index;
@@ -70,10 +70,8 @@ const mutations = {
 
 const actions = {
     /**
-     * Loads a json object of question scores.
-     * @todo might be better if didn't overwrite but rather iterate the incoming and update
-     * @todo This need not be limited to json objects
-     *
+     * Consumes an object of question scores and
+     * populates the store with them.
      */
     [aTypes.loadQuestionScores]: ( {state, commit}, payload ) => {
         for ( let i = 0; i < Object.keys( payload ).length; i++ ) {
@@ -94,6 +92,7 @@ const actions = {
         //todo add checking
         let pl = new Payload();
         pl.index = payload.studentIndex;
+        pl.index2 = payload.questionIndex;
         pl.num = payload.score;
 
         commit( mTypes.setQuestionScore, pl );
