@@ -11,6 +11,12 @@ export default class Payload {
         //the index value of the object
         this._index;
 
+        /**
+         * Where there is a compound index (e.g., obj[studentIndex][questionIndex],
+         * this holds the child value (i.e., questionIndex)
+         */
+        this._index2;
+
         /** The numeric value in the payload */
         this._num;
 
@@ -25,6 +31,7 @@ export default class Payload {
 
     }
 
+    /*  ************************* Identifier values ************************* */
     get id() {
         return this._id;
     }
@@ -43,7 +50,21 @@ export default class Payload {
         this._index = val;
     }
 
+    get index2() {
+        return this._index2;
+    }
+    set index2( val ) {
+        //todo numeric check
+        this._index2 = val;
+    }
+    //
+    // get complexIndex(){
+    //     if(typeof this._index2 != 'undefined'){
+    //         return this._index
+    //     }
+    // }
 
+    /*  ************************* Payload values ************************* */
     get num() {
         return this._num;
     }

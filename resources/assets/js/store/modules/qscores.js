@@ -4,6 +4,7 @@
 
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
+import Payload from '../models/Payload'
 
 const state = {
 
@@ -18,29 +19,51 @@ const state = {
 };
 
 const mutations = {
+    //
+    // /**
+    //  * Consume a json object and overwrite questionScores with the data
+    //  * @param state
+    //  * @param rootState
+    //  * @param payload Payload
+    //  */
+    // [mTypes.loadQuestionScores]: ( state, rootState, payload ) => {
+    //
+    //     state.questionScores = payload;
+    // },
 
     /**
-     * Consume a json object and overwrite questionScores with the data
-     * @param state
-     * @param rootState
-     * @param payload
-     */
-    [mTypes.loadQuestionScores]: ( state, rootState, payload ) => {
-        state.questionScores = payload;
-    },
-
-    /**
-     * Saves a question score for the student
+     * Saves a question score for the student.
+     * Overwrites any existing score
      * Original: data.this.questionScores[ Roster.activeStudent ][ qNumber - 1 ] = score;
      * @param studentIndex
      * @param questionIndex 0-based index of the question (i.e., questionNumber - 1
      * @param score
      */
     [mTypes.setQuestionScore]: ( state, rootState, payload ) => {
-        let {studentIndex, questionIndex, score} = payload;
+        console.log( 'mutation.setQuestionScore', payload );
+        Payload.checkIfPayload( payload );
 
-        state.questionScores[ studentIndex ][ questionIndex ] = score;
+        let studentIndex = payload.index;
+        let questionIndex = payload.index2;
+
+        state.questionScores[ studentIndex ][ questionIndex ] = payload.num;
+    },
+
+    /**
+     * Removes a score and its index from the question score store
+     * @param state
+     * @param rootState
+     * @param payload
+     */
+    [mTypes.removeQuestionScore]: ( state, rootState, payload ) => {
+        Payload.checkIfPayload( payload );
+
+        let studentIndex = payload.index;
+        let questionIndex = payload.index2;
+
+        state.questionScores[ studentIndex ][ questionIndex ] = payload.num;
     }
+
 
 
 };
@@ -50,16 +73,18 @@ const actions = {
      * Loads a json object of question scores.
      * @todo might be better if didn't overwrite but rather iterate the incoming and update
      * @todo This need not be limited to json objects
-     * @param questionScoresJSON
+     *
      */
-        [aTypes.loadQuestionScores]( {state, commit}, questionScoresJSON )
-    {
-        commit( mTypes.loadQuestionScores, questionScoresJSON );
+    [aTypes.loadQuestionScores]: ( {state, commit}, payload ) => {
+        for ( let i = 0; i < Object.keys( payload ).length; i++ ) {
+            actions[ aTypes.setQuestionScore ]( {state, commit}, payload[ i ] );
+        }
     },
 
 
     /**
      * Saves a question score for the student
+     * Overwrites existing score
      * Original: data.this.questionScores[ Roster.activeStudent ][ qNumber - 1 ] = score;
      * @param studentIndex
      * @param questionIndex 0-based index of the question (i.e., questionNumber - 1
@@ -67,18 +92,20 @@ const actions = {
      */
     [aTypes.setQuestionScore]: ( {state, commit}, payload ) => {
         //todo add checking
+        let pl = new Payload();
+        pl.index = payload.studentIndex;
+        pl.num = payload.score;
 
-        commit(mTypes.setQuestionScore, payload);
-
+        commit( mTypes.setQuestionScore, pl );
     },
+
     /**
      * Save a question score for the currently active student
      * @param state
      * @param commit
      * @param payload
      */
-        [aTypes.storeQuestionScoreForActiveStudent]( {state, commit}, payload )
-    {
+    [aTypes.storeQuestionScoreForActiveStudent]: ( {state, commit}, payload ) => {
         // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
         let {questionIndex, score} = payload;
         let studentIndex = this.activeStudentIndex;

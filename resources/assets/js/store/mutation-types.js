@@ -33,9 +33,8 @@ export const loadStandardGrades = 'loadStandardGrades'
 export const setGrade = 'setGrade'
 
 //qscores
-export const loadQuestionScores = 'loadQuestionScores'
 export const setQuestionScore = 'setQuestionScore'
-
+export const removeQuestionScore = 'removeQuestionScore'
 
 //questions
 export const loadQuestions = 'loadQuestions'

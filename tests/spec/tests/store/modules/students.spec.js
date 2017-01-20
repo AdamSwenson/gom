@@ -84,7 +84,7 @@ let obj = students.default;
 let {getters, actions, mutations} = obj;
 
 
-fdescribe( "store | modules | ", function () {
+describe( "store | modules | ", function () {
     describe( "students | ", function () {
         beforeEach( function () {
             this.state = makeState();

@@ -8,6 +8,8 @@ import {testAction, description, factories} from '../../../helpers/vuex.spec.hel
 import * as qscores from '../../../../../resources/assets/js/store/modules/qscores';
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
+import Payload from '../../../../../resources/assets/js/store/models/Payload'
+
 
 const makeState = ( n = 5 ) => {
     let s = makeRootState();
@@ -37,43 +39,57 @@ const makeTestPayload = function () {
     };
 };
 
+const makeMutationPayload = function () {
+    let p = new Payload();
+   // let s = factories.studentFactory();
+    p.index = faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
+    p.index2 = faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
+    p.id = faker.random.number();
+    p.num = faker.random.number();
+    p.obj = {};
+    return p;
+};
+
 
 //tested object
 let obj = qscores.default;
 //tested methods
 let {getters, actions, mutations} = obj;
 
-
-describe( "store | modules | ", function () {
+fdescribe( "store | modules | ", function () {
     describe( "qscores | ", function () {
         beforeEach( function () {
             this.state = makeState();
             this.rootState = makeRootState();
             this.payload = makeTestPayload();
+            this.mutationPayload = makeMutationPayload();
         } );
 
         describe( "mutations | ", function () {
-            describe( description( mTypes.loadQuestionScores ), function () {
-                it( "happy path | ", function () {
-                    //call
-                    mutations[ mTypes.loadQuestionScores ]( this.state, this.rootState, this.payload );
-
-                    //check
-                    //the object will be replaced by test
-                    expect( this.state.questionScores ).toBe( this.payload );
-                } );
-            } );
+            // describe( description( mTypes.loadQuestionScores ), function () {
+            //     it( "happy path | ", function () {
+            //         //call
+            //         mutations[ mTypes.loadQuestionScores ]( this.state, this.rootState, this.payload );
+            //
+            //         //check
+            //         //the object will be replaced by test
+            //         expect( this.state.questionScores ).toBe( this.payload );
+            //     } );
+            // } );
 
             describe( description( mTypes.setQuestionScore ), function () {
-                it( "happy path | ", function () {
-                    console.log( this.state, this.payload );
-                    //call
-                    mutations[ mTypes.setQuestionScore ]( this.state, this.rootState, this.payload );
+                it( "happy path ", function () {
+                    // console.log( 'spec.setQuestionScore', this.state, this.mutationPayload );
 
-//check
-                    let result = this.state.questionScores[ this.payload.studentIndex ][ this.payload.questionIndex ];
-                    let expected = this.payload[ this.payload.studentIndex ][ this.payload.questionIndex ];
-                    expect( result ).toBe( this.payload );
+                    let studentIndex = this.mutationPayload.index;
+                    let questionIndex = this.mutationPayload.index2;
+
+                    //call
+                    mutations[ mTypes.setQuestionScore ]( this.state, this.rootState, this.mutationPayload );
+                    let result = this.state.questionScores[ studentIndex][ questionIndex ];
+
+                    //check
+                     expect( result ).toBe( this.mutationPayload.num );
                 } );
             } );
         } );
@@ -93,7 +109,7 @@ describe( "store | modules | ", function () {
             } );
 
             describe( description( aTypes.setQuestionScore ), function () {
-                it( "happy path | ", function () {
+                it( "happy path ", function () {
                     let action = actions[ aTypes.setQuestionScore ];
 
                     testAction( action, this.payload, this.state, [ {
