@@ -5,49 +5,54 @@
 
 export const addStudent = 'addStudent'
 
+//activeexam
+export const setActiveExam = 'setActiveExam'
+export const clearActiveExam = 'clearActiveExam'
 
-//grade.activestudent
+//activestudent
 export const setActiveStudent = 'setActiveStudent'
 export const setActiveStudentId = 'setActiveStudentId'
 export const setActiveStudentIndex = 'setActiveStudentIndex'
 export const setActiveStudentObject = 'setActiveStudentObject'
 export const setActiveStudentTime = 'setActiveStudentTime'
 
-//grades comments
+//comments
 export const storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent'
 export const storeCommentText = 'storeCommentText'
 
-//grades.times
-export const storeStudentGradingTime = 'storeStudentGradingTime'
-export const increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime'
-
-
-//grades.escores
+//escores
 export const storeElementScore = 'storeElementScore'
 export const storeElementScoreForActiveStudent = 'storeElementScoreForActiveStudent'
-
-//grade.grades
-export const loadExamGrades = 'loadExamGrades'
-export const loadStandardGrades = 'loadStandardGrades'
-export const updateExamGrade = 'updateExamGrade'
-
-//grade.qscores
-export const loadQuestionScores = 'loadQuestionScores'
-export const storeQuestionScoreForActiveStudent = 'storeQuestionScoreForActiveStudent'
-
-//grade.questions
-export const loadMaxQuestionScores = 'loadMaxQuestionScores'
-export const loadQuestions = 'loadQuestions'
-export const loadNumberQuestions = 'loadNumberQuestions'
-export const addQuestion = 'addQuestion'
-
-//grade.students
-export const loadStudents = 'loadStudents'
 
 //exams
 export const addNewExam = 'addNewExam'
 export const loadExams = 'loadExams'
 
-//activeexam
-export const setActiveExam = 'setActiveExam'
-export const clearActiveExam = 'clearActiveExam'
+
+
+//grades
+export const loadExamGrades = 'loadExamGrades'
+export const loadStandardGrades = 'loadStandardGrades'
+export const updateExamGrade = 'updateExamGrade'
+
+//qscores
+export const loadQuestionScores = 'loadQuestionScores'
+export const setQuestionScore = 'setQuestionScore'
+export const storeQuestionScoreForActiveStudent = 'storeQuestionScoreForActiveStudent'
+
+
+//questions
+export const loadMaxQuestionScores = 'loadMaxQuestionScores'
+export const loadQuestions = 'loadQuestions'
+export const loadNumberQuestions = 'loadNumberQuestions'
+export const addQuestion = 'addQuestion'
+
+//students
+export const loadStudents = 'loadStudents'
+
+
+//times
+export const storeGradingTime = 'storeGradingTime'
+export const increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime'
+export const incrementGradingTime = 'incrementGradingTime'
+export const loadGradingTimes = 'loadGradingTimes'

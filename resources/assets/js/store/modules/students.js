@@ -6,6 +6,7 @@
  * Created by adam on 10/7/16.
  */
 import Student from '../models/Student'
+import Payload from '../models/Payload'
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
 
@@ -21,25 +22,27 @@ const state = {
 const mutations = {
 
     /**
-     * Populate the state.students object with a json of students
-     * @param state
-     * @param payload
-     */
-        [mTypes.populateStudents](state, rootState, payload)
-    {
-        state.students = payload;
-    },
-
-    /**
-     * Updates a student record in state.students
+     * Adds or updates a student record in state.students
      * @param state
      * @param rootState
      * @param payload
      */
-        [mTypes.setStudent](state, rootState, payload)
-    {
-        let {studentIndex, studentObject} = payload;
-        state.students[studentIndex] = studentObject;
+    [mTypes.setStudent]: ( state, rootState, payload ) => {
+        //require payload type
+        if(! payload instanceof Payload){
+            //todo other vals
+            let {studentIndex, studentObject} = payload;
+            state.students[ studentIndex ] = studentObject;
+        }
+
+        else if(payload.obj instanceof Student){
+            state.students[ payload.index ] = payload.obj;
+        }
+
+        else{
+//?
+        }
+
     }
 
 
@@ -48,17 +51,14 @@ const mutations = {
 const actions = {
 
     /**
-     * Consume a json object and populate state.students by overwriting
-     * TODO fix so doesn't just overwrite
+     * Consume a json object and populate state.students
+     *
      * @param state
      * @param payload
      */
-        [aTypes.loadStudents]({state, commit}, payload)
-    {
-        for (let i = 0; i < Object.keys(payload).length; i++) {
-            let s = payload[Object.keys(payload)[i]];
-            this[aTypes.addStudent]({state, commit}, {index: s.studentIndex, content: s});
-            // state.students[s.studentIndex] = Student.factory(s);
+    [aTypes.loadStudents] : ( {state, commit}, payload ) => {
+        for ( let i = 0; i < Object.keys( payload ).length; i++ ) {
+            actions[ aTypes.addStudent ]( {state, commit}, payload );
         }
     },
 
@@ -68,14 +68,20 @@ const actions = {
      * @param commit
      * @param payload
      */
-        [aTypes.addStudent]({state, commit}, payload)
-    {
-        let {index, content} = payload;
-        let out = {
-            studentIndex: index,
-            studentObject: Student.factory(content)
-        };
-        commit(mTypes.setStudent, out);
+    [aTypes.addStudent] : ( {state, commit}, payload )=>{
+        /*
+        create a student object out of the payload.
+        the factory will not require any properties to
+        be set. That lets us use it in very incremental ways.
+        todo the factory will sanitize values
+         */
+        let student = Student.factory( payload )
+        let pl = new Payload();
+        pl.id = student.id;
+        pl.index = student.index;
+        pl.obj = student;
+
+        commit( mTypes.setStudent, pl );
     }
 };
 
@@ -89,8 +95,8 @@ const getters = {
      * @param studentIndex
      * @returns {*}
      */
-    getStudent(state, getters, studentIndex) {
-        return state.students[studentIndex];
+    getStudent: ( state, getters, rootState, studentIndex ) => {
+        return state.students[ studentIndex ];
     },
 
 
@@ -103,7 +109,7 @@ const getters = {
      *      lastName
      * @returns {*}
      */
-    getStudents(state, getters) {
+    getStudents: ( state, getters, rootState ) => {
         return state.students;
     }
 }

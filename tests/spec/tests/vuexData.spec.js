@@ -128,7 +128,7 @@ xdescribe( "vuex.Data.js | ", function () {
             } );
         } );
 
-        describe( "storeStudentGradingTime | ", function () {
+        describe( "storeGradingTime | ", function () {
             describe( "Happy paths | ", function () {
                 beforeEach( function () {
                     this.object.loadGradingTimes( this.defaults.examGradingTimes );
@@ -150,14 +150,14 @@ xdescribe( "vuex.Data.js | ", function () {
                 //     let testVal = faker.random.number();
                 //
                 //     //call
-                //     this.object.storeStudentGradingTime( this.activeStudent, testVal );
+                //     this.object.storeGradingTime( this.activeStudent, testVal );
                 //
                 //     //check
                 //     expect( this.object.getStudentGradingTime(this.activeStudent)) .toBe( testVal );
                 // } );
             } );
 
-            describe( "increaseStudentGradingTime | ", function () {
+            describe( "incrementGradingTime | ", function () {
                 describe( "Happy paths | ", function () {
                     beforeEach( function () {
                         this.object.loadGradingTimes( this.defaults.examGradingTimes );
@@ -179,7 +179,7 @@ xdescribe( "vuex.Data.js | ", function () {
                     //     let testVal = 41;
                     //
                     //     //call
-                    //     this.object.increaseStudentGradingTime( this.activeStudent, testVal );
+                    //     this.object.incrementGradingTime( this.activeStudent, testVal );
                     //
                     //     //check
                     //     expect( this.object.getStudentGradingTime(this.activeStudent)).toBe( testVal + existingVal );
@@ -248,7 +248,7 @@ xdescribe( "vuex.Data.js | ", function () {
         it( "getQuestionScore ", function () {
         } );
 
-        it( "storeQuestionScore ", function () {
+        it( "setQuestionScore ", function () {
         } );
     } );
 

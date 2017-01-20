@@ -70,6 +70,15 @@ export default class Student {
         this._studentIndex = val;
     }
 
+    static get fillable(){
+        return [
+            'firstName',
+            'lastName',
+            'studentId',
+            'studentIdentifier',
+            'studentIndex',
+        ]
+    }
     /**
      * Takes the json student object received from the server and
      * returns a Student object
@@ -77,18 +86,28 @@ export default class Student {
      * @returns {Student}
      */
     static factory( studentJson ) {
-        if ( ! studentJson || ! studentJson.studentId ) throw new Error( "studentJson had no id" );
+        // if ( ! studentJson || ! studentJson.studentId ) throw new Error( "studentJson had no id" );
+        // console.log('sj', studentJson );
+        let student = new Student(  );
 
-        let student = new Student( studentJson.studentId );
+        let fields = Student.fillable;
+        for(let i=0; i<fields.length; i++){
+            let v = studentJson[fields[i]];
+            // console.log( 'v', v );
+            if(typeof v != 'undefined' ){
+                student[fields[i]] = v;
+            }
+        }
         // window.console.log( 'factory', student, studentJson.studentId );
-        student.firstName = studentJson.firstName;
-        student.lastName = studentJson.lastName;
-        student.studentIndex = studentJson.studentIndex;
-        student.studentIdentifier = studentJson.studentIdentifier;
+        // student.firstName = studentJson.firstName;
+        // student.lastName = studentJson.lastName;
+        // student.studentIndex = studentJson.studentIndex;
+        // student.studentIdentifier = studentJson.studentIdentifier;
         // for ( let i = 0; i < Object.keys( student ).length; i ++ ) {
         //     let key = Object.keys( student )[ i ];
         //     student[ key ] = studentJson[ key ];
         // }
+        console.log( 'student', student );
         return student;
     }
 }

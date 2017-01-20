@@ -32,11 +32,11 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [mTypes.populateQuestions](state, rootState, payload) {
+    [mTypes.loadQuestions]: ( state, rootState, payload ) => {
         state.questions = payload;
     },
 
-    [mTypes.populateMaxQuestionScores](state, rootState, payload){
+    [mTypes.loadMaxQuestionScores]: ( state, rootState, payload ) => {
         state.maxQuestionScores = payload;
     },
 
@@ -46,10 +46,9 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [mTypes.setQuestion](state, rootState, payload)
-    {
+    [mTypes.setQuestion]: ( state, rootState, payload ) => {
         let {questionIndex, questionObject} = payload;
-        state.questions[questionIndex] = questionObject;
+        state.questions[ questionIndex ] = questionObject;
     },
 
     /**
@@ -60,25 +59,29 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [mTypes.setNumberQuestions](state, rootState, payload)
-    {
-        if(Number.isInteger(payload)){
+    [mTypes.setNumberQuestions]: ( state, rootState, payload ) => {
+        if ( Number.isInteger( payload ) ) {
             state.numberQuestions = payload;
         }
-        else{
+        else {
             //count the questions
-            state.numberQuestions = Object(state.questions).keys().length
+            state.numberQuestions = Object( state.questions ).keys().length
         }
     }
 };
 
 const actions = {
-    [aTypes.addQuestion]({state, commit}, payload)
-    {
+    /**
+     * Add a new question to the store of questions
+     * @param state
+     * @param commit
+     * @param payload
+     */
+    [aTypes.addQuestion]: ( {state, commit}, payload ) => {
         let {questionIndex, content} = payload;
-        let question = Question.factory(content, questionIndex);
-        let out = { questionIndex: questionIndex, questionObject: question};
-        commit(mTypes.setQuestion, out);
+        let question = Question.factory( content, questionIndex );
+        let out = {questionIndex: questionIndex, questionObject: question};
+        commit( mTypes.setQuestion, out );
     },
 
     /**
@@ -86,19 +89,19 @@ const actions = {
      * Format: { questionIndex: maxScore, ....}
      * @param maxScores
      */
-        [aTypes.loadMaxQuestionScores]({state, commit}, maxScores)
-    {
-        commit(mTypes.populateQuestionScores, maxScores);
+    [aTypes.loadMaxQuestionScores]: ( {state, commit}, payload ) => {
+        commit( mTypes.loadMaxQuestionScores, payload );
     },
 
     /**
      * Loads a json object of questions
+     * @param payload questionsJson
      */
-        [aTypes.loadQuestions]({state, commit}, questionsJson) {
-        for (let i = 0; i < Object.keys(questionsJson).length; i++) {
-            let index = Object.keys(questionsJson)[i];
-            let s = questionsJson[index];
-            state.questions[index] = Question.factory(s, index);
+    [aTypes.loadQuestions]: ( {state, commit}, payload ) => {
+        for ( let i = 0; i < Object.keys( payload ).length; i++ ) {
+            let index = Object.keys( payload )[ i ];
+            let s = payload[ index ];
+            state.questions[ index ] = Question.factory( s, index );
         }
     },
 
@@ -109,8 +112,8 @@ const actions = {
      * @param commit
      * @param numberQuestionsOnExam
      */
-    [aTypes.loadNumberQuestions]({state, commit}, numberQuestionsOnExam) {
-        state.numberQuestions = numberQuestionsOnExam;
+    [aTypes.loadNumberQuestions]: ( {state, commit}, payload ) => {
+        state.numberQuestions = payload;
     },
 };
 
@@ -121,8 +124,8 @@ const getters = {
      * @param questionIndex
      * @returns {*}
      */
-    getQuestion(state, getters, rootState, questionIndex) {
-        return state.questions[questionIndex];
+    getQuestion: ( state, getters, rootState, questionIndex ) => {
+        return state.questions[ questionIndex ];
     },
 
     /**
@@ -130,8 +133,8 @@ const getters = {
      * @param questionIndex
      * @returns {*}
      */
-    getMaxQuestionScore(state, getters, rootState, questionIndex) {
-        return state.maxQuestionScores[questionIndex];
+    getMaxQuestionScore: ( state, getters, rootState, questionIndex ) => {
+        return state.maxQuestionScores[ questionIndex ];
     }
 };
 

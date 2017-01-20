@@ -22,37 +22,40 @@ export const loadStockComments = 'loadStockComments'
 
 
 
-//grade.escores
+//escores
 export const loadElementScores = 'loadElementScores'
 export const setElementScore = 'setElementScore'
 
 
-//grade.grades
+//grades
 export const loadExamGrades = 'loadExamGrades'
 export const loadStandardGrades = 'loadStandardGrades'
 export const setGrade = 'setGrade'
 
-//grade.qscores
-export const populateQuestionScores = 'populateQuestionScores'
-export const storeQuestionScore = 'storeQuestionScore'
+//qscores
+export const loadQuestionScores = 'loadQuestionScores'
+export const setQuestionScore = 'setQuestionScore'
 
 
-//grade.questions
-export const populateQuestions = 'populateQuestions'
-export const populateMaxQuestionScores = 'populateMaxQuestionScores'
+//questions
+export const loadQuestions = 'loadQuestions'
+export const loadMaxQuestionScores = 'loadMaxQuestionScores'
 export const setQuestion = 'setQuestion'
+export const setNumberQuestions = 'setNumberQuestions'
 
-//grade.students
-export const populateStudents = 'populateStudents'
+//students
+export const loadStudents = 'loadStudents'
 export const setStudent = 'setStudent'
 
-//grade.times
-export const loadGradingTimes = 'loadGradingTimes'
-export const increaseStudentGradingTime = 'increaseStudentGradingTime'
-
-
-export const addGradingTime = 'addGradingTime'
+//times
+export const incrementGradingTime = 'incrementGradingTime'
+export const setGradingTime = 'setGradingTime'
 export const removeGradingTime = 'removeGradingTime'
+export const resetGradingTime = 'resetGradingTime'
+
+
+
+
 
 export const setExam = 'setExam';
 

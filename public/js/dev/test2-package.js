@@ -12680,7 +12680,7 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.increaseActiveStu
 
     // studentIndex, activeStudentTime
     payload = { studentIndex: 2, timeToAdd: 3.4 };
-    commit('addGradingTime', payload);
+    commit('setGradingTime', payload);
     //        state.examGradingTimes[studentIndex] = activeStudentTime;
 }), _defineProperty(_actions, types.increaseStudentGradingTime, function (_ref3, payload) {
     var commit = _ref3.commit;

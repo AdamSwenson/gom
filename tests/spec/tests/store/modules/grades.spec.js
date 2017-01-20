@@ -1,5 +1,5 @@
-require('jasmine-jquery');
-require('sinon');
+require( 'jasmine-jquery' );
+require( 'sinon' );
 let faker = require( 'faker' );
 
 import {testAction, description, factories} from '../../../helpers/vuex.spec.helpers';
@@ -42,89 +42,103 @@ let obj = grades.default;
 let {getters, actions, mutations} = obj;
 
 
-fdescribe("store.modules | ", function() {
-    describe("grades | ", function(){
+describe( "store.modules | ", function () {
+    describe( "grades | ", function () {
         beforeEach( function () {
             this.state = makeState();
             this.rootState = makeRootState();
             this.payload = makeTestPayload();
         } );
 
-        describe("mutations | ", function() {
-            describe(description(mTypes.loadExamGrades) , function(){
-                it("happy path | ", function(){
+        describe( "mutations | ", function () {
+            describe( description( mTypes.loadExamGrades ), function () {
+                it( "happy path | ", function () {
                     let test = 'jjj';
-                    mutations[mTypes.loadExamGrades](this.state, this.rootState, test);
-                    expect(this.state.examGrades).toBe(test);
-                });
-            });
+                    mutations[ mTypes.loadExamGrades ]( this.state, this.rootState, test );
+                    expect( this.state.examGrades ).toBe( test );
+                } );
+            } );
 
-            describe(description(mTypes.loadStandardGrades) , function() {
-                it("happy path | ", function(){
+            describe( description( mTypes.loadStandardGrades ), function () {
+                it( "happy path | ", function () {
                     let test = 'jjj';
-                    mutations[mTypes.loadStandardGrades](this.state, this.rootState, test);
-                    expect(this.state.standardGrades).toBe(test);
-                });
-            });
+                    mutations[ mTypes.loadStandardGrades ]( this.state, this.rootState, test );
+                    expect( this.state.standardGrades ).toBe( test );
+                } );
+            } );
 
-            describe(description(mTypes.setGrade) , function() {
-                it("happy path | ", function(){
-                    mutations[mTypes.setGrade](this.state, this.rootState, this.payload);
-                    expect(this.state.examGrades[this.payload.studentIndex]).toBe(this.payload.score);
-                });
-            });
+            describe( description( mTypes.setGrade ), function () {
+                it( "happy path | ", function () {
+                    mutations[ mTypes.setGrade ]( this.state, this.rootState, this.payload );
+                    expect( this.state.examGrades[ this.payload.studentIndex ] ).toBe( this.payload.score );
+                } );
+            } );
 
-        });
+        } );
 
-        describe("actions | ", function(){
+        describe( "actions | ", function () {
 
-            describe(description(aTypes.loadExamGrades) , function(){
-                xit("happy path | ", function(){
+            describe( description( aTypes.loadExamGrades ), function () {
+                it( "happy path | ", function () {
+                    let action = actions[ aTypes.loadExamGrades ];
+
+                    testAction( action, this.payload, this.state, [ {
+                        type: mTypes.loadExamGrades,
+                        payload: this.payload
+                    } ] );
+                } );
+            } );
+
+
+            describe( description( aTypes.loadStandardGrades ), function () {
+                it( "happy path | ", function () {
+                    let action = actions[ aTypes.loadStandardGrades ];
+
+                    testAction( action, this.payload, this.state, [ {
+                        type: mTypes.loadStandardGrades,
+                        payload: this.payload
+                    } ] );
+                } );
+            } );
+
+
+            //THIS IS THE MOST IMPORTANT METHOD
+            describe( description( aTypes.updateExamGrade ), function () {
+                xit( "happy path | ", function () {
                     //todo
-                });
-            });
+                } );
+            } );
+
+        } );
 
 
-            describe(description(aTypes.loadStandardGrades) , function(){
-                xit("happy path | ", function(){
+        describe( "getters | ", function () {
+            describe( "getExamGrade | ", function () {
+                it( "happy path | ", function () {
+                    let result = getters.getExamGrade( this.state, {}, this.rootState, this.payload.studentIndex )
+                    expect( result ).toBe( this.state.examGrades[ this.payload.studentIndex ] )
+                } );
+            } );
+
+            describe( "getStandardGrades | ", function () {
+                it( "happy path | ", function () {
+                    let result = getters.getStandardGrades( this.state, {}, this.rootState )
+                    expect( result ).toBe( this.state.standardGrades );
+                } );
+            } );
+
+            describe( "getGrade | ", function () {
+                it( "happy path | ", function () {
+                    let result = getters.getStandardGrades( this.state, {}, this.rootState )
+                    expect( result ).toBe( this.state.standardGrades );
+                } );
+            } );
+            describe( "getExamGradeForActiveStudent | ", function () {
+                xit( "happy path | ", function () {
                     //todo
-                });
-            });
-
-
-            describe(description(aTypes.updateExamGrade) , function(){
-                xit("happy path | ", function(){
-                    //todo
-                });
-            });
-
-        });
-
-        
-        describe("getters | ", function(){
-            describe("getExamGrade | ", function(){
-                xit("happy path | ", function(){
-                    //todo
-                });
-            });
-
-            describe("getStandardGrades | ", function(){
-                xit("happy path | ", function(){
-                    //todo
-                });
-            });
-            
-            describe("getGrade | ", function(){
-                xit("happy path | ", function(){
-                    //wrapper around getStandardGrades
-                    //todo
-                });
-            });
-            describe("getExamGradeForActiveStudent | ", function(){
-                xit("happy path | ", function(){
-                    //todo
-                });
-            });
-        });
-    });
-});
+                } );
+            } );
+        } );
+    } );
+} )
+;

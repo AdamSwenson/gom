@@ -1,74 +1,238 @@
 //test libraries
-require('jasmine-jquery');
-require('sinon');
+require( 'jasmine-jquery' );
+require( 'sinon' );
+let faker = require( 'faker' );
+
+import {testAction, description, factories} from '../../../helpers/vuex.spec.helpers';
 
 //Dependencies
 import * as times from '../../../../../resources/assets/js/store/modules/times';
-
-import * as types from '../../../../../resources/assets/js/store/mutation-types'
+import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
+import Payload from '../../../../../resources/assets/js/store/models/Payload'
+
+const makeState = ( n = 5 ) => {
+    let s = makeRootState();
+    //
+    for ( let i = 0; i < n; i++ ) {
+        s.examGradingTimes[ i ] = faker.random.number();
+    }
+
+    return s;
+};
+
+const makeRootState = function () {
+    return {
+        examGradingTimes: {}
+    };
+};
+
+const makeTestPayload = function () {
+    return {
+        studentIndex: faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] ),
+        timeToAdd: faker.random.number()
+    };
+};
+
+const makeMutationPayload = function () {
+    let p = new Payload();
+    p.index = faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
+    p.num = faker.random.number();
+    return p;
+};
+
+//tested object
+let obj = times.default;
+//tested methods
+let {getters, actions, mutations} = obj;
 
 
-import {makeState} from '../../../helpers/vuex.spec.helpers';
-import {makeRootState} from '../../../helpers/vuex.spec.helpers';
-import {testAction} from '../../../helpers/vuex.spec.helpers';
-import {description} from '../../../helpers/vuex.spec.helpers';
+describe( "store | modules | ", function () {
+    describe( description( "times" ), function () {
+        beforeEach( function () {
+            this.state = makeState();
+            this.rootState = makeRootState();
+            this.payload = makeTestPayload();
+        } );
 
-describe("store | modules | ", () => {
-    describe(description("grade.times"), () => {
-        beforeAll(function () { //runs once before all tests
-        });
-        afterEach(function () {//runs after each test
-        });
-        beforeEach(function () {//runs before each test
-        });
+        describe( description( "mutations" ), function () {
+            beforeEach( function () {
+                this.mutationPayload = makeMutationPayload();
+            } );
 
+            describe( description( mTypes.setGradingTime ), function () {
+                it( "happy path | ", function () {
+                    let prevVal = this.state[ this.mutationPayload.index ];
+                    let expected = prevVal + this.mutationPayload.val;
+                    mutations[ mTypes.setGradingTime ]( this.state, this.mutationPayload );
+                    //check that overwrites
+                    expect( this.state[ this.mutationPayload.index ] ).toBe( this.expected );
+                } );
+            } );
 
-        describe(description("mutations"), () => {
-            //
-            // if (typeof(payload.studentIndex) != 'undefined' && typeof(payload.timeToAdd) != 'undefined') {
-            //     let studentIndex = payload.studentIndex;
-            //     let timeToAdd = payload.timeToAdd;
-            //     state.examGradingTimes[studentIndex] += timeToAdd;
-            // }
-            // //add processing from other allowed input configs
-
-
-            describe(description(types.removeGradingTime), () => {
-            });
-
-            /**
-             * Sets the grading time data from the server
-             * @param examGradingTimes JSON object
-             */
-            describe(description(types.loadGradingTimes), () => {
-            });
+            describe( description( mTypes.incrementGradingTime ), function () {
+                it( "happy path | ", function () {
+                    let prevVal = this.state[ this.mutationPayload.index ];
+                    let expected = prevVal + this.mutationPayload.val;
+                    mutations[ mTypes.setGradingTime ]( this.state, this.mutationPayload );
+                    //check that overwrites
+                    expect( this.state[ this.mutationPayload.index ] ).toBe( this.expected );
+                } );
+            } );
 
 
-        });
+            describe( description( mTypes.removeGradingTime ), function () {
+                it( "happy path | ", function () {
+                    mutations[ mTypes.removeGradingTime ]( this.state, this.mutationPayload );
+                    //check
+                    expect( this.state[ this.mutationPayload.index ] ).toBe( undefined );
+                    //  expect( this.state.indexOf(this.mutationPayload.index)).toBe( -1 );
+                } );
+            } );
 
-        describe("actions | ", () => {
 
-            describe(aTypes.increaseActiveStudentGradingTime, () => {
-            });
-            describe(types.storeStudentGradingTime, () => {
-            });
+            describe( description( mTypes.resetGradingTime ), function () {
+                it( "happy path | ", function () {
+                    mutations[ mTypes.resetGradingTime ]( this.state, this.mutationPayload );
+                    //check
+                    expect( this.state.examGradingTimes[ this.mutationPayload.index ] ).toBe( 0 );
+                 } );
+            } );
 
-            describe(types.increaseStudentGradingTime, () => {
-            });
-        });
 
-        describe("getters | ", () => {
 
-            describe("getTotalGradingTime", () => {
-            });
+        } );
 
-            describe("getStudentGradingTime", () => {
-            });
+        describe( "actions | ", function () {
 
-            describe("getActiveStudentGradingTime", () => {
-            });
-        });
+            describe( description( aTypes.increaseActiveStudentGradingTime ), function () {
 
-    });
-});
+                xit( "happy path | ", function () {
+                    //todo
+                } );
+            } );
+
+            describe( description( aTypes.storeGradingTime ), function () {
+
+                xit( "happy path | ", function () {
+                    //todo
+                } );
+            } );
+
+            describe( description( aTypes.incrementGradingTime ), function () {
+
+                it( "happy path | ", function () {
+                    let pl = makeTestPayload();
+                    let expected = Payload.factory( {index: pl.studentIndex, num: pl.timeToAdd} );
+
+                    // console.log( expected, pl );
+                    let action = actions[ aTypes.incrementGradingTime ];
+
+                    testAction( action, pl, this.state, [
+                        {
+                            type: mTypes.incrementGradingTime,
+                            payload: expected
+                        }
+                    ] );
+                } );
+
+            } );
+
+            describe( description( aTypes.loadGradingTimes ), function () {
+
+                it( "happy path | ", function () {
+
+                    it( "happy path | ", function () {
+                        let pl = [ makeMutationPayload(), makeMutationPayload() ];
+                        pl[ 0 ].index = 0;
+                        pl[ 1 ].index = 1;
+
+                        let expectedMutations = [
+                            {
+                                type: mTypes.setGradingTime,
+                                payload: pl[ 0 ]
+                            },
+                            {
+                                type: mTypes.setGradingTime,
+                                payload: pl[ 1 ]
+                            }
+                        ];
+
+                        let action = obj[ aTypes.loadGradingTimes ]
+
+                        testAction( action, pl, this.state, expectedMutations );
+
+                    } );
+
+                } );
+            } );
+        } );
+
+        describe( "getters | ", function () {
+            beforeEach( function () {
+                this.testIndex = 2;
+                this.testTime = faker.random.number();
+                this.get = {
+                    getActiveStudentIndex: ()=>{
+                        return this.testIndex;
+                    }, getStudentGradingTime: ()=>{
+
+                        // console.log( 'gsgt', this.testTime );
+                        return this.testTime;
+                    }
+                };
+                this.getters = {
+                    getStudentGradingTime: ()=>{
+                        // console.log( 'gsgt', this.testTime );
+                        return this.testTime;
+                    }
+                };
+            } );
+
+            describe( description( "getTotalGradingTime" ), function () {
+
+                xit( "happy path | ", function () {
+                    //todo
+                } );
+            } );
+
+            describe( description( "getStudentGradingTime" ), function () {
+
+                it( "happy path | ", function () {
+                    //call
+                    let result = getters.getStudentGradingTime( this.state, {}, this.testIndex );
+                    //check
+                    let expected = this.state.examGradingTimes[ this.testIndex ];
+                    expect( result ).toBe( expected );
+                } );
+            } );
+
+            describe( "getActiveStudentGradingTime", function () {
+                beforeEach( function () {
+                    this.testIndex = 2;
+                } );
+
+                describe( "happy path | ", function () {
+                    it( "active student set | ", function () {
+                        this.state.activeStudentIndex = this.testIndex;
+                        //call
+                        let result = getters.getActiveStudentGradingTime( this.state, this.get );
+                        //check
+                        let expected = this.state.examGradingTimes[ this.testIndex ];
+                        expect( result ).toBe( expected )
+                    } );
+
+                    it( "No active student set | ", function () {
+                        this.state.activeStudentIndex = null;
+                        //call
+                        let result = getters.getActiveStudentGradingTime( this.state, this.get );
+                        //check
+                        let expected = ''
+                        expect( result ).toBe( expected )
+                    } );
+                } );
+            } );
+        } );
+
+    } );
+} );

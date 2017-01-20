@@ -534,7 +534,7 @@ var Store = function () {
          */
 
     }, {
-        key: 'storeStudentGradingTime',
+        key: 'storeGradingTime',
         value: function storeStudentGradingTime(studentIndex, activeStudentTime) {
             this.examGradingTimes[studentIndex] = activeStudentTime;
         }
@@ -613,7 +613,7 @@ var Store = function () {
          */
 
     }, {
-        key: 'storeQuestionScore',
+        key: 'setQuestionScore',
         value: function storeQuestionScore(studentIndex, questionIndex, score) {
             this.questionScores[studentIndex][questionIndex] = score;
         }
@@ -636,7 +636,7 @@ var Store = function () {
          */
 
     }, {
-        key: 'increaseStudentGradingTime',
+        key: 'incrementGradingTime',
         value: function increaseStudentGradingTime(studentIndex, timeToAdd) {
             this.examGradingTimes[studentIndex] += timeToAdd;
         }

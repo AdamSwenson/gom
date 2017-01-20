@@ -25,7 +25,7 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-        [mTypes.populateQuestionScores](state, rootState, payload){
+    [mTypes.loadQuestionScores]: ( state, rootState, payload ) => {
         state.questionScores = payload;
     },
 
@@ -36,10 +36,11 @@ const mutations = {
      * @param questionIndex 0-based index of the question (i.e., questionNumber - 1
      * @param score
      */
-        [mTypes.storeQuestionScore](state, rootState, payload) {
+    [mTypes.setQuestionScore]: ( state, rootState, payload ) => {
         let {studentIndex, questionIndex, score} = payload;
-        state.questionScores[studentIndex][questionIndex] = score;
-    },
+
+        state.questionScores[ studentIndex ][ questionIndex ] = score;
+    }
 
 
 };
@@ -51,25 +52,39 @@ const actions = {
      * @todo This need not be limited to json objects
      * @param questionScoresJSON
      */
-        [aTypes.loadQuestionScores]({state, commit}, questionScoresJSON)
+        [aTypes.loadQuestionScores]( {state, commit}, questionScoresJSON )
     {
-        commit(mTypes.populateQuestionScores, questionScoresJSON);
+        commit( mTypes.loadQuestionScores, questionScoresJSON );
     },
 
+
+    /**
+     * Saves a question score for the student
+     * Original: data.this.questionScores[ Roster.activeStudent ][ qNumber - 1 ] = score;
+     * @param studentIndex
+     * @param questionIndex 0-based index of the question (i.e., questionNumber - 1
+     * @param score
+     */
+    [aTypes.setQuestionScore]: ( {state, commit}, payload ) => {
+        //todo add checking
+
+        commit(mTypes.setQuestionScore, payload);
+
+    },
     /**
      * Save a question score for the currently active student
      * @param state
      * @param commit
      * @param payload
      */
-        [aTypes.storeQuestionScoreForActiveStudent]({state, commit}, payload)
+        [aTypes.storeQuestionScoreForActiveStudent]( {state, commit}, payload )
     {
         // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
         let {questionIndex, score} = payload;
         let studentIndex = this.activeStudentIndex;
         //type checking
         let out = {questionIndex: questionIndex, studentIndex: studentIndex, score: score};
-        commit(mTypes.storeQuestionScore, out);
+        commit( mTypes.setQuestionScore, out );
     }
 };
 
@@ -81,8 +96,8 @@ const getters = {
      * @param studentIndex
      * @param questionIndex
      */
-    getQuestionScore(state, getters, rootState, studentIndex, questionIndex) {
-        return state.questionScores[studentIndex][questionIndex];
+    getQuestionScore( state, getters, rootState, studentIndex, questionIndex ) {
+        return state.questionScores[ studentIndex ][ questionIndex ];
     },
 
 
@@ -91,10 +106,10 @@ const getters = {
      * Old way: data.this.questionScores[ Roster.activeStudent ][ index ];
      * @param questionIndex
      */
-    getQuestionScoreForActiveStudent(state, getters, rootState, questionIndex) {
+    getQuestionScoreForActiveStudent( state, getters, rootState, questionIndex ) {
         // if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set ";
-        if (state.activeStudentIndex == null) return '';
-        return state.getQuestionScore(this.activeStudentIndex, questionIndex);
+        if ( state.activeStudentIndex == null ) return '';
+        return state.getQuestionScore( this.activeStudentIndex, questionIndex );
     }
 
 

@@ -1061,7 +1061,7 @@ export default class Data {
 //      * Overwrites any existing value.
 //      * Original: data.this.examGradingTimes[ Roster.activeStudent ];
 //      */
-//     this.storeStudentGradingTime = function ( studentIndex, activeStudentTime ) {
+//     this.storeGradingTime = function ( studentIndex, activeStudentTime ) {
 //         this.examGradingTimes[ studentIndex ] = activeStudentTime;
 //     };
 //
@@ -1070,7 +1070,7 @@ export default class Data {
 //      * amount.
 //      * Original: data.this.examGradingTimes[ Roster.activeStudent ];
 //      */
-//     this.increaseStudentGradingTime = function ( studentIndex, timeToAdd ) {
+//     this.incrementGradingTime = function ( studentIndex, timeToAdd ) {
 //         this.examGradingTimes[ studentIndex ] += timeToAdd;
 //     };
 //
