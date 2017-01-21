@@ -37,9 +37,11 @@ export const setQuestionScore = 'setQuestionScore'
 export const removeQuestionScore = 'removeQuestionScore'
 
 //questions
-export const loadQuestions = 'loadQuestions'
-export const loadMaxQuestionScores = 'loadMaxQuestionScores'
+export const setMaxQuestionScore = 'setMaxQuestionScore'
+export const removeMaxQuestionScore ='removeMaxQuestionScore'
+// export const loadMaxQuestionScores = 'loadMaxQuestionScores'
 export const setQuestion = 'setQuestion'
+export const removeQuestion = 'removeQuestion'
 export const setNumberQuestions = 'setNumberQuestions'
 
 //students

@@ -56,7 +56,7 @@ let obj = qscores.default;
 //tested methods
 let {getters, actions, mutations} = obj;
 
-fdescribe( "store | modules | ", function () {
+describe( "store | modules | ", function () {
     describe( "qscores | ", function () {
         beforeEach( function () {
             this.state = makeState();

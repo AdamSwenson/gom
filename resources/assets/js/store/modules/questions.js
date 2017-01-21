@@ -2,6 +2,7 @@
  * Created by adam on 10/7/16.
  */
 import Question from './../models/Question';
+import Payload from '../models/Payload'
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
 
@@ -26,18 +27,40 @@ const state = {
 const mutations = {
 
     /**
-     * Overwrites state.questions with the payload
-     * @todo Should iterate and do a series of commits instead
+     * Add a score to the max possible score store
      * @param state
      * @param rootState
      * @param payload
      */
-    [mTypes.loadQuestions]: ( state, rootState, payload ) => {
-        state.questions = payload;
+    [mTypes.setMaxQuestionScore]: ( state, rootState, payload ) => {
+        Payload.checkIfPayload(payload);
+        state.maxQuestionScores[payload.index] = payload.num;
     },
 
-    [mTypes.loadMaxQuestionScores]: ( state, rootState, payload ) => {
-        state.maxQuestionScores = payload;
+    /**
+     * Remove a score (including index) from the max possible score store
+     * @param state
+     * @param rootState
+     * @param payload
+     */
+    [mTypes.removeMaxQuestionScore]: ( state, rootState, payload ) => {
+        Payload.checkIfPayload(payload);
+        state.maxQuestionScores[payload.index] = payload.num;
+    },
+
+
+    /**
+     * Push a question object into the store.
+     * Overwrites any existing question at the index.
+     * @param state
+     * @param rootState
+     * @param payload
+     */
+    [mTypes.setQuestion]: ( state, rootState, payload ) => {
+        Payload.checkIfPayload(payload);
+        state.questions[payload.index] = payload.obj;
+        // let {questionIndex, questionObject} = payload;
+        // state.questions[ questionIndex ] = questionObject;
     },
 
     /**
@@ -46,10 +69,11 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [mTypes.setQuestion]: ( state, rootState, payload ) => {
-        let {questionIndex, questionObject} = payload;
-        state.questions[ questionIndex ] = questionObject;
+    [mTypes.removeQuestion]: ( state, rootState, payload ) => {
+        // let {questionIndex, questionObject} = payload;
+        // state.questions[ questionIndex ] = questionObject;
     },
+
 
     /**
      * Sets the stored number of questions. Provides the option
@@ -73,15 +97,31 @@ const mutations = {
 const actions = {
     /**
      * Add a new question to the store of questions
+     * todo handle case where payload contains a Question object already
      * @param state
      * @param commit
      * @param payload
      */
     [aTypes.addQuestion]: ( {state, commit}, payload ) => {
-        let {questionIndex, content} = payload;
-        let question = Question.factory( content, questionIndex );
-        let out = {questionIndex: questionIndex, questionObject: question};
-        commit( mTypes.setQuestion, out );
+
+        let question = Question.factory( payload);
+
+        if ( question instanceof Question ) {
+            let pl = new Payload();
+            pl.id = question.id;
+            pl.index = payload.questionIndex;
+            pl.obj = question;
+            commit( mTypes.setQuestion, pl );
+        }
+        //
+        // // let {questionIndex, content} = payload;
+        // let question = Question.factory( payload, payload.questionIndex );
+        // let out = Payload.factory( {
+        //         index: question.questionIndex,
+        //         obj: question
+        //     });
+        //
+        // commit( mTypes.setQuestion, out );
     },
 
     /**

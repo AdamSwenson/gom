@@ -6,6 +6,7 @@
 
 import Exam from '../../../resources/assets/js/store/models/Exam';
 import Student from '../../../resources/assets/js/store/models/Student';
+import Question from '../../../resources/assets/js/store/models/Question';
 
 
 let faker = require( 'faker' );
@@ -34,6 +35,16 @@ export const factories = {
         s.lastName = faker.name.lastName();
         s.firstName = faker.name.firstName();
         return s;
+    },
+
+    questionFactory: (index)=>{
+        let question = new Question(index);
+        question.questionName = faker.hacker.phrase();
+        question.questionNumber =  faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
+        question.questionAssignmentId = faker.random.number();
+        question.maxScore = faker.random.number();
+        question.content = faker.hacker.phrase();
+        return question;
     }
 };
 
