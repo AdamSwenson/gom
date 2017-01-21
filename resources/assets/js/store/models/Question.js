@@ -18,7 +18,6 @@ export default class Question {
 
 
     /* *************************** Id *************** */
-
     /**
      * Alias for _id
      * @returns {*}
@@ -52,7 +51,6 @@ export default class Question {
 
 
     /* *************************** Index ************* */
-
     /**
      * Alias for _id
      * @returns {*}
@@ -143,6 +141,13 @@ export default class Question {
         };
     }
 
+
+    /**
+     * Instantiates a question object from the server provided json.
+     *
+     * @param questionJson
+     * @returns {Question}
+     */
     static factory( params ) {
         let obj = new Question();
 
@@ -166,24 +171,5 @@ export default class Question {
         //were no parameters
         return obj;
     }
-    //
-    // /**
-    //  * Instantiates a question object from the server provided json.
-    //  * Index is optional as long as the json contains a key questionIndex.
-    //  * If both are present, will use the parameter value
-    //  * @param questionJson
-    //  * @returns {Question}
-    //  */
-    // static factory( questionJson, index ) {
-    //     // if(! questionJson || (! questionJson.questionIndex && ! index) ) throw new Error("no question index given");
-    //
-    //     index = index ? index : questionJson.questionIndex;
-    //     let question = new Question( questionJson.questionIndex );
-    //     question.questionName = questionJson.questionName;
-    //     question.questionNumber = questionJson.questionNumber;
-    //     question.questionAssignmentId = questionJson.questionAssignmentId;
-    //     question.maxScore = questionJson.maxScore;
-    //     return question;
-    // }
 
 }

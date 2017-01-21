@@ -113,15 +113,7 @@ const actions = {
             pl.obj = question;
             commit( mTypes.setQuestion, pl );
         }
-        //
-        // // let {questionIndex, content} = payload;
-        // let question = Question.factory( payload, payload.questionIndex );
-        // let out = Payload.factory( {
-        //         index: question.questionIndex,
-        //         obj: question
-        //     });
-        //
-        // commit( mTypes.setQuestion, out );
+
     },
 
     /**
@@ -139,6 +131,7 @@ const actions = {
      */
     [aTypes.loadQuestions]: ( {state, commit}, payload ) => {
         for ( let i = 0; i < Object.keys( payload ).length; i++ ) {
+            // actions[ aTypes.addQuestion ]( state, commit, payload[ i ] );
             let index = Object.keys( payload )[ i ];
             let s = payload[ index ];
             state.questions[ index ] = Question.factory( s, index );

@@ -63,7 +63,7 @@ let obj = questions.default;
 let {getters, actions, mutations} = obj;
 
 
-fdescribe( "store | modules | ", function () {
+describe( "store | modules | ", function () {
     describe( "questions | ", function () {
         beforeEach( function () {
             this.state = makeState();

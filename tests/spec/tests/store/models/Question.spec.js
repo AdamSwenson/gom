@@ -7,7 +7,7 @@ let Faker = require( 'faker' );
 import Question from  "../../../../../resources/assets/js/store/models/Question.js" ;
 
 
-fdescribe( "store.models.question | ", function () {
+describe( "store.models.question | ", function () {
     beforeAll( function () {
 //runs once before all tests
     } );
@@ -127,12 +127,6 @@ fdescribe( "store.models.question | ", function () {
                 } );
             } );
 
-        } );
-    } );
-
-    describe( "factory | ", () => {
-        xit( "happy path | ", () => {
-            //todo
         } );
     } );
 
