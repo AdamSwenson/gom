@@ -108,11 +108,14 @@ describe( "store | modules | ", function () {
 
 
             describe( description( mTypes.removeMaxQuestionScore ), function () {
-                xit( "happy path  ", function () {
+                it( "happy path  ", function () {
                     //call
                     mutations[ mTypes.removeMaxQuestionScore ]( this.state, this.rootState, this.mutationPayload );
                     //check
-                    expect( this.state.maxQuestionScores[ this.mutationPayload.index ] ).toBe( this.mutationPayload.num );
+                    //check nor in keys
+                    let target = this.state.maxQuestionScores[ this.mutationPayload.index ]
+                    expect( typeof Object.keys( this.state.maxQuestionScores )[this.mutationPayload.index] ).toBe( 'undefined');
+                    expect( typeof target).toBe( 'undefined');
                 } );
             } );
 
@@ -128,15 +131,16 @@ describe( "store | modules | ", function () {
 
 
             describe( description( mTypes.removeQuestion ), function () {
-                xit( "happy path | ", function () {
+                it( "happy path ", function () {
                     //call
-                    mutations[ mTypes.removeQuestion ]( this.state, this.rootState, this.payload );
-
+                    mutations[ mTypes.removeQuestion ]( this.state, this.rootState, this.mutationPayload );
                     //check
-                    //the object will be replaced by test
-                    expect( this.state.questions[ this.payload.questionIndex ] ).toBe( this.payload.questionObject );
+                    //check nor in keys
+                    let target = this.state.questions[ this.mutationPayload.index ]
+                    // expect( typeof Object.keys( this.state.questions )[this.mutationPayload.index] ).toBe( 'undefined');
+                    expect( typeof target).toBe( 'undefined');
                 } );
-                //todo
+
             } );
         } );
 

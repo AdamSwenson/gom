@@ -45,7 +45,7 @@ const mutations = {
      */
     [mTypes.removeMaxQuestionScore]: ( state, rootState, payload ) => {
         Payload.checkIfPayload(payload);
-        state.maxQuestionScores[payload.index] = payload.num;
+        delete state.maxQuestionScores[payload.index];
     },
 
 
@@ -59,8 +59,6 @@ const mutations = {
     [mTypes.setQuestion]: ( state, rootState, payload ) => {
         Payload.checkIfPayload(payload);
         state.questions[payload.index] = payload.obj;
-        // let {questionIndex, questionObject} = payload;
-        // state.questions[ questionIndex ] = questionObject;
     },
 
     /**
@@ -70,8 +68,8 @@ const mutations = {
      * @param payload
      */
     [mTypes.removeQuestion]: ( state, rootState, payload ) => {
-        // let {questionIndex, questionObject} = payload;
-        // state.questions[ questionIndex ] = questionObject;
+        Payload.checkIfPayload( payload );
+        delete state.questions[ payload.index ];
     },
 
 
