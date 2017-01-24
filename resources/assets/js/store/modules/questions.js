@@ -82,8 +82,10 @@ const mutations = {
      * @param payload
      */
     [mTypes.setNumberQuestions]: ( state, rootState, payload ) => {
-        if ( Number.isInteger( payload ) ) {
-            state.numberQuestions = payload;
+        Payload.checkIfPayload( payload );
+
+        if ( typeof payload.num != 'undefined' && Number.isInteger( payload.num ) ) {
+            state.numberQuestions = payload.num;
         }
         else {
             //count the questions

@@ -20,11 +20,14 @@ export const factories = {
      * Returns an Exam instance with random id and index
      * @returns {Exam}
      */
-    examFactory: () => {
-        return new Exam(
-            {
-                examId: faker.random.number(), examIndex: faker.random.number()
-            } );
+    examFactory: ( index ) => {
+        let idx = typeof index != 'undefined' ? index : faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
+
+        let e = new Exam( faker.random.number() );
+        e.name = faker.company.bsNoun();
+        e.year = 2013;
+        e.term = faker.company.bs();
+        return e;
     },
 
     studentFactory: ( index ) => {
@@ -37,10 +40,10 @@ export const factories = {
         return s;
     },
 
-    questionFactory: (index)=>{
-        let question = new Question(index);
+    questionFactory: ( index ) => {
+        let question = new Question( index );
         question.questionName = faker.hacker.phrase();
-        question.questionNumber =  faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
+        question.questionNumber = faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
         question.questionAssignmentId = faker.random.number();
         question.maxScore = faker.random.number();
         question.content = faker.hacker.phrase();
@@ -86,17 +89,17 @@ export const testAction = ( action, payload, state, expectedMutations, done ) =>
         const mutation = expectedMutations[ count ]
         expect( mutation.type ).toBe( type )
         if ( payload ) {
-            if(typeof mutation.payload == 'object'){
+            if ( typeof mutation.payload == 'object' ) {
                 //check that of same type
-                expect(typeof mutation.payload === typeof payload);
+                expect( typeof mutation.payload === typeof payload );
                 //check that have the same number of properties
-                expect(Object.keys(mutation.payload).length === Object.keys(payload).length);
+                expect( Object.keys( mutation.payload ).length === Object.keys( payload ).length );
                 //check have same values for properties
-                for(let prop in mutation.payload){
-                    expect(mutation.payload[prop]).toBe(payload[prop]);
+                for ( let prop in mutation.payload ) {
+                    expect( mutation.payload[ prop ] ).toBe( payload[ prop ] );
                 }
             }
-            else{
+            else {
                 expect( mutation.payload ).toBe( payload )
             }
 

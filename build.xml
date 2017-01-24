@@ -23,6 +23,9 @@
             depends="prepare,lint,tools-parallel"
             description=""/>
 
+    <target name="karma_only"
+            depends="prepare,karma"
+            description="run karma test suite only"/>
 
     <target name="tools-parallel" description="Run tools in parallel">
         <parallel threadCount="2">

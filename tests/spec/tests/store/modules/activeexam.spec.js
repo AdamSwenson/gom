@@ -10,7 +10,7 @@ import * as mTypes from '../../../../../resources/assets/js/store/mutation-types
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
 
 import Exam from '../../../../../resources/assets/js/store/models/Exam';
-
+import Payload from '../../../../../resources/assets/js/store/models/Payload';
 import {makeState, makeRootState, testAction, description, factories} from '../../../helpers/vuex.spec.helpers';
 
 //tested object
@@ -31,6 +31,14 @@ let state = {
     }
 };
 
+const makeMutationPayload = function () {
+    let q = factories.examFactory();
+    let p = new Payload();
+    // let s = factories.studentFactory();
+    p.obj = q;
+    return p;
+};
+
 
 describe( "store | modules | ", () => {
     describe( " activeexam | ", () => {
@@ -38,62 +46,70 @@ describe( "store | modules | ", () => {
         describe( "mutations | ", () => {
             describe( description( mTypes.setActiveExam ), () => {
 
-                it( "happy path | ", () => {
+                it( "happy path ", () => {
                     let state2 = {activeExam: null};
                     let exam2 = factories.examFactory();
-                    mutations[mTypes.setActiveExam](state2, {}, exam2);
-                    expect(state2.activeExam).toBe(exam2);
+                    let pl = Payload.factory( {obj: exam2} );
+                    mutations[ mTypes.setActiveExam ]( state2, {}, pl );
+                    expect( state2.activeExam ).toBe( exam2 );
                 } );
             } );
 
             describe( description( mTypes.clearActiveExam ), () => {
-                it( "happy path | ", () => {
+                it( "happy path  ", () => {
                     let state2 = {activeExam: 'taco'};
                     let exam2 = factories.examFactory();
-                    mutations[mTypes.clearActiveExam](state2, {}, exam2);
-                    expect(state2.activeExam).toBeNull();
+                    mutations[ mTypes.clearActiveExam ]( state2, {}, exam2 );
+                    expect( state2.activeExam ).toBeNull();
                 } );
             } );
         } );
 
-        describe( "actions | ", () => {
+        fdescribe( "actions | ", () => {
 
             describe( description( aTypes.setActiveExam ), () => {
-                describe(" payload is Exam | ", ()=>{
-                    it( "happy path | ", () =>{
-                        let action = actions[aTypes.setActiveExam];
-
-                        testAction(action, exam, state, [
+                describe( " payload is Exam | ", () => {
+                    it( "happy path ", () => {
+                        let action = actions[ aTypes.setActiveExam ];
+                        let pl = Payload.factory( {obj: exam} );
+                        testAction( action, pl, state, [
                             {
                                 type: mTypes.setActiveExam,
-                                payload: index
-                            }
-                        ])
-
-                    } );
-                });
-
-                describe(" payload Not Exam | ", ()=>{
-                    it( "happy path | ", ()=>{
-                        let action = actions[aTypes.setActiveExam];
-                        let p = {examId: examId, examIndex: index};
-
-                        testAction(action, p, state, [
-                            {
-                                type: mTypes.setActiveExam,
-                                payload: p
+                                payload: pl
                             }
                         ] )
                     } );
-                });
+                } );
+
+                describe( " payload Not Exam | ", () => {
+                    it( "happy path ", () => {
+                        let action = actions[ aTypes.setActiveExam ];
+                        let pl = makeMutationPayload();
+                        let p = {
+                            examId: pl.obj.examId,
+                            examIndex: pl.obj.index,
+                            name: pl.obj.name,
+                            year: pl.obj.year,
+                            term: pl.obj.term
+                        };
+                        console.log( 'pl', p);
+
+                        testAction( action, p, state, [
+                            {
+                                type: mTypes.setActiveExam,
+                                payload: pl
+                            }
+                        ] )
+                    } );
+                } );
 
             } );
 
-            describe( description( aTypes.clearActiveExam ), function(){
-                it( "happy path | ", function(){
-                    let action = actions[aTypes.clearActiveExam];
+            describe( description( aTypes.clearActiveExam ), function () {
+                it( "happy path | ", function () {
+                    let action = actions[ aTypes.clearActiveExam ];
 
-                    testAction(action, state, state.activeExam,  [
+                    testAction( action, state, state.activeExam, [
                         {
                             type: mTypes.clearActiveExam,
                             payload: index
@@ -123,7 +139,7 @@ describe( "store | modules | ", () => {
 
                     expect( getters.getActiveExamObj( state ) ).toBe( state.activeExam );
                 } );
-            });
+            } );
         } );
     } );
 } );

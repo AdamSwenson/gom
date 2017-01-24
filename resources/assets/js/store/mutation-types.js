@@ -9,17 +9,30 @@
  * @type {string}
  */
 
-//grade.activestudent
+
+
+
+//active exam
+export const setActiveExam = 'setActiveExam';
+export const clearActiveExam = 'clearActiveExam'
+
+//activestudent
 export const setIndex = 'setIndex'
 export const setId = 'setId'
 export const setTime = 'setTime'
 export const setStudentObject  = 'setStudentObject'
 
-//grade.comments
+
+//comments
 export const setElementComment = 'setElementComment';
 export const loadElementComments = 'loadElementComments'
 export const loadStockComments = 'loadStockComments'
 
+
+//exams
+export const addExam = 'addExam';
+export const addIndexMapping = 'addIndexMapping'
+export const loadExams = 'loadExams'
 
 
 //escores
@@ -56,17 +69,4 @@ export const removeGradingTime = 'removeGradingTime'
 export const resetGradingTime = 'resetGradingTime'
 
 
-
-
-
 export const setExam = 'setExam';
-
-
-//exams
-export const addExam = 'addExam';
-export const addIndexMapping = 'addIndexMapping'
-export const loadExams = 'loadExams'
-
-//active exam
-export const setActiveExam = 'setActiveExam';
-export const clearActiveExam = 'clearActiveExam';
