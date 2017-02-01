@@ -1,5 +1,6 @@
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
+import Payload from '../models/Payload'
 
 const state = {
     /** Format: { studentIndex : { elementIndex : elementScore},  ... } */
@@ -15,7 +16,9 @@ const mutations = {
      */
         [mTypes.loadElementScores](state, rootState, payload)
     {
-        state.elementScores = payload;
+        Payload.checkIfPayload(payload);
+        //set the state to the payload's object
+        state.elementScores = payload.obj;
     },
 
     /**
@@ -26,11 +29,10 @@ const mutations = {
      */
         [mTypes.setElementScore](state, rootState, payload)
     {
-        let {studentIndex, elementIndex, score} = payload;
-        if(typeof (score) == 'undefined'){
-            //score may have been named differently
-            score = payload.elementScore;
-        }
+        Payload.checkIfPayload(payload);
+        let studentIndex = payload.index;
+        let elementIndex = payload.index2;
+        let score = payload.num;
 
         state.elementScores[studentIndex][elementIndex] = score;
     },
@@ -43,11 +45,17 @@ const actions = {
         let {elementIndex, score} = payload;
         //type checks
 
-        let out = {
-            studentIndex: studentIndex,
-            elementIndex: elementIndex,
-            score: score
-        };
+        if(typeof (score) == 'undefined'){
+            //score may have been named differently
+            score = payload.elementScore;
+        }
+
+
+        let out = Payload.factory({
+            index: studentIndex,
+            index2: elementIndex,
+            num: score
+        });
 
         commit(mTypes.setElementScore, out);
     },
@@ -58,9 +66,24 @@ const actions = {
      * @param elementIndex
      * @param score
      */
-        [aTypes.storeElementScore]({state, commit}, payload)
+        [aTypes.setElementScore]({state, commit}, payload)
     {
-        commit(mTypes.setElementScore, payload);
+
+        let {studentIndex, elementIndex, score} = payload;
+        //type checks
+
+        if(typeof (score) == 'undefined'){
+            //score may have been named differently
+            score = payload.elementScore;
+        }
+
+        let out = Payload.factory({
+            index: studentIndex,
+            index2: elementIndex,
+            num: score
+        });
+
+        commit(mTypes.setElementScore, out);
     },
 };
 

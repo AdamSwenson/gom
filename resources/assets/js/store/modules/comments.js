@@ -3,12 +3,24 @@
  */
 
 
-import * as types from '../mutation-types'
+import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
+import Payload from '../models/Payload'
 
 const state = {
+    /**
+     * This holds the assigned comments for students
+     */
     elementComments: {},
-    stockComments: {}
+
+    /**
+     * This holds the default comments
+     */
+    stockComments: {},
+
+    /** Standard valences */
+    valences: [ 0, 1, 2, 3 ]
+
 };
 
 const mutations = {
@@ -18,9 +30,13 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-        [types.setElementComment]( state, rootState, payload )
+        [mTypes.setElementComment]( state, rootState, payload )
     {
-        let {commentText, elementIndex, studentIndex} = payload;
+        Payload.checkIfPayload( payload );
+
+        let commentText = payload.str;
+        let studentIndex = payload.index;
+        let elementIndex = payload.index2;
 
         state.elementComments[ studentIndex ][ elementIndex ] = commentText;
     },
@@ -31,9 +47,11 @@ const mutations = {
      * @param rootState
      * @param elementCommentsJSON
      */
-        [types.loadElementComments]( state, rootState, elementCommentsJSON )
+        [mTypes.loadElementComments]( state, rootState, payload )
     {
-        state.elementComments = elementCommentsJSON;
+        Payload.checkIfPayload( payload );
+        state.elementComments = payload.obj;
+        // state.elementComments = elementCommentsJSON;
     },
 
     /**
@@ -42,9 +60,10 @@ const mutations = {
      * @param rootState
      * @param stockCommentsJSON
      */
-        [types.loadStockComments]( state, rootState, stockCommentsJSON )
+        [mTypes.loadStockComments]( state, rootState, payload )
     {
-        state.stockComments = stockCommentsJSON;
+        Payload.checkIfPayload( payload );
+        state.stockComments = payload.obj;
     },
 
 
@@ -60,17 +79,32 @@ const actions = {
      * of the comment in the data object is an empty string.
      * So we save it anyway. The stock comment will be
      * retrieved on the call to getCommentText.
+     *
+     * Payload expected to have keys:
+     *      studentIndex
+     *      elementIndex
+     *      commentText
      * @param state
      * @param commit
      * @param payload
      */
     [aTypes.storeCommentText]: ( {state, commit}, payload ) => {
-        commit( types.setElementComment, payload );
+
+        let pl = Payload.factory( {
+            index: payload.studentIndex,
+            index2: payload.elementIndex,
+            str: payload.commentText
+        } );
+
+        commit( mTypes.setElementComment, pl );
+
         // let studentIndex = payload.studentIndex;
         // let elementIndex = payload.elementIndex;
         // let commentText = payload.commentText;
+        // commit( mTypes.setElementComment, payload );
         // state.elementComments[studentIndex][elementIndex] = commentText;
     }
+
     //
     // /**
     //  * Shortcut to avoid having to look up the active student from elsewhere

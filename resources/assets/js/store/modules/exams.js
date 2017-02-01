@@ -6,6 +6,7 @@
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
 import Exam from '../models/Exam'
+import Payload from '../models/Payload'
 
 /**
  * The older version used an index value to do lots of stuff.
@@ -25,12 +26,12 @@ const state = {
     /**
      * Object indexed by exam id holding exam objects
      */
- exams : {},
+    exams: {},
 
     /**
      * Mapping from older examIndex to new exam id value
      */
- indexMap: {}
+    indexMap: {}
 
 };
 
@@ -44,12 +45,11 @@ const mutations = {
      * @param rootState
      * @param payload Expecting Exam object to be in payload.obj
      */
-    [mTypes.addExam]: (state, rootState, payload) =>
-    {
-
-        if(payload.obj instanceof Exam){
+    [mTypes.addExam]: ( state, rootState, payload ) => {
+        Payload.checkIfPayload( payload );
+        if ( payload.obj instanceof Exam ) {
             //push into exams storage
-            state.exams[payload.obj.id] = payload.obj;
+            state.exams[ payload.obj.id ] = payload.obj;
         }
 
     },
@@ -62,10 +62,10 @@ const mutations = {
      * @param rootState
      * @param payload Array with keys: examIndex, examId
      */
-    [mTypes.addIndexMapping] : (state, rootState, payload) =>
-    {
-        let { examIndex, examId } = payload;
-        state.indexMap[examIndex] = examId;
+    [mTypes.addIndexMapping]: ( state, rootState, payload ) => {
+        Payload.checkIfPayload( payload );
+
+        state.indexMap[ payload.index ] = payload.id;
     },
 
     /**
@@ -75,15 +75,10 @@ const mutations = {
      * @param rootState
      * @param payload
      */
-    [mTypes.loadExams]: ( state, rootState, payload) =>
-    {
-        //check if payload has correct structure
-
+    [mTypes.loadExams]: ( state, rootState, payload ) => {
+        Payload.checkIfPayload( payload );
         //add exams
-        state.exams = payload;
-
-        //add index mappings
-
+        state.exams = payload.obj;
     }
 
 };
@@ -98,26 +93,26 @@ const actions = {
      * @param commit
      * @param payload Keys: examId, examIndex, obj
      */
-    [aTypes.addNewExam] : ({state, commit}, payload) =>
-    {
-        let { examId, examIndex, obj } = payload;
+    [aTypes.addNewExam]: ( {state, commit}, payload ) => {
+        let {examId, examIndex, obj, examObject} = payload;
 
+        obj = typeof examObject != 'undefined' ? examObject : obj;
         //check and see if an exam object has already been passed in
-        if(! obj instanceof Exam){
+        if ( !obj instanceof Exam ) {
             //create a new exam
-            let { name, year, term } = payload;
-            let examJson = {name, year, term, examIndex };
-            obj = Exam.factory( examJson);
+            let {name, year, term} = payload;
+            let examJson = {name, year, term, examIndex};
+            obj = Exam.factory( examJson );
         }
 
         //assemble the expected payload
-        let out = { examId: examId, examIndex: examIndex, obj: obj };
-
+        // let out = { examId: examId, examIndex: examIndex, obj: obj };
+        let out = Payload.factory( {id: obj.id, index: obj.index, obj: obj} );
         //Add to the exams store
-        commit(mTypes.addExam, out);
+        commit( mTypes.addExam, out );
 
         //Add to the mapping store
-         commit(mTypes.addIndexMapping, out);
+        commit( mTypes.addIndexMapping, out );
     },
 
     /**
@@ -127,20 +122,18 @@ const actions = {
      * @param rootState
      * @param payload
      */
-    [aTypes.loadExams]: ( state, rootState, payload) =>
-    {
+    [aTypes.loadExams]: ( state, rootState, payload ) => {
         //check if payload has correct structure
         //todo
 
         //push each record from the payload into the store
-        for(let i=0; i<payload.length; i++){
-            let record = payload[i];
+        for ( let i = 0; i < payload.length; i++ ) {
+            let record = payload[ i ];
             //check if record has correct structure
             //todo
 
-            //add exams
-            //add index mappings
-            [aTypes.addNewExam](state, rootState, record);
+            //add to exams and add index mapping
+            [ aTypes.addNewExam ]( state, rootState, record );
         }
     }
 
@@ -158,22 +151,21 @@ const getters = {
      * @param getters
      * @param payload Object containing exam identifier
      */
- getExam: (state, getters, payload) =>
- {
-     //finds the exam and returns it
-     const lookupByExamId = (state, examId) => {
-            return state.exams[examId];
-     };
+    getExam: ( state, getters, payload ) => {
+        //finds the exam and returns it
+        const lookupByExamId = ( state, examId ) => {
+            return state.exams[ examId ];
+        };
 
-     //Try looking up first by exam Id
-     if(typeof (payload.examId) != 'undefined'){
-            return lookupByExamId(state, payload.examId);
-     }
+        //Try looking up first by exam Id
+        if ( typeof (payload.examId) != 'undefined' ) {
+            return lookupByExamId( state, payload.examId );
+        }
 
-     //other lookup methods
+        //other lookup methods
 
 
- },
+    },
 
     /**
      * Return list of exam objects
@@ -182,11 +174,11 @@ const getters = {
      * @param payload
      * @returns {{}}
      */
-    getAllExams: (state, getters, payload)=>{
+    getAllExams: ( state, getters, payload ) => {
         let out = [];
-        let keys = Object.keys(state.exams);
-        for(let i=0; i<keys.length; i++){
-            out.push(state.exams[keys[i]]);
+        let keys = Object.keys( state.exams );
+        for ( let i = 0; i < keys.length; i++ ) {
+            out.push( state.exams[ keys[ i ] ] );
         }
 
         return out;

@@ -9,6 +9,8 @@ import * as grades from '../../../../../resources/assets/js/store/modules/grades
 
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
+import Payload from '../../../../../resources/assets/js/store/models/Payload'
+
 
 const makeState = ( n = 5 ) => {
 
@@ -35,6 +37,14 @@ const makeTestPayload = function () {
     };
 };
 
+const makeMutationPayload = function () {
+    let e = makeTestPayload();
+    return Payload.factory( {
+        index: e.studentIndex,
+        num: e.score,
+        obj: {taco: 'yes please'}
+    } );
+};
 
 //tested object
 let obj = grades.default;
@@ -42,103 +52,99 @@ let obj = grades.default;
 let {getters, actions, mutations} = obj;
 
 
-describe( "store.modules | ", function () {
-    describe( "grades | ", function () {
-        beforeEach( function () {
-            this.state = makeState();
-            this.rootState = makeRootState();
-            this.payload = makeTestPayload();
+describe( "store.modules | grades | ", function () {
+    beforeEach( function () {
+        this.state = makeState();
+        this.rootState = makeRootState();
+        this.payload = makeTestPayload();
+        this.mutationPayload = makeMutationPayload();
+    } );
+
+    describe( "mutations | ", function () {
+        describe( description( mTypes.loadExamGrades ), function () {
+            it( "happy path ", function () {
+                mutations[ mTypes.loadExamGrades ]( this.state, this.rootState, this.mutationPayload );
+                expect( this.state.examGrades ).toBe( this.mutationPayload.obj );
+
+            } );
         } );
 
-        describe( "mutations | ", function () {
-            describe( description( mTypes.loadExamGrades ), function () {
-                it( "happy path | ", function () {
-                    let test = 'jjj';
-                    mutations[ mTypes.loadExamGrades ]( this.state, this.rootState, test );
-                    expect( this.state.examGrades ).toBe( test );
-                } );
+        describe( description( mTypes.loadStandardGrades ), function () {
+            it( "happy path  ", function () {
+                mutations[ mTypes.loadStandardGrades ]( this.state, this.rootState, this.mutationPayload );
+                expect( this.state.standardGrades ).toBe( this.mutationPayload.obj );
             } );
-
-            describe( description( mTypes.loadStandardGrades ), function () {
-                it( "happy path | ", function () {
-                    let test = 'jjj';
-                    mutations[ mTypes.loadStandardGrades ]( this.state, this.rootState, test );
-                    expect( this.state.standardGrades ).toBe( test );
-                } );
-            } );
-
-            describe( description( mTypes.setGrade ), function () {
-                it( "happy path | ", function () {
-                    mutations[ mTypes.setGrade ]( this.state, this.rootState, this.payload );
-                    expect( this.state.examGrades[ this.payload.studentIndex ] ).toBe( this.payload.score );
-                } );
-            } );
-
         } );
 
-        describe( "actions | ", function () {
-
-            describe( description( aTypes.loadExamGrades ), function () {
-                it( "happy path | ", function () {
-                    let action = actions[ aTypes.loadExamGrades ];
-
-                    testAction( action, this.payload, this.state, [ {
-                        type: mTypes.loadExamGrades,
-                        payload: this.payload
-                    } ] );
-                } );
+        describe( description( mTypes.setGrade ), function () {
+            it( "happy path ", function () {
+                mutations[ mTypes.setGrade ]( this.state, this.rootState, this.mutationPayload );
+                expect( this.state.examGrades[ this.mutationPayload.index ] ).toBe( this.mutationPayload.num );
             } );
+        } );
 
+    } );
 
-            describe( description( aTypes.loadStandardGrades ), function () {
-                it( "happy path | ", function () {
-                    let action = actions[ aTypes.loadStandardGrades ];
+    describe( "actions | ", function () {
 
-                    testAction( action, this.payload, this.state, [ {
-                        type: mTypes.loadStandardGrades,
-                        payload: this.payload
-                    } ] );
-                } );
+        describe( description( aTypes.loadExamGrades ), function () {
+            it( "happy path | ", function () {
+                let action = actions[ aTypes.loadExamGrades ];
+                testAction( action, this.mutationPayload.obj, this.state, [ {
+                    type: mTypes.loadExamGrades,
+                    payload: Payload.factory( {obj: this.mutationPayload.obj} )
+                } ] );
             } );
-
-
-            //THIS IS THE MOST IMPORTANT METHOD
-            describe( description( aTypes.updateExamGrade ), function () {
-                xit( "happy path | ", function () {
-                    //todo
-                } );
-            } );
-
         } );
 
 
-        describe( "getters | ", function () {
-            describe( "getExamGrade | ", function () {
-                it( "happy path | ", function () {
-                    let result = getters.getExamGrade( this.state, {}, this.rootState, this.payload.studentIndex )
-                    expect( result ).toBe( this.state.examGrades[ this.payload.studentIndex ] )
-                } );
-            } );
+        describe( description( aTypes.loadStandardGrades ), function () {
+            it( "happy path | ", function () {
+                let action = actions[ aTypes.loadStandardGrades ];
 
-            describe( "getStandardGrades | ", function () {
-                it( "happy path | ", function () {
-                    let result = getters.getStandardGrades( this.state, {}, this.rootState )
-                    expect( result ).toBe( this.state.standardGrades );
-                } );
+                testAction( action, this.mutationPayload.obj, this.state, [ {
+                    type: mTypes.loadStandardGrades,
+                    payload: Payload.factory( {obj: this.mutationPayload.obj} )
+                } ] );
             } );
+        } );
 
-            describe( "getGrade | ", function () {
-                it( "happy path | ", function () {
-                    let result = getters.getStandardGrades( this.state, {}, this.rootState )
-                    expect( result ).toBe( this.state.standardGrades );
-                } );
+
+        //THIS IS THE MOST IMPORTANT METHOD
+        describe( description( aTypes.updateExamGrade ), function () {
+            xit( "happy path | ", function () {
+                //todo
             } );
-            describe( "getExamGradeForActiveStudent | ", function () {
-                xit( "happy path | ", function () {
-                    //todo
-                } );
+        } );
+
+    } );
+
+
+    describe( "getters | ", function () {
+        describe( "getExamGrade | ", function () {
+            it( "happy path | ", function () {
+                let result = getters.getExamGrade( this.state, {}, this.rootState, this.payload.studentIndex )
+                expect( result ).toBe( this.state.examGrades[ this.payload.studentIndex ] )
+            } );
+        } );
+
+        describe( "getStandardGrades | ", function () {
+            it( "happy path | ", function () {
+                let result = getters.getStandardGrades( this.state, {}, this.rootState )
+                expect( result ).toBe( this.state.standardGrades );
+            } );
+        } );
+
+        describe( "getGrade | ", function () {
+            it( "happy path | ", function () {
+                let result = getters.getStandardGrades( this.state, {}, this.rootState )
+                expect( result ).toBe( this.state.standardGrades );
+            } );
+        } );
+        describe( "getExamGradeForActiveStudent | ", function () {
+            xit( "happy path | ", function () {
+                //todo
             } );
         } );
     } );
-} )
-;
+} );

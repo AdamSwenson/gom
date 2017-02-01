@@ -31,6 +31,7 @@ module.exports = {
         let component = dthis.vm.$refs.testObject;
         return expect( component[ propertyName ] ).toBe( expectedValue );
     },
+
     /**
      * Checks whether a vue component's property has the specified value.
      * Waits for the next tick so that avoids problem of asynchronous changes.

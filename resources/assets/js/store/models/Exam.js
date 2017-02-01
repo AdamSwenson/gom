@@ -2,32 +2,30 @@
  * Created by adam on 8/15/16.
  */
 
+import IModel from './IModel';
 
-export default class Exam {
+export default class Exam extends IModel{
 
     /**
      * Create a new exam object
      * @param examId
      * @param examIndex
      */
-    constructor( {examId, examIndex} ) {
-        this._id;
-        this._index;
-        this.name;
-        this.year;
-        this.term;
+    constructor( ...params ) {
+        super();
+        this._id; // = examId;
+        this._index; // = examIndex;
+        this._name; // = name;
+        this._year; // = year;
+        this._term;// = term;
 
-        //set id if given
-        if ( typeof (examId) != 'undefined' ) {
-            this._id = examId;
-        }
+        if(params.length > 0){
+            //fill in from params
 
-        //set index if given
-        if ( typeof (examIndex) != 'undefined' && Number.isInteger(examIndex)) {
-            this._index = examIndex;
         }
     };
 
+    /* *************************** Id *************** */
     /**
      * The database id of the exam
      */
@@ -35,6 +33,9 @@ export default class Exam {
         return this._id;
     };
 
+    set id(v){
+        this._id = Number(v);
+    }
 
     /**
      * Some things like to call the database id
@@ -44,16 +45,34 @@ export default class Exam {
     get examId() {
         return this._id;
     }
-
+    /* *************************** Index ************* */
     /**
      * Returns the examIndex
      * This used to be the main identifier with which the exam
      * was looked up in store.exams.
+     * todo add sanitization
      * @returns {*}
      */
     get examIndex() {
         return this._index;
     }
+
+    set index(v){
+        this._index = v;
+    }
+    get index(){return this._index;}
+
+    /* *************************** Props ************* */
+
+    get name(){ return this._name; }
+    set name(n){this._name = n; }
+
+    get year(){ return this._year; }
+    set year(v){ this._year = v; }
+
+    get term(){ return this._term; }
+    set term(v){ this._term = v; }
+
 
 
     /**
@@ -67,39 +86,58 @@ export default class Exam {
         ]
     }
 
+
     /**
      * Returns a list of strings which are property
      * names. These fields can be filled from the input
      * @returns {[string,string]}
      */
-    static fillableProps(){
+    static get fillableProps() {
         return [
+            'id',
+            'index',
             'name',
-            'year'
+            'year',
+            'term'
         ];
     }
 
-    /**
-     * Takes the json exam object received from the server and
-     * returns a Exam object
-     * @param examJson
-     * @returns {Exam}
-     */
-    static factory( examJson ) {
-        let examId = typeof (examJson.examId) != 'undefined'  ? examJson.examId : 'undefined';
-        let examIndex = typeof (examJson.examIndex) != 'undefined'  ? examJson.examIndex : 'undefined';
+    static get aliasMap() {
+        return {
+            examId: 'id',
+            examIndex: 'index'
+        };
 
-        //instantiate
-        let e = new Exam({examId: examId, examIndex: examIndex});
-
-        //fill any fillable values
-        [this.fillableProps()].forEach(()=>{
-            if(typeof (examJson[this]) != 'undefined' ){
-                e[this] = examJson[this];
-            }
-        });
-
-        return e;
     }
+
+
+    static factory( params ) {
+        let exam = new Exam();
+
+        return this.fillObject(exam, params);
+//
+//         if ( typeof params != 'undefined' ) {
+//             //fill any fillable values
+//             this.fillableProps.forEach( function ( v ) {
+//                 // console.log( 'params', params, v );
+//                 if ( typeof params[ v ] != 'undefined' ) {
+//                     exam[ v ] = params[ v ];
+//                 }
+//             } );
+//
+//             //fill any aliased values
+//             for ( let v in this.aliasMap ) {
+//                 if ( typeof params[ v ] != 'undefined' ) {
+//                     // console.log( 'alias', v, map[v] );
+//                     exam[ this.aliasMap[ v ] ] = params[ v ];
+//                 }
+//             }
+//         }
+// //we will still return an empty exam if there
+//         //were no parameters
+//         return exam;
+    }
+
+
 
 }

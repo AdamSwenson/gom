@@ -14128,7 +14128,7 @@ window.onload = function () {
     //     /* ---------- update the element's score visually and in data.elementScores[] --------- */
     //
     //     //store the new element score in the data object
-    //     data.storeElementScore( Roster.activeStudent, elementIndex, score );
+    //     data.setElementScore( Roster.activeStudent, elementIndex, score );
     //
     //
     //     /**

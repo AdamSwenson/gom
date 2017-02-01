@@ -63,162 +63,160 @@ let obj = questions.default;
 let {getters, actions, mutations} = obj;
 
 
-describe( "store | modules | ", function () {
-    describe( "questions | ", function () {
-        beforeEach( function () {
-            this.state = makeState();
-            this.rootState = makeRootState();
-            this.payload = makeTestPayload();
-            this.mutationPayload = makeMutationPayload();
-        } );
+describe( "store | modules | questions | ", function () {
+    beforeEach( function () {
+        this.state = makeState();
+        this.rootState = makeRootState();
+        this.payload = makeTestPayload();
+        this.mutationPayload = makeMutationPayload();
+    } );
 
-        describe( "mutations | ", function () {
+    describe( "mutations | ", function () {
 
-            // describe( description( mTypes.loadQuestions ), function () {
-            //     it( "happy path  ", function () {
-            //         let pl = {
-            //             [this.payload.questionIndex]: this.payload
-            //         };
-            //         //call
-            //         mutations[ mTypes.loadQuestions ]( this.state, this.rootState, pl);
-            //         //check
-            //         let result = this.state.questions[this.payload.questionIndex];
-            //         expect( result ).toBe( this.payload);
-            //     } );
-            // } );
+        // describe( description( mTypes.loadQuestions ), function () {
+        //     it( "happy path  ", function () {
+        //         let pl = {
+        //             [this.payload.questionIndex]: this.payload
+        //         };
+        //         //call
+        //         mutations[ mTypes.loadQuestions ]( this.state, this.rootState, pl);
+        //         //check
+        //         let result = this.state.questions[this.payload.questionIndex];
+        //         expect( result ).toBe( this.payload);
+        //     } );
+        // } );
 
-            // describe( description( mTypes.loadMaxQuestionScores ), function () {
-            //     it( "happy path  ", function () {
-            //         //call
-            //         mutations[ mTypes.loadMaxQuestionScores ]( this.state, this.rootState, this.payload );
-            //         //check
-            //         expect( this.state.maxQuestionScores ).toBe( this.payload );
-            //     } );
-            // } );
-
-
-            describe( description( mTypes.setMaxQuestionScore ), function () {
-                it( "happy path  ", function () {
-                    //call
-                    mutations[ mTypes.setMaxQuestionScore ]( this.state, this.rootState, this.mutationPayload );
-                    //check
-                    expect( this.state.maxQuestionScores[ this.mutationPayload.index ] ).toBe( this.mutationPayload.num );
-                } );
-            } );
+        // describe( description( mTypes.loadMaxQuestionScores ), function () {
+        //     it( "happy path  ", function () {
+        //         //call
+        //         mutations[ mTypes.loadMaxQuestionScores ]( this.state, this.rootState, this.payload );
+        //         //check
+        //         expect( this.state.maxQuestionScores ).toBe( this.payload );
+        //     } );
+        // } );
 
 
-            describe( description( mTypes.removeMaxQuestionScore ), function () {
-                it( "happy path  ", function () {
-                    //call
-                    mutations[ mTypes.removeMaxQuestionScore ]( this.state, this.rootState, this.mutationPayload );
-                    //check
-                    //check nor in keys
-                    let target = this.state.maxQuestionScores[ this.mutationPayload.index ]
-                    expect( typeof Object.keys( this.state.maxQuestionScores )[this.mutationPayload.index] ).toBe( 'undefined');
-                    expect( typeof target).toBe( 'undefined');
-                } );
-            } );
-
-
-            describe( description( mTypes.setQuestion ), function () {
-                it( "happy path  ", function () {
-                    //call
-                    mutations[ mTypes.setQuestion ]( this.state, this.rootState, this.mutationPayload );
-                    //check
-                    expect( this.state.questions[ this.mutationPayload.index ] ).toBe( this.mutationPayload.obj );
-                } );
-            } );
-
-
-            describe( description( mTypes.removeQuestion ), function () {
-                it( "happy path ", function () {
-                    //call
-                    mutations[ mTypes.removeQuestion ]( this.state, this.rootState, this.mutationPayload );
-                    //check
-                    //check nor in keys
-                    let target = this.state.questions[ this.mutationPayload.index ]
-                    // expect( typeof Object.keys( this.state.questions )[this.mutationPayload.index] ).toBe( 'undefined');
-                    expect( typeof target).toBe( 'undefined');
-                } );
-
+        describe( description( mTypes.setMaxQuestionScore ), function () {
+            it( "happy path  ", function () {
+                //call
+                mutations[ mTypes.setMaxQuestionScore ]( this.state, this.rootState, this.mutationPayload );
+                //check
+                expect( this.state.maxQuestionScores[ this.mutationPayload.index ] ).toBe( this.mutationPayload.num );
             } );
         } );
 
 
-        describe( "actions | ", function () {
-
-            describe( description( aTypes.addQuestion ), function () {
-                it( "happy path | ", function () {
-                    let action = actions[ aTypes.addQuestion ];
-                    let expectedMutation = [ {
-                        type: mTypes.setQuestion,
-                        payload: Payload.factory( this.payload )
-                    } ];
-
-                    testAction( action, this.payload, this.state, expectedMutation );
-                } );
+        describe( description( mTypes.removeMaxQuestionScore ), function () {
+            it( "happy path  ", function () {
+                //call
+                mutations[ mTypes.removeMaxQuestionScore ]( this.state, this.rootState, this.mutationPayload );
+                //check
+                //check nor in keys
+                let target = this.state.maxQuestionScores[ this.mutationPayload.index ]
+                expect( typeof Object.keys( this.state.maxQuestionScores )[ this.mutationPayload.index ] ).toBe( 'undefined' );
+                expect( typeof target ).toBe( 'undefined' );
             } );
+        } );
 
-            describe( description( aTypes.loadMaxQuestionScores ), function () {
-                it( "happy path | ", function () {
-                    let action = actions[ aTypes.loadMaxQuestionScores ];
 
-                    testAction( action, this.payload, this.state, [ {
-                        type: mTypes.loadMaxQuestionScores,
-                        payload: this.payload
-                    } ] );
-                } );
+        describe( description( mTypes.setQuestion ), function () {
+            it( "happy path  ", function () {
+                //call
+                mutations[ mTypes.setQuestion ]( this.state, this.rootState, this.mutationPayload );
+                //check
+                expect( this.state.questions[ this.mutationPayload.index ] ).toBe( this.mutationPayload.obj );
             } );
+        } );
 
-            describe( description( aTypes.loadQuestions ), function () {
-                it( "happy path | ", function () {
-                    let action = actions[ aTypes.loadQuestions ];
 
-                    testAction( action, this.payload, this.state, [ {
-                        type: mTypes.loadQuestions,
-                        payload: this.payload
-                    } ] );
-                } );
-            } );
-
-            describe( description( aTypes.loadNumberQuestions ), function () {
-                it( "happy path | ", function () {
-                    let action = actions[ aTypes.loadNumberQuestions ];
-
-                    testAction( action, this.payload, this.state, [ {
-                        type: mTypes.setNumberQuestions,
-                        payload: this.payload
-                    } ] );
-                } );
+        describe( description( mTypes.removeQuestion ), function () {
+            it( "happy path ", function () {
+                //call
+                mutations[ mTypes.removeQuestion ]( this.state, this.rootState, this.mutationPayload );
+                //check
+                //check nor in keys
+                let target = this.state.questions[ this.mutationPayload.index ]
+                // expect( typeof Object.keys( this.state.questions )[this.mutationPayload.index] ).toBe( 'undefined');
+                expect( typeof target ).toBe( 'undefined' );
             } );
 
         } );
+    } );
 
-        describe( "getters | ", function () {
-            describe( "getQuestion | ", function () {
-                it( "happy path | ", function () {
-                    let expected = this.state.questions[ this.payload.questionIndex ];
 
-                    //call
-                    let result = getters.getQuestion( this.state, {}, this.rootState, this.payload.questionIndex );
+    describe( "actions | ", function () {
 
-                    //check
-                    expect( result ).toBe( expected );
-                } );
+        describe( description( aTypes.addQuestion ), function () {
+            it( "happy path | ", function () {
+                let action = actions[ aTypes.addQuestion ];
+                let expectedMutation = [ {
+                    type: mTypes.setQuestion,
+                    payload: Payload.factory( this.payload )
+                } ];
+
+                testAction( action, this.payload, this.state, expectedMutation );
             } );
-            describe( "getMaxQuestionScore | ", function () {
-                it( "happy path | ", function () {
-                    let expected = this.state.maxQuestionScores[ this.payload.questionIndex ];
+        } );
 
-                    //call
-                    let result = getters.getMaxQuestionScore( this.state, {}, this.rootState, this.payload.questionIndex );
+        describe( description( aTypes.loadMaxQuestionScores ), function () {
+            it( "happy path | ", function () {
+                let action = actions[ aTypes.loadMaxQuestionScores ];
 
-                    //check
-                    expect( result ).toBe( expected );
+                testAction( action, this.payload, this.state, [ {
+                    type: mTypes.loadMaxQuestionScores,
+                    payload: this.payload
+                } ] );
+            } );
+        } );
 
-                } );
+        describe( description( aTypes.loadQuestions ), function () {
+            it( "happy path | ", function () {
+                let action = actions[ aTypes.loadQuestions ];
+
+                testAction( action, this.payload, this.state, [ {
+                    type: mTypes.loadQuestions,
+                    payload: this.payload
+                } ] );
+            } );
+        } );
+
+        describe( description( aTypes.loadNumberQuestions ), function () {
+            it( "happy path | ", function () {
+                let action = actions[ aTypes.loadNumberQuestions ];
+
+                testAction( action, this.payload, this.state, [ {
+                    type: mTypes.setNumberQuestions,
+                    payload: this.payload
+                } ] );
+            } );
+        } );
+
+    } );
+
+    describe( "getters | ", function () {
+        describe( "getQuestion | ", function () {
+            it( "happy path | ", function () {
+                let expected = this.state.questions[ this.payload.questionIndex ];
+
+                //call
+                let result = getters.getQuestion( this.state, {}, this.rootState, this.payload.questionIndex );
+
+                //check
+                expect( result ).toBe( expected );
+            } );
+        } );
+        describe( "getMaxQuestionScore | ", function () {
+            it( "happy path | ", function () {
+                let expected = this.state.maxQuestionScores[ this.payload.questionIndex ];
+
+                //call
+                let result = getters.getMaxQuestionScore( this.state, {}, this.rootState, this.payload.questionIndex );
+
+                //check
+                expect( result ).toBe( expected );
+
             } );
         } );
     } );
-} )
-;
+} );
+

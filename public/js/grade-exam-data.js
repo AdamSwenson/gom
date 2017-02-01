@@ -574,7 +574,7 @@ var Data = function () {
          */
 
     }, {
-        key: 'storeElementScore',
+        key: 'setElementScore',
         value: function storeElementScore(studentIndex, elementIndex, score) {
             this.elementScores[studentIndex][elementIndex] = score;
         }
@@ -1220,11 +1220,11 @@ var Data = function () {
 //      * @param elementIndex
 //      * @param score
 //      */
-//     this.storeElementScore = function ( studentIndex, elementIndex, score ) {
+//     this.setElementScore = function ( studentIndex, elementIndex, score ) {
 //         this.elementScores[ studentIndex ][ elementIndex ] = score;
 //     };
 //     this.storeElementScoreForActiveStudent = function ( elementIndex, score ) {
-//         this.storeElementScore( this.activeStudentIndex, elementIndex, score );
+//         this.setElementScore( this.activeStudentIndex, elementIndex, score );
 //     };
 //
 //     /**

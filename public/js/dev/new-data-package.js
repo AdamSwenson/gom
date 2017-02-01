@@ -547,7 +547,7 @@ var Store = function () {
          */
 
     }, {
-        key: 'storeElementScore',
+        key: 'setElementScore',
         value: function storeElementScore(studentIndex, elementIndex, score) {
             this.elementScores[studentIndex][elementIndex] = score;
         }

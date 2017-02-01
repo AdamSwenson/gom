@@ -17,10 +17,9 @@ export const setActiveExam = 'setActiveExam';
 export const clearActiveExam = 'clearActiveExam'
 
 //activestudent
-export const setIndex = 'setIndex'
-export const setId = 'setId'
-export const setTime = 'setTime'
-export const setStudentObject  = 'setStudentObject'
+export const setActiveStudent = 'setActiveStudent'
+export const clearActiveStudent = 'clearActiveStudent'
+
 
 
 //comments

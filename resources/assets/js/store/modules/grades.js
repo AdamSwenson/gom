@@ -8,7 +8,7 @@
 
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
-
+import Payload from '../models/Payload'
 
 const state = {
     /**
@@ -41,7 +41,8 @@ const mutations = {
      * @param payload
      */
     [mTypes.loadExamGrades]: ( state, rootState, payload ) => {
-        state.examGrades = payload;
+        Payload.checkIfPayload( payload );
+        state.examGrades = payload.obj;
     },
 
     /**
@@ -51,7 +52,8 @@ const mutations = {
      * @param payload
      */
     [mTypes.loadStandardGrades]: ( state, rootState, payload ) => {
-        state.standardGrades = payload;
+        Payload.checkIfPayload( payload );
+        state.standardGrades = payload.obj;
     },
 
     /**
@@ -59,8 +61,8 @@ const mutations = {
      * @param studentIndex
      */
     [mTypes.setGrade]: ( state, rootState, payload ) => {
-        let {studentIndex, score} = payload;
-        state.examGrades[ studentIndex ] = score;
+        Payload.checkIfPayload( payload );
+        state.examGrades[ payload.index ] = payload.num;
     },
 };
 
@@ -74,7 +76,8 @@ const actions = {
      */
     [aTypes.loadExamGrades]: ( {state, commit}, studentGrades ) => {
         //todo type checks
-        commit( mTypes.loadExamGrades, studentGrades );
+        let out = Payload.factory({obj: studentGrades})
+        commit( mTypes.loadExamGrades, out);
         // state.examGrades = studentGrades;
     },
 
@@ -86,7 +89,9 @@ const actions = {
         if ( typeof gradesJson == 'string' ) {
             gradesJson = JSON.parse( gradesJson );
         }
-        state.standardGrades = gradesJson;
+        let out = Payload.factory({obj: gradesJson})
+        commit(mTypes.loadStandardGrades, out);
+        // state.standardGrades = gradesJson;
     },
 
     /**
@@ -115,10 +120,18 @@ const actions = {
             }
             if ( totalScore != null && totalScore >= 0 ) {
                 //push the total score into exam grades as a string
-                state.examGrades[ studentIndex ] = totalScore.toPrecision( 3 );
+                // state.examGrades[ studentIndex ] = totalScore.toPrecision( 3 );
+                let score =  totalScore.toPrecision( 3 );
+
+                let out = Payload.factory({index: studentIndex, num: score});
+
+                commit( mTypes.setGrade, out );
+
             } else {
                 //replace 'letter grade' with -1
-                state.examGrades[ studentIndex ] = -1;
+                // state.examGrades[ studentIndex ] = -1;
+                let out = Payload.factory({index: studentIndex, num: -1});
+                commit( mTypes.setGrade, out );
             }
         }
         // } catch ( err ) {

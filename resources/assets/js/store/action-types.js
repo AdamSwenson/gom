@@ -15,13 +15,18 @@ export const setActiveStudentId = 'setActiveStudentId'
 export const setActiveStudentIndex = 'setActiveStudentIndex'
 export const setActiveStudentObject = 'setActiveStudentObject'
 export const setActiveStudentTime = 'setActiveStudentTime'
+export const setIndex = 'setIndex'
+export const setId = 'setId'
+export const setTime = 'setTime'
+export const setStudentObject  = 'setStudentObject'
+
 
 //comments
 export const storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent'
 export const storeCommentText = 'storeCommentText'
 
 //escores
-export const storeElementScore = 'storeElementScore'
+export const setElementScore = 'setElementScore'
 export const storeElementScoreForActiveStudent = 'storeElementScoreForActiveStudent'
 
 //exams

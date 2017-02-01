@@ -3,6 +3,19 @@ require( 'jasmine-jquery' );
 require( 'sinon' );
 let faker = require( 'faker' );
 
+import {testAction, description, factories} from '../../../helpers/vuex.spec.helpers';
+
+//Dependencies
+import * as escores from '../../../../../resources/assets/js/store/modules/escores';
+import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
+import * as aTypes from '../../../../../resources/assets/js/store/action-types'
+import Payload from '../../../../../resources/assets/js/store/models/Payload'
+
+
+//valid values for indexes
+const studentIndexValues = [ 0, 1, 2, 3, 4 ];
+const elementIndexValues = [ 0, 1, 2, 3, 4 ];
+
 
 const makeState = ( n = 5 ) => {
     // Format: { studentIndex : { elementIndex : elementScore},  ...
@@ -13,114 +26,122 @@ const makeState = ( n = 5 ) => {
     for ( let i = 0; i < n; i++ ) {
         s.elementScores[ i ] = {}
         for ( let k = 0; k < n; k++ ) {
-            s.elementScores[ i ][ k ] = faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
+            s.elementScores[ i ][ k ] = faker.random.number();
         }
     }
     return s;
 };
 
-const makeRootState = () => {
+const makeRootState = function () {
     return {
         elementScores: {}
     };
 };
 
-const makeTestPayload = () => {
+const makeTestPayload = function () {
+    let m = makeMutationPayload();
     return {
-        elementIndex: faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] ),
-        studentIndex: faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] ),
-        elementScore: faker.random.number()
+        elementIndex: m.index2,
+        studentIndex: m.index,
+        elementScore: m.num
     };
 };
 
 
-import {testAction, description, factories} from '../../../helpers/vuex.spec.helpers';
+const makeMutationPayload = function () {
+    return Payload.factory( {
+        index: faker.random.arrayElement( studentIndexValues ),
+        index2: faker.random.arrayElement( elementIndexValues ),
+        num: faker.random.number(),
+        // obj: {test: 'test'}
+    } );
+};
 
-//Dependencies
-import * as escores from '../../../../../resources/assets/js/store/modules/escores';
-import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
-import * as aTypes from '../../../../../resources/assets/js/store/action-types'
 
 //tested object
 let obj = escores.default;
 //tested methods
 let {getters, actions, mutations} = obj;
 
-describe( "store | modules | ", function () {
-    describe( "escores | ", function () {
-        beforeEach( function () {
-            this.state = makeState();
-            this.rootState = makeRootState();
-            this.payload = makeTestPayload();
-        } );
+describe( "store | modules | escores | ", function () {
+    beforeEach( function () {
+        this.state = makeState();
+        this.rootState = makeRootState();
+        this.payload = makeTestPayload();
+        this.mutationPayload = makeMutationPayload();
 
-        describe( "mutations | ", function () {
-            describe( description( mTypes.loadElementScores ), () => {
+    } );
 
-                it( "happy path | ", function () {
-                    //call
-                    mutations.loadElementScores( this.state, this.rootState, this.payload );
+    describe( "mutations | ", function () {
+        describe( description( mTypes.loadElementScores ), function () {
 
-                    //check
-                    //the object will be replaced by test
-                    expect( this.state.elementScores ).toBe( this.payload );
-                } );
+            it( "happy path ", function () {
+                this.mutationPayload.obj = {test: 'test'};
 
+                //call
+                mutations.loadElementScores( this.state, this.rootState, this.mutationPayload );
+
+                //check
+                expect( this.state.elementScores ).toBe( this.mutationPayload.obj );
             } );
-
-            describe( description( mTypes.setElementScore ), function () {
-                it( "happy path | ", function () {
-                    //call
-                    mutations.setElementScore( this.state, this.rootState, this.payload );
-
-                    //check
-                    //the object will be replaced by test
-                    expect( this.state.elementScores[ this.payload.studentIndex ][ this.payload.elementIndex ] )
-                        .toBe( this.payload.elementScore );
-                } );
-            } );
-
 
         } );
 
-        describe( "actions | ", function () {
-            describe( description( aTypes.storeElementScoreForActiveStudent ), function () {
-                xit( "happy path | ", function () {
-                    //todo
-                } );
+        describe( description( mTypes.setElementScore ), function () {
+            it( "happy path  ", function () {
+                //call
+                mutations.setElementScore( this.state, this.rootState, this.mutationPayload );
+
+                //check
+                expect( this.state.elementScores[ this.mutationPayload.index ][ this.mutationPayload.index2 ] )
+                    .toBe( this.mutationPayload.num );
             } );
+        } );
+    } );
 
-            describe( description( aTypes.storeElementScore ), () => {
-                it( "happy path | ", () => {
-                    let action = actions[ aTypes.storeElementScore ];
 
-                    testAction( action, this.payload, this.state, [ {
-                        type: mTypes.setElementScore,
-                        payload: this.payload
-                    } ] );
-
-                } );
+    describe( "actions | ", function () {
+        describe( description( aTypes.storeElementScoreForActiveStudent ), function () {
+            xit( "happy path  ", function () {
+                //todo
             } );
         } );
 
-        describe( "getters | ", function() {
-            describe( "getElementScore | ", function(){
-                it( "happy path | ", function(){
-                    let expected = this.state.elementScores[ this.payload.studentIndex ][ this.payload.elementIndex ];
+        describe( description( aTypes.setElementScore ), function () {
+            it( "happy path ", function () {
+                let action = actions[ aTypes.setElementScore ];
+                let p = {
+                    studentIndex: this.mutationPayload.index,
+                    elementIndex: this.mutationPayload.index2,
+                    score: this.mutationPayload.num
+                };
+                this.mutationPayload.obj = 'undefined';
+                testAction( action, p, this.state, [ {
+                    type: mTypes.setElementScore,
+                    payload: this.mutationPayload
+                } ] );
 
-                    //call
-                    let result = getters.getElementScore( this.state, {}, this.rootState, this.payload.studentIndex, this.payload.elementIndex );
-
-                    //check
-                    expect( result ).toBe( expected );
-
-                } );
             } );
+        } );
+    } );
 
-            describe( "getElementScoreForActiveStudent | ", () => {
-                xit( "happy path | ", () => {
-                    //todo
-                } );
+    describe( "getters | ", function () {
+        describe( "getElementScore | ", function () {
+            it( "happy path ", function () {
+                let expected = this.state.elementScores[ this.payload.studentIndex ][ this.payload.elementIndex ];
+
+                //call
+                let result = getters.getElementScore( this.state, {}, this.rootState, this.payload.studentIndex, this.payload.elementIndex );
+
+                //check
+                expect( result ).toBe( expected );
+
+            } );
+        } );
+
+        describe( "getElementScoreForActiveStudent | ", function () {
+            xit( "happy path  ", function () {
+                //todo
             } );
         } );
     } );

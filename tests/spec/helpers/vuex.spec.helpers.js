@@ -23,7 +23,9 @@ export const factories = {
     examFactory: ( index ) => {
         let idx = typeof index != 'undefined' ? index : faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
 
-        let e = new Exam( faker.random.number() );
+        let e = new Exam();
+        e.id = faker.random.number();
+        e.index = idx;
         e.name = faker.company.bsNoun();
         e.year = 2013;
         e.term = faker.company.bs();
@@ -81,25 +83,52 @@ export const description = ( text ) => {
  * @param expectedMutations
  * @param done Callback
  */
-export const testAction = ( action, payload, state, expectedMutations, done ) => {
+export const testAction = ( action, payload, state, expectedMutations, ...kwargs ) => {
     let count = 0
+    let verbose = false;
+
+    if ( typeof kwargs[ 0 ] != 'undefined' && typeof kwargs[ 0 ][ 'verbose' ] != 'undefined' ) {
+        verbose = kwargs[ 0 ].verbose;
+    }
+    ;
+
+    if ( verbose ) {
+        console.log( 'verbose', verbose, kwargs );
+    }
 
     // mock commit
     const commit = ( type, payload ) => {
         const mutation = expectedMutations[ count ]
         expect( mutation.type ).toBe( type )
         if ( payload ) {
+            if ( verbose ) {
+                console.log( 'mutation', mutation, 'payload', payload );
+            }
+
             if ( typeof mutation.payload == 'object' ) {
+                if ( verbose ) {
+                    console.log( 'type is object', typeof mutation.payload );
+                }
+
                 //check that of same type
                 expect( typeof mutation.payload === typeof payload );
+
                 //check that have the same number of properties
                 expect( Object.keys( mutation.payload ).length === Object.keys( payload ).length );
+
                 //check have same values for properties
                 for ( let prop in mutation.payload ) {
+                    if ( verbose ) {
+                        console.log( 'checking prop', prop, 'payload', payload, 'payload value', payload[ prop ] );
+                    }
                     expect( mutation.payload[ prop ] ).toBe( payload[ prop ] );
                 }
             }
+
             else {
+                if ( verbose ) {
+                    console.log( 'type not object', typeof mutation.payload );
+                }
                 expect( mutation.payload ).toBe( payload )
             }
 
