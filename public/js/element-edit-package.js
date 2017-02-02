@@ -14723,7 +14723,9 @@ module.exports = function () {
     }
 
     (function () {
-        setActiveNavTab(activeTab);
+        if (typeof activeTab != 'undefined') {
+            setActiveNavTab(activeTab);
+        }
     })();
 };
 

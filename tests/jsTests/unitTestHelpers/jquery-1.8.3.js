@@ -4176,11 +4176,11 @@
                     /* matches from matchExpr["CHILD"]
                      1 type (only|nth|...)
                      2 argument (even|odd|\d*|\d*n([+-]\d+)?|...)
-                     3 xn-component of xn+y argument ([+-]?\d*n|)
-                     4 sign of xn-component
-                     5 x of xn-component
-                     6 sign of y-component
-                     7 y of y-component
+                     3 xn-components of xn+y argument ([+-]?\d*n|)
+                     4 sign of xn-components
+                     5 x of xn-components
+                     6 sign of y-components
+                     7 y of y-components
                      */
                     match[1] = match[1].toLowerCase();
 

@@ -5719,11 +5719,11 @@ Expr = Sizzle.selectors = {
 				1 type (only|nth|...)
 				2 what (child|of-type)
 				3 argument (even|odd|\d*|\d*n([+-]\d+)?|...)
-				4 xn-component of xn+y argument ([+-]?\d*n|)
-				5 sign of xn-component
-				6 x of xn-component
-				7 sign of y-component
-				8 y of y-component
+				4 xn-components of xn+y argument ([+-]?\d*n|)
+				5 sign of xn-components
+				6 x of xn-components
+				7 sign of y-components
+				8 y of y-components
 			*/
 			match[1] = match[1].toLowerCase();
 
@@ -15585,8 +15585,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 /**
- * Check if an element is a component, if yes return its
- * component id.
+ * Check if an element is a components, if yes return its
+ * components id.
  *
  * @param {Element} el
  * @param {Object} options
@@ -15718,7 +15718,7 @@ strats.data = function (parentVal, childVal, vm) {
 
 strats.el = function (parentVal, childVal, vm) {
   if (!vm && childVal && typeof childVal !== 'function') {
-    process.env.NODE_ENV !== 'production' && warn('The "el" option should be a function ' + 'that returns a per-instance value in component ' + 'definitions.', vm);
+    process.env.NODE_ENV !== 'production' && warn('The "el" option should be a function ' + 'that returns a per-instance value in components ' + 'definitions.', vm);
     return;
   }
   var ret = childVal || parentVal;
@@ -15796,7 +15796,7 @@ var defaultStrat = function defaultStrat(parentVal, childVal) {
 };
 
 /**
- * Make sure component options get converted to actual
+ * Make sure components options get converted to actual
  * constructors.
  *
  * @param {Object} options
@@ -15813,7 +15813,7 @@ function guardComponents(options) {
     for (var i = 0, l = ids.length; i < l; i++) {
       var key = ids[i];
       if (commonTagRE.test(key) || reservedTagRE.test(key)) {
-        process.env.NODE_ENV !== 'production' && warn('Do not use built-in or reserved HTML elements as component ' + 'id: ' + key);
+        process.env.NODE_ENV !== 'production' && warn('Do not use built-in or reserved HTML elements as components ' + 'id: ' + key);
         continue;
       }
       // record a all lowercase <-> kebab-case mapping for
@@ -19655,10 +19655,10 @@ var component = {
    * Setup. Two possible usages:
    *
    * - static:
-   *   <comp> or <div v-component="comp">
+   *   <comp> or <div v-components="comp">
    *
    * - dynamic:
-   *   <component :is="view">
+   *   <components :is="view">
    */
 
   bind: function bind() {
@@ -19916,7 +19916,7 @@ var component = {
   remove: function remove(child, cb) {
     var keepAlive = this.keepAlive;
     if (child) {
-      // we may have a component switch when a previous
+      // we may have a components switch when a previous
       // component is still being transitioned out.
       // we want to trigger only one lastest insertion cb
       // when the existing transition finishes. (#1119)
@@ -21031,7 +21031,7 @@ function compileAndLinkProps(vm, el, props, scope) {
  * Compile the root element of an instance.
  *
  * 1. attrs on context container (context scope)
- * 2. attrs on the component template root node, if
+ * 2. attrs on the components template root node, if
  *    replace:true (child scope)
  *
  * If this is a fragment instance, we only need to compile 1.
@@ -21155,7 +21155,7 @@ function compileElement(el, options) {
   if (!linkFn) {
     linkFn = checkElementDirectives(el, options);
   }
-  // check component
+  // check components
   if (!linkFn) {
     linkFn = checkComponent(el, options);
   }
@@ -21353,8 +21353,8 @@ function checkElementDirectives(el, options) {
 }
 
 /**
- * Check if an element is a component. If yes, return
- * a component link function.
+ * Check if an element is a components. If yes, return
+ * a components link function.
  *
  * @param {Element} el
  * @param {Object} options
@@ -21742,7 +21742,7 @@ function transcludeTemplate(el, options) {
 }
 
 /**
- * Helper to extract a component container's attributes
+ * Helper to extract a components container's attributes
  * into a plain object array.
  *
  * @param {Element} el
@@ -22283,7 +22283,7 @@ function noop$1() {}
  *                 - {Boolean} [hasOneTime]
  * @param {Vue} vm
  * @param {Node} el
- * @param {Vue} [host] - transclusion host component
+ * @param {Vue} [host] - transclusion host components
  * @param {Object} [scope] - v-for scope
  * @param {Fragment} [frag] - owner fragment
  * @constructor
@@ -22839,7 +22839,7 @@ function miscMixin (Vue) {
   };
 
   /**
-   * Resolve a component, depending on whether the component
+   * Resolve a components, depending on whether the components
    * is defined normally or using an async factory function.
    * Resolves synchronously if already resolved, otherwise
    * resolves asynchronously and caches the resolved

@@ -1,0 +1,14 @@
+<nav>
+    <ol class="breadcrumb"
+            id="crumbNav"
+    >
+
+        <li
+                v-for="item in links"
+                class="{{ isActive($index)}}"
+        >
+            <a href="{{item.target}}">{{item.label}}</a>
+        </li>
+
+    </ol>
+</nav>

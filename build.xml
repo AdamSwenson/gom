@@ -27,6 +27,7 @@
             depends="prepare,karma"
             description="run karma test suite only"/>
 
+
     <target name="tools-parallel" description="Run tools in parallel">
         <parallel threadCount="2">
             <sequential>
