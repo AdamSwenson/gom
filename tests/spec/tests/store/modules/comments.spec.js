@@ -60,7 +60,6 @@ const makeTextPayload = function () {
 };
 
 
-
 describe( "store | modules | comments | ", function () {
     beforeEach( function () {
         //test data
@@ -166,18 +165,28 @@ describe( "store | modules | comments | ", function () {
 
         //THIS IS THE MOST IMPORTANT ONE!!!!!!!
         describe( "getCommentText | ", function () {
-            it( "happy path  ", function () {
-                // //prep
-                let valence = this.payload.studentIndex;
-                //call
-                let result = getters.getCommentText( this.state, {}, this.rootState, this.payload.studentIndex, this.payload.elementIndex, valence );
 
-                //check
-                expect( result ).toBe( this.state.elementComments[ this.payload.studentIndex ][ this.payload.elementIndex ] );
+            describe( "happy paths | ", function () {
+                it( "Custom comment ", function () {
+                    // //prep
+                    let valence = this.payload.studentIndex;
+                    //call
+                    let result = getters.getCommentText( this.state, {}, this.rootState, this.payload.studentIndex, this.payload.elementIndex, valence );
 
+                    //check
+                    expect( result ).toBe( this.state.elementComments[ this.payload.studentIndex ][ this.payload.elementIndex ] );
+                } );
+
+                xit( " Stock comment ", function () {
+
+                    //todo lots of cases
+                } );
+                xit( " Empty comment ", function () {
+
+                    //todo lots of cases
+                } );
             } );
 
-            //todo lots of cases
         } );
 
         describe( "getStoredCommentText | ", function () {
