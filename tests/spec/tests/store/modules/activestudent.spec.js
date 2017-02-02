@@ -304,12 +304,12 @@ describe( "store | modules | activestudent | ", function () {
     describe( "getters | ", function () {
         beforeEach( function () {
             this.state.activeStudent = this.student;
-            console.log( 'getters', this.student );
+            // console.log( 'getters', this.student );
         } );
 
         describe( "getActiveStudentId | ", function () {
             it( "happy path ", function () {
-                console.log( 'fasi', this.student );
+                // console.log( 'fasi', this.student );
 
                 expect( getters.getActiveStudentId( this.state, {}, {} ) ).toBe( this.student.id );
             } );

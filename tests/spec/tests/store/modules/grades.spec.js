@@ -65,7 +65,6 @@ describe( "store.modules | grades | ", function () {
             it( "happy path ", function () {
                 mutations[ mTypes.loadExamGrades ]( this.state, this.rootState, this.mutationPayload );
                 expect( this.state.examGrades ).toBe( this.mutationPayload.obj );
-
             } );
         } );
 

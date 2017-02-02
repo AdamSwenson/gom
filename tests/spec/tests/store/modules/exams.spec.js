@@ -71,9 +71,11 @@ describe( "store | modules |  exams | ", function () {
                 expect( this.state.exams[ this.mutationPayload.id ] ).toBe( this.mutationPayload.obj );
             } );
 
-            xit( "payload.obj not Exam | ", function () {
-                // mutations[ mTypes.addExam ]( this.state, this.rootState, this.payload );
-                // expect( this.state.exams[ this.payload.obj.id ] ).toBe( this.payload.obj );
+            describe( "unhappy paths | ", function () {
+                xit( "payload.obj not Exam | ", function () {
+                    // mutations[ mTypes.addExam ]( this.state, this.rootState, this.payload );
+                    // expect( this.state.exams[ this.payload.obj.id ] ).toBe( this.payload.obj );
+                } );
             } );
         } );
 
@@ -85,14 +87,16 @@ describe( "store | modules |  exams | ", function () {
                 expect( this.state.indexMap[ this.mutationPayload.index ] ).toBe( this.mutationPayload.id );
             } );
 
-            xit( "payload does not contain index  | ", function () {
-                // mutations[ mTypes.addExam ]( this.state, this.rootState, this.payload );
-                // expect( this.state.exams[ this.payload.obj.id ] ).toBe( this.payload.obj );
-            } );
+            describe( "unhappy paths | ", function () {
+                xit( "payload does not contain index  | ", function () {
+                    // mutations[ mTypes.addExam ]( this.state, this.rootState, this.payload );
+                    // expect( this.state.exams[ this.payload.obj.id ] ).toBe( this.payload.obj );
+                } );
 
-            xit( "payload does not contain id  | ", function () {
-                // mutations[ mTypes.addExam ]( this.state, this.rootState, this.payload );
-                // expect( this.state.exams[ this.payload.obj.id ] ).toBe( this.payload.obj );
+                xit( "payload does not contain id  | ", function () {
+                    // mutations[ mTypes.addExam ]( this.state, this.rootState, this.payload );
+                    // expect( this.state.exams[ this.payload.obj.id ] ).toBe( this.payload.obj );
+                } );
             } );
         } );
 
@@ -130,16 +134,17 @@ describe( "store | modules |  exams | ", function () {
                     examObject: this.mutationPayload.obj
                 }, this.state, expectedMutations );
             } );
+
+
+            describe( "unhappy paths | ", function () {
+                //needs non instance of exam case too
+            } );
         } );
-        //needs non instance of exam case too
 
 
         describe( description( aTypes.loadExams ), function () {
             xit( "happy path | ", function () {
-
                 let action = actions[ aTypes.loadExams ];
-//Todo write
-//                let pl = makeTestPayload();
                 let expectedMutations = [
                     {
                         type: mTypes.addExam,
@@ -154,8 +159,11 @@ describe( "store | modules |  exams | ", function () {
 
                 testAction( action, this.payload, this.state, expectedMutations );
             } );
+
+            describe( "unhappy paths | ", function () {
+                //needs non instance of exam case too
+            } );
         } );
-        //needs non instance of exam case too
 
     } );
 
@@ -184,8 +192,7 @@ describe( "store | modules |  exams | ", function () {
                 for ( let i = 0; i < result.length; i++ ) {
                     expect( typeof result[ i ] ).toBe( 'object' );
                     expect( result[ i ] instanceof Exam ).toBe( true );
-                }
-                ;
+                };
             } );
         } );
 

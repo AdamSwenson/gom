@@ -35,9 +35,8 @@ const mutations = {
 
     /**
      * Resets active exam to null
-     * It's tempting to consolodate tbhis with the above
-     * but it actually turns out to be a bit complicatied to get rid of this
-
+     * It's tempting to consolidate this with the above
+     * but it actually turns out to be a bit complicated to get rid of this
      * @param state
      * @param rootState
      * @param payload

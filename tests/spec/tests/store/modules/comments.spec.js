@@ -15,7 +15,7 @@ let obj = comments.default;
 let {getters, actions, mutations} = obj;
 
 
-//valid values for indees
+//valid values for indexes
 let studentIndexValues = [ 0, 1, 2, 3, 4 ];
 let elementIndexValues = [ 0, 1, 2, 3, 4 ];
 
@@ -35,11 +35,6 @@ const makeState = ( n = 5 ) => {
 
 const makeRootState = function () {
     return obj.state;
-    // return {
-    //     elementComments: {},
-    //     stockComments: {}
-    // };
-
 };
 
 const makeMutationPayload = function () {
@@ -99,13 +94,10 @@ describe( "store | modules | comments | ", function () {
         describe( description( mTypes.setElementComment ), function () {
             describe( "pre-existing comment text | ", function () {
                 it( "happy path ", function () {
-
                     //call
                     mutations[ mTypes.setElementComment ]( this.state, this.rootState, this.mutationPayload );
                     //check
-
                     let target = this.state.elementComments[ this.mutationPayload.index ][ this.mutationPayload.index2 ];
-
                     expect( target ).toBe( this.mutationPayload.str );
                 } );
             } );
@@ -153,11 +145,8 @@ describe( "store | modules | comments | ", function () {
     describe( "getters | ", function () {
         describe( "getElementComment | ", function () {
             it( "happy path ", function () {
-                //prep
-
                 //call
                 let result = getters.getElementComment( this.state, {}, this.rootState, this.payload.studentIndex, this.payload.elementIndex );
-
                 //check
                 expect( result ).toBe( this.state.elementComments[ this.payload.studentIndex ][ this.payload.elementIndex ] );
             } )
@@ -191,11 +180,8 @@ describe( "store | modules | comments | ", function () {
 
         describe( "getStoredCommentText | ", function () {
             it( "happy path ", function () {
-                //prep
-
                 //call
                 let result = getters.getStoredCommentText( this.state, {}, this.rootState, this.payload.studentIndex, this.payload.elementIndex );
-
                 //check
                 expect( result ).toBe( this.state.elementComments[ this.payload.studentIndex ][ this.payload.elementIndex ] );
             } )

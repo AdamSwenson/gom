@@ -119,14 +119,14 @@ describe( "store | modules | students | ", function () {
                         obj: this.payload.studentObject
                     } );
 
-                    console.log( 'expect', expected );
+                    // console.log( 'expect', expected );
 
                     let expectMutations = [ {
                         type: mTypes.setStudent,
                         payload: expected
                     } ];
 
-                    console.log( 'expectM', expectMutations );
+                    // console.log( 'expectM', expectMutations );
                     testAction( action, this.payload, this.state, expectMutations );
 
                 } );
@@ -140,21 +140,6 @@ describe( "store | modules | students | ", function () {
                     let expectedMutations = makeExpMut( mTypes.setStudent, pl );
 
                     testAction( action, pl, this.state, expectedMutations );
-
-                    // let pl = [ {
-                    //     studentIndex: this.payload.studentIndex,
-                    //     studentObject: this.student
-                    // }, {
-                    //     studentIndex: this.payload.studentIndex + 1,
-                    //     studentObject: factories.studentFactory()
-                    // } ];
-
-                    // let expected = Payload.factory( {
-                    //     index: this.payload.studentIndex,
-                    //
-                    // } );
-
-
                 } );
             } );
         } );
@@ -175,7 +160,7 @@ describe( "store | modules | students | ", function () {
 
     describe( "getters | ", function () {
         describe( "getStudent | ", function () {
-            it( "happy path | ", function () {
+            it( "happy path ", function () {
                 //call
                 let result = getters.getStudent( this.state, {}, this.rootState, this.payload.studentIndex );
                 //check
@@ -185,7 +170,7 @@ describe( "store | modules | students | ", function () {
         } );
 
         describe( "getStudents | ", function () {
-            it( "happy path | ", function () {
+            it( "happy path ", function () {
                 //call
                 let result = getters.getStudents( this.state, {}, this.rootState );
                 //check
