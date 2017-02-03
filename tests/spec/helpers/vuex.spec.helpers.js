@@ -11,6 +11,10 @@ import Question from '../../../resources/assets/js/store/models/Question';
 
 let faker = require( 'faker' );
 
+//valid values for indexes
+let studentIndexValues = [ 0, 1, 2, 3, 4 ];
+let elementIndexValues = [ 0, 1, 2, 3, 4 ];
+
 /**
  * Generators of fake model objects
  * @type {{examFactory: (())}}
@@ -53,6 +57,10 @@ export const factories = {
     }
 };
 
+export const getActiveStudentIndex = () => {
+    this.val = faker.random.arrayElement( studentIndexValues );
+    return this.val;
+}
 
 /**
  * Wrapper around faker so I don't have to keep remembering

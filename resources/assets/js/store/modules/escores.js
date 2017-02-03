@@ -100,8 +100,10 @@ const getters = {
     },
 
     getElementScoreForActiveStudent(state, getters, rootState, elementIndex) {
-        if (state.activeStudentIndex == null) return '';
-        return state.elementScores[state.activeStudentIndex][elementIndex];
+        let idx = getters.getActiveStudentIndex(state, gettters, rootState);
+        if ( idx == null ) return '';
+
+        return getters.getElementScore(state, getters, rootState, idx, elementIndex);//state.elementScores[state.activeStudentIndex][elementIndex];
     },
 
 

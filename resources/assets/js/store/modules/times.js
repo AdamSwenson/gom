@@ -148,7 +148,42 @@ const actions = {
         commit( mTypes.incrementGradingTime, pl );
     },
 
+    /**
+     * Handles figuring out how to set the time of the the currently
+     * selected student from the provided payload
+     * @returns {boolean}
+     */
+        [aTypes.setActiveStudentTime]({ state, commit }, payload)
+    {
+        let time;
 
+        switch (typeof (payload)) {
+            case 'number':
+                if (Number.isInteger(payload)) {
+                    //go straight to recording
+                    time = payload;
+                }
+                break;
+
+            //object with expected key
+            case 'object':
+                //todo write if object
+                break;
+
+            //other allowed types
+            // todo
+
+            //numeric string
+            // todo
+            default:
+            //todo
+        }
+
+        //Call the mutation
+        if (typeof(time) == 'number') {
+            commit(mTypes.setTime, time);
+        }
+    },
 };
 
 const getters = {
@@ -179,9 +214,12 @@ const getters = {
      * @returns {*}
      */
     getActiveStudentGradingTime: ( state, getters ) => {
+        let idx = getters.getActiveStudentIndex(state, gettters, rootState);
+        if ( idx == null ) return '';
+return getters.getStudentGradingTime(state, getters, idx);
         // if ( ! this.isActive() ) throw "ERROR: getActiveStudentGradingTime | No active student set ";
-        if ( state.activeStudentIndex == null ) return '';
-        return state.examGradingTimes[ state.activeStudentIndex ];
+        // if ( state.activeStudentIndex == null ) return '';
+        // return state.examGradingTimes[ state.activeStudentIndex ];
         // return getters.getStudentGradingTime( state, getters, state.activeStudentIndex );
     }
 };

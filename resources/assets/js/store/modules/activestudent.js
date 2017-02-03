@@ -10,33 +10,15 @@
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
 import Student from '../models/Student'
-
 import Payload from '../models/Payload'
 
 const state = {
 
     /**
      * Holds the object representing the currently selected student
-     * @type Student
+     * @type Student|null
      */
-    activeStudent:null,
-
-    /** The database id of the student currently selected/ being graded
-     * @type integer|null
-     */
-    Id: null,
-
-    /**
-     * The index of the student currently selected/ being graded.
-     * @type integer|null
-     */
-    Index: null,
-
-    /**
-     * Holds the object representing the currently selected student
-     * @type Student
-     */
-    student: null,
+    activeStudent: null,
 
     /**
      * The time spent grading the current student
@@ -49,7 +31,7 @@ const state = {
 const mutations = {
 
     /**
-     * Sets the active exam to the payload
+     * Sets the active student from the object in the payload
      * @param state
      * @param rootState
      * @param payload
@@ -62,7 +44,7 @@ const mutations = {
 
     /**
      * Resets active exam to null
-     * It's tempting to consolodate this with the above
+     * It's tempting to consolidate this with the above
      * but it actually turns out to be a bit complicated to get rid of this
 
      * @param state
@@ -70,62 +52,17 @@ const mutations = {
      * @param payload
      */
     [mTypes.clearActiveStudent]: ( state, rootState, payload ) => {
-        // Payload.checkIfPayload( payload );
         state.activeStudent = null;
-    }
+    },
 
+    [mTypes.setActiveStudentTime]: ( state, rootState, payload ) => {
+        state.Time = payload.num;
+    }
 
 
 };
 
 const actions = {
-    /**
-     * Updates the state's stored index for the currently selected
-     * to the index specified in the payload.
-     * Does not update id or student; those must be called separately
-     * @param state
-     * @param rootState
-     * @param payload
-     */
-        [aTypes.setIndex]({ state, commit }, payload){
-        if (Number.isInteger(payload)) {
-            rootState.Index = payload;
-            state.Index = payload;
-        }
-    },
-
-    /**
-     * Updates the state's stored student id for the currently
-     * selected student to the id specified in the payload.
-     * Does not update index or student; those must be called separately
-     * @param state
-     * @param rootState
-     * @param payload integer
-     * @returns {boolean}
-     */
-        [aTypes.setId]({ state, commit }, payload)
-    {
-        if (Number.isInteger(payload)) {
-            rootState.Id = payload;
-            state.Id = payload;
-            return true;
-        }
-    },
-
-    /**
-     * Sets the state's stored student object to the
-     * object specified in the payload.
-     * Does not update index or id. Those must be called separately.
-     * @param state
-     * @param rootState
-     * @param payload Student
-     */
-        [aTypes.setStudentObject]({ state, commit }, payload)
-    {
-        if (typeof (payload) == 'object' && payload instanceof Student) {
-            state.student = payload;
-        }
-    },
 
     /**
      * Updates the stored time for the currently selected student
@@ -133,136 +70,13 @@ const actions = {
      * @param rootState
      * @param payload integer
      */
-        [aTypes.setTime]({ state, commit }, payload)
+        [aTypes.setTime]( {state, commit}, payload )
     {
-        if (typeof(payload) == 'number') {
+        if ( typeof(payload) == 'number' ) {
+            commit( mTypes.setActiveStudentTime, Payload.factory( {num: payload} ) )
             state.Time = payload;
         }
     },
-
-    /**
-     * Handles figuring out how to set the student id given
-     * the provided payload
-     * @param state
-     * @param rootState
-     * @param payload
-     */
-
-        [aTypes.setActiveStudentId]({ state, commit }, payload){
-    // [aTypes.setActiveStudentId](state, rootState, payload){
-
-        console.log(aTypes.setActiveStudentId, payload);
-        let studentId;
-
-        //number passed in
-        if (typeof (payload) == 'number' && Number.isInteger(payload)) {
-            studentId = payload;
-        }
-
-        //object passed in
-        //todo add object case
-        console.log('studentId', studentId);
-        if (Number.isInteger(studentId)) {
-            commit(mTypes.setId, studentId);
-        }
-    },
-
-    /**
-     * Handles figuring out how to set the student index given
-     * the provided payload
-     * @param state
-     * @param commit
-     * @param payload
-     */
-        [aTypes.setActiveStudentIndex]({ state, commit }, payload){
-        let studentIndex;
-        switch (typeof (payload)) {
-            case 'number':
-                if (Number.isInteger(payload)) {
-                    studentIndex = payload;
-                }
-                break;
-            case 'object':
-                //todo write if object
-
-                break;
-            default:
-        }
-
-        if (Number.isInteger(studentIndex)) {
-            commit(mTypes.setIndex, studentIndex);
-        }
-    },
-
-    /**
-     * Handles figuring out how to set a student object as active
-     * from the provided payload
-     * @param student
-     * @param rootState
-     * @param payload
-     */
-        [aTypes.setActiveStudentObject]({ state, commit }, payload){
-        // let student;
-
-        // if (payload instanceof Student) {
-        //     student = payload;
-        // }
-        // switch(typeof (payload)){
-        //     case 'number':
-        //         if(Number.isInteger(payload)){
-        //             studentIndex = payload;
-        //         }
-        //         break;
-        //     case 'object':
-        //         //todo write if object
-        //
-        //         break;
-        //     default:
-        // }
-
-        //Call the mutation
-        if (payload instanceof Student) {
-            commit(mTypes.setStudentObject, payload);
-        }
-    },
-
-    /**
-     * Handles figuring out how to set the time of the the currently
-     * selected student from the provided payload
-     * @returns {boolean}
-     */
-        [aTypes.setActiveStudentTime]({ state, commit }, payload)
-    {
-        let time;
-
-        switch (typeof (payload)) {
-            case 'number':
-                if (Number.isInteger(payload)) {
-                    //go straight to recording
-                    time = payload;
-                }
-                break;
-
-            //object with expected key
-            case 'object':
-                //todo write if object
-                break;
-
-            //other allowed types
-                // todo
-
-            //numeric string
-                // todo
-            default:
-                //todo
-        }
-
-        //Call the mutation
-        if (typeof(time) == 'number') {
-            commit(mTypes.setTime, time);
-        }
-    },
-
 
     /**
      * Update the state with the indicated student
@@ -274,93 +88,102 @@ const actions = {
      * @param rootState
      * @param payload
      */
-        [aTypes.setActiveStudent]({ state, commit }, payload) {
-        let payloadType;
-        let studentId;
-        let studentIndex;
-        let studentObject;
-        let time;
+        [aTypes.setActiveStudent]( {state, commit}, payload ) {
 
         //Really should've received a Student object.
         //this is the happiest of paths
-        if(payload instanceof Student){
+        if ( payload instanceof Student ) {
             //we just build the payload
-            let pl = Payload.factory({obj: payload});
+            let pl = Payload.factory( {obj: payload} );
             //call the mutation
-            commit(mTypes.setActiveStudent, pl);
+            commit( mTypes.setActiveStudent, pl );
         }
+    },
 
-        //Uh oh. They gave us something other than a student.
-        //Lets try to help them out by finding the right student
-        //object
-        else {
-            //figure out what received in payload
-            switch ( typeof payload ) {
-                case 'number':
-                    if ( Number.isInteger( payload ) ) {
-                        studentId = payload;
-                    }
-                    //non-integer case?
 
-                    break;
+    /**
+     * Resets active exam to null
+     * It's tempting to consolidate this with the above
+     * but it actually turns out to be a bit complicated to get rid of this
 
-                case 'object':
-                    //Generic object with parameters as keys/values
-                    if ( typeof (payload.studentId != 'undefined') ) {
-                        studentId = payload.studentId;
-                        //try getting index and object
-                    }
-                    if ( typeof (payload.studentIndex != 'undefined') ) {
-                        studentIndex = payload.studentIndex;
-                        //try getting id and object
-                    }
+     * @param state
+     * @param rootState
+     * @param payload
+     */
+    [aTypes.clearActiveStudent]: ( {state, commit}, payload ) => {
+        commit( mTypes.clearActiveStudent );
+    },
 
-                    if ( typeof (payload.studentObject != 'undefined') ) {
-                        studentObject = payload.studentObject;
-                        studentId = studentObject.studentId;
-                        studentIndex = studentObject.studentIndex;
-                    }
-                    break;
 
-                case 'student-object':
-                    break;
-            }
+    //
+    // let payloadType;
+    // let studentId;
+    // let studentIndex;
+    // let studentObject;
+    // let time;
+    //
+    //
+    // //Uh oh. They gave us something other than a student.
+    // //Lets try to help them out by finding the right student
+    // //object
+    // else {
+    //     //figure out what received in payload
+    //     switch ( typeof payload ) {
+    //         case 'number':
+    //             if ( Number.isInteger( payload ) ) {
+    //                 studentId = payload;
+    //
+    //             }
+    //             //non-integer case?
+    //
+    //             break;
+    //
+    //         case 'object':
+    //             //Generic object with parameters as keys/values
+    //             if ( typeof (payload.studentId != 'undefined') ) {
+    //                 studentId = payload.studentId;
+    //                 //try getting index and object
+    //             }
+    //             if ( typeof (payload.studentIndex != 'undefined') ) {
+    //                 studentIndex = payload.studentIndex;
+    //                 //try getting id and object
+    //             }
+    //
+    //             if ( typeof (payload.studentObject != 'undefined') ) {
+    //                 studentObject = payload.studentObject;
+    //                 studentId = studentObject.studentId;
+    //                 studentIndex = studentObject.studentIndex;
+    //             }
+    //             break;
+    //
+    //         case 'student-object':
+    //             break;
+    //     }
 
-            //set id
+    //set id
+    // studentObject = Student.factory(payload);
+    //set index
 
-            //set index
+    //set object
 
-            //set object
+    //set time
 
-            //set time
+    // //mapping from expected payload keys to mutations
+    // let mutationMap = {studentId: types.setId, studentIndex: types.setIndex};
+    // let me = this;
+    //
+    // //populate fields from payload
+    // mutationMap.forEach( function ( incomingKey, mutationName ) {
+    //     if ( typeof(payload[ incomingKey ]) != 'undefined' ) {
+    //         //Set the state property
+    //         commit( mutationName, payload );
+    //     }
+    // } );
+    // }
+    // },
 
-            //mapping from expected payload keys to mutations
-            let mutationMap = {studentId: types.setId, studentIndex: types.setIndex};
-            let me = this;
 
-            //populate fields from payload
-            mutationMap.forEach( function ( incomingKey, mutationName ) {
-                if ( typeof(payload[ incomingKey ]) != 'undefined' ) {
-                    //Set the state property
-                    commit( mutationName, payload );
-                }
-            } );
-        }
-    }
 };
-//
-// /**
-//  * internally used helpers
-//  * @type {{if: (()), typeof: boolean}}
-//  */
-// const methods = {
-//
-//     setStudentId: (val) => {
-//         if (typeof val != 'undefined' && val != null && Number.isInteger(val)) {
-//             return val;
-//         }
-//     }
-// };
 
 const getters = {
     /**
@@ -370,7 +193,7 @@ const getters = {
      * @param rootState
      * @returns {null|integer}
      */
-    getActiveStudentId(state, getters, rootState){
+    getActiveStudentId( state, getters, rootState ){
         return state.activeStudent.id;
     },
 
@@ -381,7 +204,7 @@ const getters = {
      * @param rootState
      * @returns {integer|null}
      */
-    getActiveStudentIndex: (state, getters, rootState) => {
+    getActiveStudentIndex: ( state, getters, rootState ) => {
         return state.activeStudent.index;
     },
 
@@ -390,7 +213,7 @@ const getters = {
      * currently selected student.
      * @returns {Student}
      */
-    getActiveStudent: (state, getters, rootState) => {
+    getActiveStudent: ( state, getters, rootState ) => {
         return state.activeStudent;
     }
 

@@ -2,7 +2,7 @@ require( 'jasmine-jquery' );
 require( 'sinon' );
 let faker = require( 'faker' );
 
-import {testAction, description, factories} from '../../../helpers/vuex.spec.helpers';
+import {testAction, description, factories, getActiveStudentIndex} from '../../../helpers/vuex.spec.helpers';
 
 //Dependencies
 import * as qscores from '../../../../../resources/assets/js/store/modules/qscores';
@@ -62,6 +62,7 @@ describe( "store | modules | qscores | ", function () {
         this.rootState = makeRootState();
         this.payload = makeTestPayload();
         this.mutationPayload = makeMutationPayload();
+        this.mockGetters = { getActiveStudentIndex: getActiveStudentIndex}
     } );
 
     describe( "mutations | ", function () {
@@ -171,7 +172,15 @@ describe( "store | modules | qscores | ", function () {
         } );
 
         describe( "getQuestionScoreForActiveStudent | ", function () {
-            xit( "happy path | ", function () {
+            it( "happy path  ", function () {
+
+                //call
+                let result = getters.getQuestionScore( this.state, this.mockGetters, this.rootState, this.payload.studentIndex, this.payload.questionIndex );
+
+                //check
+                let expected = this.state.questionScores[ this.mockGetters.getActiveStudentIndex.value ][ this.payload.questionIndex ];
+
+                expect( result ).toBe( expected );
                 //todo
             } );
         } );

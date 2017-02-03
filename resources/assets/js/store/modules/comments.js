@@ -212,9 +212,10 @@ const getters = {
      */
     getCommentTextForActiveStudent: ( state, getters, rootState, elementIndex, valence ) => {
         //If no student is set, the comment field should be blank
-        if ( state.activeStudentIndex == null ) return '';
+        let idx = getters.getActiveStudentIndex(state, gettters, rootState);
+        if ( idx == null ) return '';
 
-        return getters.getCommentText( state, getters, rootState, state.activeStudentIndex, elementIndex, valence );
+        return getters.getCommentText( state, getters, rootState, idx, elementIndex, valence );
     },
 
 

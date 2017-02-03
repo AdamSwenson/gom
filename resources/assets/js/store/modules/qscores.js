@@ -133,9 +133,12 @@ const getters = {
      * @param questionIndex
      */
     getQuestionScoreForActiveStudent( state, getters, rootState, questionIndex ) {
+        let idx = getters.getActiveStudentIndex(state, gettters, rootState);
+        if ( idx == null ) return '';
+return getters.getQuestionScore(state, getters, rootState, idx, questionIndex);
         // if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set ";
-        if ( state.activeStudentIndex == null ) return '';
-        return state.getQuestionScore( this.activeStudentIndex, questionIndex );
+        // if ( state.activeStudentIndex == null ) return '';
+        // return state.getQuestionScore( this.activeStudentIndex, questionIndex );
     }
 
 

@@ -1,4 +1,7 @@
 //Root getters for the vuex instance
+// Methods which make use of multiple modules should generally
+// be kept  here
+
 
 export const getExamId = (state) => {
     return state.examId;

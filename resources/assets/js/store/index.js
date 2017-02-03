@@ -84,13 +84,13 @@ export default new Vuex.Store({
     },
 
     modules: {
-    //     activeStudent,
-    //     // gradeStateDefault,
-    //     comments,
-    //     elementScores,
-    //     grades,
-    //     questionScores,
-    //     questions,
+        activeexam,
+        activestudent,
+        comments,
+        escores,
+        grades,
+        qscores,
+        questions,
         students,
         times
     },

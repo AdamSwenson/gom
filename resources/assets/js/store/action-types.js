@@ -19,7 +19,7 @@ export const setIndex = 'setIndex'
 export const setId = 'setId'
 export const setTime = 'setTime'
 export const setStudentObject  = 'setStudentObject'
-
+export const clearActiveStudent = 'clearActiveStudent'
 
 //comments
 export const storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent'

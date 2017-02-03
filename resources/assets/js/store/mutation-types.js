@@ -19,7 +19,7 @@ export const clearActiveExam = 'clearActiveExam'
 //activestudent
 export const setActiveStudent = 'setActiveStudent'
 export const clearActiveStudent = 'clearActiveStudent'
-
+export const setActiveStudentTime = 'setActiveStudentTime'
 
 
 //comments

@@ -168,8 +168,11 @@ const getters = {
 
 
     getExamGradeForActiveStudent: ( state, getters, rootState ) => {
-        if ( state.activeStudentIndex == null ) return '';
-        return state.examGrades[ state.activeStudent ];
+        let idx = getters.getActiveStudentIndex(state, gettters, rootState);
+        if ( idx == null ) return '';
+return getters.getExamGrade(state, getters, rootState, idx );
+        // if ( state.activeStudentIndex == null ) return '';
+        // return state.examGrades[ state.activeStudent ];
     }
 
 };
