@@ -12,12 +12,7 @@ import * as mTypes from '../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../resources/assets/js/store/action-types'
 import Payload from '../../../../resources/assets/js/store/models/Payload'
 
-//tested object
-// let obj = comments.default;
-// //tested methods
-// let {getters, actions, mutations} = obj;
-
-fdescribe( "store | getters.js || ", function () {
+describe( "store | getters.js || ", function () {
 
     describe( "getExamId | ", () => {
         it( "happy path ", function () {
@@ -157,9 +152,8 @@ fdescribe( "store | getters.js || ", function () {
         describe( "getQuestionScoreForActiveStudent | ", function () {
 
             it( "happy path  ", function () {
-                console.log( 'hp', this );
                 let expected = this.state.questionScores[ this.payload.studentIndex ][ this.payload.questionIndex ];
-                console.log( 'gqsas', expected );
+
                 this.mockGetters.getQuestionScore = function () {
                     return expected;
                 };
@@ -168,9 +162,7 @@ fdescribe( "store | getters.js || ", function () {
                 let result = getters.getQuestionScoreForActiveStudent( this.state, this.mockGetters, this.rootState, this.payload.questionIndex );
 
                 //check
-
                 expect( result ).toBe( expected );
-                //todo
             } );
 
         } );
@@ -180,7 +172,6 @@ fdescribe( "store | getters.js || ", function () {
             beforeEach( function () {
                 this.testObj = factories.studentFactory( this.payload.studentIndex );
                 this.testIndex = this.payload.studentIndex;
-                console.log( 'hp', this );
                 this.expected = this.state.examGradingTimes[ this.payload.studentIndex ];
 
                 //overwrite mock getters
@@ -236,8 +227,8 @@ fdescribe( "store | getters.js || ", function () {
                     },
                 };
             } );
-            //todo Requires adding in valence
-            it( "happy path | ", function () {
+
+            it( "happy path ", function () {
                 //prep
                 let expected = faker.random.word();
                 var mock = sinon.mock( this.mockGetters );
@@ -252,31 +243,9 @@ fdescribe( "store | getters.js || ", function () {
                 //check
                 expect( result ).toBe( expected )
 
-                //
-                // let pl = makeTextPayload(); //makes nice fake data
-                // let rootState = makeRootState();
-                // let state = makeState();
-                // let txt = state[ pl.studentIndex ][ pl.elementIndex ];
-                //
-                // state.activeStudentIndex = pl.studentIndex;
-                // pl.studentIndex = null;
-                //
-                // //call
-                // let result = getters.getCommentTextForActiveStudent( state, {
-                //     getCommentText: ( ...kwargs ) => {
-                //         return txt;
-                //     },
-                //     getActiveStudentIndex: () => {
-                //         return pl.studentIndex;
-                //     }
-                // }, rootState, pl.studentIndex, pl.elementIndex );
-                //
-                // //check
-                // expect( result ).toBe( txt );
-
             } );
 
-            it( "null case | ", function () {
+            it( "null case  ", function () {
                 //prep
                 let expected = ''
                 var mock = sinon.mock( this.mockGetters );
@@ -290,24 +259,6 @@ fdescribe( "store | getters.js || ", function () {
 
                 //check
                 expect( result ).toBe( expected );
-                //
-                // this.state.activeStudentIndex = null;
-                // this.payload.studentIndex = null;
-                //
-                // //call
-                // let result = getters.getCommentTextForActiveStudent( this.state, {
-                //     getCommentText: ( ...kwargs ) => {
-                //         return this.payload.commentText;
-                //     },
-                //     getActiveStudentIndex: () => {
-                //         return this.payload.studentIndex;
-                //     }
-                //
-                // }, this.rootState, this.payload.studentIndex, this.payload.elementIndex );
-                //
-                // //check
-                // expect( result ).toBe( '' );
-
             } )
         } );
 
