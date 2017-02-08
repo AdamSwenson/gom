@@ -151,11 +151,6 @@ describe( "store | modules | qscores | ", function () {
             } );
         } );
 
-        describe( description( aTypes.storeQuestionScoreForActiveStudent ), function () {
-            xit( "happy path | ", function () {
-                //todo
-            } );
-        } );
     } );
 
     describe( "getters | ", function () {
@@ -171,19 +166,6 @@ describe( "store | modules | qscores | ", function () {
             } );
         } );
 
-        describe( "getQuestionScoreForActiveStudent | ", function () {
-            it( "happy path  ", function () {
-
-                //call
-                let result = getters.getQuestionScore( this.state, this.mockGetters, this.rootState, this.payload.studentIndex, this.payload.questionIndex );
-
-                //check
-                let expected = this.state.questionScores[ this.mockGetters.getActiveStudentIndex.value ][ this.payload.questionIndex ];
-
-                expect( result ).toBe( expected );
-                //todo
-            } );
-        } );
     } );
 
 } );

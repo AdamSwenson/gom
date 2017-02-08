@@ -101,11 +101,6 @@ describe( "store | modules | escores | ", function () {
 
 
     describe( "actions | ", function () {
-        describe( description( aTypes.storeElementScoreForActiveStudent ), function () {
-            xit( "happy path  ", function () {
-                //todo
-            } );
-        } );
 
         describe( description( aTypes.setElementScore ), function () {
             it( "happy path ", function () {
@@ -139,11 +134,6 @@ describe( "store | modules | escores | ", function () {
             } );
         } );
 
-        describe( "getElementScoreForActiveStudent | ", function () {
-            xit( "happy path  ", function () {
-                //todo
-            } );
-        } );
     } );
 } );
 

@@ -15,11 +15,6 @@ import * as aTypes from '../../../../resources/assets/js/store/action-types'
 
 var DataHelper = require( '../../helpers/dataObject.helper' );
 
-//
-// import {makeState} from './helpers';
-// import {makeRootState} from './helpers';
-// import {testAction} from './helpers';
-// import {description} from './helpers';
 
 xdescribe("store | index.js | ", function () {
 

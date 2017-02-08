@@ -67,22 +67,6 @@ const actions = {
         if ( payload instanceof Exam ) {
             obj = payload;
         }
-        // else
-        //     {
-        //     let {examId, examIndex, obj, name, year, term} = payload;
-        //     console.log( examId, examIndex, obj, name, year, term );
-        //     if(typeof obj == 'undefined') {
-        //         //if not, create a new exam object
-        //         // let {name, year, term} = payload;
-        //         obj = Exam.factory( {
-        //             examIndex: examIndex,
-        //             examId: examId
-        //         } );
-        //         obj.name = name;
-        //         obj.year = year;
-        //         obj.term = term;
-        //     }
-        // }
 
         //create the payload with the object
         let pl = Payload.factory( {obj: obj} );
@@ -101,22 +85,6 @@ const actions = {
     {
         commit( mTypes.clearActiveExam );
     },
-
-
-    /**
-     * This should probably be deprecated
-     *
-     * @param state
-     * @param commit
-     * @param payload
-     */
-        [aTypes.setActiveStudentId]( {state, commit}, payload ){
-        //look up the student
-
-        //set the exam by calling setActiveExam
-
-
-    }
 
 };
 

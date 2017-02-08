@@ -139,11 +139,7 @@ describe( "store.modules | grades | ", function () {
                 let result = getters.getStandardGrades( this.state, {}, this.rootState )
                 expect( result ).toBe( this.state.standardGrades );
             } );
-        } );
-        describe( "getExamGradeForActiveStudent | ", function () {
-            xit( "happy path | ", function () {
-                //todo
-            } );
+
         } );
     } );
 } );

@@ -19,8 +19,8 @@ export const actions = {
 // };
 
     /**
-     * Handles figuring out how to set the student id given
-     * the provided payload
+     * Handles figuring out how to set the active student from the given
+     * the id in the provided payload
      * @deprecated
      * @param state
      * @param rootState
@@ -32,7 +32,10 @@ export const actions = {
 
         console.log( aTypes.setActiveStudentId, 'is deprecated!' );
         console.log( aTypes.setActiveStudentId, payload );
+        payload = state.activeStudent;
+
         actions[ aTypes.setActiveStudent ]( state, commit, payload );
+
         // let studentId;
         //
         // //number passed in
@@ -50,8 +53,8 @@ export const actions = {
     },
 
     /**
-     * Handles figuring out how to set the student index given
-     * the provided payload
+     * Handles figuring out how to set the active student given
+     * the provided index payload
      * @deprecated
      * @param state
      * @param commit
@@ -60,6 +63,7 @@ export const actions = {
     [ aTypes.setActiveStudentIndex ]: ( {state, commit}, payload ) => {
 
         console.log( aTypes.setActiveStudentIndex, 'is deprecated!' );
+        payload = state.activeStudent;
         actions[ aTypes.setActiveStudent ]( state, commit, payload );
         // let studentIndex;
         // switch (typeof (payload)) {
@@ -126,11 +130,8 @@ export const actions = {
         [aTypes.setIndex]( {state, commit}, payload ){
         console.log( aTypes.setIndex, 'is deprecated!' );
         console.log( aTypes.setIndex, payload );
+        payload = state.activeStudent;
         actions[ aTypes.setActiveStudent ]( state, commit, payload );
-        // if (Number.isInteger(payload)) {
-        //     rootState.Index = payload;
-        //     state.Index = payload;
-        // }
     },
 
     /**
@@ -146,13 +147,9 @@ export const actions = {
         [aTypes.setId]( {state, commit}, payload )
     {
         console.log( aTypes.setId, 'is deprecated!' );
+        payload = state.activeStudent;
 
         actions[ aTypes.setActiveStudent ]( state, commit, payload );
-        // if (Number.isInteger(payload)) {
-        //     rootState.Id = payload;
-        //     state.Id = payload;
-        //     return true;
-        // }
     },
 
     /**
@@ -166,10 +163,107 @@ export const actions = {
      */
         [aTypes.setStudentObject]( {state, commit}, payload )
     {
+        payload = state.activeStudent;
+
         if ( typeof (payload) == 'object' && payload instanceof Student ) {
             commit( mTypes.setActiveStudent, Payload.factory( {obj: payload} ) )
             // state.student = payload;
         }
     },
+
+
+    // -------------------- from times
+
+    /**
+     * Handles figuring out how to set the time of the the currently
+     * selected student from the provided payload
+     * @returns {boolean}
+     */
+        [aTypes.setActiveStudentTime]( {state, commit}, payload )
+    {
+
+        let studentIndex = state.activeStudent.index;
+        let time;
+
+        switch ( typeof (payload) ) {
+            case 'number':
+                if ( Number.isInteger( payload ) ) {
+                    //go straight to recording
+                    time = payload;
+                }
+                break;
+
+            //object with expected key
+            case 'object':
+                //todo write if object
+                break;
+
+            //other allowed types
+            // todo
+
+            //numeric string
+            // todo
+            default:
+            //todo
+        }
+
+        //Call the mutation
+        if ( typeof(time) == 'number' ) {
+            commit( mTypes.setTime, time );
+        }
+    },
+
+    /**
+     * Increases the stored time for the student currently being graded by the specified
+     * amount.
+     * Original: data.this.examGradingTimes[ Roster.activeStudent ];
+     */
+    [aTypes.increaseActiveStudentGradingTime]: ( {state, commit}, payload ) => {
+        let studentIndex = state.activeStudent.index;
+        state.examGradingTimes[ studentIndex ] += payload.timeToAdd;
+    },
+
+// qscores
+
+
+    /**
+     * Save a question score for the currently active student
+     * @param state
+     * @param commit
+     * @param payload
+     */
+    [aTypes.storeQuestionScoreForActiveStudent]: ( {state, commit}, payload ) => {
+        // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
+        let {questionIndex, score} = payload;
+        let studentIndex = state.activeStudent.index;
+        //type checking
+
+        let out = Payload.factory({index2: questionIndex, index: studentIndex, num: score});
+
+        commit( mTypes.setQuestionScore, out );
+    },
+
+    // escores
+
+    [aTypes.storeElementScoreForActiveStudent]({state, commit}, payload) {
+        let studentIndex = state.getActiveStudentIndex();
+        let {elementIndex, score} = payload;
+        //type checks
+
+        if(typeof (score) == 'undefined'){
+            //score may have been named differently
+            score = payload.elementScore;
+        }
+
+
+        let out = Payload.factory({
+            index: studentIndex,
+            index2: elementIndex,
+            num: score
+        });
+
+        commit(mTypes.setElementScore, out);
+    },
+
 
 }

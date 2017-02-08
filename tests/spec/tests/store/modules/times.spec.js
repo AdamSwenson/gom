@@ -103,23 +103,16 @@ describe( "store | modules | times", function () {
 
     describe( "actions | ", function () {
 
-        describe( description( aTypes.increaseActiveStudentGradingTime ), function () {
-
-            xit( "happy path | ", function () {
-                //todo
-            } );
-        } );
-
         describe( description( aTypes.storeGradingTime ), function () {
 
-            xit( "happy path | ", function () {
+            xit( "happy path ", function () {
                 //todo
             } );
         } );
 
         describe( description( aTypes.incrementGradingTime ), function () {
 
-            it( "happy path | ", function () {
+            it( "happy path ", function () {
                 let pl = makeTestPayload();
                 let expected = Payload.factory( {index: pl.studentIndex, num: pl.timeToAdd} );
 
@@ -137,10 +130,7 @@ describe( "store | modules | times", function () {
         } );
 
         describe( description( aTypes.loadGradingTimes ), function () {
-
-            it( "happy path | ", function () {
-
-                it( "happy path | ", function () {
+                it( "happy path  ", function () {
                     let pl = [ makeMutationPayload(), makeMutationPayload() ];
                     pl[ 0 ].index = 0;
                     pl[ 1 ].index = 1;
@@ -156,12 +146,9 @@ describe( "store | modules | times", function () {
                         }
                     ];
 
-                    let action = obj[ aTypes.loadGradingTimes ]
+                    let action = actions[ aTypes.loadGradingTimes ]
 
                     testAction( action, pl, this.state, expectedMutations );
-
-                } );
-
             } );
         } );
     } );
@@ -205,31 +192,6 @@ describe( "store | modules | times", function () {
             } );
         } );
 
-        describe( "getActiveStudentGradingTime", function () {
-            beforeEach( function () {
-                this.testIndex = 2;
-            } );
-
-            describe( "happy path | ", function () {
-                it( "active student set | ", function () {
-                    this.state.activeStudentIndex = this.testIndex;
-                    //call
-                    let result = getters.getActiveStudentGradingTime( this.state, this.get );
-                    //check
-                    let expected = this.state.examGradingTimes[ this.testIndex ];
-                    expect( result ).toBe( expected )
-                } );
-
-                it( "No active student set | ", function () {
-                    this.state.activeStudentIndex = null;
-                    //call
-                    let result = getters.getActiveStudentGradingTime( this.state, this.get );
-                    //check
-                    let expected = ''
-                    expect( result ).toBe( expected )
-                } );
-            } );
-        } );
     } );
 
 } );

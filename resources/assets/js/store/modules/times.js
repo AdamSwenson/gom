@@ -20,14 +20,6 @@ const state = {
     examGradingTimes: {},
 };
 
-const checkIfPayload = ( payload ) => {
-    //received payload object case
-    if ( payload instanceof Payload ) {
-        return true;
-    }
-
-    throw new Exception( "Non Payload passed to mutation" );
-}
 
 const mutations = {
     /**
@@ -40,7 +32,6 @@ const mutations = {
         state.examGradingTimes[ payload.index ] = payload.num;
     },
 
-
     /**
      * Increases the stored time for the student by the specified amount
      * @param state
@@ -52,22 +43,19 @@ const mutations = {
         state.examGradingTimes[ payload.index ] += payload.num;
     },
 
-
     /**
      * Removes a grading time data object
      *
      * @param examGradingTimes JSON object
      */
     [ mTypes.removeGradingTime ]: ( state, payload ) => {
+        Payload.checkIfPayload( payload );
 
         let idx = -1;
         if ( payload instanceof Payload ) {
             idx = payload.index;
         }
 
-        else if ( typeof( payload.studentIndex) != 'undefined' ) {
-            idx = payload.studentIndex;
-        }
         if ( idx > -1 ) {
             delete state.examGradingTimes[ idx ];
             // state.examGradingTimes.splice( idx, 1 );
@@ -76,7 +64,6 @@ const mutations = {
 
     /**
      * Sets the grading time for a student index to 0
-     *
      */
     [ mTypes.resetGradingTime ]: ( state, payload ) => {
         Payload.checkIfPayload( payload );
@@ -93,24 +80,14 @@ const actions = {
     [aTypes.loadGradingTimes]: ( {state, commit}, payload ) => {
         if ( payload.length > 1 ) {
             for ( let i = 0; i < payload.length; i++ ) {
-                this[ aTypes.storeGradingTime ]( state, commit, payload );
+                actions[ aTypes.storeGradingTime ]( state, commit, payload );
             }
         }
     },
 
 
     /**
-     * Increases the stored time for the student currently being graded by the specified
-     * amount.
-     * Original: data.this.examGradingTimes[ Roster.activeStudent ];
-     */
-    [aTypes.increaseActiveStudentGradingTime]: ( {state, commit}, payload ) => {
-        state.examGradingTimes[ state.activeStudentIndex ] += payload.timeToAdd;
-    },
-
-
-    /**
-     *      * Todo Add ability to look up by student index or student id
+     * Todo Add ability to look up by student index or student id
      * TODO Add handling for an unset index
      * Stores a new time for the student.
      * Overwrites any existing value.
@@ -123,10 +100,11 @@ const actions = {
             //todo add sanitation and checks
             let studentIndex = payload.studentIndex;
             let timeToAdd = payload.timeToAdd;
-//add processing from other allowed input configs
+
+            //add processing from other allowed input configs
 
 
-            let pl = {studentIndex: studentIndex, timeToAdd: timeToAdd};
+            let pl = Payload.factory( {index: studentIndex, num: timeToAdd} );
             commit( mTypes.setGradingTime, pl );
         }
     },
@@ -136,9 +114,10 @@ const actions = {
      * Increases the stored time for a student by the specified
      * amount.
      * Original: data.this.examGradingTimes[ Roster.activeStudent ];
+     * state.examGradingTimes[ state.activeStudentIndex ] += payload.timeToAdd;
      */
     [aTypes.incrementGradingTime]: ( {state, commit}, payload ) => {
-        // state.examGradingTimes[ state.activeStudentIndex ] += payload.timeToAdd;
+
         let pl = Payload.factory(
             {
                 index: payload.studentIndex,
@@ -148,42 +127,6 @@ const actions = {
         commit( mTypes.incrementGradingTime, pl );
     },
 
-    /**
-     * Handles figuring out how to set the time of the the currently
-     * selected student from the provided payload
-     * @returns {boolean}
-     */
-        [aTypes.setActiveStudentTime]({ state, commit }, payload)
-    {
-        let time;
-
-        switch (typeof (payload)) {
-            case 'number':
-                if (Number.isInteger(payload)) {
-                    //go straight to recording
-                    time = payload;
-                }
-                break;
-
-            //object with expected key
-            case 'object':
-                //todo write if object
-                break;
-
-            //other allowed types
-            // todo
-
-            //numeric string
-            // todo
-            default:
-            //todo
-        }
-
-        //Call the mutation
-        if (typeof(time) == 'number') {
-            commit(mTypes.setTime, time);
-        }
-    },
 };
 
 const getters = {
@@ -208,20 +151,6 @@ const getters = {
         return state.examGradingTimes[ studentIndex ];
     },
 
-    /**
-     * Convenience method for getting the grading time of the student presently
-     * being graded
-     * @returns {*}
-     */
-    getActiveStudentGradingTime: ( state, getters ) => {
-        let idx = getters.getActiveStudentIndex(state, gettters, rootState);
-        if ( idx == null ) return '';
-return getters.getStudentGradingTime(state, getters, idx);
-        // if ( ! this.isActive() ) throw "ERROR: getActiveStudentGradingTime | No active student set ";
-        // if ( state.activeStudentIndex == null ) return '';
-        // return state.examGradingTimes[ state.activeStudentIndex ];
-        // return getters.getStudentGradingTime( state, getters, state.activeStudentIndex );
-    }
 };
 
 

@@ -40,26 +40,6 @@ const mutations = {
 
 const actions = {
 
-    [aTypes.storeElementScoreForActiveStudent]({state, commit}, payload) {
-        let studentIndex = state.getActiveStudentIndex();
-        let {elementIndex, score} = payload;
-        //type checks
-
-        if(typeof (score) == 'undefined'){
-            //score may have been named differently
-            score = payload.elementScore;
-        }
-
-
-        let out = Payload.factory({
-            index: studentIndex,
-            index2: elementIndex,
-            num: score
-        });
-
-        commit(mTypes.setElementScore, out);
-    },
-
     /**
      * Stores a student's score on a particular element
      * @param studentIndex
@@ -85,6 +65,20 @@ const actions = {
 
         commit(mTypes.setElementScore, out);
     },
+
+    /**
+     * Consume a json object and populate the elementScores state.
+     * Overwrites the existing store.
+     * @param state
+     * @param rootState
+     * @param studentElementScores
+     */
+        [aTypes.loadElementScores]({state, commit}, payload)
+    {
+
+        let pl = Payload.factory({obj: payload});
+        commit(mTypes.loadElementScores, pl);
+    },
 };
 
 const getters = {
@@ -97,14 +91,8 @@ const getters = {
      */
     getElementScore(state, getters, rootState, studentIndex, elementIndex) {
         return state.elementScores[studentIndex][elementIndex];
-    },
+    }
 
-    getElementScoreForActiveStudent(state, getters, rootState, elementIndex) {
-        let idx = getters.getActiveStudentIndex(state, gettters, rootState);
-        if ( idx == null ) return '';
-
-        return getters.getElementScore(state, getters, rootState, idx, elementIndex);//state.elementScores[state.activeStudentIndex][elementIndex];
-    },
 
 
 };

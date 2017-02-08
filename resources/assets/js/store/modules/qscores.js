@@ -19,17 +19,6 @@ const state = {
 };
 
 const mutations = {
-    //
-    // /**
-    //  * Consume a json object and overwrite questionScores with the data
-    //  * @param state
-    //  * @param rootState
-    //  * @param payload Payload
-    //  */
-    // [mTypes.loadQuestionScores]: ( state, rootState, payload ) => {
-    //
-    //     state.questionScores = payload;
-    // },
 
     /**
      * Saves a question score for the student.
@@ -90,6 +79,7 @@ const actions = {
      */
     [aTypes.setQuestionScore]: ( {state, commit}, payload ) => {
         //todo add checking
+
         let pl = new Payload();
         pl.index = payload.studentIndex;
         pl.index2 = payload.questionIndex;
@@ -98,20 +88,6 @@ const actions = {
         commit( mTypes.setQuestionScore, pl );
     },
 
-    /**
-     * Save a question score for the currently active student
-     * @param state
-     * @param commit
-     * @param payload
-     */
-    [aTypes.storeQuestionScoreForActiveStudent]: ( {state, commit}, payload ) => {
-        // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
-        let {questionIndex, score} = payload;
-        let studentIndex = this.activeStudentIndex;
-        //type checking
-        let out = {questionIndex: questionIndex, studentIndex: studentIndex, score: score};
-        commit( mTypes.setQuestionScore, out );
-    }
 };
 
 const getters = {
@@ -125,21 +101,6 @@ const getters = {
     getQuestionScore( state, getters, rootState, studentIndex, questionIndex ) {
         return state.questionScores[ studentIndex ][ questionIndex ];
     },
-
-
-    /**
-     * Convenience function for getting the current student's score for question
-     * Old way: data.this.questionScores[ Roster.activeStudent ][ index ];
-     * @param questionIndex
-     */
-    getQuestionScoreForActiveStudent( state, getters, rootState, questionIndex ) {
-        let idx = getters.getActiveStudentIndex(state, gettters, rootState);
-        if ( idx == null ) return '';
-return getters.getQuestionScore(state, getters, rootState, idx, questionIndex);
-        // if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set ";
-        // if ( state.activeStudentIndex == null ) return '';
-        // return state.getQuestionScore( this.activeStudentIndex, questionIndex );
-    }
 
 
 };

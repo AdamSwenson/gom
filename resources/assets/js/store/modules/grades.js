@@ -100,6 +100,7 @@ const actions = {
      * if no questions have been graded.
      **/
     [aTypes.updateExamGrade]: ( {state, commit}, studentIndex ) => {
+
         var totalScore = null;
         // try {
         // state.checkValid( 'state.questionScores' );
@@ -166,14 +167,6 @@ const getters = {
         return getters.getStandardGrades( state, getters, rootState );
     },
 
-
-    getExamGradeForActiveStudent: ( state, getters, rootState ) => {
-        let idx = getters.getActiveStudentIndex(state, gettters, rootState);
-        if ( idx == null ) return '';
-return getters.getExamGrade(state, getters, rootState, idx );
-        // if ( state.activeStudentIndex == null ) return '';
-        // return state.examGrades[ state.activeStudent ];
-    }
 
 };
 

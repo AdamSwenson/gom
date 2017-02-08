@@ -5,6 +5,13 @@ require('sinon');
 //Dependencies
 import * as actions from '../../../../resources/assets/js/store/actions.js';
 
+import {testAction, description, factories, getActiveStudentIndex} from '../../helpers/vuex.spec.helpers';
+
+//Dependencies
+import * as mTypes from '../../../../resources/assets/js/store/mutation-types'
+import * as aTypes from '../../../../resources/assets/js/store/action-types'
+import Payload from '../../../../resources/assets/js/store/models/Payload'
+
 const {setExamId} = actions;
 
 describe("store | actions.js | ", function () {
@@ -167,6 +174,35 @@ describe("store | actions.js | ", function () {
         } )
     } );
 
+
+
+
+    describe( description( aTypes.increaseActiveStudentGradingTime ), function () {
+
+        xit( "happy path | ", function () {
+            //todo
+        } );
+    } );
+
+
+
+    describe( description( aTypes.storeQuestionScoreForActiveStudent ), function () {
+        xit( "happy path | ", function () {
+            //todo
+        } );
+    } );
+
+
+    describe( description( aTypes.storeCommentTextForActiveStudent ), function () {
+        xit( "happy path | ", function () {
+            //todo
+        } )
+    } );
+    describe( description( aTypes.storeElementScoreForActiveStudent ), function () {
+        xit( "happy path  ", function () {
+            //todo
+        } );
+    } );
 
 })
 ;

@@ -135,11 +135,7 @@ describe( "store | modules | comments | ", function () {
 
             } )
         } );
-        describe( description( aTypes.storeCommentTextForActiveStudent ), function () {
-            xit( "happy path | ", function () {
-                //todo
-            } )
-        } );
+
     } );
 
     describe( "getters | ", function () {
@@ -187,47 +183,5 @@ describe( "store | modules | comments | ", function () {
             } )
         } );
 
-        describe( "getCommentTextForActiveStudent | ", function () {
-            //todo Requires adding in valence
-            xit( "happy path | ", function () {
-                //prep
-                let pl = makeTextPayload(); //makes nice fake data
-                let rootState = makeRootState();
-                let state = makeState();
-                let txt = state[ pl.studentIndex ][ pl.elementIndex ];
-
-                state.activeStudentIndex = pl.studentIndex;
-                pl.studentIndex = null;
-
-                //call
-                let result = getters.getCommentTextForActiveStudent( state, {
-                    getCommentText: ( ...kwargs ) => {
-                        return txt;
-                    }
-                }, rootState, pl.studentIndex, pl.elementIndex );
-
-                //check
-                expect( result ).toBe( txt );
-
-            } );
-
-            it( "null case | ", function () {
-                //prep
-
-                this.state.activeStudentIndex = null;
-                this.payload.studentIndex = null;
-
-                //call
-                let result = getters.getCommentTextForActiveStudent( this.state, {
-                    getCommentText: ( ...kwargs ) => {
-                        return this.payload.commentText;
-                    }
-                }, this.rootState, this.payload.studentIndex, this.payload.elementIndex );
-
-                //check
-                expect( result ).toBe( '' );
-
-            } )
-        } );
     } );
 } );

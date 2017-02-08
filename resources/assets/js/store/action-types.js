@@ -27,6 +27,7 @@ export const storeCommentText = 'storeCommentText'
 
 //escores
 export const setElementScore = 'setElementScore'
+export const loadElementScores = 'loadElementScores'
 export const storeElementScoreForActiveStudent = 'storeElementScoreForActiveStudent'
 
 //exams

@@ -48,7 +48,6 @@ const mutations = {
         delete state.maxQuestionScores[payload.index];
     },
 
-
     /**
      * Push a question object into the store.
      * Overwrites any existing question at the index.
@@ -62,7 +61,7 @@ const mutations = {
     },
 
     /**
-     * Update the properties of a specific question
+     * Remove a specific question
      * @param state
      * @param rootState
      * @param payload
@@ -71,7 +70,6 @@ const mutations = {
         Payload.checkIfPayload( payload );
         delete state.questions[ payload.index ];
     },
-
 
     /**
      * Sets the stored number of questions. Provides the option

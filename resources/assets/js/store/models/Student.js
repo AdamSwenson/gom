@@ -2,8 +2,12 @@
  * Created by adam on 8/15/16.
  */
 
-export default class Student {
+import IModel from './IModel';
+
+
+export default class Student extends IModel{
     constructor( studentId ) {
+        super();
         this._email = '';
         this._id = studentId;
         this._index = null;
@@ -182,26 +186,30 @@ export default class Student {
 
     static factory( params ) {
         let student = new Student();
-        if ( typeof params != 'undefined' ) {
-            //fill any fillable values
-            this.fillableProps.forEach( function ( v ) {
-                // console.log( 'params', params, v );
-                if ( typeof params[ v ] != 'undefined' ) {
-                    student[ v ] = params[ v ];
-                }
-            } );
 
-            //fill any aliased values
-            for ( let v in this.aliasMap ) {
-                if ( typeof params[ v ] != 'undefined' ) {
-                    // console.log( 'alias', v, map[v] );
-                    student[ this.aliasMap[ v ] ] = params[ v ];
-                }
-            }
-        }
-//we will still return an empty student if there
-        //were no parameters
-        return student;
+// //we will still return an empty student if there
+//         //were no parameters
+
+        return this.fillObject(student, params);
+
+        //         if ( typeof params != 'undefined' ) {
+//             //fill any fillable values
+//             this.fillableProps.forEach( function ( v ) {
+//                 // console.log( 'params', params, v );
+//                 if ( typeof params[ v ] != 'undefined' ) {
+//                     student[ v ] = params[ v ];
+//                 }
+//             } );
+//
+//             //fill any aliased values
+//             for ( let v in this.aliasMap ) {
+//                 if ( typeof params[ v ] != 'undefined' ) {
+//                     // console.log( 'alias', v, map[v] );
+//                     student[ this.aliasMap[ v ] ] = params[ v ];
+//                 }
+//             }
+//         }
+//         return student;
     }
 
     //

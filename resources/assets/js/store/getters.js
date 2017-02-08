@@ -1,10 +1,32 @@
-//Root getters for the vuex instance
-// Methods which make use of multiple modules should generally
-// be kept  here
+/**
+ * Root getters for the vuex instance
+ *
+ * Methods which make use of multiple modules should generally be kept here
+ */
 
+/**
+ * Helper function used by getters which tests for an index value and then
+ * handles undefined and  null inputs when they were expecting
+ * a numeric index.
+ */
+const validateIndex = (index) => {
+    let handleInvalid = ()=>{
+        return '';
+    };
 
+    if (typeof index == 'undefined') return handleInvalid();
+    if (index === null) return handleInvalid();
+
+    return true;
+};
+
+/**
+ * Poorly named shortcut for getting the db id of
+ * the currently active exam.
+ * @param state
+ */
 export const getExamId = (state) => {
-    return state.examId;
+    return state.activeExam.id;
 };
 
 /**
@@ -14,9 +36,9 @@ export const getExamId = (state) => {
  * active student has index 0 and the consuming method interprets this as false).
  */
 export const isActive = (state) => {
-    if (typeof state.activeStudentIndex == 'undefined') return false;
-    if (state.activeStudentIndex === null) return false;
-    if (state.activeStudentIndex >= 0) {
+    if (typeof state.activeStudent == 'undefined') return false;
+    if (state.activeStudent === null) return false;
+    if (state.activeStudent.index >= 0) {
         return true;
     }
     return false;
@@ -51,15 +73,9 @@ export const getNumberGraded = (state) => {
 /**
  * Returns the total number of exams
  *
- * TODO Store this value after first run
- *
  * @returns {number|Number}
  */
 export const getTotalExams = (state) => {
-    //memoize
-    // if(this.getTotalExams.total && this.getTotalExams.total >= 0) return this.getTotalExams.total;
-
-    //initialize
     let total = 0;
     if (Object.keys(state.examGrades).length > 0) {
         total = Object.keys(state.examGrades).length;
@@ -67,6 +83,89 @@ export const getTotalExams = (state) => {
 
     return total;
 };
+
+
+
+//------------ from qscores
+
+/**
+ * Convenience function for getting the current student's score for question
+ * Old way: data.this.questionScores[ Roster.activeStudent ][ index ];
+ *  if ( state.activeStudentIndex == null ) return '';
+ *  return state.getQuestionScore( this.activeStudentIndex, questionIndex );
+ * @param questionIndex
+ */
+export const getQuestionScoreForActiveStudent = ( state, getters, rootState, questionIndex ) =>{
+    let idx = getters.getActiveStudentIndex(state, getters, rootState);
+    if ( idx == null ) return '';
+    return getters.getQuestionScore(state, getters, rootState, idx, questionIndex);
+    // if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set ";
+};
+
+// --------------- from times
+
+/**
+ * Convenience method for getting the grading time of the student presently
+ * being graded
+ * if ( state.activeStudentIndex == null ) return '';
+ * return state.examGradingTimes[ state.activeStudentIndex ];
+ * return getters.getStudentGradingTime( state, getters, state.activeStudentIndex );
+ * @returns {*}
+ */
+export const getActiveStudentGradingTime = ( state, getters, rootState ) => {
+    let idx = getters.getActiveStudentIndex( state, getters, rootState );
+    if ( idx == null ) return '';
+    return getters.getStudentGradingTime( state, getters, idx );
+    // if ( ! this.isActive() ) throw "ERROR: getActiveStudentGradingTime | No active student set ";
+ };
+
+//--------------- comments
+
+/**
+ * Gets the comment text for the student
+ * @param state
+ * @param getters
+ * @param rootState
+ * @param elementIndex
+ * @param valence
+ * @returns {*}
+ */
+export const getCommentTextForActiveStudent = ( state, getters, rootState, elementIndex, valence ) => {
+    //If no student is set, the comment field should be blank
+    let idx = getters.getActiveStudentIndex(state, getters, rootState);
+    validateIndex(idx);
+//    if ( idx == null ) return '';
+
+    return getters.getCommentText( state, getters, rootState, idx, elementIndex, valence );
+};
+
+
+//------------------ grades
+/**
+ * Retrieves exam grade for current student
+ * if ( state.activeStudentIndex == null ) return '';
+ * return state.examGrades[ state.activeStudent ];
+ * @param state
+ * @param getters
+ * @param rootState
+ * @returns {*}
+ */
+export const getExamGradeForActiveStudent = ( state, getters, rootState ) => {
+    let idx = getters.getActiveStudentIndex(state, getters, rootState);
+    validateIndex(idx);
+    // if ( idx == null ) return '';
+    return getters.getExamGrade(state, getters, rootState, idx );
+};
+
+//------------ escores
+export const getElementScoreForActiveStudent = (state, getters, rootState, elementIndex)=> {
+    let idx = getters.getActiveStudentIndex(state, getters, rootState);
+    validateIndex(idx);
+    // if ( idx == null ) return '';
+    return getters.getElementScore(state, getters, rootState, idx, elementIndex);//state.elementScores[state.activeStudentIndex][elementIndex];
+};
+
+
 
 
 

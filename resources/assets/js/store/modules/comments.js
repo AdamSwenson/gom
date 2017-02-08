@@ -199,24 +199,7 @@ const getters = {
      */
     getStoredCommentText: ( state, getters, rootState, studentIndex, elementIndex ) => {
         return state.elementComments[ studentIndex ][ elementIndex ];
-    },
-
-    /**
-     * Gets the comment text for the student
-     * @param state
-     * @param getters
-     * @param rootState
-     * @param elementIndex
-     * @param valence
-     * @returns {*}
-     */
-    getCommentTextForActiveStudent: ( state, getters, rootState, elementIndex, valence ) => {
-        //If no student is set, the comment field should be blank
-        let idx = getters.getActiveStudentIndex(state, gettters, rootState);
-        if ( idx == null ) return '';
-
-        return getters.getCommentText( state, getters, rootState, idx, elementIndex, valence );
-    },
+    }
 
 
 };
