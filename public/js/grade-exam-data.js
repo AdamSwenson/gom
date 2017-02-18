@@ -139,7 +139,7 @@ var Data = function () {
          */
 
     }, {
-        key: 'loadStandardGrades',
+        key: 'loadGrades',
         value: function loadGrades(gradesJson) {
             if (typeof gradesJson == 'string') {
                 gradesJson = JSON.parse(gradesJson);
@@ -561,7 +561,7 @@ var Data = function () {
          */
 
     }, {
-        key: 'storeGradingTime',
+        key: 'storeStudentGradingTime',
         value: function storeStudentGradingTime(studentIndex, activeStudentTime) {
             this.examGradingTimes[studentIndex] = activeStudentTime;
         }
@@ -574,7 +574,7 @@ var Data = function () {
          */
 
     }, {
-        key: 'setElementScore',
+        key: 'storeElementScore',
         value: function storeElementScore(studentIndex, elementIndex, score) {
             this.elementScores[studentIndex][elementIndex] = score;
         }
@@ -646,7 +646,7 @@ var Data = function () {
          */
 
     }, {
-        key: 'setQuestionScore',
+        key: 'storeQuestionScore',
         value: function storeQuestionScore(studentIndex, questionIndex, score) {
             this.questionScores[studentIndex][questionIndex] = score;
         }
@@ -664,7 +664,7 @@ var Data = function () {
          */
 
     }, {
-        key: 'incrementGradingTime',
+        key: 'increaseStudentGradingTime',
         value: function increaseStudentGradingTime(studentIndex, timeToAdd) {
             this.examGradingTimes[studentIndex] += timeToAdd;
         }
@@ -1300,7 +1300,7 @@ var Data = function () {
 //      * @param questionIndex 0-based index of the question (i.e., questionNumber - 1
 //      * @param score
 //      */
-//     this.setQuestionScore = function ( studentIndex, questionIndex, score ) {
+//     this.storeQuestionScore = function ( studentIndex, questionIndex, score ) {
 //         this.questionScores[ studentIndex ][ questionIndex ] = score;
 //     };
 //

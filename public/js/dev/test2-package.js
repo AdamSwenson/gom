@@ -10403,54 +10403,54 @@ module.exports = Vue;
 }).call(this,require('_process'))
 },{"_process":1}],3:[function(require,module,exports){
 /**
- * vuex v2.1.1
- * (c) 2016 Evan You
+ * vuex v2.1.2
+ * (c) 2017 Evan You
  * @license MIT
  */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global.Vuex = factory());
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define(factory) :
+	(global.Vuex = factory());
 }(this, (function () { 'use strict';
 
 var devtoolHook =
   typeof window !== 'undefined' &&
-  window.__VUE_DEVTOOLS_GLOBAL_HOOK__
+  window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
 
 function devtoolPlugin (store) {
   if (!devtoolHook) { return }
 
-  store._devtoolHook = devtoolHook
+  store._devtoolHook = devtoolHook;
 
-  devtoolHook.emit('vuex:init', store)
+  devtoolHook.emit('vuex:init', store);
 
   devtoolHook.on('vuex:travel-to-state', function (targetState) {
-    store.replaceState(targetState)
-  })
+    store.replaceState(targetState);
+  });
 
   store.subscribe(function (mutation, state) {
-    devtoolHook.emit('vuex:mutation', mutation, state)
-  })
+    devtoolHook.emit('vuex:mutation', mutation, state);
+  });
 }
 
-function applyMixin (Vue) {
-  var version = Number(Vue.version.split('.')[0])
+var applyMixin = function (Vue) {
+  var version = Number(Vue.version.split('.')[0]);
 
   if (version >= 2) {
-    var usesInit = Vue.config._lifecycleHooks.indexOf('init') > -1
-    Vue.mixin(usesInit ? { init: vuexInit } : { beforeCreate: vuexInit })
+    var usesInit = Vue.config._lifecycleHooks.indexOf('init') > -1;
+    Vue.mixin(usesInit ? { init: vuexInit } : { beforeCreate: vuexInit });
   } else {
     // override init and inject vuex init procedure
     // for 1.x backwards compatibility.
-    var _init = Vue.prototype._init
+    var _init = Vue.prototype._init;
     Vue.prototype._init = function (options) {
       if ( options === void 0 ) options = {};
 
       options.init = options.init
         ? [vuexInit].concat(options.init)
-        : vuexInit
-      _init.call(this, options)
-    }
+        : vuexInit;
+      _init.call(this, options);
+    };
   }
 
   /**
@@ -10458,92 +10458,101 @@ function applyMixin (Vue) {
    */
 
   function vuexInit () {
-    var options = this.$options
+    var options = this.$options;
     // store injection
     if (options.store) {
-      this.$store = options.store
+      this.$store = options.store;
     } else if (options.parent && options.parent.$store) {
-      this.$store = options.parent.$store
+      this.$store = options.parent.$store;
     }
   }
-}
+};
 
 var mapState = normalizeNamespace(function (namespace, states) {
-  var res = {}
+  var res = {};
   normalizeMap(states).forEach(function (ref) {
     var key = ref.key;
     var val = ref.val;
 
     res[key] = function mappedState () {
-      var state = this.$store.state
-      var getters = this.$store.getters
+      var state = this.$store.state;
+      var getters = this.$store.getters;
       if (namespace) {
-        var module = this.$store._modulesNamespaceMap[namespace]
+        var module = getModuleByNamespace(this.$store, 'mapState', namespace);
         if (!module) {
-          warnNamespace('mapState', namespace)
           return
         }
-        state = module.state
-        getters = module.context.getters
+        state = module.context.state;
+        getters = module.context.getters;
       }
       return typeof val === 'function'
         ? val.call(this, state, getters)
         : state[val]
-    }
-  })
+    };
+  });
   return res
-})
+});
 
 var mapMutations = normalizeNamespace(function (namespace, mutations) {
-  var res = {}
+  var res = {};
   normalizeMap(mutations).forEach(function (ref) {
     var key = ref.key;
     var val = ref.val;
 
-    val = namespace + val
+    val = namespace + val;
     res[key] = function mappedMutation () {
       var args = [], len = arguments.length;
       while ( len-- ) args[ len ] = arguments[ len ];
 
+      if (namespace && !getModuleByNamespace(this.$store, 'mapMutations', namespace)) {
+        return
+      }
       return this.$store.commit.apply(this.$store, [val].concat(args))
-    }
-  })
+    };
+  });
   return res
-})
+});
 
 var mapGetters = normalizeNamespace(function (namespace, getters) {
-  var res = {}
+  var res = {};
   normalizeMap(getters).forEach(function (ref) {
     var key = ref.key;
     var val = ref.val;
 
-    val = namespace + val
+    val = namespace + val;
     res[key] = function mappedGetter () {
+      if (namespace && !getModuleByNamespace(this.$store, 'mapGetters', namespace)) {
+        return
+      }
       if (!(val in this.$store.getters)) {
-        console.error(("[vuex] unknown getter: " + val))
+        console.error(("[vuex] unknown getter: " + val));
+        return
       }
       return this.$store.getters[val]
-    }
-  })
+    };
+  });
   return res
-})
+});
 
 var mapActions = normalizeNamespace(function (namespace, actions) {
-  var res = {}
+  var res = {};
   normalizeMap(actions).forEach(function (ref) {
     var key = ref.key;
     var val = ref.val;
 
-    val = namespace + val
+    val = namespace + val;
     res[key] = function mappedAction () {
       var args = [], len = arguments.length;
       while ( len-- ) args[ len ] = arguments[ len ];
 
+      if (namespace && !getModuleByNamespace(this.$store, 'mapActions', namespace)) {
+        return
+      }
       return this.$store.dispatch.apply(this.$store, [val].concat(args))
-    }
-  })
+    };
+  });
   return res
-})
+});
 
 function normalizeMap (map) {
   return Array.isArray(map)
@@ -10554,24 +10563,47 @@ function normalizeMap (map) {
 function normalizeNamespace (fn) {
   return function (namespace, map) {
     if (typeof namespace !== 'string') {
-      map = namespace
-      namespace = ''
+      map = namespace;
+      namespace = '';
     } else if (namespace.charAt(namespace.length - 1) !== '/') {
-      namespace += '/'
+      namespace += '/';
     }
     return fn(namespace, map)
   }
 }
 
-function warnNamespace (helper, namespace) {
-  console.error(("[vuex] module namespace not found in " + helper + "(): " + namespace))
+function getModuleByNamespace (store, helper, namespace) {
+  var module = store._modulesNamespaceMap[namespace];
+  if (!module) {
+    console.error(("[vuex] module namespace not found in " + helper + "(): " + namespace));
+  }
+  return module
 }
+
+/**
+ * Get the first item that pass the test
+ * by second argument function
+ *
+ * @param {Array} list
+ * @param {Function} f
+ * @return {*}
+ */
+/**
+ * Deep copy the given object considering circular structure.
+ * This function caches all nested objects and its copies.
+ * If it detects circular structure, use cached copy to avoid infinite loop.
+ *
+ * @param {*} obj
+ * @param {Array<Object>} cache
+ * @return {*}
+ */
+
 
 /**
  * forEach for object
  */
 function forEachValue (obj, fn) {
-  Object.keys(obj).forEach(function (key) { return fn(obj[key], key); })
+  Object.keys(obj).forEach(function (key) { return fn(obj[key], key); });
 }
 
 function isObject (obj) {
@@ -10587,9 +10619,9 @@ function assert (condition, msg) {
 }
 
 var Module = function Module (rawModule, runtime) {
-  this.runtime = runtime
-  this._children = Object.create(null)
-  this._rawModule = rawModule
+  this.runtime = runtime;
+  this._children = Object.create(null);
+  this._rawModule = rawModule;
 };
 
 var prototypeAccessors$1 = { state: {},namespaced: {} };
@@ -10603,11 +10635,11 @@ prototypeAccessors$1.namespaced.get = function () {
 };
 
 Module.prototype.addChild = function addChild (key, module) {
-  this._children[key] = module
+  this._children[key] = module;
 };
 
 Module.prototype.removeChild = function removeChild (key) {
-  delete this._children[key]
+  delete this._children[key];
 };
 
 Module.prototype.getChild = function getChild (key) {
@@ -10615,37 +10647,37 @@ Module.prototype.getChild = function getChild (key) {
 };
 
 Module.prototype.update = function update (rawModule) {
-  this._rawModule.namespaced = rawModule.namespaced
+  this._rawModule.namespaced = rawModule.namespaced;
   if (rawModule.actions) {
-    this._rawModule.actions = rawModule.actions
+    this._rawModule.actions = rawModule.actions;
   }
   if (rawModule.mutations) {
-    this._rawModule.mutations = rawModule.mutations
+    this._rawModule.mutations = rawModule.mutations;
   }
   if (rawModule.getters) {
-    this._rawModule.getters = rawModule.getters
+    this._rawModule.getters = rawModule.getters;
   }
 };
 
 Module.prototype.forEachChild = function forEachChild (fn) {
-  forEachValue(this._children, fn)
+  forEachValue(this._children, fn);
 };
 
 Module.prototype.forEachGetter = function forEachGetter (fn) {
   if (this._rawModule.getters) {
-    forEachValue(this._rawModule.getters, fn)
+    forEachValue(this._rawModule.getters, fn);
   }
 };
 
 Module.prototype.forEachAction = function forEachAction (fn) {
   if (this._rawModule.actions) {
-    forEachValue(this._rawModule.actions, fn)
+    forEachValue(this._rawModule.actions, fn);
   }
 };
 
 Module.prototype.forEachMutation = function forEachMutation (fn) {
   if (this._rawModule.mutations) {
-    forEachValue(this._rawModule.mutations, fn)
+    forEachValue(this._rawModule.mutations, fn);
   }
 };
 
@@ -10655,13 +10687,13 @@ var ModuleCollection = function ModuleCollection (rawRootModule) {
   var this$1 = this;
 
   // register root module (Vuex.Store options)
-  this.root = new Module(rawRootModule, false)
+  this.root = new Module(rawRootModule, false);
 
   // register all nested modules
   if (rawRootModule.modules) {
     forEachValue(rawRootModule.modules, function (rawModule, key) {
-      this$1.register([key], rawModule, false)
-    })
+      this$1.register([key], rawModule, false);
+    });
   }
 };
 
@@ -10672,44 +10704,44 @@ ModuleCollection.prototype.get = function get (path) {
 };
 
 ModuleCollection.prototype.getNamespace = function getNamespace (path) {
-  var module = this.root
+  var module = this.root;
   return path.reduce(function (namespace, key) {
-    module = module.getChild(key)
+    module = module.getChild(key);
     return namespace + (module.namespaced ? key + '/' : '')
   }, '')
 };
 
 ModuleCollection.prototype.update = function update$1 (rawRootModule) {
-  update(this.root, rawRootModule)
+  update(this.root, rawRootModule);
 };
 
 ModuleCollection.prototype.register = function register (path, rawModule, runtime) {
     var this$1 = this;
     if ( runtime === void 0 ) runtime = true;
 
-  var parent = this.get(path.slice(0, -1))
-  var newModule = new Module(rawModule, runtime)
-  parent.addChild(path[path.length - 1], newModule)
+  var parent = this.get(path.slice(0, -1));
+  var newModule = new Module(rawModule, runtime);
+  parent.addChild(path[path.length - 1], newModule);
 
   // register nested modules
   if (rawModule.modules) {
     forEachValue(rawModule.modules, function (rawChildModule, key) {
-      this$1.register(path.concat(key), rawChildModule, runtime)
-    })
+      this$1.register(path.concat(key), rawChildModule, runtime);
+    });
   }
 };
 
 ModuleCollection.prototype.unregister = function unregister (path) {
-  var parent = this.get(path.slice(0, -1))
-  var key = path[path.length - 1]
+  var parent = this.get(path.slice(0, -1));
+  var key = path[path.length - 1];
   if (!parent.getChild(key).runtime) { return }
 
-  parent.removeChild(key)
+  parent.removeChild(key);
 };
 
 function update (targetModule, newModule) {
   // update target module
-  targetModule.update(newModule)
+  targetModule.update(newModule);
 
   // update nested modules
   if (newModule.modules) {
@@ -10718,63 +10750,63 @@ function update (targetModule, newModule) {
         console.warn(
           "[vuex] trying to add a new module '" + key + "' on hot reloading, " +
           'manual reload is needed'
-        )
+        );
         return
       }
-      update(targetModule.getChild(key), newModule.modules[key])
+      update(targetModule.getChild(key), newModule.modules[key]);
     }
   }
 }
 
-var Vue // bind on install
+var Vue; // bind on install
 
 var Store = function Store (options) {
   var this$1 = this;
   if ( options === void 0 ) options = {};
 
-  assert(Vue, "must call Vue.use(Vuex) before creating a store instance.")
-  assert(typeof Promise !== 'undefined', "vuex requires a Promise polyfill in this browser.")
+  assert(Vue, "must call Vue.use(Vuex) before creating a store instance.");
+  assert(typeof Promise !== 'undefined', "vuex requires a Promise polyfill in this browser.");
 
   var state = options.state; if ( state === void 0 ) state = {};
   var plugins = options.plugins; if ( plugins === void 0 ) plugins = [];
   var strict = options.strict; if ( strict === void 0 ) strict = false;
 
   // store internal state
-  this._committing = false
-  this._actions = Object.create(null)
-  this._mutations = Object.create(null)
-  this._wrappedGetters = Object.create(null)
-  this._modules = new ModuleCollection(options)
-  this._modulesNamespaceMap = Object.create(null)
-  this._subscribers = []
-  this._watcherVM = new Vue()
+  this._committing = false;
+  this._actions = Object.create(null);
+  this._mutations = Object.create(null);
+  this._wrappedGetters = Object.create(null);
+  this._modules = new ModuleCollection(options);
+  this._modulesNamespaceMap = Object.create(null);
+  this._subscribers = [];
+  this._watcherVM = new Vue();
 
   // bind commit and dispatch to self
-  var store = this
+  var store = this;
   var ref = this;
   var dispatch = ref.dispatch;
   var commit = ref.commit;
-    this.dispatch = function boundDispatch (type, payload) {
+  this.dispatch = function boundDispatch (type, payload) {
     return dispatch.call(store, type, payload)
-  }
+  };
   this.commit = function boundCommit (type, payload, options) {
     return commit.call(store, type, payload, options)
-    }
+  };
 
-    // strict mode
-  this.strict = strict
+  // strict mode
+  this.strict = strict;
 
   // init root module.
   // this also recursively registers all sub-modules
   // and collects all module getters inside this._wrappedGetters
-  installModule(this, state, [], this._modules.root)
+  installModule(this, state, [], this._modules.root);
 
   // initialize the store vm, which is responsible for the reactivity
   // (also registers _wrappedGetters as computed properties)
-  resetStoreVM(this, state)
+  resetStoreVM(this, state);
 
   // apply plugins
-  plugins.concat(devtoolPlugin).forEach(function (plugin) { return plugin(this$1); })
+  plugins.concat(devtoolPlugin).forEach(function (plugin) { return plugin(this$1); });
 };
 
 var prototypeAccessors = { state: {} };
@@ -10784,7 +10816,7 @@ prototypeAccessors.state.get = function () {
 };
 
 prototypeAccessors.state.set = function (v) {
-  assert(false, "Use store.replaceState() to explicit replace store state.")
+  assert(false, "Use store.replaceState() to explicit replace store state.");
 };
 
 Store.prototype.commit = function commit (_type, _payload, _options) {
@@ -10796,24 +10828,24 @@ Store.prototype.commit = function commit (_type, _payload, _options) {
     var payload = ref.payload;
     var options = ref.options;
 
-  var mutation = { type: type, payload: payload }
-  var entry = this._mutations[type]
+  var mutation = { type: type, payload: payload };
+  var entry = this._mutations[type];
   if (!entry) {
-    console.error(("[vuex] unknown mutation type: " + type))
+    console.error(("[vuex] unknown mutation type: " + type));
     return
   }
   this._withCommit(function () {
     entry.forEach(function commitIterator (handler) {
-      handler(payload)
-    })
-  })
-  this._subscribers.forEach(function (sub) { return sub(mutation, this$1.state); })
+      handler(payload);
+    });
+  });
+  this._subscribers.forEach(function (sub) { return sub(mutation, this$1.state); });
 
   if (options && options.silent) {
     console.warn(
       "[vuex] mutation type: " + type + ". Silent option has been removed. " +
       'Use the filter functionality in the vue-devtools'
-    )
+    );
   }
 };
 
@@ -10823,9 +10855,9 @@ Store.prototype.dispatch = function dispatch (_type, _payload) {
     var type = ref.type;
     var payload = ref.payload;
 
-  var entry = this._actions[type]
+  var entry = this._actions[type];
   if (!entry) {
-    console.error(("[vuex] unknown action type: " + type))
+    console.error(("[vuex] unknown action type: " + type));
     return
   }
   return entry.length > 1
@@ -10834,14 +10866,14 @@ Store.prototype.dispatch = function dispatch (_type, _payload) {
 };
 
 Store.prototype.subscribe = function subscribe (fn) {
-  var subs = this._subscribers
+  var subs = this._subscribers;
   if (subs.indexOf(fn) < 0) {
-    subs.push(fn)
+    subs.push(fn);
   }
   return function () {
-    var i = subs.indexOf(fn)
+    var i = subs.indexOf(fn);
     if (i > -1) {
-      subs.splice(i, 1)
+      subs.splice(i, 1);
     }
   }
 };
@@ -10849,7 +10881,7 @@ Store.prototype.subscribe = function subscribe (fn) {
 Store.prototype.watch = function watch (getter, cb, options) {
     var this$1 = this;
 
-  assert(typeof getter === 'function', "store.watch only accepts a function.")
+  assert(typeof getter === 'function', "store.watch only accepts a function.");
   return this._watcherVM.$watch(function () { return getter(this$1.state, this$1.getters); }, cb, options)
 };
 
@@ -10857,158 +10889,160 @@ Store.prototype.replaceState = function replaceState (state) {
     var this$1 = this;
 
   this._withCommit(function () {
-    this$1._vm.state = state
-  })
+    this$1._vm.state = state;
+  });
 };
 
 Store.prototype.registerModule = function registerModule (path, rawModule) {
-  if (typeof path === 'string') { path = [path] }
-  assert(Array.isArray(path), "module path must be a string or an Array.")
-  this._modules.register(path, rawModule)
-  installModule(this, this.state, path, this._modules.get(path))
+  if (typeof path === 'string') { path = [path]; }
+  assert(Array.isArray(path), "module path must be a string or an Array.");
+  this._modules.register(path, rawModule);
+  installModule(this, this.state, path, this._modules.get(path));
   // reset store to update getters...
-  resetStoreVM(this, this.state)
+  resetStoreVM(this, this.state);
 };
 
 Store.prototype.unregisterModule = function unregisterModule (path) {
     var this$1 = this;
 
-  if (typeof path === 'string') { path = [path] }
-  assert(Array.isArray(path), "module path must be a string or an Array.")
-    this._modules.unregister(path)
+  if (typeof path === 'string') { path = [path]; }
+  assert(Array.isArray(path), "module path must be a string or an Array.");
+  this._modules.unregister(path);
   this._withCommit(function () {
-    var parentState = getNestedState(this$1.state, path.slice(0, -1))
-    Vue.delete(parentState, path[path.length - 1])
-  })
-  resetStore(this)
+    var parentState = getNestedState(this$1.state, path.slice(0, -1));
+    Vue.delete(parentState, path[path.length - 1]);
+  });
+  resetStore(this);
 };
 
 Store.prototype.hotUpdate = function hotUpdate (newOptions) {
-  this._modules.update(newOptions)
-  resetStore(this)
+  this._modules.update(newOptions);
+  resetStore(this, true);
 };
 
 Store.prototype._withCommit = function _withCommit (fn) {
-  var committing = this._committing
-  this._committing = true
-  fn()
-  this._committing = committing
+  var committing = this._committing;
+  this._committing = true;
+  fn();
+  this._committing = committing;
 };
 
 Object.defineProperties( Store.prototype, prototypeAccessors );
 
-function resetStore (store) {
-  store._actions = Object.create(null)
-  store._mutations = Object.create(null)
-  store._wrappedGetters = Object.create(null)
-  store._modulesNamespaceMap = Object.create(null)
-  var state = store.state
+function resetStore (store, hot) {
+  store._actions = Object.create(null);
+  store._mutations = Object.create(null);
+  store._wrappedGetters = Object.create(null);
+  store._modulesNamespaceMap = Object.create(null);
+  var state = store.state;
   // init all modules
-  installModule(store, state, [], store._modules.root, true)
+  installModule(store, state, [], store._modules.root, true);
   // reset vm
-  resetStoreVM(store, state)
+  resetStoreVM(store, state, hot);
 }
 
-function resetStoreVM (store, state) {
-  var oldVm = store._vm
+function resetStoreVM (store, state, hot) {
+  var oldVm = store._vm;
 
   // bind store public getters
-  store.getters = {}
-  var wrappedGetters = store._wrappedGetters
-  var computed = {}
+  store.getters = {};
+  var wrappedGetters = store._wrappedGetters;
+  var computed = {};
   forEachValue(wrappedGetters, function (fn, key) {
     // use computed to leverage its lazy-caching mechanism
-    computed[key] = function () { return fn(store); }
+    computed[key] = function () { return fn(store); };
     Object.defineProperty(store.getters, key, {
       get: function () { return store._vm[key]; },
       enumerable: true // for local getters
-    })
-  })
+    });
+  });
 
   // use a Vue instance to store the state tree
   // suppress warnings just in case the user has added
   // some funky global mixins
-  var silent = Vue.config.silent
-  Vue.config.silent = true
+  var silent = Vue.config.silent;
+  Vue.config.silent = true;
   store._vm = new Vue({
     data: { state: state },
     computed: computed
-  })
-  Vue.config.silent = silent
+  });
+  Vue.config.silent = silent;
 
   // enable strict mode for new vm
   if (store.strict) {
-    enableStrictMode(store)
+    enableStrictMode(store);
   }
 
   if (oldVm) {
-    // dispatch changes in all subscribed watchers
-    // to force getter re-evaluation.
-    store._withCommit(function () {
-      oldVm.state = null
-    })
-    Vue.nextTick(function () { return oldVm.$destroy(); })
+    if (hot) {
+      // dispatch changes in all subscribed watchers
+      // to force getter re-evaluation for hot reloading.
+      store._withCommit(function () {
+        oldVm.state = null;
+      });
+    }
+    Vue.nextTick(function () { return oldVm.$destroy(); });
   }
 }
 
 function installModule (store, rootState, path, module, hot) {
-  var isRoot = !path.length
-  var namespace = store._modules.getNamespace(path)
+  var isRoot = !path.length;
+  var namespace = store._modules.getNamespace(path);
 
   // register in namespace map
   if (namespace) {
-    store._modulesNamespaceMap[namespace] = module
+    store._modulesNamespaceMap[namespace] = module;
   }
 
   // set state
   if (!isRoot && !hot) {
-    var parentState = getNestedState(rootState, path.slice(0, -1))
-    var moduleName = path[path.length - 1]
+    var parentState = getNestedState(rootState, path.slice(0, -1));
+    var moduleName = path[path.length - 1];
     store._withCommit(function () {
-      Vue.set(parentState, moduleName, module.state)
-    })
+      Vue.set(parentState, moduleName, module.state);
+    });
   }
 
-  var local = module.context = makeLocalContext(store, namespace)
+  var local = module.context = makeLocalContext(store, namespace, path);
 
   module.forEachMutation(function (mutation, key) {
-    var namespacedType = namespace + key
-    registerMutation(store, namespacedType, mutation, path)
-  })
+    var namespacedType = namespace + key;
+    registerMutation(store, namespacedType, mutation, local);
+  });
 
   module.forEachAction(function (action, key) {
-    var namespacedType = namespace + key
-    registerAction(store, namespacedType, action, local, path)
-  })
+    var namespacedType = namespace + key;
+    registerAction(store, namespacedType, action, local);
+  });
 
   module.forEachGetter(function (getter, key) {
-    var namespacedType = namespace + key
-    registerGetter(store, namespacedType, getter, local, path)
-  })
+    var namespacedType = namespace + key;
+    registerGetter(store, namespacedType, getter, local);
+  });
 
   module.forEachChild(function (child, key) {
-    installModule(store, rootState, path.concat(key), child, hot)
-  })
+    installModule(store, rootState, path.concat(key), child, hot);
+  });
 }
 
 /**
- * make localized dispatch, commit and getters
+ * make localized dispatch, commit, getters and state
  * if there is no namespace, just use root ones
  */
-function makeLocalContext (store, namespace) {
-  var noNamespace = namespace === ''
+function makeLocalContext (store, namespace, path) {
+  var noNamespace = namespace === '';
 
   var local = {
     dispatch: noNamespace ? store.dispatch : function (_type, _payload, _options) {
-      var args = unifyObjectStyle(_type, _payload, _options)
+      var args = unifyObjectStyle(_type, _payload, _options);
       var payload = args.payload;
       var options = args.options;
       var type = args.type;
 
       if (!options || !options.root) {
-        type = namespace + type
+        type = namespace + type;
         if (!store._actions[type]) {
-          console.error(("[vuex] unknown local action type: " + (args.type) + ", global type: " + type))
+          console.error(("[vuex] unknown local action type: " + (args.type) + ", global type: " + type));
           return
         }
       }
@@ -11017,42 +11051,49 @@ function makeLocalContext (store, namespace) {
     },
 
     commit: noNamespace ? store.commit : function (_type, _payload, _options) {
-      var args = unifyObjectStyle(_type, _payload, _options)
+      var args = unifyObjectStyle(_type, _payload, _options);
       var payload = args.payload;
       var options = args.options;
       var type = args.type;
 
       if (!options || !options.root) {
-        type = namespace + type
+        type = namespace + type;
         if (!store._mutations[type]) {
-          console.error(("[vuex] unknown local mutation type: " + (args.type) + ", global type: " + type))
+          console.error(("[vuex] unknown local mutation type: " + (args.type) + ", global type: " + type));
           return
         }
       }
 
-      store.commit(type, payload, options)
+      store.commit(type, payload, options);
     }
-  }
+  };
 
-  // getters object must be gotten lazily
-  // because store.getters will be changed by vm update
-  Object.defineProperty(local, 'getters', {
-    get: noNamespace ? function () { return store.getters; } : function () { return makeLocalGetters(store, namespace); }
-  })
+  // getters and state object must be gotten lazily
+  // because they will be changed by vm update
+  Object.defineProperties(local, {
+    getters: {
+      get: noNamespace
+        ? function () { return store.getters; }
+        : function () { return makeLocalGetters(store, namespace); }
+    },
+    state: {
+      get: function () { return getNestedState(store.state, path); }
+    }
+  });
 
   return local
 }
 
 function makeLocalGetters (store, namespace) {
-  var gettersProxy = {}
+  var gettersProxy = {};
 
-  var splitPos = namespace.length
+  var splitPos = namespace.length;
   Object.keys(store.getters).forEach(function (type) {
     // skip if the target getter is not match this namespace
     if (type.slice(0, splitPos) !== namespace) { return }
 
     // extract local getter type
-    var localType = type.slice(splitPos)
+    var localType = type.slice(splitPos);
 
     // Add a port to the getters proxy.
     // Define as getter property because
@@ -11060,63 +11101,63 @@ function makeLocalGetters (store, namespace) {
     Object.defineProperty(gettersProxy, localType, {
       get: function () { return store.getters[type]; },
       enumerable: true
-    })
-  })
+    });
+  });
 
   return gettersProxy
 }
 
-function registerMutation (store, type, handler, path) {
-  var entry = store._mutations[type] || (store._mutations[type] = [])
+function registerMutation (store, type, handler, local) {
+  var entry = store._mutations[type] || (store._mutations[type] = []);
   entry.push(function wrappedMutationHandler (payload) {
-    handler(getNestedState(store.state, path), payload)
-  })
+    handler(local.state, payload);
+  });
 }
 
-function registerAction (store, type, handler, local, path) {
-  var entry = store._actions[type] || (store._actions[type] = [])
+function registerAction (store, type, handler, local) {
+  var entry = store._actions[type] || (store._actions[type] = []);
   entry.push(function wrappedActionHandler (payload, cb) {
     var res = handler({
       dispatch: local.dispatch,
       commit: local.commit,
       getters: local.getters,
-      state: getNestedState(store.state, path),
+      state: local.state,
       rootGetters: store.getters,
       rootState: store.state
-    }, payload, cb)
+    }, payload, cb);
     if (!isPromise(res)) {
-      res = Promise.resolve(res)
+      res = Promise.resolve(res);
     }
     if (store._devtoolHook) {
       return res.catch(function (err) {
-        store._devtoolHook.emit('vuex:error', err)
+        store._devtoolHook.emit('vuex:error', err);
         throw err
       })
     } else {
       return res
     }
-  })
+  });
 }
 
-function registerGetter (store, type, rawGetter, local, path) {
+function registerGetter (store, type, rawGetter, local) {
   if (store._wrappedGetters[type]) {
-    console.error(("[vuex] duplicate getter key: " + type))
+    console.error(("[vuex] duplicate getter key: " + type));
     return
   }
   store._wrappedGetters[type] = function wrappedGetter (store) {
     return rawGetter(
-      getNestedState(store.state, path), // local state
+      local.state, // local state
       local.getters, // local getters
       store.state, // root state
       store.getters // root getters
     )
-  }
+  };
 }
 
 function enableStrictMode (store) {
   store._vm.$watch('state', function () {
-    assert(store._committing, "Do not mutate vuex store state outside mutation handlers.")
-  }, { deep: true, sync: true })
+    assert(store._committing, "Do not mutate vuex store state outside mutation handlers.");
+  }, { deep: true, sync: true });
 }
 
 function getNestedState (state, path) {
@@ -11127,10 +11168,13 @@ function getNestedState (state, path) {
 
 function unifyObjectStyle (type, payload, options) {
   if (isObject(type) && type.type) {
-    options = payload
-    payload = type
-    type = type.type
+    options = payload;
+    payload = type;
+    type = type.type;
   }
+
+  assert(typeof type === 'string', ("Expects string as the type, but found " + (typeof type) + "."));
+
   return { type: type, payload: payload, options: options }
 }
 
@@ -11138,31 +11182,32 @@ function install (_Vue) {
   if (Vue) {
     console.error(
       '[vuex] already installed. Vue.use(Vuex) should be called only once.'
-    )
+    );
     return
   }
-  Vue = _Vue
-  applyMixin(Vue)
+  Vue = _Vue;
+  applyMixin(Vue);
 }
 
 // auto install in dist mode
 if (typeof window !== 'undefined' && window.Vue) {
-  install(window.Vue)
+  install(window.Vue);
 }
 
 var index = {
   Store: Store,
   install: install,
-  version: '2.1.1',
+  version: '2.1.2',
   mapState: mapState,
   mapMutations: mapMutations,
   mapGetters: mapGetters,
   mapActions: mapActions
-}
+};
 
 return index;
 
 })));
+
 },{}],4:[function(require,module,exports){
 'use strict';
 
@@ -11175,47 +11220,273 @@ Object.defineProperty(exports, "__esModule", {
 
 var addStudent = exports.addStudent = 'addStudent';
 
-//grade.activestudent
+//activeexam
+var setActiveExam = exports.setActiveExam = 'setActiveExam';
+var clearActiveExam = exports.clearActiveExam = 'clearActiveExam';
+
+//activestudent
 var setActiveStudent = exports.setActiveStudent = 'setActiveStudent';
 var setActiveStudentId = exports.setActiveStudentId = 'setActiveStudentId';
 var setActiveStudentIndex = exports.setActiveStudentIndex = 'setActiveStudentIndex';
 var setActiveStudentObject = exports.setActiveStudentObject = 'setActiveStudentObject';
 var setActiveStudentTime = exports.setActiveStudentTime = 'setActiveStudentTime';
+var setIndex = exports.setIndex = 'setIndex';
+var setId = exports.setId = 'setId';
+var setTime = exports.setTime = 'setTime';
+var setStudentObject = exports.setStudentObject = 'setStudentObject';
+var clearActiveStudent = exports.clearActiveStudent = 'clearActiveStudent';
 
-//grades comments
+//comments
 var storeCommentTextForActiveStudent = exports.storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent';
 var storeCommentText = exports.storeCommentText = 'storeCommentText';
 
-//grades.times
-var storeStudentGradingTime = exports.storeStudentGradingTime = 'storeStudentGradingTime';
+//escores
+var setElementScore = exports.setElementScore = 'setElementScore';
+var loadElementScores = exports.loadElementScores = 'loadElementScores';
+var storeElementScoreForActiveStudent = exports.storeElementScoreForActiveStudent = 'storeElementScoreForActiveStudent';
+
+//exams
+var addNewExam = exports.addNewExam = 'addNewExam';
+var loadExams = exports.loadExams = 'loadExams';
+
+//grades
+var loadExamGrades = exports.loadExamGrades = 'loadExamGrades';
+var loadStandardGrades = exports.loadStandardGrades = 'loadStandardGrades';
+var updateExamGrade = exports.updateExamGrade = 'updateExamGrade';
+
+//qscores
+var loadQuestionScores = exports.loadQuestionScores = 'loadQuestionScores';
+var setQuestionScore = exports.setQuestionScore = 'setQuestionScore';
+var storeQuestionScoreForActiveStudent = exports.storeQuestionScoreForActiveStudent = 'storeQuestionScoreForActiveStudent';
+
+//questions
+var loadMaxQuestionScores = exports.loadMaxQuestionScores = 'loadMaxQuestionScores';
+var loadQuestions = exports.loadQuestions = 'loadQuestions';
+var loadNumberQuestions = exports.loadNumberQuestions = 'loadNumberQuestions';
+var addQuestion = exports.addQuestion = 'addQuestion';
+
+//students
+var loadStudents = exports.loadStudents = 'loadStudents';
+
+//times
+var storeGradingTime = exports.storeGradingTime = 'storeGradingTime';
 var increaseActiveStudentGradingTime = exports.increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime';
+var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
+var loadGradingTimes = exports.loadGradingTimes = 'loadGradingTimes';
 
 },{}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
-exports.setExamId = undefined;
+exports.actions = undefined;
+
+var _actions;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; //Root actions for the vuex instance
 
 var _mutationTypes = require('./mutation-types');
 
-var types = _interopRequireWildcard(_mutationTypes);
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('./action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _Student = require('./models/Student');
+
+var _Student2 = _interopRequireDefault(_Student);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-/**
- * Sets the id of the exam currently being worked on
- * @param commit
- * @param examId
- */
-var setExamId = exports.setExamId = function setExamId(_ref, examId) {
-  var commit = _ref.commit;
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-  commit('_setExamId', examId);
-}; //Root actions for the vuex instance
+var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes.setActiveStudentId, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
 
-},{"./mutation-types":19}],6:[function(require,module,exports){
+    // [aTypes.setActiveStudentId](state, rootState, payload){
+
+    console.log(aTypes.setActiveStudentId, 'is deprecated!');
+    console.log(aTypes.setActiveStudentId, payload);
+    payload = state.activeStudent;
+
+    actions[aTypes.setActiveStudent](state, commit, payload);
+
+    // let studentId;
+    //
+    // //number passed in
+    // if (typeof (payload) == 'number' && Number.isInteger(payload)) {
+    //     studentId = payload;
+    // }
+    //
+    //
+    // //object passed in
+    // //todo add object case
+    // console.log('studentId', studentId);
+    // if (Number.isInteger(studentId)) {
+    //     commit(mTypes.setId, Payload.factory({num: studentId}));
+    // }
+}), _defineProperty(_actions, aTypes.setActiveStudentIndex, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+
+    console.log(aTypes.setActiveStudentIndex, 'is deprecated!');
+    payload = state.activeStudent;
+    actions[aTypes.setActiveStudent](state, commit, payload);
+    // let studentIndex;
+    // switch (typeof (payload)) {
+    //     case 'number':
+    //         if (Number.isInteger(payload)) {
+    //             studentIndex = payload;
+    //         }
+    //         break;
+    //     case 'object':
+    //         //todo write if object
+    //
+    //         break;
+    //     default:
+    // }
+    //
+    // if (Number.isInteger(studentIndex)) {
+    //     commit(mTypes.setIndex, studentIndex);
+    // }
+}), _defineProperty(_actions, aTypes.setActiveStudentObject, function (_ref3, payload) {
+    var state = _ref3.state,
+        commit = _ref3.commit;
+
+    console.log(aTypes.setActiveStudentObject, 'is deprecated!');
+    [aTypes.setActiveStudent](state, commit, payload);
+    // // let student;
+    //
+    // // if (payload instanceof Student) {
+    // //     student = payload;
+    // // }
+    // // switch(typeof (payload)){
+    // //     case 'number':
+    // //         if(Number.isInteger(payload)){
+    // //             studentIndex = payload;
+    // //         }
+    // //         break;
+    // //     case 'object':
+    // //         //todo write if object
+    // //
+    // //         break;
+    // //     default:
+    // // }
+    //
+    // //Call the mutation
+    // if (payload instanceof Student) {
+    //     commit(mTypes.setStudentObject, payload);
+    // }
+}), _defineProperty(_actions, aTypes.setIndex, function (_ref4, payload) {
+    var state = _ref4.state,
+        commit = _ref4.commit;
+
+    console.log(aTypes.setIndex, 'is deprecated!');
+    console.log(aTypes.setIndex, payload);
+    payload = state.activeStudent;
+    actions[aTypes.setActiveStudent](state, commit, payload);
+}), _defineProperty(_actions, aTypes.setId, function (_ref5, payload) {
+    var state = _ref5.state,
+        commit = _ref5.commit;
+
+    console.log(aTypes.setId, 'is deprecated!');
+    payload = state.activeStudent;
+
+    actions[aTypes.setActiveStudent](state, commit, payload);
+}), _defineProperty(_actions, aTypes.setStudentObject, function (_ref6, payload) {
+    var state = _ref6.state,
+        commit = _ref6.commit;
+
+    payload = state.activeStudent;
+
+    if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == 'object' && payload instanceof _Student2.default) {
+        commit(mTypes.setActiveStudent, Payload.factory({ obj: payload }));
+        // state.student = payload;
+    }
+}), _defineProperty(_actions, aTypes.setActiveStudentTime, function (_ref7, payload) {
+    var state = _ref7.state,
+        commit = _ref7.commit;
+
+
+    var studentIndex = state.activeStudent.index;
+    var time = void 0;
+
+    switch (typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) {
+        case 'number':
+            if (Number.isInteger(payload)) {
+                //go straight to recording
+                time = payload;
+            }
+            break;
+
+        //object with expected key
+        case 'object':
+            //todo write if object
+            break;
+
+        //other allowed types
+        // todo
+
+        //numeric string
+        // todo
+        default:
+        //todo
+    }
+
+    //Call the mutation
+    if (typeof time == 'number') {
+        commit(mTypes.setTime, time);
+    }
+}), _defineProperty(_actions, aTypes.increaseActiveStudentGradingTime, function (_ref8, payload) {
+    var state = _ref8.state,
+        commit = _ref8.commit;
+
+    var studentIndex = state.activeStudent.index;
+    state.examGradingTimes[studentIndex] += payload.timeToAdd;
+}), _defineProperty(_actions, aTypes.storeQuestionScoreForActiveStudent, function (_ref9, payload) {
+    var state = _ref9.state,
+        commit = _ref9.commit;
+
+    // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
+    var questionIndex = payload.questionIndex,
+        score = payload.score;
+
+    var studentIndex = state.activeStudent.index;
+    //type checking
+
+    var out = Payload.factory({ index2: questionIndex, index: studentIndex, num: score });
+
+    commit(mTypes.setQuestionScore, out);
+}), _defineProperty(_actions, aTypes.storeElementScoreForActiveStudent, function (_ref10, payload) {
+    var state = _ref10.state,
+        commit = _ref10.commit;
+
+    var studentIndex = state.getActiveStudentIndex();
+    var elementIndex = payload.elementIndex,
+        score = payload.score;
+    //type checks
+
+    if (typeof score == 'undefined') {
+        //score may have been named differently
+        score = payload.elementScore;
+    }
+
+    var out = Payload.factory({
+        index: studentIndex,
+        index2: elementIndex,
+        num: score
+    });
+
+    commit(mTypes.setElementScore, out);
+}), _actions);
+
+},{"./action-types":4,"./models/Student":13,"./mutation-types":23}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11265,10 +11536,35 @@ var checkValid = exports.checkValid = function checkValid(state, propertyName) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-//Root getters for the vuex instance
+/**
+ * Root getters for the vuex instance
+ *
+ * Methods which make use of multiple modules should generally be kept here
+ */
 
+/**
+ * Helper function used by getters which tests for an index value and then
+ * handles undefined and  null inputs when they were expecting
+ * a numeric index.
+ */
+var validateIndex = function validateIndex(index) {
+    var handleInvalid = function handleInvalid() {
+        return '';
+    };
+
+    if (typeof index == 'undefined') return handleInvalid();
+    if (index === null) return handleInvalid();
+
+    return true;
+};
+
+/**
+ * Poorly named shortcut for getting the db id of
+ * the currently active exam.
+ * @param state
+ */
 var getExamId = exports.getExamId = function getExamId(state) {
-    return state.examId;
+    return state.activeExam.id;
 };
 
 /**
@@ -11278,9 +11574,9 @@ var getExamId = exports.getExamId = function getExamId(state) {
  * active student has index 0 and the consuming method interprets this as false).
  */
 var isActive = exports.isActive = function isActive(state) {
-    if (typeof state.activeStudentIndex == 'undefined') return false;
-    if (state.activeStudentIndex === null) return false;
-    if (state.activeStudentIndex >= 0) {
+    if (typeof state.activeStudent == 'undefined') return false;
+    if (state.activeStudent === null) return false;
+    if (state.activeStudent.index >= 0) {
         return true;
     }
     return false;
@@ -11313,21 +11609,93 @@ var getNumberGraded = exports.getNumberGraded = function getNumberGraded(state) 
 /**
  * Returns the total number of exams
  *
- * TODO Store this value after first run
- *
  * @returns {number|Number}
  */
 var getTotalExams = exports.getTotalExams = function getTotalExams(state) {
-    //memoize
-    // if(this.getTotalExams.total && this.getTotalExams.total >= 0) return this.getTotalExams.total;
-
-    //initialize
     var total = 0;
     if (Object.keys(state.examGrades).length > 0) {
         total = Object.keys(state.examGrades).length;
     }
 
     return total;
+};
+
+//------------ from qscores
+
+/**
+ * Convenience function for getting the current student's score for question
+ * Old way: data.this.questionScores[ Roster.activeStudent ][ index ];
+ *  if ( state.activeStudentIndex == null ) return '';
+ *  return state.getQuestionScore( this.activeStudentIndex, questionIndex );
+ * @param questionIndex
+ */
+var getQuestionScoreForActiveStudent = exports.getQuestionScoreForActiveStudent = function getQuestionScoreForActiveStudent(state, getters, rootState, questionIndex) {
+    var idx = getters.getActiveStudentIndex(state, getters, rootState);
+    if (idx == null) return '';
+    return getters.getQuestionScore(state, getters, rootState, idx, questionIndex);
+    // if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set ";
+};
+
+// --------------- from times
+
+/**
+ * Convenience method for getting the grading time of the student presently
+ * being graded
+ * if ( state.activeStudentIndex == null ) return '';
+ * return state.examGradingTimes[ state.activeStudentIndex ];
+ * return getters.getStudentGradingTime( state, getters, state.activeStudentIndex );
+ * @returns {*}
+ */
+var getActiveStudentGradingTime = exports.getActiveStudentGradingTime = function getActiveStudentGradingTime(state, getters, rootState) {
+    var idx = getters.getActiveStudentIndex(state, getters, rootState);
+    if (idx == null) return '';
+    return getters.getStudentGradingTime(state, getters, idx);
+    // if ( ! this.isActive() ) throw "ERROR: getActiveStudentGradingTime | No active student set ";
+};
+
+//--------------- comments
+
+/**
+ * Gets the comment text for the student
+ * @param state
+ * @param getters
+ * @param rootState
+ * @param elementIndex
+ * @param valence
+ * @returns {*}
+ */
+var getCommentTextForActiveStudent = exports.getCommentTextForActiveStudent = function getCommentTextForActiveStudent(state, getters, rootState, elementIndex, valence) {
+    //If no student is set, the comment field should be blank
+    var idx = getters.getActiveStudentIndex(state, getters, rootState);
+    validateIndex(idx);
+    //    if ( idx == null ) return '';
+
+    return getters.getCommentText(state, getters, rootState, idx, elementIndex, valence);
+};
+
+//------------------ grades
+/**
+ * Retrieves exam grade for current student
+ * if ( state.activeStudentIndex == null ) return '';
+ * return state.examGrades[ state.activeStudent ];
+ * @param state
+ * @param getters
+ * @param rootState
+ * @returns {*}
+ */
+var getExamGradeForActiveStudent = exports.getExamGradeForActiveStudent = function getExamGradeForActiveStudent(state, getters, rootState) {
+    var idx = getters.getActiveStudentIndex(state, getters, rootState);
+    validateIndex(idx);
+    // if ( idx == null ) return '';
+    return getters.getExamGrade(state, getters, rootState, idx);
+};
+
+//------------ escores
+var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = function getElementScoreForActiveStudent(state, getters, rootState, elementIndex) {
+    var idx = getters.getActiveStudentIndex(state, getters, rootState);
+    validateIndex(idx);
+    // if ( idx == null ) return '';
+    return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
 };
 
 },{}],8:[function(require,module,exports){
@@ -11401,37 +11769,41 @@ var _api = require('./api');
 
 var api = _interopRequireWildcard(_api);
 
-var _gradeActivestudent = require('./modules/grade.activestudent.js');
+var _activestudent = require('./modules/activestudent.js');
 
-var _gradeActivestudent2 = _interopRequireDefault(_gradeActivestudent);
+var _activestudent2 = _interopRequireDefault(_activestudent);
 
-var _gradeComments = require('./modules/comments.js');
+var _activeexam = require('./modules/activeexam.js');
 
-var _gradeComments2 = _interopRequireDefault(_gradeComments);
+var _activeexam2 = _interopRequireDefault(_activeexam);
 
-var _gradeEscores = require('./modules/escores.js');
+var _comments = require('./modules/comments.js');
 
-var _gradeEscores2 = _interopRequireDefault(_gradeEscores);
+var _comments2 = _interopRequireDefault(_comments);
 
-var _gradeGrades = require('./modules/grades.js');
+var _escores = require('./modules/escores.js');
 
-var _gradeGrades2 = _interopRequireDefault(_gradeGrades);
+var _escores2 = _interopRequireDefault(_escores);
 
-var _gradeQscores = require('./modules/qscores.js');
+var _grades = require('./modules/grades.js');
 
-var _gradeQscores2 = _interopRequireDefault(_gradeQscores);
+var _grades2 = _interopRequireDefault(_grades);
 
-var _gradeQuestions = require('./modules/questions.js');
+var _qscores = require('./modules/qscores.js');
 
-var _gradeQuestions2 = _interopRequireDefault(_gradeQuestions);
+var _qscores2 = _interopRequireDefault(_qscores);
 
-var _gradeStudents = require('./modules/students.js');
+var _questions = require('./modules/questions.js');
 
-var _gradeStudents2 = _interopRequireDefault(_gradeStudents);
+var _questions2 = _interopRequireDefault(_questions);
 
-var _gradeTimes = require('./modules/times.js');
+var _students = require('./modules/students.js');
 
-var _gradeTimes2 = _interopRequireDefault(_gradeTimes);
+var _students2 = _interopRequireDefault(_students);
+
+var _times = require('./modules/times.js');
+
+var _times2 = _interopRequireDefault(_times);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -11471,15 +11843,15 @@ exports.default = new _vuex2.default.Store({
   },
 
   modules: {
-    //     activeStudent,
-    //     // gradeStateDefault,
-    //     comments,
-    //     elementScores,
-    //     grades,
-    //     questionScores,
-    //     questions,
-    students: _gradeStudents2.default,
-    times: _gradeTimes2.default
+    activeexam: _activeexam2.default,
+    activestudent: _activestudent2.default,
+    comments: _comments2.default,
+    escores: _escores2.default,
+    grades: _grades2.default,
+    qscores: _qscores2.default,
+    questions: _questions2.default,
+    students: _students2.default,
+    times: _times2.default
   },
   state: state,
   api: api,
@@ -11487,8 +11859,435 @@ exports.default = new _vuex2.default.Store({
   strict: debug });
 
 }).call(this,require('_process'))
-},{"./actions":5,"./api":6,"./getters":7,"./modules/grade.activestudent.js":11,"./modules/grade.comments.js":12,"./modules/grade.escores.js":13,"./modules/grade.grades.js":14,"./modules/grade.qscores.js":15,"./modules/grade.questions.js":16,"./modules/grade.students.js":17,"./modules/grade.times.js":18,"./mutations":20,"./state":21,"_process":1,"vue":2,"vuex":3}],9:[function(require,module,exports){
-"use strict";
+},{"./actions":5,"./api":6,"./getters":7,"./modules/activeexam.js":14,"./modules/activestudent.js":15,"./modules/comments.js":16,"./modules/escores.js":17,"./modules/grades.js":18,"./modules/qscores.js":19,"./modules/questions.js":20,"./modules/students.js":21,"./modules/times.js":22,"./mutations":24,"./state":25,"_process":1,"vue":2,"vuex":3}],9:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _IModel2 = require('./IModel');
+
+var _IModel3 = _interopRequireDefault(_IModel2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Created by adam on 8/15/16.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+var Exam = function (_IModel) {
+    _inherits(Exam, _IModel);
+
+    /**
+     * Create a new exam object
+     * @param examId
+     * @param examIndex
+     */
+    function Exam() {
+        _classCallCheck(this, Exam);
+
+        var _this = _possibleConstructorReturn(this, (Exam.__proto__ || Object.getPrototypeOf(Exam)).call(this));
+
+        _this._id; // = examId;
+        _this._index; // = examIndex;
+        _this._name; // = name;
+        _this._year; // = year;
+        _this._term; // = term;
+
+        if (arguments.length > 0) {
+            //fill in from params
+
+        }
+        return _this;
+    }
+
+    _createClass(Exam, [{
+        key: 'id',
+
+
+        /* *************************** Id *************** */
+        /**
+         * The database id of the exam
+         */
+        get: function get() {
+            return this._id;
+        },
+        set: function set(v) {
+            this._id = Number(v);
+        }
+
+        /**
+         * Some things like to call the database id
+         * this when they ask for the property. So
+         * we oblige them with a nice alias.
+         */
+
+    }, {
+        key: 'examId',
+        get: function get() {
+            return this._id;
+        }
+        /* *************************** Index ************* */
+        /**
+         * Returns the examIndex
+         * This used to be the main identifier with which the exam
+         * was looked up in store.exams.
+         * todo add sanitization
+         * @returns {*}
+         */
+
+    }, {
+        key: 'examIndex',
+        get: function get() {
+            return this._index;
+        }
+    }, {
+        key: 'index',
+        set: function set(v) {
+            this._index = v;
+        },
+        get: function get() {
+            return this._index;
+        }
+
+        /* *************************** Props ************* */
+
+    }, {
+        key: 'name',
+        get: function get() {
+            return this._name;
+        },
+        set: function set(n) {
+            this._name = n;
+        }
+    }, {
+        key: 'year',
+        get: function get() {
+            return this._year;
+        },
+        set: function set(v) {
+            this._year = v;
+        }
+    }, {
+        key: 'term',
+        get: function get() {
+            return this._term;
+        },
+        set: function set(v) {
+            this._term = v;
+        }
+
+        /**
+         * Returns a list of fields which may
+         * be used to look up an exam from the store
+         */
+
+    }], [{
+        key: 'examIdentifiers',
+        value: function examIdentifiers() {
+            return ['examId', 'examIndex'];
+        }
+
+        /**
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
+         */
+
+    }, {
+        key: 'factory',
+        value: function factory(params) {
+            var exam = new Exam();
+
+            return this.fillObject(exam, params);
+            //
+            //         if ( typeof params != 'undefined' ) {
+            //             //fill any fillable values
+            //             this.fillableProps.forEach( function ( v ) {
+            //                 // console.log( 'params', params, v );
+            //                 if ( typeof params[ v ] != 'undefined' ) {
+            //                     exam[ v ] = params[ v ];
+            //                 }
+            //             } );
+            //
+            //             //fill any aliased values
+            //             for ( let v in this.aliasMap ) {
+            //                 if ( typeof params[ v ] != 'undefined' ) {
+            //                     // console.log( 'alias', v, map[v] );
+            //                     exam[ this.aliasMap[ v ] ] = params[ v ];
+            //                 }
+            //             }
+            //         }
+            // //we will still return an empty exam if there
+            //         //were no parameters
+            //         return exam;
+        }
+    }, {
+        key: 'fillableProps',
+        get: function get() {
+            return ['id', 'index', 'name', 'year', 'term'];
+        }
+    }, {
+        key: 'aliasMap',
+        get: function get() {
+            return {
+                examId: 'id',
+                examIndex: 'index'
+            };
+        }
+    }]);
+
+    return Exam;
+}(_IModel3.default);
+
+exports.default = Exam;
+
+},{"./IModel":10}],10:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Created by adam on 1/23/17.
+ */
+
+var IModel = function () {
+    function IModel() {
+        _classCallCheck(this, IModel);
+    }
+
+    _createClass(IModel, null, [{
+        key: 'fillObject',
+
+
+        /**
+         * Iterate over the provided parameters and set the properties of the
+         * object.
+         * @param obj
+         * @param params
+         * @returns {*}
+         */
+        value: function fillObject(obj, params) {
+            if (typeof params != 'undefined') {
+
+                //fill any fillable values
+                this.fillableProps.forEach(function (v) {
+                    // console.log( 'params', params, v );
+                    if (typeof params[v] != 'undefined') {
+                        obj[v] = params[v];
+                    }
+                });
+
+                //fill any aliased values
+                for (var v in this.aliasMap) {
+                    if (typeof params[v] != 'undefined') {
+                        // console.log( 'alias', v, map[v] );
+                        obj[this.aliasMap[v]] = params[v];
+                    }
+                }
+            }
+
+            //we will still return the empty obj if there
+            //were no parameters
+            return obj;
+        }
+    }]);
+
+    return IModel;
+}();
+
+exports.default = IModel;
+
+},{}],11:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * This is the common payload which all participating
+ * mutations receive
+ * Created by adam on 1/17/17.
+ */
+
+var Payload = function () {
+    function Payload() {
+        _classCallCheck(this, Payload);
+
+        //the object's db id
+        this._id;
+        //the index value of the object
+        this._index;
+
+        /**
+         * Where there is a compound index (e.g., obj[studentIndex][questionIndex],
+         * this holds the child value (i.e., questionIndex)
+         */
+        this._index2;
+
+        /** The numeric value in the payload */
+        this._num;
+
+        /** The object in the payload */
+        this._obj;
+
+        /** The string in the payload */
+        this._str;
+
+        /** The timestamp in the payload */
+        this._stamp;
+    }
+
+    /*  ************************* Identifier values ************************* */
+
+
+    _createClass(Payload, [{
+        key: 'id',
+        get: function get() {
+            return this._id;
+        },
+        set: function set(val) {
+            //todo numeric check
+            this._id = val;
+        }
+    }, {
+        key: 'index',
+        get: function get() {
+            return this._index;
+        },
+        set: function set(val) {
+            //todo numeric check
+            this._index = val;
+        }
+    }, {
+        key: 'index2',
+        get: function get() {
+            return this._index2;
+        },
+        set: function set(val) {
+            //todo numeric check
+            this._index2 = val;
+        }
+        //
+        // get complexIndex(){
+        //     if(typeof this._index2 != 'undefined'){
+        //         return this._index
+        //     }
+        // }
+
+        /*  ************************* Payload values ************************* */
+
+    }, {
+        key: 'num',
+        get: function get() {
+            return this._num;
+        },
+        set: function set(v) {
+            //todo numeric check
+            this._num = v;
+        }
+    }, {
+        key: 'obj',
+        get: function get() {
+            return this._obj;
+        },
+        set: function set(val) {
+            if ((typeof val === 'undefined' ? 'undefined' : _typeof(val)) == 'object') {
+                this._obj = val;
+            }
+            //todo error handling
+        }
+    }, {
+        key: 'str',
+        get: function get() {
+            return this._obj;
+        },
+        set: function set(v) {
+            //todo string check
+            this._str = v;
+        }
+
+        /**
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
+         */
+
+    }], [{
+        key: 'factory',
+        value: function factory(params) {
+            var p = new Payload();
+            if (typeof params != 'undefined') {
+
+                //fill any fillable values
+                this.fillableProps.forEach(function (v) {
+                    if (typeof params[v] != 'undefined') {
+                        p[v] = params[v];
+                    }
+                });
+
+                //fill any aliased values
+                for (var v in this.aliasMap) {
+                    if (typeof params[v] != 'undefined') {
+                        // console.log( 'alias', v, map[v] );
+                        p[this.aliasMap[v]] = params[v];
+                    }
+                }
+            }
+            return p;
+        }
+    }, {
+        key: 'checkIfPayload',
+        value: function checkIfPayload(payload) {
+            //received payload object case
+            if (payload instanceof Payload) {
+                return true;
+            }
+            return false;
+            // throw new Exception( "Non Payload passed to a Payload requiring method" );
+        }
+    }, {
+        key: 'fillableProps',
+        get: function get() {
+            return ['id', 'index', 'num', 'obj', 'str', 'stamp'];
+        }
+    }, {
+        key: 'aliasMap',
+        get: function get() {
+            return {
+                studentId: 'id',
+                studentIndex: 'index'
+            };
+        }
+    }]);
+
+    return Payload;
+}();
+
+exports.default = Payload;
+
+},{}],12:[function(require,module,exports){
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -11509,6 +12308,8 @@ var Question = function () {
     function Question(questionIndex) {
         _classCallCheck(this, Question);
 
+        this._id;
+        this._index;
         this.questionIndex = questionIndex;
         this._questionName;
         this._questionNumber;
@@ -11516,8 +12317,91 @@ var Question = function () {
         this._maxScore;
     }
 
+    /* *************************** Id *************** */
+    /**
+     * Alias for _id
+     * @returns {*}
+     */
+
+
     _createClass(Question, [{
-        key: "questionName",
+        key: 'id',
+        get: function get() {
+            return this._id;
+        }
+
+        /**
+         * Alias setter for _id
+         * @param v
+         */
+        ,
+        set: function set(v) {
+            this._id = v;
+        }
+        /**
+         * Alias for _id
+         * @returns {*}
+         */
+
+    }, {
+        key: 'questionId',
+        get: function get() {
+            return this._id;
+        }
+
+        /**
+         * Alias setter for _id
+         * @param v
+         */
+        ,
+        set: function set(v) {
+            this._id = v;
+        }
+
+        /* *************************** Index ************* */
+        /**
+         * Alias for _id
+         * @returns {*}
+         */
+
+    }, {
+        key: 'index',
+        get: function get() {
+            return this._index;
+        }
+
+        /**
+         * Alias setter for _id
+         * @param v
+         */
+        ,
+        set: function set(v) {
+            this._index = v;
+        }
+
+        /**
+         * Alias for _id
+         * @returns {*}
+         */
+
+    }, {
+        key: 'questionIndex',
+        get: function get() {
+            return this._index;
+        }
+
+        /**
+         * Alias for _id
+         */
+        ,
+        set: function set(v) {
+            this._index = v;
+        }
+
+        /* *************************** Content ************* */
+
+    }, {
+        key: 'questionName',
         get: function get() {
             return this._questionName;
         },
@@ -11525,7 +12409,7 @@ var Question = function () {
             this._questionName = name;
         }
     }, {
-        key: "questionNumber",
+        key: 'questionNumber',
         get: function get() {
             return this._questionNumber ? Number(this._questionNumber) : null;
         },
@@ -11533,7 +12417,7 @@ var Question = function () {
             this._questionNumber = number;
         }
     }, {
-        key: "questionAssignmentId",
+        key: 'questionAssignmentId',
         get: function get() {
             return this._questionAssignmentId ? Number(this._questionAssignmentId) : null;
         },
@@ -11541,7 +12425,7 @@ var Question = function () {
             this._questionAssignmentId = id;
         }
     }, {
-        key: "maxScore",
+        key: 'maxScore',
         get: function get() {
             return this._maxScore ? Number(this._maxScore) : null;
         },
@@ -11549,26 +12433,57 @@ var Question = function () {
             this._maxScore = score;
         }
     }], [{
-        key: "factory",
+        key: 'factory',
 
 
         /**
          * Instantiates a question object from the server provided json.
-         * Index is optional as long as the json contains a key questionIndex.
-         * If both are present, will use the parameter value
+         *
          * @param questionJson
          * @returns {Question}
          */
-        value: function factory(questionJson, index) {
-            if (!questionJson || !questionJson.questionIndex && !index) throw new Error("no question index given");
+        value: function factory(params) {
+            var obj = new Question();
 
-            index = index ? index : questionJson.questionIndex;
-            var question = new Question(questionJson.questionIndex);
-            question.questionName = questionJson.questionName;
-            question.questionNumber = questionJson.questionNumber;
-            question.questionAssignmentId = questionJson.questionAssignmentId;
-            question.maxScore = questionJson.maxScore;
-            return question;
+            if (typeof params != 'undefined') {
+                //fill any fillable values
+                this.fillableProps.forEach(function (v) {
+                    // console.log( 'params', params, v );
+                    if (typeof params[v] != 'undefined') {
+                        obj[v] = params[v];
+                    }
+                });
+                //fill any aliased values
+                for (var v in this.aliasMap) {
+                    if (typeof params[v] != 'undefined') {
+                        // console.log( 'alias', v, map[v] );
+                        obj[this.aliasMap[v]] = params[v];
+                    }
+                }
+            }
+            //we will still return an empty object if there
+            //were no parameters
+            return obj;
+        }
+    }, {
+        key: 'fillableProps',
+
+
+        /**
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
+         */
+        get: function get() {
+            return ['id', 'index', 'content', 'maxScore', 'questionName', 'questionNumber', 'questionAssignmentId'];
+        }
+    }, {
+        key: 'aliasMap',
+        get: function get() {
+            return {
+                questionId: 'id',
+                questionIndex: 'index'
+            };
         }
     }]);
 
@@ -11577,7 +12492,7 @@ var Question = function () {
 
 exports.default = Question;
 
-},{}],10:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11586,32 +12501,147 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _IModel2 = require('./IModel');
+
+var _IModel3 = _interopRequireDefault(_IModel2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/**
- * Created by adam on 8/15/16.
- */
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-var Student = function () {
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Created by adam on 8/15/16.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+var Student = function (_IModel) {
+    _inherits(Student, _IModel);
+
     function Student(studentId) {
         _classCallCheck(this, Student);
 
-        this._email = '';
-        this._id = studentId;
-        this._index = null;
-        this._studentIdentifier = null;
-        this._lastName = '';
-        this._firstName = '';
+        var _this = _possibleConstructorReturn(this, (Student.__proto__ || Object.getPrototypeOf(Student)).call(this));
+
+        _this._email = '';
+        _this._id = studentId;
+        _this._index = null;
+        _this._studentIdentifier = null;
+        _this._lastName = '';
+        _this._firstName = '';
+        return _this;
     }
 
+    /* *************************** Id *************** */
+    // /**
+    //  * Master getter for database identifier, i.e., studentId
+    //  * Any checks or transformations should be done here
+    //  * since everything else will call this.
+    //  * @returns {*}
+    //  */
+    // get _id() {
+    //     return Number( this._id );
+    // }
+    //
+    // /**
+    //  * Master setter for id
+    //  * Any checks or transformations should be done here
+    //  * since everything else will call this.
+    //  */
+    // set _id( v ) {
+    //     this._id = v;
+    // }
+
+    /**
+     * Alias for _id
+     * @returns {*}
+     */
+
+
     _createClass(Student, [{
-        key: 'email',
+        key: 'id',
         get: function get() {
-            return this._email;
-        },
-        set: function set(address) {
-            this._email = address;
+            return this._id;
         }
+
+        /**
+         * Alias setter for _id
+         * @param v
+         */
+        ,
+        set: function set(v) {
+            this._id = v;
+        }
+
+        /**
+         * Alias for _id
+         */
+
+    }, {
+        key: 'studentId',
+        get: function get() {
+            return Number(this._id);
+        },
+
+
+        /**
+         * Alias for _id
+         * @param val
+         */
+        set: function set(val) {
+            this._id = val;
+        }
+
+        /* *************************** Index ************* */
+        // /**
+        //  * Master getter for index
+        //  * Any checks or transformations should be done here
+        //  * since everything else will call this.
+        //  * @returns {*}
+        //  */
+        // get _index() {
+        //     return this._index;
+        // }
+        //
+        // /**
+        //  * Master setter for index
+        //  * Any checks or transformations should be done here
+        //  * since everything else will call this.
+        //  */
+        // set _index( v ) {
+        //     this._index = v;
+        // }
+
+        /** Alias getter for _index  */
+
+    }, {
+        key: 'index',
+        get: function get() {
+            return this._index;
+        }
+
+        /** Alias setter for _index */
+        ,
+        set: function set(v) {
+            this._index = v;
+        }
+
+        /** Alias getter for _index  */
+
+    }, {
+        key: 'studentIndex',
+        get: function get() {
+            return Number(this._index);
+        },
+
+
+        /** Alias setter for _index */
+        set: function set(val) {
+            this._index = val;
+        }
+
+        /* *************************** Names ************* */
+
     }, {
         key: 'firstName',
         get: function get() {
@@ -11621,84 +12651,139 @@ var Student = function () {
             this._firstName = val;
         }
 
-        /** Alias for database identifier, i.e., studentId */
+        /**
+         * Getter for last name
+         */
 
-    }, {
-        key: 'id',
-        get: function get() {
-            return this.studentId;
-        }
     }, {
         key: 'lastName',
         get: function get() {
             return this._lastName;
         },
+
+
+        /**
+         * Setter for last name
+         * @param val
+         */
         set: function set(val) {
             this._lastName = val;
         }
+    }, {
+        key: 'studentIdentifier',
 
+
+        /* *************************** Identifier *********** */
         /**
          * Returns the identifier set by the user.
          * This is not the database id of the student
          * */
-
-    }, {
-        key: 'studentIdentifier',
         get: function get() {
             return this._studentIdentifier;
         },
         set: function set(val) {
             this._studentIdentifier = val;
         }
+
+        /* *************************** Email ****************** */
+
     }, {
-        key: 'studentId',
+        key: 'email',
         get: function get() {
-            return Number(this._id);
+            return this._email;
         },
-        set: function set(val) {
-            this._id = val;
-        }
-    }, {
-        key: 'studentIndex',
-        get: function get() {
-            return Number(this._index);
-        },
-        set: function set(val) {
-            this._index = val;
+        set: function set(address) {
+            this._email = address;
         }
 
         /**
-         * Takes the json student object received from the server and
-         * returns a Student object
-         * @param studentJson
-         * @returns {Student}
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
          */
 
     }], [{
         key: 'factory',
-        value: function factory(studentJson) {
-            if (!studentJson || !studentJson.studentId) throw new Error("studentJson had no id");
+        value: function factory(params) {
+            var student = new Student();
 
-            var student = new Student(studentJson.studentId);
-            // window.console.log( 'factory', student, studentJson.studentId );
-            student.firstName = studentJson.firstName;
-            student.lastName = studentJson.lastName;
-            student.studentIndex = studentJson.studentIndex;
-            student.studentIdentifier = studentJson.studentIdentifier;
-            // for ( let i = 0; i < Object.keys( student ).length; i ++ ) {
-            //     let key = Object.keys( student )[ i ];
-            //     student[ key ] = studentJson[ key ];
-            // }
-            return student;
+            // //we will still return an empty student if there
+            //         //were no parameters
+
+            return this.fillObject(student, params);
+
+            //         if ( typeof params != 'undefined' ) {
+            //             //fill any fillable values
+            //             this.fillableProps.forEach( function ( v ) {
+            //                 // console.log( 'params', params, v );
+            //                 if ( typeof params[ v ] != 'undefined' ) {
+            //                     student[ v ] = params[ v ];
+            //                 }
+            //             } );
+            //
+            //             //fill any aliased values
+            //             for ( let v in this.aliasMap ) {
+            //                 if ( typeof params[ v ] != 'undefined' ) {
+            //                     // console.log( 'alias', v, map[v] );
+            //                     student[ this.aliasMap[ v ] ] = params[ v ];
+            //                 }
+            //             }
+            //         }
+            //         return student;
+        }
+
+        //
+        // static get fillable(){
+        //     return [
+        //         'firstName',
+        //         'lastName',
+        //         'studentId',
+        //         'studentIdentifier',
+        //         'studentIndex',
+        //     ]
+        // }
+        // /**
+        //  * Takes the json student object received from the server and
+        //  * returns a Student object
+        //  * @param studentJson
+        //  * @returns {Student}
+        //  */
+        // static factory( studentJson ) {
+        //     let student = new Student(  );
+        //     let fields = Student.fillable;
+        //
+        //     for(let i=0; i<fields.length; i++){
+        //         let field = fields[i];
+        //         if(typeof studentJson[field] != 'undefined' ){
+        //             student[field] = studentJson[field];
+        //         }
+        //     }
+        //
+        //     console.log( 'student', student );
+        //     return student;
+        // }
+
+    }, {
+        key: 'fillableProps',
+        get: function get() {
+            return ['id', 'index', 'firstName', 'lastName', 'studentIdentifier'];
+        }
+    }, {
+        key: 'aliasMap',
+        get: function get() {
+            return {
+                studentId: 'id',
+                studentIndex: 'index'
+            };
         }
     }]);
 
     return Student;
-}();
+}(_IModel3.default);
 
 exports.default = Student;
 
-},{}],11:[function(require,module,exports){
+},{"./IModel":10}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11707,14 +12792,103 @@ Object.defineProperty(exports, "__esModule", {
 
 var _mutations, _actions;
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; /**
-                                                                                                                                                                                                                                                   * This handles all matters related to one student being the
-                                                                                                                                                                                                                                                   * currently selected student which operations on the page
-                                                                                                                                                                                                                                                   * are affecting. Mainly used in grading, but could also be used in
-                                                                                                                                                                                                                                                   * reporting.
-                                                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                                                   * Created by adam on 10/7/16.
-                                                                                                                                                                                                                                                   */
+var _mutationTypes = require('../mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _Exam = require('../models/Exam');
+
+var _Exam2 = _interopRequireDefault(_Exam);
+
+var _Payload = require('../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * This manages state regarding the exam
+                                                                                                                                                                                                                   * currently being worked on, used for grading, etc
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * Created by adam on 1/12/17.
+                                                                                                                                                                                                                   */
+
+var state = {
+    /**
+     * Exam object representing the current exam being
+     * worked on, graded, reported, etc
+     */
+    activeExam: null
+
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setActiveExam, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.activeExam = payload.obj;
+}), _defineProperty(_mutations, mTypes.clearActiveExam, function (state, rootState, payload) {
+    //    Payload.checkIfPayload( payload );
+    state.activeExam = null;
+}), _mutations);
+
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.setActiveExam, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
+
+    var obj = void 0;
+    //check and see if an exam object has already been passed in
+    if (payload instanceof _Exam2.default) {
+        obj = payload;
+    }
+
+    //create the payload with the object
+    var pl = _Payload2.default.factory({ obj: obj });
+
+    //Save the object
+    commit(mTypes.setActiveExam, pl);
+}), _defineProperty(_actions, aTypes.clearActiveExam, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+    commit(mTypes.clearActiveExam);
+}), _actions);
+
+var getters = {
+
+    getActiveExamId: function getActiveExamId(state, getters, payload) {
+        return state.activeExam.id;
+    },
+
+    getActiveExamIndex: function getActiveExamIndex(state, getters, payload) {
+        return state.activeExam.index;
+    },
+
+    getActiveExamObj: function getActiveExamObj(state, getters) {
+        return state.activeExam;
+    }
+
+};
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+},{"../action-types":4,"../models/Exam":9,"../models/Payload":11,"../mutation-types":23}],15:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations, _actions;
 
 var _mutationTypes = require('../mutation-types');
 
@@ -11728,29 +12902,30 @@ var _Student = require('../models/Student');
 
 var _Student2 = _interopRequireDefault(_Student);
 
+var _Payload = require('../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * This handles all matters related to one student being the
+                                                                                                                                                                                                                   * currently selected student which operations on the page
+                                                                                                                                                                                                                   * are affecting. Mainly used in grading, but could also be used in
+                                                                                                                                                                                                                   * reporting.
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * Created by adam on 10/7/16.
+                                                                                                                                                                                                                   */
 
 var state = {
-    /** The database id of the student currently selected/ being graded
-     * @type integer|null
-     */
-    Id: null,
-
-    /**
-     * The index of the student currently selected/ being graded.
-     * @type integer|null
-     */
-    Index: null,
 
     /**
      * Holds the object representing the currently selected student
-     * @type Student
+     * @type Student|null
      */
-    student: null,
+    activeStudent: null,
 
     /**
      * The time spent grading the current student
@@ -11760,216 +12935,42 @@ var state = {
 
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setIndex, function (state, rootState, payload) {
-    if (Number.isInteger(payload)) {
-        rootState.Index = payload;
-        state.Index = payload;
-    }
-}), _defineProperty(_mutations, mTypes.setId, function (state, rootState, payload) {
-    if (Number.isInteger(payload)) {
-        rootState.Id = payload;
-        state.Id = payload;
-        return true;
-    }
-}), _defineProperty(_mutations, mTypes.setStudentObject, function (state, rootState, payload) {
-    if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == 'object' && payload instanceof _Student2.default) {
-        state.student = payload;
-    }
-}), _defineProperty(_mutations, mTypes.setTime, function (state, rootState, payload) {
-    if (typeof payload == 'number') {
-        state.Time = payload;
-    }
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setActiveStudent, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.activeStudent = payload.obj;
+}), _defineProperty(_mutations, mTypes.clearActiveStudent, function (state, rootState, payload) {
+    state.activeStudent = null;
+}), _defineProperty(_mutations, mTypes.setActiveStudentTime, function (state, rootState, payload) {
+    state.Time = payload.num;
 }), _mutations);
 
-var actions = (_actions = {}, _defineProperty(_actions, aTypes.setActiveStudentId, function (_ref, payload) {
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.setTime, function (_ref, payload) {
     var state = _ref.state,
         commit = _ref.commit;
 
-    // [aTypes.setActiveStudentId](state, rootState, payload){
-
-    console.log(aTypes.setActiveStudentId, payload);
-    var studentId = void 0;
-
-    //number passed in
-    if (typeof payload == 'number' && Number.isInteger(payload)) {
-        studentId = payload;
+    if (typeof payload == 'number') {
+        commit(mTypes.setActiveStudentTime, _Payload2.default.factory({ num: payload }));
+        state.Time = payload;
     }
-
-    //object passed in
-    //todo add object case
-    console.log('studentId', studentId);
-    if (Number.isInteger(studentId)) {
-        commit(mTypes.setId, studentId);
-    }
-}), _defineProperty(_actions, aTypes.setActiveStudentIndex, function (_ref2, payload) {
+}), _defineProperty(_actions, aTypes.setActiveStudent, function (_ref2, payload) {
     var state = _ref2.state,
         commit = _ref2.commit;
 
-    var studentIndex = void 0;
-    switch (typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) {
-        case 'number':
-            if (Number.isInteger(payload)) {
-                studentIndex = payload;
-            }
-            break;
-        case 'object':
-            //todo write if object
 
-            break;
-        default:
+    //Really should've received a Student object.
+    //this is the happiest of paths
+    if (payload instanceof _Student2.default) {
+        //we just build the payload
+        var pl = _Payload2.default.factory({ obj: payload });
+        //call the mutation
+        commit(mTypes.setActiveStudent, pl);
     }
-
-    if (Number.isInteger(studentIndex)) {
-        commit(mTypes.setIndex, studentIndex);
-    }
-}), _defineProperty(_actions, aTypes.setActiveStudentObject, function (_ref3, payload) {
+}), _defineProperty(_actions, aTypes.clearActiveStudent, function (_ref3, payload) {
     var state = _ref3.state,
         commit = _ref3.commit;
 
-    // let student;
-
-    // if (payload instanceof Student) {
-    //     student = payload;
-    // }
-    // switch(typeof (payload)){
-    //     case 'number':
-    //         if(Number.isInteger(payload)){
-    //             studentIndex = payload;
-    //         }
-    //         break;
-    //     case 'object':
-    //         //todo write if object
-    //
-    //         break;
-    //     default:
-    // }
-
-    //Call the mutation
-    if (payload instanceof _Student2.default) {
-        commit(mTypes.setStudentObject, payload);
-    }
-}), _defineProperty(_actions, aTypes.setActiveStudentTime, function (_ref4, payload) {
-    var state = _ref4.state,
-        commit = _ref4.commit;
-
-    var time = void 0;
-
-    switch (typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) {
-        case 'number':
-            if (Number.isInteger(payload)) {
-                //go straight to recording
-                time = payload;
-            }
-            break;
-
-        //object with expected key
-        case 'object':
-            //todo write if object
-            break;
-
-        //other allowed types
-        // todo
-
-        //numeric string
-        // todo
-        default:
-        //todo
-    }
-
-    //Call the mutation
-    if (typeof time == 'number') {
-        commit(mTypes.setTime, time);
-    }
-}), _defineProperty(_actions, aTypes.setActiveStudent, function (_ref5, payload) {
-    var state = _ref5.state,
-        commit = _ref5.commit;
-
-    var payloadType = void 0;
-    var studentId = void 0;
-    var studentIndex = void 0;
-    var studentObject = void 0;
-    var time = void 0;
-
-    //figure out what received in payload
-    switch (typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) {
-        case 'number':
-            if (Number.isInteger(payload)) {
-                studentId = payload;
-            }
-            //non-integer case?
-
-            break;
-
-        case 'object':
-            //Generic object with parameters as keys/values
-            if (_typeof(payload.studentId != 'undefined')) {
-                studentId = payload.studentId;
-                //try getting index and object
-            }
-            if (_typeof(payload.studentIndex != 'undefined')) {
-                studentIndex = payload.studentIndex;
-                //try getting id and object
-            }
-
-            if (_typeof(payload.studentObject != 'undefined')) {
-                studentObject = payload.studentObject;
-                studentId = studentObject.studentId;
-                studentIndex = studentObject.studentIndex;
-            }
-            break;
-
-        case 'student-object':
-            break;
-    }
-
-    //set id
-
-    //set index
-
-    //set object
-
-    //set time
-
-    //mapping from expected payload keys to mutations
-    var mutationMap = { studentId: types.setId, studentIndex: types.setIndex };
-    var me = this;
-
-    //populate fields from payload
-    mutationMap.forEach(function (incomingKey, mutationName) {
-        if (typeof payload[incomingKey] != 'undefined') {
-            //Set the state property
-            commit(mutationName, payload);
-        }
-    });
-
-    //Set the index on the state
-    if (_typeof(this.studentIndex != 'undefined')) {
-        state.Index = this.studentIndex;
-    }
-
-    //set student id
-    if (typeof this.studentId == 'undefined' || this.studentId === null) {
-
-        var student = state.students[studentIndex];
-        // window.console.log( 'jjj', student );
-        studentId = student.studentId;
-    }
-
-    state.Id = studentId;
+    commit(mTypes.clearActiveStudent);
 }), _actions);
-//
-// /**
-//  * internally used helpers
-//  * @type {{if: (()), typeof: boolean}}
-//  */
-// const methods = {
-//
-//     setStudentId: (val) => {
-//         if (typeof val != 'undefined' && val != null && Number.isInteger(val)) {
-//             return val;
-//         }
-//     }
-// };
 
 var getters = {
     /**
@@ -11980,7 +12981,7 @@ var getters = {
      * @returns {null|integer}
      */
     getActiveStudentId: function getActiveStudentId(state, getters, rootState) {
-        return state.Id;
+        return state.activeStudent.id;
     },
 
 
@@ -11992,7 +12993,7 @@ var getters = {
      * @returns {integer|null}
      */
     getActiveStudentIndex: function getActiveStudentIndex(state, getters, rootState) {
-        return state.Index;
+        return state.activeStudent.index;
     },
 
     /**
@@ -12001,7 +13002,7 @@ var getters = {
      * @returns {Student}
      */
     getActiveStudent: function getActiveStudent(state, getters, rootState) {
-        return state.student;
+        return state.activeStudent;
     }
 
 };
@@ -12013,22 +13014,28 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":4,"../models/Student":10,"../mutation-types":19}],12:[function(require,module,exports){
+},{"../action-types":4,"../models/Payload":11,"../models/Student":13,"../mutation-types":23}],16:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _mutations, _actions;
+var _mutations;
 
 var _mutationTypes = require('../mutation-types');
 
-var types = _interopRequireWildcard(_mutationTypes);
+var mTypes = _interopRequireWildcard(_mutationTypes);
 
 var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _Payload = require('../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -12037,38 +13044,57 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                                                                                                                                                                                                                    */
 
 var state = {
+    /**
+     * This holds the assigned comments for students
+     */
     elementComments: {},
-    stockComments: {}
+
+    /**
+     * This holds the default comments
+     */
+    stockComments: {},
+
+    /** Standard valences */
+    valences: [0, 1, 2, 3]
+
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, types.setElementComment, function (state, rootState, payload) {
-    var studentIndex = payload.studentIndex;
-    var elementIndex = payload.elementIndex;
-    var commentText = payload.commentText;
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setElementComment, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+
+    var commentText = payload.str;
+    var studentIndex = payload.index;
+    var elementIndex = payload.index2;
+
     state.elementComments[studentIndex][elementIndex] = commentText;
-}), _defineProperty(_mutations, types.loadElementComments, function (state, rootState, elementCommentsJSON) {
-    state.elementComments = elementCommentsJSON;
-}), _defineProperty(_mutations, types.loadStockComments, function (state, rootState, stockCommentsJSON) {
-    state.stockComments = stockCommentsJSON;
+}), _defineProperty(_mutations, mTypes.loadElementComments, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.elementComments = payload.obj;
+    // state.elementComments = elementCommentsJSON;
+}), _defineProperty(_mutations, mTypes.loadStockComments, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.stockComments = payload.obj;
 }), _mutations);
 
-var actions = (_actions = {}, _defineProperty(_actions, aTypes.storeCommentText, function (_ref, payload) {
+var actions = _defineProperty({}, aTypes.storeCommentText, function (_ref, payload) {
     var state = _ref.state,
         commit = _ref.commit;
 
-    var studentIndex = payload.studentIndex;
-    var elementIndex = payload.elementIndex;
-    var commentText = payload.commentText;
-    state.elementComments[studentIndex][elementIndex] = commentText;
-}), _defineProperty(_actions, aTypes.storeCommentTextForActiveStudent, function (_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
 
-    var studentIndex = payload.studentIndex;
-    var elementIndex = payload.elementIndex;
-    var commentText = payload.commentText;
-    state.elementComments[state.activeStudentIndex][elementIndex] = commentText;
-}), _actions);
+    var pl = _Payload2.default.factory({
+        index: payload.studentIndex,
+        index2: payload.elementIndex,
+        str: payload.commentText
+    });
+
+    commit(mTypes.setElementComment, pl);
+
+    // let studentIndex = payload.studentIndex;
+    // let elementIndex = payload.elementIndex;
+    // let commentText = payload.commentText;
+    // commit( mTypes.setElementComment, payload );
+    // state.elementComments[studentIndex][elementIndex] = commentText;
+});
 
 var getters = {
     /**
@@ -12141,21 +13167,6 @@ var getters = {
      */
     getStoredCommentText: function getStoredCommentText(state, getters, rootState, studentIndex, elementIndex) {
         return state.elementComments[studentIndex][elementIndex];
-    },
-
-    /**
-     * Gets the comment text for the student
-     * @param state
-     * @param getters
-     * @param rootState
-     * @param elementIndex
-     * @param valence
-     * @returns {*}
-     */
-    getCommentTextForActiveStudent: function getCommentTextForActiveStudent(state, getters, rootState, elementIndex, valence) {
-        //If no student is set, the comment field should be blank
-        if (state.activeStudentIndex == null) return '';
-        return state.getCommentText(state.activeStudentIndex, elementIndex, valence);
     }
 
 };
@@ -12167,14 +13178,14 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":4,"../mutation-types":19}],13:[function(require,module,exports){
+},{"../action-types":4,"../models/Payload":11,"../mutation-types":23}],17:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _mutations;
+var _mutations, _actions;
 
 var _mutationTypes = require('../mutation-types');
 
@@ -12183,6 +13194,12 @@ var mTypes = _interopRequireWildcard(_mutationTypes);
 var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _Payload = require('../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -12193,15 +13210,47 @@ var state = {
     elementScores: {}
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.loadElementScores, function (state, rootState, studentElementScores) {
-    state.elementScores = studentElementScores;
-}), _defineProperty(_mutations, mTypes.setElementScore, function (state, rootState, studentIndex, elementIndex, score) {
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.loadElementScores, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    //set the state to the payload's object
+    state.elementScores = payload.obj;
+}), _defineProperty(_mutations, mTypes.setElementScore, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    var studentIndex = payload.index;
+    var elementIndex = payload.index2;
+    var score = payload.num;
+
     state.elementScores[studentIndex][elementIndex] = score;
-}), _defineProperty(_mutations, mTypes.storeElementScoreForActiveStudent, function (state, elementIndex, score) {
-    state.storeElementScore(state.activeStudentIndex, elementIndex, score);
 }), _mutations);
 
-var actions = {};
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.setElementScore, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
+    var studentIndex = payload.studentIndex,
+        elementIndex = payload.elementIndex,
+        score = payload.score;
+    //type checks
+
+    if (typeof score == 'undefined') {
+        //score may have been named differently
+        score = payload.elementScore;
+    }
+
+    var out = _Payload2.default.factory({
+        index: studentIndex,
+        index2: elementIndex,
+        num: score
+    });
+
+    commit(mTypes.setElementScore, out);
+}), _defineProperty(_actions, aTypes.loadElementScores, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+
+    var pl = _Payload2.default.factory({ obj: payload });
+    commit(mTypes.loadElementScores, pl);
+}), _actions);
 
 var getters = {
     /**
@@ -12213,18 +13262,8 @@ var getters = {
      */
     getElementScore: function getElementScore(state, getters, rootState, studentIndex, elementIndex) {
         return state.elementScores[studentIndex][elementIndex];
-    },
-    getElementScoreForActiveStudent: function getElementScoreForActiveStudent(state, getters, rootState, elementIndex) {
-        if (state.activeStudentIndex == null) return '';
-        return state.elementScores[state.activeStudentIndex][elementIndex];
     }
 };
-
-var api = _defineProperty({}, mTypes.storeElementScore, function (state, rootState, studentIndex, elementIndex, score) {
-    state.elementScores[studentIndex][elementIndex] = score;
-});
-
-// }
 
 exports.default = {
     actions: actions,
@@ -12233,26 +13272,38 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":4,"../mutation-types":19}],14:[function(require,module,exports){
+},{"../action-types":4,"../models/Payload":11,"../mutation-types":23}],18:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _mutations;
+var _mutations, _actions;
 
 var _mutationTypes = require('../mutation-types');
 
-var types = _interopRequireWildcard(_mutationTypes);
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _Payload = require('../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Vuex component dealing with grades
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * @todo Consider moving standard grades to its own file
                                                                                                                                                                                                                    * Created by adam on 10/7/16.
                                                                                                                                                                                                                    */
 
-// export const Grades = {
 var state = {
     /**
      * examGrades[] keeps a persistent total of the exam score for each student.
@@ -12270,91 +13321,108 @@ var state = {
      *  { {calcValue : int, displayValue: string}, .... }
      * @type {{}}
      */
-    grades: {}
+    standardGrades: {}
 
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, types.loadExamGrades, function (state, rootState, studentGrades) {
-    state.examGrades = studentGrades;
-}), _defineProperty(_mutations, types.loadGrades, function (state, rootState, gradesJson) {
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.loadExamGrades, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.examGrades = payload.obj;
+}), _defineProperty(_mutations, mTypes.loadStandardGrades, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.standardGrades = payload.obj;
+}), _defineProperty(_mutations, mTypes.setGrade, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.examGrades[payload.index] = payload.num;
+}), _mutations);
+
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadExamGrades, function (_ref, studentGrades) {
+    var state = _ref.state,
+        commit = _ref.commit;
+
+    //todo type checks
+    var out = _Payload2.default.factory({ obj: studentGrades });
+    commit(mTypes.loadExamGrades, out);
+    // state.examGrades = studentGrades;
+}), _defineProperty(_actions, aTypes.loadStandardGrades, function (_ref2, gradesJson) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
     if (typeof gradesJson == 'string') {
         gradesJson = JSON.parse(gradesJson);
     }
-    state.grades = gradesJson;
-}), _defineProperty(_mutations, types._setExamGrade, function (state, rootState, studentIndex, score) {
-    state.examGrades[studentIndex];
-}), _mutations);
+    var out = _Payload2.default.factory({ obj: gradesJson });
+    commit(mTypes.loadStandardGrades, out);
+    // state.standardGrades = gradesJson;
+}), _defineProperty(_actions, aTypes.updateExamGrade, function (_ref3, studentIndex) {
+    var state = _ref3.state,
+        commit = _ref3.commit;
 
-var actions = {};
+
+    var totalScore = null;
+    // try {
+    // state.checkValid( 'state.questionScores' );
+    if (Object.keys(state.questionScores).length > 0) {
+        for (var i = 0; i < Object.keys(state.questionScores[studentIndex]).length; i++) {
+            var v = state.questionScores[studentIndex][i];
+            if (v != null) {
+                //at least one question score is non-null
+                //so the total score should be at least 0
+                //first we check whether the totalScore is still null
+                //and set it to 0 if not
+                if (totalScore === null) {
+                    totalScore = 0;
+                }
+                //now we can add the question values to it
+                totalScore += parseFloat(v);
+            }
+        }
+        if (totalScore != null && totalScore >= 0) {
+            //push the total score into exam grades as a string
+            // state.examGrades[ studentIndex ] = totalScore.toPrecision( 3 );
+            var score = totalScore.toPrecision(3);
+
+            var out = _Payload2.default.factory({ index: studentIndex, num: score });
+
+            commit(mTypes.setGrade, out);
+        } else {
+            //replace 'letter grade' with -1
+            // state.examGrades[ studentIndex ] = -1;
+            var _out = _Payload2.default.factory({ index: studentIndex, num: -1 });
+            commit(mTypes.setGrade, _out);
+        }
+    }
+    // } catch ( err ) {
+    //     window.console.log( err );
+    // }
+}), _actions);
 
 var getters = {
 
-    /**
-     * Mostly used for testing
-     * @param studentIndex
-     * @param score
-     * @private
-     */
-    _setExamGrade: function _setExamGrade(state, getters, rootState, studentIndex, score) {
-        state.examGrades[studentIndex] = score;
-    },
-
-
-    /**
-     * Updates the stored total exam score for the student
-     * The first time it runs, it will set the total score to 0
-     * if no questions have been graded.
-     **/
-    updateExamGrade: function updateExamGrade(state, getters, rootState, studentIndex) {
-        var totalScore = null;
-        // try {
-        // state.checkValid( 'state.questionScores' );
-        if (Object.keys(state.questionScores).length > 0) {
-            for (var i = 0; i < Object.keys(state.questionScores[studentIndex]).length; i++) {
-                var v = state.questionScores[studentIndex][i];
-                if (v != null) {
-                    //at least one question score is non-null
-                    //so the total score should be at least 0
-                    //first we check whether the totalScore is still null
-                    //and set it to 0 if not
-                    if (totalScore === null) {
-                        totalScore = 0;
-                    }
-                    //now we can add the question values to it
-                    totalScore += parseFloat(v);
-                }
-            }
-            if (totalScore != null && totalScore >= 0) {
-                //push the total score into exam grades as a string
-                state.examGrades[studentIndex] = totalScore.toPrecision(3);
-            } else {
-                //replace 'letter grade' with -1
-                state.examGrades[studentIndex] = -1;
-            }
-        }
-        // } catch ( err ) {
-        //     window.console.log( err );
-        // }
-    },
     getExamGrade: function getExamGrade(state, getters, rootState, studentIndex) {
         return state.examGrades[studentIndex];
     },
-
 
     /**
      * Returns the standard grades json.
      * NB, state is not the total scores for students
      * @returns {{}}
      */
-    getGrade: function getGrade(state, getters, rootState) {
-        return state.grades;
+    getStandardGrades: function getStandardGrades(state, getters, rootState) {
+        return state.standardGrades;
     },
-    getExamGradeForActiveStudent: function getExamGradeForActiveStudent(state, getters, rootState) {
-        if (state.activeStudentIndex == null) return '';
-        return state.examGrades[state.activeStudent];
+
+    /**
+     * Returns the standard grades json.
+     * NB, state is not the total scores for students
+     * @deprecated This now wraps the better named method
+     * @returns {{}}
+     */
+    getGrade: function getGrade(state, getters, rootState) {
+        return getters.getStandardGrades(state, getters, rootState);
     }
+
 };
-// }
 
 exports.default = {
     actions: actions,
@@ -12363,18 +13431,28 @@ exports.default = {
     state: state
 };
 
-},{"../mutation-types":19}],15:[function(require,module,exports){
+},{"../action-types":4,"../models/Payload":11,"../mutation-types":23}],19:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _mutations;
+var _mutations, _actions;
 
 var _mutationTypes = require('../mutation-types');
 
-var types = _interopRequireWildcard(_mutationTypes);
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _Payload = require('../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -12382,7 +13460,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                                                                                                                                                                                                                    * Created by adam on 10/7/16.
                                                                                                                                                                                                                    */
 
-// export const questionScores = {
 var state = {
 
     /**
@@ -12395,16 +13472,43 @@ var state = {
 
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, types.loadQuestionScores, function (state, rootState, questionScoresJSON) {
-    state.questionScores = questionScoresJSON;
-}), _defineProperty(_mutations, types.storeQuestionScore, function (state, rootState, studentIndex, questionIndex, score) {
-    state.questionScores[studentIndex][questionIndex] = score;
-}), _defineProperty(_mutations, types.storeQuestionScoreForActiveStudent, function (state, rootState, questionIndex, score) {
-    // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
-    state.questionScores[this.activeStudentIndex][questionIndex] = score;
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setQuestionScore, function (state, rootState, payload) {
+    // console.log( 'mutation.setQuestionScore', payload );
+    _Payload2.default.checkIfPayload(payload);
+
+    var studentIndex = payload.index;
+    var questionIndex = payload.index2;
+
+    state.questionScores[studentIndex][questionIndex] = payload.num;
+}), _defineProperty(_mutations, mTypes.removeQuestionScore, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+
+    var studentIndex = payload.index;
+    var questionIndex = payload.index2;
+
+    state.questionScores[studentIndex][questionIndex] = payload.num;
 }), _mutations);
 
-var actions = {};
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadQuestionScores, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
+
+    for (var i = 0; i < Object.keys(payload).length; i++) {
+        actions[aTypes.setQuestionScore]({ state: state, commit: commit }, payload[i]);
+    }
+}), _defineProperty(_actions, aTypes.setQuestionScore, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+    //todo add checking
+
+    var pl = new _Payload2.default();
+    pl.index = payload.studentIndex;
+    pl.index2 = payload.questionIndex;
+    pl.num = payload.score;
+
+    commit(mTypes.setQuestionScore, pl);
+}), _actions);
 
 var getters = {
 
@@ -12416,18 +13520,6 @@ var getters = {
      */
     getQuestionScore: function getQuestionScore(state, getters, rootState, studentIndex, questionIndex) {
         return state.questionScores[studentIndex][questionIndex];
-    },
-
-
-    /**
-     * Convenience function for getting the current student's score for question
-     * Old way: data.this.questionScores[ Roster.activeStudent ][ index ];
-     * @param questionIndex
-     */
-    getQuestionScoreForActiveStudent: function getQuestionScoreForActiveStudent(state, getters, rootState, questionIndex) {
-        // if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set ";
-        if (state.activeStudentIndex == null) return '';
-        return state.getQuestionScore(this.activeStudentIndex, questionIndex);
     }
 };
 
@@ -12438,22 +13530,30 @@ exports.default = {
     state: state
 };
 
-},{"../mutation-types":19}],16:[function(require,module,exports){
+},{"../action-types":4,"../models/Payload":11,"../mutation-types":23}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _mutations;
+var _mutations, _actions;
 
 var _Question = require('./../models/Question');
 
 var _Question2 = _interopRequireDefault(_Question);
 
+var _Payload = require('../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
 var _mutationTypes = require('../mutation-types');
 
-var types = _interopRequireWildcard(_mutationTypes);
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -12482,19 +13582,64 @@ var state = {
 
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, types.loadMaxQuestionScores, function (state, rootState, maxScores) {
-    state.maxQuestionScores = maxScores;
-}), _defineProperty(_mutations, types.loadQuestions, function (state, rootState, questionsJson) {
-    for (var i = 0; i < Object.keys(questionsJson).length; i++) {
-        var index = Object.keys(questionsJson)[i];
-        var s = questionsJson[index];
-        state.questions[index] = _Question2.default.factory(s, index);
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setMaxQuestionScore, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.maxQuestionScores[payload.index] = payload.num;
+}), _defineProperty(_mutations, mTypes.removeMaxQuestionScore, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    delete state.maxQuestionScores[payload.index];
+}), _defineProperty(_mutations, mTypes.setQuestion, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.questions[payload.index] = payload.obj;
+}), _defineProperty(_mutations, mTypes.removeQuestion, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    delete state.questions[payload.index];
+}), _defineProperty(_mutations, mTypes.setNumberQuestions, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+
+    if (typeof payload.num != 'undefined' && Number.isInteger(payload.num)) {
+        state.numberQuestions = payload.num;
+    } else {
+        //count the questions
+        state.numberQuestions = Object(state.questions).keys().length;
     }
-}), _defineProperty(_mutations, types.loadNumberQuestions, function (state, rootState, numberQuestionsOnExam) {
-    state.numberQuestions = numberQuestionsOnExam;
 }), _mutations);
 
-var actions = {};
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.addQuestion, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
+
+
+    var question = _Question2.default.factory(payload);
+
+    if (question instanceof _Question2.default) {
+        var pl = new _Payload2.default();
+        pl.id = question.id;
+        pl.index = payload.questionIndex;
+        pl.obj = question;
+        commit(mTypes.setQuestion, pl);
+    }
+}), _defineProperty(_actions, aTypes.loadMaxQuestionScores, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+    commit(mTypes.loadMaxQuestionScores, payload);
+}), _defineProperty(_actions, aTypes.loadQuestions, function (_ref3, payload) {
+    var state = _ref3.state,
+        commit = _ref3.commit;
+
+    for (var i = 0; i < Object.keys(payload).length; i++) {
+        // actions[ aTypes.addQuestion ]( state, commit, payload[ i ] );
+        var index = Object.keys(payload)[i];
+        var s = payload[index];
+        state.questions[index] = _Question2.default.factory(s, index);
+    }
+}), _defineProperty(_actions, aTypes.loadNumberQuestions, function (_ref4, payload) {
+    var state = _ref4.state,
+        commit = _ref4.commit;
+
+    state.numberQuestions = payload;
+}), _actions);
 
 var getters = {
     /**
@@ -12506,7 +13651,6 @@ var getters = {
     getQuestion: function getQuestion(state, getters, rootState, questionIndex) {
         return state.questions[questionIndex];
     },
-
 
     /**
      * Returns the maximum possible score for a given question
@@ -12525,20 +13669,26 @@ exports.default = {
     state: state
 };
 
-},{"../mutation-types":19,"./../models/Question":9}],17:[function(require,module,exports){
+},{"../action-types":4,"../models/Payload":11,"../mutation-types":23,"./../models/Question":12}],21:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _Student = require('./../models/Student');
+var _mutations, _actions;
+
+var _Student = require('../models/Student');
 
 var _Student2 = _interopRequireDefault(_Student);
 
+var _Payload = require('../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
 var _mutationTypes = require('../mutation-types');
 
-var types = _interopRequireWildcard(_mutationTypes);
+var mTypes = _interopRequireWildcard(_mutationTypes);
 
 var _actionTypes = require('../action-types');
 
@@ -12566,18 +13716,43 @@ var state = {
     students: {}
 };
 
-var mutations = _defineProperty({}, types.loadStudents, function (state, payload) {
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setStudent, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.students[payload.index] = payload.obj;
+}), _defineProperty(_mutations, mTypes.removeStudent, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    delete state.students[payload.index];
+}), _mutations);
+
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadStudents, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
+
+
     for (var i = 0; i < Object.keys(payload).length; i++) {
-        var s = payload[Object.keys(payload)[i]];
-        state.students[s.studentIndex] = _Student2.default.factory(s);
+        actions[aTypes.addStudent]({ state: state, commit: commit }, payload[i]);
     }
-});
+}), _defineProperty(_actions, aTypes.addStudent, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
 
-var actions = _defineProperty({}, aTypes.addStudent, function (_ref, studentJson) {
-    var commit = _ref.commit;
+    /*
+     create a student object out of the payload.
+     the factory will not require any properties to
+     be set. That lets us use it in very incremental ways.
+     todo the factory will sanitize values
+     */
+    var student = _Student2.default.factory(payload);
+    if (student instanceof _Student2.default) {
+        var pl = new _Payload2.default();
+        pl.id = student.id;
+        pl.index = student.index;
+        pl.obj = student;
+        commit(mTypes.setStudent, pl);
+    }
 
-    commit(types.loadStudents, studentJson);
-});
+    //todo error handling if a student wasn't returned
+}), _actions);
 
 var getters = {
     /**
@@ -12589,10 +13764,9 @@ var getters = {
      * @param studentIndex
      * @returns {*}
      */
-    getStudent: function getStudent(state, getters, studentIndex) {
+    getStudent: function getStudent(state, getters, rootState, studentIndex) {
         return state.students[studentIndex];
     },
-
 
     /**
      * Returns a json containing student objects with student indexes as keys.
@@ -12603,7 +13777,7 @@ var getters = {
      *      lastName
      * @returns {*}
      */
-    getStudents: function getStudents(state, getters) {
+    getStudents: function getStudents(state, getters, rootState) {
         return state.students;
     }
 };
@@ -12615,7 +13789,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":4,"../mutation-types":19,"./../models/Student":10}],18:[function(require,module,exports){
+},{"../action-types":4,"../models/Payload":11,"../models/Student":13,"../mutation-types":23}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12626,11 +13800,17 @@ var _mutations, _actions;
 
 var _mutationTypes = require('../mutation-types');
 
-var types = _interopRequireWildcard(_mutationTypes);
+var mTypes = _interopRequireWildcard(_mutationTypes);
 
 var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _Payload = require('../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -12638,8 +13818,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                                                                                                                                                                                                                    * Created by adam on 10/7/16.
                                                                                                                                                                                                                    */
 
-
-// const Times = {
 
 var state = {
     /**
@@ -12653,41 +13831,68 @@ var state = {
      *      examGradingTimes[ studentIndex] = gradingTime
      */
     examGradingTimes: {}
-
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, types.addGradingTime, function (state, payload) {
-    if (typeof payload.studentIndex != 'undefined' && typeof payload.timeToAdd != 'undefined') {
-        var studentIndex = payload.studentIndex;
-        var timeToAdd = payload.timeToAdd;
-        state.examGradingTimes[studentIndex] += timeToAdd;
-    }
-    //add processing from other allowed input configs
-}), _defineProperty(_mutations, types.removeGradingTime, function (state, payload) {
-    //state.examGradingTimes = payload;
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setGradingTime, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.examGradingTimes[payload.index] = payload.num;
+}), _defineProperty(_mutations, mTypes.incrementGradingTime, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.examGradingTimes[payload.index] += payload.num;
+}), _defineProperty(_mutations, mTypes.removeGradingTime, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
 
-}), _defineProperty(_mutations, types.loadGradingTimes, function (state, payload) {
-    state.examGradingTimes = payload;
+    var idx = -1;
+    if (payload instanceof _Payload2.default) {
+        idx = payload.index;
+    }
+
+    if (idx > -1) {
+        delete state.examGradingTimes[idx];
+        // state.examGradingTimes.splice( idx, 1 );
+    }
+}), _defineProperty(_mutations, mTypes.resetGradingTime, function (state, payload) {
+    _Payload2.default.checkIfPayload(payload);
+    state.examGradingTimes[payload.index] = 0;
 }), _mutations);
 
-var actions = (_actions = {}, _defineProperty(_actions, aTypes.increaseActiveStudentGradingTime, function (_ref, payload) {
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.loadGradingTimes, function (_ref, payload) {
     var state = _ref.state,
         commit = _ref.commit;
 
-    state.examGradingTimes[state.activeStudentIndex] += payload.timeToAdd;
-}), _defineProperty(_actions, aTypes.storeStudentGradingTime, function (_ref2, payload) {
-    var commit = _ref2.commit;
+    if (payload.length > 1) {
+        for (var i = 0; i < payload.length; i++) {
+            actions[aTypes.storeGradingTime](state, commit, payload);
+        }
+    }
+}), _defineProperty(_actions, aTypes.storeGradingTime, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
 
-    // studentIndex, activeStudentTime
-    payload = { studentIndex: 2, timeToAdd: 3.4 };
-    commit('setGradingTime', payload);
-    //        state.examGradingTimes[studentIndex] = activeStudentTime;
-}), _defineProperty(_actions, types.increaseStudentGradingTime, function (_ref3, payload) {
-    var commit = _ref3.commit;
+    //type checking
+    if (typeof payload.studentIndex != 'undefined' && typeof payload.timeToAdd != 'undefined') {
 
-    // studentIndex, timeToAdd
-    payload = { 'studentIndex': 1, 'timeToAdd': 3.2 };
-    store.commit(types.addGradingTime, payload);
+        //todo add sanitation and checks
+        var studentIndex = payload.studentIndex;
+        var timeToAdd = payload.timeToAdd;
+
+        //add processing from other allowed input configs
+
+
+        var pl = _Payload2.default.factory({ index: studentIndex, num: timeToAdd });
+        commit(mTypes.setGradingTime, pl);
+    }
+}), _defineProperty(_actions, aTypes.incrementGradingTime, function (_ref3, payload) {
+    var state = _ref3.state,
+        commit = _ref3.commit;
+
+
+    var pl = _Payload2.default.factory({
+        index: payload.studentIndex,
+        num: payload.timeToAdd
+    });
+
+    commit(mTypes.incrementGradingTime, pl);
 }), _actions);
 
 var getters = {
@@ -12703,29 +13908,15 @@ var getters = {
         return totalTime;
     },
 
-
     /**
      * Original: data.this.examGradingTimes[ Roster.activeStudent ]
      * @param activeStudent
      * @returns {*}
      */
-    getStudentGradingTime: function getStudentGradingTime(state, getters) {
-        var activeStudent = getters.getActiveStudentIndex();
-        return state.examGradingTimes[activeStudent];
-    },
-
-
-    /**
-     * Convenience method for getting the grading time of the student presently
-     * being graded
-     * @returns {*}
-     */
-    getActiveStudentGradingTime: function getActiveStudentGradingTime(state, getters) {
-        // if ( ! this.isActive() ) throw "ERROR: getActiveStudentGradingTime | No active student set ";
-        if (state.activeStudentIndex == null) return '';
-
-        return state.getStudentGradingTime(state.activeStudentIndex);
+    getStudentGradingTime: function getStudentGradingTime(state, getters, studentIndex) {
+        return state.examGradingTimes[studentIndex];
     }
+
 };
 
 exports.default = {
@@ -12735,7 +13926,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../action-types":4,"../mutation-types":19}],19:[function(require,module,exports){
+},{"../action-types":4,"../models/Payload":11,"../mutation-types":23}],23:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12752,51 +13943,59 @@ Object.defineProperty(exports, "__esModule", {
  * @type {string}
  */
 
-//grade.activestudent
-var setIndex = exports.setIndex = 'setIndex';
-var setId = exports.setId = 'setId';
-var setTime = exports.setTime = 'setTime';
-var setStudentObject = exports.setStudentObject = 'setStudentObject';
+//active exam
+var setActiveExam = exports.setActiveExam = 'setActiveExam';
+var clearActiveExam = exports.clearActiveExam = 'clearActiveExam';
 
-//grade.comments
+//activestudent
+var setActiveStudent = exports.setActiveStudent = 'setActiveStudent';
+var clearActiveStudent = exports.clearActiveStudent = 'clearActiveStudent';
+var setActiveStudentTime = exports.setActiveStudentTime = 'setActiveStudentTime';
+
+//comments
 var setElementComment = exports.setElementComment = 'setElementComment';
 var loadElementComments = exports.loadElementComments = 'loadElementComments';
 var loadStockComments = exports.loadStockComments = 'loadStockComments';
 
-//grade.escores
+//exams
+var addExam = exports.addExam = 'addExam';
+var addIndexMapping = exports.addIndexMapping = 'addIndexMapping';
+var loadExams = exports.loadExams = 'loadExams';
+
+//escores
 var loadElementScores = exports.loadElementScores = 'loadElementScores';
 var setElementScore = exports.setElementScore = 'setElementScore';
-var storeElementScore = exports.storeElementScore = 'storeElementScoreForActiveStudent';
-var storeElementScoreForActiveStudent = exports.storeElementScoreForActiveStudent = 'storeElementScoreForActiveStudent';
 
-//grade.grades
+//grades
 var loadExamGrades = exports.loadExamGrades = 'loadExamGrades';
-var loadGrades = exports.loadGrades = 'loadGrades';
-var _setExamGrade = exports._setExamGrade = 'loadGrades';
+var loadStandardGrades = exports.loadStandardGrades = 'loadStandardGrades';
+var setGrade = exports.setGrade = 'setGrade';
 
-//grade.qscores
-var loadQuestionScores = exports.loadQuestionScores = 'loadQuestionScores';
-var storeQuestionScore = exports.storeQuestionScore = 'storeQuestionScore';
-var storeQuestionScoreForActiveStudent = exports.storeQuestionScoreForActiveStudent = 'storeQuestionScoreForActiveStudent';
+//qscores
+var setQuestionScore = exports.setQuestionScore = 'setQuestionScore';
+var removeQuestionScore = exports.removeQuestionScore = 'removeQuestionScore';
 
-//grade.questions
-var loadMaxQuestionScores = exports.loadMaxQuestionScores = 'loadMaxQuestionScores';
-var loadQuestions = exports.loadQuestions = 'loadQuestions';
-var loadNumberQuestions = exports.loadNumberQuestions = 'loadNumberQuestions';
+//questions
+var setMaxQuestionScore = exports.setMaxQuestionScore = 'setMaxQuestionScore';
+var removeMaxQuestionScore = exports.removeMaxQuestionScore = 'removeMaxQuestionScore';
+// export const loadMaxQuestionScores = 'loadMaxQuestionScores'
+var setQuestion = exports.setQuestion = 'setQuestion';
+var removeQuestion = exports.removeQuestion = 'removeQuestion';
+var setNumberQuestions = exports.setNumberQuestions = 'setNumberQuestions';
 
-//grade.students
-var loadStudents = exports.loadStudents = 'loadStudents';
+//students
+var setStudent = exports.setStudent = 'setStudent';
+var removeStudent = exports.removeStudent = 'removeStudent';
 
-//grade.times
-var loadGradingTimes = exports.loadGradingTimes = 'loadGradingTimes';
-var increaseStudentGradingTime = exports.increaseStudentGradingTime = 'increaseStudentGradingTime';
-
-var addGradingTime = exports.addGradingTime = 'addGradingTime';
+//times
+var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
+var setGradingTime = exports.setGradingTime = 'setGradingTime';
 var removeGradingTime = exports.removeGradingTime = 'removeGradingTime';
+var resetGradingTime = exports.resetGradingTime = 'resetGradingTime';
 
 var setExam = exports.setExam = 'setExam';
 
-},{}],20:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12806,7 +14005,7 @@ exports.mutations = undefined;
 
 var _mutationTypes = require('./mutation-types');
 
-var types = _interopRequireWildcard(_mutationTypes);
+var mTypes = _interopRequireWildcard(_mutationTypes);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -12823,20 +14022,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @param state
  * @param payload
  */
-var mutations = exports.mutations = _defineProperty({}, types.setExam, function (state, payload) {
+var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function (state, payload) {
     if (Number.isInteger(payload)) {
         state.examId = payload;
     }
     //other allowed payload types
 });
 
-// }
-//
-// export default {
-//     mutations
-// }
-
-},{"./mutation-types":19}],21:[function(require,module,exports){
+},{"./mutation-types":23}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

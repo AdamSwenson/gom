@@ -180,6 +180,9 @@ elixir( function ( mix ) {
     mix.browserify('navigation/crumbnav.js', 'public/js/dev/test2.js')
 
 
+    mix.browserify('development/newSetup.js', 'public/js/dev/new-setup-package.js')
+
+
     //
     // elixir(function(mix) {
     //     mix.browserSync({

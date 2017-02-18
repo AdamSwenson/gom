@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "babel": "^6.5.2",
+    "babel-polyfill": "^6.23.0",
     "babelify": "^7.3.0",
     "bootbox": "^4.4.0",
     "bootstrap": "^3.3.6",
@@ -83,6 +84,7 @@
     "typeahead": "^0.2.2",
     "vue": "^1.0.0",
     "vue-charts": "0.0.5",
+    "vue-router": "^2.2.1",
     "vuex": "^2.1.1"
   }
 }

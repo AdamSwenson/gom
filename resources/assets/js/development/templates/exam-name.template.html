@@ -1,0 +1,19 @@
+<div id="examNameArea">
+
+    <div class="input-group">
+        <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>
+        <input type="text"
+               class="form-control input-lg"
+               id="privateName"
+               name="privateName"
+               aria-describedby="basic-addon1"
+               placeholder="{{ placeHolders.privateName }}"
+               v-model="privateName"
+        >
+        <span class="input-group-addon" id="basic-addon2"> <span v-on:click="openExamProperties" class="glyphicon glyphicon-cog"></span></span>
+
+    </div>
+
+
+
+</div>

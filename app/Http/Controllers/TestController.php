@@ -43,4 +43,8 @@ class TestController extends Controller
 
     }
 
+
+    public function newSetup(){
+        return view('development.newsetup');
+    }
 }

@@ -1,0 +1,31 @@
+<div class="itemNameArea">
+
+    <div class="input-group">
+
+        <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>
+
+        <input type="text"
+               class="itemName form-control input-lg"
+               aria-describedby="basic-addon1"
+               placeholder="{{ placeHolders.privateName }}"
+               v-model="itemName"
+        >
+
+        <div class="input-group-addon"
+             id="basic-addon2">
+            <div class="input-group-btn">
+                <button class="btn"
+                        v-on:click="openItemProperties">
+                    <span class="glyphicon glyphicon-cog"></span>
+                </button>
+
+                <!--<span class="input-group-addon" id="basic-addon3">-->
+
+                <public-indicator></public-indicator>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>

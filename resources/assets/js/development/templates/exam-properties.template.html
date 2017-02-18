@@ -1,0 +1,75 @@
+<!--This is the hideable area via which we edit the exam's properties-->
+
+<div class="row">
+    <div class="col-lg-10">
+        <!-- name input -->
+        <div class="input-group">
+                    <span class="input-group-addon"
+                          id="basic-addon1">Public Assignment Name</span>
+            <input type="text"
+                   class="form-control input-lg"
+                   id="publicName"
+                   name="publicName"
+                   aria-describedby="basic-addon1"
+                   v-model="publicName"
+            >
+            <span class="glyphicon glyphicon-question-sign"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-5">
+
+            <!-- term selector -->
+            <input v-model="term"
+                   name="examTerm"
+                   type="hidden"
+                   id="hiddenTerm"
+            />
+
+            <div class="btn-group btn-group">
+                <button
+                        class="btn btn-primary dropdown-toggle"
+                        id="term"
+                        title="Choose Term"
+                        data-toggle="dropdown"
+                >{{ term }} <span class="glyphicon glyphicon-menu-down"></span></button>
+
+                <ul class="dropdown-menu" id="termList" role="menu" style="cursor:pointer;">
+                    <li v-for="term in terms">
+                        <a class="termItem">{{ term }}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <!-- year selector -->
+            <input name="examYear"
+                   type="hidden"
+                   id="hiddenYear"
+                   v-model="year"
+            />
+
+            <div class="btn-group btn-group">
+                <button class="btn btn-primary dropdown-toggle"
+                        id="year"
+                        title="Choose Year"
+                        data-toggle="dropdown">{{ year }}
+                    <span class="glyphicon glyphicon-menu-down"></span>
+                </button>
+
+                <ul class="dropdown-menu"
+                    id="yearList"
+                    role="menu"
+                    style="cursor:pointer;">
+                    <li v-for="year in years">
+                        <a class="yearItem">{{ year }}</a>
+                    </li>
+                </ul>
+            </div>
+             <span class="glyphicon glyphicon-question-sign"></span>
+        </div>
+    </div>
+
+</div>

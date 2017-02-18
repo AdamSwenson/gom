@@ -1,0 +1,6 @@
+<button class="btn publicIndicator"
+     v-bind:class="{'btn-warning': isPublic, '': isPrivate}"
+     v-on:click="togglePublic"
+>
+    <span v-bind:class="icon"></span>
+</button>
