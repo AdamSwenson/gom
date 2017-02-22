@@ -19135,6 +19135,1488 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],312:[function(require,module,exports){
+/**!
+ * Sortable
+ * @author	RubaXa   <trash@rubaxa.org>
+ * @license MIT
+ */
+
+(function sortableModule(factory) {
+	"use strict";
+
+	if (typeof define === "function" && define.amd) {
+		define(factory);
+	}
+	else if (typeof module != "undefined" && typeof module.exports != "undefined") {
+		module.exports = factory();
+	}
+	else {
+		/* jshint sub:true */
+		window["Sortable"] = factory();
+	}
+})(function sortableFactory() {
+	"use strict";
+
+	if (typeof window == "undefined" || !window.document) {
+		return function sortableError() {
+			throw new Error("Sortable.js requires a window with a document");
+		};
+	}
+
+	var dragEl,
+		parentEl,
+		ghostEl,
+		cloneEl,
+		rootEl,
+		nextEl,
+		lastDownEl,
+
+		scrollEl,
+		scrollParentEl,
+		scrollCustomFn,
+
+		lastEl,
+		lastCSS,
+		lastParentCSS,
+
+		oldIndex,
+		newIndex,
+
+		activeGroup,
+		putSortable,
+
+		autoScroll = {},
+
+		tapEvt,
+		touchEvt,
+
+		moved,
+
+		/** @const */
+		R_SPACE = /\s+/g,
+		R_FLOAT = /left|right|inline/,
+
+		expando = 'Sortable' + (new Date).getTime(),
+
+		win = window,
+		document = win.document,
+		parseInt = win.parseInt,
+
+		$ = win.jQuery || win.Zepto,
+		Polymer = win.Polymer,
+
+		captureMode = false,
+
+		supportDraggable = !!('draggable' in document.createElement('div')),
+		supportCssPointerEvents = (function (el) {
+			// false when IE11
+			if (!!navigator.userAgent.match(/Trident.*rv[ :]?11\./)) {
+				return false;
+			}
+			el = document.createElement('x');
+			el.style.cssText = 'pointer-events:auto';
+			return el.style.pointerEvents === 'auto';
+		})(),
+
+		_silent = false,
+
+		abs = Math.abs,
+		min = Math.min,
+
+		savedInputChecked = [],
+		touchDragOverListeners = [],
+
+		_autoScroll = _throttle(function (/**Event*/evt, /**Object*/options, /**HTMLElement*/rootEl) {
+			// Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=505521
+			if (rootEl && options.scroll) {
+				var _this = rootEl[expando],
+					el,
+					rect,
+					sens = options.scrollSensitivity,
+					speed = options.scrollSpeed,
+
+					x = evt.clientX,
+					y = evt.clientY,
+
+					winWidth = window.innerWidth,
+					winHeight = window.innerHeight,
+
+					vx,
+					vy,
+
+					scrollOffsetX,
+					scrollOffsetY
+				;
+
+				// Delect scrollEl
+				if (scrollParentEl !== rootEl) {
+					scrollEl = options.scroll;
+					scrollParentEl = rootEl;
+					scrollCustomFn = options.scrollFn;
+
+					if (scrollEl === true) {
+						scrollEl = rootEl;
+
+						do {
+							if ((scrollEl.offsetWidth < scrollEl.scrollWidth) ||
+								(scrollEl.offsetHeight < scrollEl.scrollHeight)
+							) {
+								break;
+							}
+							/* jshint boss:true */
+						} while (scrollEl = scrollEl.parentNode);
+					}
+				}
+
+				if (scrollEl) {
+					el = scrollEl;
+					rect = scrollEl.getBoundingClientRect();
+					vx = (abs(rect.right - x) <= sens) - (abs(rect.left - x) <= sens);
+					vy = (abs(rect.bottom - y) <= sens) - (abs(rect.top - y) <= sens);
+				}
+
+
+				if (!(vx || vy)) {
+					vx = (winWidth - x <= sens) - (x <= sens);
+					vy = (winHeight - y <= sens) - (y <= sens);
+
+					/* jshint expr:true */
+					(vx || vy) && (el = win);
+				}
+
+
+				if (autoScroll.vx !== vx || autoScroll.vy !== vy || autoScroll.el !== el) {
+					autoScroll.el = el;
+					autoScroll.vx = vx;
+					autoScroll.vy = vy;
+
+					clearInterval(autoScroll.pid);
+
+					if (el) {
+						autoScroll.pid = setInterval(function () {
+							scrollOffsetY = vy ? vy * speed : 0;
+							scrollOffsetX = vx ? vx * speed : 0;
+
+							if ('function' === typeof(scrollCustomFn)) {
+								return scrollCustomFn.call(_this, scrollOffsetX, scrollOffsetY, evt);
+							}
+
+							if (el === win) {
+								win.scrollTo(win.pageXOffset + scrollOffsetX, win.pageYOffset + scrollOffsetY);
+							} else {
+								el.scrollTop += scrollOffsetY;
+								el.scrollLeft += scrollOffsetX;
+							}
+						}, 24);
+					}
+				}
+			}
+		}, 30),
+
+		_prepareGroup = function (options) {
+			function toFn(value, pull) {
+				if (value === void 0 || value === true) {
+					value = group.name;
+				}
+
+				if (typeof value === 'function') {
+					return value;
+				} else {
+					return function (to, from) {
+						var fromGroup = from.options.group.name;
+
+						return pull
+							? value
+							: value && (value.join
+								? value.indexOf(fromGroup) > -1
+								: (fromGroup == value)
+							);
+					};
+				}
+			}
+
+			var group = {};
+			var originalGroup = options.group;
+
+			if (!originalGroup || typeof originalGroup != 'object') {
+				originalGroup = {name: originalGroup};
+			}
+
+			group.name = originalGroup.name;
+			group.checkPull = toFn(originalGroup.pull, true);
+			group.checkPut = toFn(originalGroup.put);
+			group.revertClone = originalGroup.revertClone;
+
+			options.group = group;
+		}
+	;
+
+
+	/**
+	 * @class  Sortable
+	 * @param  {HTMLElement}  el
+	 * @param  {Object}       [options]
+	 */
+	function Sortable(el, options) {
+		if (!(el && el.nodeType && el.nodeType === 1)) {
+			throw 'Sortable: `el` must be HTMLElement, and not ' + {}.toString.call(el);
+		}
+
+		this.el = el; // root element
+		this.options = options = _extend({}, options);
+
+
+		// Export instance
+		el[expando] = this;
+
+		// Default options
+		var defaults = {
+			group: Math.random(),
+			sort: true,
+			disabled: false,
+			store: null,
+			handle: null,
+			scroll: true,
+			scrollSensitivity: 30,
+			scrollSpeed: 10,
+			draggable: /[uo]l/i.test(el.nodeName) ? 'li' : '>*',
+			ghostClass: 'sortable-ghost',
+			chosenClass: 'sortable-chosen',
+			dragClass: 'sortable-drag',
+			ignore: 'a, img',
+			filter: null,
+			preventOnFilter: true,
+			animation: 0,
+			setData: function (dataTransfer, dragEl) {
+				dataTransfer.setData('Text', dragEl.textContent);
+			},
+			dropBubble: false,
+			dragoverBubble: false,
+			dataIdAttr: 'data-id',
+			delay: 0,
+			forceFallback: false,
+			fallbackClass: 'sortable-fallback',
+			fallbackOnBody: false,
+			fallbackTolerance: 0,
+			fallbackOffset: {x: 0, y: 0}
+		};
+
+
+		// Set default options
+		for (var name in defaults) {
+			!(name in options) && (options[name] = defaults[name]);
+		}
+
+		_prepareGroup(options);
+
+		// Bind all private methods
+		for (var fn in this) {
+			if (fn.charAt(0) === '_' && typeof this[fn] === 'function') {
+				this[fn] = this[fn].bind(this);
+			}
+		}
+
+		// Setup drag mode
+		this.nativeDraggable = options.forceFallback ? false : supportDraggable;
+
+		// Bind events
+		_on(el, 'mousedown', this._onTapStart);
+		_on(el, 'touchstart', this._onTapStart);
+		_on(el, 'pointerdown', this._onTapStart);
+
+		if (this.nativeDraggable) {
+			_on(el, 'dragover', this);
+			_on(el, 'dragenter', this);
+		}
+
+		touchDragOverListeners.push(this._onDragOver);
+
+		// Restore sorting
+		options.store && this.sort(options.store.get(this));
+	}
+
+
+	Sortable.prototype = /** @lends Sortable.prototype */ {
+		constructor: Sortable,
+
+		_onTapStart: function (/** Event|TouchEvent */evt) {
+			var _this = this,
+				el = this.el,
+				options = this.options,
+				preventOnFilter = options.preventOnFilter,
+				type = evt.type,
+				touch = evt.touches && evt.touches[0],
+				target = (touch || evt).target,
+				originalTarget = evt.target.shadowRoot && evt.path[0] || target,
+				filter = options.filter,
+				startIndex;
+
+			_saveInputCheckedState(el);
+
+
+			// Don't trigger start event when an element is been dragged, otherwise the evt.oldindex always wrong when set option.group.
+			if (dragEl) {
+				return;
+			}
+
+			if (type === 'mousedown' && evt.button !== 0 || options.disabled) {
+				return; // only left button or enabled
+			}
+
+
+			target = _closest(target, options.draggable, el);
+
+			if (!target) {
+				return;
+			}
+
+			if (lastDownEl === target) {
+				// Ignoring duplicate `down`
+				return;
+			}
+
+			// Get the index of the dragged element within its parent
+			startIndex = _index(target, options.draggable);
+
+			// Check filter
+			if (typeof filter === 'function') {
+				if (filter.call(this, evt, target, this)) {
+					_dispatchEvent(_this, originalTarget, 'filter', target, el, startIndex);
+					preventOnFilter && evt.preventDefault();
+					return; // cancel dnd
+				}
+			}
+			else if (filter) {
+				filter = filter.split(',').some(function (criteria) {
+					criteria = _closest(originalTarget, criteria.trim(), el);
+
+					if (criteria) {
+						_dispatchEvent(_this, criteria, 'filter', target, el, startIndex);
+						return true;
+					}
+				});
+
+				if (filter) {
+					preventOnFilter && evt.preventDefault();
+					return; // cancel dnd
+				}
+			}
+
+			if (options.handle && !_closest(originalTarget, options.handle, el)) {
+				return;
+			}
+
+			// Prepare `dragstart`
+			this._prepareDragStart(evt, touch, target, startIndex);
+		},
+
+		_prepareDragStart: function (/** Event */evt, /** Touch */touch, /** HTMLElement */target, /** Number */startIndex) {
+			var _this = this,
+				el = _this.el,
+				options = _this.options,
+				ownerDocument = el.ownerDocument,
+				dragStartFn;
+
+			if (target && !dragEl && (target.parentNode === el)) {
+				tapEvt = evt;
+
+				rootEl = el;
+				dragEl = target;
+				parentEl = dragEl.parentNode;
+				nextEl = dragEl.nextSibling;
+				lastDownEl = target;
+				activeGroup = options.group;
+				oldIndex = startIndex;
+
+				this._lastX = (touch || evt).clientX;
+				this._lastY = (touch || evt).clientY;
+
+				dragEl.style['will-change'] = 'transform';
+
+				dragStartFn = function () {
+					// Delayed drag has been triggered
+					// we can re-enable the events: touchmove/mousemove
+					_this._disableDelayedDrag();
+
+					// Make the element draggable
+					dragEl.draggable = _this.nativeDraggable;
+
+					// Chosen item
+					_toggleClass(dragEl, options.chosenClass, true);
+
+					// Bind the events: dragstart/dragend
+					_this._triggerDragStart(evt, touch);
+
+					// Drag start event
+					_dispatchEvent(_this, rootEl, 'choose', dragEl, rootEl, oldIndex);
+				};
+
+				// Disable "draggable"
+				options.ignore.split(',').forEach(function (criteria) {
+					_find(dragEl, criteria.trim(), _disableDraggable);
+				});
+
+				_on(ownerDocument, 'mouseup', _this._onDrop);
+				_on(ownerDocument, 'touchend', _this._onDrop);
+				_on(ownerDocument, 'touchcancel', _this._onDrop);
+				_on(ownerDocument, 'pointercancel', _this._onDrop);
+				_on(ownerDocument, 'selectstart', _this);
+
+				if (options.delay) {
+					// If the user moves the pointer or let go the click or touch
+					// before the delay has been reached:
+					// disable the delayed drag
+					_on(ownerDocument, 'mouseup', _this._disableDelayedDrag);
+					_on(ownerDocument, 'touchend', _this._disableDelayedDrag);
+					_on(ownerDocument, 'touchcancel', _this._disableDelayedDrag);
+					_on(ownerDocument, 'mousemove', _this._disableDelayedDrag);
+					_on(ownerDocument, 'touchmove', _this._disableDelayedDrag);
+					_on(ownerDocument, 'pointermove', _this._disableDelayedDrag);
+
+					_this._dragStartTimer = setTimeout(dragStartFn, options.delay);
+				} else {
+					dragStartFn();
+				}
+
+
+			}
+		},
+
+		_disableDelayedDrag: function () {
+			var ownerDocument = this.el.ownerDocument;
+
+			clearTimeout(this._dragStartTimer);
+			_off(ownerDocument, 'mouseup', this._disableDelayedDrag);
+			_off(ownerDocument, 'touchend', this._disableDelayedDrag);
+			_off(ownerDocument, 'touchcancel', this._disableDelayedDrag);
+			_off(ownerDocument, 'mousemove', this._disableDelayedDrag);
+			_off(ownerDocument, 'touchmove', this._disableDelayedDrag);
+			_off(ownerDocument, 'pointermove', this._disableDelayedDrag);
+		},
+
+		_triggerDragStart: function (/** Event */evt, /** Touch */touch) {
+			touch = touch || (evt.pointerType == 'touch' ? evt : null);
+
+			if (touch) {
+				// Touch device support
+				tapEvt = {
+					target: dragEl,
+					clientX: touch.clientX,
+					clientY: touch.clientY
+				};
+
+				this._onDragStart(tapEvt, 'touch');
+			}
+			else if (!this.nativeDraggable) {
+				this._onDragStart(tapEvt, true);
+			}
+			else {
+				_on(dragEl, 'dragend', this);
+				_on(rootEl, 'dragstart', this._onDragStart);
+			}
+
+			try {
+				if (document.selection) {					
+					// Timeout neccessary for IE9					
+					setTimeout(function () {
+						document.selection.empty();
+					});					
+				} else {
+					window.getSelection().removeAllRanges();
+				}
+			} catch (err) {
+			}
+		},
+
+		_dragStarted: function () {
+			if (rootEl && dragEl) {
+				var options = this.options;
+
+				// Apply effect
+				_toggleClass(dragEl, options.ghostClass, true);
+				_toggleClass(dragEl, options.dragClass, false);
+
+				Sortable.active = this;
+
+				// Drag start event
+				_dispatchEvent(this, rootEl, 'start', dragEl, rootEl, oldIndex);
+			} else {
+				this._nulling();
+			}
+		},
+
+		_emulateDragOver: function () {
+			if (touchEvt) {
+				if (this._lastX === touchEvt.clientX && this._lastY === touchEvt.clientY) {
+					return;
+				}
+
+				this._lastX = touchEvt.clientX;
+				this._lastY = touchEvt.clientY;
+
+				if (!supportCssPointerEvents) {
+					_css(ghostEl, 'display', 'none');
+				}
+
+				var target = document.elementFromPoint(touchEvt.clientX, touchEvt.clientY),
+					parent = target,
+					i = touchDragOverListeners.length;
+
+				if (parent) {
+					do {
+						if (parent[expando]) {
+							while (i--) {
+								touchDragOverListeners[i]({
+									clientX: touchEvt.clientX,
+									clientY: touchEvt.clientY,
+									target: target,
+									rootEl: parent
+								});
+							}
+
+							break;
+						}
+
+						target = parent; // store last element
+					}
+					/* jshint boss:true */
+					while (parent = parent.parentNode);
+				}
+
+				if (!supportCssPointerEvents) {
+					_css(ghostEl, 'display', '');
+				}
+			}
+		},
+
+
+		_onTouchMove: function (/**TouchEvent*/evt) {
+			if (tapEvt) {
+				var	options = this.options,
+					fallbackTolerance = options.fallbackTolerance,
+					fallbackOffset = options.fallbackOffset,
+					touch = evt.touches ? evt.touches[0] : evt,
+					dx = (touch.clientX - tapEvt.clientX) + fallbackOffset.x,
+					dy = (touch.clientY - tapEvt.clientY) + fallbackOffset.y,
+					translate3d = evt.touches ? 'translate3d(' + dx + 'px,' + dy + 'px,0)' : 'translate(' + dx + 'px,' + dy + 'px)';
+
+				// only set the status to dragging, when we are actually dragging
+				if (!Sortable.active) {
+					if (fallbackTolerance &&
+						min(abs(touch.clientX - this._lastX), abs(touch.clientY - this._lastY)) < fallbackTolerance
+					) {
+						return;
+					}
+
+					this._dragStarted();
+				}
+
+				// as well as creating the ghost element on the document body
+				this._appendGhost();
+
+				moved = true;
+				touchEvt = touch;
+
+				_css(ghostEl, 'webkitTransform', translate3d);
+				_css(ghostEl, 'mozTransform', translate3d);
+				_css(ghostEl, 'msTransform', translate3d);
+				_css(ghostEl, 'transform', translate3d);
+
+				evt.preventDefault();
+			}
+		},
+
+		_appendGhost: function () {
+			if (!ghostEl) {
+				var rect = dragEl.getBoundingClientRect(),
+					css = _css(dragEl),
+					options = this.options,
+					ghostRect;
+
+				ghostEl = dragEl.cloneNode(true);
+
+				_toggleClass(ghostEl, options.ghostClass, false);
+				_toggleClass(ghostEl, options.fallbackClass, true);
+				_toggleClass(ghostEl, options.dragClass, true);
+
+				_css(ghostEl, 'top', rect.top - parseInt(css.marginTop, 10));
+				_css(ghostEl, 'left', rect.left - parseInt(css.marginLeft, 10));
+				_css(ghostEl, 'width', rect.width);
+				_css(ghostEl, 'height', rect.height);
+				_css(ghostEl, 'opacity', '0.8');
+				_css(ghostEl, 'position', 'fixed');
+				_css(ghostEl, 'zIndex', '100000');
+				_css(ghostEl, 'pointerEvents', 'none');
+
+				options.fallbackOnBody && document.body.appendChild(ghostEl) || rootEl.appendChild(ghostEl);
+
+				// Fixing dimensions.
+				ghostRect = ghostEl.getBoundingClientRect();
+				_css(ghostEl, 'width', rect.width * 2 - ghostRect.width);
+				_css(ghostEl, 'height', rect.height * 2 - ghostRect.height);
+			}
+		},
+
+		_onDragStart: function (/**Event*/evt, /**boolean*/useFallback) {
+			var dataTransfer = evt.dataTransfer,
+				options = this.options;
+
+			this._offUpEvents();
+
+			if (activeGroup.checkPull(this, this, dragEl, evt)) {
+				cloneEl = _clone(dragEl);
+
+				cloneEl.draggable = false;
+				cloneEl.style['will-change'] = '';
+
+				_css(cloneEl, 'display', 'none');
+				_toggleClass(cloneEl, this.options.chosenClass, false);
+
+				rootEl.insertBefore(cloneEl, dragEl);
+				_dispatchEvent(this, rootEl, 'clone', dragEl);
+			}
+
+			_toggleClass(dragEl, options.dragClass, true);
+
+			if (useFallback) {
+				if (useFallback === 'touch') {
+					// Bind touch events
+					_on(document, 'touchmove', this._onTouchMove);
+					_on(document, 'touchend', this._onDrop);
+					_on(document, 'touchcancel', this._onDrop);
+					_on(document, 'pointermove', this._onTouchMove);
+					_on(document, 'pointerup', this._onDrop);
+				} else {
+					// Old brwoser
+					_on(document, 'mousemove', this._onTouchMove);
+					_on(document, 'mouseup', this._onDrop);
+				}
+
+				this._loopId = setInterval(this._emulateDragOver, 50);
+			}
+			else {
+				if (dataTransfer) {
+					dataTransfer.effectAllowed = 'move';
+					options.setData && options.setData.call(this, dataTransfer, dragEl);
+				}
+
+				_on(document, 'drop', this);
+				setTimeout(this._dragStarted, 0);
+			}
+		},
+
+		_onDragOver: function (/**Event*/evt) {
+			var el = this.el,
+				target,
+				dragRect,
+				targetRect,
+				revert,
+				options = this.options,
+				group = options.group,
+				activeSortable = Sortable.active,
+				isOwner = (activeGroup === group),
+				isMovingBetweenSortable = false,
+				canSort = options.sort;
+
+			if (evt.preventDefault !== void 0) {
+				evt.preventDefault();
+				!options.dragoverBubble && evt.stopPropagation();
+			}
+
+			if (dragEl.animated) {
+				return;
+			}
+
+			moved = true;
+
+			if (activeSortable && !options.disabled &&
+				(isOwner
+					? canSort || (revert = !rootEl.contains(dragEl)) // Reverting item into the original list
+					: (
+						putSortable === this ||
+						(
+							(activeSortable.lastPullMode = activeGroup.checkPull(this, activeSortable, dragEl, evt)) &&
+							group.checkPut(this, activeSortable, dragEl, evt)
+						)
+					)
+				) &&
+				(evt.rootEl === void 0 || evt.rootEl === this.el) // touch fallback
+			) {
+				// Smart auto-scrolling
+				_autoScroll(evt, options, this.el);
+
+				if (_silent) {
+					return;
+				}
+
+				target = _closest(evt.target, options.draggable, el);
+				dragRect = dragEl.getBoundingClientRect();
+
+				if (putSortable !== this) {
+					putSortable = this;
+					isMovingBetweenSortable = true;
+				}
+
+				if (revert) {
+					_cloneHide(activeSortable, true);
+					parentEl = rootEl; // actualization
+
+					if (cloneEl || nextEl) {
+						rootEl.insertBefore(dragEl, cloneEl || nextEl);
+					}
+					else if (!canSort) {
+						rootEl.appendChild(dragEl);
+					}
+
+					return;
+				}
+
+
+				if ((el.children.length === 0) || (el.children[0] === ghostEl) ||
+					(el === evt.target) && (target = _ghostIsLast(el, evt))
+				) {
+					if (target) {
+						if (target.animated) {
+							return;
+						}
+
+						targetRect = target.getBoundingClientRect();
+					}
+
+					_cloneHide(activeSortable, isOwner);
+
+					if (_onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt) !== false) {
+						if (!dragEl.contains(el)) {
+							el.appendChild(dragEl);
+							parentEl = el; // actualization
+						}
+
+						this._animate(dragRect, dragEl);
+						target && this._animate(targetRect, target);
+					}
+				}
+				else if (target && !target.animated && target !== dragEl && (target.parentNode[expando] !== void 0)) {
+					if (lastEl !== target) {
+						lastEl = target;
+						lastCSS = _css(target);
+						lastParentCSS = _css(target.parentNode);
+					}
+
+					targetRect = target.getBoundingClientRect();
+
+					var width = targetRect.right - targetRect.left,
+						height = targetRect.bottom - targetRect.top,
+						floating = R_FLOAT.test(lastCSS.cssFloat + lastCSS.display)
+							|| (lastParentCSS.display == 'flex' && lastParentCSS['flex-direction'].indexOf('row') === 0),
+						isWide = (target.offsetWidth > dragEl.offsetWidth),
+						isLong = (target.offsetHeight > dragEl.offsetHeight),
+						halfway = (floating ? (evt.clientX - targetRect.left) / width : (evt.clientY - targetRect.top) / height) > 0.5,
+						nextSibling = target.nextElementSibling,
+						moveVector = _onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt),
+						after = false
+					;
+
+					if (moveVector !== false) {
+						_silent = true;
+						setTimeout(_unsilent, 30);
+
+						_cloneHide(activeSortable, isOwner);
+
+						if (moveVector === 1 || moveVector === -1) {
+							after = (moveVector === 1);
+						}
+						else if (floating) {
+							var elTop = dragEl.offsetTop,
+								tgTop = target.offsetTop;
+
+							if (elTop === tgTop) {
+								after = (target.previousElementSibling === dragEl) && !isWide || halfway && isWide;
+							}
+							else if (target.previousElementSibling === dragEl || dragEl.previousElementSibling === target) {
+								after = (evt.clientY - targetRect.top) / height > 0.5;
+							} else {
+								after = tgTop > elTop;
+							}
+						} else if (!isMovingBetweenSortable) {
+							after = (nextSibling !== dragEl) && !isLong || halfway && isLong;
+						}
+
+						if (!dragEl.contains(el)) {
+							if (after && !nextSibling) {
+								el.appendChild(dragEl);
+							} else {
+								target.parentNode.insertBefore(dragEl, after ? nextSibling : target);
+							}
+						}
+
+						parentEl = dragEl.parentNode; // actualization
+
+						this._animate(dragRect, dragEl);
+						this._animate(targetRect, target);
+					}
+				}
+			}
+		},
+
+		_animate: function (prevRect, target) {
+			var ms = this.options.animation;
+
+			if (ms) {
+				var currentRect = target.getBoundingClientRect();
+
+				if (prevRect.nodeType === 1) {
+					prevRect = prevRect.getBoundingClientRect();
+				}
+
+				_css(target, 'transition', 'none');
+				_css(target, 'transform', 'translate3d('
+					+ (prevRect.left - currentRect.left) + 'px,'
+					+ (prevRect.top - currentRect.top) + 'px,0)'
+				);
+
+				target.offsetWidth; // repaint
+
+				_css(target, 'transition', 'all ' + ms + 'ms');
+				_css(target, 'transform', 'translate3d(0,0,0)');
+
+				clearTimeout(target.animated);
+				target.animated = setTimeout(function () {
+					_css(target, 'transition', '');
+					_css(target, 'transform', '');
+					target.animated = false;
+				}, ms);
+			}
+		},
+
+		_offUpEvents: function () {
+			var ownerDocument = this.el.ownerDocument;
+
+			_off(document, 'touchmove', this._onTouchMove);
+			_off(document, 'pointermove', this._onTouchMove);
+			_off(ownerDocument, 'mouseup', this._onDrop);
+			_off(ownerDocument, 'touchend', this._onDrop);
+			_off(ownerDocument, 'pointerup', this._onDrop);
+			_off(ownerDocument, 'touchcancel', this._onDrop);
+			_off(ownerDocument, 'selectstart', this);
+		},
+
+		_onDrop: function (/**Event*/evt) {
+			var el = this.el,
+				options = this.options;
+
+			clearInterval(this._loopId);
+			clearInterval(autoScroll.pid);
+			clearTimeout(this._dragStartTimer);
+
+			// Unbind events
+			_off(document, 'mousemove', this._onTouchMove);
+
+			if (this.nativeDraggable) {
+				_off(document, 'drop', this);
+				_off(el, 'dragstart', this._onDragStart);
+			}
+
+			this._offUpEvents();
+
+			if (evt) {
+				if (moved) {
+					evt.preventDefault();
+					!options.dropBubble && evt.stopPropagation();
+				}
+
+				ghostEl && ghostEl.parentNode.removeChild(ghostEl);
+
+				if (dragEl) {
+					if (this.nativeDraggable) {
+						_off(dragEl, 'dragend', this);
+					}
+
+					_disableDraggable(dragEl);
+					dragEl.style['will-change'] = '';
+
+					// Remove class's
+					_toggleClass(dragEl, this.options.ghostClass, false);
+					_toggleClass(dragEl, this.options.chosenClass, false);
+
+					if (rootEl !== parentEl) {
+						newIndex = _index(dragEl, options.draggable);
+
+						if (newIndex >= 0) {
+
+							// Add event
+							_dispatchEvent(null, parentEl, 'add', dragEl, rootEl, oldIndex, newIndex);
+
+							// Remove event
+							_dispatchEvent(this, rootEl, 'remove', dragEl, rootEl, oldIndex, newIndex);
+
+							// drag from one list and drop into another
+							_dispatchEvent(null, parentEl, 'sort', dragEl, rootEl, oldIndex, newIndex);
+							_dispatchEvent(this, rootEl, 'sort', dragEl, rootEl, oldIndex, newIndex);
+						}
+					}
+					else {
+						// Remove clone
+						cloneEl && cloneEl.parentNode.removeChild(cloneEl);
+
+						if (dragEl.nextSibling !== nextEl) {
+							// Get the index of the dragged element within its parent
+							newIndex = _index(dragEl, options.draggable);
+
+							if (newIndex >= 0) {
+								// drag & drop within the same list
+								_dispatchEvent(this, rootEl, 'update', dragEl, rootEl, oldIndex, newIndex);
+								_dispatchEvent(this, rootEl, 'sort', dragEl, rootEl, oldIndex, newIndex);
+							}
+						}
+					}
+
+					if (Sortable.active) {
+						/* jshint eqnull:true */
+						if (newIndex == null || newIndex === -1) {
+							newIndex = oldIndex;
+						}
+
+						_dispatchEvent(this, rootEl, 'end', dragEl, rootEl, oldIndex, newIndex);
+
+						// Save sorting
+						this.save();
+					}
+				}
+
+			}
+
+			this._nulling();
+		},
+
+		_nulling: function() {
+			rootEl =
+			dragEl =
+			parentEl =
+			ghostEl =
+			nextEl =
+			cloneEl =
+			lastDownEl =
+
+			scrollEl =
+			scrollParentEl =
+
+			tapEvt =
+			touchEvt =
+
+			moved =
+			newIndex =
+
+			lastEl =
+			lastCSS =
+
+			putSortable =
+			activeGroup =
+			Sortable.active = null;
+
+			savedInputChecked.forEach(function (el) {
+				el.checked = true;
+			});
+			savedInputChecked.length = 0;
+		},
+
+		handleEvent: function (/**Event*/evt) {
+			switch (evt.type) {
+				case 'drop':
+				case 'dragend':
+					this._onDrop(evt);
+					break;
+
+				case 'dragover':
+				case 'dragenter':
+					if (dragEl) {
+						this._onDragOver(evt);
+						_globalDragOver(evt);
+					}
+					break;
+
+				case 'selectstart':
+					evt.preventDefault();
+					break;
+			}
+		},
+
+
+		/**
+		 * Serializes the item into an array of string.
+		 * @returns {String[]}
+		 */
+		toArray: function () {
+			var order = [],
+				el,
+				children = this.el.children,
+				i = 0,
+				n = children.length,
+				options = this.options;
+
+			for (; i < n; i++) {
+				el = children[i];
+				if (_closest(el, options.draggable, this.el)) {
+					order.push(el.getAttribute(options.dataIdAttr) || _generateId(el));
+				}
+			}
+
+			return order;
+		},
+
+
+		/**
+		 * Sorts the elements according to the array.
+		 * @param  {String[]}  order  order of the items
+		 */
+		sort: function (order) {
+			var items = {}, rootEl = this.el;
+
+			this.toArray().forEach(function (id, i) {
+				var el = rootEl.children[i];
+
+				if (_closest(el, this.options.draggable, rootEl)) {
+					items[id] = el;
+				}
+			}, this);
+
+			order.forEach(function (id) {
+				if (items[id]) {
+					rootEl.removeChild(items[id]);
+					rootEl.appendChild(items[id]);
+				}
+			});
+		},
+
+
+		/**
+		 * Save the current sorting
+		 */
+		save: function () {
+			var store = this.options.store;
+			store && store.set(this);
+		},
+
+
+		/**
+		 * For each element in the set, get the first element that matches the selector by testing the element itself and traversing up through its ancestors in the DOM tree.
+		 * @param   {HTMLElement}  el
+		 * @param   {String}       [selector]  default: `options.draggable`
+		 * @returns {HTMLElement|null}
+		 */
+		closest: function (el, selector) {
+			return _closest(el, selector || this.options.draggable, this.el);
+		},
+
+
+		/**
+		 * Set/get option
+		 * @param   {string} name
+		 * @param   {*}      [value]
+		 * @returns {*}
+		 */
+		option: function (name, value) {
+			var options = this.options;
+
+			if (value === void 0) {
+				return options[name];
+			} else {
+				options[name] = value;
+
+				if (name === 'group') {
+					_prepareGroup(options);
+				}
+			}
+		},
+
+
+		/**
+		 * Destroy
+		 */
+		destroy: function () {
+			var el = this.el;
+
+			el[expando] = null;
+
+			_off(el, 'mousedown', this._onTapStart);
+			_off(el, 'touchstart', this._onTapStart);
+			_off(el, 'pointerdown', this._onTapStart);
+
+			if (this.nativeDraggable) {
+				_off(el, 'dragover', this);
+				_off(el, 'dragenter', this);
+			}
+
+			// Remove draggable attributes
+			Array.prototype.forEach.call(el.querySelectorAll('[draggable]'), function (el) {
+				el.removeAttribute('draggable');
+			});
+
+			touchDragOverListeners.splice(touchDragOverListeners.indexOf(this._onDragOver), 1);
+
+			this._onDrop();
+
+			this.el = el = null;
+		}
+	};
+
+
+	function _cloneHide(sortable, state) {
+		if (sortable.lastPullMode !== 'clone') {
+			state = true;
+		}
+
+		if (cloneEl && (cloneEl.state !== state)) {
+			_css(cloneEl, 'display', state ? 'none' : '');
+
+			if (!state) {
+				if (cloneEl.state) {
+					if (sortable.options.group.revertClone) {
+						rootEl.insertBefore(cloneEl, nextEl);
+						sortable._animate(dragEl, cloneEl);
+					} else {
+						rootEl.insertBefore(cloneEl, dragEl);
+					}
+				}
+			}
+
+			cloneEl.state = state;
+		}
+	}
+
+
+	function _closest(/**HTMLElement*/el, /**String*/selector, /**HTMLElement*/ctx) {
+		if (el) {
+			ctx = ctx || document;
+
+			do {
+				if ((selector === '>*' && el.parentNode === ctx) || _matches(el, selector)) {
+					return el;
+				}
+				/* jshint boss:true */
+			} while (el = _getParentOrHost(el));
+		}
+
+		return null;
+	}
+
+
+	function _getParentOrHost(el) {
+		var parent = el.host;
+
+		return (parent && parent.nodeType) ? parent : el.parentNode;
+	}
+
+
+	function _globalDragOver(/**Event*/evt) {
+		if (evt.dataTransfer) {
+			evt.dataTransfer.dropEffect = 'move';
+		}
+		evt.preventDefault();
+	}
+
+
+	function _on(el, event, fn) {
+		el.addEventListener(event, fn, captureMode);
+	}
+
+
+	function _off(el, event, fn) {
+		el.removeEventListener(event, fn, captureMode);
+	}
+
+
+	function _toggleClass(el, name, state) {
+		if (el) {
+			if (el.classList) {
+				el.classList[state ? 'add' : 'remove'](name);
+			}
+			else {
+				var className = (' ' + el.className + ' ').replace(R_SPACE, ' ').replace(' ' + name + ' ', ' ');
+				el.className = (className + (state ? ' ' + name : '')).replace(R_SPACE, ' ');
+			}
+		}
+	}
+
+
+	function _css(el, prop, val) {
+		var style = el && el.style;
+
+		if (style) {
+			if (val === void 0) {
+				if (document.defaultView && document.defaultView.getComputedStyle) {
+					val = document.defaultView.getComputedStyle(el, '');
+				}
+				else if (el.currentStyle) {
+					val = el.currentStyle;
+				}
+
+				return prop === void 0 ? val : val[prop];
+			}
+			else {
+				if (!(prop in style)) {
+					prop = '-webkit-' + prop;
+				}
+
+				style[prop] = val + (typeof val === 'string' ? '' : 'px');
+			}
+		}
+	}
+
+
+	function _find(ctx, tagName, iterator) {
+		if (ctx) {
+			var list = ctx.getElementsByTagName(tagName), i = 0, n = list.length;
+
+			if (iterator) {
+				for (; i < n; i++) {
+					iterator(list[i], i);
+				}
+			}
+
+			return list;
+		}
+
+		return [];
+	}
+
+
+
+	function _dispatchEvent(sortable, rootEl, name, targetEl, fromEl, startIndex, newIndex) {
+		sortable = (sortable || rootEl[expando]);
+
+		var evt = document.createEvent('Event'),
+			options = sortable.options,
+			onName = 'on' + name.charAt(0).toUpperCase() + name.substr(1);
+
+		evt.initEvent(name, true, true);
+
+		evt.to = rootEl;
+		evt.from = fromEl || rootEl;
+		evt.item = targetEl || rootEl;
+		evt.clone = cloneEl;
+
+		evt.oldIndex = startIndex;
+		evt.newIndex = newIndex;
+
+		rootEl.dispatchEvent(evt);
+
+		if (options[onName]) {
+			options[onName].call(sortable, evt);
+		}
+	}
+
+
+	function _onMove(fromEl, toEl, dragEl, dragRect, targetEl, targetRect, originalEvt) {
+		var evt,
+			sortable = fromEl[expando],
+			onMoveFn = sortable.options.onMove,
+			retVal;
+
+		evt = document.createEvent('Event');
+		evt.initEvent('move', true, true);
+
+		evt.to = toEl;
+		evt.from = fromEl;
+		evt.dragged = dragEl;
+		evt.draggedRect = dragRect;
+		evt.related = targetEl || toEl;
+		evt.relatedRect = targetRect || toEl.getBoundingClientRect();
+
+		fromEl.dispatchEvent(evt);
+
+		if (onMoveFn) {
+			retVal = onMoveFn.call(sortable, evt, originalEvt);
+		}
+
+		return retVal;
+	}
+
+
+	function _disableDraggable(el) {
+		el.draggable = false;
+	}
+
+
+	function _unsilent() {
+		_silent = false;
+	}
+
+
+	/** @returns {HTMLElement|false} */
+	function _ghostIsLast(el, evt) {
+		var lastEl = el.lastElementChild,
+			rect = lastEl.getBoundingClientRect();
+
+		// 5 — min delta
+		// abs — нельзя добавлять, а то глюки при наведении сверху
+		return (
+			(evt.clientY - (rect.top + rect.height) > 5) ||
+			(evt.clientX - (rect.right + rect.width) > 5)
+		) && lastEl;
+	}
+
+
+	/**
+	 * Generate id
+	 * @param   {HTMLElement} el
+	 * @returns {String}
+	 * @private
+	 */
+	function _generateId(el) {
+		var str = el.tagName + el.className + el.src + el.href + el.textContent,
+			i = str.length,
+			sum = 0;
+
+		while (i--) {
+			sum += str.charCodeAt(i);
+		}
+
+		return sum.toString(36);
+	}
+
+	/**
+	 * Returns the index of an element within its parent for a selected set of
+	 * elements
+	 * @param  {HTMLElement} el
+	 * @param  {selector} selector
+	 * @return {number}
+	 */
+	function _index(el, selector) {
+		var index = 0;
+
+		if (!el || !el.parentNode) {
+			return -1;
+		}
+
+		while (el && (el = el.previousElementSibling)) {
+			if ((el.nodeName.toUpperCase() !== 'TEMPLATE') && (selector === '>*' || _matches(el, selector))) {
+				index++;
+			}
+		}
+
+		return index;
+	}
+
+	function _matches(/**HTMLElement*/el, /**String*/selector) {
+		if (el) {
+			selector = selector.split('.');
+
+			var tag = selector.shift().toUpperCase(),
+				re = new RegExp('\\s(' + selector.join('|') + ')(?=\\s)', 'g');
+
+			return (
+				(tag === '' || el.nodeName.toUpperCase() == tag) &&
+				(!selector.length || ((' ' + el.className + ' ').match(re) || []).length == selector.length)
+			);
+		}
+
+		return false;
+	}
+
+	function _throttle(callback, ms) {
+		var args, _this;
+
+		return function () {
+			if (args === void 0) {
+				args = arguments;
+				_this = this;
+
+				setTimeout(function () {
+					if (args.length === 1) {
+						callback.call(_this, args[0]);
+					} else {
+						callback.apply(_this, args);
+					}
+
+					args = void 0;
+				}, ms);
+			}
+		};
+	}
+
+	function _extend(dst, src) {
+		if (dst && src) {
+			for (var key in src) {
+				if (src.hasOwnProperty(key)) {
+					dst[key] = src[key];
+				}
+			}
+		}
+
+		return dst;
+	}
+
+	function _clone(el) {
+		return $
+			? $(el).clone(true)[0]
+			: (Polymer && Polymer.dom
+				? Polymer.dom(el).cloneNode(true)
+				: el.cloneNode(true)
+			);
+	}
+
+	function _saveInputCheckedState(root) {
+		var inputs = root.getElementsByTagName('input');
+		var idx = inputs.length;
+
+		while (idx--) {
+			var el = inputs[idx];
+			el.checked && savedInputChecked.push(el);
+		}
+	}
+
+	// Fixed #973: 
+	_on(document, 'touchmove', function (evt) {
+		if (Sortable.active) {
+			evt.preventDefault();
+		}
+	});
+
+	try {
+		window.addEventListener('test', null, Object.defineProperty({}, 'passive', {
+			get: function () {
+				captureMode = {
+					capture: false,
+					passive: false
+				};
+			}
+		}));
+	} catch (err) {}
+
+	// Export utils
+	Sortable.utils = {
+		on: _on,
+		off: _off,
+		css: _css,
+		find: _find,
+		is: function (el, selector) {
+			return !!_closest(el, selector, el);
+		},
+		extend: _extend,
+		throttle: _throttle,
+		closest: _closest,
+		toggleClass: _toggleClass,
+		clone: _clone,
+		index: _index
+	};
+
+
+	/**
+	 * Create sortable instance
+	 * @param {HTMLElement}  el
+	 * @param {Object}      [options]
+	 */
+	Sortable.create = function (el, options) {
+		return new Sortable(el, options);
+	};
+
+
+	// Export
+	Sortable.version = '1.5.0';
+	return Sortable;
+});
+
+},{}],313:[function(require,module,exports){
 (function (process){
 /**
   * vue-router v2.2.1
@@ -21416,7 +22898,7 @@ if (inBrowser && window.Vue) {
 module.exports = VueRouter;
 
 }).call(this,require('_process'))
-},{"_process":311}],313:[function(require,module,exports){
+},{"_process":311}],314:[function(require,module,exports){
 (function (process){
 /*!
  * Vue.js v1.0.28
@@ -31657,7 +33139,7 @@ setTimeout(function () {
 
 module.exports = Vue;
 }).call(this,require('_process'))
-},{"_process":311}],314:[function(require,module,exports){
+},{"_process":311}],315:[function(require,module,exports){
 /**
  * vuex v2.1.2
  * (c) 2017 Evan You
@@ -32464,7 +33946,183 @@ return index;
 
 })));
 
-},{}],315:[function(require,module,exports){
+},{}],316:[function(require,module,exports){
+'use strict';
+
+var _Item = require('../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Holds the item cards. Serves as their outer parent
+ *
+ * Created by adam on 2/19/17.
+ */
+var $ = require('jquery');
+window.$ = $;
+
+var Sortable = require('sortablejs');
+
+
+module.exports = {
+
+    template: require('../templates/card-list.template.html'),
+
+    props: [],
+
+    data: function data() {
+        return {
+            items: []
+        };
+    },
+
+    computed: {
+        // items
+    },
+
+    methods: {
+        /**
+         * This creates a new default item and pushes
+         * onto stack
+         * later this should be able to accept positional
+         * and type info
+         */
+        addItem: function addItem() {
+            var itm = new _Item2.default();
+            itm.index = this.items.length + 1;
+            console.log('itm', itm);
+            this.items.push(itm);
+        },
+
+        /**
+         * Handle deletion - items will be deleted once the form is submitted
+         * This is actually listening for an attempt to drag a filtered element.
+         * It fires on mousedown, so it is practically equivalent to a click.
+         *
+         * evt.item is HTMLElement receiving the `mousedown|tapstart` event.
+         *
+         * @param evt
+         */
+        handleDelete: function handleDelete(evt, editableList) {
+            //get the element from the list
+            var el = editableList.closest(evt.item);
+
+            bootbox.dialog({
+                className: 'confirmationModal',
+                message: "<p class='questionDeleteWarning' id='questionDeleteWarning'> <span class='glyphicon glyphicon-warning-sign'></span>" + " Warning: This will permanently delete all elements and scores associated with the question </p>",
+                title: "Delete Question",
+                buttons: {
+                    success: {
+                        label: 'Cancel',
+                        className: "btn-sm bnt-primary cancelQuestionDelete",
+                        callback: function callback() {}
+                    },
+                    danger: {
+                        label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
+                        className: "btn-danger btn-sm confirmQuestionDelete",
+                        callback: function callback() {
+                            if (el && el.parentNode.removeChild(el)) updateNumbers();
+                        }
+                    }
+                }
+            });
+        },
+
+        // Sortable is the lib for drag and drop questions
+        // create an editable list and set up some filters to handle callbacks
+        initializeSort: function initializeSort() {
+
+            try {
+
+                localStorage.clear();
+                var qList = this.$el;
+                var editableList = Sortable.create(qList, {
+                    filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
+                    animation: 150,
+                    handle: '.handle', // Drag handle selector within list items
+                    ghostClass: "sortable-ghost", // Class name for the drop placeholder
+
+                    onFilter: function onFilter(evt) {
+                        handleDelete(evt, editableList);
+                    },
+                    store: {
+                        // store the ordering to localStorage
+                        get: function get(sortable) {
+                            var order = localStorage.getItem(sortable.options.group);
+                            //window.console.log(localStorage.getItem(sortable.options.group));
+                            return order ? order.split('|') : [];
+                        },
+                        set: function set(sortable) {
+                            var order = sortable.toArray();
+                            localStorage.setItem(sortable.options.group, order.join('|'));
+                            updateNumbers();
+                        }
+                    }
+                });
+            } catch (e) {
+                window.console.log(e);
+            }
+
+            // update all "questionItem" ids. These define the ordering when saved to the DB.
+            // function updateNumbers() {
+            //     $( '#questionForm' ).find( "[id^='questionItem']" ).each( function ( index, el ) {
+            //         updateListItemData( el, (index + 1) );
+            //     } );
+            // }
+
+            // // set all relevant names and ids of [item] to value [order]
+            // function updateListItemData( item, order ) {
+            //     $( item ).attr( 'id', 'questionItem' + order );
+            //     $( item ).find( '#displayNumber' ).text( 'Question #' + (order) );
+            //     $( item ).find( "[id^='questionName']" ).attr( 'id', 'questionName' + order );
+            //     $( item ).find( "[id^='questionName']" ).attr( 'name', 'questionName' + order );
+            //     $( item ).find( 'textarea' ).attr( 'id', 'questionText' + order );
+            //     $( item ).find( 'textarea' ).attr( 'name', 'questionText' + order );
+            //     $( item ).find( '#questionId' ).attr( 'name', 'questionId' + order );
+            //     $( item ).find( "[id^='maxScore']" ).attr( 'id', 'maxScore' + order );
+            //     $( item ).find( "[id^='maxScore']" ).attr( 'name', 'maxScore' + order );
+            //
+            // }
+
+            // function getQuestionCount() {
+            //     // return number of questions currently in the questionList
+            //     return $( "[id^='questionItem']" ).length;
+            // }
+            //
+        }
+    },
+
+    directives: {},
+
+    events: {
+        'add-item': function addItem() {
+            console.log('cardList', 'CAUGHT', 'add-item', this.items);
+
+            this.addItem();
+            console.log(this.items);
+        }
+    },
+
+    ready: function ready() {
+
+        this.addItem();
+
+        try {
+            var qList = this.el;
+            var editableList = Sortable.create(qList, {
+                filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
+                animation: 150,
+                handle: '.handle', // Drag handle selector within list items
+                ghostClass: "sortable-ghost" });
+        } catch (e) {
+            window.console.log(e);
+        }
+    }
+};
+
+},{"../models/Item":331,"../templates/card-list.template.html":333,"jquery":310,"sortablejs":312}],317:[function(require,module,exports){
 "use strict";
 
 /**
@@ -32540,7 +34198,7 @@ module.exports = {
     }
 };
 
-},{"../templates/exam-name.template.html":327}],316:[function(require,module,exports){
+},{"../templates/exam-name.template.html":335}],318:[function(require,module,exports){
 'use strict';
 
 /**
@@ -32600,7 +34258,7 @@ module.exports = {
     }
 };
 
-},{"../templates/exam-properties.template.html":328}],317:[function(require,module,exports){
+},{"../templates/exam-properties.template.html":336}],319:[function(require,module,exports){
 'use strict';
 
 /**
@@ -32628,8 +34286,11 @@ module.exports = {
          */
         addItem: function addItem() {
             console.log('CALLED', 'addItem');
+            this.sendRequest();
         },
-        sendRequest: function sendRequest() {}
+        sendRequest: function sendRequest() {
+            this.$dispatch('add-item');
+        }
     },
 
     directives: {},
@@ -32639,7 +34300,121 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/item-add-button.template.html":329}],318:[function(require,module,exports){
+},{"../templates/item-add-button.template.html":337}],320:[function(require,module,exports){
+'use strict';
+
+/**
+ * This is the representation of a question
+ * or element.
+ * It can be moved around to reorder the exam.
+ * It can be deleted (without worrying the user about other exams being affected)
+ * It has several hidden elements which allow settings or customizations
+ * Created by adam on 2/17/17.
+ */
+//var $ = require('jquery');
+//window.$ = $;
+
+module.exports = {
+
+    template: require('../templates/item-card.template.html'),
+
+    props: ['item', 'item-index'],
+
+    data: function data() {
+        return {
+
+            defaults: {
+                depth: null,
+                index: null,
+                type: null
+            },
+            isCommented: false,
+            /**
+             * Whether students can see the name of the item
+             */
+            isNamePublic: false
+        };
+    },
+
+    computed: {
+        /**
+         * The name of the item
+         */
+        itemName: {},
+        depth: {
+            get: function get() {
+                return this.defaults.depth;
+            },
+            set: function set() {}
+        },
+        index: {
+            get: function get() {
+
+                if (typeof this.item == 'undefined') {
+                    return this.item.index;
+                }
+                if (typeof this.itemIndex == 'undefined') {
+                    return this.defaults.index;
+                }
+                return this.itemIndex;
+            },
+
+            //todo this is a kludge until get store and item worked in
+            set: function set(v) {
+                if (typeof this.item == 'undefined') {
+                    this.item.index = v;
+                }
+                if (typeof this.itemIndex == 'undefined') {
+                    this.defaults.index = v;
+                }
+                this.itemIndex = v;
+            }
+        },
+
+        type: {
+            get: function get() {
+                return this.defaults.index;
+            },
+            set: function set() {}
+        }
+    },
+
+    methods: {
+        /**
+         * Toggles whether comments are shown for this item.
+         * Turning comments off does not delete any existing
+         * comments.
+         */
+        toggleCommentsOn: function toggleCommentsOn() {
+            console.log('CALLED', 'toggleCommentsOn');
+            this.isCommented = !this.isCommented;
+        },
+
+        /**
+         * Toggles whether comments are shown for this item.
+         * Turning comments off does not delete any existing
+         * comments.
+         */
+        toggleNameVisibility: function toggleNameVisibility() {
+            console.log('CALLED', 'toggleNameVisibility');
+            this.isNamePublic = !this.isNamePublic;
+        }
+
+    },
+
+    directives: {},
+
+    events: {
+        'display-settings': function displaySettings() {
+            console.log('itemName', 'CAUGHT', 'display-settings', this.item);
+            this.$broadcast('display-settings');
+        }
+    },
+
+    ready: function ready() {}
+};
+
+},{"../templates/item-card.template.html":338}],321:[function(require,module,exports){
 'use strict';
 
 var _Item = require('../models/Item');
@@ -32678,6 +34453,21 @@ module.exports = {
     },
 
     computed: {
+        /**
+         * For questions, this will be the question number
+         * For elements it will be the subtask number.
+         * todo This should be displayed on the left of the area and update as the item is moved.
+         * todo It could also be hidable....
+         */
+        displayOrder: {
+            get: function get() {
+                //if question, return q number
+
+                //if element, return order
+
+            },
+            set: function set(v) {}
+        },
 
         /**
          * This will return the reference to
@@ -32729,8 +34519,9 @@ module.exports = {
          * Requests that the item properties area
          * be displayed
          */
-        openItemProperties: function openItemProperties() {
-            console.log('CALLED', 'openItemProperties');
+        openItemSettings: function openItemSettings() {
+            console.log('itemName', 'CALLED', 'openItemSettings');
+            this.$dipatch('display-settings');
         },
 
         isPublic: function isPublic() {
@@ -32742,6 +34533,7 @@ module.exports = {
     directives: {},
 
     events: {
+
         'toggle-public': function togglePublic() {
             console.log('itemName', 'CAUGHT', 'toggle-public', this.item);
             this.item.togglePublic();
@@ -32757,7 +34549,7 @@ module.exports = {
 //var $ = require('jquery');
 //window.$ = $;
 
-},{"../models/Item":324,"../templates/item-name.template.html":330}],319:[function(require,module,exports){
+},{"../models/Item":331,"../templates/item-name.template.html":339}],322:[function(require,module,exports){
 'use strict';
 
 /**
@@ -32854,7 +34646,253 @@ module.exports = {
     }
 };
 
-},{"../templates/item-nav.template.html":331}],320:[function(require,module,exports){
+},{"../templates/item-nav.template.html":340}],323:[function(require,module,exports){
+'use strict';
+
+/**
+ * This handles injecting the correct settings component in
+ *
+ * Created by adam on 2/18/17.
+ */
+//var $ = require('jquery');
+//window.$ = $;
+
+module.exports = {
+
+    template: require('../templates/item-settings.template.html'),
+
+    props: ["item"],
+
+    data: function data() {
+        return {
+            currentView: 'item-settings-question',
+
+            hiding: true,
+
+            tabs: ['tab1', 'tab2']
+        };
+    },
+
+    computed: {
+        index: {
+            get: function get() {
+                if (typeof this.item != 'undefined') {
+                    return this.item.index;
+                }
+                if (typeof this.itemIndex == 'undefined') {
+                    return this.defaults.index;
+                }
+                return this.itemIndex;
+            },
+
+            set: function set(v) {
+                if (typeof this.item == 'undefined') {
+                    this.item.index = v;
+                }
+                if (typeof this.itemIndex == 'undefined') {
+                    this.defaults.index = v;
+                }
+                this.itemIndex = v;
+            }
+        },
+        hidden: function hidden() {
+            console.log(this.hiding);
+            return this.hiding;
+        }
+    },
+
+    methods: {
+        show: function show() {
+            console.log('itemSetting', 'CALLED', 'show');
+            this.hiding = false;
+        },
+        hide: function hide() {
+            console.log('itemSetting', 'CALLED', 'hide', this.hiding);
+            this.hiding = true;
+            console.log(this.hiding);
+        },
+        toggle: function toggle() {
+            console.log('itemSetting', 'CALLED', 'hide', this.hiding);
+
+            this.hiding = !this.hiding;
+
+            console.log(this.hiding);
+        }
+    },
+
+    directives: {},
+
+    events: {
+        'display-settings': function displaySettings() {
+            console.log('itemSettings', 'CAUGHT', 'display-settings', this.hiding);
+            this.toggle();
+        }
+    },
+
+    ready: function ready() {}
+};
+
+},{"../templates/item-settings.template.html":343}],324:[function(require,module,exports){
+'use strict';
+
+/**
+ * Created by adam on 2/19/17.
+ */
+//var $ = require('jquery');
+//window.$ = $;
+
+module.exports = {
+
+    template: require('../templates/item-settings.element.template.html'),
+
+    props: ['item'],
+
+    data: function data() {
+        return {
+
+            defaults: {
+                name: '',
+                text: '',
+                commentText: ''
+            },
+            placeholders: {
+                elementName: "Enter a short reminder for this element, e.g., &quot;Economic causes of World War I&quot; ",
+                elementText: "Explain in detail what needed to be done in order to fully answer this element. This will form the basis for the response seen by the student."
+            },
+
+            tabs: ['details', 'stats', 'history', 'notes']
+        };
+    },
+
+    computed: {
+        index: {
+            get: function get() {
+                if (typeof this.item == 'undefined') {
+                    return this.item.index;
+                }
+                if (typeof this.itemIndex == 'undefined') {
+                    return this.defaults.index;
+                }
+                return this.itemIndex;
+            },
+
+            //todo this is a kludge until get store and item worked in
+            set: function set(v) {
+                if (typeof this.item == 'undefined') {
+                    this.item.index = v;
+                }
+                if (typeof this.itemIndex == 'undefined') {
+                    this.defaults.index = v;
+                }
+                this.itemIndex = v;
+            }
+        },
+
+        name: {
+            get: function get() {},
+            set: function set(v) {}
+        },
+        text: {
+            get: function get() {},
+            set: function set(v) {}
+        },
+        commentText: {
+            get: function get() {},
+            set: function set(v) {}
+        }
+    },
+
+    methods: {},
+
+    directives: {},
+
+    events: {},
+
+    ready: function ready() {}
+};
+
+},{"../templates/item-settings.element.template.html":341}],325:[function(require,module,exports){
+'use strict';
+
+/**
+ * This is the settings component which is
+ * specific to items playing the question role.
+ *
+ * todo Add an 'other uses of this quetion' area
+ * Created by adam on 2/19/17.
+ */
+//var $ = require('jquery');
+//window.$ = $;
+
+module.exports = {
+
+    template: require('../templates/item-settings.question.template.html'),
+
+    props: ['item'],
+
+    data: function data() {
+        return {
+            placeholders: {
+                questionName: "Enter a brief description of the question, i.e. &quot;Causes of the Civil War&quot;"
+            },
+
+            tabs: ['details', 'stats', 'history', 'notes']
+        };
+    },
+
+    computed: {
+        index: {
+            get: function get() {
+                console.log('indx', this.item);
+                if (typeof this.item != 'undefined') {
+                    return this.item.index;
+                }
+                if (typeof this.itemIndex == 'undefined') {
+                    return this.defaults.index;
+                }
+                return this.itemIndex;
+            },
+
+            //todo this is a kludge until get store and item worked in
+            set: function set(v) {
+                if (typeof this.item == 'undefined') {
+                    this.item.index = v;
+                }
+                if (typeof this.itemIndex == 'undefined') {
+                    this.defaults.index = v;
+                }
+                this.itemIndex = v;
+            }
+        },
+
+        questionText: {
+            get: function get() {},
+            set: function set() {}
+        },
+        questionNumber: {
+            get: function get() {},
+            set: function set() {}
+        },
+        questionName: {
+            get: function get() {},
+            set: function set() {}
+        },
+        maxScore: {
+            get: function get() {},
+            set: function set() {}
+        }
+    },
+
+    methods: {},
+
+    directives: {},
+
+    events: {},
+
+    ready: function ready() {}
+};
+
+},{"../templates/item-settings.question.template.html":342}],326:[function(require,module,exports){
 'use strict';
 
 /**
@@ -32950,7 +34988,7 @@ module.exports = {
     }
 };
 
-},{"../templates/props-dashboard.template.html":332}],321:[function(require,module,exports){
+},{"../templates/props-dashboard.template.html":344}],327:[function(require,module,exports){
 'use strict';
 
 /**
@@ -33017,15 +35055,6 @@ module.exports = {
             return this.$parent.public;
         },
 
-        // /**
-        //  * The id of the item (question, element, etc) whose publicity
-        //  * this indicator is tracking
-        //  */
-        // itemId: function(){
-        //     if(typeof this.id == 'undefined'){ return this.defaults.itemId; }
-        //     return this.id;
-        // },
-
         /**
          * This alters the styling of the indicator
          * to help highlight the possibility that others
@@ -33034,19 +35063,7 @@ module.exports = {
          */
         styling: function styling() {
             return this.public ? this.styles.public : this.styles.private;
-            // if ( this.public ) {
-            //     return this.styles.public;
-            // }
-            // return this.styles.private;
         },
-
-        // indicatorClass: function () {
-        //     if ( this.isPublic() ) {
-        //         return 'status-warning';
-        //     }
-        //
-        //
-        // },
 
         icon: function icon() {
             if (this.public) {
@@ -33057,17 +35074,6 @@ module.exports = {
     },
 
     methods: {
-        // /**
-        //  * This handles finding out whether the indicator should be
-        //  * public or not. No one needs to know how it goes about its
-        //  * business. I'm I making myself clear?
-        //  */
-        // lookupPublicity: function(){
-        //     console.log( 'CALLED', 'lookupPublicity' );
-        // },
-        //
-
-
         /**
          * Returns boolean for whether the thing
          * this is attached to is visible to students
@@ -33075,22 +35081,7 @@ module.exports = {
          * @returns {*}
          */
         isPublic: function isPublic() {
-            this.public;
-            // return this.public || false;
-
-            // //in rare cases, this will have been set by prop,
-            // // if that happens use the prop
-            // //however this will not normally be the case
-            // if ( typeof this.public != 'undefined' ) {
-            //     return this.public
-            // }
-            //
-            // //usually, we will look up the item from
-            // //the store and return the public setting
-            // //from the model
-            // //If it can't find anything, it will return the
-            // //default
-            // return this.lookupPublicity() || this.defaults.public;
+            return this.public;
         },
 
         isPrivate: function isPrivate() {
@@ -33116,7 +35107,56 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/public-indicator.template.html":333}],322:[function(require,module,exports){
+},{"../templates/public-indicator.template.html":345}],328:[function(require,module,exports){
+'use strict';
+
+/**
+ * Created by adam on 2/18/17.
+ */
+//var $ = require('jquery');
+//window.$ = $;
+
+module.exports = {
+
+    template: require('../templates/settings-button.template.html'),
+
+    props: [],
+
+    data: function data() {
+        return {};
+    },
+
+    computed: {},
+
+    methods: {
+        /**
+         * Requests that the item properties area
+         * be displayed
+         */
+        openItemSettings: function openItemSettings() {
+            console.log('CALLED', 'openItemSettings');
+            this.requestSettingsDisplay();
+        },
+
+        /**
+         * Emits an event caught by the parent.
+         * The catching object will handle the opening.
+         * Thus there is no need for this button to know
+         * who it belongs to
+         */
+        requestSettingsDisplay: function requestSettingsDisplay() {
+            this.$dispatch('display-settings');
+        }
+    },
+
+    directives: {},
+
+    events: {},
+
+    ready: function ready() {}
+};
+
+},{"../templates/settings-button.template.html":346}],329:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -33162,7 +35202,7 @@ exports.default = {
     }
 };
 
-},{"./examName.component":315,"./examProperties.component":316,"./propsDashboard.component":320,"./toolsDashboard.component":323,"babel-polyfill":1,"vue":313}],323:[function(require,module,exports){
+},{"./examName.component":317,"./examProperties.component":318,"./propsDashboard.component":326,"./toolsDashboard.component":330,"babel-polyfill":1,"vue":314}],330:[function(require,module,exports){
 'use strict';
 
 /**
@@ -33225,7 +35265,7 @@ module.exports = {
   }
 };
 
-},{"../templates/tools-dashboard.template.html":334}],324:[function(require,module,exports){
+},{"../templates/tools-dashboard.template.html":347}],331:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -33321,6 +35361,9 @@ var Item = function () {
         key: 'index',
         get: function get() {
             return this._index;
+        },
+        set: function set(v) {
+            this._index = v;
         }
     }, {
         key: 'type',
@@ -33342,7 +35385,7 @@ var Item = function () {
 
 exports.default = Item;
 
-},{}],325:[function(require,module,exports){
+},{}],332:[function(require,module,exports){
 'use strict';
 
 require('babel-polyfill');
@@ -33395,6 +35438,30 @@ var _publicIndicator = require('./components/publicIndicator.component');
 
 var _publicIndicator2 = _interopRequireDefault(_publicIndicator);
 
+var _settingsButton = require('./components/settingsButton.component');
+
+var _settingsButton2 = _interopRequireDefault(_settingsButton);
+
+var _itemSettings = require('./components/itemSettings.component');
+
+var _itemSettings2 = _interopRequireDefault(_itemSettings);
+
+var _itemCard = require('./components/itemCard.component');
+
+var _itemCard2 = _interopRequireDefault(_itemCard);
+
+var _cardList = require('./components/cardList.component');
+
+var _cardList2 = _interopRequireDefault(_cardList);
+
+var _itemSettingsQuestion = require('./components/itemSettings.question.component');
+
+var _itemSettingsQuestion2 = _interopRequireDefault(_itemSettingsQuestion);
+
+var _itemSettingsElement = require('./components/itemSettings.element.component');
+
+var _itemSettingsElement2 = _interopRequireDefault(_itemSettingsElement);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -33418,7 +35485,12 @@ _vue2.default.component('item-nav', _itemNav2.default);
 _vue2.default.component('item-add-button', _itemAddButton2.default);
 _vue2.default.component('item-name', _itemName2.default);
 _vue2.default.component('public-indicator', _publicIndicator2.default);
-
+_vue2.default.component('settings-button', _settingsButton2.default);
+_vue2.default.component('item-settings', _itemSettings2.default);
+_vue2.default.component('item-card', _itemCard2.default);
+_vue2.default.component('card-list', _cardList2.default);
+_vue2.default.component('item-settings-question', _itemSettingsQuestion2.default);
+_vue2.default.component('item-settings-element', _itemSettingsElement2.default);
 // install router
 // Vue.use(Router)
 
@@ -33463,25 +35535,37 @@ new _vue2.default({
 
 // router.start(App, '#app')
 
-},{"../store":339,"./components/examName.component":315,"./components/examProperties.component":316,"./components/itemAddButton.component":317,"./components/itemName.component":318,"./components/itemNav.component":319,"./components/propsDashboard.component":320,"./components/publicIndicator.component":321,"./components/setupApp.vue.js":322,"./components/toolsDashboard.component":323,"./templates/exam-editor.template.html":326,"babel-polyfill":1,"bootstrap":3,"jquery":310,"vue":313,"vue-router":312}],326:[function(require,module,exports){
-module.exports = '<div id="app">\n    <div id="examEditor">\n\n        <!--<div class="row">-->\n        <!--<div class="col-lg-8">-->\n        <exam-name></exam-name>\n        <!--</div>-->\n        <!--</div>-->\n\n\n        <div id="examEditorBody"\n             class="row">\n\n            <div id="itemCol"\n                 class="col-lg-9 well well-lg">\n                <h1>jay</h1>\n                <div class="row">\n                    <div class="col-lg-1">\n                        <item-nav nav-type="back"></item-nav>\n                    </div>\n                    <div class="col-lg-10"></div>\n                    <div class="col-lg-1">\n                        <item-nav nav-type="forward"></item-nav>\n                    </div>\n                </div>\n\n                <div class="itemRow row">\n                    <div class="col-lg-12">\n                    <item-name></item-name>\n                    </div>\n                </div>\n\n                <!-- Used by \'edit_exam\' and \'create_exam\' to display the fields for exam name, term, year -->\n                <div class="itemRow row">\n                    <div class="col-lg-12">\n                        <item-add-button></item-add-button>\n                    </div>\n                </div>\n\n            </div>\n\n            <div id="infoCol"\n                 class="col-lg-3">\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <props-dashboard></props-dashboard>\n                    </div>\n                </div>\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <tools-dashboard></tools-dashboard>\n                    </div>\n                </div>\n\n            </div>\n\n        </div>\n    </div>\n\n</div>';
-},{}],327:[function(require,module,exports){
-module.exports = '<div id="examNameArea">\n\n    <div class="input-group">\n        <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>\n        <input type="text"\n               class="form-control input-lg"\n               id="privateName"\n               name="privateName"\n               aria-describedby="basic-addon1"\n               placeholder="{{ placeHolders.privateName }}"\n               v-model="privateName"\n        >\n        <span class="input-group-addon" id="basic-addon2"> <span v-on:click="openExamProperties" class="glyphicon glyphicon-cog"></span></span>\n\n    </div>\n\n\n\n</div>\n';
-},{}],328:[function(require,module,exports){
-module.exports = '<!--This is the hideable area via which we edit the exam\'s properties-->\n\n<div class="row">\n    <div class="col-lg-10">\n        <!-- name input -->\n        <div class="input-group">\n                    <span class="input-group-addon"\n                          id="basic-addon1">Public Assignment Name</span>\n            <input type="text"\n                   class="form-control input-lg"\n                   id="publicName"\n                   name="publicName"\n                   aria-describedby="basic-addon1"\n                   v-model="publicName"\n            >\n            <span class="glyphicon glyphicon-question-sign"></span>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="col-lg-5">\n\n            <!-- term selector -->\n            <input v-model="term"\n                   name="examTerm"\n                   type="hidden"\n                   id="hiddenTerm"\n            />\n\n            <div class="btn-group btn-group">\n                <button\n                        class="btn btn-primary dropdown-toggle"\n                        id="term"\n                        title="Choose Term"\n                        data-toggle="dropdown"\n                >{{ term }} <span class="glyphicon glyphicon-menu-down"></span></button>\n\n                <ul class="dropdown-menu" id="termList" role="menu" style="cursor:pointer;">\n                    <li v-for="term in terms">\n                        <a class="termItem">{{ term }}</a>\n                    </li>\n                </ul>\n            </div>\n        </div>\n\n        <div class="col-lg-5">\n            <!-- year selector -->\n            <input name="examYear"\n                   type="hidden"\n                   id="hiddenYear"\n                   v-model="year"\n            />\n\n            <div class="btn-group btn-group">\n                <button class="btn btn-primary dropdown-toggle"\n                        id="year"\n                        title="Choose Year"\n                        data-toggle="dropdown">{{ year }}\n                    <span class="glyphicon glyphicon-menu-down"></span>\n                </button>\n\n                <ul class="dropdown-menu"\n                    id="yearList"\n                    role="menu"\n                    style="cursor:pointer;">\n                    <li v-for="year in years">\n                        <a class="yearItem">{{ year }}</a>\n                    </li>\n                </ul>\n            </div>\n             <span class="glyphicon glyphicon-question-sign"></span>\n        </div>\n    </div>\n\n</div>';
-},{}],329:[function(require,module,exports){
-module.exports = '<button\n        class="btn btn-info"\n        v-on:click="addItem"\n>\n    <span class="glyphicon glyphicon-plus"></span>\n    <span class="hidden-md"> Add item</span>\n</button>';
-},{}],330:[function(require,module,exports){
-module.exports = '<div class="itemNameArea">\n\n    <div class="input-group">\n\n        <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>\n\n        <input type="text"\n               class="itemName form-control input-lg"\n               aria-describedby="basic-addon1"\n               placeholder="{{ placeHolders.privateName }}"\n               v-model="itemName"\n        >\n\n        <div class="input-group-addon"\n             id="basic-addon2">\n            <div class="input-group-btn">\n                <button class="btn"\n                        v-on:click="openItemProperties">\n                    <span class="glyphicon glyphicon-cog"></span>\n                </button>\n\n                <!--<span class="input-group-addon" id="basic-addon3">-->\n\n                <public-indicator></public-indicator>\n            </div>\n        </div>\n\n    </div>\n\n\n</div>\n';
-},{}],331:[function(require,module,exports){
-module.exports = '<div class="itemNav"\n     v-on:click="goTo">\n    <span v-bind:class="arrow"></span>\n</div>';
-},{}],332:[function(require,module,exports){
-module.exports = '<div id="props-dashboard" class="dashboard">\n    <dl class="dl-horizontal">\n\n        <dt># Items</dt>\n        <dd>{{ numberItems }}</dd>\n\n        <dt>Max total score</dt>\n        <dd>{{ numberItems }}</dd>\n        <!--<dd><input type="number" v-model="perfectScore" /></dd>-->\n\n        <dt># Students</dt>\n        <dd>{{ numberStudents}}</dd>\n\n        <dt># Graded</dt>\n        <dd>{{ numberGraded }}</dd>\n\n        <dt>Time grading</dt>\n        <dd>{{ timeGrading }}</dd>\n\n    </dl>\n\n</div>';
-},{}],333:[function(require,module,exports){
-module.exports = '<button class="btn publicIndicator"\n     v-bind:class="{\'btn-warning\': isPublic, \'\': isPrivate}"\n     v-on:click="togglePublic"\n>\n    <span v-bind:class="icon"></span>\n</button>';
+},{"../store":352,"./components/cardList.component":316,"./components/examName.component":317,"./components/examProperties.component":318,"./components/itemAddButton.component":319,"./components/itemCard.component":320,"./components/itemName.component":321,"./components/itemNav.component":322,"./components/itemSettings.component":323,"./components/itemSettings.element.component":324,"./components/itemSettings.question.component":325,"./components/propsDashboard.component":326,"./components/publicIndicator.component":327,"./components/settingsButton.component":328,"./components/setupApp.vue.js":329,"./components/toolsDashboard.component":330,"./templates/exam-editor.template.html":334,"babel-polyfill":1,"bootstrap":3,"jquery":310,"vue":314,"vue-router":313}],333:[function(require,module,exports){
+module.exports = '<div class="card-list">\n    <div class="item-cards" v-for="item in items">\n        <item-card :item="item"></item-card>\n    </div>\n\n    <item-add-button></item-add-button>\n</div>\n';
 },{}],334:[function(require,module,exports){
-module.exports = '<div id="setupToolDashboard" class="dashboard">\n\n    <ul class="list-group">\n        <li class="list-group-item">\n            <button class="btn btn-block btn-danger"  v-on:click="activateDeleteMode">Remove items</button>\n        </li>\n\n        <li class="list-group-item">\n            <button class="btn btn-block btn-primary"  v-on:click="showSampleFeedback">View sample feedback</button>\n        </li>\n\n        <li class="list-group-item">\n            <!--replace with toggle-->\n            <button class="btn btn-block btn-primary" v-on:click="toggleHolesShown">Show holes</button>\n        </li>\n    </ul>\n</div>';
+module.exports = '<div id="app">\n    <div id="examEditor">\n\n        <!--<div class="row">-->\n        <!--<div class="col-lg-8">-->\n        <exam-name></exam-name>\n        <!--</div>-->\n        <!--</div>-->\n\n\n        <div id="examEditorBody"\n             class="row">\n\n            <div id="itemCol"\n                 class="col-lg-9 well well-lg">\n\n                <div class="itemRow row">\n                    <div class="col-lg-12">\n                        <card-list></card-list>\n                    </div>\n                </div>\n\n            </div>\n\n            <div id="infoCol"\n                 class="col-lg-3">\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <props-dashboard></props-dashboard>\n                    </div>\n                </div>\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <tools-dashboard></tools-dashboard>\n                    </div>\n                </div>\n\n            </div>\n\n        </div>\n    </div>\n\n</div>';
 },{}],335:[function(require,module,exports){
+module.exports = '<div id="examNameArea">\n\n    <div class="input-group">\n        <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>\n        <input type="text"\n               class="form-control input-lg"\n               id="privateName"\n               name="privateName"\n               aria-describedby="basic-addon1"\n               placeholder="{{ placeHolders.privateName }}"\n               v-model="privateName"\n        >\n        <span class="input-group-addon" id="basic-addon2"> <span v-on:click="openExamProperties" class="glyphicon glyphicon-cog"></span></span>\n\n    </div>\n\n\n\n</div>\n';
+},{}],336:[function(require,module,exports){
+module.exports = '<!--This is the hideable area via which we edit the exam\'s properties-->\n\n<div class="row">\n    <div class="col-lg-10">\n        <!-- name input -->\n        <div class="input-group">\n                    <span class="input-group-addon"\n                          id="basic-addon1">Public Assignment Name</span>\n            <input type="text"\n                   class="form-control input-lg"\n                   id="publicName"\n                   name="publicName"\n                   aria-describedby="basic-addon1"\n                   v-model="publicName"\n            >\n            <span class="glyphicon glyphicon-question-sign"></span>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="col-lg-5">\n\n            <!-- term selector -->\n            <input v-model="term"\n                   name="examTerm"\n                   type="hidden"\n                   id="hiddenTerm"\n            />\n\n            <div class="btn-group btn-group">\n                <button\n                        class="btn btn-primary dropdown-toggle"\n                        id="term"\n                        title="Choose Term"\n                        data-toggle="dropdown"\n                >{{ term }} <span class="glyphicon glyphicon-menu-down"></span></button>\n\n                <ul class="dropdown-menu" id="termList" role="menu" style="cursor:pointer;">\n                    <li v-for="term in terms">\n                        <a class="termItem">{{ term }}</a>\n                    </li>\n                </ul>\n            </div>\n        </div>\n\n        <div class="col-lg-5">\n            <!-- year selector -->\n            <input name="examYear"\n                   type="hidden"\n                   id="hiddenYear"\n                   v-model="year"\n            />\n\n            <div class="btn-group btn-group">\n                <button class="btn btn-primary dropdown-toggle"\n                        id="year"\n                        title="Choose Year"\n                        data-toggle="dropdown">{{ year }}\n                    <span class="glyphicon glyphicon-menu-down"></span>\n                </button>\n\n                <ul class="dropdown-menu"\n                    id="yearList"\n                    role="menu"\n                    style="cursor:pointer;">\n                    <li v-for="year in years">\n                        <a class="yearItem">{{ year }}</a>\n                    </li>\n                </ul>\n            </div>\n             <span class="glyphicon glyphicon-question-sign"></span>\n        </div>\n    </div>\n\n</div>';
+},{}],337:[function(require,module,exports){
+module.exports = '<button\n        class="btn btn-info"\n        v-on:click="addItem"\n>\n    <span class="glyphicon glyphicon-plus"></span>\n    <span class="hidden-md"> Add item</span>\n</button>';
+},{}],338:[function(require,module,exports){
+module.exports = '<!--This represents a question or an element-->\n<div class="itemCard">\n    <div class="row">\n        <div class="col-lg-1">\n            <item-nav nav-type="back"></item-nav>\n        </div>\n        <div class="col-lg-10">\n\n                    <slot name="head">\n\n                        <item-name></item-name>\n\n                        <item-settings :item="item"\n                                       is="currentView"></item-settings>\n\n                    </slot>\n\n            </div>\n            <div class="col-lg-1">\n                <item-nav nav-type="forward"></item-nav>\n\n            </div>\n        </div>\n\n    </div>\n</div>\n';
+},{}],339:[function(require,module,exports){
+module.exports = '<div class="item-name-component input-group input-group-lg">\n\n    <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>\n\n    <input type="text"\n           class="itemName form-control"\n           aria-describedby="basic-addon1"\n           placeholder="{{ placeHolders.privateName }}"\n           v-model="itemName"\n    >\n\n    <div class="input-group-btn">\n        <settings-button></settings-button>\n        <public-indicator></public-indicator>\n    </div>\n\n</div>';
+},{}],340:[function(require,module,exports){
+module.exports = '<div class="itemNav"\n     v-on:click="goTo">\n    <span v-bind:class="arrow"></span>\n</div>';
+},{}],341:[function(require,module,exports){
+module.exports = '<!-- Template used by \'edit_element\' to hold the fields and buttons for an individual element.  -->\n\n<div>\n\n    <!-- Nav tabs -->\n    <ul class="nav nav-tabs" role="tablist">\n        <li role="presentation"\n            class=""\n            v-for="tab in tabs">\n            <a href="#{{tab}}{{index}}"\n               aria-controls="{{tab}}{{index}}"\n               role="tab"\n               data-toggle="tab">{{ tab | capitalize }}</a>\n        </li>\n    </ul>\n\n    <!-- Tab panes -->\n    <div class="tab-content">\n        <div role="tabpanel" class="tab-pane active " id="details{{index}}">\n            <div class="row">\n                <div class="col-md-12 list-group-item">\n                    <h4 id="displayNumber">Element #{{ index }}</h4>\n\n                    <h5>Element Response</h5>\n                    <!-- element description (the "stock comment") -->\n                    <div class="form-group">\n                        <textarea\n                                class="form-control"\n                                rows="3"\n                                placeholder="{{ placeholders.elementText }}"\n                                v-model="commentText"></textarea>\n                    </div>\n\n                    <div class="form-group">\n                        <!-- move -->\n                        <span class="btn btn-info btn-sm handle">\n                            <span class="glyphicon glyphicon-move" aria-hidden="true"></span> Move</span>\n\n                        <!-- customize responses -->\n                        <a class="btn btn-info btn-sm"\n                           data-toggle="modal"\n                           data-target="#commentForm{{ index }}">\n                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Customize Responses\n                        </a>\n\n                        <!-- \'comment form\' displays the modal triggered by \'customize response\' button -->\n                        <!--@include(\'setup.partials.comment_form\')-->\n\n                        <!-- delete button -->\n                        <a class="btn btn-danger btn-sm js-remove">\n                            <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete\n                        </a>\n                    </div>\n                </div>\n\n            </div>\n        </div>\n\n\n        <div role="tabpanel" class="tab-pane " id="stats{{index}}">\n            <p>Stats here</p>\n        </div>\n\n        <div role="tabpanel" class="tab-pane " id="history{{index}}">\n            <p>Which exams clones of this item have been used on</p>\n        </div>\n\n        <div role="tabpanel" class="tab-pane fade" id="notes{{index}}">\n            <p>Notes to self about item</p>\n        </div>\n\n    </div>\n</div>';
+},{}],342:[function(require,module,exports){
+module.exports = '<!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n\n<div>\n\n    <!-- Nav tabs -->\n    <ul class="nav nav-tabs" role="tablist">\n        <li role="presentation"\n            class=""\n            v-for="tab in tabs">\n            <a href="#{{tab}}{{index}}"\n               aria-controls="{{tab}}{{index}}"\n               role="tab"\n               data-toggle="tab">{{ tab | capitalize }}</a>\n        </li>\n    </ul>\n\n    <!-- Tab panes -->\n    <div class="tab-content">\n\n        <div role="tabpanel" class="tab-pane active " id="details{{index}}">\n\n            <div class="row">\n                <div class="col-md-6">\n                    <div class="question-num-area input-group">\n\n                        <span class="input-group-addon">Question #</span>\n                        <input style="width:6em;"\n                               type="number"\n                               min="0"\n                               title="order of the question on the exam"\n                               class="form-control input"\n                               aria-describedby="basic-addon"\n                               v-model="questionNumber"/>\n\n                    </div>\n                </div>\n\n                <div class="col-md-6">\n                    <div class="max-score-area" style="text-align: left">\n                        <!-- max grade -->\n                        <div class="input-group">\n                            <span class="input-group-addon">Max Score</span>\n                            <input style="width:6em;"\n                                   type="number"\n                                   min="0"\n                                   title="maximum score for this question"\n                                   class="form-control input"\n                                   aria-describedby="basic-addon"\n                                   v-model="maxScore"/>\n                        </div>\n                    </div>\n                </div>\n            </div>\n\n            <div class="row">\n                <div class="question-text-area col-md-12">\n                    <h5>Question Text</h5>\n                    <div class="form-group">\n                            <textarea class="question-text form-control"\n                                      rows="3"\n                                      placeholder="Enter the full question text (optional)"\n                            >{{ questionText }}</textarea>\n                    </div>\n                </div>\n            </div>\n\n            <div class="form-group questionButtonArea">\n                        <span class="btn btn-info btn-sm handle">\n                            <span class="glyphicon glyphicon-move" aria-hidden="true"></span> Move</span>\n\n                <button type="button"\n                        class="btn btn-danger btn-sm js-remove"\n                        data-question-number="{{questionNumber }}">\n                    <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete\n                </button>\n            </div>\n        </div>\n\n\n        <div role="tabpanel"\n             class="tab-pane "\n             id="stats{{index}}">\n            <p>Stats here</p>\n        </div>\n        <div role="tabpanel"\n             class="tab-pane "\n             id="history{{index}}">\n            <p>Which exams clones of this item have been used on</p>\n        </div>\n        <div role="tabpanel"\n             class="tab-pane fade"\n             id="notes{{index}}">\n            <p>Notes to self about item</p>\n        </div>\n    </div>\n</div>\n';
+},{}],343:[function(require,module,exports){
+module.exports = '<div class="well" v-show="hidden">\n\n    <slot name="settingsBody">\n\n        <div>\n\n            <!--&lt;!&ndash; Nav tabs &ndash;&gt;-->\n            <!--<ul class="nav nav-tabs" role="tablist">-->\n                <!--<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>-->\n                <!--<li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>-->\n                <!--<li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>-->\n                <!--<li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>-->\n            <!--</ul>-->\n\n            <!--&lt;!&ndash; Tab panes &ndash;&gt;-->\n            <!--<div class="tab-content" >-->\n                <!--&lt;!&ndash;v-for="tab in tabss&ndash;&gt;-->\n                <!--&lt;!&ndash;<div role="tabpanel" class="tab-pane fade" id="{{{tab}}">&ndash;&gt;-->\n\n                <!--<div role="tabpanel" class="tab-pane active" id="home">-->\n\n<item-settings-element item="item"></item-settings-element>\n<!--<item-settings-question :item="item"></item-settings-question>-->\n\n                <!--</div>-->\n                <!--<div role="tabpanel" class="tab-pane fade" id="profile">...</div>-->\n                <!--<div role="tabpanel" class="tab-pane fade" id="messages">...</div>-->\n                <!--<div role="tabpanel" class="tab-pane fade" id="settings">...</div>-->\n            <!--</div>-->\n\n        </div>\n\n    </slot>\n<!--<button class="btn btn-primary" v-on:click="hide">Close</button>-->\n</div>\n';
+},{}],344:[function(require,module,exports){
+module.exports = '<div id="props-dashboard" class="dashboard">\n    <dl class="dl-horizontal">\n\n        <dt># Items</dt>\n        <dd>{{ numberItems }}</dd>\n\n        <dt>Max total score</dt>\n        <dd>{{ numberItems }}</dd>\n        <!--<dd><input type="number" v-model="perfectScore" /></dd>-->\n\n        <dt># Students</dt>\n        <dd>{{ numberStudents}}</dd>\n\n        <dt># Graded</dt>\n        <dd>{{ numberGraded }}</dd>\n\n        <dt>Time grading</dt>\n        <dd>{{ timeGrading }}</dd>\n\n    </dl>\n\n</div>';
+},{}],345:[function(require,module,exports){
+module.exports = '<button\n        class="btn public-indicator"\n        v-bind:class="{\'btn-warning\': public}"\n        v-on:click="togglePublic"\n>\n    <span v-bind:class="icon"></span>\n</button>';
+},{}],346:[function(require,module,exports){
+module.exports = '<button\n        class="btn settings-button"\n        v-on:click="openItemSettings"\n>\n    <span class="glyphicon glyphicon-cog"></span>\n</button>';
+},{}],347:[function(require,module,exports){
+module.exports = '<div id="setupToolDashboard" class="dashboard">\n\n    <ul class="list-group">\n        <li class="list-group-item">\n            <button class="btn btn-block btn-danger"  v-on:click="activateDeleteMode">Remove items</button>\n        </li>\n\n        <li class="list-group-item">\n            <button class="btn btn-block btn-primary"  v-on:click="showSampleFeedback">View sample feedback</button>\n        </li>\n\n        <li class="list-group-item">\n            <!--replace with toggle-->\n            <button class="btn btn-block btn-primary" v-on:click="toggleHolesShown">Show holes</button>\n        </li>\n    </ul>\n</div>';
+},{}],348:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -33547,7 +35631,7 @@ var increaseActiveStudentGradingTime = exports.increaseActiveStudentGradingTime 
 var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
 var loadGradingTimes = exports.loadGradingTimes = 'loadGradingTimes';
 
-},{}],336:[function(require,module,exports){
+},{}],349:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -33759,7 +35843,7 @@ var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes
     commit(mTypes.setElementScore, out);
 }), _actions);
 
-},{"./action-types":335,"./models/Student":344,"./mutation-types":354}],337:[function(require,module,exports){
+},{"./action-types":348,"./models/Student":357,"./mutation-types":367}],350:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -33803,7 +35887,7 @@ var checkValid = exports.checkValid = function checkValid(state, propertyName) {
     return true;
 };
 
-},{}],338:[function(require,module,exports){
+},{}],351:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -33971,7 +36055,7 @@ var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = 
     return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
 };
 
-},{}],339:[function(require,module,exports){
+},{}],352:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -34132,7 +36216,7 @@ exports.default = new _vuex2.default.Store({
   strict: debug });
 
 }).call(this,require('_process'))
-},{"./actions":336,"./api":337,"./getters":338,"./modules/activeexam.js":345,"./modules/activestudent.js":346,"./modules/comments.js":347,"./modules/escores.js":348,"./modules/grades.js":349,"./modules/qscores.js":350,"./modules/questions.js":351,"./modules/students.js":352,"./modules/times.js":353,"./mutations":355,"./state":356,"_process":311,"vue":313,"vuex":314}],340:[function(require,module,exports){
+},{"./actions":349,"./api":350,"./getters":351,"./modules/activeexam.js":358,"./modules/activestudent.js":359,"./modules/comments.js":360,"./modules/escores.js":361,"./modules/grades.js":362,"./modules/qscores.js":363,"./modules/questions.js":364,"./modules/students.js":365,"./modules/times.js":366,"./mutations":368,"./state":369,"_process":311,"vue":314,"vuex":315}],353:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -34322,7 +36406,7 @@ var Exam = function (_IModel) {
 
 exports.default = Exam;
 
-},{"./IModel":341}],341:[function(require,module,exports){
+},{"./IModel":354}],354:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -34384,7 +36468,7 @@ var IModel = function () {
 
 exports.default = IModel;
 
-},{}],342:[function(require,module,exports){
+},{}],355:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -34559,7 +36643,7 @@ var Payload = function () {
 
 exports.default = Payload;
 
-},{}],343:[function(require,module,exports){
+},{}],356:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -34765,7 +36849,7 @@ var Question = function () {
 
 exports.default = Question;
 
-},{}],344:[function(require,module,exports){
+},{}],357:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35056,7 +37140,7 @@ var Student = function (_IModel) {
 
 exports.default = Student;
 
-},{"./IModel":341}],345:[function(require,module,exports){
+},{"./IModel":354}],358:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35154,7 +37238,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":335,"../models/Exam":340,"../models/Payload":342,"../mutation-types":354}],346:[function(require,module,exports){
+},{"../action-types":348,"../models/Exam":353,"../models/Payload":355,"../mutation-types":367}],359:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35287,7 +37371,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":335,"../models/Payload":342,"../models/Student":344,"../mutation-types":354}],347:[function(require,module,exports){
+},{"../action-types":348,"../models/Payload":355,"../models/Student":357,"../mutation-types":367}],360:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35451,7 +37535,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":335,"../models/Payload":342,"../mutation-types":354}],348:[function(require,module,exports){
+},{"../action-types":348,"../models/Payload":355,"../mutation-types":367}],361:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35545,7 +37629,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":335,"../models/Payload":342,"../mutation-types":354}],349:[function(require,module,exports){
+},{"../action-types":348,"../models/Payload":355,"../mutation-types":367}],362:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35704,7 +37788,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":335,"../models/Payload":342,"../mutation-types":354}],350:[function(require,module,exports){
+},{"../action-types":348,"../models/Payload":355,"../mutation-types":367}],363:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35803,7 +37887,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":335,"../models/Payload":342,"../mutation-types":354}],351:[function(require,module,exports){
+},{"../action-types":348,"../models/Payload":355,"../mutation-types":367}],364:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35942,7 +38026,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":335,"../models/Payload":342,"../mutation-types":354,"./../models/Question":343}],352:[function(require,module,exports){
+},{"../action-types":348,"../models/Payload":355,"../mutation-types":367,"./../models/Question":356}],365:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36062,7 +38146,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":335,"../models/Payload":342,"../models/Student":344,"../mutation-types":354}],353:[function(require,module,exports){
+},{"../action-types":348,"../models/Payload":355,"../models/Student":357,"../mutation-types":367}],366:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36199,7 +38283,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../action-types":335,"../models/Payload":342,"../mutation-types":354}],354:[function(require,module,exports){
+},{"../action-types":348,"../models/Payload":355,"../mutation-types":367}],367:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36268,7 +38352,7 @@ var resetGradingTime = exports.resetGradingTime = 'resetGradingTime';
 
 var setExam = exports.setExam = 'setExam';
 
-},{}],355:[function(require,module,exports){
+},{}],368:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36302,7 +38386,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":354}],356:[function(require,module,exports){
+},{"./mutation-types":367}],369:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -36332,6 +38416,6 @@ exports.default = {
 
 };
 
-},{}]},{},[325]);
+},{}]},{},[332]);
 
 //# sourceMappingURL=new-setup-package.js.map

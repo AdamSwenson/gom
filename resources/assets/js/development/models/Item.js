@@ -40,6 +40,9 @@ export default class Item {
     get index() {
         return this._index;
     }
+    set index(v) {
+        this._index = v;
+    }
 
     get type() {
         return this._type;

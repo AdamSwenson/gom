@@ -2,17 +2,25 @@
 <div class="itemCard">
     <div class="row">
         <div class="col-lg-1">
-<item-nav nav-type="back"></item-nav>
+            <item-nav nav-type="back"></item-nav>
         </div>
         <div class="col-lg-10">
 
+                    <slot name="head">
 
+                        <item-name></item-name>
 
+                        <item-settings :item="item"
+                                       is="currentView"></item-settings>
+
+                    </slot>
+
+            </div>
+            <div class="col-lg-1">
+                <item-nav nav-type="forward"></item-nav>
+
+            </div>
         </div>
-        <div class="col-lg-1">
-            <item-nav nav-type="forward"></item-nav>
 
-        </div>
     </div>
-
 </div>

@@ -1,0 +1,35 @@
+<div class="well" v-show="hidden">
+
+    <slot name="settingsBody">
+
+        <div>
+
+            <!--&lt;!&ndash; Nav tabs &ndash;&gt;-->
+            <!--<ul class="nav nav-tabs" role="tablist">-->
+                <!--<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>-->
+                <!--<li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>-->
+                <!--<li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>-->
+                <!--<li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>-->
+            <!--</ul>-->
+
+            <!--&lt;!&ndash; Tab panes &ndash;&gt;-->
+            <!--<div class="tab-content" >-->
+                <!--&lt;!&ndash;v-for="tab in tabss&ndash;&gt;-->
+                <!--&lt;!&ndash;<div role="tabpanel" class="tab-pane fade" id="{{{tab}}">&ndash;&gt;-->
+
+                <!--<div role="tabpanel" class="tab-pane active" id="home">-->
+
+<item-settings-element item="item"></item-settings-element>
+<!--<item-settings-question :item="item"></item-settings-question>-->
+
+                <!--</div>-->
+                <!--<div role="tabpanel" class="tab-pane fade" id="profile">...</div>-->
+                <!--<div role="tabpanel" class="tab-pane fade" id="messages">...</div>-->
+                <!--<div role="tabpanel" class="tab-pane fade" id="settings">...</div>-->
+            <!--</div>-->
+
+        </div>
+
+    </slot>
+<!--<button class="btn btn-primary" v-on:click="hide">Close</button>-->
+</div>

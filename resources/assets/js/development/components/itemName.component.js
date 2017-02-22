@@ -38,6 +38,23 @@ module.exports = {
     },
 
     computed: {
+        /**
+         * For questions, this will be the question number
+         * For elements it will be the subtask number.
+         * todo This should be displayed on the left of the area and update as the item is moved.
+         * todo It could also be hidable....
+         */
+        displayOrder: {
+            get: function (  ) {
+                //if question, return q number
+
+                //if element, return order
+
+            },
+            set: function ( v ) {
+
+            }
+        },
 
         /**
          * This will return the reference to
@@ -89,8 +106,9 @@ module.exports = {
          * Requests that the item properties area
          * be displayed
          */
-        openItemProperties: function () {
-            console.log( 'CALLED', 'openItemProperties' );
+        openItemSettings: function () {
+            console.log( 'itemName', 'CALLED', 'openItemSettings' );
+            this.$dipatch('display-settings');
         },
 
         isPublic: function () {
@@ -102,6 +120,8 @@ module.exports = {
     directives: {},
 
     events: {
+
+
         'toggle-public': function () {
             console.log( 'itemName', 'CAUGHT', 'toggle-public' , this.item);
             this.item.togglePublic();

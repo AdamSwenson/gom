@@ -25,6 +25,14 @@ import itemNav from './components/itemNav.component'
 import itemAddButton from './components/itemAddButton.component'
 import itemName from './components/itemName.component'
 import publicIndicator from './components/publicIndicator.component'
+import settingsButton from './components/settingsButton.component'
+import settingsArea from './components/itemSettings.component'
+import itemCard from './components/itemCard.component'
+import cardList from './components/cardList.component'
+
+import questionSettings from './components/itemSettings.question.component'
+import elementSettings from './components/itemSettings.element.component'
+
 
 Vue.component( 'exam-name', examName )
 Vue.component( 'exam-properties', examProperties )
@@ -34,7 +42,12 @@ Vue.component( 'item-nav', itemNav )
 Vue.component( 'item-add-button', itemAddButton )
 Vue.component( 'item-name', itemName )
 Vue.component( 'public-indicator', publicIndicator )
-
+Vue.component( 'settings-button', settingsButton )
+Vue.component( 'item-settings', settingsArea )
+Vue.component( 'item-card', itemCard )
+Vue.component( 'card-list', cardList )
+Vue.component( 'item-settings-question', questionSettings )
+Vue.component( 'item-settings-element', elementSettings )
 // install router
 // Vue.use(Router)
 

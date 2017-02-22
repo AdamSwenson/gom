@@ -62,15 +62,6 @@ module.exports = {
             return this.$parent.public;
         },
 
-        // /**
-        //  * The id of the item (question, element, etc) whose publicity
-        //  * this indicator is tracking
-        //  */
-        // itemId: function(){
-        //     if(typeof this.id == 'undefined'){ return this.defaults.itemId; }
-        //     return this.id;
-        // },
-
         /**
          * This alters the styling of the indicator
          * to help highlight the possibility that others
@@ -79,20 +70,8 @@ module.exports = {
          */
         styling: function () {
             return this.public ? this.styles.public : this.styles.private;
-            // if ( this.public ) {
-            //     return this.styles.public;
-            // }
-            // return this.styles.private;
         },
 
-
-        // indicatorClass: function () {
-        //     if ( this.isPublic() ) {
-        //         return 'status-warning';
-        //     }
-        //
-        //
-        // },
 
         icon: function () {
             if ( this.public ) {
@@ -103,17 +82,6 @@ module.exports = {
     },
 
     methods: {
-        // /**
-        //  * This handles finding out whether the indicator should be
-        //  * public or not. No one needs to know how it goes about its
-        //  * business. I'm I making myself clear?
-        //  */
-        // lookupPublicity: function(){
-        //     console.log( 'CALLED', 'lookupPublicity' );
-        // },
-        //
-
-
         /**
          * Returns boolean for whether the thing
          * this is attached to is visible to students
@@ -121,22 +89,7 @@ module.exports = {
          * @returns {*}
          */
         isPublic: function () {
-            this.public;
-            // return this.public || false;
-
-            // //in rare cases, this will have been set by prop,
-            // // if that happens use the prop
-            // //however this will not normally be the case
-            // if ( typeof this.public != 'undefined' ) {
-            //     return this.public
-            // }
-            //
-            // //usually, we will look up the item from
-            // //the store and return the public setting
-            // //from the model
-            // //If it can't find anything, it will return the
-            // //default
-            // return this.lookupPublicity() || this.defaults.public;
+            return this.public;
         },
 
         isPrivate: function () {

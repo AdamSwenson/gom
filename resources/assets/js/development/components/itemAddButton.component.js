@@ -23,8 +23,11 @@ module.exports = {
          */
         addItem:function(){
             console.log( 'CALLED', 'addItem' );
+            this.sendRequest();
         },
-        sendRequest:function(){}
+        sendRequest:function(){
+            this.$dispatch('add-item');
+        }
     },
 
     directives: {},
