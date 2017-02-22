@@ -1,0 +1,58 @@
+<!-- Used by "edit_question" to hold fields and buttons for an individual question -->
+<div class="item-details">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="question-num-area input-group">
+
+                <span class="input-group-addon">Question #</span>
+                <input style="width:6em;"
+                       type="number"
+                       min="0"
+                       title="order of the question on the exam"
+                       class="form-control input"
+                       aria-describedby="basic-addon"
+                       v-model="questionNumber"/>
+
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="max-score-area" style="text-align: left">
+                <!-- max grade -->
+                <div class="input-group">
+                    <span class="input-group-addon">Max Score</span>
+                    <input style="width:6em;"
+                           type="number"
+                           min="0"
+                           title="maximum score for this question"
+                           class="form-control input"
+                           aria-describedby="basic-addon"
+                           v-model="maxScore"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="question-text-area col-md-12">
+            <h5>Question Text</h5>
+            <div class="form-group">
+                            <textarea class="question-text form-control"
+                                      rows="3"
+                                      placeholder="Enter the full question text (optional)"
+                            >{{ questionText }}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group questionButtonArea">
+                        <span class="btn btn-info btn-sm handle">
+                            <span class="glyphicon glyphicon-move" aria-hidden="true"></span> Move</span>
+
+        <button type="button"
+                class="btn btn-danger btn-sm js-remove"
+                data-question-number="{{questionNumber }}">
+            <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete
+        </button>
+    </div>
+</div>

@@ -1,8 +1,4 @@
 /**
- * This is the settings component which is
- * specific to items playing the question role.
- *
- * todo Add an 'other uses of this quetion' area
  * Created by adam on 2/19/17.
  */
 //var $ = require('jquery');
@@ -10,14 +6,21 @@
 
 module.exports = {
 
-    template: require( '../templates/item-settings.question.template.html' ),
+    template: require( '../templates/item-settings.commentSetup.template.html' ),
 
     props: ['item'],
 
     data: function () {
         return {
-            placeholders:{
-                questionName: "Enter a brief description of the question, i.e. &quot;Causes of the Civil War&quot;"
+
+            defaults: {
+                name: '',
+                text: '',
+                commentText: ''
+            },
+            placeholders: {
+                elementName: "Enter a short reminder for this element, e.g., &quot;Economic causes of World War I&quot; ",
+                elementText: "Explain in detail what needed to be done in order to fully answer this element. This will form the basis for the response seen by the student.",
             },
 
             tabs:[
@@ -29,8 +32,7 @@ module.exports = {
     computed: {
         index: {
             get: function () {
-                console.log( 'indx', this.item);
-                if ( typeof this.item != 'undefined' ) {
+                if ( typeof this.item == 'undefined' ) {
                     return this.item.index;
                 }
                 if ( typeof this.itemIndex == 'undefined' ) {
@@ -51,29 +53,17 @@ module.exports = {
             }
         },
 
-        questionText: {
-            get: function () {
-            },
-            set: function () {
-            }
+        name: {
+            get:function(){},
+            set:function(v){}
         },
-        questionNumber: {
-            get: function () {
-            },
-            set: function () {
-            }
+        text: {
+            get:function(){},
+            set:function(v){}
         },
-        questionName: {
-            get: function () {
-            },
-            set: function () {
-            }
-        },
-        maxScore: {
-            get: function () {
-            },
-            set: function () {
-            }
+        commentText:  {
+            get:function(){},
+            set:function(v){}
         },
     },
 

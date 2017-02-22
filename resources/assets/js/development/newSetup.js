@@ -30,8 +30,8 @@ import settingsArea from './components/itemSettings.component'
 import itemCard from './components/itemCard.component'
 import cardList from './components/cardList.component'
 
-import questionSettings from './components/itemSettings.question.component'
-import elementSettings from './components/itemSettings.element.component'
+import itemDetail from './components/itemSettings.detail.component'
+import commentSetup from './components/itemSettings.commentSetup.component'
 
 
 Vue.component( 'exam-name', examName )
@@ -46,8 +46,8 @@ Vue.component( 'settings-button', settingsButton )
 Vue.component( 'item-settings', settingsArea )
 Vue.component( 'item-card', itemCard )
 Vue.component( 'card-list', cardList )
-Vue.component( 'item-settings-question', questionSettings )
-Vue.component( 'item-settings-element', elementSettings )
+Vue.component( 'item-settings-detail', itemDetail )
+Vue.component( 'item-settings-comment-setup', commentSetup )
 // install router
 // Vue.use(Router)
 

@@ -1,24 +1,26 @@
 /**
- * This handles injecting the correct settings component in
+ * This handles the settings associated with the item
  *
  * Created by adam on 2/18/17.
  */
-//var $ = require('jquery');
-//window.$ = $;
 
 module.exports = {
 
     template: require( '../templates/item-settings.template.html' ),
 
-    props: ["item"],
+    props: [ "item" ],
 
     data: function () {
         return {
-            currentView: 'item-settings-question',
-
+            defaults: {
+                types: [ 'question', 'element' ]
+            },
+            // currentView: 'item-settings-question',
+            tabs: [
+                'details', 'comments', 'stats', 'history', 'notes'
+            ],
             hiding: true,
 
-            tabs: ['tab1', 'tab2']
         };
     },
 
@@ -44,26 +46,57 @@ module.exports = {
                 this.itemIndex = v;
             }
         },
-        hidden : function(){
-            console.log( this.hiding );
-            return this.hiding;
+
+        text: {
+            get: function () {
+                if ( typeof this.item != 'undefined' ) {
+                    return this.item.text;
+                }
+                return this.defaults.text;
+
+            },
+
+            set: function ( v ) {
+                if ( typeof this.item == 'undefined' ) {
+                    this.item.text = v;
+                }
+                else {
+                    this.defaults.text = v;
+                }
+
+            }
+        },
+
+
+        hidden: {
+            get: function () {
+                console.log( this.hiding );
+                return this.hiding;
+            },
+            /**
+             * Maybe this should be disabled?
+             * @param v
+             */
+            set: function(v){
+                this.hiding = v;
+            }
         }
     },
 
     methods: {
-        show: function(){
+        show: function () {
             console.log( 'itemSetting', 'CALLED', 'show' );
             this.hiding = false;
         },
-        hide:function(){
+        hide: function () {
             console.log( 'itemSetting', 'CALLED', 'hide', this.hiding );
             this.hiding = true;
             console.log( this.hiding );
         },
-        toggle:function(){
+        toggle: function () {
             console.log( 'itemSetting', 'CALLED', 'hide', this.hiding );
 
-            this.hiding = ! this.hiding;
+            this.hiding = !this.hiding;
 
             console.log( this.hiding );
         }
@@ -72,7 +105,7 @@ module.exports = {
     directives: {},
 
     events: {
-        'display-settings': function(){
+        'display-settings': function () {
             console.log( 'itemSettings', 'CAUGHT', 'display-settings', this.hiding );
             this.toggle();
         }

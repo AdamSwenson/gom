@@ -34650,92 +34650,6 @@ module.exports = {
 'use strict';
 
 /**
- * This handles injecting the correct settings component in
- *
- * Created by adam on 2/18/17.
- */
-//var $ = require('jquery');
-//window.$ = $;
-
-module.exports = {
-
-    template: require('../templates/item-settings.template.html'),
-
-    props: ["item"],
-
-    data: function data() {
-        return {
-            currentView: 'item-settings-question',
-
-            hiding: true,
-
-            tabs: ['tab1', 'tab2']
-        };
-    },
-
-    computed: {
-        index: {
-            get: function get() {
-                if (typeof this.item != 'undefined') {
-                    return this.item.index;
-                }
-                if (typeof this.itemIndex == 'undefined') {
-                    return this.defaults.index;
-                }
-                return this.itemIndex;
-            },
-
-            set: function set(v) {
-                if (typeof this.item == 'undefined') {
-                    this.item.index = v;
-                }
-                if (typeof this.itemIndex == 'undefined') {
-                    this.defaults.index = v;
-                }
-                this.itemIndex = v;
-            }
-        },
-        hidden: function hidden() {
-            console.log(this.hiding);
-            return this.hiding;
-        }
-    },
-
-    methods: {
-        show: function show() {
-            console.log('itemSetting', 'CALLED', 'show');
-            this.hiding = false;
-        },
-        hide: function hide() {
-            console.log('itemSetting', 'CALLED', 'hide', this.hiding);
-            this.hiding = true;
-            console.log(this.hiding);
-        },
-        toggle: function toggle() {
-            console.log('itemSetting', 'CALLED', 'hide', this.hiding);
-
-            this.hiding = !this.hiding;
-
-            console.log(this.hiding);
-        }
-    },
-
-    directives: {},
-
-    events: {
-        'display-settings': function displaySettings() {
-            console.log('itemSettings', 'CAUGHT', 'display-settings', this.hiding);
-            this.toggle();
-        }
-    },
-
-    ready: function ready() {}
-};
-
-},{"../templates/item-settings.template.html":343}],324:[function(require,module,exports){
-'use strict';
-
-/**
  * Created by adam on 2/19/17.
  */
 //var $ = require('jquery');
@@ -34743,7 +34657,7 @@ module.exports = {
 
 module.exports = {
 
-    template: require('../templates/item-settings.element.template.html'),
+    template: require('../templates/item-settings.commentSetup.template.html'),
 
     props: ['item'],
 
@@ -34811,7 +34725,120 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/item-settings.element.template.html":341}],325:[function(require,module,exports){
+},{"../templates/item-settings.commentSetup.template.html":341}],324:[function(require,module,exports){
+'use strict';
+
+/**
+ * This handles the settings associated with the item
+ *
+ * Created by adam on 2/18/17.
+ */
+
+module.exports = {
+
+    template: require('../templates/item-settings.template.html'),
+
+    props: ["item"],
+
+    data: function data() {
+        return {
+            defaults: {
+                types: ['question', 'element']
+            },
+            // currentView: 'item-settings-question',
+            tabs: ['details', 'comments', 'stats', 'history', 'notes'],
+            hiding: true
+
+        };
+    },
+
+    computed: {
+        index: {
+            get: function get() {
+                if (typeof this.item != 'undefined') {
+                    return this.item.index;
+                }
+                if (typeof this.itemIndex == 'undefined') {
+                    return this.defaults.index;
+                }
+                return this.itemIndex;
+            },
+
+            set: function set(v) {
+                if (typeof this.item == 'undefined') {
+                    this.item.index = v;
+                }
+                if (typeof this.itemIndex == 'undefined') {
+                    this.defaults.index = v;
+                }
+                this.itemIndex = v;
+            }
+        },
+
+        text: {
+            get: function get() {
+                if (typeof this.item != 'undefined') {
+                    return this.item.text;
+                }
+                return this.defaults.text;
+            },
+
+            set: function set(v) {
+                if (typeof this.item == 'undefined') {
+                    this.item.text = v;
+                } else {
+                    this.defaults.text = v;
+                }
+            }
+        },
+
+        hidden: {
+            get: function get() {
+                console.log(this.hiding);
+                return this.hiding;
+            },
+            /**
+             * Maybe this should be disabled?
+             * @param v
+             */
+            set: function set(v) {
+                this.hiding = v;
+            }
+        }
+    },
+
+    methods: {
+        show: function show() {
+            console.log('itemSetting', 'CALLED', 'show');
+            this.hiding = false;
+        },
+        hide: function hide() {
+            console.log('itemSetting', 'CALLED', 'hide', this.hiding);
+            this.hiding = true;
+            console.log(this.hiding);
+        },
+        toggle: function toggle() {
+            console.log('itemSetting', 'CALLED', 'hide', this.hiding);
+
+            this.hiding = !this.hiding;
+
+            console.log(this.hiding);
+        }
+    },
+
+    directives: {},
+
+    events: {
+        'display-settings': function displaySettings() {
+            console.log('itemSettings', 'CAUGHT', 'display-settings', this.hiding);
+            this.toggle();
+        }
+    },
+
+    ready: function ready() {}
+};
+
+},{"../templates/item-settings.template.html":343}],325:[function(require,module,exports){
 'use strict';
 
 /**
@@ -34826,7 +34853,7 @@ module.exports = {
 
 module.exports = {
 
-    template: require('../templates/item-settings.question.template.html'),
+    template: require('../templates/item-settings.detail.template.html'),
 
     props: ['item'],
 
@@ -34892,7 +34919,7 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/item-settings.question.template.html":342}],326:[function(require,module,exports){
+},{"../templates/item-settings.detail.template.html":342}],326:[function(require,module,exports){
 'use strict';
 
 /**
@@ -35269,7 +35296,7 @@ module.exports = {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -35282,105 +35309,171 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * Created by adam on 2/17/17.
  */
 var Item = function () {
-    function Item() {
-        _classCallCheck(this, Item);
+  function Item() {
+    _classCallCheck(this, Item);
 
-        /**
-         * The db identifier of the model
-         */
-        this._id;
-        this._index;
-        this._type;
-        this._name;
+    /**
+     * The db identifier of the model
+     */
+    this._id;
 
-        /**
-         * Whether the item is currently set to
-         * be appear in pages, emails, or anything
-         * else that a student could see.
-         *
-         * If this value is true, there are some outputs viewable
-         * by students, which this appears in.
-         *
-         * @type {boolean}
-         * @private
-         */
-        this._public = false;
+    /**
+     * The locator value
+     */
+    this._index;
+
+    /**
+     * The role played by the item
+     */
+    this._type;
+
+    /**
+     * The possible values of this._type
+     */
+    this.types = ['comment', 'element', 'question'];
+
+    /** The nickname or title by which this item is identified */
+    this._name;
+
+    /**
+     * The full length text of the item.
+     * This could be the question prompt;
+     * a longer description of the element; etc
+     */
+    this._text;
+
+    /**
+     * Whether the item is currently set to
+     * be appear in pages, emails, or anything
+     * else that a student could see.
+     *
+     * If this value is true, there are some outputs viewable
+     * by students, which this appears in.
+     *
+     * @type {boolean}
+     * @private
+     */
+    this._public = false;
+  }
+
+  /* *************************** Id *************** */
+  /**
+   * Alias for _id
+   * @returns {*}
+   */
+
+
+  _createClass(Item, [{
+    key: 'isPublic',
+
+
+    /**
+     * Getter for whether this can currently appear in student-viewable outputs
+     * @returns {boolean|*}
+     */
+    value: function isPublic() {
+      return this._public;
     }
 
-    /* *************************** Id *************** */
     /**
-     * Alias for _id
+     * Makes able to appear in student-viewable outputs
+     */
+
+  }, {
+    key: 'makePublic',
+    value: function makePublic() {
+      this._public = true;
+    }
+
+    /**
+     * Makes no longer visible to students
+     */
+
+  }, {
+    key: 'hide',
+    value: function hide() {
+      this._public = false;
+    }
+  }, {
+    key: 'togglePublic',
+    value: function togglePublic() {
+      console.log('Item', 'CALLED', 'togglePublic', this._public);
+      this._public = !this._public;
+      console.log(this._public);
+    }
+  }, {
+    key: 'id',
+    get: function get() {
+      return this._id;
+    }
+
+    /**
+     * The locator for the item
      * @returns {*}
      */
 
+  }, {
+    key: 'index',
+    get: function get() {
+      return this._index;
+    }
 
-    _createClass(Item, [{
-        key: 'isPublic',
+    /**
+     * The locator for the item
+     * @param v
+     */
+    ,
+    set: function set(v) {
+      this._index = v;
+    }
+  }, {
+    key: 'type',
+    get: function get() {
+      return this._type;
+    }
 
+    /**
+     * The full length text of the item.
+     * @returns {*}
+     */
 
-        /**
-         * Getter for whether this can currently appear in student-viewable outputs
-         * @returns {boolean|*}
-         */
-        value: function isPublic() {
-            return this._public;
-        }
+  }, {
+    key: 'text',
+    get: function get() {
+      return this._text;
+    }
 
-        /**
-         * Makes able to appear in student-viewable outputs
-         */
+    /**
+     * The full length text of the item.
+     * @param v
+     */
+    ,
+    set: function set(v) {
+      this._text = v;
+    }
 
-    }, {
-        key: 'makePublic',
-        value: function makePublic() {
-            this._public = true;
-        }
+    /**
+     * The nickname or title by which this item is identified
+     * @returns {*}
+     */
 
-        /**
-         * Makes no longer visible to students
-         */
+  }, {
+    key: 'name',
+    get: function get() {
+      return this._name;
+    }
 
-    }, {
-        key: 'hide',
-        value: function hide() {
-            this._public = false;
-        }
-    }, {
-        key: 'togglePublic',
-        value: function togglePublic() {
-            console.log('Item', 'CALLED', 'togglePublic', this._public);
-            this._public = !this._public;
-            console.log(this._public);
-        }
-    }, {
-        key: 'id',
-        get: function get() {
-            return this._id;
-        }
-    }, {
-        key: 'index',
-        get: function get() {
-            return this._index;
-        },
-        set: function set(v) {
-            this._index = v;
-        }
-    }, {
-        key: 'type',
-        get: function get() {
-            return this._type;
-        }
-    }, {
-        key: 'name',
-        get: function get() {
-            return this._name;
-        },
-        set: function set(v) {
-            this._name = v;
-        }
-    }]);
+    /**
+     * The nickname or title by which this item is identified
+     * @param v
+     */
+    ,
+    set: function set(v) {
+      this._name = v;
+    }
+  }]);
 
-    return Item;
+  return Item;
 }();
 
 exports.default = Item;
@@ -35454,13 +35547,13 @@ var _cardList = require('./components/cardList.component');
 
 var _cardList2 = _interopRequireDefault(_cardList);
 
-var _itemSettingsQuestion = require('./components/itemSettings.question.component');
+var _itemSettingsDetail = require('./components/itemSettings.detail.component');
 
-var _itemSettingsQuestion2 = _interopRequireDefault(_itemSettingsQuestion);
+var _itemSettingsDetail2 = _interopRequireDefault(_itemSettingsDetail);
 
-var _itemSettingsElement = require('./components/itemSettings.element.component');
+var _itemSettingsCommentSetup = require('./components/itemSettings.commentSetup.component');
 
-var _itemSettingsElement2 = _interopRequireDefault(_itemSettingsElement);
+var _itemSettingsCommentSetup2 = _interopRequireDefault(_itemSettingsCommentSetup);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -35489,8 +35582,8 @@ _vue2.default.component('settings-button', _settingsButton2.default);
 _vue2.default.component('item-settings', _itemSettings2.default);
 _vue2.default.component('item-card', _itemCard2.default);
 _vue2.default.component('card-list', _cardList2.default);
-_vue2.default.component('item-settings-question', _itemSettingsQuestion2.default);
-_vue2.default.component('item-settings-element', _itemSettingsElement2.default);
+_vue2.default.component('item-settings-detail', _itemSettingsDetail2.default);
+_vue2.default.component('item-settings-comment-setup', _itemSettingsCommentSetup2.default);
 // install router
 // Vue.use(Router)
 
@@ -35535,7 +35628,7 @@ new _vue2.default({
 
 // router.start(App, '#app')
 
-},{"../store":352,"./components/cardList.component":316,"./components/examName.component":317,"./components/examProperties.component":318,"./components/itemAddButton.component":319,"./components/itemCard.component":320,"./components/itemName.component":321,"./components/itemNav.component":322,"./components/itemSettings.component":323,"./components/itemSettings.element.component":324,"./components/itemSettings.question.component":325,"./components/propsDashboard.component":326,"./components/publicIndicator.component":327,"./components/settingsButton.component":328,"./components/setupApp.vue.js":329,"./components/toolsDashboard.component":330,"./templates/exam-editor.template.html":334,"babel-polyfill":1,"bootstrap":3,"jquery":310,"vue":314,"vue-router":313}],333:[function(require,module,exports){
+},{"../store":352,"./components/cardList.component":316,"./components/examName.component":317,"./components/examProperties.component":318,"./components/itemAddButton.component":319,"./components/itemCard.component":320,"./components/itemName.component":321,"./components/itemNav.component":322,"./components/itemSettings.commentSetup.component":323,"./components/itemSettings.component":324,"./components/itemSettings.detail.component":325,"./components/propsDashboard.component":326,"./components/publicIndicator.component":327,"./components/settingsButton.component":328,"./components/setupApp.vue.js":329,"./components/toolsDashboard.component":330,"./templates/exam-editor.template.html":334,"babel-polyfill":1,"bootstrap":3,"jquery":310,"vue":314,"vue-router":313}],333:[function(require,module,exports){
 module.exports = '<div class="card-list">\n    <div class="item-cards" v-for="item in items">\n        <item-card :item="item"></item-card>\n    </div>\n\n    <item-add-button></item-add-button>\n</div>\n';
 },{}],334:[function(require,module,exports){
 module.exports = '<div id="app">\n    <div id="examEditor">\n\n        <!--<div class="row">-->\n        <!--<div class="col-lg-8">-->\n        <exam-name></exam-name>\n        <!--</div>-->\n        <!--</div>-->\n\n\n        <div id="examEditorBody"\n             class="row">\n\n            <div id="itemCol"\n                 class="col-lg-9 well well-lg">\n\n                <div class="itemRow row">\n                    <div class="col-lg-12">\n                        <card-list></card-list>\n                    </div>\n                </div>\n\n            </div>\n\n            <div id="infoCol"\n                 class="col-lg-3">\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <props-dashboard></props-dashboard>\n                    </div>\n                </div>\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <tools-dashboard></tools-dashboard>\n                    </div>\n                </div>\n\n            </div>\n\n        </div>\n    </div>\n\n</div>';
@@ -35552,11 +35645,11 @@ module.exports = '<div class="item-name-component input-group input-group-lg">\n
 },{}],340:[function(require,module,exports){
 module.exports = '<div class="itemNav"\n     v-on:click="goTo">\n    <span v-bind:class="arrow"></span>\n</div>';
 },{}],341:[function(require,module,exports){
-module.exports = '<!-- Template used by \'edit_element\' to hold the fields and buttons for an individual element.  -->\n\n<div>\n\n    <!-- Nav tabs -->\n    <ul class="nav nav-tabs" role="tablist">\n        <li role="presentation"\n            class=""\n            v-for="tab in tabs">\n            <a href="#{{tab}}{{index}}"\n               aria-controls="{{tab}}{{index}}"\n               role="tab"\n               data-toggle="tab">{{ tab | capitalize }}</a>\n        </li>\n    </ul>\n\n    <!-- Tab panes -->\n    <div class="tab-content">\n        <div role="tabpanel" class="tab-pane active " id="details{{index}}">\n            <div class="row">\n                <div class="col-md-12 list-group-item">\n                    <h4 id="displayNumber">Element #{{ index }}</h4>\n\n                    <h5>Element Response</h5>\n                    <!-- element description (the "stock comment") -->\n                    <div class="form-group">\n                        <textarea\n                                class="form-control"\n                                rows="3"\n                                placeholder="{{ placeholders.elementText }}"\n                                v-model="commentText"></textarea>\n                    </div>\n\n                    <div class="form-group">\n                        <!-- move -->\n                        <span class="btn btn-info btn-sm handle">\n                            <span class="glyphicon glyphicon-move" aria-hidden="true"></span> Move</span>\n\n                        <!-- customize responses -->\n                        <a class="btn btn-info btn-sm"\n                           data-toggle="modal"\n                           data-target="#commentForm{{ index }}">\n                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Customize Responses\n                        </a>\n\n                        <!-- \'comment form\' displays the modal triggered by \'customize response\' button -->\n                        <!--@include(\'setup.partials.comment_form\')-->\n\n                        <!-- delete button -->\n                        <a class="btn btn-danger btn-sm js-remove">\n                            <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete\n                        </a>\n                    </div>\n                </div>\n\n            </div>\n        </div>\n\n\n        <div role="tabpanel" class="tab-pane " id="stats{{index}}">\n            <p>Stats here</p>\n        </div>\n\n        <div role="tabpanel" class="tab-pane " id="history{{index}}">\n            <p>Which exams clones of this item have been used on</p>\n        </div>\n\n        <div role="tabpanel" class="tab-pane fade" id="notes{{index}}">\n            <p>Notes to self about item</p>\n        </div>\n\n    </div>\n</div>';
+module.exports = '<!-- Template used by \'edit_element\' to hold the fields and buttons for an individual element.  -->\n<div class="comment-setup">\n    <div class="row">\n        <div class="col-md-12 list-group-item">\n            <h4 id="displayNumber">Element #{{ index }}</h4>\n\n            <h5>Element Response</h5>\n            <!-- element description (the "stock comment") -->\n            <div class="form-group">\n                        <textarea\n                                class="form-control"\n                                rows="3"\n                                placeholder="{{ placeholders.elementText }}"\n                                v-model="commentText"></textarea>\n            </div>\n\n            <div class="form-group">\n                <!-- move -->\n                <span class="btn btn-info btn-sm handle">\n                            <span class="glyphicon glyphicon-move" aria-hidden="true"></span> Move</span>\n\n                <!-- customize responses -->\n                <a class="btn btn-info btn-sm"\n                   data-toggle="modal"\n                   data-target="#commentForm{{ index }}">\n                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Customize Responses\n                </a>\n\n                <!-- \'comment form\' displays the modal triggered by \'customize response\' button -->\n                <!--@include(\'setup.partials.comment_form\')-->\n\n                <!-- delete button -->\n                <a class="btn btn-danger btn-sm js-remove">\n                    <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete\n                </a>\n            </div>\n        </div>\n\n    </div>\n</div>\n';
 },{}],342:[function(require,module,exports){
-module.exports = '<!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n\n<div>\n\n    <!-- Nav tabs -->\n    <ul class="nav nav-tabs" role="tablist">\n        <li role="presentation"\n            class=""\n            v-for="tab in tabs">\n            <a href="#{{tab}}{{index}}"\n               aria-controls="{{tab}}{{index}}"\n               role="tab"\n               data-toggle="tab">{{ tab | capitalize }}</a>\n        </li>\n    </ul>\n\n    <!-- Tab panes -->\n    <div class="tab-content">\n\n        <div role="tabpanel" class="tab-pane active " id="details{{index}}">\n\n            <div class="row">\n                <div class="col-md-6">\n                    <div class="question-num-area input-group">\n\n                        <span class="input-group-addon">Question #</span>\n                        <input style="width:6em;"\n                               type="number"\n                               min="0"\n                               title="order of the question on the exam"\n                               class="form-control input"\n                               aria-describedby="basic-addon"\n                               v-model="questionNumber"/>\n\n                    </div>\n                </div>\n\n                <div class="col-md-6">\n                    <div class="max-score-area" style="text-align: left">\n                        <!-- max grade -->\n                        <div class="input-group">\n                            <span class="input-group-addon">Max Score</span>\n                            <input style="width:6em;"\n                                   type="number"\n                                   min="0"\n                                   title="maximum score for this question"\n                                   class="form-control input"\n                                   aria-describedby="basic-addon"\n                                   v-model="maxScore"/>\n                        </div>\n                    </div>\n                </div>\n            </div>\n\n            <div class="row">\n                <div class="question-text-area col-md-12">\n                    <h5>Question Text</h5>\n                    <div class="form-group">\n                            <textarea class="question-text form-control"\n                                      rows="3"\n                                      placeholder="Enter the full question text (optional)"\n                            >{{ questionText }}</textarea>\n                    </div>\n                </div>\n            </div>\n\n            <div class="form-group questionButtonArea">\n                        <span class="btn btn-info btn-sm handle">\n                            <span class="glyphicon glyphicon-move" aria-hidden="true"></span> Move</span>\n\n                <button type="button"\n                        class="btn btn-danger btn-sm js-remove"\n                        data-question-number="{{questionNumber }}">\n                    <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete\n                </button>\n            </div>\n        </div>\n\n\n        <div role="tabpanel"\n             class="tab-pane "\n             id="stats{{index}}">\n            <p>Stats here</p>\n        </div>\n        <div role="tabpanel"\n             class="tab-pane "\n             id="history{{index}}">\n            <p>Which exams clones of this item have been used on</p>\n        </div>\n        <div role="tabpanel"\n             class="tab-pane fade"\n             id="notes{{index}}">\n            <p>Notes to self about item</p>\n        </div>\n    </div>\n</div>\n';
+module.exports = '<!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n<div class="item-details">\n    <div class="row">\n        <div class="col-md-6">\n            <div class="question-num-area input-group">\n\n                <span class="input-group-addon">Question #</span>\n                <input style="width:6em;"\n                       type="number"\n                       min="0"\n                       title="order of the question on the exam"\n                       class="form-control input"\n                       aria-describedby="basic-addon"\n                       v-model="questionNumber"/>\n\n            </div>\n        </div>\n\n        <div class="col-md-6">\n            <div class="max-score-area" style="text-align: left">\n                <!-- max grade -->\n                <div class="input-group">\n                    <span class="input-group-addon">Max Score</span>\n                    <input style="width:6em;"\n                           type="number"\n                           min="0"\n                           title="maximum score for this question"\n                           class="form-control input"\n                           aria-describedby="basic-addon"\n                           v-model="maxScore"/>\n                </div>\n            </div>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="question-text-area col-md-12">\n            <h5>Question Text</h5>\n            <div class="form-group">\n                            <textarea class="question-text form-control"\n                                      rows="3"\n                                      placeholder="Enter the full question text (optional)"\n                            >{{ questionText }}</textarea>\n            </div>\n        </div>\n    </div>\n\n    <div class="form-group questionButtonArea">\n                        <span class="btn btn-info btn-sm handle">\n                            <span class="glyphicon glyphicon-move" aria-hidden="true"></span> Move</span>\n\n        <button type="button"\n                class="btn btn-danger btn-sm js-remove"\n                data-question-number="{{questionNumber }}">\n            <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete\n        </button>\n    </div>\n</div>';
 },{}],343:[function(require,module,exports){
-module.exports = '<div class="well" v-show="hidden">\n\n    <slot name="settingsBody">\n\n        <div>\n\n            <!--&lt;!&ndash; Nav tabs &ndash;&gt;-->\n            <!--<ul class="nav nav-tabs" role="tablist">-->\n                <!--<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>-->\n                <!--<li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>-->\n                <!--<li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>-->\n                <!--<li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>-->\n            <!--</ul>-->\n\n            <!--&lt;!&ndash; Tab panes &ndash;&gt;-->\n            <!--<div class="tab-content" >-->\n                <!--&lt;!&ndash;v-for="tab in tabss&ndash;&gt;-->\n                <!--&lt;!&ndash;<div role="tabpanel" class="tab-pane fade" id="{{{tab}}">&ndash;&gt;-->\n\n                <!--<div role="tabpanel" class="tab-pane active" id="home">-->\n\n<item-settings-element item="item"></item-settings-element>\n<!--<item-settings-question :item="item"></item-settings-question>-->\n\n                <!--</div>-->\n                <!--<div role="tabpanel" class="tab-pane fade" id="profile">...</div>-->\n                <!--<div role="tabpanel" class="tab-pane fade" id="messages">...</div>-->\n                <!--<div role="tabpanel" class="tab-pane fade" id="settings">...</div>-->\n            <!--</div>-->\n\n        </div>\n\n    </slot>\n<!--<button class="btn btn-primary" v-on:click="hide">Close</button>-->\n</div>\n';
+module.exports = '<div class="well" v-show="hidden">\n\n    <slot name="settingsBody">\n\n        <div>\n            <!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n\n            <!-- Nav tabs -->\n            <ul class="nav nav-tabs" role="tablist">\n                <li role="presentation"\n                    class=""\n                    v-for="tab in tabs">\n                    <a href="#{{tab}}{{index}}"\n                       aria-controls="{{tab}}{{index}}"\n                       role="tab"\n                       data-toggle="tab">{{ tab | capitalize }}</a>\n                </li>\n            </ul>\n\n            <!-- Tab panes -->\n            <div class="tab-content">\n\n                <div role="tabpanel"\n                     class="tab-pane active "\n                     id="details{{index}}"\n                >\n                    <item-settings-detail :item="item"></item-settings-detail>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane  "\n                     id="comments{{index}}"\n                >\n                    <item-settings-comment-setup :item="item"></item-settings-comment-setup>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="stats{{index}}"\n                >\n                    <p>Stats here</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="history{{index}}"\n                >\n                    <p>Which exams clones of this item have been used on</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane fade"\n                     id="notes{{index}}"\n                >\n                    <p>Notes to self about item</p>\n                </div>\n\n            </div>\n\n        </div>\n\n    </slot>\n    <!--<item-settings-element item="item"></item-settings-element>-->\n    <!--<item-settings-question :item="item"></item-settings-question>-->\n\n    <!--<button class="btn btn-primary" v-on:click="hide">Close</button>-->\n</div>\n';
 },{}],344:[function(require,module,exports){
 module.exports = '<div id="props-dashboard" class="dashboard">\n    <dl class="dl-horizontal">\n\n        <dt># Items</dt>\n        <dd>{{ numberItems }}</dd>\n\n        <dt>Max total score</dt>\n        <dd>{{ numberItems }}</dd>\n        <!--<dd><input type="number" v-model="perfectScore" /></dd>-->\n\n        <dt># Students</dt>\n        <dd>{{ numberStudents}}</dd>\n\n        <dt># Graded</dt>\n        <dd>{{ numberGraded }}</dd>\n\n        <dt>Time grading</dt>\n        <dd>{{ timeGrading }}</dd>\n\n    </dl>\n\n</div>';
 },{}],345:[function(require,module,exports){

@@ -9,9 +9,31 @@ export default class Item {
          * The db identifier of the model
          */
         this._id;
+
+        /**
+         * The locator value
+         */
         this._index;
+
+        /**
+         * The role played by the item
+         */
         this._type;
+
+        /**
+         * The possible values of this._type
+         */
+        this.types = ['comment', 'element', 'question'];
+
+        /** The nickname or title by which this item is identified */
         this._name;
+
+        /**
+         * The full length text of the item.
+         * This could be the question prompt;
+         * a longer description of the element; etc
+         */
+        this._text;
 
         /**
          * Whether the item is currently set to
@@ -37,21 +59,57 @@ export default class Item {
         return this._id;
     }
 
+    /**
+     * The locator for the item
+     * @returns {*}
+     */
     get index() {
         return this._index;
     }
+
+    /**
+     * The locator for the item
+     * @param v
+     */
     set index(v) {
         this._index = v;
     }
+
 
     get type() {
         return this._type;
     }
 
+
+    /**
+     * The full length text of the item.
+     * @returns {*}
+     */
+    get text() {
+        return this._text;
+    }
+
+    /**
+     * The full length text of the item.
+     * @param v
+     */
+    set text( v ) {
+        this._text = v;
+    }
+
+
+    /**
+     * The nickname or title by which this item is identified
+     * @returns {*}
+     */
     get name() {
         return this._name;
     }
 
+    /**
+     * The nickname or title by which this item is identified
+     * @param v
+     */
     set name( v ) {
         this._name = v;
     }
