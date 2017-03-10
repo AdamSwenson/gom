@@ -10403,7 +10403,7 @@ module.exports = Vue;
 }).call(this,require('_process'))
 },{"_process":1}],3:[function(require,module,exports){
 /**
- * vuex v2.1.2
+ * vuex v2.2.1
  * (c) 2017 Evan You
  * @license MIT
  */
@@ -10412,26 +10412,6 @@ module.exports = Vue;
 	typeof define === 'function' && define.amd ? define(factory) :
 	(global.Vuex = factory());
 }(this, (function () { 'use strict';
-
-var devtoolHook =
-  typeof window !== 'undefined' &&
-  window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
-
-function devtoolPlugin (store) {
-  if (!devtoolHook) { return }
-
-  store._devtoolHook = devtoolHook;
-
-  devtoolHook.emit('vuex:init', store);
-
-  devtoolHook.on('vuex:travel-to-state', function (targetState) {
-    store.replaceState(targetState);
-  });
-
-  store.subscribe(function (mutation, state) {
-    devtoolHook.emit('vuex:mutation', mutation, state);
-  });
-}
 
 var applyMixin = function (Vue) {
   var version = Number(Vue.version.split('.')[0]);
@@ -10468,116 +10448,24 @@ var applyMixin = function (Vue) {
   }
 };
 
-var mapState = normalizeNamespace(function (namespace, states) {
-  var res = {};
-  normalizeMap(states).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
+var devtoolHook =
+  typeof window !== 'undefined' &&
+  window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
 
-    res[key] = function mappedState () {
-      var state = this.$store.state;
-      var getters = this.$store.getters;
-      if (namespace) {
-        var module = getModuleByNamespace(this.$store, 'mapState', namespace);
-        if (!module) {
-          return
-        }
-        state = module.context.state;
-        getters = module.context.getters;
-      }
-      return typeof val === 'function'
-        ? val.call(this, state, getters)
-        : state[val]
-    };
+function devtoolPlugin (store) {
+  if (!devtoolHook) { return }
+
+  store._devtoolHook = devtoolHook;
+
+  devtoolHook.emit('vuex:init', store);
+
+  devtoolHook.on('vuex:travel-to-state', function (targetState) {
+    store.replaceState(targetState);
   });
-  return res
-});
 
-var mapMutations = normalizeNamespace(function (namespace, mutations) {
-  var res = {};
-  normalizeMap(mutations).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
-
-    val = namespace + val;
-    res[key] = function mappedMutation () {
-      var args = [], len = arguments.length;
-      while ( len-- ) args[ len ] = arguments[ len ];
-
-      if (namespace && !getModuleByNamespace(this.$store, 'mapMutations', namespace)) {
-        return
-      }
-      return this.$store.commit.apply(this.$store, [val].concat(args))
-    };
+  store.subscribe(function (mutation, state) {
+    devtoolHook.emit('vuex:mutation', mutation, state);
   });
-  return res
-});
-
-var mapGetters = normalizeNamespace(function (namespace, getters) {
-  var res = {};
-  normalizeMap(getters).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
-
-    val = namespace + val;
-    res[key] = function mappedGetter () {
-      if (namespace && !getModuleByNamespace(this.$store, 'mapGetters', namespace)) {
-        return
-      }
-      if (!(val in this.$store.getters)) {
-        console.error(("[vuex] unknown getter: " + val));
-        return
-      }
-      return this.$store.getters[val]
-    };
-  });
-  return res
-});
-
-var mapActions = normalizeNamespace(function (namespace, actions) {
-  var res = {};
-  normalizeMap(actions).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
-
-    val = namespace + val;
-    res[key] = function mappedAction () {
-      var args = [], len = arguments.length;
-      while ( len-- ) args[ len ] = arguments[ len ];
-
-      if (namespace && !getModuleByNamespace(this.$store, 'mapActions', namespace)) {
-        return
-      }
-      return this.$store.dispatch.apply(this.$store, [val].concat(args))
-    };
-  });
-  return res
-});
-
-function normalizeMap (map) {
-  return Array.isArray(map)
-    ? map.map(function (key) { return ({ key: key, val: key }); })
-    : Object.keys(map).map(function (key) { return ({ key: key, val: map[key] }); })
-}
-
-function normalizeNamespace (fn) {
-  return function (namespace, map) {
-    if (typeof namespace !== 'string') {
-      map = namespace;
-      namespace = '';
-    } else if (namespace.charAt(namespace.length - 1) !== '/') {
-      namespace += '/';
-    }
-    return fn(namespace, map)
-  }
-}
-
-function getModuleByNamespace (store, helper, namespace) {
-  var module = store._modulesNamespaceMap[namespace];
-  if (!module) {
-    console.error(("[vuex] module namespace not found in " + helper + "(): " + namespace));
-  }
-  return module
 }
 
 /**
@@ -10812,7 +10700,7 @@ var Store = function Store (options) {
 var prototypeAccessors = { state: {} };
 
 prototypeAccessors.state.get = function () {
-  return this._vm.$data.state
+  return this._vm._data.$$state
 };
 
 prototypeAccessors.state.set = function (v) {
@@ -10889,7 +10777,7 @@ Store.prototype.replaceState = function replaceState (state) {
     var this$1 = this;
 
   this._withCommit(function () {
-    this$1._vm.state = state;
+    this$1._vm._data.$$state = state;
   });
 };
 
@@ -10963,7 +10851,9 @@ function resetStoreVM (store, state, hot) {
   var silent = Vue.config.silent;
   Vue.config.silent = true;
   store._vm = new Vue({
-    data: { state: state },
+    data: {
+      $$state: state
+    },
     computed: computed
   });
   Vue.config.silent = silent;
@@ -10978,7 +10868,7 @@ function resetStoreVM (store, state, hot) {
       // dispatch changes in all subscribed watchers
       // to force getter re-evaluation for hot reloading.
       store._withCommit(function () {
-        oldVm.state = null;
+        oldVm._data.$$state = null;
       });
     }
     Vue.nextTick(function () { return oldVm.$destroy(); });
@@ -11155,7 +11045,7 @@ function registerGetter (store, type, rawGetter, local) {
 }
 
 function enableStrictMode (store) {
-  store._vm.$watch('state', function () {
+  store._vm.$watch(function () { return this._data.$$state }, function () {
     assert(store._committing, "Do not mutate vuex store state outside mutation handlers.");
   }, { deep: true, sync: true });
 }
@@ -11194,10 +11084,126 @@ if (typeof window !== 'undefined' && window.Vue) {
   install(window.Vue);
 }
 
+var mapState = normalizeNamespace(function (namespace, states) {
+  var res = {};
+  normalizeMap(states).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    res[key] = function mappedState () {
+      var state = this.$store.state;
+      var getters = this.$store.getters;
+      if (namespace) {
+        var module = getModuleByNamespace(this.$store, 'mapState', namespace);
+        if (!module) {
+          return
+        }
+        state = module.context.state;
+        getters = module.context.getters;
+      }
+      return typeof val === 'function'
+        ? val.call(this, state, getters)
+        : state[val]
+    };
+    // mark vuex getter for devtools
+    res[key].vuex = true;
+  });
+  return res
+});
+
+var mapMutations = normalizeNamespace(function (namespace, mutations) {
+  var res = {};
+  normalizeMap(mutations).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    val = namespace + val;
+    res[key] = function mappedMutation () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      if (namespace && !getModuleByNamespace(this.$store, 'mapMutations', namespace)) {
+        return
+      }
+      return this.$store.commit.apply(this.$store, [val].concat(args))
+    };
+  });
+  return res
+});
+
+var mapGetters = normalizeNamespace(function (namespace, getters) {
+  var res = {};
+  normalizeMap(getters).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    val = namespace + val;
+    res[key] = function mappedGetter () {
+      if (namespace && !getModuleByNamespace(this.$store, 'mapGetters', namespace)) {
+        return
+      }
+      if (!(val in this.$store.getters)) {
+        console.error(("[vuex] unknown getter: " + val));
+        return
+      }
+      return this.$store.getters[val]
+    };
+    // mark vuex getter for devtools
+    res[key].vuex = true;
+  });
+  return res
+});
+
+var mapActions = normalizeNamespace(function (namespace, actions) {
+  var res = {};
+  normalizeMap(actions).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    val = namespace + val;
+    res[key] = function mappedAction () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      if (namespace && !getModuleByNamespace(this.$store, 'mapActions', namespace)) {
+        return
+      }
+      return this.$store.dispatch.apply(this.$store, [val].concat(args))
+    };
+  });
+  return res
+});
+
+function normalizeMap (map) {
+  return Array.isArray(map)
+    ? map.map(function (key) { return ({ key: key, val: key }); })
+    : Object.keys(map).map(function (key) { return ({ key: key, val: map[key] }); })
+}
+
+function normalizeNamespace (fn) {
+  return function (namespace, map) {
+    if (typeof namespace !== 'string') {
+      map = namespace;
+      namespace = '';
+    } else if (namespace.charAt(namespace.length - 1) !== '/') {
+      namespace += '/';
+    }
+    return fn(namespace, map)
+  }
+}
+
+function getModuleByNamespace (store, helper, namespace) {
+  var module = store._modulesNamespaceMap[namespace];
+  if (!module) {
+    console.error(("[vuex] module namespace not found in " + helper + "(): " + namespace));
+  }
+  return module
+}
+
 var index = {
   Store: Store,
   install: install,
-  version: '2.1.2',
+  version: '2.2.1',
   mapState: mapState,
   mapMutations: mapMutations,
   mapGetters: mapGetters,
@@ -11212,665 +11218,14 @@ return index;
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Created by adam on 1/10/17.
- */
-
-var addStudent = exports.addStudent = 'addStudent';
-
-//activeexam
-var setActiveExam = exports.setActiveExam = 'setActiveExam';
-var clearActiveExam = exports.clearActiveExam = 'clearActiveExam';
-
-//activestudent
-var setActiveStudent = exports.setActiveStudent = 'setActiveStudent';
-var setActiveStudentId = exports.setActiveStudentId = 'setActiveStudentId';
-var setActiveStudentIndex = exports.setActiveStudentIndex = 'setActiveStudentIndex';
-var setActiveStudentObject = exports.setActiveStudentObject = 'setActiveStudentObject';
-var setActiveStudentTime = exports.setActiveStudentTime = 'setActiveStudentTime';
-var setIndex = exports.setIndex = 'setIndex';
-var setId = exports.setId = 'setId';
-var setTime = exports.setTime = 'setTime';
-var setStudentObject = exports.setStudentObject = 'setStudentObject';
-var clearActiveStudent = exports.clearActiveStudent = 'clearActiveStudent';
-
-//comments
-var storeCommentTextForActiveStudent = exports.storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent';
-var storeCommentText = exports.storeCommentText = 'storeCommentText';
-
-//escores
-var setElementScore = exports.setElementScore = 'setElementScore';
-var loadElementScores = exports.loadElementScores = 'loadElementScores';
-var storeElementScoreForActiveStudent = exports.storeElementScoreForActiveStudent = 'storeElementScoreForActiveStudent';
-
-//exams
-var addNewExam = exports.addNewExam = 'addNewExam';
-var loadExams = exports.loadExams = 'loadExams';
-
-//grades
-var loadExamGrades = exports.loadExamGrades = 'loadExamGrades';
-var loadStandardGrades = exports.loadStandardGrades = 'loadStandardGrades';
-var updateExamGrade = exports.updateExamGrade = 'updateExamGrade';
-
-//qscores
-var loadQuestionScores = exports.loadQuestionScores = 'loadQuestionScores';
-var setQuestionScore = exports.setQuestionScore = 'setQuestionScore';
-var storeQuestionScoreForActiveStudent = exports.storeQuestionScoreForActiveStudent = 'storeQuestionScoreForActiveStudent';
-
-//questions
-var loadMaxQuestionScores = exports.loadMaxQuestionScores = 'loadMaxQuestionScores';
-var loadQuestions = exports.loadQuestions = 'loadQuestions';
-var loadNumberQuestions = exports.loadNumberQuestions = 'loadNumberQuestions';
-var addQuestion = exports.addQuestion = 'addQuestion';
-
-//students
-var loadStudents = exports.loadStudents = 'loadStudents';
-
-//times
-var storeGradingTime = exports.storeGradingTime = 'storeGradingTime';
-var increaseActiveStudentGradingTime = exports.increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime';
-var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
-var loadGradingTimes = exports.loadGradingTimes = 'loadGradingTimes';
-
-},{}],5:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.actions = undefined;
-
-var _actions;
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; //Root actions for the vuex instance
-
-var _mutationTypes = require('./mutation-types');
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = require('./action-types');
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _Student = require('./models/Student');
-
-var _Student2 = _interopRequireDefault(_Student);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes.setActiveStudentId, function (_ref, payload) {
-    var state = _ref.state,
-        commit = _ref.commit;
-
-    // [aTypes.setActiveStudentId](state, rootState, payload){
-
-    console.log(aTypes.setActiveStudentId, 'is deprecated!');
-    console.log(aTypes.setActiveStudentId, payload);
-    payload = state.activeStudent;
-
-    actions[aTypes.setActiveStudent](state, commit, payload);
-
-    // let studentId;
-    //
-    // //number passed in
-    // if (typeof (payload) == 'number' && Number.isInteger(payload)) {
-    //     studentId = payload;
-    // }
-    //
-    //
-    // //object passed in
-    // //todo add object case
-    // console.log('studentId', studentId);
-    // if (Number.isInteger(studentId)) {
-    //     commit(mTypes.setId, Payload.factory({num: studentId}));
-    // }
-}), _defineProperty(_actions, aTypes.setActiveStudentIndex, function (_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
-
-
-    console.log(aTypes.setActiveStudentIndex, 'is deprecated!');
-    payload = state.activeStudent;
-    actions[aTypes.setActiveStudent](state, commit, payload);
-    // let studentIndex;
-    // switch (typeof (payload)) {
-    //     case 'number':
-    //         if (Number.isInteger(payload)) {
-    //             studentIndex = payload;
-    //         }
-    //         break;
-    //     case 'object':
-    //         //todo write if object
-    //
-    //         break;
-    //     default:
-    // }
-    //
-    // if (Number.isInteger(studentIndex)) {
-    //     commit(mTypes.setIndex, studentIndex);
-    // }
-}), _defineProperty(_actions, aTypes.setActiveStudentObject, function (_ref3, payload) {
-    var state = _ref3.state,
-        commit = _ref3.commit;
-
-    console.log(aTypes.setActiveStudentObject, 'is deprecated!');
-    [aTypes.setActiveStudent](state, commit, payload);
-    // // let student;
-    //
-    // // if (payload instanceof Student) {
-    // //     student = payload;
-    // // }
-    // // switch(typeof (payload)){
-    // //     case 'number':
-    // //         if(Number.isInteger(payload)){
-    // //             studentIndex = payload;
-    // //         }
-    // //         break;
-    // //     case 'object':
-    // //         //todo write if object
-    // //
-    // //         break;
-    // //     default:
-    // // }
-    //
-    // //Call the mutation
-    // if (payload instanceof Student) {
-    //     commit(mTypes.setStudentObject, payload);
-    // }
-}), _defineProperty(_actions, aTypes.setIndex, function (_ref4, payload) {
-    var state = _ref4.state,
-        commit = _ref4.commit;
-
-    console.log(aTypes.setIndex, 'is deprecated!');
-    console.log(aTypes.setIndex, payload);
-    payload = state.activeStudent;
-    actions[aTypes.setActiveStudent](state, commit, payload);
-}), _defineProperty(_actions, aTypes.setId, function (_ref5, payload) {
-    var state = _ref5.state,
-        commit = _ref5.commit;
-
-    console.log(aTypes.setId, 'is deprecated!');
-    payload = state.activeStudent;
-
-    actions[aTypes.setActiveStudent](state, commit, payload);
-}), _defineProperty(_actions, aTypes.setStudentObject, function (_ref6, payload) {
-    var state = _ref6.state,
-        commit = _ref6.commit;
-
-    payload = state.activeStudent;
-
-    if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == 'object' && payload instanceof _Student2.default) {
-        commit(mTypes.setActiveStudent, Payload.factory({ obj: payload }));
-        // state.student = payload;
-    }
-}), _defineProperty(_actions, aTypes.setActiveStudentTime, function (_ref7, payload) {
-    var state = _ref7.state,
-        commit = _ref7.commit;
-
-
-    var studentIndex = state.activeStudent.index;
-    var time = void 0;
-
-    switch (typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) {
-        case 'number':
-            if (Number.isInteger(payload)) {
-                //go straight to recording
-                time = payload;
-            }
-            break;
-
-        //object with expected key
-        case 'object':
-            //todo write if object
-            break;
-
-        //other allowed types
-        // todo
-
-        //numeric string
-        // todo
-        default:
-        //todo
-    }
-
-    //Call the mutation
-    if (typeof time == 'number') {
-        commit(mTypes.setTime, time);
-    }
-}), _defineProperty(_actions, aTypes.increaseActiveStudentGradingTime, function (_ref8, payload) {
-    var state = _ref8.state,
-        commit = _ref8.commit;
-
-    var studentIndex = state.activeStudent.index;
-    state.examGradingTimes[studentIndex] += payload.timeToAdd;
-}), _defineProperty(_actions, aTypes.storeQuestionScoreForActiveStudent, function (_ref9, payload) {
-    var state = _ref9.state,
-        commit = _ref9.commit;
-
-    // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
-    var questionIndex = payload.questionIndex,
-        score = payload.score;
-
-    var studentIndex = state.activeStudent.index;
-    //type checking
-
-    var out = Payload.factory({ index2: questionIndex, index: studentIndex, num: score });
-
-    commit(mTypes.setQuestionScore, out);
-}), _defineProperty(_actions, aTypes.storeElementScoreForActiveStudent, function (_ref10, payload) {
-    var state = _ref10.state,
-        commit = _ref10.commit;
-
-    var studentIndex = state.getActiveStudentIndex();
-    var elementIndex = payload.elementIndex,
-        score = payload.score;
-    //type checks
-
-    if (typeof score == 'undefined') {
-        //score may have been named differently
-        score = payload.elementScore;
-    }
-
-    var out = Payload.factory({
-        index: studentIndex,
-        index2: elementIndex,
-        num: score
-    });
-
-    commit(mTypes.setElementScore, out);
-}), _actions);
-
-},{"./action-types":4,"./models/Student":13,"./mutation-types":23}],6:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-/**
- * Created by adam on 1/10/17.
- */
-
-/**
- * Returns true if at least one question has received
- * a score for the student.
- */
-var isGraded = exports.isGraded = function isGraded(state, studentIndex) {
-    state.updateExamGrade(studentIndex);
-    if (state.examGrades[studentIndex] != "Letter grade" && state.examGrades[studentIndex] >= 0) {
-        return true;
-    }
-    return false;
-};
-
-/* ------------ Utilities --------------*/
-
-/**
- * Checks to make sure that a property has had its
- * values loaded before trying to do stuff with it
- *
- * @param propertyName
- */
-var checkValid = exports.checkValid = function checkValid(state, propertyName) {
-    if (typeof state[propertyName] != 'undefined') {
-        throw propertyName + " is undefined";
-    }
-    if (state[propertyName] == null) {
-        throw propertyName + " is null";
-    }
-    if (state[propertyName] == {}) {
-        throw propertyName + " was empty. Probably because it wasn't initialized";
-    }
-
-    return true;
-};
-
-},{}],7:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-/**
- * Root getters for the vuex instance
- *
- * Methods which make use of multiple modules should generally be kept here
- */
-
-/**
- * Helper function used by getters which tests for an index value and then
- * handles undefined and  null inputs when they were expecting
- * a numeric index.
- */
-var validateIndex = function validateIndex(index) {
-    var handleInvalid = function handleInvalid() {
-        return '';
-    };
-
-    if (typeof index == 'undefined') return handleInvalid();
-    if (index === null) return handleInvalid();
-
-    return true;
-};
-
-/**
- * Poorly named shortcut for getting the db id of
- * the currently active exam.
- * @param state
- */
-var getExamId = exports.getExamId = function getExamId(state) {
-    return state.activeExam.id;
-};
-
-/**
- * Returns true if some student is set as active.
- * Saves the trouble of other methods having to figure out whether a student
- * is set as active student (which can run into trouble if, for example, the
- * active student has index 0 and the consuming method interprets this as false).
- */
-var isActive = exports.isActive = function isActive(state) {
-    if (typeof state.activeStudent == 'undefined') return false;
-    if (state.activeStudent === null) return false;
-    if (state.activeStudent.index >= 0) {
-        return true;
-    }
-    return false;
-};
-
-/**
- * Returns the number of exams that have been graded.
- * NB, before counting them it first goes through and makes
- * sure that each examGrade is set to the sum of graded questions
- * for that exam.
- */
-var getNumberGraded = exports.getNumberGraded = function getNumberGraded(state) {
-    var graded = 0;
-
-    if (Object.keys(state.examGrades).length > 0) {
-        //Loop through each exam (via studentIndex as key)
-        for (var i = 0; i < Object.keys(state.examGrades).length; i++) {
-            //Make sure the stored exam total score is up to date
-            state.updateExamGrade(i);
-            //this will be the string 'letter grade' if
-            //no grade has been entered. Thus we check
-            //whether it is a number 0 or greater
-            //if it is graded, increment the number graded
-            if (state.examGrades[i] >= 0) graded++;
-        }
-    }
-    return graded;
-};
-
-/**
- * Returns the total number of exams
- *
- * @returns {number|Number}
- */
-var getTotalExams = exports.getTotalExams = function getTotalExams(state) {
-    var total = 0;
-    if (Object.keys(state.examGrades).length > 0) {
-        total = Object.keys(state.examGrades).length;
-    }
-
-    return total;
-};
-
-//------------ from qscores
-
-/**
- * Convenience function for getting the current student's score for question
- * Old way: data.this.questionScores[ Roster.activeStudent ][ index ];
- *  if ( state.activeStudentIndex == null ) return '';
- *  return state.getQuestionScore( this.activeStudentIndex, questionIndex );
- * @param questionIndex
- */
-var getQuestionScoreForActiveStudent = exports.getQuestionScoreForActiveStudent = function getQuestionScoreForActiveStudent(state, getters, rootState, questionIndex) {
-    var idx = getters.getActiveStudentIndex(state, getters, rootState);
-    if (idx == null) return '';
-    return getters.getQuestionScore(state, getters, rootState, idx, questionIndex);
-    // if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set ";
-};
-
-// --------------- from times
-
-/**
- * Convenience method for getting the grading time of the student presently
- * being graded
- * if ( state.activeStudentIndex == null ) return '';
- * return state.examGradingTimes[ state.activeStudentIndex ];
- * return getters.getStudentGradingTime( state, getters, state.activeStudentIndex );
- * @returns {*}
- */
-var getActiveStudentGradingTime = exports.getActiveStudentGradingTime = function getActiveStudentGradingTime(state, getters, rootState) {
-    var idx = getters.getActiveStudentIndex(state, getters, rootState);
-    if (idx == null) return '';
-    return getters.getStudentGradingTime(state, getters, idx);
-    // if ( ! this.isActive() ) throw "ERROR: getActiveStudentGradingTime | No active student set ";
-};
-
-//--------------- comments
-
-/**
- * Gets the comment text for the student
- * @param state
- * @param getters
- * @param rootState
- * @param elementIndex
- * @param valence
- * @returns {*}
- */
-var getCommentTextForActiveStudent = exports.getCommentTextForActiveStudent = function getCommentTextForActiveStudent(state, getters, rootState, elementIndex, valence) {
-    //If no student is set, the comment field should be blank
-    var idx = getters.getActiveStudentIndex(state, getters, rootState);
-    validateIndex(idx);
-    //    if ( idx == null ) return '';
-
-    return getters.getCommentText(state, getters, rootState, idx, elementIndex, valence);
-};
-
-//------------------ grades
-/**
- * Retrieves exam grade for current student
- * if ( state.activeStudentIndex == null ) return '';
- * return state.examGrades[ state.activeStudent ];
- * @param state
- * @param getters
- * @param rootState
- * @returns {*}
- */
-var getExamGradeForActiveStudent = exports.getExamGradeForActiveStudent = function getExamGradeForActiveStudent(state, getters, rootState) {
-    var idx = getters.getActiveStudentIndex(state, getters, rootState);
-    validateIndex(idx);
-    // if ( idx == null ) return '';
-    return getters.getExamGrade(state, getters, rootState, idx);
-};
-
-//------------ escores
-var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = function getElementScoreForActiveStudent(state, getters, rootState, elementIndex) {
-    var idx = getters.getActiveStudentIndex(state, getters, rootState);
-    validateIndex(idx);
-    // if ( idx == null ) return '';
-    return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
-};
-
-},{}],8:[function(require,module,exports){
-(function (process){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; /**
-                                                                                                                                                                                                                                                   * Created by adam on 1/10/17.
-                                                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                                                   * Notes about how to use
-                                                                                                                                                                                                                                                   * However, this pattern causes the component to rely on the global store singleton. When using a module system, it requires importing the store in every component that uses store state, and also requires mocking when testing the component.
-                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                   Vuex provides a mechanism to "inject" the store into all child components from the root component with the store option (enabled by Vue.use(Vuex)):
-                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                   const app = new Vue({
-                                                                                                                                                                                                                                                    el: '#app',
-                                                                                                                                                                                                                                                    // provide the store using the "store" option.
-                                                                                                                                                                                                                                                    // this will inject the store instance to all child components.
-                                                                                                                                                                                                                                                    store,
-                                                                                                                                                                                                                                                    components: { Counter },
-                                                                                                                                                                                                                                                    template: `
-                                                                                                                                                                                                                                                      <div class="app">
-                                                                                                                                                                                                                                                        <counter></counter>
-                                                                                                                                                                                                                                                      </div>
-                                                                                                                                                                                                                                                    `
-                                                                                                                                                                                                                                                  })
-                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                   By providing the store option to the root instance, the store will be injected into all child components of the root and will be available on them as this.$store. Let's update our Counter implementation:
-                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                   const Counter = {
-                                                                                                                                                                                                                                                    template: `<div>{{ count }}</div>`,
-                                                                                                                                                                                                                                                    computed: {
-                                                                                                                                                                                                                                                      count () {
-                                                                                                                                                                                                                                                        return this.$store.state.count
-                                                                                                                                                                                                                                                      }
-                                                                                                                                                                                                                                                    }
-                                                                                                                                                                                                                                                  }
-                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                                                   */
-
-var _vue = require('vue');
-
-var _vue2 = _interopRequireDefault(_vue);
-
-var _vuex = require('vuex');
-
-var _vuex2 = _interopRequireDefault(_vuex);
-
-var _actions = require('./actions');
-
-var actions = _interopRequireWildcard(_actions);
-
-var _getters = require('./getters');
-
-var getters = _interopRequireWildcard(_getters);
-
-var _mutations = require('./mutations');
-
-var mutations = _interopRequireWildcard(_mutations);
-
-var _state = require('./state');
-
-var state = _interopRequireWildcard(_state);
-
-var _api = require('./api');
-
-var api = _interopRequireWildcard(_api);
-
-var _activestudent = require('./modules/activestudent.js');
-
-var _activestudent2 = _interopRequireDefault(_activestudent);
-
-var _activeexam = require('./modules/activeexam.js');
-
-var _activeexam2 = _interopRequireDefault(_activeexam);
-
-var _comments = require('./modules/comments.js');
-
-var _comments2 = _interopRequireDefault(_comments);
-
-var _escores = require('./modules/escores.js');
-
-var _escores2 = _interopRequireDefault(_escores);
-
-var _grades = require('./modules/grades.js');
-
-var _grades2 = _interopRequireDefault(_grades);
-
-var _qscores = require('./modules/qscores.js');
-
-var _qscores2 = _interopRequireDefault(_qscores);
-
-var _questions = require('./modules/questions.js');
-
-var _questions2 = _interopRequireDefault(_questions);
-
-var _students = require('./modules/students.js');
-
-var _students2 = _interopRequireDefault(_students);
-
-var _times = require('./modules/times.js');
-
-var _times2 = _interopRequireDefault(_times);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// import gradeStateDefault from './modules/grade.defaultstate'
-// import createLogger from '../../../src/plugins/logger'
-
-_vue2.default.use(_vuex2.default);
-
-var debug = process.env.NODE_ENV !== 'production';
-
-exports.default = new _vuex2.default.Store({
-  /**
-   * From instances and components where store has been
-   * injected, actions are called
-   * like so: store.dispatch( 'string-action-name' )
-   */
-  actions: actions,
-  getters: getters,
-  mutations: {
-    /**
-     * Sets the current exam id
-     *
-     * @todo Extend to set from an exam object
-     *
-     * @param state
-     * @param payload
-     */
-    _setExamId: function _setExamId(state, payload) {
-      if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == Number) {
-        state.examId = payload;
-      }
-
-      window.console.log('setExamId', state);
-    }
-  },
-
-  modules: {
-    activeexam: _activeexam2.default,
-    activestudent: _activestudent2.default,
-    comments: _comments2.default,
-    escores: _escores2.default,
-    grades: _grades2.default,
-    qscores: _qscores2.default,
-    questions: _questions2.default,
-    students: _students2.default,
-    times: _times2.default
-  },
-  state: state,
-  api: api,
-
-  strict: debug });
-
-}).call(this,require('_process'))
-},{"./actions":5,"./api":6,"./getters":7,"./modules/activeexam.js":14,"./modules/activestudent.js":15,"./modules/comments.js":16,"./modules/escores.js":17,"./modules/grades.js":18,"./modules/qscores.js":19,"./modules/questions.js":20,"./modules/students.js":21,"./modules/times.js":22,"./mutations":24,"./state":25,"_process":1,"vue":2,"vuex":3}],9:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _IModel2 = require('./IModel');
+var _Item2 = require('./Item');
 
-var _IModel3 = _interopRequireDefault(_IModel2);
+var _Item3 = _interopRequireDefault(_Item2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -11882,8 +11237,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Created by adam on 8/15/16.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
-var Exam = function (_IModel) {
-    _inherits(Exam, _IModel);
+var Exam = function (_Item) {
+    _inherits(Exam, _Item);
 
     /**
      * Create a new exam object
@@ -11893,11 +11248,11 @@ var Exam = function (_IModel) {
     function Exam() {
         _classCallCheck(this, Exam);
 
+        // this._id; // = examId;
+        // this._index; // = examIndex;
+        // this._name; // = name;
         var _this = _possibleConstructorReturn(this, (Exam.__proto__ || Object.getPrototypeOf(Exam)).call(this));
 
-        _this._id; // = examId;
-        _this._index; // = examIndex;
-        _this._name; // = name;
         _this._year; // = year;
         _this._term; // = term;
 
@@ -11909,31 +11264,19 @@ var Exam = function (_IModel) {
     }
 
     _createClass(Exam, [{
-        key: 'id',
+        key: 'examId',
 
 
         /* *************************** Id *************** */
-        /**
-         * The database id of the exam
-         */
-        get: function get() {
-            return this._id;
-        },
-        set: function set(v) {
-            this._id = Number(v);
-        }
-
         /**
          * Some things like to call the database id
          * this when they ask for the property. So
          * we oblige them with a nice alias.
          */
-
-    }, {
-        key: 'examId',
         get: function get() {
-            return this._id;
+            return this.id;
         }
+
         /* *************************** Index ************* */
         /**
          * Returns the examIndex
@@ -11946,27 +11289,11 @@ var Exam = function (_IModel) {
     }, {
         key: 'examIndex',
         get: function get() {
-            return this._index;
-        }
-    }, {
-        key: 'index',
-        set: function set(v) {
-            this._index = v;
-        },
-        get: function get() {
-            return this._index;
+            return this.index;
         }
 
         /* *************************** Props ************* */
 
-    }, {
-        key: 'name',
-        get: function get() {
-            return this._name;
-        },
-        set: function set(n) {
-            this._name = n;
-        }
     }, {
         key: 'year',
         get: function get() {
@@ -12005,29 +11332,9 @@ var Exam = function (_IModel) {
         key: 'factory',
         value: function factory(params) {
             var exam = new Exam();
-
-            return this.fillObject(exam, params);
-            //
-            //         if ( typeof params != 'undefined' ) {
-            //             //fill any fillable values
-            //             this.fillableProps.forEach( function ( v ) {
-            //                 // console.log( 'params', params, v );
-            //                 if ( typeof params[ v ] != 'undefined' ) {
-            //                     exam[ v ] = params[ v ];
-            //                 }
-            //             } );
-            //
-            //             //fill any aliased values
-            //             for ( let v in this.aliasMap ) {
-            //                 if ( typeof params[ v ] != 'undefined' ) {
-            //                     // console.log( 'alias', v, map[v] );
-            //                     exam[ this.aliasMap[ v ] ] = params[ v ];
-            //                 }
-            //             }
-            //         }
             // //we will still return an empty exam if there
             //         //were no parameters
-            //         return exam;
+            return this.fillObject(exam, params);
         }
     }, {
         key: 'fillableProps',
@@ -12045,11 +11352,11 @@ var Exam = function (_IModel) {
     }]);
 
     return Exam;
-}(_IModel3.default);
+}(_Item3.default);
 
 exports.default = Exam;
 
-},{"./IModel":10}],10:[function(require,module,exports){
+},{"./Item":6}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12111,7 +11418,277 @@ var IModel = function () {
 
 exports.default = IModel;
 
-},{}],11:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _IModel2 = require('./IModel');
+
+var _IModel3 = _interopRequireDefault(_IModel2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * This is the model which can be either a question
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * or an element.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Created by adam on 2/17/17.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+var Item = function (_IModel) {
+    _inherits(Item, _IModel);
+
+    function Item() {
+        _classCallCheck(this, Item);
+
+        /**
+         * The db identifier of the model
+         */
+        var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
+
+        _this._id;
+
+        /**
+         * The locator value
+         */
+        // this._index;
+        _this.index;
+
+        /** The nickname or title by which this item is identified */
+        _this.name = "";
+
+        _this.text;
+        /**
+         * The secondary locator value
+         * Q1 E2 = index 0, depth 3
+         */
+        _this._depth;
+
+        /**
+         * The maximum possible value of the item
+         */
+        _this._maxScore;
+
+        // this.name;
+
+        /**
+         * Whether the item is currently set to
+         * be appear in pages, emails, or anything
+         * else that a student could see.
+         *
+         * If this value is true, there are some outputs viewable
+         * by students, which this appears in.
+         *
+         * @type {boolean}
+         * @private
+         */
+        _this._public = false;
+
+        /**
+         * The full length text of the item.
+         * This could be the question prompt;
+         * a longer description of the element; etc
+         */
+        // this._text;
+
+        /**
+         * The role played by the item
+         */
+        _this._type;
+
+        /**
+         * The possible values of this._type
+         */
+        _this.types = ['comment', 'element', 'question'];
+        return _this;
+    }
+
+    /* *************************** Id *************** */
+    /**
+     * Alias for _id
+     * @returns {*}
+     */
+
+
+    _createClass(Item, [{
+        key: 'isPublic',
+
+
+        /* *************************** Public *************** */
+        /**
+         * Getter for whether this can currently appear in student-viewable outputs
+         * @returns {boolean|*}
+         */
+        value: function isPublic() {
+            return this._public;
+        }
+
+        /**
+         * Makes able to appear in student-viewable outputs
+         */
+
+    }, {
+        key: 'makePublic',
+        value: function makePublic() {
+            this._public = true;
+        }
+
+        /**
+         * Makes no longer visible to students
+         */
+
+    }, {
+        key: 'hide',
+        value: function hide() {
+            this._public = false;
+        }
+    }, {
+        key: 'togglePublic',
+        value: function togglePublic() {
+            console.log('Item', 'CALLED', 'togglePublic', this._public);
+            this._public = !this._public;
+            console.log(this._public);
+        }
+
+        /* *************************** Type *************** */
+
+    }, {
+        key: 'id',
+        get: function get() {
+            return Number(this._id) || null;
+        }
+
+        /**
+         * Alias for _id
+         */
+        ,
+        set: function set(v) {
+            this._id = Number(v);
+        }
+
+        /* *************************** Index *************** */
+        // /**
+        //  * The locator for the item
+        //  * @returns {*}
+        //  */
+        // get index() {
+        //     return this._index;
+        // }
+        //
+        // /**
+        //  * The locator for the item
+        //  * @param v
+        //  */
+        // set index( v ) {
+        //     this._index = v;
+        // }
+        //
+
+        /* *************************** Max score *************** */
+
+    }, {
+        key: 'maxScore',
+        get: function get() {
+            return this._maxScore ? Number(this._maxScore) : null;
+        },
+        set: function set(score) {
+            this._maxScore = score;
+        }
+    }, {
+        key: 'type',
+        get: function get() {
+            return this._type;
+        }
+
+        // /* *************************** Text *************** */
+        // /**
+        //  * The full length text of the item.
+        //  * @returns {*}
+        //  */
+        // get text() {
+        //     return this._text;
+        // }
+        //
+        // /**
+        //  * The full length text of the item.
+        //  * @param v
+        //  */
+        // set text( v ) {
+        //     this._text = v;
+        // }
+        //
+
+        /* *************************** Name *************** */
+        // /**
+        //  * The nickname or title by which this item is identified
+        //  * @returns {*}
+        //  */
+        // get name() {
+        //     return this._name;
+        // }
+        //
+        // /**
+        //  * The nickname or title by which this item is identified
+        //  * @param v
+        //  */
+        // set name( v ) {
+        //     this._name = v;
+        // }
+        //
+
+
+        /**
+         * Returns a list of fields which may
+         * be used to look up an exam from the store
+         */
+
+    }], [{
+        key: 'identifiers',
+        value: function identifiers() {
+            return ['id', 'index'];
+        }
+
+        /**
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
+         */
+
+    }, {
+        key: 'factory',
+        value: function factory(params) {
+            var obj = new Item();
+            return this.fillObject(obj, params);
+        }
+    }, {
+        key: 'fillableProps',
+        get: function get() {
+            return ['id', 'index', 'name', 'text', 'maxScore'];
+        }
+    }, {
+        key: 'aliasMap',
+        get: function get() {
+            return {
+                ItemId: 'id',
+                ItemIndex: 'index'
+            };
+        }
+    }]);
+
+    return Item;
+}(_IModel3.default);
+
+exports.default = Item;
+
+},{"./IModel":5}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12156,6 +11733,9 @@ var Payload = function () {
 
         /** The timestamp in the payload */
         this._stamp;
+
+        this.str;
+        this.index;
     }
 
     /*  ************************* Identifier values ************************* */
@@ -12170,15 +11750,16 @@ var Payload = function () {
             //todo numeric check
             this._id = val;
         }
-    }, {
-        key: 'index',
-        get: function get() {
-            return this._index;
-        },
-        set: function set(val) {
-            //todo numeric check
-            this._index = val;
-        }
+        //
+        // get index() {
+        //     return this._index;
+        // }
+        //
+        // set index( val ) {
+        //     //todo numeric check
+        //     this._index = val;
+        // }
+
     }, {
         key: 'index2',
         get: function get() {
@@ -12188,6 +11769,7 @@ var Payload = function () {
             //todo numeric check
             this._index2 = val;
         }
+
         //
         // get complexIndex(){
         //     if(typeof this._index2 != 'undefined'){
@@ -12217,15 +11799,16 @@ var Payload = function () {
             }
             //todo error handling
         }
-    }, {
-        key: 'str',
-        get: function get() {
-            return this._obj;
-        },
-        set: function set(v) {
-            //todo string check
-            this._str = v;
-        }
+        //
+        //
+        // get str() {
+        //     return this._obj;
+        // }
+        //
+        // set str( v ) {
+        //     //todo string check
+        //     this._str = v;
+        // }
 
         /**
          * Returns a list of strings which are property
@@ -12286,7 +11869,7 @@ var Payload = function () {
 
 exports.default = Payload;
 
-},{}],12:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12295,26 +11878,40 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _Item2 = require('./Item');
+
+var _Item3 = _interopRequireDefault(_Item2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/**
- * Created by adam on 8/18/16.
- */
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Created by adam on 8/18/16.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
 
 /**
  * Model for questions
  */
-var Question = function () {
+
+// import IModel from './IModel';
+
+
+var Question = function (_Item) {
+    _inherits(Question, _Item);
+
     function Question(questionIndex) {
         _classCallCheck(this, Question);
 
-        this._id;
-        this._index;
-        this.questionIndex = questionIndex;
-        this._questionName;
-        this._questionNumber;
-        this._questionAssignmentId;
-        this._maxScore;
+        var _this = _possibleConstructorReturn(this, (Question.__proto__ || Object.getPrototypeOf(Question)).call(this));
+
+        _this.questionIndex = questionIndex;
+        _this._questionName;
+        _this._questionNumber;
+        _this._questionAssignmentId;
+        return _this;
     }
 
     /* *************************** Id *************** */
@@ -12325,25 +11922,6 @@ var Question = function () {
 
 
     _createClass(Question, [{
-        key: 'id',
-        get: function get() {
-            return this._id;
-        }
-
-        /**
-         * Alias setter for _id
-         * @param v
-         */
-        ,
-        set: function set(v) {
-            this._id = v;
-        }
-        /**
-         * Alias for _id
-         * @returns {*}
-         */
-
-    }, {
         key: 'questionId',
         get: function get() {
             return this._id;
@@ -12359,25 +11937,6 @@ var Question = function () {
         }
 
         /* *************************** Index ************* */
-        /**
-         * Alias for _id
-         * @returns {*}
-         */
-
-    }, {
-        key: 'index',
-        get: function get() {
-            return this._index;
-        }
-
-        /**
-         * Alias setter for _id
-         * @param v
-         */
-        ,
-        set: function set(v) {
-            this._index = v;
-        }
 
         /**
          * Alias for _id
@@ -12424,14 +11983,6 @@ var Question = function () {
         set: function set(id) {
             this._questionAssignmentId = id;
         }
-    }, {
-        key: 'maxScore',
-        get: function get() {
-            return this._maxScore ? Number(this._maxScore) : null;
-        },
-        set: function set(score) {
-            this._maxScore = score;
-        }
     }], [{
         key: 'factory',
 
@@ -12444,26 +11995,9 @@ var Question = function () {
          */
         value: function factory(params) {
             var obj = new Question();
-
-            if (typeof params != 'undefined') {
-                //fill any fillable values
-                this.fillableProps.forEach(function (v) {
-                    // console.log( 'params', params, v );
-                    if (typeof params[v] != 'undefined') {
-                        obj[v] = params[v];
-                    }
-                });
-                //fill any aliased values
-                for (var v in this.aliasMap) {
-                    if (typeof params[v] != 'undefined') {
-                        // console.log( 'alias', v, map[v] );
-                        obj[this.aliasMap[v]] = params[v];
-                    }
-                }
-            }
             //we will still return an empty object if there
             //were no parameters
-            return obj;
+            return this.fillObject(obj, params);
         }
     }, {
         key: 'fillableProps',
@@ -12488,11 +12022,11 @@ var Question = function () {
     }]);
 
     return Question;
-}();
+}(_Item3.default);
 
 exports.default = Question;
 
-},{}],13:[function(require,module,exports){
+},{"./Item":6}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12783,7 +12317,674 @@ var Student = function (_IModel) {
 
 exports.default = Student;
 
-},{"./IModel":10}],14:[function(require,module,exports){
+},{"./IModel":5}],10:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Created by adam on 1/10/17.
+ */
+
+var addStudent = exports.addStudent = 'addStudent';
+
+//activeexam
+var setActiveExam = exports.setActiveExam = 'setActiveExam';
+var clearActiveExam = exports.clearActiveExam = 'clearActiveExam';
+
+//activestudent
+var setActiveStudent = exports.setActiveStudent = 'setActiveStudent';
+var setActiveStudentId = exports.setActiveStudentId = 'setActiveStudentId';
+var setActiveStudentIndex = exports.setActiveStudentIndex = 'setActiveStudentIndex';
+var setActiveStudentObject = exports.setActiveStudentObject = 'setActiveStudentObject';
+var setActiveStudentTime = exports.setActiveStudentTime = 'setActiveStudentTime';
+var setIndex = exports.setIndex = 'setIndex';
+var setId = exports.setId = 'setId';
+var setTime = exports.setTime = 'setTime';
+var setStudentObject = exports.setStudentObject = 'setStudentObject';
+var clearActiveStudent = exports.clearActiveStudent = 'clearActiveStudent';
+
+//comments
+var storeCommentTextForActiveStudent = exports.storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent';
+var storeCommentText = exports.storeCommentText = 'storeCommentText';
+
+//escores
+var setElementScore = exports.setElementScore = 'setElementScore';
+var loadElementScores = exports.loadElementScores = 'loadElementScores';
+var storeElementScoreForActiveStudent = exports.storeElementScoreForActiveStudent = 'storeElementScoreForActiveStudent';
+
+//exams
+var addNewExam = exports.addNewExam = 'addNewExam';
+var loadExams = exports.loadExams = 'loadExams';
+
+//grades
+var loadExamGrades = exports.loadExamGrades = 'loadExamGrades';
+var loadStandardGrades = exports.loadStandardGrades = 'loadStandardGrades';
+var updateExamGrade = exports.updateExamGrade = 'updateExamGrade';
+
+//qscores
+var loadQuestionScores = exports.loadQuestionScores = 'loadQuestionScores';
+var setQuestionScore = exports.setQuestionScore = 'setQuestionScore';
+var storeQuestionScoreForActiveStudent = exports.storeQuestionScoreForActiveStudent = 'storeQuestionScoreForActiveStudent';
+
+//questions
+var loadMaxQuestionScores = exports.loadMaxQuestionScores = 'loadMaxQuestionScores';
+var loadQuestions = exports.loadQuestions = 'loadQuestions';
+var loadNumberQuestions = exports.loadNumberQuestions = 'loadNumberQuestions';
+var addQuestion = exports.addQuestion = 'addQuestion';
+
+//students
+var loadStudents = exports.loadStudents = 'loadStudents';
+
+//times
+var storeGradingTime = exports.storeGradingTime = 'storeGradingTime';
+var increaseActiveStudentGradingTime = exports.increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime';
+var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
+var loadGradingTimes = exports.loadGradingTimes = 'loadGradingTimes';
+
+//items
+var createItem = exports.createItem = 'createItem';
+var addNewItem = exports.addNewItem = 'addNewItem';
+var loadItems = exports.loadItems = 'loadItems';
+var updateItemName = exports.updateItemName = 'updateItemName';
+
+},{}],11:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.actions = undefined;
+
+var _actions;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; //Root actions for the vuex instance
+
+var _mutationTypes = require('./mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('./action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _Student = require('../models/Student');
+
+var _Student2 = _interopRequireDefault(_Student);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes.setActiveStudentId, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
+
+    // [aTypes.setActiveStudentId](state, rootState, payload){
+
+    console.log(aTypes.setActiveStudentId, 'is deprecated!');
+    console.log(aTypes.setActiveStudentId, payload);
+    payload = state.activeStudent;
+
+    actions[aTypes.setActiveStudent](state, commit, payload);
+
+    // let studentId;
+    //
+    // //number passed in
+    // if (typeof (payload) == 'number' && Number.isInteger(payload)) {
+    //     studentId = payload;
+    // }
+    //
+    //
+    // //object passed in
+    // //todo add object case
+    // console.log('studentId', studentId);
+    // if (Number.isInteger(studentId)) {
+    //     commit(mTypes.setId, Payload.factory({num: studentId}));
+    // }
+}), _defineProperty(_actions, aTypes.setActiveStudentIndex, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+
+    console.log(aTypes.setActiveStudentIndex, 'is deprecated!');
+    payload = state.activeStudent;
+    actions[aTypes.setActiveStudent](state, commit, payload);
+    // let studentIndex;
+    // switch (typeof (payload)) {
+    //     case 'number':
+    //         if (Number.isInteger(payload)) {
+    //             studentIndex = payload;
+    //         }
+    //         break;
+    //     case 'object':
+    //         //todo write if object
+    //
+    //         break;
+    //     default:
+    // }
+    //
+    // if (Number.isInteger(studentIndex)) {
+    //     commit(mTypes.setIndex, studentIndex);
+    // }
+}), _defineProperty(_actions, aTypes.setActiveStudentObject, function (_ref3, payload) {
+    var state = _ref3.state,
+        commit = _ref3.commit;
+
+    console.log(aTypes.setActiveStudentObject, 'is deprecated!');
+    [aTypes.setActiveStudent](state, commit, payload);
+    // // let student;
+    //
+    // // if (payload instanceof Student) {
+    // //     student = payload;
+    // // }
+    // // switch(typeof (payload)){
+    // //     case 'number':
+    // //         if(Number.isInteger(payload)){
+    // //             studentIndex = payload;
+    // //         }
+    // //         break;
+    // //     case 'object':
+    // //         //todo write if object
+    // //
+    // //         break;
+    // //     default:
+    // // }
+    //
+    // //Call the mutation
+    // if (payload instanceof Student) {
+    //     commit(mTypes.setStudentObject, payload);
+    // }
+}), _defineProperty(_actions, aTypes.setIndex, function (_ref4, payload) {
+    var state = _ref4.state,
+        commit = _ref4.commit;
+
+    console.log(aTypes.setIndex, 'is deprecated!');
+    console.log(aTypes.setIndex, payload);
+    payload = state.activeStudent;
+    actions[aTypes.setActiveStudent](state, commit, payload);
+}), _defineProperty(_actions, aTypes.setId, function (_ref5, payload) {
+    var state = _ref5.state,
+        commit = _ref5.commit;
+
+    console.log(aTypes.setId, 'is deprecated!');
+    payload = state.activeStudent;
+
+    actions[aTypes.setActiveStudent](state, commit, payload);
+}), _defineProperty(_actions, aTypes.setStudentObject, function (_ref6, payload) {
+    var state = _ref6.state,
+        commit = _ref6.commit;
+
+    payload = state.activeStudent;
+
+    if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == 'object' && payload instanceof _Student2.default) {
+        commit(mTypes.setActiveStudent, Payload.factory({ obj: payload }));
+        // state.student = payload;
+    }
+}), _defineProperty(_actions, aTypes.setActiveStudentTime, function (_ref7, payload) {
+    var state = _ref7.state,
+        commit = _ref7.commit;
+
+
+    var studentIndex = state.activeStudent.index;
+    var time = void 0;
+
+    switch (typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) {
+        case 'number':
+            if (Number.isInteger(payload)) {
+                //go straight to recording
+                time = payload;
+            }
+            break;
+
+        //object with expected key
+        case 'object':
+            //todo write if object
+            break;
+
+        //other allowed types
+        // todo
+
+        //numeric string
+        // todo
+        default:
+        //todo
+    }
+
+    //Call the mutation
+    if (typeof time == 'number') {
+        commit(mTypes.setTime, time);
+    }
+}), _defineProperty(_actions, aTypes.increaseActiveStudentGradingTime, function (_ref8, payload) {
+    var state = _ref8.state,
+        commit = _ref8.commit;
+
+    var studentIndex = state.activeStudent.index;
+    state.examGradingTimes[studentIndex] += payload.timeToAdd;
+}), _defineProperty(_actions, aTypes.storeQuestionScoreForActiveStudent, function (_ref9, payload) {
+    var state = _ref9.state,
+        commit = _ref9.commit;
+
+    // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
+    var questionIndex = payload.questionIndex,
+        score = payload.score;
+
+    var studentIndex = state.activeStudent.index;
+    //type checking
+
+    var out = Payload.factory({ index2: questionIndex, index: studentIndex, num: score });
+
+    commit(mTypes.setQuestionScore, out);
+}), _defineProperty(_actions, aTypes.storeElementScoreForActiveStudent, function (_ref10, payload) {
+    var state = _ref10.state,
+        commit = _ref10.commit;
+
+    var studentIndex = state.getActiveStudentIndex();
+    var elementIndex = payload.elementIndex,
+        score = payload.score;
+    //type checks
+
+    if (typeof score == 'undefined') {
+        //score may have been named differently
+        score = payload.elementScore;
+    }
+
+    var out = Payload.factory({
+        index: studentIndex,
+        index2: elementIndex,
+        num: score
+    });
+
+    commit(mTypes.setElementScore, out);
+}), _actions);
+
+},{"../models/Student":9,"./action-types":10,"./mutation-types":26}],12:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+/**
+ * Created by adam on 1/10/17.
+ */
+
+/**
+ * Returns true if at least one question has received
+ * a score for the student.
+ */
+var isGraded = exports.isGraded = function isGraded(state, studentIndex) {
+    state.updateExamGrade(studentIndex);
+    if (state.examGrades[studentIndex] != "Letter grade" && state.examGrades[studentIndex] >= 0) {
+        return true;
+    }
+    return false;
+};
+
+/* ------------ Utilities --------------*/
+
+/**
+ * Checks to make sure that a property has had its
+ * values loaded before trying to do stuff with it
+ *
+ * @param propertyName
+ */
+var checkValid = exports.checkValid = function checkValid(state, propertyName) {
+    if (typeof state[propertyName] != 'undefined') {
+        throw propertyName + " is undefined";
+    }
+    if (state[propertyName] == null) {
+        throw propertyName + " is null";
+    }
+    if (state[propertyName] == {}) {
+        throw propertyName + " was empty. Probably because it wasn't initialized";
+    }
+
+    return true;
+};
+
+},{}],13:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+/**
+ * Root getters for the vuex instance
+ *
+ * Methods which make use of multiple modules should generally be kept here
+ */
+
+/**
+ * Helper function used by getters which tests for an index value and then
+ * handles undefined and  null inputs when they were expecting
+ * a numeric index.
+ */
+var validateIndex = function validateIndex(index) {
+    var handleInvalid = function handleInvalid() {
+        return '';
+    };
+
+    if (typeof index == 'undefined') return handleInvalid();
+    if (index === null) return handleInvalid();
+
+    return true;
+};
+
+/**
+ * Poorly named shortcut for getting the db id of
+ * the currently active exam.
+ * @param state
+ */
+var getExamId = exports.getExamId = function getExamId(state) {
+    return state.activeExam.id;
+};
+
+/**
+ * Returns true if some student is set as active.
+ * Saves the trouble of other methods having to figure out whether a student
+ * is set as active student (which can run into trouble if, for example, the
+ * active student has index 0 and the consuming method interprets this as false).
+ */
+var isActive = exports.isActive = function isActive(state) {
+    if (typeof state.activeStudent == 'undefined') return false;
+    if (state.activeStudent === null) return false;
+    if (state.activeStudent.index >= 0) {
+        return true;
+    }
+    return false;
+};
+
+/**
+ * Returns the number of exams that have been graded.
+ * NB, before counting them it first goes through and makes
+ * sure that each examGrade is set to the sum of graded questions
+ * for that exam.
+ */
+var getNumberGraded = exports.getNumberGraded = function getNumberGraded(state) {
+    var graded = 0;
+
+    if (Object.keys(state.examGrades).length > 0) {
+        //Loop through each exam (via studentIndex as key)
+        for (var i = 0; i < Object.keys(state.examGrades).length; i++) {
+            //Make sure the stored exam total score is up to date
+            state.updateExamGrade(i);
+            //this will be the string 'letter grade' if
+            //no grade has been entered. Thus we check
+            //whether it is a number 0 or greater
+            //if it is graded, increment the number graded
+            if (state.examGrades[i] >= 0) graded++;
+        }
+    }
+    return graded;
+};
+
+/**
+ * Returns the total number of exams
+ *
+ * @returns {number|Number}
+ */
+var getTotalExams = exports.getTotalExams = function getTotalExams(state) {
+    var total = 0;
+    if (Object.keys(state.examGrades).length > 0) {
+        total = Object.keys(state.examGrades).length;
+    }
+
+    return total;
+};
+
+//------------ from qscores
+
+/**
+ * Convenience function for getting the current student's score for question
+ * Old way: data.this.questionScores[ Roster.activeStudent ][ index ];
+ *  if ( state.activeStudentIndex == null ) return '';
+ *  return state.getQuestionScore( this.activeStudentIndex, questionIndex );
+ * @param questionIndex
+ */
+var getQuestionScoreForActiveStudent = exports.getQuestionScoreForActiveStudent = function getQuestionScoreForActiveStudent(state, getters, rootState, questionIndex) {
+    var idx = getters.getActiveStudentIndex(state, getters, rootState);
+    if (idx == null) return '';
+    return getters.getQuestionScore(state, getters, rootState, idx, questionIndex);
+    // if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set ";
+};
+
+// --------------- from times
+
+/**
+ * Convenience method for getting the grading time of the student presently
+ * being graded
+ * if ( state.activeStudentIndex == null ) return '';
+ * return state.examGradingTimes[ state.activeStudentIndex ];
+ * return getters.getStudentGradingTime( state, getters, state.activeStudentIndex );
+ * @returns {*}
+ */
+var getActiveStudentGradingTime = exports.getActiveStudentGradingTime = function getActiveStudentGradingTime(state, getters, rootState) {
+    var idx = getters.getActiveStudentIndex(state, getters, rootState);
+    if (idx == null) return '';
+    return getters.getStudentGradingTime(state, getters, idx);
+    // if ( ! this.isActive() ) throw "ERROR: getActiveStudentGradingTime | No active student set ";
+};
+
+//--------------- comments
+
+/**
+ * Gets the comment text for the student
+ * @param state
+ * @param getters
+ * @param rootState
+ * @param elementIndex
+ * @param valence
+ * @returns {*}
+ */
+var getCommentTextForActiveStudent = exports.getCommentTextForActiveStudent = function getCommentTextForActiveStudent(state, getters, rootState, elementIndex, valence) {
+    //If no student is set, the comment field should be blank
+    var idx = getters.getActiveStudentIndex(state, getters, rootState);
+    validateIndex(idx);
+    //    if ( idx == null ) return '';
+
+    return getters.getCommentText(state, getters, rootState, idx, elementIndex, valence);
+};
+
+//------------------ grades
+/**
+ * Retrieves exam grade for current student
+ * if ( state.activeStudentIndex == null ) return '';
+ * return state.examGrades[ state.activeStudent ];
+ * @param state
+ * @param getters
+ * @param rootState
+ * @returns {*}
+ */
+var getExamGradeForActiveStudent = exports.getExamGradeForActiveStudent = function getExamGradeForActiveStudent(state, getters, rootState) {
+    var idx = getters.getActiveStudentIndex(state, getters, rootState);
+    validateIndex(idx);
+    // if ( idx == null ) return '';
+    return getters.getExamGrade(state, getters, rootState, idx);
+};
+
+//------------ escores
+var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = function getElementScoreForActiveStudent(state, getters, rootState, elementIndex) {
+    var idx = getters.getActiveStudentIndex(state, getters, rootState);
+    validateIndex(idx);
+    // if ( idx == null ) return '';
+    return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
+};
+
+},{}],14:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; /**
+                                                                                                                                                                                                                                                   * Created by adam on 1/10/17.
+                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                   * Notes about how to use
+                                                                                                                                                                                                                                                   * However, this pattern causes the component to rely on the global store singleton. When using a module system, it requires importing the store in every component that uses store state, and also requires mocking when testing the component.
+                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                   Vuex provides a mechanism to "inject" the store into all child components from the root component with the store option (enabled by Vue.use(Vuex)):
+                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                   const app = new Vue({
+                                                                                                                                                                                                                                                    el: '#app',
+                                                                                                                                                                                                                                                    // provide the store using the "store" option.
+                                                                                                                                                                                                                                                    // this will inject the store instance to all child components.
+                                                                                                                                                                                                                                                    store,
+                                                                                                                                                                                                                                                    components: { Counter },
+                                                                                                                                                                                                                                                    template: `
+                                                                                                                                                                                                                                                      <div class="app">
+                                                                                                                                                                                                                                                        <counter></counter>
+                                                                                                                                                                                                                                                      </div>
+                                                                                                                                                                                                                                                    `
+                                                                                                                                                                                                                                                  })
+                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                   By providing the store option to the root instance, the store will be injected into all child components of the root and will be available on them as this.$store. Let's update our Counter implementation:
+                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                   const Counter = {
+                                                                                                                                                                                                                                                    template: `<div>{{ count }}</div>`,
+                                                                                                                                                                                                                                                    computed: {
+                                                                                                                                                                                                                                                      count () {
+                                                                                                                                                                                                                                                        return this.$store.state.count
+                                                                                                                                                                                                                                                      }
+                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                  }
+                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                   */
+
+var _vue = require('vue');
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _vuex = require('vuex');
+
+var _vuex2 = _interopRequireDefault(_vuex);
+
+var _actions = require('./actions');
+
+var actions = _interopRequireWildcard(_actions);
+
+var _getters = require('./getters');
+
+var getters = _interopRequireWildcard(_getters);
+
+var _mutations = require('./mutations');
+
+var mutations = _interopRequireWildcard(_mutations);
+
+var _state = require('./state');
+
+var state = _interopRequireWildcard(_state);
+
+var _api = require('./api');
+
+var api = _interopRequireWildcard(_api);
+
+var _activestudent = require('./modules/activestudent.js');
+
+var _activestudent2 = _interopRequireDefault(_activestudent);
+
+var _activeexam = require('./modules/activeexam.js');
+
+var _activeexam2 = _interopRequireDefault(_activeexam);
+
+var _comments = require('./modules/comments.js');
+
+var _comments2 = _interopRequireDefault(_comments);
+
+var _escores = require('./modules/escores.js');
+
+var _escores2 = _interopRequireDefault(_escores);
+
+var _items = require('./modules/items.js');
+
+var _items2 = _interopRequireDefault(_items);
+
+var _grades = require('./modules/grades.js');
+
+var _grades2 = _interopRequireDefault(_grades);
+
+var _qscores = require('./modules/qscores.js');
+
+var _qscores2 = _interopRequireDefault(_qscores);
+
+var _questions = require('./modules/questions.js');
+
+var _questions2 = _interopRequireDefault(_questions);
+
+var _students = require('./modules/students.js');
+
+var _students2 = _interopRequireDefault(_students);
+
+var _times = require('./modules/times.js');
+
+var _times2 = _interopRequireDefault(_times);
+
+var _item = require('./modules/item.names');
+
+var _item2 = _interopRequireDefault(_item);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// import gradeStateDefault from './modules/grade.defaultstate'
+// import createLogger from '../../../src/plugins/logger'
+
+_vue2.default.use(_vuex2.default);
+
+var debug = process.env.NODE_ENV !== 'production';
+
+exports.default = new _vuex2.default.Store({
+  /**
+   * From instances and components where store has been
+   * injected, actions are called
+   * like so: store.dispatch( 'string-action-name' )
+   */
+  actions: actions,
+  getters: getters,
+  mutations: {
+    /**
+     * Sets the current exam id
+     *
+     * @todo Extend to set from an exam object
+     *
+     * @param state
+     * @param payload
+     */
+    _setExamId: function _setExamId(state, payload) {
+      if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == Number) {
+        state.examId = payload;
+      }
+
+      window.console.log('setExamId', state);
+    }
+  },
+
+  modules: {
+    activeexam: _activeexam2.default,
+    activestudent: _activestudent2.default,
+    comments: _comments2.default,
+    escores: _escores2.default,
+    items: _items2.default,
+    grades: _grades2.default,
+    qscores: _qscores2.default,
+    questions: _questions2.default,
+    students: _students2.default,
+    times: _times2.default,
+    names: _item2.default
+  },
+  state: state,
+  api: api,
+
+  strict: debug });
+
+}).call(this,require('_process'))
+},{"./actions":11,"./api":12,"./getters":13,"./modules/activeexam.js":15,"./modules/activestudent.js":16,"./modules/comments.js":17,"./modules/escores.js":18,"./modules/grades.js":19,"./modules/item.names":20,"./modules/items.js":21,"./modules/qscores.js":22,"./modules/questions.js":23,"./modules/students.js":24,"./modules/times.js":25,"./mutations":27,"./state":28,"_process":1,"vue":2,"vuex":3}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12800,11 +13001,11 @@ var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _Exam = require('../models/Exam');
+var _Exam = require('../../models/Exam');
 
 var _Exam2 = _interopRequireDefault(_Exam);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -12881,7 +13082,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":4,"../models/Exam":9,"../models/Payload":11,"../mutation-types":23}],15:[function(require,module,exports){
+},{"../../models/Exam":4,"../../models/Payload":7,"../action-types":10,"../mutation-types":26}],16:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12898,11 +13099,11 @@ var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _Student = require('../models/Student');
+var _Student = require('../../models/Student');
 
 var _Student2 = _interopRequireDefault(_Student);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -13014,7 +13215,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":4,"../models/Payload":11,"../models/Student":13,"../mutation-types":23}],16:[function(require,module,exports){
+},{"../../models/Payload":7,"../../models/Student":9,"../action-types":10,"../mutation-types":26}],17:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13031,7 +13232,7 @@ var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -13178,7 +13379,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":4,"../models/Payload":11,"../mutation-types":23}],17:[function(require,module,exports){
+},{"../../models/Payload":7,"../action-types":10,"../mutation-types":26}],18:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13195,7 +13396,7 @@ var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -13272,7 +13473,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":4,"../models/Payload":11,"../mutation-types":23}],18:[function(require,module,exports){
+},{"../../models/Payload":7,"../action-types":10,"../mutation-types":26}],19:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13289,7 +13490,7 @@ var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -13431,7 +13632,445 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":4,"../models/Payload":11,"../mutation-types":23}],19:[function(require,module,exports){
+},{"../../models/Payload":7,"../action-types":10,"../mutation-types":26}],20:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations;
+
+var _mutationTypes = require('../mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 3/10/17.
+                                                                                                                                                                                                                   */
+
+var state = {
+    // itemNames: {}
+    itemNames: [] //new Map()
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setItemNameByIndex, function (state, payload) {
+    console.log('*****', 'addName', payload, state);
+    // Vue.set(state.itemNames, payload.index, payload.str);
+
+    //state.itemNames.splice( payload.index, 0, payload.str );
+}), _defineProperty(_mutations, mTypes.updateItemNameByIndex, function (state, payload) {
+    console.log('*****', 'updateItemNameByIndex', state, payload);
+    state.itemNames.$set(payload.index, payload.str);
+}), _mutations);
+
+var actions = {};
+var getters = {
+
+    getItemNameByIndex: function getItemNameByIndex(state, getters) {
+        return function (index) {
+            console.log('getItemNameByIndex', state, index);
+            // return state.itemNames.filter((index) => state.itemNames[index] );
+
+            return state.itemNames[index];
+            // return state.itemNames.get( index )
+        };
+    }
+};
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+},{"../../models/Payload":7,"../action-types":10,"../mutation-types":26}],21:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _mutations, _actions;
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = require('../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * The older version used an index value to do lots of stuff.
+ * Given the prospect of using a websocket connection or connecting
+ * to canvas or other 3rd party system, it now makes more sense
+ * to use the db's id as the primary locator in the store. Thus
+ * state.Items has the Item's database id as key and an Item object
+ * as value. That is:
+ *      state.Items[Item.id] = Item
+ *
+ * To maintain compatibility, indexMap holds a mapping from the old
+ * ItemIndex to the database id
+ */
+var state = {
+
+    /**
+     * Object indexed by Item id holding Item objects
+     */
+    items: [],
+
+    // items: new Map(),
+    // itemsRepo: [], // Item.factory( {index: 0} ) ],
+    // // items: {},
+
+    /**
+     * Mapping from older ItemIndex to new Item id value
+     */
+    indexMap: new Map()
+
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.addNewItem, function (state, payload) {
+    console.log(mTypes.addNewItem, state, payload);
+    var len = state.items.length;
+    //set the item index
+    var index = len == 0 || 1 ? len : len + 1;
+    var item = _Item2.default.factory({ index: index });
+
+    state.items.push(item);
+}), _defineProperty(_mutations, mTypes.updateItemName, function (state, payload) {
+    console.log('*****', mTypes.updateItemName, payload, state);
+    var itm = state.items[payload.index];
+    itm.name = payload.str;
+    state.items.$set(payload.index, itm);
+    // state.itemNames.$set(payload.index,  payload.str);
+}), _defineProperty(_mutations, mTypes.addItem, function (state, payload) {
+    //thi should probably be renamed 'set item' because it is for settong
+    //at a certain index, rather than pushing it in at the front
+    console.log('items.mutations', mTypes.addItem, state, payload);
+
+    // state.itemRepo.$set( payload.obj.index, payload.obj );
+    state.items.$set(payload.obj.index, payload.obj);
+
+    //If we received an item by itself, wrap it in a payload
+    // //no idea why I decided to permit this....
+    // if ( payload instanceof Item ) {
+    //     payload = Payload.factory( {obj: payload} );
+    // }
+    //
+    // //at this point, when the button has been clicked,
+    // //there is an index (or at least question number/subtask
+    // //but not an id
+    // if ( Payload.checkIfPayload( payload ) && payload.obj instanceof Item ) {
+    //     //push into Items storage
+    //     state.items.set(payload.obj.index , payload.obj);
+    //     // state.items[ payload.obj.index ] = payload.obj;
+    // }
+
+    //todo add error handling
+}), _defineProperty(_mutations, mTypes.updateItemNameByIndex, function (state, payload) {
+    console.log('*****', 'updateItemNameByIndex', state, payload);
+    //state.itemNames.$set(payload.index,  payload.str);
+}), _defineProperty(_mutations, mTypes.addItemIndexMapping, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+
+    state.indexMap.set(payload.index, payload.id);
+}), _mutations);
+
+/**
+ * Build an input object and return a payload object
+ * containing it
+ */
+var createItemExNihlo = function createItemExNihlo(state) {
+    //nothing was passed in.
+    //This probably means the add new item button was clicked
+    // let len = getters.getNumberOfItems( state, {}, {} ) + 1 || 0
+    var len = state.items.length;
+    var index = len == 0 ? len : len + 1;
+
+    var obj = _Item2.default.factory({ index: index });
+    var out = _Payload2.default.factory({ obj: obj });
+    return out;
+};
+
+/**
+ * Build an input object out of an input object
+ * and return a payload object containing it
+ * @param input
+ */
+var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, payload) {
+    //either a json or an item object have been passed in
+    var ItemId = payload.ItemId,
+        ItemIndex = payload.ItemIndex,
+        obj = payload.obj,
+        ItemObject = payload.ItemObject;
+
+
+    obj = typeof ItemObject != 'undefined' ? ItemObject : obj;
+
+    //check and see if an Item object has already been passed in
+    if (!obj instanceof _Item2.default) {
+        //create a new Item
+        var name = payload.name,
+            id = payload.id,
+            index = payload.index;
+
+        var ItemJson = { name: name, ItemIndex: ItemIndex };
+        obj = _Item2.default.factory(ItemJson);
+    }
+
+    //assemble the expected payload
+    // let out = { ItemId: ItemId, ItemIndex: ItemIndex, obj: obj };
+    var out = _Payload2.default.factory({ id: obj.id, index: obj.index, obj: obj });
+    //Add to the Items store
+    return out;
+};
+
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.createItem, function (_ref) {
+    var state = _ref.state,
+        commit = _ref.commit;
+
+    commit(mTypes.addNewItem);
+}), _defineProperty(_actions, aTypes.addNewItem, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+    var len = state.items.length;
+    var index = len == 0 ? len : len + 1;
+
+    var obj = _Item2.default.factory({ index: index });
+    var out = _Payload2.default.factory({ obj: obj });
+    // commit( mTypes.addItem, out );
+    commit(mTypes.addNewItem);
+
+    // let out = createItemExNihlo( state );
+    // // (typeof payload != 'undefined') ? this.buildPayloadFromInput(payload) : createItemExNihlo(state);
+    // console.log( 'addNewItem out', out );
+    //
+    // if ( typeof out != 'undefined' && Payload.checkIfPayload(out)) {
+    //     console.log( 'addNewItem != undefined ', out );
+    //     commit( mTypes.addItem, out );
+    //     //Add to the mapping store
+    //     // commit( mTypes.addIndexMapping, out );
+    // }
+}), _defineProperty(_actions, aTypes.loadItems, function (state, rootState, payload) {
+    //check if payload has correct structure
+    //todo
+
+    //push each record from the payload into the store
+    for (var i = 0; i < payload.length; i++) {
+        var record = payload[i];
+        //check if record has correct structure
+        //todo
+
+        //add to Items and add index mapping
+        [aTypes.addNewItem](state, rootState, record);
+    }
+}), _actions);
+
+var getters = {
+    /**
+     * Returns the desired Item object
+     * Payload can have any of the following identifiers,
+     * used in descending order:
+     *      ItemId,
+     *      ItemIndex
+     *      todo Add others
+     * @param state
+     * @param getters
+     * @param payload Object containing Item identifier
+     */
+    getItem: function getItem(state, getters, rootState, payload) {
+        var index = void 0;
+
+        //room for other ways of finding index
+        index = payload.index;
+
+        // return state.items[index];
+        console.log('getItem', payload);
+        return state.items[index];
+    },
+
+    /**
+     * Returns the item object with the given index
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param index
+     */
+    getItemByIndex: function getItemByIndex(state, getters) {
+        return function (index) {
+            console.log('getItemByIndex', state, index);
+
+            return function (state, index) {
+                var r = state.items.filter(function (i) {
+                    if (i.index === index) {
+                        return i;
+                    }
+                });
+                return r[0];
+            }(state, index);
+        };
+    },
+
+    /**
+     * Returns list of items objects
+     * @param state
+     * @param getters
+     * @param payload
+     * @returns []
+     */
+    getAllItems: function getAllItems(state, getters, rootState) {
+        return state.items;
+        // return state.items.entries()
+    },
+
+    getAllIndexesList: function getAllIndexesList(state, getters, rootState, payload) {
+        var out = [];
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+            for (var _iterator = state.items.entries()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var _step$value = _slicedToArray(_step.value, 2),
+                    key = _step$value[0],
+                    val = _step$value[1];
+
+                console.log('getall idexes itemslist', key, val);
+                out.push(key);
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+
+        return out;
+    },
+
+    /**
+     * Return list of Item objects
+     * @param state
+     * @param getters
+     * @param payload
+     * @returns []
+     */
+    getAllItemsList: function getAllItemsList(state, getters) {
+        return function (items) {
+            var out = [];
+            // if ( state.items.size > 0 ) {
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+                for (var _iterator2 = items.entries()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var _step2$value = _slicedToArray(_step2.value, 2),
+                        key = _step2$value[0],
+                        val = _step2$value[1];
+
+                    // for ( let [ key, val ] of state.items.entries() ) {
+                    console.log('getallitemslist', key, val);
+                    out.push(val);
+                }
+                // }
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
+                }
+            }
+
+            return out;
+        };
+    },
+
+    getItemCount: function getItemCount(state) {
+        return state.itemsRepo.length;
+    },
+
+    /**
+     * Returns the current count of items
+     * @param state
+     * @param getters
+     * @param payload
+     * @returns {Number}
+     */
+    getNumberOfItems: function getNumberOfItems(state, getters) {
+        return function (items) {
+            // return items.size;
+            return items.length;
+            // return Object.keys( state.items ).length || 0;
+        };
+    },
+
+    /**
+     * Returns the highest index value
+     * @param state
+     * @param getters
+     * @param payload
+     */
+    getMaxIndex: function getMaxIndex(state, getters, payload) {
+        //   return Object.keys( state.items ).max || 0;
+    }
+};
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+},{"../../models/Item":6,"../../models/Payload":7,"../../store/action-types":10,"../../store/mutation-types":26}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13448,7 +14087,7 @@ var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -13530,7 +14169,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":4,"../models/Payload":11,"../mutation-types":23}],20:[function(require,module,exports){
+},{"../../models/Payload":7,"../action-types":10,"../mutation-types":26}],23:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13539,11 +14178,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _mutations, _actions;
 
-var _Question = require('./../models/Question');
+var _Question = require('../../models/Question');
 
 var _Question2 = _interopRequireDefault(_Question);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -13669,7 +14308,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":4,"../models/Payload":11,"../mutation-types":23,"./../models/Question":12}],21:[function(require,module,exports){
+},{"../../models/Payload":7,"../../models/Question":8,"../action-types":10,"../mutation-types":26}],24:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13678,11 +14317,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _mutations, _actions;
 
-var _Student = require('../models/Student');
+var _Student = require('../../models/Student');
 
 var _Student2 = _interopRequireDefault(_Student);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -13789,7 +14428,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":4,"../models/Payload":11,"../models/Student":13,"../mutation-types":23}],22:[function(require,module,exports){
+},{"../../models/Payload":7,"../../models/Student":9,"../action-types":10,"../mutation-types":26}],25:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13806,7 +14445,7 @@ var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -13926,7 +14565,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../action-types":4,"../models/Payload":11,"../mutation-types":23}],23:[function(require,module,exports){
+},{"../../models/Payload":7,"../action-types":10,"../mutation-types":26}],26:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13995,7 +14634,18 @@ var resetGradingTime = exports.resetGradingTime = 'resetGradingTime';
 
 var setExam = exports.setExam = 'setExam';
 
-},{}],24:[function(require,module,exports){
+//items
+var addNewItem = exports.addNewItem = 'addNewItem';
+var addItem = exports.addItem = 'addItem';
+var addItemIndexMapping = exports.addItemIndexMapping = 'addItemIndexMapping';
+var loadItems = exports.loadItems = 'loadItems';
+
+var updateItemName = exports.updateItemName = 'updateItemName';
+
+var setItemNameByIndex = exports.setItemNameByIndex = 'setItemNameByIndex';
+var updateItemNameByIndex = exports.updateItemNameByIndex = 'updateItemNameByIndex';
+
+},{}],27:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14029,7 +14679,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":23}],25:[function(require,module,exports){
+},{"./mutation-types":26}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14059,6 +14709,6 @@ exports.default = {
 
 };
 
-},{}]},{},[8]);
+},{}]},{},[14]);
 
 //# sourceMappingURL=test2-package.js.map

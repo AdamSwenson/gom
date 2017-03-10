@@ -5,34 +5,21 @@
 /**
  * Model for questions
  */
-export default class Question {
+
+// import IModel from './IModel';
+import Item from './Item';
+
+export default class Question extends Item{
     constructor( questionIndex ) {
-        this._id;
-        this._index;
+        super();
         this.questionIndex = questionIndex;
         this._questionName;
         this._questionNumber;
         this._questionAssignmentId;
-        this._maxScore;
     }
 
 
     /* *************************** Id *************** */
-    /**
-     * Alias for _id
-     * @returns {*}
-     */
-    get id() {
-        return this._id;
-    }
-
-    /**
-     * Alias setter for _id
-     * @param v
-     */
-    set id( v ) {
-        this._id = v;
-    }
     /**
      * Alias for _id
      * @returns {*}
@@ -51,21 +38,6 @@ export default class Question {
 
 
     /* *************************** Index ************* */
-    /**
-     * Alias for _id
-     * @returns {*}
-     */
-    get index() {
-        return this._index;
-    }
-
-    /**
-     * Alias setter for _id
-     * @param v
-     */
-    set index( v ) {
-        this._index = v;
-    }
 
     /**
      * Alias for _id
@@ -108,15 +80,6 @@ export default class Question {
     };
 
 
-    get maxScore() {
-        return this._maxScore ? Number( this._maxScore ) : null;
-    };
-
-    set maxScore( score ) {
-        this._maxScore = score;
-    };
-
-
     /**
      * Returns a list of strings which are property
      * names. These fields can be filled from the input
@@ -150,26 +113,10 @@ export default class Question {
      */
     static factory( params ) {
         let obj = new Question();
-
-        if ( typeof params != 'undefined' ) {
-            //fill any fillable values
-            this.fillableProps.forEach( function ( v ) {
-                // console.log( 'params', params, v );
-                if ( typeof params[ v ] != 'undefined' ) {
-                    obj[ v ] = params[ v ];
-                }
-            } );
-            //fill any aliased values
-            for ( let v in this.aliasMap ) {
-                if ( typeof params[ v ] != 'undefined' ) {
-                    // console.log( 'alias', v, map[v] );
-                    obj[ this.aliasMap[ v ] ] = params[ v ];
-                }
-            }
-        }
         //we will still return an empty object if there
         //were no parameters
-        return obj;
+        return this.fillObject(obj, params);
+
     }
 
 }

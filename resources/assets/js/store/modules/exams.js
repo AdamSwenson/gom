@@ -5,8 +5,8 @@
 
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
-import Exam from '../models/Exam'
-import Payload from '../models/Payload'
+import Exam from '../../models/Exam'
+import Payload from '../../models/Payload'
 
 /**
  * The older version used an index value to do lots of stuff.

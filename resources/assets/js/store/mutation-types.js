@@ -60,7 +60,6 @@ export const setNumberQuestions = 'setNumberQuestions'
 export const setStudent = 'setStudent'
 export const removeStudent = 'removeStudent'
 
-
 //times
 export const incrementGradingTime = 'incrementGradingTime'
 export const setGradingTime = 'setGradingTime'
@@ -69,3 +68,15 @@ export const resetGradingTime = 'resetGradingTime'
 
 
 export const setExam = 'setExam';
+
+
+//items
+export const addNewItem = 'addNewItem';
+export const addItem = 'addItem';
+export const addItemIndexMapping = 'addItemIndexMapping'
+export const loadItems = 'loadItems'
+
+export const updateItemName = 'updateItemName'
+
+export const setItemNameByIndex = 'setItemNameByIndex'
+export const updateItemNameByIndex = 'updateItemNameByIndex'

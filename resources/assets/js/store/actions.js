@@ -2,7 +2,7 @@
 
 import * as mTypes from './mutation-types'
 import * as aTypes from './action-types'
-import Student from './models/Student'
+import Student from '../models/Student'
 
 export const actions = {
 // /**

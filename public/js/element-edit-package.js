@@ -14079,6 +14079,11 @@ return jQuery;
 
 				ghostEl && ghostEl.parentNode.removeChild(ghostEl);
 
+				if (rootEl === parentEl || Sortable.active.lastPullMode !== 'clone') {
+					// Remove clone
+					cloneEl && cloneEl.parentNode.removeChild(cloneEl);
+				}
+
 				if (dragEl) {
 					if (this.nativeDraggable) {
 						_off(dragEl, 'dragend', this);
@@ -14095,7 +14100,6 @@ return jQuery;
 						newIndex = _index(dragEl, options.draggable);
 
 						if (newIndex >= 0) {
-
 							// Add event
 							_dispatchEvent(null, parentEl, 'add', dragEl, rootEl, oldIndex, newIndex);
 
@@ -14108,9 +14112,6 @@ return jQuery;
 						}
 					}
 					else {
-						// Remove clone
-						cloneEl && cloneEl.parentNode.removeChild(cloneEl);
-
 						if (dragEl.nextSibling !== nextEl) {
 							// Get the index of the dragged element within its parent
 							newIndex = _index(dragEl, options.draggable);
@@ -14665,7 +14666,7 @@ return jQuery;
 
 
 	// Export
-	Sortable.version = '1.5.0';
+	Sortable.version = '1.5.1';
 	return Sortable;
 });
 

@@ -8,7 +8,7 @@ import {testAction, description, factories, getActiveStudentIndex} from '../../.
 import * as qscores from '../../../../../resources/assets/js/store/modules/qscores';
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
-import Payload from '../../../../../resources/assets/js/store/models/Payload'
+import Payload from '../../../../../resources/assets/js/models/Payload'
 
 
 const makeState = ( n = 5 ) => {

@@ -6,8 +6,12 @@
 var $ = require( 'jquery' );
 window.$ = $;
 
+import {mapGetters} from 'vuex'
+
 var Sortable = require( 'sortablejs' );
-import Item from '../models/Item'
+import Item from '../../models/Item'
+
+import * as aTypes from '../../store/action-types';
 
 module.exports = {
 
@@ -16,13 +20,23 @@ module.exports = {
     props: [],
 
     data: function () {
-        return {
-            items: [ ]
-        };
+        return {};
     },
 
     computed: {
-        // items
+        // mix the getters into computed with object spread operator
+        // ...mapGetters( {
+        //     items: 'getAllItemsList'
+        // } ),
+        items: function () {
+            return this.$store.getters.getAllItems;
+        },
+
+
+//         },
+        numberOfItems: function () {
+            return this.$store.itemsRepo.length;
+        }
     },
 
     methods: {
@@ -33,10 +47,8 @@ module.exports = {
          * and type info
          */
         addItem: function () {
-let itm = new Item();
-itm.index = this.items.length + 1
-            console.log( 'itm' , itm);
-            this.items.push( itm );
+            console.log( 'cardList.component', 'methods', 'addItem', this.$store );
+            this.$store.dispatch( aTypes.addNewItem );
         },
 
 
@@ -146,29 +158,28 @@ itm.index = this.items.length + 1
 
     events: {
         'add-item': function () {
-            console.log( 'cardList', 'CAUGHT', 'add-item', this.items );
-
+            console.log( 'cardList', 'CAUGHT', 'add-item' );
             this.addItem();
-            console.log( this.items );
         }
     },
 
     ready: function () {
-
+        console.log( '.....', this.items );
         this.addItem();
+        console.log( 'cardList ready', this.$store );
 
-
-        try {
-            var qList = this.el;
-            var editableList = Sortable.create( qList, {
-                filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
-                animation: 150,
-                handle: '.handle',  // Drag handle selector within list items
-                ghostClass: "sortable-ghost", // Class name for the drop placeholder
-            } );
-        } catch (e) {
-            window.console.log( e );
-        }
+        //
+        // try {
+        //     var qList = this.el;
+        //     var editableList = Sortable.create( qList, {
+        //         filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
+        //         animation: 150,
+        //         handle: '.handle',  // Drag handle selector within list items
+        //         ghostClass: "sortable-ghost", // Class name for the drop placeholder
+        //     } );
+        // } catch (e) {
+        //     window.console.log( e );
+        // }
 
 
     },

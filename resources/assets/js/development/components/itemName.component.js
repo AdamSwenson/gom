@@ -6,13 +6,16 @@
 //var $ = require('jquery');
 //window.$ = $;
 
-import Item from '../models/Item'
+import Item from '../../models/Item'
+import Payload from '../../models/Payload'
+
+import * as mTypes from '../../store/mutation-types'
 
 module.exports = {
 
     template: require( '../templates/item-name.template.html' ),
 
-    props: [ 'itemModel' ],
+    props: [ 'index' ],
 
     data: function () {
         return {
@@ -38,6 +41,7 @@ module.exports = {
     },
 
     computed: {
+
         /**
          * For questions, this will be the question number
          * For elements it will be the subtask number.
@@ -45,7 +49,7 @@ module.exports = {
          * todo It could also be hidable....
          */
         displayOrder: {
-            get: function (  ) {
+            get: function () {
                 //if question, return q number
 
                 //if element, return order
@@ -57,46 +61,40 @@ module.exports = {
         },
 
         /**
-         * This will return the reference to
-         * the item
-         * If the model wasn't set in the prop, it makes a new one.
-         * This probably won't ever be used. It might be necessary in testing.
-         * Nonetheless, there is no reason it should cause a
-         * problem if the stored model isn't available. It will
-         * return the stored model on subsequent calls if it
-         * becomes available
-         * @returns{Item}
-         */
-        item: {
-            get(){
-                if(typeof this.itemModel == 'undefined' ){
-                    return this.defaults.item;
-                }
-                return this.itemModel;
-            }
-        },
-
-        /**
          * The id of the item that this is the name of
          * @returns {module.exports.computed.itemId|null|itemId}
          */
         itemId: function () {
-            return this.item.id;
-//            return (typeof this.id != 'undefined') ? this.id : this.defaults.itemId;
+            // return this.itemObj.id;
+
         },
 
-        itemName: {
+        name: {
             get: function () {
-                return this.item.name;
+
+                // return this.$store.getters.getItemNameByIndex( this.itemIndex );
+                let item = this.$store.getters.getItemByIndex(this.index);
+                console.log( "item", item );
+                if(typeof item.name != 'undefined'){
+                    return item.name;
+
+                }
+
             },
 
             set: function ( v ) {
-                this.item.name = v;
+                let pl = Payload.factory( {index: this.index, str: v} );
+                this.$store.commit( mTypes.updateItemName, pl );
+
+                // this.$store.commit( mTypes.updateItemNameByIndex, pl );
+                // let item = this.$store.getters.getItemByIndex(this.index)
+                // this.itemObj.name = v;
+
             }
         },
 
         public: function () {
-            return this.item.isPublic();
+            // return this.itemObj.isPublic();
         }
 
     },
@@ -108,11 +106,11 @@ module.exports = {
          */
         openItemSettings: function () {
             console.log( 'itemName', 'CALLED', 'openItemSettings' );
-            this.$dipatch('display-settings');
+            this.$dipatch( 'display-settings' );
         },
 
         isPublic: function () {
-            return this.item.isPublic();
+            // return this.item.Obj.isPublic();
         }
 
     },
@@ -123,8 +121,8 @@ module.exports = {
 
 
         'toggle-public': function () {
-            console.log( 'itemName', 'CAUGHT', 'toggle-public' , this.item);
-            this.item.togglePublic();
+            // console.log( 'itemName', 'CAUGHT', 'toggle-public' , this.itemObj);
+            // this.itemObj.togglePublic();
         }
     },
 

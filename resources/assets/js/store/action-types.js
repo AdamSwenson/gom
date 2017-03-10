@@ -62,3 +62,10 @@ export const storeGradingTime = 'storeGradingTime'
 export const increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime'
 export const incrementGradingTime = 'incrementGradingTime'
 export const loadGradingTimes = 'loadGradingTimes'
+
+
+//items
+export const createItem = 'createItem'
+export const addNewItem = 'addNewItem'
+export const loadItems = 'loadItems'
+export const updateItemName = 'updateItemName'

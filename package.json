@@ -74,17 +74,18 @@
     "jasmine": "^2.5.3",
     "jquery": "^2.2.0",
     "jquery-ui": "^1.10.5",
+    "karma-firefox-launcher": "^1.0.1",
     "laravel-elixir": "*",
     "laravel-elixir-browserify-official": "*",
     "laravel-elixir-rollup-official": "*",
     "node-gyp": "^3.5.0",
     "npm": "^3.10.5",
     "sinon": "^1.17.7",
-    "sortablejs": "^1.4.2",
+    "sortablejs": "^1.5.1",
     "typeahead": "^0.2.2",
     "vue": "^1.0.0",
     "vue-charts": "0.0.5",
-    "vue-router": "^2.2.1",
-    "vuex": "^2.1.1"
+    "vue-router": "^2.3.0",
+    "vuex": "^2.2.1"
   }
 }

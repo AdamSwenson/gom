@@ -20026,6 +20026,11 @@ process.umask = function() { return 0; };
 
 				ghostEl && ghostEl.parentNode.removeChild(ghostEl);
 
+				if (rootEl === parentEl || Sortable.active.lastPullMode !== 'clone') {
+					// Remove clone
+					cloneEl && cloneEl.parentNode.removeChild(cloneEl);
+				}
+
 				if (dragEl) {
 					if (this.nativeDraggable) {
 						_off(dragEl, 'dragend', this);
@@ -20042,7 +20047,6 @@ process.umask = function() { return 0; };
 						newIndex = _index(dragEl, options.draggable);
 
 						if (newIndex >= 0) {
-
 							// Add event
 							_dispatchEvent(null, parentEl, 'add', dragEl, rootEl, oldIndex, newIndex);
 
@@ -20055,9 +20059,6 @@ process.umask = function() { return 0; };
 						}
 					}
 					else {
-						// Remove clone
-						cloneEl && cloneEl.parentNode.removeChild(cloneEl);
-
 						if (dragEl.nextSibling !== nextEl) {
 							// Get the index of the dragged element within its parent
 							newIndex = _index(dragEl, options.draggable);
@@ -20612,7 +20613,7 @@ process.umask = function() { return 0; };
 
 
 	// Export
-	Sortable.version = '1.5.0';
+	Sortable.version = '1.5.1';
 	return Sortable;
 });
 
@@ -33141,7 +33142,7 @@ module.exports = Vue;
 }).call(this,require('_process'))
 },{"_process":311}],315:[function(require,module,exports){
 /**
- * vuex v2.1.2
+ * vuex v2.2.1
  * (c) 2017 Evan You
  * @license MIT
  */
@@ -33150,26 +33151,6 @@ module.exports = Vue;
 	typeof define === 'function' && define.amd ? define(factory) :
 	(global.Vuex = factory());
 }(this, (function () { 'use strict';
-
-var devtoolHook =
-  typeof window !== 'undefined' &&
-  window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
-
-function devtoolPlugin (store) {
-  if (!devtoolHook) { return }
-
-  store._devtoolHook = devtoolHook;
-
-  devtoolHook.emit('vuex:init', store);
-
-  devtoolHook.on('vuex:travel-to-state', function (targetState) {
-    store.replaceState(targetState);
-  });
-
-  store.subscribe(function (mutation, state) {
-    devtoolHook.emit('vuex:mutation', mutation, state);
-  });
-}
 
 var applyMixin = function (Vue) {
   var version = Number(Vue.version.split('.')[0]);
@@ -33206,116 +33187,24 @@ var applyMixin = function (Vue) {
   }
 };
 
-var mapState = normalizeNamespace(function (namespace, states) {
-  var res = {};
-  normalizeMap(states).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
+var devtoolHook =
+  typeof window !== 'undefined' &&
+  window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
 
-    res[key] = function mappedState () {
-      var state = this.$store.state;
-      var getters = this.$store.getters;
-      if (namespace) {
-        var module = getModuleByNamespace(this.$store, 'mapState', namespace);
-        if (!module) {
-          return
-        }
-        state = module.context.state;
-        getters = module.context.getters;
-      }
-      return typeof val === 'function'
-        ? val.call(this, state, getters)
-        : state[val]
-    };
+function devtoolPlugin (store) {
+  if (!devtoolHook) { return }
+
+  store._devtoolHook = devtoolHook;
+
+  devtoolHook.emit('vuex:init', store);
+
+  devtoolHook.on('vuex:travel-to-state', function (targetState) {
+    store.replaceState(targetState);
   });
-  return res
-});
 
-var mapMutations = normalizeNamespace(function (namespace, mutations) {
-  var res = {};
-  normalizeMap(mutations).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
-
-    val = namespace + val;
-    res[key] = function mappedMutation () {
-      var args = [], len = arguments.length;
-      while ( len-- ) args[ len ] = arguments[ len ];
-
-      if (namespace && !getModuleByNamespace(this.$store, 'mapMutations', namespace)) {
-        return
-      }
-      return this.$store.commit.apply(this.$store, [val].concat(args))
-    };
+  store.subscribe(function (mutation, state) {
+    devtoolHook.emit('vuex:mutation', mutation, state);
   });
-  return res
-});
-
-var mapGetters = normalizeNamespace(function (namespace, getters) {
-  var res = {};
-  normalizeMap(getters).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
-
-    val = namespace + val;
-    res[key] = function mappedGetter () {
-      if (namespace && !getModuleByNamespace(this.$store, 'mapGetters', namespace)) {
-        return
-      }
-      if (!(val in this.$store.getters)) {
-        console.error(("[vuex] unknown getter: " + val));
-        return
-      }
-      return this.$store.getters[val]
-    };
-  });
-  return res
-});
-
-var mapActions = normalizeNamespace(function (namespace, actions) {
-  var res = {};
-  normalizeMap(actions).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
-
-    val = namespace + val;
-    res[key] = function mappedAction () {
-      var args = [], len = arguments.length;
-      while ( len-- ) args[ len ] = arguments[ len ];
-
-      if (namespace && !getModuleByNamespace(this.$store, 'mapActions', namespace)) {
-        return
-      }
-      return this.$store.dispatch.apply(this.$store, [val].concat(args))
-    };
-  });
-  return res
-});
-
-function normalizeMap (map) {
-  return Array.isArray(map)
-    ? map.map(function (key) { return ({ key: key, val: key }); })
-    : Object.keys(map).map(function (key) { return ({ key: key, val: map[key] }); })
-}
-
-function normalizeNamespace (fn) {
-  return function (namespace, map) {
-    if (typeof namespace !== 'string') {
-      map = namespace;
-      namespace = '';
-    } else if (namespace.charAt(namespace.length - 1) !== '/') {
-      namespace += '/';
-    }
-    return fn(namespace, map)
-  }
-}
-
-function getModuleByNamespace (store, helper, namespace) {
-  var module = store._modulesNamespaceMap[namespace];
-  if (!module) {
-    console.error(("[vuex] module namespace not found in " + helper + "(): " + namespace));
-  }
-  return module
 }
 
 /**
@@ -33550,7 +33439,7 @@ var Store = function Store (options) {
 var prototypeAccessors = { state: {} };
 
 prototypeAccessors.state.get = function () {
-  return this._vm.$data.state
+  return this._vm._data.$$state
 };
 
 prototypeAccessors.state.set = function (v) {
@@ -33627,7 +33516,7 @@ Store.prototype.replaceState = function replaceState (state) {
     var this$1 = this;
 
   this._withCommit(function () {
-    this$1._vm.state = state;
+    this$1._vm._data.$$state = state;
   });
 };
 
@@ -33701,7 +33590,9 @@ function resetStoreVM (store, state, hot) {
   var silent = Vue.config.silent;
   Vue.config.silent = true;
   store._vm = new Vue({
-    data: { state: state },
+    data: {
+      $$state: state
+    },
     computed: computed
   });
   Vue.config.silent = silent;
@@ -33716,7 +33607,7 @@ function resetStoreVM (store, state, hot) {
       // dispatch changes in all subscribed watchers
       // to force getter re-evaluation for hot reloading.
       store._withCommit(function () {
-        oldVm.state = null;
+        oldVm._data.$$state = null;
       });
     }
     Vue.nextTick(function () { return oldVm.$destroy(); });
@@ -33893,7 +33784,7 @@ function registerGetter (store, type, rawGetter, local) {
 }
 
 function enableStrictMode (store) {
-  store._vm.$watch('state', function () {
+  store._vm.$watch(function () { return this._data.$$state }, function () {
     assert(store._committing, "Do not mutate vuex store state outside mutation handlers.");
   }, { deep: true, sync: true });
 }
@@ -33932,10 +33823,126 @@ if (typeof window !== 'undefined' && window.Vue) {
   install(window.Vue);
 }
 
+var mapState = normalizeNamespace(function (namespace, states) {
+  var res = {};
+  normalizeMap(states).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    res[key] = function mappedState () {
+      var state = this.$store.state;
+      var getters = this.$store.getters;
+      if (namespace) {
+        var module = getModuleByNamespace(this.$store, 'mapState', namespace);
+        if (!module) {
+          return
+        }
+        state = module.context.state;
+        getters = module.context.getters;
+      }
+      return typeof val === 'function'
+        ? val.call(this, state, getters)
+        : state[val]
+    };
+    // mark vuex getter for devtools
+    res[key].vuex = true;
+  });
+  return res
+});
+
+var mapMutations = normalizeNamespace(function (namespace, mutations) {
+  var res = {};
+  normalizeMap(mutations).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    val = namespace + val;
+    res[key] = function mappedMutation () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      if (namespace && !getModuleByNamespace(this.$store, 'mapMutations', namespace)) {
+        return
+      }
+      return this.$store.commit.apply(this.$store, [val].concat(args))
+    };
+  });
+  return res
+});
+
+var mapGetters = normalizeNamespace(function (namespace, getters) {
+  var res = {};
+  normalizeMap(getters).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    val = namespace + val;
+    res[key] = function mappedGetter () {
+      if (namespace && !getModuleByNamespace(this.$store, 'mapGetters', namespace)) {
+        return
+      }
+      if (!(val in this.$store.getters)) {
+        console.error(("[vuex] unknown getter: " + val));
+        return
+      }
+      return this.$store.getters[val]
+    };
+    // mark vuex getter for devtools
+    res[key].vuex = true;
+  });
+  return res
+});
+
+var mapActions = normalizeNamespace(function (namespace, actions) {
+  var res = {};
+  normalizeMap(actions).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    val = namespace + val;
+    res[key] = function mappedAction () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      if (namespace && !getModuleByNamespace(this.$store, 'mapActions', namespace)) {
+        return
+      }
+      return this.$store.dispatch.apply(this.$store, [val].concat(args))
+    };
+  });
+  return res
+});
+
+function normalizeMap (map) {
+  return Array.isArray(map)
+    ? map.map(function (key) { return ({ key: key, val: key }); })
+    : Object.keys(map).map(function (key) { return ({ key: key, val: map[key] }); })
+}
+
+function normalizeNamespace (fn) {
+  return function (namespace, map) {
+    if (typeof namespace !== 'string') {
+      map = namespace;
+      namespace = '';
+    } else if (namespace.charAt(namespace.length - 1) !== '/') {
+      namespace += '/';
+    }
+    return fn(namespace, map)
+  }
+}
+
+function getModuleByNamespace (store, helper, namespace) {
+  var module = store._modulesNamespaceMap[namespace];
+  if (!module) {
+    console.error(("[vuex] module namespace not found in " + helper + "(): " + namespace));
+  }
+  return module
+}
+
 var index = {
   Store: Store,
   install: install,
-  version: '2.1.2',
+  version: '2.2.1',
   mapState: mapState,
   mapMutations: mapMutations,
   mapGetters: mapGetters,
@@ -33949,9 +33956,17 @@ return index;
 },{}],316:[function(require,module,exports){
 'use strict';
 
-var _Item = require('../models/Item');
+var _vuex = require('vuex');
+
+var _Item = require('../../models/Item');
 
 var _Item2 = _interopRequireDefault(_Item);
+
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -33973,13 +33988,22 @@ module.exports = {
     props: [],
 
     data: function data() {
-        return {
-            items: []
-        };
+        return {};
     },
 
     computed: {
-        // items
+        // mix the getters into computed with object spread operator
+        // ...mapGetters( {
+        //     items: 'getAllItemsList'
+        // } ),
+        items: function items() {
+            return this.$store.getters.getAllItems;
+        },
+
+        //         },
+        numberOfItems: function numberOfItems() {
+            return this.$store.itemsRepo.length;
+        }
     },
 
     methods: {
@@ -33990,10 +34014,8 @@ module.exports = {
          * and type info
          */
         addItem: function addItem() {
-            var itm = new _Item2.default();
-            itm.index = this.items.length + 1;
-            console.log('itm', itm);
-            this.items.push(itm);
+            console.log('cardList.component', 'methods', 'addItem', this.$store);
+            this.$store.dispatch(aTypes.addNewItem);
         },
 
         /**
@@ -34098,31 +34120,33 @@ module.exports = {
 
     events: {
         'add-item': function addItem() {
-            console.log('cardList', 'CAUGHT', 'add-item', this.items);
-
+            console.log('cardList', 'CAUGHT', 'add-item');
             this.addItem();
-            console.log(this.items);
         }
     },
 
     ready: function ready() {
-
+        console.log('.....', this.items);
         this.addItem();
+        console.log('cardList ready', this.$store);
 
-        try {
-            var qList = this.el;
-            var editableList = Sortable.create(qList, {
-                filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
-                animation: 150,
-                handle: '.handle', // Drag handle selector within list items
-                ghostClass: "sortable-ghost" });
-        } catch (e) {
-            window.console.log(e);
-        }
+        //
+        // try {
+        //     var qList = this.el;
+        //     var editableList = Sortable.create( qList, {
+        //         filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
+        //         animation: 150,
+        //         handle: '.handle',  // Drag handle selector within list items
+        //         ghostClass: "sortable-ghost", // Class name for the drop placeholder
+        //     } );
+        // } catch (e) {
+        //     window.console.log( e );
+        // }
+
     }
 };
 
-},{"../models/Item":331,"../templates/card-list.template.html":333,"jquery":310,"sortablejs":312}],317:[function(require,module,exports){
+},{"../../models/Item":349,"../../store/action-types":353,"../templates/card-list.template.html":332,"jquery":310,"sortablejs":312,"vuex":315}],317:[function(require,module,exports){
 "use strict";
 
 /**
@@ -34198,7 +34222,7 @@ module.exports = {
     }
 };
 
-},{"../templates/exam-name.template.html":335}],318:[function(require,module,exports){
+},{"../templates/exam-name.template.html":334}],318:[function(require,module,exports){
 'use strict';
 
 /**
@@ -34258,14 +34282,25 @@ module.exports = {
     }
 };
 
-},{"../templates/exam-properties.template.html":336}],319:[function(require,module,exports){
+},{"../templates/exam-properties.template.html":335}],319:[function(require,module,exports){
 'use strict';
+
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 /**
  * Created by adam on 2/17/17.
  */
 //var $ = require('jquery');
 //window.$ = $;
+
 
 module.exports = {
 
@@ -34289,7 +34324,9 @@ module.exports = {
             this.sendRequest();
         },
         sendRequest: function sendRequest() {
-            this.$dispatch('add-item');
+            // this.$store.dispatch(addNewItem');
+            // this.store[aTypes.addNewItem]();
+            this.$dispatch('add-new-item');
         }
     },
 
@@ -34297,10 +34334,12 @@ module.exports = {
 
     events: {},
 
-    ready: function ready() {}
+    ready: function ready() {
+        console.log('itemAddButton', 'ready', this.$store);
+    }
 };
 
-},{"../templates/item-add-button.template.html":337}],320:[function(require,module,exports){
+},{"../../store/action-types":353,"../../store/mutation-types":369,"../templates/item-add-button.template.html":336}],320:[function(require,module,exports){
 'use strict';
 
 /**
@@ -34318,7 +34357,7 @@ module.exports = {
 
     template: require('../templates/item-card.template.html'),
 
-    props: ['item', 'item-index'],
+    props: ['index'],
 
     data: function data() {
         return {
@@ -34337,39 +34376,36 @@ module.exports = {
     },
 
     computed: {
-        /**
-         * The name of the item
-         */
-        itemName: {},
+
         depth: {
             get: function get() {
                 return this.defaults.depth;
             },
             set: function set() {}
         },
-        index: {
-            get: function get() {
-
-                if (typeof this.item == 'undefined') {
-                    return this.item.index;
-                }
-                if (typeof this.itemIndex == 'undefined') {
-                    return this.defaults.index;
-                }
-                return this.itemIndex;
-            },
-
-            //todo this is a kludge until get store and item worked in
-            set: function set(v) {
-                if (typeof this.item == 'undefined') {
-                    this.item.index = v;
-                }
-                if (typeof this.itemIndex == 'undefined') {
-                    this.defaults.index = v;
-                }
-                this.itemIndex = v;
-            }
-        },
+        // index: {
+        //     get: function () {
+        //
+        //         if ( typeof this.item == 'undefined' ) {
+        //             return this.item.index;
+        //         }
+        //         if ( typeof this.itemIndex == 'undefined' ) {
+        //             return this.defaults.index;
+        //         }
+        //         return this.itemIndex;
+        //     },
+        //
+        //     //todo this is a kludge until get store and item worked in
+        //     set: function ( v ) {
+        //         if ( typeof this.item == 'undefined' ) {
+        //             this.item.index = v;
+        //         }
+        //         if ( typeof this.itemIndex == 'undefined' ) {
+        //             this.defaults.index = v;
+        //         }
+        //         this.itemIndex = v;
+        //     }
+        // },
 
         type: {
             get: function get() {
@@ -34406,7 +34442,7 @@ module.exports = {
 
     events: {
         'display-settings': function displaySettings() {
-            console.log('itemName', 'CAUGHT', 'display-settings', this.item);
+            console.log('itemName', 'CAUGHT', 'display-settings', this.index);
             this.$broadcast('display-settings');
         }
     },
@@ -34414,12 +34450,22 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/item-card.template.html":338}],321:[function(require,module,exports){
+},{"../templates/item-card.template.html":337}],321:[function(require,module,exports){
 'use strict';
 
-var _Item = require('../models/Item');
+var _Item = require('../../models/Item');
 
 var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -34427,7 +34473,7 @@ module.exports = {
 
     template: require('../templates/item-name.template.html'),
 
-    props: ['itemModel'],
+    props: ['index'],
 
     data: function data() {
         return {
@@ -34453,6 +34499,7 @@ module.exports = {
     },
 
     computed: {
+
         /**
          * For questions, this will be the question number
          * For elements it will be the subtask number.
@@ -34470,46 +34517,37 @@ module.exports = {
         },
 
         /**
-         * This will return the reference to
-         * the item
-         * If the model wasn't set in the prop, it makes a new one.
-         * This probably won't ever be used. It might be necessary in testing.
-         * Nonetheless, there is no reason it should cause a
-         * problem if the stored model isn't available. It will
-         * return the stored model on subsequent calls if it
-         * becomes available
-         * @returns{Item}
-         */
-        item: {
-            get: function get() {
-                if (typeof this.itemModel == 'undefined') {
-                    return this.defaults.item;
-                }
-                return this.itemModel;
-            }
-        },
-
-        /**
          * The id of the item that this is the name of
          * @returns {module.exports.computed.itemId|null|itemId}
          */
         itemId: function itemId() {
-            return this.item.id;
-            //            return (typeof this.id != 'undefined') ? this.id : this.defaults.itemId;
+            // return this.itemObj.id;
+
         },
 
-        itemName: {
+        name: {
             get: function get() {
-                return this.item.name;
+
+                // return this.$store.getters.getItemNameByIndex( this.itemIndex );
+                var item = this.$store.getters.getItemByIndex(this.index);
+                console.log("item", item);
+                if (typeof item.name != 'undefined') {
+                    return item.name;
+                }
             },
 
             set: function set(v) {
-                this.item.name = v;
+                var pl = _Payload2.default.factory({ index: this.index, str: v });
+                this.$store.commit(mTypes.updateItemName, pl);
+
+                // this.$store.commit( mTypes.updateItemNameByIndex, pl );
+                // let item = this.$store.getters.getItemByIndex(this.index)
+                // this.itemObj.name = v;
             }
         },
 
         public: function _public() {
-            return this.item.isPublic();
+            // return this.itemObj.isPublic();
         }
 
     },
@@ -34525,7 +34563,7 @@ module.exports = {
         },
 
         isPublic: function isPublic() {
-            return this.item.isPublic();
+            // return this.item.Obj.isPublic();
         }
 
     },
@@ -34535,8 +34573,8 @@ module.exports = {
     events: {
 
         'toggle-public': function togglePublic() {
-            console.log('itemName', 'CAUGHT', 'toggle-public', this.item);
-            this.item.togglePublic();
+            // console.log( 'itemName', 'CAUGHT', 'toggle-public' , this.itemObj);
+            // this.itemObj.togglePublic();
         }
     },
 
@@ -34549,7 +34587,7 @@ module.exports = {
 //var $ = require('jquery');
 //window.$ = $;
 
-},{"../models/Item":331,"../templates/item-name.template.html":339}],322:[function(require,module,exports){
+},{"../../models/Item":349,"../../models/Payload":350,"../../store/mutation-types":369,"../templates/item-name.template.html":338}],322:[function(require,module,exports){
 'use strict';
 
 /**
@@ -34646,7 +34684,7 @@ module.exports = {
     }
 };
 
-},{"../templates/item-nav.template.html":340}],323:[function(require,module,exports){
+},{"../templates/item-nav.template.html":339}],323:[function(require,module,exports){
 'use strict';
 
 /**
@@ -34672,47 +34710,57 @@ module.exports = {
             placeholders: {
                 elementName: "Enter a short reminder for this element, e.g., &quot;Economic causes of World War I&quot; ",
                 elementText: "Explain in detail what needed to be done in order to fully answer this element. This will form the basis for the response seen by the student."
-            },
-
-            tabs: ['details', 'stats', 'history', 'notes']
+            }
         };
     },
 
     computed: {
         index: {
             get: function get() {
-                if (typeof this.item == 'undefined') {
-                    return this.item.index;
-                }
-                if (typeof this.itemIndex == 'undefined') {
-                    return this.defaults.index;
-                }
-                return this.itemIndex;
+                // if ( typeof this.item == 'undefined' ) {
+                //     return this.item.index;
+                // }
+                // if ( typeof this.itemIndex == 'undefined' ) {
+                //     return this.defaults.index;
+                // }
+                // return this.item.index;
             },
 
             //todo this is a kludge until get store and item worked in
             set: function set(v) {
-                if (typeof this.item == 'undefined') {
-                    this.item.index = v;
-                }
-                if (typeof this.itemIndex == 'undefined') {
-                    this.defaults.index = v;
-                }
-                this.itemIndex = v;
+                // if ( typeof this.item == 'undefined' ) {
+                //     this.item.index = v;
+                // }
+                // if ( typeof this.item.index == 'undefined' ) {
+                //     this.defaults.index = v;
+                // }
+                // this.item.index = v;
             }
         },
 
         name: {
-            get: function get() {},
-            set: function set(v) {}
+            get: function get() {
+                // return this.item.name
+            },
+            set: function set(v) {
+                // this.item.name = v;
+            }
         },
         text: {
-            get: function get() {},
-            set: function set(v) {}
+            get: function get() {
+                // return this.item.text
+            },
+            set: function set(v) {
+                // this.item.text = v;
+            }
         },
         commentText: {
-            get: function get() {},
-            set: function set(v) {}
+            get: function get() {
+                // return this.item.commentText;
+            },
+            set: function set(v) {
+                // this.item.commentText = v;
+            }
         }
     },
 
@@ -34725,7 +34773,7 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/item-settings.commentSetup.template.html":341}],324:[function(require,module,exports){
+},{"../templates/item-settings.commentSetup.template.html":340}],324:[function(require,module,exports){
 'use strict';
 
 /**
@@ -34838,75 +34886,106 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/item-settings.template.html":343}],325:[function(require,module,exports){
+},{"../templates/item-settings.template.html":342}],325:[function(require,module,exports){
 'use strict';
 
-/**
- * This is the settings component which is
- * specific to items playing the question role.
- *
- * todo Add an 'other uses of this quetion' area
- * Created by adam on 2/19/17.
- */
-//var $ = require('jquery');
-//window.$ = $;
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 module.exports = {
 
     template: require('../templates/item-settings.detail.template.html'),
 
-    props: ['item'],
+    props: ['item-obj', 'item-index'],
 
     data: function data() {
         return {
             placeholders: {
-                questionName: "Enter a brief description of the question, i.e. &quot;Causes of the Civil War&quot;"
-            },
-
-            tabs: ['details', 'stats', 'history', 'notes']
+                questionName: "Enter a brief description of the question or task, e.g. &quot;Causes of the Civil War&quot;"
+            }
         };
     },
 
     computed: {
+
+        item: {
+            get: function get() {
+                // if(typeof this.itemObj != 'undefined'){
+                //     return this.itemObj;
+                // }
+                // if(typeof this.itemIndex != 'undefined'){
+                //     return this.$store.getters.getItem(Payload.factory({index: this.itemIndex}));
+                // }
+                //
+
+            },
+            set: function set(v) {}
+        },
+
         index: {
             get: function get() {
-                console.log('indx', this.item);
-                if (typeof this.item != 'undefined') {
-                    return this.item.index;
-                }
-                if (typeof this.itemIndex == 'undefined') {
-                    return this.defaults.index;
-                }
-                return this.itemIndex;
+                //     console.log( 'indx', this.item);
+                //     if ( typeof this.item != 'undefined' ) {
+                //         return this.itemObj.index;
+                //     }
+                //     if ( typeof this.item.index == 'undefined' ) {
+                //         return this.defaults.index;
+                //     }
+                //     return this.itemObj.index;
             },
 
             //todo this is a kludge until get store and item worked in
             set: function set(v) {
-                if (typeof this.item == 'undefined') {
-                    this.item.index = v;
-                }
-                if (typeof this.itemIndex == 'undefined') {
-                    this.defaults.index = v;
-                }
-                this.itemIndex = v;
+                // if ( typeof this.item == 'undefined' ) {
+                //     this.item.index = v;
+                // }
+                // if ( typeof this.item.index == 'undefined' ) {
+                //     this.defaults.index = v;
+                // }
+                // this.item.index = v;
             }
         },
 
         questionText: {
-            get: function get() {},
-            set: function set() {}
+            get: function get() {
+                // return this.itemObj.text;
+            },
+            set: function set(v) {
+                // this.itemObj.text = v;
+            }
         },
         questionNumber: {
             get: function get() {},
             set: function set() {}
         },
         questionName: {
-            get: function get() {},
-            set: function set() {}
+            get: function get() {
+                // return this.itemObj.name;
+            },
+            set: function set(v) {
+                // this.itemObj.name = v;
+            }
         },
         maxScore: {
-            get: function get() {},
-            set: function set() {}
+            get: function get() {
+                // return this.itemObj.maxScore;
+            },
+            set: function set(v) {
+                // this.itemObj.maxScore = v;
+            }
         }
     },
 
@@ -34917,9 +34996,19 @@ module.exports = {
     events: {},
 
     ready: function ready() {}
-};
+}; /**
+    * This is the settings component which contains
+    * the more lengthy item text (like the prompt question)
+    * as well as other settings, depending on which role it
+    * is playing.
+    *
+    * todo Add an 'other uses of this quetion' area
+    * Created by adam on 2/19/17.
+    */
+//var $ = require('jquery');
+//window.$ = $;
 
-},{"../templates/item-settings.detail.template.html":342}],326:[function(require,module,exports){
+},{"../../models/Payload":350,"../../store/action-types":353,"../../store/mutation-types":369,"../templates/item-settings.detail.template.html":341}],326:[function(require,module,exports){
 'use strict';
 
 /**
@@ -34937,7 +35026,7 @@ module.exports = {
     data: function data() {
         return {
             placeHolders: {
-                numberItems: 0,
+                numberItems: '-',
                 perfectScore: '-',
                 timeGrading: '-'
             },
@@ -34953,11 +35042,10 @@ module.exports = {
         /**
          * Number of constituent items (questions, elements) on the exam
          */
-        numberItems: {
-            get: function get() {
-                //if not set return placeholder
-                return this.placeHolders.numberItems;
-            }
+        numberItems: function numberItems() {
+            var v = this.$store.getters.getItemCount;
+            //if not set return placeholder
+            return typeof v != 'undefined' ? v : this.placeHolders.numberItems;
         },
 
         /**
@@ -35015,7 +35103,7 @@ module.exports = {
     }
 };
 
-},{"../templates/props-dashboard.template.html":344}],327:[function(require,module,exports){
+},{"../templates/props-dashboard.template.html":343}],327:[function(require,module,exports){
 'use strict';
 
 /**
@@ -35134,7 +35222,7 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/public-indicator.template.html":345}],328:[function(require,module,exports){
+},{"../templates/public-indicator.template.html":344}],328:[function(require,module,exports){
 'use strict';
 
 /**
@@ -35183,7 +35271,7 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/settings-button.template.html":346}],329:[function(require,module,exports){
+},{"../templates/settings-button.template.html":345}],329:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35292,193 +35380,7 @@ module.exports = {
   }
 };
 
-},{"../templates/tools-dashboard.template.html":347}],331:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * This is the model which can be either a question
- * or an element.
- * Created by adam on 2/17/17.
- */
-var Item = function () {
-  function Item() {
-    _classCallCheck(this, Item);
-
-    /**
-     * The db identifier of the model
-     */
-    this._id;
-
-    /**
-     * The locator value
-     */
-    this._index;
-
-    /**
-     * The role played by the item
-     */
-    this._type;
-
-    /**
-     * The possible values of this._type
-     */
-    this.types = ['comment', 'element', 'question'];
-
-    /** The nickname or title by which this item is identified */
-    this._name;
-
-    /**
-     * The full length text of the item.
-     * This could be the question prompt;
-     * a longer description of the element; etc
-     */
-    this._text;
-
-    /**
-     * Whether the item is currently set to
-     * be appear in pages, emails, or anything
-     * else that a student could see.
-     *
-     * If this value is true, there are some outputs viewable
-     * by students, which this appears in.
-     *
-     * @type {boolean}
-     * @private
-     */
-    this._public = false;
-  }
-
-  /* *************************** Id *************** */
-  /**
-   * Alias for _id
-   * @returns {*}
-   */
-
-
-  _createClass(Item, [{
-    key: 'isPublic',
-
-
-    /**
-     * Getter for whether this can currently appear in student-viewable outputs
-     * @returns {boolean|*}
-     */
-    value: function isPublic() {
-      return this._public;
-    }
-
-    /**
-     * Makes able to appear in student-viewable outputs
-     */
-
-  }, {
-    key: 'makePublic',
-    value: function makePublic() {
-      this._public = true;
-    }
-
-    /**
-     * Makes no longer visible to students
-     */
-
-  }, {
-    key: 'hide',
-    value: function hide() {
-      this._public = false;
-    }
-  }, {
-    key: 'togglePublic',
-    value: function togglePublic() {
-      console.log('Item', 'CALLED', 'togglePublic', this._public);
-      this._public = !this._public;
-      console.log(this._public);
-    }
-  }, {
-    key: 'id',
-    get: function get() {
-      return this._id;
-    }
-
-    /**
-     * The locator for the item
-     * @returns {*}
-     */
-
-  }, {
-    key: 'index',
-    get: function get() {
-      return this._index;
-    }
-
-    /**
-     * The locator for the item
-     * @param v
-     */
-    ,
-    set: function set(v) {
-      this._index = v;
-    }
-  }, {
-    key: 'type',
-    get: function get() {
-      return this._type;
-    }
-
-    /**
-     * The full length text of the item.
-     * @returns {*}
-     */
-
-  }, {
-    key: 'text',
-    get: function get() {
-      return this._text;
-    }
-
-    /**
-     * The full length text of the item.
-     * @param v
-     */
-    ,
-    set: function set(v) {
-      this._text = v;
-    }
-
-    /**
-     * The nickname or title by which this item is identified
-     * @returns {*}
-     */
-
-  }, {
-    key: 'name',
-    get: function get() {
-      return this._name;
-    }
-
-    /**
-     * The nickname or title by which this item is identified
-     * @param v
-     */
-    ,
-    set: function set(v) {
-      this._name = v;
-    }
-  }]);
-
-  return Item;
-}();
-
-exports.default = Item;
-
-},{}],332:[function(require,module,exports){
+},{"../templates/tools-dashboard.template.html":346}],331:[function(require,module,exports){
 'use strict';
 
 require('babel-polyfill');
@@ -35628,688 +35530,37 @@ new _vue2.default({
 
 // router.start(App, '#app')
 
-},{"../store":352,"./components/cardList.component":316,"./components/examName.component":317,"./components/examProperties.component":318,"./components/itemAddButton.component":319,"./components/itemCard.component":320,"./components/itemName.component":321,"./components/itemNav.component":322,"./components/itemSettings.commentSetup.component":323,"./components/itemSettings.component":324,"./components/itemSettings.detail.component":325,"./components/propsDashboard.component":326,"./components/publicIndicator.component":327,"./components/settingsButton.component":328,"./components/setupApp.vue.js":329,"./components/toolsDashboard.component":330,"./templates/exam-editor.template.html":334,"babel-polyfill":1,"bootstrap":3,"jquery":310,"vue":314,"vue-router":313}],333:[function(require,module,exports){
-module.exports = '<div class="card-list">\n    <div class="item-cards" v-for="item in items">\n        <item-card :item="item"></item-card>\n    </div>\n\n    <item-add-button></item-add-button>\n</div>\n';
-},{}],334:[function(require,module,exports){
+},{"../store":357,"./components/cardList.component":316,"./components/examName.component":317,"./components/examProperties.component":318,"./components/itemAddButton.component":319,"./components/itemCard.component":320,"./components/itemName.component":321,"./components/itemNav.component":322,"./components/itemSettings.commentSetup.component":323,"./components/itemSettings.component":324,"./components/itemSettings.detail.component":325,"./components/propsDashboard.component":326,"./components/publicIndicator.component":327,"./components/settingsButton.component":328,"./components/setupApp.vue.js":329,"./components/toolsDashboard.component":330,"./templates/exam-editor.template.html":333,"babel-polyfill":1,"bootstrap":3,"jquery":310,"vue":314,"vue-router":313}],332:[function(require,module,exports){
+module.exports = '<div class="card-list">\n\n    <div class="item-cards" v-for="(index, item) in items">\n        <item-card :index="index"></item-card>\n    </div>\n\n    <div class="row">\n        <div class="col-lg-12 ">\n            <div class="text-right">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n</div>\n';
+},{}],333:[function(require,module,exports){
 module.exports = '<div id="app">\n    <div id="examEditor">\n\n        <!--<div class="row">-->\n        <!--<div class="col-lg-8">-->\n        <exam-name></exam-name>\n        <!--</div>-->\n        <!--</div>-->\n\n\n        <div id="examEditorBody"\n             class="row">\n\n            <div id="itemCol"\n                 class="col-lg-9 well well-lg">\n\n                <div class="itemRow row">\n                    <div class="col-lg-12">\n                        <card-list></card-list>\n                    </div>\n                </div>\n\n            </div>\n\n            <div id="infoCol"\n                 class="col-lg-3">\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <props-dashboard></props-dashboard>\n                    </div>\n                </div>\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <tools-dashboard></tools-dashboard>\n                    </div>\n                </div>\n\n            </div>\n\n        </div>\n    </div>\n\n</div>';
-},{}],335:[function(require,module,exports){
+},{}],334:[function(require,module,exports){
 module.exports = '<div id="examNameArea">\n\n    <div class="input-group">\n        <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>\n        <input type="text"\n               class="form-control input-lg"\n               id="privateName"\n               name="privateName"\n               aria-describedby="basic-addon1"\n               placeholder="{{ placeHolders.privateName }}"\n               v-model="privateName"\n        >\n        <span class="input-group-addon" id="basic-addon2"> <span v-on:click="openExamProperties" class="glyphicon glyphicon-cog"></span></span>\n\n    </div>\n\n\n\n</div>\n';
-},{}],336:[function(require,module,exports){
+},{}],335:[function(require,module,exports){
 module.exports = '<!--This is the hideable area via which we edit the exam\'s properties-->\n\n<div class="row">\n    <div class="col-lg-10">\n        <!-- name input -->\n        <div class="input-group">\n                    <span class="input-group-addon"\n                          id="basic-addon1">Public Assignment Name</span>\n            <input type="text"\n                   class="form-control input-lg"\n                   id="publicName"\n                   name="publicName"\n                   aria-describedby="basic-addon1"\n                   v-model="publicName"\n            >\n            <span class="glyphicon glyphicon-question-sign"></span>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="col-lg-5">\n\n            <!-- term selector -->\n            <input v-model="term"\n                   name="examTerm"\n                   type="hidden"\n                   id="hiddenTerm"\n            />\n\n            <div class="btn-group btn-group">\n                <button\n                        class="btn btn-primary dropdown-toggle"\n                        id="term"\n                        title="Choose Term"\n                        data-toggle="dropdown"\n                >{{ term }} <span class="glyphicon glyphicon-menu-down"></span></button>\n\n                <ul class="dropdown-menu" id="termList" role="menu" style="cursor:pointer;">\n                    <li v-for="term in terms">\n                        <a class="termItem">{{ term }}</a>\n                    </li>\n                </ul>\n            </div>\n        </div>\n\n        <div class="col-lg-5">\n            <!-- year selector -->\n            <input name="examYear"\n                   type="hidden"\n                   id="hiddenYear"\n                   v-model="year"\n            />\n\n            <div class="btn-group btn-group">\n                <button class="btn btn-primary dropdown-toggle"\n                        id="year"\n                        title="Choose Year"\n                        data-toggle="dropdown">{{ year }}\n                    <span class="glyphicon glyphicon-menu-down"></span>\n                </button>\n\n                <ul class="dropdown-menu"\n                    id="yearList"\n                    role="menu"\n                    style="cursor:pointer;">\n                    <li v-for="year in years">\n                        <a class="yearItem">{{ year }}</a>\n                    </li>\n                </ul>\n            </div>\n             <span class="glyphicon glyphicon-question-sign"></span>\n        </div>\n    </div>\n\n</div>';
-},{}],337:[function(require,module,exports){
+},{}],336:[function(require,module,exports){
 module.exports = '<button\n        class="btn btn-info"\n        v-on:click="addItem"\n>\n    <span class="glyphicon glyphicon-plus"></span>\n    <span class="hidden-md"> Add item</span>\n</button>';
+},{}],337:[function(require,module,exports){
+module.exports = '<!--This represents a question or an element-->\n<div class="itemCard">\n    <div class="row">\n        <div class="col-lg-1">\n            <item-nav nav-type="back"></item-nav>\n        </div>\n        <div class="col-lg-10">\n\n                    <slot name="head">\n\n                        <item-name :index="index"></item-name>\n\n                        <item-settings :item-obj="item" :item-index="index"\n                                       is="currentView"></item-settings>\n\n                    </slot>\n\n            </div>\n            <div class="col-lg-1">\n                <item-nav nav-type="forward"></item-nav>\n\n            </div>\n        </div>\n\n    </div>\n</div>\n';
 },{}],338:[function(require,module,exports){
-module.exports = '<!--This represents a question or an element-->\n<div class="itemCard">\n    <div class="row">\n        <div class="col-lg-1">\n            <item-nav nav-type="back"></item-nav>\n        </div>\n        <div class="col-lg-10">\n\n                    <slot name="head">\n\n                        <item-name></item-name>\n\n                        <item-settings :item="item"\n                                       is="currentView"></item-settings>\n\n                    </slot>\n\n            </div>\n            <div class="col-lg-1">\n                <item-nav nav-type="forward"></item-nav>\n\n            </div>\n        </div>\n\n    </div>\n</div>\n';
+module.exports = '<div class="item-name-component input-group input-group-lg">\n\n    <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>\n\n    <input type="text"\n           class="itemName form-control"\n           aria-describedby="basic-addon1"\n           placeholder="{{ placeHolders.privateName }}"\n           v-model="name"\n    >\n\n    <div class="input-group-btn">\n        <settings-button></settings-button>\n        <public-indicator></public-indicator>\n    </div>\n\n</div>';
 },{}],339:[function(require,module,exports){
-module.exports = '<div class="item-name-component input-group input-group-lg">\n\n    <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>\n\n    <input type="text"\n           class="itemName form-control"\n           aria-describedby="basic-addon1"\n           placeholder="{{ placeHolders.privateName }}"\n           v-model="itemName"\n    >\n\n    <div class="input-group-btn">\n        <settings-button></settings-button>\n        <public-indicator></public-indicator>\n    </div>\n\n</div>';
-},{}],340:[function(require,module,exports){
 module.exports = '<div class="itemNav"\n     v-on:click="goTo">\n    <span v-bind:class="arrow"></span>\n</div>';
-},{}],341:[function(require,module,exports){
+},{}],340:[function(require,module,exports){
 module.exports = '<!-- Template used by \'edit_element\' to hold the fields and buttons for an individual element.  -->\n<div class="comment-setup">\n    <div class="row">\n        <div class="col-md-12 list-group-item">\n            <h4 id="displayNumber">Element #{{ index }}</h4>\n\n            <h5>Element Response</h5>\n            <!-- element description (the "stock comment") -->\n            <div class="form-group">\n                        <textarea\n                                class="form-control"\n                                rows="3"\n                                placeholder="{{ placeholders.elementText }}"\n                                v-model="commentText"></textarea>\n            </div>\n\n            <div class="form-group">\n                <!-- move -->\n                <span class="btn btn-info btn-sm handle">\n                            <span class="glyphicon glyphicon-move" aria-hidden="true"></span> Move</span>\n\n                <!-- customize responses -->\n                <a class="btn btn-info btn-sm"\n                   data-toggle="modal"\n                   data-target="#commentForm{{ index }}">\n                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Customize Responses\n                </a>\n\n                <!-- \'comment form\' displays the modal triggered by \'customize response\' button -->\n                <!--@include(\'setup.partials.comment_form\')-->\n\n                <!-- delete button -->\n                <a class="btn btn-danger btn-sm js-remove">\n                    <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete\n                </a>\n            </div>\n        </div>\n\n    </div>\n</div>\n';
-},{}],342:[function(require,module,exports){
+},{}],341:[function(require,module,exports){
 module.exports = '<!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n<div class="item-details">\n    <div class="row">\n        <div class="col-md-6">\n            <div class="question-num-area input-group">\n\n                <span class="input-group-addon">Question #</span>\n                <input style="width:6em;"\n                       type="number"\n                       min="0"\n                       title="order of the question on the exam"\n                       class="form-control input"\n                       aria-describedby="basic-addon"\n                       v-model="questionNumber"/>\n\n            </div>\n        </div>\n\n        <div class="col-md-6">\n            <div class="max-score-area" style="text-align: left">\n                <!-- max grade -->\n                <div class="input-group">\n                    <span class="input-group-addon">Max Score</span>\n                    <input style="width:6em;"\n                           type="number"\n                           min="0"\n                           title="maximum score for this question"\n                           class="form-control input"\n                           aria-describedby="basic-addon"\n                           v-model="maxScore"/>\n                </div>\n            </div>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="question-text-area col-md-12">\n            <h5>Question Text</h5>\n            <div class="form-group">\n                            <textarea class="question-text form-control"\n                                      rows="3"\n                                      placeholder="Enter the full question text (optional)"\n                            >{{ questionText }}</textarea>\n            </div>\n        </div>\n    </div>\n\n    <div class="form-group questionButtonArea">\n                        <span class="btn btn-info btn-sm handle">\n                            <span class="glyphicon glyphicon-move" aria-hidden="true"></span> Move</span>\n\n        <button type="button"\n                class="btn btn-danger btn-sm js-remove"\n                data-question-number="{{questionNumber }}">\n            <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete\n        </button>\n    </div>\n</div>';
-},{}],343:[function(require,module,exports){
+},{}],342:[function(require,module,exports){
 module.exports = '<div class="well" v-show="hidden">\n\n    <slot name="settingsBody">\n\n        <div>\n            <!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n\n            <!-- Nav tabs -->\n            <ul class="nav nav-tabs" role="tablist">\n                <li role="presentation"\n                    class=""\n                    v-for="tab in tabs">\n                    <a href="#{{tab}}{{index}}"\n                       aria-controls="{{tab}}{{index}}"\n                       role="tab"\n                       data-toggle="tab">{{ tab | capitalize }}</a>\n                </li>\n            </ul>\n\n            <!-- Tab panes -->\n            <div class="tab-content">\n\n                <div role="tabpanel"\n                     class="tab-pane active "\n                     id="details{{index}}"\n                >\n                    <item-settings-detail :item="item"></item-settings-detail>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane  "\n                     id="comments{{index}}"\n                >\n                    <item-settings-comment-setup :item="item"></item-settings-comment-setup>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="stats{{index}}"\n                >\n                    <p>Stats here</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="history{{index}}"\n                >\n                    <p>Which exams clones of this item have been used on</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane fade"\n                     id="notes{{index}}"\n                >\n                    <p>Notes to self about item</p>\n                </div>\n\n            </div>\n\n        </div>\n\n    </slot>\n    <!--<item-settings-element item="item"></item-settings-element>-->\n    <!--<item-settings-question :item="item"></item-settings-question>-->\n\n    <!--<button class="btn btn-primary" v-on:click="hide">Close</button>-->\n</div>\n';
+},{}],343:[function(require,module,exports){
+module.exports = '<div id="props-dashboard" class="dashboard">\n    <dl class="dl-horizontal">\n\n        <dt># items</dt>\n        <dd>{{ numberItems }}</dd>\n\n        <dt>Max total score</dt>\n        <dd>{{ perfectScore }}</dd>\n        <!--<dd><input type="number" v-model="perfectScore" /></dd>-->\n\n        <dt># Students</dt>\n        <dd>{{ numberStudents}}</dd>\n\n        <dt># Graded</dt>\n        <dd>{{ numberGraded }}</dd>\n\n        <dt>Time grading</dt>\n        <dd>{{ timeGrading }}</dd>\n\n    </dl>\n\n</div>';
 },{}],344:[function(require,module,exports){
-module.exports = '<div id="props-dashboard" class="dashboard">\n    <dl class="dl-horizontal">\n\n        <dt># Items</dt>\n        <dd>{{ numberItems }}</dd>\n\n        <dt>Max total score</dt>\n        <dd>{{ numberItems }}</dd>\n        <!--<dd><input type="number" v-model="perfectScore" /></dd>-->\n\n        <dt># Students</dt>\n        <dd>{{ numberStudents}}</dd>\n\n        <dt># Graded</dt>\n        <dd>{{ numberGraded }}</dd>\n\n        <dt>Time grading</dt>\n        <dd>{{ timeGrading }}</dd>\n\n    </dl>\n\n</div>';
-},{}],345:[function(require,module,exports){
 module.exports = '<button\n        class="btn public-indicator"\n        v-bind:class="{\'btn-warning\': public}"\n        v-on:click="togglePublic"\n>\n    <span v-bind:class="icon"></span>\n</button>';
-},{}],346:[function(require,module,exports){
+},{}],345:[function(require,module,exports){
 module.exports = '<button\n        class="btn settings-button"\n        v-on:click="openItemSettings"\n>\n    <span class="glyphicon glyphicon-cog"></span>\n</button>';
-},{}],347:[function(require,module,exports){
+},{}],346:[function(require,module,exports){
 module.exports = '<div id="setupToolDashboard" class="dashboard">\n\n    <ul class="list-group">\n        <li class="list-group-item">\n            <button class="btn btn-block btn-danger"  v-on:click="activateDeleteMode">Remove items</button>\n        </li>\n\n        <li class="list-group-item">\n            <button class="btn btn-block btn-primary"  v-on:click="showSampleFeedback">View sample feedback</button>\n        </li>\n\n        <li class="list-group-item">\n            <!--replace with toggle-->\n            <button class="btn btn-block btn-primary" v-on:click="toggleHolesShown">Show holes</button>\n        </li>\n    </ul>\n</div>';
-},{}],348:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Created by adam on 1/10/17.
- */
-
-var addStudent = exports.addStudent = 'addStudent';
-
-//activeexam
-var setActiveExam = exports.setActiveExam = 'setActiveExam';
-var clearActiveExam = exports.clearActiveExam = 'clearActiveExam';
-
-//activestudent
-var setActiveStudent = exports.setActiveStudent = 'setActiveStudent';
-var setActiveStudentId = exports.setActiveStudentId = 'setActiveStudentId';
-var setActiveStudentIndex = exports.setActiveStudentIndex = 'setActiveStudentIndex';
-var setActiveStudentObject = exports.setActiveStudentObject = 'setActiveStudentObject';
-var setActiveStudentTime = exports.setActiveStudentTime = 'setActiveStudentTime';
-var setIndex = exports.setIndex = 'setIndex';
-var setId = exports.setId = 'setId';
-var setTime = exports.setTime = 'setTime';
-var setStudentObject = exports.setStudentObject = 'setStudentObject';
-var clearActiveStudent = exports.clearActiveStudent = 'clearActiveStudent';
-
-//comments
-var storeCommentTextForActiveStudent = exports.storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent';
-var storeCommentText = exports.storeCommentText = 'storeCommentText';
-
-//escores
-var setElementScore = exports.setElementScore = 'setElementScore';
-var loadElementScores = exports.loadElementScores = 'loadElementScores';
-var storeElementScoreForActiveStudent = exports.storeElementScoreForActiveStudent = 'storeElementScoreForActiveStudent';
-
-//exams
-var addNewExam = exports.addNewExam = 'addNewExam';
-var loadExams = exports.loadExams = 'loadExams';
-
-//grades
-var loadExamGrades = exports.loadExamGrades = 'loadExamGrades';
-var loadStandardGrades = exports.loadStandardGrades = 'loadStandardGrades';
-var updateExamGrade = exports.updateExamGrade = 'updateExamGrade';
-
-//qscores
-var loadQuestionScores = exports.loadQuestionScores = 'loadQuestionScores';
-var setQuestionScore = exports.setQuestionScore = 'setQuestionScore';
-var storeQuestionScoreForActiveStudent = exports.storeQuestionScoreForActiveStudent = 'storeQuestionScoreForActiveStudent';
-
-//questions
-var loadMaxQuestionScores = exports.loadMaxQuestionScores = 'loadMaxQuestionScores';
-var loadQuestions = exports.loadQuestions = 'loadQuestions';
-var loadNumberQuestions = exports.loadNumberQuestions = 'loadNumberQuestions';
-var addQuestion = exports.addQuestion = 'addQuestion';
-
-//students
-var loadStudents = exports.loadStudents = 'loadStudents';
-
-//times
-var storeGradingTime = exports.storeGradingTime = 'storeGradingTime';
-var increaseActiveStudentGradingTime = exports.increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime';
-var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
-var loadGradingTimes = exports.loadGradingTimes = 'loadGradingTimes';
-
-},{}],349:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.actions = undefined;
-
-var _actions;
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; //Root actions for the vuex instance
-
-var _mutationTypes = require('./mutation-types');
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = require('./action-types');
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _Student = require('./models/Student');
-
-var _Student2 = _interopRequireDefault(_Student);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes.setActiveStudentId, function (_ref, payload) {
-    var state = _ref.state,
-        commit = _ref.commit;
-
-    // [aTypes.setActiveStudentId](state, rootState, payload){
-
-    console.log(aTypes.setActiveStudentId, 'is deprecated!');
-    console.log(aTypes.setActiveStudentId, payload);
-    payload = state.activeStudent;
-
-    actions[aTypes.setActiveStudent](state, commit, payload);
-
-    // let studentId;
-    //
-    // //number passed in
-    // if (typeof (payload) == 'number' && Number.isInteger(payload)) {
-    //     studentId = payload;
-    // }
-    //
-    //
-    // //object passed in
-    // //todo add object case
-    // console.log('studentId', studentId);
-    // if (Number.isInteger(studentId)) {
-    //     commit(mTypes.setId, Payload.factory({num: studentId}));
-    // }
-}), _defineProperty(_actions, aTypes.setActiveStudentIndex, function (_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
-
-
-    console.log(aTypes.setActiveStudentIndex, 'is deprecated!');
-    payload = state.activeStudent;
-    actions[aTypes.setActiveStudent](state, commit, payload);
-    // let studentIndex;
-    // switch (typeof (payload)) {
-    //     case 'number':
-    //         if (Number.isInteger(payload)) {
-    //             studentIndex = payload;
-    //         }
-    //         break;
-    //     case 'object':
-    //         //todo write if object
-    //
-    //         break;
-    //     default:
-    // }
-    //
-    // if (Number.isInteger(studentIndex)) {
-    //     commit(mTypes.setIndex, studentIndex);
-    // }
-}), _defineProperty(_actions, aTypes.setActiveStudentObject, function (_ref3, payload) {
-    var state = _ref3.state,
-        commit = _ref3.commit;
-
-    console.log(aTypes.setActiveStudentObject, 'is deprecated!');
-    [aTypes.setActiveStudent](state, commit, payload);
-    // // let student;
-    //
-    // // if (payload instanceof Student) {
-    // //     student = payload;
-    // // }
-    // // switch(typeof (payload)){
-    // //     case 'number':
-    // //         if(Number.isInteger(payload)){
-    // //             studentIndex = payload;
-    // //         }
-    // //         break;
-    // //     case 'object':
-    // //         //todo write if object
-    // //
-    // //         break;
-    // //     default:
-    // // }
-    //
-    // //Call the mutation
-    // if (payload instanceof Student) {
-    //     commit(mTypes.setStudentObject, payload);
-    // }
-}), _defineProperty(_actions, aTypes.setIndex, function (_ref4, payload) {
-    var state = _ref4.state,
-        commit = _ref4.commit;
-
-    console.log(aTypes.setIndex, 'is deprecated!');
-    console.log(aTypes.setIndex, payload);
-    payload = state.activeStudent;
-    actions[aTypes.setActiveStudent](state, commit, payload);
-}), _defineProperty(_actions, aTypes.setId, function (_ref5, payload) {
-    var state = _ref5.state,
-        commit = _ref5.commit;
-
-    console.log(aTypes.setId, 'is deprecated!');
-    payload = state.activeStudent;
-
-    actions[aTypes.setActiveStudent](state, commit, payload);
-}), _defineProperty(_actions, aTypes.setStudentObject, function (_ref6, payload) {
-    var state = _ref6.state,
-        commit = _ref6.commit;
-
-    payload = state.activeStudent;
-
-    if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == 'object' && payload instanceof _Student2.default) {
-        commit(mTypes.setActiveStudent, Payload.factory({ obj: payload }));
-        // state.student = payload;
-    }
-}), _defineProperty(_actions, aTypes.setActiveStudentTime, function (_ref7, payload) {
-    var state = _ref7.state,
-        commit = _ref7.commit;
-
-
-    var studentIndex = state.activeStudent.index;
-    var time = void 0;
-
-    switch (typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) {
-        case 'number':
-            if (Number.isInteger(payload)) {
-                //go straight to recording
-                time = payload;
-            }
-            break;
-
-        //object with expected key
-        case 'object':
-            //todo write if object
-            break;
-
-        //other allowed types
-        // todo
-
-        //numeric string
-        // todo
-        default:
-        //todo
-    }
-
-    //Call the mutation
-    if (typeof time == 'number') {
-        commit(mTypes.setTime, time);
-    }
-}), _defineProperty(_actions, aTypes.increaseActiveStudentGradingTime, function (_ref8, payload) {
-    var state = _ref8.state,
-        commit = _ref8.commit;
-
-    var studentIndex = state.activeStudent.index;
-    state.examGradingTimes[studentIndex] += payload.timeToAdd;
-}), _defineProperty(_actions, aTypes.storeQuestionScoreForActiveStudent, function (_ref9, payload) {
-    var state = _ref9.state,
-        commit = _ref9.commit;
-
-    // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
-    var questionIndex = payload.questionIndex,
-        score = payload.score;
-
-    var studentIndex = state.activeStudent.index;
-    //type checking
-
-    var out = Payload.factory({ index2: questionIndex, index: studentIndex, num: score });
-
-    commit(mTypes.setQuestionScore, out);
-}), _defineProperty(_actions, aTypes.storeElementScoreForActiveStudent, function (_ref10, payload) {
-    var state = _ref10.state,
-        commit = _ref10.commit;
-
-    var studentIndex = state.getActiveStudentIndex();
-    var elementIndex = payload.elementIndex,
-        score = payload.score;
-    //type checks
-
-    if (typeof score == 'undefined') {
-        //score may have been named differently
-        score = payload.elementScore;
-    }
-
-    var out = Payload.factory({
-        index: studentIndex,
-        index2: elementIndex,
-        num: score
-    });
-
-    commit(mTypes.setElementScore, out);
-}), _actions);
-
-},{"./action-types":348,"./models/Student":357,"./mutation-types":367}],350:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-/**
- * Created by adam on 1/10/17.
- */
-
-/**
- * Returns true if at least one question has received
- * a score for the student.
- */
-var isGraded = exports.isGraded = function isGraded(state, studentIndex) {
-    state.updateExamGrade(studentIndex);
-    if (state.examGrades[studentIndex] != "Letter grade" && state.examGrades[studentIndex] >= 0) {
-        return true;
-    }
-    return false;
-};
-
-/* ------------ Utilities --------------*/
-
-/**
- * Checks to make sure that a property has had its
- * values loaded before trying to do stuff with it
- *
- * @param propertyName
- */
-var checkValid = exports.checkValid = function checkValid(state, propertyName) {
-    if (typeof state[propertyName] != 'undefined') {
-        throw propertyName + " is undefined";
-    }
-    if (state[propertyName] == null) {
-        throw propertyName + " is null";
-    }
-    if (state[propertyName] == {}) {
-        throw propertyName + " was empty. Probably because it wasn't initialized";
-    }
-
-    return true;
-};
-
-},{}],351:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-/**
- * Root getters for the vuex instance
- *
- * Methods which make use of multiple modules should generally be kept here
- */
-
-/**
- * Helper function used by getters which tests for an index value and then
- * handles undefined and  null inputs when they were expecting
- * a numeric index.
- */
-var validateIndex = function validateIndex(index) {
-    var handleInvalid = function handleInvalid() {
-        return '';
-    };
-
-    if (typeof index == 'undefined') return handleInvalid();
-    if (index === null) return handleInvalid();
-
-    return true;
-};
-
-/**
- * Poorly named shortcut for getting the db id of
- * the currently active exam.
- * @param state
- */
-var getExamId = exports.getExamId = function getExamId(state) {
-    return state.activeExam.id;
-};
-
-/**
- * Returns true if some student is set as active.
- * Saves the trouble of other methods having to figure out whether a student
- * is set as active student (which can run into trouble if, for example, the
- * active student has index 0 and the consuming method interprets this as false).
- */
-var isActive = exports.isActive = function isActive(state) {
-    if (typeof state.activeStudent == 'undefined') return false;
-    if (state.activeStudent === null) return false;
-    if (state.activeStudent.index >= 0) {
-        return true;
-    }
-    return false;
-};
-
-/**
- * Returns the number of exams that have been graded.
- * NB, before counting them it first goes through and makes
- * sure that each examGrade is set to the sum of graded questions
- * for that exam.
- */
-var getNumberGraded = exports.getNumberGraded = function getNumberGraded(state) {
-    var graded = 0;
-
-    if (Object.keys(state.examGrades).length > 0) {
-        //Loop through each exam (via studentIndex as key)
-        for (var i = 0; i < Object.keys(state.examGrades).length; i++) {
-            //Make sure the stored exam total score is up to date
-            state.updateExamGrade(i);
-            //this will be the string 'letter grade' if
-            //no grade has been entered. Thus we check
-            //whether it is a number 0 or greater
-            //if it is graded, increment the number graded
-            if (state.examGrades[i] >= 0) graded++;
-        }
-    }
-    return graded;
-};
-
-/**
- * Returns the total number of exams
- *
- * @returns {number|Number}
- */
-var getTotalExams = exports.getTotalExams = function getTotalExams(state) {
-    var total = 0;
-    if (Object.keys(state.examGrades).length > 0) {
-        total = Object.keys(state.examGrades).length;
-    }
-
-    return total;
-};
-
-//------------ from qscores
-
-/**
- * Convenience function for getting the current student's score for question
- * Old way: data.this.questionScores[ Roster.activeStudent ][ index ];
- *  if ( state.activeStudentIndex == null ) return '';
- *  return state.getQuestionScore( this.activeStudentIndex, questionIndex );
- * @param questionIndex
- */
-var getQuestionScoreForActiveStudent = exports.getQuestionScoreForActiveStudent = function getQuestionScoreForActiveStudent(state, getters, rootState, questionIndex) {
-    var idx = getters.getActiveStudentIndex(state, getters, rootState);
-    if (idx == null) return '';
-    return getters.getQuestionScore(state, getters, rootState, idx, questionIndex);
-    // if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set ";
-};
-
-// --------------- from times
-
-/**
- * Convenience method for getting the grading time of the student presently
- * being graded
- * if ( state.activeStudentIndex == null ) return '';
- * return state.examGradingTimes[ state.activeStudentIndex ];
- * return getters.getStudentGradingTime( state, getters, state.activeStudentIndex );
- * @returns {*}
- */
-var getActiveStudentGradingTime = exports.getActiveStudentGradingTime = function getActiveStudentGradingTime(state, getters, rootState) {
-    var idx = getters.getActiveStudentIndex(state, getters, rootState);
-    if (idx == null) return '';
-    return getters.getStudentGradingTime(state, getters, idx);
-    // if ( ! this.isActive() ) throw "ERROR: getActiveStudentGradingTime | No active student set ";
-};
-
-//--------------- comments
-
-/**
- * Gets the comment text for the student
- * @param state
- * @param getters
- * @param rootState
- * @param elementIndex
- * @param valence
- * @returns {*}
- */
-var getCommentTextForActiveStudent = exports.getCommentTextForActiveStudent = function getCommentTextForActiveStudent(state, getters, rootState, elementIndex, valence) {
-    //If no student is set, the comment field should be blank
-    var idx = getters.getActiveStudentIndex(state, getters, rootState);
-    validateIndex(idx);
-    //    if ( idx == null ) return '';
-
-    return getters.getCommentText(state, getters, rootState, idx, elementIndex, valence);
-};
-
-//------------------ grades
-/**
- * Retrieves exam grade for current student
- * if ( state.activeStudentIndex == null ) return '';
- * return state.examGrades[ state.activeStudent ];
- * @param state
- * @param getters
- * @param rootState
- * @returns {*}
- */
-var getExamGradeForActiveStudent = exports.getExamGradeForActiveStudent = function getExamGradeForActiveStudent(state, getters, rootState) {
-    var idx = getters.getActiveStudentIndex(state, getters, rootState);
-    validateIndex(idx);
-    // if ( idx == null ) return '';
-    return getters.getExamGrade(state, getters, rootState, idx);
-};
-
-//------------ escores
-var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = function getElementScoreForActiveStudent(state, getters, rootState, elementIndex) {
-    var idx = getters.getActiveStudentIndex(state, getters, rootState);
-    validateIndex(idx);
-    // if ( idx == null ) return '';
-    return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
-};
-
-},{}],352:[function(require,module,exports){
-(function (process){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; /**
-                                                                                                                                                                                                                                                   * Created by adam on 1/10/17.
-                                                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                                                   * Notes about how to use
-                                                                                                                                                                                                                                                   * However, this pattern causes the component to rely on the global store singleton. When using a module system, it requires importing the store in every component that uses store state, and also requires mocking when testing the component.
-                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                   Vuex provides a mechanism to "inject" the store into all child components from the root component with the store option (enabled by Vue.use(Vuex)):
-                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                   const app = new Vue({
-                                                                                                                                                                                                                                                    el: '#app',
-                                                                                                                                                                                                                                                    // provide the store using the "store" option.
-                                                                                                                                                                                                                                                    // this will inject the store instance to all child components.
-                                                                                                                                                                                                                                                    store,
-                                                                                                                                                                                                                                                    components: { Counter },
-                                                                                                                                                                                                                                                    template: `
-                                                                                                                                                                                                                                                      <div class="app">
-                                                                                                                                                                                                                                                        <counter></counter>
-                                                                                                                                                                                                                                                      </div>
-                                                                                                                                                                                                                                                    `
-                                                                                                                                                                                                                                                  })
-                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                   By providing the store option to the root instance, the store will be injected into all child components of the root and will be available on them as this.$store. Let's update our Counter implementation:
-                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                   const Counter = {
-                                                                                                                                                                                                                                                    template: `<div>{{ count }}</div>`,
-                                                                                                                                                                                                                                                    computed: {
-                                                                                                                                                                                                                                                      count () {
-                                                                                                                                                                                                                                                        return this.$store.state.count
-                                                                                                                                                                                                                                                      }
-                                                                                                                                                                                                                                                    }
-                                                                                                                                                                                                                                                  }
-                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                   *
-                                                                                                                                                                                                                                                   */
-
-var _vue = require('vue');
-
-var _vue2 = _interopRequireDefault(_vue);
-
-var _vuex = require('vuex');
-
-var _vuex2 = _interopRequireDefault(_vuex);
-
-var _actions = require('./actions');
-
-var actions = _interopRequireWildcard(_actions);
-
-var _getters = require('./getters');
-
-var getters = _interopRequireWildcard(_getters);
-
-var _mutations = require('./mutations');
-
-var mutations = _interopRequireWildcard(_mutations);
-
-var _state = require('./state');
-
-var state = _interopRequireWildcard(_state);
-
-var _api = require('./api');
-
-var api = _interopRequireWildcard(_api);
-
-var _activestudent = require('./modules/activestudent.js');
-
-var _activestudent2 = _interopRequireDefault(_activestudent);
-
-var _activeexam = require('./modules/activeexam.js');
-
-var _activeexam2 = _interopRequireDefault(_activeexam);
-
-var _comments = require('./modules/comments.js');
-
-var _comments2 = _interopRequireDefault(_comments);
-
-var _escores = require('./modules/escores.js');
-
-var _escores2 = _interopRequireDefault(_escores);
-
-var _grades = require('./modules/grades.js');
-
-var _grades2 = _interopRequireDefault(_grades);
-
-var _qscores = require('./modules/qscores.js');
-
-var _qscores2 = _interopRequireDefault(_qscores);
-
-var _questions = require('./modules/questions.js');
-
-var _questions2 = _interopRequireDefault(_questions);
-
-var _students = require('./modules/students.js');
-
-var _students2 = _interopRequireDefault(_students);
-
-var _times = require('./modules/times.js');
-
-var _times2 = _interopRequireDefault(_times);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// import gradeStateDefault from './modules/grade.defaultstate'
-// import createLogger from '../../../src/plugins/logger'
-
-_vue2.default.use(_vuex2.default);
-
-var debug = process.env.NODE_ENV !== 'production';
-
-exports.default = new _vuex2.default.Store({
-  /**
-   * From instances and components where store has been
-   * injected, actions are called
-   * like so: store.dispatch( 'string-action-name' )
-   */
-  actions: actions,
-  getters: getters,
-  mutations: {
-    /**
-     * Sets the current exam id
-     *
-     * @todo Extend to set from an exam object
-     *
-     * @param state
-     * @param payload
-     */
-    _setExamId: function _setExamId(state, payload) {
-      if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == Number) {
-        state.examId = payload;
-      }
-
-      window.console.log('setExamId', state);
-    }
-  },
-
-  modules: {
-    activeexam: _activeexam2.default,
-    activestudent: _activestudent2.default,
-    comments: _comments2.default,
-    escores: _escores2.default,
-    grades: _grades2.default,
-    qscores: _qscores2.default,
-    questions: _questions2.default,
-    students: _students2.default,
-    times: _times2.default
-  },
-  state: state,
-  api: api,
-
-  strict: debug });
-
-}).call(this,require('_process'))
-},{"./actions":349,"./api":350,"./getters":351,"./modules/activeexam.js":358,"./modules/activestudent.js":359,"./modules/comments.js":360,"./modules/escores.js":361,"./modules/grades.js":362,"./modules/qscores.js":363,"./modules/questions.js":364,"./modules/students.js":365,"./modules/times.js":366,"./mutations":368,"./state":369,"_process":311,"vue":314,"vuex":315}],353:[function(require,module,exports){
+},{}],347:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36318,9 +35569,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _IModel2 = require('./IModel');
+var _Item2 = require('./Item');
 
-var _IModel3 = _interopRequireDefault(_IModel2);
+var _Item3 = _interopRequireDefault(_Item2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -36332,8 +35583,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * Created by adam on 8/15/16.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
-var Exam = function (_IModel) {
-    _inherits(Exam, _IModel);
+var Exam = function (_Item) {
+    _inherits(Exam, _Item);
 
     /**
      * Create a new exam object
@@ -36343,11 +35594,11 @@ var Exam = function (_IModel) {
     function Exam() {
         _classCallCheck(this, Exam);
 
+        // this._id; // = examId;
+        // this._index; // = examIndex;
+        // this._name; // = name;
         var _this = _possibleConstructorReturn(this, (Exam.__proto__ || Object.getPrototypeOf(Exam)).call(this));
 
-        _this._id; // = examId;
-        _this._index; // = examIndex;
-        _this._name; // = name;
         _this._year; // = year;
         _this._term; // = term;
 
@@ -36359,31 +35610,19 @@ var Exam = function (_IModel) {
     }
 
     _createClass(Exam, [{
-        key: 'id',
+        key: 'examId',
 
 
         /* *************************** Id *************** */
-        /**
-         * The database id of the exam
-         */
-        get: function get() {
-            return this._id;
-        },
-        set: function set(v) {
-            this._id = Number(v);
-        }
-
         /**
          * Some things like to call the database id
          * this when they ask for the property. So
          * we oblige them with a nice alias.
          */
-
-    }, {
-        key: 'examId',
         get: function get() {
-            return this._id;
+            return this.id;
         }
+
         /* *************************** Index ************* */
         /**
          * Returns the examIndex
@@ -36396,27 +35635,11 @@ var Exam = function (_IModel) {
     }, {
         key: 'examIndex',
         get: function get() {
-            return this._index;
-        }
-    }, {
-        key: 'index',
-        set: function set(v) {
-            this._index = v;
-        },
-        get: function get() {
-            return this._index;
+            return this.index;
         }
 
         /* *************************** Props ************* */
 
-    }, {
-        key: 'name',
-        get: function get() {
-            return this._name;
-        },
-        set: function set(n) {
-            this._name = n;
-        }
     }, {
         key: 'year',
         get: function get() {
@@ -36455,29 +35678,9 @@ var Exam = function (_IModel) {
         key: 'factory',
         value: function factory(params) {
             var exam = new Exam();
-
-            return this.fillObject(exam, params);
-            //
-            //         if ( typeof params != 'undefined' ) {
-            //             //fill any fillable values
-            //             this.fillableProps.forEach( function ( v ) {
-            //                 // console.log( 'params', params, v );
-            //                 if ( typeof params[ v ] != 'undefined' ) {
-            //                     exam[ v ] = params[ v ];
-            //                 }
-            //             } );
-            //
-            //             //fill any aliased values
-            //             for ( let v in this.aliasMap ) {
-            //                 if ( typeof params[ v ] != 'undefined' ) {
-            //                     // console.log( 'alias', v, map[v] );
-            //                     exam[ this.aliasMap[ v ] ] = params[ v ];
-            //                 }
-            //             }
-            //         }
             // //we will still return an empty exam if there
             //         //were no parameters
-            //         return exam;
+            return this.fillObject(exam, params);
         }
     }, {
         key: 'fillableProps',
@@ -36495,11 +35698,11 @@ var Exam = function (_IModel) {
     }]);
 
     return Exam;
-}(_IModel3.default);
+}(_Item3.default);
 
 exports.default = Exam;
 
-},{"./IModel":354}],354:[function(require,module,exports){
+},{"./Item":349}],348:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36561,7 +35764,277 @@ var IModel = function () {
 
 exports.default = IModel;
 
-},{}],355:[function(require,module,exports){
+},{}],349:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _IModel2 = require('./IModel');
+
+var _IModel3 = _interopRequireDefault(_IModel2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * This is the model which can be either a question
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * or an element.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Created by adam on 2/17/17.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+var Item = function (_IModel) {
+    _inherits(Item, _IModel);
+
+    function Item() {
+        _classCallCheck(this, Item);
+
+        /**
+         * The db identifier of the model
+         */
+        var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
+
+        _this._id;
+
+        /**
+         * The locator value
+         */
+        // this._index;
+        _this.index;
+
+        /** The nickname or title by which this item is identified */
+        _this.name = "";
+
+        _this.text;
+        /**
+         * The secondary locator value
+         * Q1 E2 = index 0, depth 3
+         */
+        _this._depth;
+
+        /**
+         * The maximum possible value of the item
+         */
+        _this._maxScore;
+
+        // this.name;
+
+        /**
+         * Whether the item is currently set to
+         * be appear in pages, emails, or anything
+         * else that a student could see.
+         *
+         * If this value is true, there are some outputs viewable
+         * by students, which this appears in.
+         *
+         * @type {boolean}
+         * @private
+         */
+        _this._public = false;
+
+        /**
+         * The full length text of the item.
+         * This could be the question prompt;
+         * a longer description of the element; etc
+         */
+        // this._text;
+
+        /**
+         * The role played by the item
+         */
+        _this._type;
+
+        /**
+         * The possible values of this._type
+         */
+        _this.types = ['comment', 'element', 'question'];
+        return _this;
+    }
+
+    /* *************************** Id *************** */
+    /**
+     * Alias for _id
+     * @returns {*}
+     */
+
+
+    _createClass(Item, [{
+        key: 'isPublic',
+
+
+        /* *************************** Public *************** */
+        /**
+         * Getter for whether this can currently appear in student-viewable outputs
+         * @returns {boolean|*}
+         */
+        value: function isPublic() {
+            return this._public;
+        }
+
+        /**
+         * Makes able to appear in student-viewable outputs
+         */
+
+    }, {
+        key: 'makePublic',
+        value: function makePublic() {
+            this._public = true;
+        }
+
+        /**
+         * Makes no longer visible to students
+         */
+
+    }, {
+        key: 'hide',
+        value: function hide() {
+            this._public = false;
+        }
+    }, {
+        key: 'togglePublic',
+        value: function togglePublic() {
+            console.log('Item', 'CALLED', 'togglePublic', this._public);
+            this._public = !this._public;
+            console.log(this._public);
+        }
+
+        /* *************************** Type *************** */
+
+    }, {
+        key: 'id',
+        get: function get() {
+            return Number(this._id) || null;
+        }
+
+        /**
+         * Alias for _id
+         */
+        ,
+        set: function set(v) {
+            this._id = Number(v);
+        }
+
+        /* *************************** Index *************** */
+        // /**
+        //  * The locator for the item
+        //  * @returns {*}
+        //  */
+        // get index() {
+        //     return this._index;
+        // }
+        //
+        // /**
+        //  * The locator for the item
+        //  * @param v
+        //  */
+        // set index( v ) {
+        //     this._index = v;
+        // }
+        //
+
+        /* *************************** Max score *************** */
+
+    }, {
+        key: 'maxScore',
+        get: function get() {
+            return this._maxScore ? Number(this._maxScore) : null;
+        },
+        set: function set(score) {
+            this._maxScore = score;
+        }
+    }, {
+        key: 'type',
+        get: function get() {
+            return this._type;
+        }
+
+        // /* *************************** Text *************** */
+        // /**
+        //  * The full length text of the item.
+        //  * @returns {*}
+        //  */
+        // get text() {
+        //     return this._text;
+        // }
+        //
+        // /**
+        //  * The full length text of the item.
+        //  * @param v
+        //  */
+        // set text( v ) {
+        //     this._text = v;
+        // }
+        //
+
+        /* *************************** Name *************** */
+        // /**
+        //  * The nickname or title by which this item is identified
+        //  * @returns {*}
+        //  */
+        // get name() {
+        //     return this._name;
+        // }
+        //
+        // /**
+        //  * The nickname or title by which this item is identified
+        //  * @param v
+        //  */
+        // set name( v ) {
+        //     this._name = v;
+        // }
+        //
+
+
+        /**
+         * Returns a list of fields which may
+         * be used to look up an exam from the store
+         */
+
+    }], [{
+        key: 'identifiers',
+        value: function identifiers() {
+            return ['id', 'index'];
+        }
+
+        /**
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
+         */
+
+    }, {
+        key: 'factory',
+        value: function factory(params) {
+            var obj = new Item();
+            return this.fillObject(obj, params);
+        }
+    }, {
+        key: 'fillableProps',
+        get: function get() {
+            return ['id', 'index', 'name', 'text', 'maxScore'];
+        }
+    }, {
+        key: 'aliasMap',
+        get: function get() {
+            return {
+                ItemId: 'id',
+                ItemIndex: 'index'
+            };
+        }
+    }]);
+
+    return Item;
+}(_IModel3.default);
+
+exports.default = Item;
+
+},{"./IModel":348}],350:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36606,6 +36079,9 @@ var Payload = function () {
 
         /** The timestamp in the payload */
         this._stamp;
+
+        this.str;
+        this.index;
     }
 
     /*  ************************* Identifier values ************************* */
@@ -36620,15 +36096,16 @@ var Payload = function () {
             //todo numeric check
             this._id = val;
         }
-    }, {
-        key: 'index',
-        get: function get() {
-            return this._index;
-        },
-        set: function set(val) {
-            //todo numeric check
-            this._index = val;
-        }
+        //
+        // get index() {
+        //     return this._index;
+        // }
+        //
+        // set index( val ) {
+        //     //todo numeric check
+        //     this._index = val;
+        // }
+
     }, {
         key: 'index2',
         get: function get() {
@@ -36638,6 +36115,7 @@ var Payload = function () {
             //todo numeric check
             this._index2 = val;
         }
+
         //
         // get complexIndex(){
         //     if(typeof this._index2 != 'undefined'){
@@ -36667,15 +36145,16 @@ var Payload = function () {
             }
             //todo error handling
         }
-    }, {
-        key: 'str',
-        get: function get() {
-            return this._obj;
-        },
-        set: function set(v) {
-            //todo string check
-            this._str = v;
-        }
+        //
+        //
+        // get str() {
+        //     return this._obj;
+        // }
+        //
+        // set str( v ) {
+        //     //todo string check
+        //     this._str = v;
+        // }
 
         /**
          * Returns a list of strings which are property
@@ -36736,7 +36215,7 @@ var Payload = function () {
 
 exports.default = Payload;
 
-},{}],356:[function(require,module,exports){
+},{}],351:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36745,26 +36224,40 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _Item2 = require('./Item');
+
+var _Item3 = _interopRequireDefault(_Item2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/**
- * Created by adam on 8/18/16.
- */
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Created by adam on 8/18/16.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
 
 /**
  * Model for questions
  */
-var Question = function () {
+
+// import IModel from './IModel';
+
+
+var Question = function (_Item) {
+    _inherits(Question, _Item);
+
     function Question(questionIndex) {
         _classCallCheck(this, Question);
 
-        this._id;
-        this._index;
-        this.questionIndex = questionIndex;
-        this._questionName;
-        this._questionNumber;
-        this._questionAssignmentId;
-        this._maxScore;
+        var _this = _possibleConstructorReturn(this, (Question.__proto__ || Object.getPrototypeOf(Question)).call(this));
+
+        _this.questionIndex = questionIndex;
+        _this._questionName;
+        _this._questionNumber;
+        _this._questionAssignmentId;
+        return _this;
     }
 
     /* *************************** Id *************** */
@@ -36775,25 +36268,6 @@ var Question = function () {
 
 
     _createClass(Question, [{
-        key: 'id',
-        get: function get() {
-            return this._id;
-        }
-
-        /**
-         * Alias setter for _id
-         * @param v
-         */
-        ,
-        set: function set(v) {
-            this._id = v;
-        }
-        /**
-         * Alias for _id
-         * @returns {*}
-         */
-
-    }, {
         key: 'questionId',
         get: function get() {
             return this._id;
@@ -36809,25 +36283,6 @@ var Question = function () {
         }
 
         /* *************************** Index ************* */
-        /**
-         * Alias for _id
-         * @returns {*}
-         */
-
-    }, {
-        key: 'index',
-        get: function get() {
-            return this._index;
-        }
-
-        /**
-         * Alias setter for _id
-         * @param v
-         */
-        ,
-        set: function set(v) {
-            this._index = v;
-        }
 
         /**
          * Alias for _id
@@ -36874,14 +36329,6 @@ var Question = function () {
         set: function set(id) {
             this._questionAssignmentId = id;
         }
-    }, {
-        key: 'maxScore',
-        get: function get() {
-            return this._maxScore ? Number(this._maxScore) : null;
-        },
-        set: function set(score) {
-            this._maxScore = score;
-        }
     }], [{
         key: 'factory',
 
@@ -36894,26 +36341,9 @@ var Question = function () {
          */
         value: function factory(params) {
             var obj = new Question();
-
-            if (typeof params != 'undefined') {
-                //fill any fillable values
-                this.fillableProps.forEach(function (v) {
-                    // console.log( 'params', params, v );
-                    if (typeof params[v] != 'undefined') {
-                        obj[v] = params[v];
-                    }
-                });
-                //fill any aliased values
-                for (var v in this.aliasMap) {
-                    if (typeof params[v] != 'undefined') {
-                        // console.log( 'alias', v, map[v] );
-                        obj[this.aliasMap[v]] = params[v];
-                    }
-                }
-            }
             //we will still return an empty object if there
             //were no parameters
-            return obj;
+            return this.fillObject(obj, params);
         }
     }, {
         key: 'fillableProps',
@@ -36938,11 +36368,11 @@ var Question = function () {
     }]);
 
     return Question;
-}();
+}(_Item3.default);
 
 exports.default = Question;
 
-},{}],357:[function(require,module,exports){
+},{"./Item":349}],352:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37233,7 +36663,674 @@ var Student = function (_IModel) {
 
 exports.default = Student;
 
-},{"./IModel":354}],358:[function(require,module,exports){
+},{"./IModel":348}],353:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Created by adam on 1/10/17.
+ */
+
+var addStudent = exports.addStudent = 'addStudent';
+
+//activeexam
+var setActiveExam = exports.setActiveExam = 'setActiveExam';
+var clearActiveExam = exports.clearActiveExam = 'clearActiveExam';
+
+//activestudent
+var setActiveStudent = exports.setActiveStudent = 'setActiveStudent';
+var setActiveStudentId = exports.setActiveStudentId = 'setActiveStudentId';
+var setActiveStudentIndex = exports.setActiveStudentIndex = 'setActiveStudentIndex';
+var setActiveStudentObject = exports.setActiveStudentObject = 'setActiveStudentObject';
+var setActiveStudentTime = exports.setActiveStudentTime = 'setActiveStudentTime';
+var setIndex = exports.setIndex = 'setIndex';
+var setId = exports.setId = 'setId';
+var setTime = exports.setTime = 'setTime';
+var setStudentObject = exports.setStudentObject = 'setStudentObject';
+var clearActiveStudent = exports.clearActiveStudent = 'clearActiveStudent';
+
+//comments
+var storeCommentTextForActiveStudent = exports.storeCommentTextForActiveStudent = 'storeCommentTextForActiveStudent';
+var storeCommentText = exports.storeCommentText = 'storeCommentText';
+
+//escores
+var setElementScore = exports.setElementScore = 'setElementScore';
+var loadElementScores = exports.loadElementScores = 'loadElementScores';
+var storeElementScoreForActiveStudent = exports.storeElementScoreForActiveStudent = 'storeElementScoreForActiveStudent';
+
+//exams
+var addNewExam = exports.addNewExam = 'addNewExam';
+var loadExams = exports.loadExams = 'loadExams';
+
+//grades
+var loadExamGrades = exports.loadExamGrades = 'loadExamGrades';
+var loadStandardGrades = exports.loadStandardGrades = 'loadStandardGrades';
+var updateExamGrade = exports.updateExamGrade = 'updateExamGrade';
+
+//qscores
+var loadQuestionScores = exports.loadQuestionScores = 'loadQuestionScores';
+var setQuestionScore = exports.setQuestionScore = 'setQuestionScore';
+var storeQuestionScoreForActiveStudent = exports.storeQuestionScoreForActiveStudent = 'storeQuestionScoreForActiveStudent';
+
+//questions
+var loadMaxQuestionScores = exports.loadMaxQuestionScores = 'loadMaxQuestionScores';
+var loadQuestions = exports.loadQuestions = 'loadQuestions';
+var loadNumberQuestions = exports.loadNumberQuestions = 'loadNumberQuestions';
+var addQuestion = exports.addQuestion = 'addQuestion';
+
+//students
+var loadStudents = exports.loadStudents = 'loadStudents';
+
+//times
+var storeGradingTime = exports.storeGradingTime = 'storeGradingTime';
+var increaseActiveStudentGradingTime = exports.increaseActiveStudentGradingTime = 'increaseActiveStudentGradingTime';
+var incrementGradingTime = exports.incrementGradingTime = 'incrementGradingTime';
+var loadGradingTimes = exports.loadGradingTimes = 'loadGradingTimes';
+
+//items
+var createItem = exports.createItem = 'createItem';
+var addNewItem = exports.addNewItem = 'addNewItem';
+var loadItems = exports.loadItems = 'loadItems';
+var updateItemName = exports.updateItemName = 'updateItemName';
+
+},{}],354:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.actions = undefined;
+
+var _actions;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; //Root actions for the vuex instance
+
+var _mutationTypes = require('./mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('./action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _Student = require('../models/Student');
+
+var _Student2 = _interopRequireDefault(_Student);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes.setActiveStudentId, function (_ref, payload) {
+    var state = _ref.state,
+        commit = _ref.commit;
+
+    // [aTypes.setActiveStudentId](state, rootState, payload){
+
+    console.log(aTypes.setActiveStudentId, 'is deprecated!');
+    console.log(aTypes.setActiveStudentId, payload);
+    payload = state.activeStudent;
+
+    actions[aTypes.setActiveStudent](state, commit, payload);
+
+    // let studentId;
+    //
+    // //number passed in
+    // if (typeof (payload) == 'number' && Number.isInteger(payload)) {
+    //     studentId = payload;
+    // }
+    //
+    //
+    // //object passed in
+    // //todo add object case
+    // console.log('studentId', studentId);
+    // if (Number.isInteger(studentId)) {
+    //     commit(mTypes.setId, Payload.factory({num: studentId}));
+    // }
+}), _defineProperty(_actions, aTypes.setActiveStudentIndex, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+
+    console.log(aTypes.setActiveStudentIndex, 'is deprecated!');
+    payload = state.activeStudent;
+    actions[aTypes.setActiveStudent](state, commit, payload);
+    // let studentIndex;
+    // switch (typeof (payload)) {
+    //     case 'number':
+    //         if (Number.isInteger(payload)) {
+    //             studentIndex = payload;
+    //         }
+    //         break;
+    //     case 'object':
+    //         //todo write if object
+    //
+    //         break;
+    //     default:
+    // }
+    //
+    // if (Number.isInteger(studentIndex)) {
+    //     commit(mTypes.setIndex, studentIndex);
+    // }
+}), _defineProperty(_actions, aTypes.setActiveStudentObject, function (_ref3, payload) {
+    var state = _ref3.state,
+        commit = _ref3.commit;
+
+    console.log(aTypes.setActiveStudentObject, 'is deprecated!');
+    [aTypes.setActiveStudent](state, commit, payload);
+    // // let student;
+    //
+    // // if (payload instanceof Student) {
+    // //     student = payload;
+    // // }
+    // // switch(typeof (payload)){
+    // //     case 'number':
+    // //         if(Number.isInteger(payload)){
+    // //             studentIndex = payload;
+    // //         }
+    // //         break;
+    // //     case 'object':
+    // //         //todo write if object
+    // //
+    // //         break;
+    // //     default:
+    // // }
+    //
+    // //Call the mutation
+    // if (payload instanceof Student) {
+    //     commit(mTypes.setStudentObject, payload);
+    // }
+}), _defineProperty(_actions, aTypes.setIndex, function (_ref4, payload) {
+    var state = _ref4.state,
+        commit = _ref4.commit;
+
+    console.log(aTypes.setIndex, 'is deprecated!');
+    console.log(aTypes.setIndex, payload);
+    payload = state.activeStudent;
+    actions[aTypes.setActiveStudent](state, commit, payload);
+}), _defineProperty(_actions, aTypes.setId, function (_ref5, payload) {
+    var state = _ref5.state,
+        commit = _ref5.commit;
+
+    console.log(aTypes.setId, 'is deprecated!');
+    payload = state.activeStudent;
+
+    actions[aTypes.setActiveStudent](state, commit, payload);
+}), _defineProperty(_actions, aTypes.setStudentObject, function (_ref6, payload) {
+    var state = _ref6.state,
+        commit = _ref6.commit;
+
+    payload = state.activeStudent;
+
+    if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == 'object' && payload instanceof _Student2.default) {
+        commit(mTypes.setActiveStudent, Payload.factory({ obj: payload }));
+        // state.student = payload;
+    }
+}), _defineProperty(_actions, aTypes.setActiveStudentTime, function (_ref7, payload) {
+    var state = _ref7.state,
+        commit = _ref7.commit;
+
+
+    var studentIndex = state.activeStudent.index;
+    var time = void 0;
+
+    switch (typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) {
+        case 'number':
+            if (Number.isInteger(payload)) {
+                //go straight to recording
+                time = payload;
+            }
+            break;
+
+        //object with expected key
+        case 'object':
+            //todo write if object
+            break;
+
+        //other allowed types
+        // todo
+
+        //numeric string
+        // todo
+        default:
+        //todo
+    }
+
+    //Call the mutation
+    if (typeof time == 'number') {
+        commit(mTypes.setTime, time);
+    }
+}), _defineProperty(_actions, aTypes.increaseActiveStudentGradingTime, function (_ref8, payload) {
+    var state = _ref8.state,
+        commit = _ref8.commit;
+
+    var studentIndex = state.activeStudent.index;
+    state.examGradingTimes[studentIndex] += payload.timeToAdd;
+}), _defineProperty(_actions, aTypes.storeQuestionScoreForActiveStudent, function (_ref9, payload) {
+    var state = _ref9.state,
+        commit = _ref9.commit;
+
+    // window.console.log( 'store called', this.activeStudentIndex, questionIndex, score );
+    var questionIndex = payload.questionIndex,
+        score = payload.score;
+
+    var studentIndex = state.activeStudent.index;
+    //type checking
+
+    var out = Payload.factory({ index2: questionIndex, index: studentIndex, num: score });
+
+    commit(mTypes.setQuestionScore, out);
+}), _defineProperty(_actions, aTypes.storeElementScoreForActiveStudent, function (_ref10, payload) {
+    var state = _ref10.state,
+        commit = _ref10.commit;
+
+    var studentIndex = state.getActiveStudentIndex();
+    var elementIndex = payload.elementIndex,
+        score = payload.score;
+    //type checks
+
+    if (typeof score == 'undefined') {
+        //score may have been named differently
+        score = payload.elementScore;
+    }
+
+    var out = Payload.factory({
+        index: studentIndex,
+        index2: elementIndex,
+        num: score
+    });
+
+    commit(mTypes.setElementScore, out);
+}), _actions);
+
+},{"../models/Student":352,"./action-types":353,"./mutation-types":369}],355:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+/**
+ * Created by adam on 1/10/17.
+ */
+
+/**
+ * Returns true if at least one question has received
+ * a score for the student.
+ */
+var isGraded = exports.isGraded = function isGraded(state, studentIndex) {
+    state.updateExamGrade(studentIndex);
+    if (state.examGrades[studentIndex] != "Letter grade" && state.examGrades[studentIndex] >= 0) {
+        return true;
+    }
+    return false;
+};
+
+/* ------------ Utilities --------------*/
+
+/**
+ * Checks to make sure that a property has had its
+ * values loaded before trying to do stuff with it
+ *
+ * @param propertyName
+ */
+var checkValid = exports.checkValid = function checkValid(state, propertyName) {
+    if (typeof state[propertyName] != 'undefined') {
+        throw propertyName + " is undefined";
+    }
+    if (state[propertyName] == null) {
+        throw propertyName + " is null";
+    }
+    if (state[propertyName] == {}) {
+        throw propertyName + " was empty. Probably because it wasn't initialized";
+    }
+
+    return true;
+};
+
+},{}],356:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+/**
+ * Root getters for the vuex instance
+ *
+ * Methods which make use of multiple modules should generally be kept here
+ */
+
+/**
+ * Helper function used by getters which tests for an index value and then
+ * handles undefined and  null inputs when they were expecting
+ * a numeric index.
+ */
+var validateIndex = function validateIndex(index) {
+    var handleInvalid = function handleInvalid() {
+        return '';
+    };
+
+    if (typeof index == 'undefined') return handleInvalid();
+    if (index === null) return handleInvalid();
+
+    return true;
+};
+
+/**
+ * Poorly named shortcut for getting the db id of
+ * the currently active exam.
+ * @param state
+ */
+var getExamId = exports.getExamId = function getExamId(state) {
+    return state.activeExam.id;
+};
+
+/**
+ * Returns true if some student is set as active.
+ * Saves the trouble of other methods having to figure out whether a student
+ * is set as active student (which can run into trouble if, for example, the
+ * active student has index 0 and the consuming method interprets this as false).
+ */
+var isActive = exports.isActive = function isActive(state) {
+    if (typeof state.activeStudent == 'undefined') return false;
+    if (state.activeStudent === null) return false;
+    if (state.activeStudent.index >= 0) {
+        return true;
+    }
+    return false;
+};
+
+/**
+ * Returns the number of exams that have been graded.
+ * NB, before counting them it first goes through and makes
+ * sure that each examGrade is set to the sum of graded questions
+ * for that exam.
+ */
+var getNumberGraded = exports.getNumberGraded = function getNumberGraded(state) {
+    var graded = 0;
+
+    if (Object.keys(state.examGrades).length > 0) {
+        //Loop through each exam (via studentIndex as key)
+        for (var i = 0; i < Object.keys(state.examGrades).length; i++) {
+            //Make sure the stored exam total score is up to date
+            state.updateExamGrade(i);
+            //this will be the string 'letter grade' if
+            //no grade has been entered. Thus we check
+            //whether it is a number 0 or greater
+            //if it is graded, increment the number graded
+            if (state.examGrades[i] >= 0) graded++;
+        }
+    }
+    return graded;
+};
+
+/**
+ * Returns the total number of exams
+ *
+ * @returns {number|Number}
+ */
+var getTotalExams = exports.getTotalExams = function getTotalExams(state) {
+    var total = 0;
+    if (Object.keys(state.examGrades).length > 0) {
+        total = Object.keys(state.examGrades).length;
+    }
+
+    return total;
+};
+
+//------------ from qscores
+
+/**
+ * Convenience function for getting the current student's score for question
+ * Old way: data.this.questionScores[ Roster.activeStudent ][ index ];
+ *  if ( state.activeStudentIndex == null ) return '';
+ *  return state.getQuestionScore( this.activeStudentIndex, questionIndex );
+ * @param questionIndex
+ */
+var getQuestionScoreForActiveStudent = exports.getQuestionScoreForActiveStudent = function getQuestionScoreForActiveStudent(state, getters, rootState, questionIndex) {
+    var idx = getters.getActiveStudentIndex(state, getters, rootState);
+    if (idx == null) return '';
+    return getters.getQuestionScore(state, getters, rootState, idx, questionIndex);
+    // if ( ! this.isActive() ) throw "ERROR: getQuestionScoreForActiveStudent | No active student set ";
+};
+
+// --------------- from times
+
+/**
+ * Convenience method for getting the grading time of the student presently
+ * being graded
+ * if ( state.activeStudentIndex == null ) return '';
+ * return state.examGradingTimes[ state.activeStudentIndex ];
+ * return getters.getStudentGradingTime( state, getters, state.activeStudentIndex );
+ * @returns {*}
+ */
+var getActiveStudentGradingTime = exports.getActiveStudentGradingTime = function getActiveStudentGradingTime(state, getters, rootState) {
+    var idx = getters.getActiveStudentIndex(state, getters, rootState);
+    if (idx == null) return '';
+    return getters.getStudentGradingTime(state, getters, idx);
+    // if ( ! this.isActive() ) throw "ERROR: getActiveStudentGradingTime | No active student set ";
+};
+
+//--------------- comments
+
+/**
+ * Gets the comment text for the student
+ * @param state
+ * @param getters
+ * @param rootState
+ * @param elementIndex
+ * @param valence
+ * @returns {*}
+ */
+var getCommentTextForActiveStudent = exports.getCommentTextForActiveStudent = function getCommentTextForActiveStudent(state, getters, rootState, elementIndex, valence) {
+    //If no student is set, the comment field should be blank
+    var idx = getters.getActiveStudentIndex(state, getters, rootState);
+    validateIndex(idx);
+    //    if ( idx == null ) return '';
+
+    return getters.getCommentText(state, getters, rootState, idx, elementIndex, valence);
+};
+
+//------------------ grades
+/**
+ * Retrieves exam grade for current student
+ * if ( state.activeStudentIndex == null ) return '';
+ * return state.examGrades[ state.activeStudent ];
+ * @param state
+ * @param getters
+ * @param rootState
+ * @returns {*}
+ */
+var getExamGradeForActiveStudent = exports.getExamGradeForActiveStudent = function getExamGradeForActiveStudent(state, getters, rootState) {
+    var idx = getters.getActiveStudentIndex(state, getters, rootState);
+    validateIndex(idx);
+    // if ( idx == null ) return '';
+    return getters.getExamGrade(state, getters, rootState, idx);
+};
+
+//------------ escores
+var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = function getElementScoreForActiveStudent(state, getters, rootState, elementIndex) {
+    var idx = getters.getActiveStudentIndex(state, getters, rootState);
+    validateIndex(idx);
+    // if ( idx == null ) return '';
+    return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
+};
+
+},{}],357:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; /**
+                                                                                                                                                                                                                                                   * Created by adam on 1/10/17.
+                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                   * Notes about how to use
+                                                                                                                                                                                                                                                   * However, this pattern causes the component to rely on the global store singleton. When using a module system, it requires importing the store in every component that uses store state, and also requires mocking when testing the component.
+                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                   Vuex provides a mechanism to "inject" the store into all child components from the root component with the store option (enabled by Vue.use(Vuex)):
+                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                   const app = new Vue({
+                                                                                                                                                                                                                                                    el: '#app',
+                                                                                                                                                                                                                                                    // provide the store using the "store" option.
+                                                                                                                                                                                                                                                    // this will inject the store instance to all child components.
+                                                                                                                                                                                                                                                    store,
+                                                                                                                                                                                                                                                    components: { Counter },
+                                                                                                                                                                                                                                                    template: `
+                                                                                                                                                                                                                                                      <div class="app">
+                                                                                                                                                                                                                                                        <counter></counter>
+                                                                                                                                                                                                                                                      </div>
+                                                                                                                                                                                                                                                    `
+                                                                                                                                                                                                                                                  })
+                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                   By providing the store option to the root instance, the store will be injected into all child components of the root and will be available on them as this.$store. Let's update our Counter implementation:
+                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                   const Counter = {
+                                                                                                                                                                                                                                                    template: `<div>{{ count }}</div>`,
+                                                                                                                                                                                                                                                    computed: {
+                                                                                                                                                                                                                                                      count () {
+                                                                                                                                                                                                                                                        return this.$store.state.count
+                                                                                                                                                                                                                                                      }
+                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                  }
+                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                   */
+
+var _vue = require('vue');
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _vuex = require('vuex');
+
+var _vuex2 = _interopRequireDefault(_vuex);
+
+var _actions = require('./actions');
+
+var actions = _interopRequireWildcard(_actions);
+
+var _getters = require('./getters');
+
+var getters = _interopRequireWildcard(_getters);
+
+var _mutations = require('./mutations');
+
+var mutations = _interopRequireWildcard(_mutations);
+
+var _state = require('./state');
+
+var state = _interopRequireWildcard(_state);
+
+var _api = require('./api');
+
+var api = _interopRequireWildcard(_api);
+
+var _activestudent = require('./modules/activestudent.js');
+
+var _activestudent2 = _interopRequireDefault(_activestudent);
+
+var _activeexam = require('./modules/activeexam.js');
+
+var _activeexam2 = _interopRequireDefault(_activeexam);
+
+var _comments = require('./modules/comments.js');
+
+var _comments2 = _interopRequireDefault(_comments);
+
+var _escores = require('./modules/escores.js');
+
+var _escores2 = _interopRequireDefault(_escores);
+
+var _items = require('./modules/items.js');
+
+var _items2 = _interopRequireDefault(_items);
+
+var _grades = require('./modules/grades.js');
+
+var _grades2 = _interopRequireDefault(_grades);
+
+var _qscores = require('./modules/qscores.js');
+
+var _qscores2 = _interopRequireDefault(_qscores);
+
+var _questions = require('./modules/questions.js');
+
+var _questions2 = _interopRequireDefault(_questions);
+
+var _students = require('./modules/students.js');
+
+var _students2 = _interopRequireDefault(_students);
+
+var _times = require('./modules/times.js');
+
+var _times2 = _interopRequireDefault(_times);
+
+var _item = require('./modules/item.names');
+
+var _item2 = _interopRequireDefault(_item);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// import gradeStateDefault from './modules/grade.defaultstate'
+// import createLogger from '../../../src/plugins/logger'
+
+_vue2.default.use(_vuex2.default);
+
+var debug = process.env.NODE_ENV !== 'production';
+
+exports.default = new _vuex2.default.Store({
+  /**
+   * From instances and components where store has been
+   * injected, actions are called
+   * like so: store.dispatch( 'string-action-name' )
+   */
+  actions: actions,
+  getters: getters,
+  mutations: {
+    /**
+     * Sets the current exam id
+     *
+     * @todo Extend to set from an exam object
+     *
+     * @param state
+     * @param payload
+     */
+    _setExamId: function _setExamId(state, payload) {
+      if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) == Number) {
+        state.examId = payload;
+      }
+
+      window.console.log('setExamId', state);
+    }
+  },
+
+  modules: {
+    activeexam: _activeexam2.default,
+    activestudent: _activestudent2.default,
+    comments: _comments2.default,
+    escores: _escores2.default,
+    items: _items2.default,
+    grades: _grades2.default,
+    qscores: _qscores2.default,
+    questions: _questions2.default,
+    students: _students2.default,
+    times: _times2.default,
+    names: _item2.default
+  },
+  state: state,
+  api: api,
+
+  strict: debug });
+
+}).call(this,require('_process'))
+},{"./actions":354,"./api":355,"./getters":356,"./modules/activeexam.js":358,"./modules/activestudent.js":359,"./modules/comments.js":360,"./modules/escores.js":361,"./modules/grades.js":362,"./modules/item.names":363,"./modules/items.js":364,"./modules/qscores.js":365,"./modules/questions.js":366,"./modules/students.js":367,"./modules/times.js":368,"./mutations":370,"./state":371,"_process":311,"vue":314,"vuex":315}],358:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37250,11 +37347,11 @@ var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _Exam = require('../models/Exam');
+var _Exam = require('../../models/Exam');
 
 var _Exam2 = _interopRequireDefault(_Exam);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -37331,7 +37428,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":348,"../models/Exam":353,"../models/Payload":355,"../mutation-types":367}],359:[function(require,module,exports){
+},{"../../models/Exam":347,"../../models/Payload":350,"../action-types":353,"../mutation-types":369}],359:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37348,11 +37445,11 @@ var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _Student = require('../models/Student');
+var _Student = require('../../models/Student');
 
 var _Student2 = _interopRequireDefault(_Student);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -37464,7 +37561,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":348,"../models/Payload":355,"../models/Student":357,"../mutation-types":367}],360:[function(require,module,exports){
+},{"../../models/Payload":350,"../../models/Student":352,"../action-types":353,"../mutation-types":369}],360:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37481,7 +37578,7 @@ var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -37628,7 +37725,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":348,"../models/Payload":355,"../mutation-types":367}],361:[function(require,module,exports){
+},{"../../models/Payload":350,"../action-types":353,"../mutation-types":369}],361:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37645,7 +37742,7 @@ var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -37722,7 +37819,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":348,"../models/Payload":355,"../mutation-types":367}],362:[function(require,module,exports){
+},{"../../models/Payload":350,"../action-types":353,"../mutation-types":369}],362:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37739,7 +37836,7 @@ var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -37881,7 +37978,445 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":348,"../models/Payload":355,"../mutation-types":367}],363:[function(require,module,exports){
+},{"../../models/Payload":350,"../action-types":353,"../mutation-types":369}],363:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations;
+
+var _mutationTypes = require('../mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 3/10/17.
+                                                                                                                                                                                                                   */
+
+var state = {
+    // itemNames: {}
+    itemNames: [] //new Map()
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setItemNameByIndex, function (state, payload) {
+    console.log('*****', 'addName', payload, state);
+    // Vue.set(state.itemNames, payload.index, payload.str);
+
+    //state.itemNames.splice( payload.index, 0, payload.str );
+}), _defineProperty(_mutations, mTypes.updateItemNameByIndex, function (state, payload) {
+    console.log('*****', 'updateItemNameByIndex', state, payload);
+    state.itemNames.$set(payload.index, payload.str);
+}), _mutations);
+
+var actions = {};
+var getters = {
+
+    getItemNameByIndex: function getItemNameByIndex(state, getters) {
+        return function (index) {
+            console.log('getItemNameByIndex', state, index);
+            // return state.itemNames.filter((index) => state.itemNames[index] );
+
+            return state.itemNames[index];
+            // return state.itemNames.get( index )
+        };
+    }
+};
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+},{"../../models/Payload":350,"../action-types":353,"../mutation-types":369}],364:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _mutations, _actions;
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../../store/action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+var _Item = require('../../models/Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * The older version used an index value to do lots of stuff.
+ * Given the prospect of using a websocket connection or connecting
+ * to canvas or other 3rd party system, it now makes more sense
+ * to use the db's id as the primary locator in the store. Thus
+ * state.Items has the Item's database id as key and an Item object
+ * as value. That is:
+ *      state.Items[Item.id] = Item
+ *
+ * To maintain compatibility, indexMap holds a mapping from the old
+ * ItemIndex to the database id
+ */
+var state = {
+
+    /**
+     * Object indexed by Item id holding Item objects
+     */
+    items: [],
+
+    // items: new Map(),
+    // itemsRepo: [], // Item.factory( {index: 0} ) ],
+    // // items: {},
+
+    /**
+     * Mapping from older ItemIndex to new Item id value
+     */
+    indexMap: new Map()
+
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.addNewItem, function (state, payload) {
+    console.log(mTypes.addNewItem, state, payload);
+    var len = state.items.length;
+    //set the item index
+    var index = len == 0 || 1 ? len : len + 1;
+    var item = _Item2.default.factory({ index: index });
+
+    state.items.push(item);
+}), _defineProperty(_mutations, mTypes.updateItemName, function (state, payload) {
+    console.log('*****', mTypes.updateItemName, payload, state);
+    var itm = state.items[payload.index];
+    itm.name = payload.str;
+    state.items.$set(payload.index, itm);
+    // state.itemNames.$set(payload.index,  payload.str);
+}), _defineProperty(_mutations, mTypes.addItem, function (state, payload) {
+    //thi should probably be renamed 'set item' because it is for settong
+    //at a certain index, rather than pushing it in at the front
+    console.log('items.mutations', mTypes.addItem, state, payload);
+
+    // state.itemRepo.$set( payload.obj.index, payload.obj );
+    state.items.$set(payload.obj.index, payload.obj);
+
+    //If we received an item by itself, wrap it in a payload
+    // //no idea why I decided to permit this....
+    // if ( payload instanceof Item ) {
+    //     payload = Payload.factory( {obj: payload} );
+    // }
+    //
+    // //at this point, when the button has been clicked,
+    // //there is an index (or at least question number/subtask
+    // //but not an id
+    // if ( Payload.checkIfPayload( payload ) && payload.obj instanceof Item ) {
+    //     //push into Items storage
+    //     state.items.set(payload.obj.index , payload.obj);
+    //     // state.items[ payload.obj.index ] = payload.obj;
+    // }
+
+    //todo add error handling
+}), _defineProperty(_mutations, mTypes.updateItemNameByIndex, function (state, payload) {
+    console.log('*****', 'updateItemNameByIndex', state, payload);
+    //state.itemNames.$set(payload.index,  payload.str);
+}), _defineProperty(_mutations, mTypes.addItemIndexMapping, function (state, rootState, payload) {
+    _Payload2.default.checkIfPayload(payload);
+
+    state.indexMap.set(payload.index, payload.id);
+}), _mutations);
+
+/**
+ * Build an input object and return a payload object
+ * containing it
+ */
+var createItemExNihlo = function createItemExNihlo(state) {
+    //nothing was passed in.
+    //This probably means the add new item button was clicked
+    // let len = getters.getNumberOfItems( state, {}, {} ) + 1 || 0
+    var len = state.items.length;
+    var index = len == 0 ? len : len + 1;
+
+    var obj = _Item2.default.factory({ index: index });
+    var out = _Payload2.default.factory({ obj: obj });
+    return out;
+};
+
+/**
+ * Build an input object out of an input object
+ * and return a payload object containing it
+ * @param input
+ */
+var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, payload) {
+    //either a json or an item object have been passed in
+    var ItemId = payload.ItemId,
+        ItemIndex = payload.ItemIndex,
+        obj = payload.obj,
+        ItemObject = payload.ItemObject;
+
+
+    obj = typeof ItemObject != 'undefined' ? ItemObject : obj;
+
+    //check and see if an Item object has already been passed in
+    if (!obj instanceof _Item2.default) {
+        //create a new Item
+        var name = payload.name,
+            id = payload.id,
+            index = payload.index;
+
+        var ItemJson = { name: name, ItemIndex: ItemIndex };
+        obj = _Item2.default.factory(ItemJson);
+    }
+
+    //assemble the expected payload
+    // let out = { ItemId: ItemId, ItemIndex: ItemIndex, obj: obj };
+    var out = _Payload2.default.factory({ id: obj.id, index: obj.index, obj: obj });
+    //Add to the Items store
+    return out;
+};
+
+var actions = (_actions = {}, _defineProperty(_actions, aTypes.createItem, function (_ref) {
+    var state = _ref.state,
+        commit = _ref.commit;
+
+    commit(mTypes.addNewItem);
+}), _defineProperty(_actions, aTypes.addNewItem, function (_ref2, payload) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+    var len = state.items.length;
+    var index = len == 0 ? len : len + 1;
+
+    var obj = _Item2.default.factory({ index: index });
+    var out = _Payload2.default.factory({ obj: obj });
+    // commit( mTypes.addItem, out );
+    commit(mTypes.addNewItem);
+
+    // let out = createItemExNihlo( state );
+    // // (typeof payload != 'undefined') ? this.buildPayloadFromInput(payload) : createItemExNihlo(state);
+    // console.log( 'addNewItem out', out );
+    //
+    // if ( typeof out != 'undefined' && Payload.checkIfPayload(out)) {
+    //     console.log( 'addNewItem != undefined ', out );
+    //     commit( mTypes.addItem, out );
+    //     //Add to the mapping store
+    //     // commit( mTypes.addIndexMapping, out );
+    // }
+}), _defineProperty(_actions, aTypes.loadItems, function (state, rootState, payload) {
+    //check if payload has correct structure
+    //todo
+
+    //push each record from the payload into the store
+    for (var i = 0; i < payload.length; i++) {
+        var record = payload[i];
+        //check if record has correct structure
+        //todo
+
+        //add to Items and add index mapping
+        [aTypes.addNewItem](state, rootState, record);
+    }
+}), _actions);
+
+var getters = {
+    /**
+     * Returns the desired Item object
+     * Payload can have any of the following identifiers,
+     * used in descending order:
+     *      ItemId,
+     *      ItemIndex
+     *      todo Add others
+     * @param state
+     * @param getters
+     * @param payload Object containing Item identifier
+     */
+    getItem: function getItem(state, getters, rootState, payload) {
+        var index = void 0;
+
+        //room for other ways of finding index
+        index = payload.index;
+
+        // return state.items[index];
+        console.log('getItem', payload);
+        return state.items[index];
+    },
+
+    /**
+     * Returns the item object with the given index
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param index
+     */
+    getItemByIndex: function getItemByIndex(state, getters) {
+        return function (index) {
+            console.log('getItemByIndex', state, index);
+
+            return function (state, index) {
+                var r = state.items.filter(function (i) {
+                    if (i.index === index) {
+                        return i;
+                    }
+                });
+                return r[0];
+            }(state, index);
+        };
+    },
+
+    /**
+     * Returns list of items objects
+     * @param state
+     * @param getters
+     * @param payload
+     * @returns []
+     */
+    getAllItems: function getAllItems(state, getters, rootState) {
+        return state.items;
+        // return state.items.entries()
+    },
+
+    getAllIndexesList: function getAllIndexesList(state, getters, rootState, payload) {
+        var out = [];
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+            for (var _iterator = state.items.entries()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var _step$value = _slicedToArray(_step.value, 2),
+                    key = _step$value[0],
+                    val = _step$value[1];
+
+                console.log('getall idexes itemslist', key, val);
+                out.push(key);
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+
+        return out;
+    },
+
+    /**
+     * Return list of Item objects
+     * @param state
+     * @param getters
+     * @param payload
+     * @returns []
+     */
+    getAllItemsList: function getAllItemsList(state, getters) {
+        return function (items) {
+            var out = [];
+            // if ( state.items.size > 0 ) {
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+                for (var _iterator2 = items.entries()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var _step2$value = _slicedToArray(_step2.value, 2),
+                        key = _step2$value[0],
+                        val = _step2$value[1];
+
+                    // for ( let [ key, val ] of state.items.entries() ) {
+                    console.log('getallitemslist', key, val);
+                    out.push(val);
+                }
+                // }
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
+                }
+            }
+
+            return out;
+        };
+    },
+
+    getItemCount: function getItemCount(state) {
+        return state.itemsRepo.length;
+    },
+
+    /**
+     * Returns the current count of items
+     * @param state
+     * @param getters
+     * @param payload
+     * @returns {Number}
+     */
+    getNumberOfItems: function getNumberOfItems(state, getters) {
+        return function (items) {
+            // return items.size;
+            return items.length;
+            // return Object.keys( state.items ).length || 0;
+        };
+    },
+
+    /**
+     * Returns the highest index value
+     * @param state
+     * @param getters
+     * @param payload
+     */
+    getMaxIndex: function getMaxIndex(state, getters, payload) {
+        //   return Object.keys( state.items ).max || 0;
+    }
+};
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+},{"../../models/Item":349,"../../models/Payload":350,"../../store/action-types":353,"../../store/mutation-types":369}],365:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37898,7 +38433,7 @@ var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -37980,7 +38515,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":348,"../models/Payload":355,"../mutation-types":367}],364:[function(require,module,exports){
+},{"../../models/Payload":350,"../action-types":353,"../mutation-types":369}],366:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37989,11 +38524,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _mutations, _actions;
 
-var _Question = require('./../models/Question');
+var _Question = require('../../models/Question');
 
 var _Question2 = _interopRequireDefault(_Question);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -38119,7 +38654,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":348,"../models/Payload":355,"../mutation-types":367,"./../models/Question":356}],365:[function(require,module,exports){
+},{"../../models/Payload":350,"../../models/Question":351,"../action-types":353,"../mutation-types":369}],367:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38128,11 +38663,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _mutations, _actions;
 
-var _Student = require('../models/Student');
+var _Student = require('../../models/Student');
 
 var _Student2 = _interopRequireDefault(_Student);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -38239,7 +38774,7 @@ exports.default = {
     state: state
 };
 
-},{"../action-types":348,"../models/Payload":355,"../models/Student":357,"../mutation-types":367}],366:[function(require,module,exports){
+},{"../../models/Payload":350,"../../models/Student":352,"../action-types":353,"../mutation-types":369}],368:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38256,7 +38791,7 @@ var _actionTypes = require('../action-types');
 
 var aTypes = _interopRequireWildcard(_actionTypes);
 
-var _Payload = require('../models/Payload');
+var _Payload = require('../../models/Payload');
 
 var _Payload2 = _interopRequireDefault(_Payload);
 
@@ -38376,7 +38911,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../action-types":348,"../models/Payload":355,"../mutation-types":367}],367:[function(require,module,exports){
+},{"../../models/Payload":350,"../action-types":353,"../mutation-types":369}],369:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38445,7 +38980,18 @@ var resetGradingTime = exports.resetGradingTime = 'resetGradingTime';
 
 var setExam = exports.setExam = 'setExam';
 
-},{}],368:[function(require,module,exports){
+//items
+var addNewItem = exports.addNewItem = 'addNewItem';
+var addItem = exports.addItem = 'addItem';
+var addItemIndexMapping = exports.addItemIndexMapping = 'addItemIndexMapping';
+var loadItems = exports.loadItems = 'loadItems';
+
+var updateItemName = exports.updateItemName = 'updateItemName';
+
+var setItemNameByIndex = exports.setItemNameByIndex = 'setItemNameByIndex';
+var updateItemNameByIndex = exports.updateItemNameByIndex = 'updateItemNameByIndex';
+
+},{}],370:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38479,7 +39025,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":367}],369:[function(require,module,exports){
+},{"./mutation-types":369}],371:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -38509,6 +39055,6 @@ exports.default = {
 
 };
 
-},{}]},{},[332]);
+},{}]},{},[331]);
 
 //# sourceMappingURL=new-setup-package.js.map

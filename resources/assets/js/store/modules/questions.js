@@ -1,8 +1,8 @@
 /**
  * Created by adam on 10/7/16.
  */
-import Question from './../models/Question';
-import Payload from '../models/Payload'
+import Question from '../../models/Question';
+import Payload from '../../models/Payload'
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
 
@@ -33,8 +33,8 @@ const mutations = {
      * @param payload
      */
     [mTypes.setMaxQuestionScore]: ( state, rootState, payload ) => {
-        Payload.checkIfPayload(payload);
-        state.maxQuestionScores[payload.index] = payload.num;
+        Payload.checkIfPayload( payload );
+        state.maxQuestionScores[ payload.index ] = payload.num;
     },
 
     /**
@@ -44,8 +44,8 @@ const mutations = {
      * @param payload
      */
     [mTypes.removeMaxQuestionScore]: ( state, rootState, payload ) => {
-        Payload.checkIfPayload(payload);
-        delete state.maxQuestionScores[payload.index];
+        Payload.checkIfPayload( payload );
+        delete state.maxQuestionScores[ payload.index ];
     },
 
     /**
@@ -56,8 +56,8 @@ const mutations = {
      * @param payload
      */
     [mTypes.setQuestion]: ( state, rootState, payload ) => {
-        Payload.checkIfPayload(payload);
-        state.questions[payload.index] = payload.obj;
+        Payload.checkIfPayload( payload );
+        state.questions[ payload.index ] = payload.obj;
     },
 
     /**
@@ -102,7 +102,7 @@ const actions = {
      */
     [aTypes.addQuestion]: ( {state, commit}, payload ) => {
 
-        let question = Question.factory( payload);
+        let question = Question.factory( payload );
 
         if ( question instanceof Question ) {
             let pl = new Payload();

@@ -29,6 +29,9 @@ export default class Payload {
         /** The timestamp in the payload */
         this._stamp;
 
+        this.str;
+        this.index;
+
     }
 
     /*  ************************* Identifier values ************************* */
@@ -40,23 +43,25 @@ export default class Payload {
         //todo numeric check
         this._id = val;
     }
-
-    get index() {
-        return this._index;
-    }
-
-    set index( val ) {
-        //todo numeric check
-        this._index = val;
-    }
+    //
+    // get index() {
+    //     return this._index;
+    // }
+    //
+    // set index( val ) {
+    //     //todo numeric check
+    //     this._index = val;
+    // }
 
     get index2() {
         return this._index2;
     }
+
     set index2( val ) {
         //todo numeric check
         this._index2 = val;
     }
+
     //
     // get complexIndex(){
     //     if(typeof this._index2 != 'undefined'){
@@ -84,16 +89,16 @@ export default class Payload {
         }
 //todo error handling
     }
-
-
-    get str() {
-        return this._obj;
-    }
-
-    set str( v ) {
-        //todo string check
-        this._str = v;
-    }
+    //
+    //
+    // get str() {
+    //     return this._obj;
+    // }
+    //
+    // set str( v ) {
+    //     //todo string check
+    //     this._str = v;
+    // }
 
     /**
      * Returns a list of strings which are property

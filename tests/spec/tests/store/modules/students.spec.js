@@ -10,8 +10,8 @@ import {testAction, description, factories} from '../../../helpers/vuex.spec.hel
 import * as students from '../../../../../resources/assets/js/store/modules/students';
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
-import Student from '../../../../../resources/assets/js/store/models/Student'
-import Payload from '../../../../../resources/assets/js/store/models/Payload'
+import Student from '../../../../../resources/assets/js/models/Student'
+import Payload from '../../../../../resources/assets/js/models/Payload'
 
 const makeState = ( n = 5 ) => {
     let s = makeRootState();

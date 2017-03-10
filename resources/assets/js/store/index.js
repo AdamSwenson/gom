@@ -45,11 +45,13 @@ import  activestudent from './modules/activestudent.js'
 import  activeexam from './modules/activeexam.js'
 import  comments from './modules/comments.js'
 import escores from './modules/escores.js'
+import items from './modules/items.js'
 import grades from './modules/grades.js'
 import qscores from './modules/qscores.js'
 import questions from './modules/questions.js'
 import students from './modules/students.js'
 import times from './modules/times.js'
+import names from './modules/item.names'
 
 // import gradeStateDefault from './modules/grade.defaultstate'
 // import createLogger from '../../../src/plugins/logger'
@@ -89,11 +91,13 @@ export default new Vuex.Store({
         activestudent,
         comments,
         escores,
+        items,
         grades,
         qscores,
         questions,
         students,
-        times
+        times,
+        names
     },
     state,
     api,

@@ -10,7 +10,7 @@ import {testAction, description, factories, getActiveStudentIndex} from '../../h
 //Dependencies
 import * as mTypes from '../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../resources/assets/js/store/action-types'
-import Payload from '../../../../resources/assets/js/store/models/Payload'
+import Payload from '../../../../resources/assets/js/models/Payload'
 
 const {setExamId} = actions;
 

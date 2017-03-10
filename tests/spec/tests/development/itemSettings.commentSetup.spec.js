@@ -21,7 +21,7 @@ var testedComponent = require( "../../../../resources/assets/js/development/comp
 var fixture = 'itemSettings.fixture.html';
 
 
-fdescribe( "item-settings-comment-setup tests | ", function () {
+describe( "item-settings-comment-setup tests | ", function () {
     var $fixture;
     var vm;
 

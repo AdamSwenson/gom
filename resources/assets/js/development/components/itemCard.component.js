@@ -13,7 +13,7 @@ module.exports = {
 
     template: require( '../templates/item-card.template.html' ),
 
-    props: [ 'item', 'item-index' ],
+    props: [ 'index' ],
 
     data: function () {
         return {
@@ -32,10 +32,7 @@ module.exports = {
     },
 
     computed: {
-        /**
-         * The name of the item
-         */
-        itemName: {},
+
         depth: {
             get: function () {
                 return this.defaults.depth;
@@ -44,29 +41,29 @@ module.exports = {
 
             }
         },
-        index: {
-            get: function () {
-
-                if ( typeof this.item == 'undefined' ) {
-                    return this.item.index;
-                }
-                if ( typeof this.itemIndex == 'undefined' ) {
-                    return this.defaults.index;
-                }
-                return this.itemIndex;
-            },
-
-            //todo this is a kludge until get store and item worked in
-            set: function ( v ) {
-                if ( typeof this.item == 'undefined' ) {
-                    this.item.index = v;
-                }
-                if ( typeof this.itemIndex == 'undefined' ) {
-                    this.defaults.index = v;
-                }
-                this.itemIndex = v;
-            }
-        },
+        // index: {
+        //     get: function () {
+        //
+        //         if ( typeof this.item == 'undefined' ) {
+        //             return this.item.index;
+        //         }
+        //         if ( typeof this.itemIndex == 'undefined' ) {
+        //             return this.defaults.index;
+        //         }
+        //         return this.itemIndex;
+        //     },
+        //
+        //     //todo this is a kludge until get store and item worked in
+        //     set: function ( v ) {
+        //         if ( typeof this.item == 'undefined' ) {
+        //             this.item.index = v;
+        //         }
+        //         if ( typeof this.itemIndex == 'undefined' ) {
+        //             this.defaults.index = v;
+        //         }
+        //         this.itemIndex = v;
+        //     }
+        // },
 
         type: {
             get: function () {
@@ -106,9 +103,8 @@ module.exports = {
 
     events: {
         'display-settings': function () {
-            console.log( 'itemName', 'CAUGHT', 'display-settings', this.item );
+            console.log( 'itemName', 'CAUGHT', 'display-settings', this.index);
             this.$broadcast( 'display-settings' );
-
         },
     },
 

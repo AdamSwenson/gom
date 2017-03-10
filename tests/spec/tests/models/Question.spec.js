@@ -4,10 +4,10 @@ require( 'sinon' );
 let Faker = require( 'faker' );
 
 //tested stuff
-import Question from  "../../../../../resources/assets/js/store/models/Question.js" ;
+import Question from  "../../../../resources/assets/js/models/Question.js" ;
 
 
-describe( "store.models.question | ", function () {
+describe( "models.question | ", function () {
     beforeAll( function () {
 //runs once before all tests
     } );

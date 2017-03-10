@@ -5,10 +5,10 @@ require( 'sinon' );
 const faker = require( 'faker' );
 
 //tested stuff
-import Payload from  "../../../../../resources/assets/js/store/models/Payload.js" ;
+import Payload from  "../../../../resources/assets/js/models/Payload.js" ;
 
 
-describe( " store.models.Payload | ", function () {
+describe( " models.Payload | ", function () {
 
     describe( " factory | ", function () {
         describe( "happy path | ", function () {

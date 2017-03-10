@@ -5,8 +5,8 @@
 /**
  * Created by adam on 10/7/16.
  */
-import Student from '../models/Student'
-import Payload from '../models/Payload'
+import Student from '../../models/Student'
+import Payload from '../../models/Payload'
 import * as mTypes from '../mutation-types'
 import * as aTypes from '../action-types'
 

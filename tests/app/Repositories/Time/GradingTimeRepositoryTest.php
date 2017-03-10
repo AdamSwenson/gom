@@ -72,7 +72,7 @@ class GradingTimeRepositoryTest extends \TestCase
         //Check that properly ordered
         foreach ( $result as $r )
         {
-            $this->assertInstanceOf(GradingTime::class, $r, "Items in collection are GradingTime objects");
+            $this->assertInstanceOf(GradingTime::class, $r, "items in collection are GradingTime objects");
             //append the student id to the array so can check if got all of them
             $studentIds[] = $r->student_id;
 

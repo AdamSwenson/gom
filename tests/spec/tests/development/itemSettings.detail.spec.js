@@ -22,7 +22,7 @@ var fixture = 'itemSettings.fixture.html';
 
 
 
-fdescribe( "item-settings-detail tests | ", function () {
+describe( "item-settings-detail tests | ", function () {
     beforeAll( function () {
 //runs once before all tests
     } );

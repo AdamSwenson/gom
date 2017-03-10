@@ -5,10 +5,10 @@ require( 'sinon' );
 var Faker = require( 'faker' );
 
 //tested stuff
-import Student from  "../../../../../resources/assets/js/store/models/Student" ;
+import Student from  "../../../../resources/assets/js/models/Student" ;
 
 
-describe( "store.models.Student | ", function () {
+describe( "models Student | ", function () {
 
     beforeEach( function () {
 //runs before each test

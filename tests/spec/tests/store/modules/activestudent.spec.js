@@ -7,7 +7,7 @@ let faker = require( 'faker' );
 import * as active from '../../../../../resources/assets/js/store/modules/activestudent';
 import * as mTypes from '../../../../../resources/assets/js/store/mutation-types'
 import * as aTypes from '../../../../../resources/assets/js/store/action-types'
-import Payload from '../../../../../resources/assets/js/store/models/Payload'
+import Payload from '../../../../../resources/assets/js/models/Payload'
 
 
 import {testAction, description, factories} from '../../../helpers/vuex.spec.helpers';

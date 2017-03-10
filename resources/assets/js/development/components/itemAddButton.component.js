@@ -4,6 +4,11 @@
 //var $ = require('jquery');
 //window.$ = $;
 
+
+import * as aTypes from '../../store/action-types';
+import * as mTypes from '../../store/mutation-types';
+
+
 module.exports = {
 
     template: require( '../templates/item-add-button.template.html' ),
@@ -26,7 +31,9 @@ module.exports = {
             this.sendRequest();
         },
         sendRequest:function(){
-            this.$dispatch('add-item');
+            // this.$store.dispatch(addNewItem');
+            // this.store[aTypes.addNewItem]();
+            this.$dispatch('add-new-item');
         }
     },
 
@@ -35,5 +42,6 @@ module.exports = {
     events: {},
 
     ready: function () {
+        console.log( 'itemAddButton', 'ready', this.$store );
     },
 };

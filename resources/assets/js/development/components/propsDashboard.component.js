@@ -13,7 +13,7 @@ module.exports = {
     data: function () {
         return {
             placeHolders: {
-                numberItems: 0,
+                numberItems: '-',
                 perfectScore: '-',
                 timeGrading: '-'
             },
@@ -29,11 +29,11 @@ module.exports = {
         /**
          * Number of constituent items (questions, elements) on the exam
          */
-        numberItems: {
-            get: function () {
+        numberItems: function () {
+                let v = this.$store.getters.getItemCount;
                 //if not set return placeholder
-                return this.placeHolders.numberItems;
-            }
+                return typeof v != 'undefined' ? v : this.placeHolders.numberItems;
+
         },
 
         /**

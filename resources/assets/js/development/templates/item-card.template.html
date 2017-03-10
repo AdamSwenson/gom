@@ -8,9 +8,9 @@
 
                     <slot name="head">
 
-                        <item-name></item-name>
+                        <item-name :index="index"></item-name>
 
-                        <item-settings :item="item"
+                        <item-settings :item-obj="item" :item-index="index"
                                        is="currentView"></item-settings>
 
                     </slot>

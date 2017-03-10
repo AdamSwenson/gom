@@ -3,10 +3,10 @@
  */
 //
 // export const PATH_TO_STORE_FROM_TEST_MODULES = '../../../../../resources/assets/js/store/';
-
-import Exam from '../../../resources/assets/js/store/models/Exam';
-import Student from '../../../resources/assets/js/store/models/Student';
-import Question from '../../../resources/assets/js/store/models/Question';
+import Item from '../../../resources/assets/js/models/Item';
+import Exam from '../../../resources/assets/js/models/Exam';
+import Student from '../../../resources/assets/js/models/Student';
+import Question from '../../../resources/assets/js/models/Question';
 
 
 let faker = require( 'faker' );
@@ -33,6 +33,18 @@ export const factories = {
         e.name = faker.company.bsNoun();
         e.year = 2013;
         e.term = faker.company.bs();
+        return e;
+    },
+
+    itemFactory: ( index ) => {
+        let idx = typeof index != 'undefined' ? index : faker.random.arrayElement( [ 0, 1, 2, 3, 4 ] );
+
+        let e = new Item();
+        e.id = faker.random.number();
+        e.index = idx;
+        e.name = faker.company.bsNoun();
+        e.text = faker.company.bsNoun();
+        e.maxScore = faker.random.number();
         return e;
     },
 
@@ -127,7 +139,8 @@ export const testAction = ( action, payload, state, expectedMutations, ...kwargs
                 //check have same values for properties
                 for ( let prop in mutation.payload ) {
                     if ( verbose ) {
-                        console.log( 'checking prop', prop, 'payload', payload, 'payload value', payload[ prop ] );
+                        console.log( 'checking prop', prop, 'expected payload', payload, 'expected payload value', payload[ prop ], 'actual payload', mutation.payload[ prop ]   );
+
                     }
                     expect( mutation.payload[ prop ] ).toBe( payload[ prop ] );
                 }
