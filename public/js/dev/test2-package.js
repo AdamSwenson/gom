@@ -11422,7 +11422,7 @@ exports.default = IModel;
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -11444,246 +11444,247 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
 var Item = function (_IModel) {
-    _inherits(Item, _IModel);
+  _inherits(Item, _IModel);
 
-    function Item() {
-        _classCallCheck(this, Item);
+  function Item() {
+    _classCallCheck(this, Item);
 
-        /**
-         * The db identifier of the model
-         */
-        var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
+    /**
+     * The db identifier of the model
+     */
+    var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
 
-        _this._id;
+    _this._id;
 
-        /**
-         * The locator value
-         */
-        // this._index;
-        _this.index;
+    /**
+     * The locator value
+     */
+    // this._index;
+    _this.index;
 
-        /** The nickname or title by which this item is identified */
-        _this.name = "";
+    /** The nickname or title by which this item is identified */
+    _this.name = "";
 
-        _this.text;
-        /**
-         * The secondary locator value
-         * Q1 E2 = index 0, depth 3
-         */
-        _this._depth;
+    _this.number = null;
 
-        /**
-         * The maximum possible value of the item
-         */
-        _this._maxScore;
+    _this.text;
+    /**
+     * The secondary locator value
+     * Q1 E2 = index 0, depth 3
+     */
+    _this._depth;
 
-        // this.name;
+    /**
+     * The maximum possible value of the item
+     */
+    _this.maxScore;
 
-        /**
-         * Whether the item is currently set to
-         * be appear in pages, emails, or anything
-         * else that a student could see.
-         *
-         * If this value is true, there are some outputs viewable
-         * by students, which this appears in.
-         *
-         * @type {boolean}
-         * @private
-         */
-        _this._public = false;
+    // this.name;
 
-        /**
-         * The full length text of the item.
-         * This could be the question prompt;
-         * a longer description of the element; etc
-         */
-        // this._text;
+    /**
+     * Whether the item is currently set to
+     * be appear in pages, emails, or anything
+     * else that a student could see.
+     *
+     * If this value is true, there are some outputs viewable
+     * by students, which this appears in.
+     *
+     * @type {boolean}
+     * @private
+     */
+    _this._public = false;
 
-        /**
-         * The role played by the item
-         */
-        _this._type;
+    /**
+     * The full length text of the item.
+     * This could be the question prompt;
+     * a longer description of the element; etc
+     */
+    // this._text;
 
-        /**
-         * The possible values of this._type
-         */
-        _this.types = ['comment', 'element', 'question'];
-        return _this;
+    /**
+     * The role played by the item
+     */
+    _this._type;
+
+    /**
+     * The possible values of this._type
+     */
+    _this.types = ['comment', 'element', 'question'];
+    return _this;
+  }
+
+  /* *************************** Id *************** */
+  /**
+   * Alias for _id
+   * @returns {*}
+   */
+
+
+  _createClass(Item, [{
+    key: 'isPublic',
+
+
+    /* *************************** Index *************** */
+    // /**
+    //  * The locator for the item
+    //  * @returns {*}
+    //  */
+    // get index() {
+    //     return this._index;
+    // }
+    //
+    // /**
+    //  * The locator for the item
+    //  * @param v
+    //  */
+    // set index( v ) {
+    //     this._index = v;
+    // }
+    //
+    //
+    // /* *************************** Max score *************** */
+    // get maxScore() {
+    //     return this._maxScore ? Number( this._maxScore ) : null;
+    // };
+    //
+    // set maxScore( score ) {
+    //     this._maxScore = score;
+    // };
+
+
+    /* *************************** Public *************** */
+    /**
+     * Getter for whether this can currently appear in student-viewable outputs
+     * @returns {boolean|*}
+     */
+    value: function isPublic() {
+      return this._public;
     }
 
-    /* *************************** Id *************** */
     /**
-     * Alias for _id
-     * @returns {*}
+     * Makes able to appear in student-viewable outputs
      */
 
+  }, {
+    key: 'makePublic',
+    value: function makePublic() {
+      this._public = true;
+    }
 
-    _createClass(Item, [{
-        key: 'isPublic',
+    /**
+     * Makes no longer visible to students
+     */
 
+  }, {
+    key: 'hide',
+    value: function hide() {
+      this._public = false;
+    }
+  }, {
+    key: 'togglePublic',
+    value: function togglePublic() {
+      console.log('Item', 'CALLED', 'togglePublic', this._public);
+      this._public = !this._public;
+      console.log(this._public);
+    }
 
-        /* *************************** Public *************** */
-        /**
-         * Getter for whether this can currently appear in student-viewable outputs
-         * @returns {boolean|*}
-         */
-        value: function isPublic() {
-            return this._public;
-        }
+    /* *************************** Type *************** */
 
-        /**
-         * Makes able to appear in student-viewable outputs
-         */
+  }, {
+    key: 'id',
+    get: function get() {
+      return Number(this._id) || null;
+    }
 
-    }, {
-        key: 'makePublic',
-        value: function makePublic() {
-            this._public = true;
-        }
+    /**
+     * Alias for _id
+     */
+    ,
+    set: function set(v) {
+      this._id = Number(v);
+    }
+  }, {
+    key: 'type',
+    get: function get() {
+      return this._type;
+    }
 
-        /**
-         * Makes no longer visible to students
-         */
+    // /* *************************** Text *************** */
+    // /**
+    //  * The full length text of the item.
+    //  * @returns {*}
+    //  */
+    // get text() {
+    //     return this._text;
+    // }
+    //
+    // /**
+    //  * The full length text of the item.
+    //  * @param v
+    //  */
+    // set text( v ) {
+    //     this._text = v;
+    // }
+    //
 
-    }, {
-        key: 'hide',
-        value: function hide() {
-            this._public = false;
-        }
-    }, {
-        key: 'togglePublic',
-        value: function togglePublic() {
-            console.log('Item', 'CALLED', 'togglePublic', this._public);
-            this._public = !this._public;
-            console.log(this._public);
-        }
-
-        /* *************************** Type *************** */
-
-    }, {
-        key: 'id',
-        get: function get() {
-            return Number(this._id) || null;
-        }
-
-        /**
-         * Alias for _id
-         */
-        ,
-        set: function set(v) {
-            this._id = Number(v);
-        }
-
-        /* *************************** Index *************** */
-        // /**
-        //  * The locator for the item
-        //  * @returns {*}
-        //  */
-        // get index() {
-        //     return this._index;
-        // }
-        //
-        // /**
-        //  * The locator for the item
-        //  * @param v
-        //  */
-        // set index( v ) {
-        //     this._index = v;
-        // }
-        //
-
-        /* *************************** Max score *************** */
-
-    }, {
-        key: 'maxScore',
-        get: function get() {
-            return this._maxScore ? Number(this._maxScore) : null;
-        },
-        set: function set(score) {
-            this._maxScore = score;
-        }
-    }, {
-        key: 'type',
-        get: function get() {
-            return this._type;
-        }
-
-        // /* *************************** Text *************** */
-        // /**
-        //  * The full length text of the item.
-        //  * @returns {*}
-        //  */
-        // get text() {
-        //     return this._text;
-        // }
-        //
-        // /**
-        //  * The full length text of the item.
-        //  * @param v
-        //  */
-        // set text( v ) {
-        //     this._text = v;
-        // }
-        //
-
-        /* *************************** Name *************** */
-        // /**
-        //  * The nickname or title by which this item is identified
-        //  * @returns {*}
-        //  */
-        // get name() {
-        //     return this._name;
-        // }
-        //
-        // /**
-        //  * The nickname or title by which this item is identified
-        //  * @param v
-        //  */
-        // set name( v ) {
-        //     this._name = v;
-        // }
-        //
+    /* *************************** Name *************** */
+    // /**
+    //  * The nickname or title by which this item is identified
+    //  * @returns {*}
+    //  */
+    // get name() {
+    //     return this._name;
+    // }
+    //
+    // /**
+    //  * The nickname or title by which this item is identified
+    //  * @param v
+    //  */
+    // set name( v ) {
+    //     this._name = v;
+    // }
+    //
 
 
-        /**
-         * Returns a list of fields which may
-         * be used to look up an exam from the store
-         */
+    /**
+     * Returns a list of fields which may
+     * be used to look up an exam from the store
+     */
 
-    }], [{
-        key: 'identifiers',
-        value: function identifiers() {
-            return ['id', 'index'];
-        }
+  }], [{
+    key: 'identifiers',
+    value: function identifiers() {
+      return ['id', 'index'];
+    }
 
-        /**
-         * Returns a list of strings which are property
-         * names. These fields can be filled from the input
-         * @returns {[string,string]}
-         */
+    /**
+     * Returns a list of strings which are property
+     * names. These fields can be filled from the input
+     * @returns {[string,string]}
+     */
 
-    }, {
-        key: 'factory',
-        value: function factory(params) {
-            var obj = new Item();
-            return this.fillObject(obj, params);
-        }
-    }, {
-        key: 'fillableProps',
-        get: function get() {
-            return ['id', 'index', 'name', 'text', 'maxScore'];
-        }
-    }, {
-        key: 'aliasMap',
-        get: function get() {
-            return {
-                ItemId: 'id',
-                ItemIndex: 'index'
-            };
-        }
-    }]);
+  }, {
+    key: 'factory',
+    value: function factory(params) {
+      var obj = new Item();
+      return this.fillObject(obj, params);
+    }
+  }, {
+    key: 'fillableProps',
+    get: function get() {
+      return ['id', 'index', 'name', 'number', 'text', 'maxScore'];
+    }
+  }, {
+    key: 'aliasMap',
+    get: function get() {
+      return {
+        ItemId: 'id',
+        ItemIndex: 'index'
+      };
+    }
+  }]);
 
-    return Item;
+  return Item;
 }(_IModel3.default);
 
 exports.default = Item;
@@ -11736,6 +11737,11 @@ var Payload = function () {
 
         this.str;
         this.index;
+
+        /** The name of the property to update */
+        this.updateProp;
+        /** The new value to set the property in updateProp */
+        this.updateVal;
     }
 
     /*  ************************* Identifier values ************************* */
@@ -11852,7 +11858,7 @@ var Payload = function () {
     }, {
         key: 'fillableProps',
         get: function get() {
-            return ['id', 'index', 'num', 'obj', 'str', 'stamp'];
+            return ['id', 'index', 'num', 'obj', 'str', 'stamp', 'updateProp', 'updateVal'];
         }
     }, {
         key: 'aliasMap',
@@ -13730,6 +13736,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+var Vue = require('vue');
+
 /**
  * The older version used an index value to do lots of stuff.
  * Given the prospect of using a websocket connection or connecting
@@ -13749,15 +13757,10 @@ var state = {
      */
     items: [],
 
-    // items: new Map(),
-    // itemsRepo: [], // Item.factory( {index: 0} ) ],
-    // // items: {},
-
     /**
      * Mapping from older ItemIndex to new Item id value
      */
     indexMap: new Map()
-
 };
 
 var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.addNewItem, function (state, payload) {
@@ -13768,60 +13771,21 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.addNewItem,
     var item = _Item2.default.factory({ index: index });
 
     state.items.push(item);
-}), _defineProperty(_mutations, mTypes.updateItemName, function (state, payload) {
-    console.log('*****', mTypes.updateItemName, payload, state);
+}), _defineProperty(_mutations, mTypes.updateItem, function (state, payload) {
+    console.log(mTypes.updateItem, payload, state);
+    //get the item
     var itm = state.items[payload.index];
-    itm.name = payload.str;
+    //Set the value so vue can see it
+    Vue.set(itm, payload.updateProp, payload.updateVal);
+    //Push the altered item back into the array
     state.items.$set(payload.index, itm);
-    // state.itemNames.$set(payload.index,  payload.str);
-}), _defineProperty(_mutations, mTypes.addItem, function (state, payload) {
-    //thi should probably be renamed 'set item' because it is for settong
-    //at a certain index, rather than pushing it in at the front
-    console.log('items.mutations', mTypes.addItem, state, payload);
-
-    // state.itemRepo.$set( payload.obj.index, payload.obj );
+}), _defineProperty(_mutations, mTypes.setItem, function (state, payload) {
+    console.log('items.mutations', mTypes.setItem, state, payload);
     state.items.$set(payload.obj.index, payload.obj);
-
-    //If we received an item by itself, wrap it in a payload
-    // //no idea why I decided to permit this....
-    // if ( payload instanceof Item ) {
-    //     payload = Payload.factory( {obj: payload} );
-    // }
-    //
-    // //at this point, when the button has been clicked,
-    // //there is an index (or at least question number/subtask
-    // //but not an id
-    // if ( Payload.checkIfPayload( payload ) && payload.obj instanceof Item ) {
-    //     //push into Items storage
-    //     state.items.set(payload.obj.index , payload.obj);
-    //     // state.items[ payload.obj.index ] = payload.obj;
-    // }
-
-    //todo add error handling
-}), _defineProperty(_mutations, mTypes.updateItemNameByIndex, function (state, payload) {
-    console.log('*****', 'updateItemNameByIndex', state, payload);
-    //state.itemNames.$set(payload.index,  payload.str);
 }), _defineProperty(_mutations, mTypes.addItemIndexMapping, function (state, rootState, payload) {
     _Payload2.default.checkIfPayload(payload);
-
     state.indexMap.set(payload.index, payload.id);
 }), _mutations);
-
-/**
- * Build an input object and return a payload object
- * containing it
- */
-var createItemExNihlo = function createItemExNihlo(state) {
-    //nothing was passed in.
-    //This probably means the add new item button was clicked
-    // let len = getters.getNumberOfItems( state, {}, {} ) + 1 || 0
-    var len = state.items.length;
-    var index = len == 0 ? len : len + 1;
-
-    var obj = _Item2.default.factory({ index: index });
-    var out = _Payload2.default.factory({ obj: obj });
-    return out;
-};
 
 /**
  * Build an input object out of an input object
@@ -13860,29 +13824,8 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.createItem, funct
     var state = _ref.state,
         commit = _ref.commit;
 
+    console.log(aTypes.createItem, state);
     commit(mTypes.addNewItem);
-}), _defineProperty(_actions, aTypes.addNewItem, function (_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
-
-    var len = state.items.length;
-    var index = len == 0 ? len : len + 1;
-
-    var obj = _Item2.default.factory({ index: index });
-    var out = _Payload2.default.factory({ obj: obj });
-    // commit( mTypes.addItem, out );
-    commit(mTypes.addNewItem);
-
-    // let out = createItemExNihlo( state );
-    // // (typeof payload != 'undefined') ? this.buildPayloadFromInput(payload) : createItemExNihlo(state);
-    // console.log( 'addNewItem out', out );
-    //
-    // if ( typeof out != 'undefined' && Payload.checkIfPayload(out)) {
-    //     console.log( 'addNewItem != undefined ', out );
-    //     commit( mTypes.addItem, out );
-    //     //Add to the mapping store
-    //     // commit( mTypes.addIndexMapping, out );
-    // }
 }), _defineProperty(_actions, aTypes.loadItems, function (state, rootState, payload) {
     //check if payload has correct structure
     //todo
@@ -13916,7 +13859,6 @@ var getters = {
         //room for other ways of finding index
         index = payload.index;
 
-        // return state.items[index];
         console.log('getItem', payload);
         return state.items[index];
     },
@@ -13952,7 +13894,6 @@ var getters = {
      */
     getAllItems: function getAllItems(state, getters, rootState) {
         return state.items;
-        // return state.items.entries()
     },
 
     getAllIndexesList: function getAllIndexesList(state, getters, rootState, payload) {
@@ -13962,7 +13903,7 @@ var getters = {
         var _iteratorError = undefined;
 
         try {
-            for (var _iterator = state.items.entries()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            for (var _iterator = state.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                 var _step$value = _slicedToArray(_step.value, 2),
                     key = _step$value[0],
                     val = _step$value[1];
@@ -14004,7 +13945,7 @@ var getters = {
             var _iteratorError2 = undefined;
 
             try {
-                for (var _iterator2 = items.entries()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                for (var _iterator2 = items[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                     var _step2$value = _slicedToArray(_step2.value, 2),
                         key = _step2$value[0],
                         val = _step2$value[1];
@@ -14033,10 +13974,6 @@ var getters = {
         };
     },
 
-    getItemCount: function getItemCount(state) {
-        return state.itemsRepo.length;
-    },
-
     /**
      * Returns the current count of items
      * @param state
@@ -14044,23 +13981,10 @@ var getters = {
      * @param payload
      * @returns {Number}
      */
-    getNumberOfItems: function getNumberOfItems(state, getters) {
-        return function (items) {
-            // return items.size;
-            return items.length;
-            // return Object.keys( state.items ).length || 0;
-        };
-    },
-
-    /**
-     * Returns the highest index value
-     * @param state
-     * @param getters
-     * @param payload
-     */
-    getMaxIndex: function getMaxIndex(state, getters, payload) {
-        //   return Object.keys( state.items ).max || 0;
+    getItemCount: function getItemCount(state, getters) {
+        return state.items.length;
     }
+
 };
 
 exports.default = {
@@ -14070,7 +13994,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Item":6,"../../models/Payload":7,"../../store/action-types":10,"../../store/mutation-types":26}],22:[function(require,module,exports){
+},{"../../models/Item":6,"../../models/Payload":7,"../../store/action-types":10,"../../store/mutation-types":26,"vue":2}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14636,14 +14560,14 @@ var setExam = exports.setExam = 'setExam';
 
 //items
 var addNewItem = exports.addNewItem = 'addNewItem';
-var addItem = exports.addItem = 'addItem';
+var setItem = exports.setItem = 'setItem';
 var addItemIndexMapping = exports.addItemIndexMapping = 'addItemIndexMapping';
 var loadItems = exports.loadItems = 'loadItems';
 
 var updateItemName = exports.updateItemName = 'updateItemName';
-
+var updateItem = exports.updateItem = 'updateItem';
 var setItemNameByIndex = exports.setItemNameByIndex = 'setItemNameByIndex';
-var updateItemNameByIndex = exports.updateItemNameByIndex = 'updateItemNameByIndex';
+// export const updateItemNameByIndex = 'updateItemNameByIndex'
 
 },{}],27:[function(require,module,exports){
 'use strict';

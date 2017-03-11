@@ -47,8 +47,8 @@ module.exports = {
          * and type info
          */
         addItem: function () {
-            console.log( 'cardList.component', 'methods', 'addItem', this.$store );
-            this.$store.dispatch( aTypes.addNewItem );
+            console.log( 'cardList.component', 'methods', 'setItem', this.$store );
+            this.$store.dispatch( aTypes.createItem );
         },
 
 

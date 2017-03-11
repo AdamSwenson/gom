@@ -41,29 +41,6 @@ module.exports = {
 
             }
         },
-        // index: {
-        //     get: function () {
-        //
-        //         if ( typeof this.item == 'undefined' ) {
-        //             return this.item.index;
-        //         }
-        //         if ( typeof this.itemIndex == 'undefined' ) {
-        //             return this.defaults.index;
-        //         }
-        //         return this.itemIndex;
-        //     },
-        //
-        //     //todo this is a kludge until get store and item worked in
-        //     set: function ( v ) {
-        //         if ( typeof this.item == 'undefined' ) {
-        //             this.item.index = v;
-        //         }
-        //         if ( typeof this.itemIndex == 'undefined' ) {
-        //             this.defaults.index = v;
-        //         }
-        //         this.itemIndex = v;
-        //     }
-        // },
 
         type: {
             get: function () {

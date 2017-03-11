@@ -8,7 +8,7 @@ module.exports = {
 
     template: require( '../templates/item-settings.template.html' ),
 
-    props: [ "item" ],
+    props: [ "index" ],
 
     data: function () {
         return {
@@ -25,48 +25,6 @@ module.exports = {
     },
 
     computed: {
-        index: {
-            get: function () {
-                if ( typeof this.item != 'undefined' ) {
-                    return this.item.index;
-                }
-                if ( typeof this.itemIndex == 'undefined' ) {
-                    return this.defaults.index;
-                }
-                return this.itemIndex;
-            },
-
-            set: function ( v ) {
-                if ( typeof this.item == 'undefined' ) {
-                    this.item.index = v;
-                }
-                if ( typeof this.itemIndex == 'undefined' ) {
-                    this.defaults.index = v;
-                }
-                this.itemIndex = v;
-            }
-        },
-
-        text: {
-            get: function () {
-                if ( typeof this.item != 'undefined' ) {
-                    return this.item.text;
-                }
-                return this.defaults.text;
-
-            },
-
-            set: function ( v ) {
-                if ( typeof this.item == 'undefined' ) {
-                    this.item.text = v;
-                }
-                else {
-                    this.defaults.text = v;
-                }
-
-            }
-        },
-
 
         hidden: {
             get: function () {

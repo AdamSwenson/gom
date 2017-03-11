@@ -7,8 +7,6 @@
  * todo Add an 'other uses of this quetion' area
  * Created by adam on 2/19/17.
  */
-//var $ = require('jquery');
-//window.$ = $;
 
 import * as aTypes from '../../store/action-types';
 import * as mTypes from '../../store/mutation-types';
@@ -20,11 +18,11 @@ module.exports = {
 
     template: require( '../templates/item-settings.detail.template.html' ),
 
-    props: ['item-obj', 'item-index' ],
+    props: [ 'index' ],
 
     data: function () {
         return {
-            placeholders:{
+            placeholders: {
                 questionName: "Enter a brief description of the question or task, e.g. &quot;Causes of the Civil War&quot;"
             },
         };
@@ -32,78 +30,61 @@ module.exports = {
 
     computed: {
 
-        item: {
-            get: function () {
-                // if(typeof this.itemObj != 'undefined'){
-                //     return this.itemObj;
-                // }
-                // if(typeof this.itemIndex != 'undefined'){
-                //     return this.$store.getters.getItem(Payload.factory({index: this.itemIndex}));
-                // }
-                //
-
-            },
-            set: function ( v ) {
-            }
-        },
-
-                index: {
-            get: function () {
-            //     console.log( 'indx', this.item);
-            //     if ( typeof this.item != 'undefined' ) {
-            //         return this.itemObj.index;
-            //     }
-            //     if ( typeof this.item.index == 'undefined' ) {
-            //         return this.defaults.index;
-            //     }
-            //     return this.itemObj.index;
-            },
-
-            //todo this is a kludge until get store and item worked in
-            set: function ( v ) {
-                // if ( typeof this.item == 'undefined' ) {
-                //     this.item.index = v;
-                // }
-                // if ( typeof this.item.index == 'undefined' ) {
-                //     this.defaults.index = v;
-                // }
-                // this.item.index = v;
-            }
-        },
-
         questionText: {
             get: function () {
-                // return this.itemObj.text;
+                return this.getter('text');
+                // let item = this.$store.getters.getItemByIndex( this.index );
+                // if ( typeof item != 'undefined' ) {
+                //     return item.text;
+                // }
             },
-            set: function (v) {
-                // this.itemObj.text = v;
+
+            set: function ( v ) {
+                let pl = Payload.factory( {index: this.index, updateProp: 'text', updateVal: v} );
+                this.$store.commit( mTypes.updateItem, pl );
             }
         },
+
         questionNumber: {
             get: function () {
+                return this.getter('number');
+                // let item = this.$store.getters.getItemByIndex( this.index );
+                // if ( typeof item != 'undefined' ) {
+                //     return item.number;
+                // }
             },
-            set: function () {
+
+            set: function ( v ) {
+                let pl = Payload.factory( {index: this.index, updateProp: 'number', updateVal: v} );
+                this.$store.commit( mTypes.updateItem, pl );
             }
-        },
-        questionName: {
-            get: function () {
-                // return this.itemObj.name;
-            },
-            set: function (v) {
-                // this.itemObj.name = v;
-            }
+
         },
         maxScore: {
             get: function () {
-                // return this.itemObj.maxScore;
+                return this.getter('maxScore');
+                // let item = this.$store.getters.getItemByIndex( this.index );
+                // if ( typeof item != 'undefined' ) {
+                //     return item.maxScore;
+                // }
             },
-            set: function (v) {
-                // this.itemObj.maxScore = v;
+
+            set: function ( v ) {
+                let pl = Payload.factory( {index: this.index, updateProp: 'maxScore', updateVal: v} );
+                this.$store.commit( mTypes.updateItem, pl );
             }
+
         },
     },
 
-    methods: {},
+    methods: {
+        getter: function(name){
+            let item = this.$store.getters.getItemByIndex( this.index );
+            if ( typeof item != 'undefined' ) {
+                return item[name]
+            }
+        }
+    },
 
     directives: {},
 

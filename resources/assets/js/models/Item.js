@@ -21,10 +21,12 @@ export default class Item extends IModel
          * The locator value
          */
         // this._index;
-        this.index
+        this.index;
 
         /** The nickname or title by which this item is identified */
         this.name ="";
+
+        this.number = null;
 
         this.text;
         /**
@@ -36,7 +38,7 @@ export default class Item extends IModel
         /**
          * The maximum possible value of the item
          */
-        this._maxScore;
+        this.maxScore;
 
 
         // this.name;
@@ -107,15 +109,15 @@ export default class Item extends IModel
     //     this._index = v;
     // }
     //
-
-    /* *************************** Max score *************** */
-    get maxScore() {
-        return this._maxScore ? Number( this._maxScore ) : null;
-    };
-
-    set maxScore( score ) {
-        this._maxScore = score;
-    };
+    //
+    // /* *************************** Max score *************** */
+    // get maxScore() {
+    //     return this._maxScore ? Number( this._maxScore ) : null;
+    // };
+    //
+    // set maxScore( score ) {
+    //     this._maxScore = score;
+    // };
 
 
     /* *************************** Public *************** */
@@ -213,6 +215,7 @@ export default class Item extends IModel
             'id',
             'index',
             'name',
+            'number',
             'text',
             'maxScore'
         ];

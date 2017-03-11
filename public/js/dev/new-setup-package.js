@@ -34014,8 +34014,8 @@ module.exports = {
          * and type info
          */
         addItem: function addItem() {
-            console.log('cardList.component', 'methods', 'addItem', this.$store);
-            this.$store.dispatch(aTypes.addNewItem);
+            console.log('cardList.component', 'methods', 'setItem', this.$store);
+            this.$store.dispatch(aTypes.createItem);
         },
 
         /**
@@ -34298,9 +34298,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 /**
  * Created by adam on 2/17/17.
  */
-//var $ = require('jquery');
-//window.$ = $;
-
 
 module.exports = {
 
@@ -34323,10 +34320,12 @@ module.exports = {
             console.log('CALLED', 'addItem');
             this.sendRequest();
         },
+
+        /**
+         * This sends the actual request(s)
+         */
         sendRequest: function sendRequest() {
-            // this.$store.dispatch(addNewItem');
-            // this.store[aTypes.addNewItem]();
-            this.$dispatch('add-new-item');
+            this.$store.dispatch(aTypes.createItem);
         }
     },
 
@@ -34383,29 +34382,6 @@ module.exports = {
             },
             set: function set() {}
         },
-        // index: {
-        //     get: function () {
-        //
-        //         if ( typeof this.item == 'undefined' ) {
-        //             return this.item.index;
-        //         }
-        //         if ( typeof this.itemIndex == 'undefined' ) {
-        //             return this.defaults.index;
-        //         }
-        //         return this.itemIndex;
-        //     },
-        //
-        //     //todo this is a kludge until get store and item worked in
-        //     set: function ( v ) {
-        //         if ( typeof this.item == 'undefined' ) {
-        //             this.item.index = v;
-        //         }
-        //         if ( typeof this.itemIndex == 'undefined' ) {
-        //             this.defaults.index = v;
-        //         }
-        //         this.itemIndex = v;
-        //     }
-        // },
 
         type: {
             get: function get() {
@@ -34509,9 +34485,7 @@ module.exports = {
         displayOrder: {
             get: function get() {
                 //if question, return q number
-
                 //if element, return order
-
             },
             set: function set(v) {}
         },
@@ -34527,29 +34501,24 @@ module.exports = {
 
         name: {
             get: function get() {
-
-                // return this.$store.getters.getItemNameByIndex( this.itemIndex );
                 var item = this.$store.getters.getItemByIndex(this.index);
-                console.log("item", item);
                 if (typeof item.name != 'undefined') {
                     return item.name;
                 }
             },
 
             set: function set(v) {
-                var pl = _Payload2.default.factory({ index: this.index, str: v });
-                this.$store.commit(mTypes.updateItemName, pl);
-
-                // this.$store.commit( mTypes.updateItemNameByIndex, pl );
-                // let item = this.$store.getters.getItemByIndex(this.index)
-                // this.itemObj.name = v;
+                var pl = _Payload2.default.factory({ index: this.index, updateProp: 'name', updateVal: v });
+                this.$store.commit(mTypes.updateItem, pl);
             }
         },
 
         public: function _public() {
-            // return this.itemObj.isPublic();
+            var item = this.$store.getters.getItemByIndex(this.index);
+            if (typeof item.name != 'undefined') {
+                return item.isPublic();
+            }
         }
-
     },
 
     methods: {
@@ -34563,18 +34532,18 @@ module.exports = {
         },
 
         isPublic: function isPublic() {
-            // return this.item.Obj.isPublic();
+            return this.public;
         }
-
     },
 
     directives: {},
 
     events: {
-
         'toggle-public': function togglePublic() {
-            // console.log( 'itemName', 'CAUGHT', 'toggle-public' , this.itemObj);
-            // this.itemObj.togglePublic();
+            var item = this.$store.getters.getItemByIndex(this.index);
+            if (typeof item.name != 'undefined') {
+                return item.togglePublic();
+            }
         }
     },
 
@@ -34786,7 +34755,7 @@ module.exports = {
 
     template: require('../templates/item-settings.template.html'),
 
-    props: ["item"],
+    props: ["index"],
 
     data: function data() {
         return {
@@ -34801,44 +34770,6 @@ module.exports = {
     },
 
     computed: {
-        index: {
-            get: function get() {
-                if (typeof this.item != 'undefined') {
-                    return this.item.index;
-                }
-                if (typeof this.itemIndex == 'undefined') {
-                    return this.defaults.index;
-                }
-                return this.itemIndex;
-            },
-
-            set: function set(v) {
-                if (typeof this.item == 'undefined') {
-                    this.item.index = v;
-                }
-                if (typeof this.itemIndex == 'undefined') {
-                    this.defaults.index = v;
-                }
-                this.itemIndex = v;
-            }
-        },
-
-        text: {
-            get: function get() {
-                if (typeof this.item != 'undefined') {
-                    return this.item.text;
-                }
-                return this.defaults.text;
-            },
-
-            set: function set(v) {
-                if (typeof this.item == 'undefined') {
-                    this.item.text = v;
-                } else {
-                    this.defaults.text = v;
-                }
-            }
-        },
 
         hidden: {
             get: function get() {
@@ -34909,7 +34840,7 @@ module.exports = {
 
     template: require('../templates/item-settings.detail.template.html'),
 
-    props: ['item-obj', 'item-index'],
+    props: ['index'],
 
     data: function data() {
         return {
@@ -34921,75 +34852,61 @@ module.exports = {
 
     computed: {
 
-        item: {
-            get: function get() {
-                // if(typeof this.itemObj != 'undefined'){
-                //     return this.itemObj;
-                // }
-                // if(typeof this.itemIndex != 'undefined'){
-                //     return this.$store.getters.getItem(Payload.factory({index: this.itemIndex}));
-                // }
-                //
-
-            },
-            set: function set(v) {}
-        },
-
-        index: {
-            get: function get() {
-                //     console.log( 'indx', this.item);
-                //     if ( typeof this.item != 'undefined' ) {
-                //         return this.itemObj.index;
-                //     }
-                //     if ( typeof this.item.index == 'undefined' ) {
-                //         return this.defaults.index;
-                //     }
-                //     return this.itemObj.index;
-            },
-
-            //todo this is a kludge until get store and item worked in
-            set: function set(v) {
-                // if ( typeof this.item == 'undefined' ) {
-                //     this.item.index = v;
-                // }
-                // if ( typeof this.item.index == 'undefined' ) {
-                //     this.defaults.index = v;
-                // }
-                // this.item.index = v;
-            }
-        },
-
         questionText: {
             get: function get() {
-                // return this.itemObj.text;
+                return this.getter('text');
+                // let item = this.$store.getters.getItemByIndex( this.index );
+                // if ( typeof item != 'undefined' ) {
+                //     return item.text;
+                // }
             },
+
             set: function set(v) {
-                // this.itemObj.text = v;
+                var pl = _Payload2.default.factory({ index: this.index, updateProp: 'text', updateVal: v });
+                this.$store.commit(mTypes.updateItem, pl);
             }
         },
+
         questionNumber: {
-            get: function get() {},
-            set: function set() {}
-        },
-        questionName: {
             get: function get() {
-                // return this.itemObj.name;
+                return this.getter('number');
+                // let item = this.$store.getters.getItemByIndex( this.index );
+                // if ( typeof item != 'undefined' ) {
+                //     return item.number;
+                // }
             },
+
             set: function set(v) {
-                // this.itemObj.name = v;
+                var pl = _Payload2.default.factory({ index: this.index, updateProp: 'number', updateVal: v });
+                this.$store.commit(mTypes.updateItem, pl);
             }
+
         },
         maxScore: {
             get: function get() {
-                // return this.itemObj.maxScore;
+                return this.getter('maxScore');
+                // let item = this.$store.getters.getItemByIndex( this.index );
+                // if ( typeof item != 'undefined' ) {
+                //     return item.maxScore;
+                // }
             },
+
             set: function set(v) {
-                // this.itemObj.maxScore = v;
+                var pl = _Payload2.default.factory({ index: this.index, updateProp: 'maxScore', updateVal: v });
+                this.$store.commit(mTypes.updateItem, pl);
             }
+
         }
     },
 
-    methods: {},
+    methods: {
+        getter: function getter(name) {
+            var item = this.$store.getters.getItemByIndex(this.index);
+            if (typeof item != 'undefined') {
+                return item[name];
+            }
+        }
+    },
 
     directives: {},
 
@@ -35005,8 +34922,6 @@ module.exports = {
     * todo Add an 'other uses of this quetion' area
     * Created by adam on 2/19/17.
     */
-//var $ = require('jquery');
-//window.$ = $;
 
 },{"../../models/Payload":350,"../../store/action-types":353,"../../store/mutation-types":369,"../templates/item-settings.detail.template.html":341}],326:[function(require,module,exports){
 'use strict';
@@ -35541,7 +35456,7 @@ module.exports = '<!--This is the hideable area via which we edit the exam\'s pr
 },{}],336:[function(require,module,exports){
 module.exports = '<button\n        class="btn btn-info"\n        v-on:click="addItem"\n>\n    <span class="glyphicon glyphicon-plus"></span>\n    <span class="hidden-md"> Add item</span>\n</button>';
 },{}],337:[function(require,module,exports){
-module.exports = '<!--This represents a question or an element-->\n<div class="itemCard">\n    <div class="row">\n        <div class="col-lg-1">\n            <item-nav nav-type="back"></item-nav>\n        </div>\n        <div class="col-lg-10">\n\n                    <slot name="head">\n\n                        <item-name :index="index"></item-name>\n\n                        <item-settings :item-obj="item" :item-index="index"\n                                       is="currentView"></item-settings>\n\n                    </slot>\n\n            </div>\n            <div class="col-lg-1">\n                <item-nav nav-type="forward"></item-nav>\n\n            </div>\n        </div>\n\n    </div>\n</div>\n';
+module.exports = '<!--This represents a question or an element-->\n<div class="itemCard">\n    <div class="row">\n        <div class="col-lg-1">\n            <item-nav nav-type="back"></item-nav>\n        </div>\n        <div class="col-lg-10">\n\n                    <slot name="head">\n\n                        <item-name :index="index"></item-name>\n\n                        <item-settings :index="index"\n                                       is="currentView"></item-settings>\n\n                    </slot>\n\n            </div>\n            <div class="col-lg-1">\n                <item-nav nav-type="forward"></item-nav>\n\n            </div>\n        </div>\n\n    </div>\n</div>\n';
 },{}],338:[function(require,module,exports){
 module.exports = '<div class="item-name-component input-group input-group-lg">\n\n    <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>\n\n    <input type="text"\n           class="itemName form-control"\n           aria-describedby="basic-addon1"\n           placeholder="{{ placeHolders.privateName }}"\n           v-model="name"\n    >\n\n    <div class="input-group-btn">\n        <settings-button></settings-button>\n        <public-indicator></public-indicator>\n    </div>\n\n</div>';
 },{}],339:[function(require,module,exports){
@@ -35549,9 +35464,9 @@ module.exports = '<div class="itemNav"\n     v-on:click="goTo">\n    <span v-bin
 },{}],340:[function(require,module,exports){
 module.exports = '<!-- Template used by \'edit_element\' to hold the fields and buttons for an individual element.  -->\n<div class="comment-setup">\n    <div class="row">\n        <div class="col-md-12 list-group-item">\n            <h4 id="displayNumber">Element #{{ index }}</h4>\n\n            <h5>Element Response</h5>\n            <!-- element description (the "stock comment") -->\n            <div class="form-group">\n                        <textarea\n                                class="form-control"\n                                rows="3"\n                                placeholder="{{ placeholders.elementText }}"\n                                v-model="commentText"></textarea>\n            </div>\n\n            <div class="form-group">\n                <!-- move -->\n                <span class="btn btn-info btn-sm handle">\n                            <span class="glyphicon glyphicon-move" aria-hidden="true"></span> Move</span>\n\n                <!-- customize responses -->\n                <a class="btn btn-info btn-sm"\n                   data-toggle="modal"\n                   data-target="#commentForm{{ index }}">\n                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Customize Responses\n                </a>\n\n                <!-- \'comment form\' displays the modal triggered by \'customize response\' button -->\n                <!--@include(\'setup.partials.comment_form\')-->\n\n                <!-- delete button -->\n                <a class="btn btn-danger btn-sm js-remove">\n                    <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete\n                </a>\n            </div>\n        </div>\n\n    </div>\n</div>\n';
 },{}],341:[function(require,module,exports){
-module.exports = '<!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n<div class="item-details">\n    <div class="row">\n        <div class="col-md-6">\n            <div class="question-num-area input-group">\n\n                <span class="input-group-addon">Question #</span>\n                <input style="width:6em;"\n                       type="number"\n                       min="0"\n                       title="order of the question on the exam"\n                       class="form-control input"\n                       aria-describedby="basic-addon"\n                       v-model="questionNumber"/>\n\n            </div>\n        </div>\n\n        <div class="col-md-6">\n            <div class="max-score-area" style="text-align: left">\n                <!-- max grade -->\n                <div class="input-group">\n                    <span class="input-group-addon">Max Score</span>\n                    <input style="width:6em;"\n                           type="number"\n                           min="0"\n                           title="maximum score for this question"\n                           class="form-control input"\n                           aria-describedby="basic-addon"\n                           v-model="maxScore"/>\n                </div>\n            </div>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="question-text-area col-md-12">\n            <h5>Question Text</h5>\n            <div class="form-group">\n                            <textarea class="question-text form-control"\n                                      rows="3"\n                                      placeholder="Enter the full question text (optional)"\n                            >{{ questionText }}</textarea>\n            </div>\n        </div>\n    </div>\n\n    <div class="form-group questionButtonArea">\n                        <span class="btn btn-info btn-sm handle">\n                            <span class="glyphicon glyphicon-move" aria-hidden="true"></span> Move</span>\n\n        <button type="button"\n                class="btn btn-danger btn-sm js-remove"\n                data-question-number="{{questionNumber }}">\n            <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete\n        </button>\n    </div>\n</div>';
+module.exports = '<!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n<div class="item-details">\n    <div class="row">\n        <div class="col-md-6">\n            <div class="question-num-area input-group">\n\n                <span class="input-group-addon">Question #</span>\n                <input style="width:6em;"\n                       type="number"\n                       min="0"\n                       title="order of the question on the exam"\n                       class="form-control input"\n                       aria-describedby="basic-addon"\n                       v-model="questionNumber"/>\n\n            </div>\n        </div>\n\n        <div class="col-md-6">\n            <div class="max-score-area" style="text-align: left">\n                <!-- max grade -->\n                <div class="input-group">\n                    <span class="input-group-addon">Max Score</span>\n                    <input style="width:6em;"\n                           type="number"\n                           min="0"\n                           title="maximum score for this question"\n                           class="form-control input"\n                           aria-describedby="basic-addon"\n                           v-model="maxScore"/>\n                </div>\n            </div>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="question-text-area col-md-12">\n            <h5>Question Text</h5>\n            <div class="form-group">\n                            <textarea class="question-text form-control"\n                                      rows="3"\n                                      placeholder="Enter the full question text (optional)"\n                            v-model="questionText"></textarea>\n            </div>\n        </div>\n    </div>\n\n    <div class="form-group questionButtonArea">\n                        <span class="btn btn-info btn-sm handle">\n                            <span class="glyphicon glyphicon-move" aria-hidden="true"></span> Move</span>\n\n        <button type="button"\n                class="btn btn-danger btn-sm js-remove"\n                data-question-number="{{questionNumber }}">\n            <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete\n        </button>\n    </div>\n</div>';
 },{}],342:[function(require,module,exports){
-module.exports = '<div class="well" v-show="hidden">\n\n    <slot name="settingsBody">\n\n        <div>\n            <!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n\n            <!-- Nav tabs -->\n            <ul class="nav nav-tabs" role="tablist">\n                <li role="presentation"\n                    class=""\n                    v-for="tab in tabs">\n                    <a href="#{{tab}}{{index}}"\n                       aria-controls="{{tab}}{{index}}"\n                       role="tab"\n                       data-toggle="tab">{{ tab | capitalize }}</a>\n                </li>\n            </ul>\n\n            <!-- Tab panes -->\n            <div class="tab-content">\n\n                <div role="tabpanel"\n                     class="tab-pane active "\n                     id="details{{index}}"\n                >\n                    <item-settings-detail :item="item"></item-settings-detail>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane  "\n                     id="comments{{index}}"\n                >\n                    <item-settings-comment-setup :item="item"></item-settings-comment-setup>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="stats{{index}}"\n                >\n                    <p>Stats here</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="history{{index}}"\n                >\n                    <p>Which exams clones of this item have been used on</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane fade"\n                     id="notes{{index}}"\n                >\n                    <p>Notes to self about item</p>\n                </div>\n\n            </div>\n\n        </div>\n\n    </slot>\n    <!--<item-settings-element item="item"></item-settings-element>-->\n    <!--<item-settings-question :item="item"></item-settings-question>-->\n\n    <!--<button class="btn btn-primary" v-on:click="hide">Close</button>-->\n</div>\n';
+module.exports = '<div class="well" v-show="hidden">\n\n    <slot name="settingsBody">\n\n        <div>\n            <!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n\n            <!-- Nav tabs -->\n            <ul class="nav nav-tabs" role="tablist">\n                <li role="presentation"\n                    class=""\n                    v-for="tab in tabs">\n                    <a href="#{{tab}}{{index}}"\n                       aria-controls="{{tab}}{{index}}"\n                       role="tab"\n                       data-toggle="tab">{{ tab | capitalize }}</a>\n                </li>\n            </ul>\n\n            <!-- Tab panes -->\n            <div class="tab-content">\n\n                <div role="tabpanel"\n                     class="tab-pane active "\n                     id="details{{index}}"\n                >\n                    <item-settings-detail :index="index"></item-settings-detail>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane  "\n                     id="comments{{index}}"\n                >\n                    <item-settings-comment-setup :index="index"></item-settings-comment-setup>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="stats{{index}}"\n                >\n                    <p>Stats here</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="history{{index}}"\n                >\n                    <p>Which exams clones of this item have been used on</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane fade"\n                     id="notes{{index}}"\n                >\n                    <p>Notes to self about item</p>\n                </div>\n\n            </div>\n\n        </div>\n\n    </slot>\n    <!--<item-settings-element item="item"></item-settings-element>-->\n    <!--<item-settings-question :item="item"></item-settings-question>-->\n\n    <!--<button class="btn btn-primary" v-on:click="hide">Close</button>-->\n</div>\n';
 },{}],343:[function(require,module,exports){
 module.exports = '<div id="props-dashboard" class="dashboard">\n    <dl class="dl-horizontal">\n\n        <dt># items</dt>\n        <dd>{{ numberItems }}</dd>\n\n        <dt>Max total score</dt>\n        <dd>{{ perfectScore }}</dd>\n        <!--<dd><input type="number" v-model="perfectScore" /></dd>-->\n\n        <dt># Students</dt>\n        <dd>{{ numberStudents}}</dd>\n\n        <dt># Graded</dt>\n        <dd>{{ numberGraded }}</dd>\n\n        <dt>Time grading</dt>\n        <dd>{{ timeGrading }}</dd>\n\n    </dl>\n\n</div>';
 },{}],344:[function(require,module,exports){
@@ -35768,7 +35683,7 @@ exports.default = IModel;
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -35790,246 +35705,247 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
 var Item = function (_IModel) {
-    _inherits(Item, _IModel);
+  _inherits(Item, _IModel);
 
-    function Item() {
-        _classCallCheck(this, Item);
+  function Item() {
+    _classCallCheck(this, Item);
 
-        /**
-         * The db identifier of the model
-         */
-        var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
+    /**
+     * The db identifier of the model
+     */
+    var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
 
-        _this._id;
+    _this._id;
 
-        /**
-         * The locator value
-         */
-        // this._index;
-        _this.index;
+    /**
+     * The locator value
+     */
+    // this._index;
+    _this.index;
 
-        /** The nickname or title by which this item is identified */
-        _this.name = "";
+    /** The nickname or title by which this item is identified */
+    _this.name = "";
 
-        _this.text;
-        /**
-         * The secondary locator value
-         * Q1 E2 = index 0, depth 3
-         */
-        _this._depth;
+    _this.number = null;
 
-        /**
-         * The maximum possible value of the item
-         */
-        _this._maxScore;
+    _this.text;
+    /**
+     * The secondary locator value
+     * Q1 E2 = index 0, depth 3
+     */
+    _this._depth;
 
-        // this.name;
+    /**
+     * The maximum possible value of the item
+     */
+    _this.maxScore;
 
-        /**
-         * Whether the item is currently set to
-         * be appear in pages, emails, or anything
-         * else that a student could see.
-         *
-         * If this value is true, there are some outputs viewable
-         * by students, which this appears in.
-         *
-         * @type {boolean}
-         * @private
-         */
-        _this._public = false;
+    // this.name;
 
-        /**
-         * The full length text of the item.
-         * This could be the question prompt;
-         * a longer description of the element; etc
-         */
-        // this._text;
+    /**
+     * Whether the item is currently set to
+     * be appear in pages, emails, or anything
+     * else that a student could see.
+     *
+     * If this value is true, there are some outputs viewable
+     * by students, which this appears in.
+     *
+     * @type {boolean}
+     * @private
+     */
+    _this._public = false;
 
-        /**
-         * The role played by the item
-         */
-        _this._type;
+    /**
+     * The full length text of the item.
+     * This could be the question prompt;
+     * a longer description of the element; etc
+     */
+    // this._text;
 
-        /**
-         * The possible values of this._type
-         */
-        _this.types = ['comment', 'element', 'question'];
-        return _this;
+    /**
+     * The role played by the item
+     */
+    _this._type;
+
+    /**
+     * The possible values of this._type
+     */
+    _this.types = ['comment', 'element', 'question'];
+    return _this;
+  }
+
+  /* *************************** Id *************** */
+  /**
+   * Alias for _id
+   * @returns {*}
+   */
+
+
+  _createClass(Item, [{
+    key: 'isPublic',
+
+
+    /* *************************** Index *************** */
+    // /**
+    //  * The locator for the item
+    //  * @returns {*}
+    //  */
+    // get index() {
+    //     return this._index;
+    // }
+    //
+    // /**
+    //  * The locator for the item
+    //  * @param v
+    //  */
+    // set index( v ) {
+    //     this._index = v;
+    // }
+    //
+    //
+    // /* *************************** Max score *************** */
+    // get maxScore() {
+    //     return this._maxScore ? Number( this._maxScore ) : null;
+    // };
+    //
+    // set maxScore( score ) {
+    //     this._maxScore = score;
+    // };
+
+
+    /* *************************** Public *************** */
+    /**
+     * Getter for whether this can currently appear in student-viewable outputs
+     * @returns {boolean|*}
+     */
+    value: function isPublic() {
+      return this._public;
     }
 
-    /* *************************** Id *************** */
     /**
-     * Alias for _id
-     * @returns {*}
+     * Makes able to appear in student-viewable outputs
      */
 
+  }, {
+    key: 'makePublic',
+    value: function makePublic() {
+      this._public = true;
+    }
 
-    _createClass(Item, [{
-        key: 'isPublic',
+    /**
+     * Makes no longer visible to students
+     */
 
+  }, {
+    key: 'hide',
+    value: function hide() {
+      this._public = false;
+    }
+  }, {
+    key: 'togglePublic',
+    value: function togglePublic() {
+      console.log('Item', 'CALLED', 'togglePublic', this._public);
+      this._public = !this._public;
+      console.log(this._public);
+    }
 
-        /* *************************** Public *************** */
-        /**
-         * Getter for whether this can currently appear in student-viewable outputs
-         * @returns {boolean|*}
-         */
-        value: function isPublic() {
-            return this._public;
-        }
+    /* *************************** Type *************** */
 
-        /**
-         * Makes able to appear in student-viewable outputs
-         */
+  }, {
+    key: 'id',
+    get: function get() {
+      return Number(this._id) || null;
+    }
 
-    }, {
-        key: 'makePublic',
-        value: function makePublic() {
-            this._public = true;
-        }
+    /**
+     * Alias for _id
+     */
+    ,
+    set: function set(v) {
+      this._id = Number(v);
+    }
+  }, {
+    key: 'type',
+    get: function get() {
+      return this._type;
+    }
 
-        /**
-         * Makes no longer visible to students
-         */
+    // /* *************************** Text *************** */
+    // /**
+    //  * The full length text of the item.
+    //  * @returns {*}
+    //  */
+    // get text() {
+    //     return this._text;
+    // }
+    //
+    // /**
+    //  * The full length text of the item.
+    //  * @param v
+    //  */
+    // set text( v ) {
+    //     this._text = v;
+    // }
+    //
 
-    }, {
-        key: 'hide',
-        value: function hide() {
-            this._public = false;
-        }
-    }, {
-        key: 'togglePublic',
-        value: function togglePublic() {
-            console.log('Item', 'CALLED', 'togglePublic', this._public);
-            this._public = !this._public;
-            console.log(this._public);
-        }
-
-        /* *************************** Type *************** */
-
-    }, {
-        key: 'id',
-        get: function get() {
-            return Number(this._id) || null;
-        }
-
-        /**
-         * Alias for _id
-         */
-        ,
-        set: function set(v) {
-            this._id = Number(v);
-        }
-
-        /* *************************** Index *************** */
-        // /**
-        //  * The locator for the item
-        //  * @returns {*}
-        //  */
-        // get index() {
-        //     return this._index;
-        // }
-        //
-        // /**
-        //  * The locator for the item
-        //  * @param v
-        //  */
-        // set index( v ) {
-        //     this._index = v;
-        // }
-        //
-
-        /* *************************** Max score *************** */
-
-    }, {
-        key: 'maxScore',
-        get: function get() {
-            return this._maxScore ? Number(this._maxScore) : null;
-        },
-        set: function set(score) {
-            this._maxScore = score;
-        }
-    }, {
-        key: 'type',
-        get: function get() {
-            return this._type;
-        }
-
-        // /* *************************** Text *************** */
-        // /**
-        //  * The full length text of the item.
-        //  * @returns {*}
-        //  */
-        // get text() {
-        //     return this._text;
-        // }
-        //
-        // /**
-        //  * The full length text of the item.
-        //  * @param v
-        //  */
-        // set text( v ) {
-        //     this._text = v;
-        // }
-        //
-
-        /* *************************** Name *************** */
-        // /**
-        //  * The nickname or title by which this item is identified
-        //  * @returns {*}
-        //  */
-        // get name() {
-        //     return this._name;
-        // }
-        //
-        // /**
-        //  * The nickname or title by which this item is identified
-        //  * @param v
-        //  */
-        // set name( v ) {
-        //     this._name = v;
-        // }
-        //
+    /* *************************** Name *************** */
+    // /**
+    //  * The nickname or title by which this item is identified
+    //  * @returns {*}
+    //  */
+    // get name() {
+    //     return this._name;
+    // }
+    //
+    // /**
+    //  * The nickname or title by which this item is identified
+    //  * @param v
+    //  */
+    // set name( v ) {
+    //     this._name = v;
+    // }
+    //
 
 
-        /**
-         * Returns a list of fields which may
-         * be used to look up an exam from the store
-         */
+    /**
+     * Returns a list of fields which may
+     * be used to look up an exam from the store
+     */
 
-    }], [{
-        key: 'identifiers',
-        value: function identifiers() {
-            return ['id', 'index'];
-        }
+  }], [{
+    key: 'identifiers',
+    value: function identifiers() {
+      return ['id', 'index'];
+    }
 
-        /**
-         * Returns a list of strings which are property
-         * names. These fields can be filled from the input
-         * @returns {[string,string]}
-         */
+    /**
+     * Returns a list of strings which are property
+     * names. These fields can be filled from the input
+     * @returns {[string,string]}
+     */
 
-    }, {
-        key: 'factory',
-        value: function factory(params) {
-            var obj = new Item();
-            return this.fillObject(obj, params);
-        }
-    }, {
-        key: 'fillableProps',
-        get: function get() {
-            return ['id', 'index', 'name', 'text', 'maxScore'];
-        }
-    }, {
-        key: 'aliasMap',
-        get: function get() {
-            return {
-                ItemId: 'id',
-                ItemIndex: 'index'
-            };
-        }
-    }]);
+  }, {
+    key: 'factory',
+    value: function factory(params) {
+      var obj = new Item();
+      return this.fillObject(obj, params);
+    }
+  }, {
+    key: 'fillableProps',
+    get: function get() {
+      return ['id', 'index', 'name', 'number', 'text', 'maxScore'];
+    }
+  }, {
+    key: 'aliasMap',
+    get: function get() {
+      return {
+        ItemId: 'id',
+        ItemIndex: 'index'
+      };
+    }
+  }]);
 
-    return Item;
+  return Item;
 }(_IModel3.default);
 
 exports.default = Item;
@@ -36082,6 +35998,11 @@ var Payload = function () {
 
         this.str;
         this.index;
+
+        /** The name of the property to update */
+        this.updateProp;
+        /** The new value to set the property in updateProp */
+        this.updateVal;
     }
 
     /*  ************************* Identifier values ************************* */
@@ -36198,7 +36119,7 @@ var Payload = function () {
     }, {
         key: 'fillableProps',
         get: function get() {
-            return ['id', 'index', 'num', 'obj', 'str', 'stamp'];
+            return ['id', 'index', 'num', 'obj', 'str', 'stamp', 'updateProp', 'updateVal'];
         }
     }, {
         key: 'aliasMap',
@@ -38076,6 +37997,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+var Vue = require('vue');
+
 /**
  * The older version used an index value to do lots of stuff.
  * Given the prospect of using a websocket connection or connecting
@@ -38095,15 +38018,10 @@ var state = {
      */
     items: [],
 
-    // items: new Map(),
-    // itemsRepo: [], // Item.factory( {index: 0} ) ],
-    // // items: {},
-
     /**
      * Mapping from older ItemIndex to new Item id value
      */
     indexMap: new Map()
-
 };
 
 var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.addNewItem, function (state, payload) {
@@ -38114,60 +38032,21 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.addNewItem,
     var item = _Item2.default.factory({ index: index });
 
     state.items.push(item);
-}), _defineProperty(_mutations, mTypes.updateItemName, function (state, payload) {
-    console.log('*****', mTypes.updateItemName, payload, state);
+}), _defineProperty(_mutations, mTypes.updateItem, function (state, payload) {
+    console.log(mTypes.updateItem, payload, state);
+    //get the item
     var itm = state.items[payload.index];
-    itm.name = payload.str;
+    //Set the value so vue can see it
+    Vue.set(itm, payload.updateProp, payload.updateVal);
+    //Push the altered item back into the array
     state.items.$set(payload.index, itm);
-    // state.itemNames.$set(payload.index,  payload.str);
-}), _defineProperty(_mutations, mTypes.addItem, function (state, payload) {
-    //thi should probably be renamed 'set item' because it is for settong
-    //at a certain index, rather than pushing it in at the front
-    console.log('items.mutations', mTypes.addItem, state, payload);
-
-    // state.itemRepo.$set( payload.obj.index, payload.obj );
+}), _defineProperty(_mutations, mTypes.setItem, function (state, payload) {
+    console.log('items.mutations', mTypes.setItem, state, payload);
     state.items.$set(payload.obj.index, payload.obj);
-
-    //If we received an item by itself, wrap it in a payload
-    // //no idea why I decided to permit this....
-    // if ( payload instanceof Item ) {
-    //     payload = Payload.factory( {obj: payload} );
-    // }
-    //
-    // //at this point, when the button has been clicked,
-    // //there is an index (or at least question number/subtask
-    // //but not an id
-    // if ( Payload.checkIfPayload( payload ) && payload.obj instanceof Item ) {
-    //     //push into Items storage
-    //     state.items.set(payload.obj.index , payload.obj);
-    //     // state.items[ payload.obj.index ] = payload.obj;
-    // }
-
-    //todo add error handling
-}), _defineProperty(_mutations, mTypes.updateItemNameByIndex, function (state, payload) {
-    console.log('*****', 'updateItemNameByIndex', state, payload);
-    //state.itemNames.$set(payload.index,  payload.str);
 }), _defineProperty(_mutations, mTypes.addItemIndexMapping, function (state, rootState, payload) {
     _Payload2.default.checkIfPayload(payload);
-
     state.indexMap.set(payload.index, payload.id);
 }), _mutations);
-
-/**
- * Build an input object and return a payload object
- * containing it
- */
-var createItemExNihlo = function createItemExNihlo(state) {
-    //nothing was passed in.
-    //This probably means the add new item button was clicked
-    // let len = getters.getNumberOfItems( state, {}, {} ) + 1 || 0
-    var len = state.items.length;
-    var index = len == 0 ? len : len + 1;
-
-    var obj = _Item2.default.factory({ index: index });
-    var out = _Payload2.default.factory({ obj: obj });
-    return out;
-};
 
 /**
  * Build an input object out of an input object
@@ -38206,29 +38085,8 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.createItem, funct
     var state = _ref.state,
         commit = _ref.commit;
 
+    console.log(aTypes.createItem, state);
     commit(mTypes.addNewItem);
-}), _defineProperty(_actions, aTypes.addNewItem, function (_ref2, payload) {
-    var state = _ref2.state,
-        commit = _ref2.commit;
-
-    var len = state.items.length;
-    var index = len == 0 ? len : len + 1;
-
-    var obj = _Item2.default.factory({ index: index });
-    var out = _Payload2.default.factory({ obj: obj });
-    // commit( mTypes.addItem, out );
-    commit(mTypes.addNewItem);
-
-    // let out = createItemExNihlo( state );
-    // // (typeof payload != 'undefined') ? this.buildPayloadFromInput(payload) : createItemExNihlo(state);
-    // console.log( 'addNewItem out', out );
-    //
-    // if ( typeof out != 'undefined' && Payload.checkIfPayload(out)) {
-    //     console.log( 'addNewItem != undefined ', out );
-    //     commit( mTypes.addItem, out );
-    //     //Add to the mapping store
-    //     // commit( mTypes.addIndexMapping, out );
-    // }
 }), _defineProperty(_actions, aTypes.loadItems, function (state, rootState, payload) {
     //check if payload has correct structure
     //todo
@@ -38262,7 +38120,6 @@ var getters = {
         //room for other ways of finding index
         index = payload.index;
 
-        // return state.items[index];
         console.log('getItem', payload);
         return state.items[index];
     },
@@ -38298,7 +38155,6 @@ var getters = {
      */
     getAllItems: function getAllItems(state, getters, rootState) {
         return state.items;
-        // return state.items.entries()
     },
 
     getAllIndexesList: function getAllIndexesList(state, getters, rootState, payload) {
@@ -38308,7 +38164,7 @@ var getters = {
         var _iteratorError = undefined;
 
         try {
-            for (var _iterator = state.items.entries()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            for (var _iterator = state.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                 var _step$value = _slicedToArray(_step.value, 2),
                     key = _step$value[0],
                     val = _step$value[1];
@@ -38350,7 +38206,7 @@ var getters = {
             var _iteratorError2 = undefined;
 
             try {
-                for (var _iterator2 = items.entries()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                for (var _iterator2 = items[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                     var _step2$value = _slicedToArray(_step2.value, 2),
                         key = _step2$value[0],
                         val = _step2$value[1];
@@ -38379,10 +38235,6 @@ var getters = {
         };
     },
 
-    getItemCount: function getItemCount(state) {
-        return state.itemsRepo.length;
-    },
-
     /**
      * Returns the current count of items
      * @param state
@@ -38390,23 +38242,10 @@ var getters = {
      * @param payload
      * @returns {Number}
      */
-    getNumberOfItems: function getNumberOfItems(state, getters) {
-        return function (items) {
-            // return items.size;
-            return items.length;
-            // return Object.keys( state.items ).length || 0;
-        };
-    },
-
-    /**
-     * Returns the highest index value
-     * @param state
-     * @param getters
-     * @param payload
-     */
-    getMaxIndex: function getMaxIndex(state, getters, payload) {
-        //   return Object.keys( state.items ).max || 0;
+    getItemCount: function getItemCount(state, getters) {
+        return state.items.length;
     }
+
 };
 
 exports.default = {
@@ -38416,7 +38255,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Item":349,"../../models/Payload":350,"../../store/action-types":353,"../../store/mutation-types":369}],365:[function(require,module,exports){
+},{"../../models/Item":349,"../../models/Payload":350,"../../store/action-types":353,"../../store/mutation-types":369,"vue":314}],365:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38982,14 +38821,14 @@ var setExam = exports.setExam = 'setExam';
 
 //items
 var addNewItem = exports.addNewItem = 'addNewItem';
-var addItem = exports.addItem = 'addItem';
+var setItem = exports.setItem = 'setItem';
 var addItemIndexMapping = exports.addItemIndexMapping = 'addItemIndexMapping';
 var loadItems = exports.loadItems = 'loadItems';
 
 var updateItemName = exports.updateItemName = 'updateItemName';
-
+var updateItem = exports.updateItem = 'updateItem';
 var setItemNameByIndex = exports.setItemNameByIndex = 'setItemNameByIndex';
-var updateItemNameByIndex = exports.updateItemNameByIndex = 'updateItemNameByIndex';
+// export const updateItemNameByIndex = 'updateItemNameByIndex'
 
 },{}],370:[function(require,module,exports){
 'use strict';

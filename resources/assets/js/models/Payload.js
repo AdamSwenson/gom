@@ -32,6 +32,11 @@ export default class Payload {
         this.str;
         this.index;
 
+        /** The name of the property to update */
+        this.updateProp;
+        /** The new value to set the property in updateProp */
+        this.updateVal;
+
     }
 
     /*  ************************* Identifier values ************************* */
@@ -107,7 +112,7 @@ export default class Payload {
      */
     static get fillableProps() {
         return [
-            'id', 'index', 'num', 'obj', 'str', 'stamp'
+            'id', 'index', 'num', 'obj', 'str', 'stamp', 'updateProp', 'updateVal'
         ];
     }
 

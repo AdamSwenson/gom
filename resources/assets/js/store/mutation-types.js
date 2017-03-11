@@ -72,11 +72,11 @@ export const setExam = 'setExam';
 
 //items
 export const addNewItem = 'addNewItem';
-export const addItem = 'addItem';
+export const setItem = 'setItem';
 export const addItemIndexMapping = 'addItemIndexMapping'
 export const loadItems = 'loadItems'
 
 export const updateItemName = 'updateItemName'
-
+export const updateItem = 'updateItem'
 export const setItemNameByIndex = 'setItemNameByIndex'
-export const updateItemNameByIndex = 'updateItemNameByIndex'
+// export const updateItemNameByIndex = 'updateItemNameByIndex'

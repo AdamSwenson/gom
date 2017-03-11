@@ -65,7 +65,7 @@ fdescribe( "store.modules.items | ", function () {
     } );
 
     describe( "mutations | ", function () {
-        describe( description( mTypes.addItem ), function () {
+        describe( description( mTypes.setItem ), function () {
 
             describe( "no preexisting | ", function () {
                 describe( "payload is Payload | ", function () {
@@ -75,7 +75,7 @@ fdescribe( "store.modules.items | ", function () {
                         let payload = Payload.factory( {obj: this.item} );
 
                         //call
-                        mutations[ mTypes.addItem ]( this.state, {}, payload );
+                        mutations[ mTypes.setItem ]( this.state, {}, payload );
 
                         //check
                         //expect( state.items[ item.index ] ).toBe( item );
@@ -85,10 +85,10 @@ fdescribe( "store.modules.items | ", function () {
                     describe( 'unhappy paths | ', function () {
                         it( "payload.obj not Item | ", function () {
 
-                            // mutations[ mTypes.addItem ]( this.state, this.mutationPayload );
+                            // mutations[ mTypes.setItem ]( this.state, this.mutationPayload );
                             // console.log( 'addItems', this.state.items , this.mutationPayload.index);
                             // expect( this.state.items[ this.mutationPayload.index] ).toBe( this.mutationPayload.obj );
-                            // mutations[ mTypes.addItem ]( this.state, this.rootState, this.payload );
+                            // mutations[ mTypes.setItem ]( this.state, this.rootState, this.payload );
                             // expect( this.state.items[ this.payload.obj.id ] ).toBe( this.payload.obj );
                         } );
 
@@ -100,7 +100,7 @@ fdescribe( "store.modules.items | ", function () {
                 describe( " payload is Item", function () {
                     it( "happy path", function () {
                         //call
-                        mutations[ mTypes.addItem ]( this.state, {}, this.item );
+                        mutations[ mTypes.setItem ]( this.state, {}, this.item );
 
                         //check
                         expect( this.state.items.get( this.item.index ) ).toBe( this.item );
@@ -125,12 +125,12 @@ fdescribe( "store.modules.items | ", function () {
 
             describe( "unhappy paths | ", function () {
                 xit( "payload does not contain index  | ", function () {
-                    // mutations[ mTypes.addItem ]( this.state, this.rootState, this.payload );
+                    // mutations[ mTypes.setItem ]( this.state, this.rootState, this.payload );
                     // expect( this.state.items[ this.payload.obj.id ] ).toBe( this.payload.obj );
                 } );
 
                 xit( "payload does not contain id  | ", function () {
-                    // mutations[ mTypes.addItem ]( this.state, this.rootState, this.payload );
+                    // mutations[ mTypes.setItem ]( this.state, this.rootState, this.payload );
                     // expect( this.state.items[ this.payload.obj.id ] ).toBe( this.payload.obj );
                 } );
             } );
@@ -191,7 +191,7 @@ fdescribe( "store.modules.items | ", function () {
                 //
                 // let expectedMutations = [
                 //     {
-                //         type: mTypes.addItem,
+                //         type: mTypes.setItem,
                 //         payload: this.mutationPayload
                 //     }
                 // ];
@@ -213,7 +213,7 @@ fdescribe( "store.modules.items | ", function () {
 
                 let expectedMutations = [
                     {
-                        type: mTypes.addItem,
+                        type: mTypes.setItem,
                         payload: pl
                     }
                 ];
@@ -233,7 +233,7 @@ fdescribe( "store.modules.items | ", function () {
                 let action = actions[ aTypes.loadItems ];
                 let expectedMutations = [
                     {
-                        type: mTypes.addItem,
+                        type: mTypes.setItem,
                         payload: this.payload
                     }//,
                     //

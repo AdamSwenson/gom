@@ -1,9 +1,6 @@
 /**
  * Created by adam on 2/17/17.
  */
-//var $ = require('jquery');
-//window.$ = $;
-
 
 import * as aTypes from '../../store/action-types';
 import * as mTypes from '../../store/mutation-types';
@@ -30,10 +27,12 @@ module.exports = {
             console.log( 'CALLED', 'addItem' );
             this.sendRequest();
         },
+
+        /**
+         * This sends the actual request(s)
+         */
         sendRequest:function(){
-            // this.$store.dispatch(addNewItem');
-            // this.store[aTypes.addNewItem]();
-            this.$dispatch('add-new-item');
+            this.$store.dispatch(aTypes.createItem);
         }
     },
 

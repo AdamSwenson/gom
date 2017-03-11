@@ -4,6 +4,9 @@ import * as aTypes from '../../store/action-types'
 import Payload from '../../models/Payload'
 import Item from '../../models/Item'
 
+const Vue = require( 'vue' );
+
+
 /**
  * The older version used an index value to do lots of stuff.
  * Given the prospect of using a websocket connection or connecting
@@ -23,21 +26,16 @@ const state = {
      */
     items: [],
 
-    // items: new Map(),
-    // itemsRepo: [], // Item.factory( {index: 0} ) ],
-    // // items: {},
-
     /**
      * Mapping from older ItemIndex to new Item id value
      */
     indexMap: new Map()
-
 };
 
 const mutations = {
 
     /**
-     * Push a newly created Item into storage
+     * Creates a new item and pushes it into storage
      *
      * @param state
      * @param rootState
@@ -47,59 +45,42 @@ const mutations = {
         console.log( mTypes.addNewItem, state, payload );
         let len = state.items.length;
         //set the item index
-        let index = len == 0 ||1? len : len + 1;
+        let index = len == 0 || 1 ? len : len + 1;
         let item = Item.factory( {index: index} );
 
         state.items.push( item );
     },
 
-    [mTypes.updateItemName]: ( state, payload ) => {
-        console.log( '*****', mTypes.updateItemName, payload, state )
-        let itm = state.items[payload.index];
-        itm.name = payload.str;
-        state.items.$set(payload.index, itm);
-        // state.itemNames.$set(payload.index,  payload.str);
+
+    /**
+     * Alters the the property named in updateProp to have the
+     * the value set in updateVal
+     * @param state
+     * @param payload
+     */
+    [mTypes.updateItem]: ( state, payload ) => {
+        console.log( mTypes.updateItem, payload, state )
+        //get the item
+        let itm = state.items[ payload.index ];
+        //Set the value so vue can see it
+        Vue.set( itm, payload.updateProp, payload.updateVal );
+        //Push the altered item back into the array
+        state.items.$set( payload.index, itm );
     },
 
     /**
-     * Push an Item into storage
-     * Payload should have keys: obj
+     * Push an Item into storage at a particular index
+     * Payload should have keys: obj, index
      *
      * @param state
      * @param rootState
      * @param payload Expecting Item object to be in payload.obj
      */
-    [mTypes.addItem]: ( state, payload ) => {
-        //thi should probably be renamed 'set item' because it is for settong
-        //at a certain index, rather than pushing it in at the front
-        console.log( 'items.mutations', mTypes.addItem, state, payload );
-
-        // state.itemRepo.$set( payload.obj.index, payload.obj );
+    [mTypes.setItem]: ( state, payload ) => {
+        console.log( 'items.mutations', mTypes.setItem, state, payload );
         state.items.$set( payload.obj.index, payload.obj );
-
-        //If we received an item by itself, wrap it in a payload
-        // //no idea why I decided to permit this....
-        // if ( payload instanceof Item ) {
-        //     payload = Payload.factory( {obj: payload} );
-        // }
-        //
-        // //at this point, when the button has been clicked,
-        // //there is an index (or at least question number/subtask
-        // //but not an id
-        // if ( Payload.checkIfPayload( payload ) && payload.obj instanceof Item ) {
-        //     //push into Items storage
-        //     state.items.set(payload.obj.index , payload.obj);
-        //     // state.items[ payload.obj.index ] = payload.obj;
-        // }
-
-        //todo add error handling
     },
 
-
-    [mTypes.updateItemNameByIndex]: ( state, payload ) => {
-        console.log( '*****', 'updateItemNameByIndex', state , payload)
-        //state.itemNames.$set(payload.index,  payload.str);
-    },
 
     /**
      * Pushes a mapping of index to id into indexMap
@@ -111,41 +92,12 @@ const mutations = {
      */
     [mTypes.addItemIndexMapping]: ( state, rootState, payload ) => {
         Payload.checkIfPayload( payload );
-
         state.indexMap.set( payload.index, payload.id );
     },
 
-    // /**
-    //  * Consume a json object and populate the Items object
-    //  * by overwriting it.
-    //  * @param state
-    //  * @param rootState
-    //  * @param payload
-    //  */
-    // [mTypes.loadItems]: ( state, rootState, payload ) => {
-    //     Payload.checkIfPayload( payload );
-    //     //add Items
-    //     state.items = payload.obj;
-    // }
 
 };
 
-
-/**
- * Build an input object and return a payload object
- * containing it
- */
-const createItemExNihlo = ( state ) => {
-    //nothing was passed in.
-    //This probably means the add new item button was clicked
-    // let len = getters.getNumberOfItems( state, {}, {} ) + 1 || 0
-    let len = state.items.length;
-    let index = len == 0 ? len : len + 1;
-
-    let obj = Item.factory( {index: index} );
-    let out = Payload.factory( {obj: obj} );
-    return out;
-};
 
 /**
  * Build an input object out of an input object
@@ -177,48 +129,17 @@ const actions = {
     /**
      * Called when a brand new item needs to be created and inserted into
      * the store.
+     * This handles the creation of the item and then the subsequent actions
+     * like notifying the server
      *
      * @param state
      * @param commit
      */
     [aTypes.createItem]: ( {state, commit} ) => {
+        console.log( aTypes.createItem, state );
         commit( mTypes.addNewItem );
     },
-//
-//     [aTypes.updateItemName]: ({state, commit}, payload)=>{
-// let {index, str} = payload;
-// commit()
-//     },
 
-
-    /**
-     * Adds the Item in the payload to the store. Also
-     * adds the Item index to the indexMap so can look up
-     * the id for older components.
-     * @param state
-     * @param commit
-     * @param payload Keys: ItemId, ItemIndex, obj
-     */
-    [aTypes.addNewItem]: ( {state, commit}, payload ) => {
-        let len = state.items.length;
-        let index = len == 0 ? len : len + 1;
-
-        let obj = Item.factory( {index: index} );
-        let out = Payload.factory( {obj: obj} );
-       // commit( mTypes.addItem, out );
-        commit( mTypes.addNewItem );
-
-        // let out = createItemExNihlo( state );
-        // // (typeof payload != 'undefined') ? this.buildPayloadFromInput(payload) : createItemExNihlo(state);
-        // console.log( 'addNewItem out', out );
-        //
-        // if ( typeof out != 'undefined' && Payload.checkIfPayload(out)) {
-        //     console.log( 'addNewItem != undefined ', out );
-        //     commit( mTypes.addItem, out );
-        //     //Add to the mapping store
-        //     // commit( mTypes.addIndexMapping, out );
-        // }
-    },
 
     /**
      * Consume a json object and populate the Items store
@@ -262,7 +183,6 @@ const getters = {
         //room for other ways of finding index
         index = payload.index;
 
-        // return state.items[index];
         console.log( 'getItem', payload );
         return state.items[ index ];
     },
@@ -298,12 +218,11 @@ const getters = {
      */
     getAllItems: ( state, getters, rootState ) => {
         return state.items;
-        // return state.items.entries()
     },
 
     getAllIndexesList: ( state, getters, rootState, payload ) => {
         let out = [];
-        for ( let [ key, val ] of state.items.entries() ) {
+        for ( let [ key, val ] of state.items ) {
             console.log( 'getall idexes itemslist', key, val );
             out.push( key );
         }
@@ -321,17 +240,13 @@ const getters = {
     getAllItemsList: ( state, getters ) => ( items ) => {
         let out = [];
         // if ( state.items.size > 0 ) {
-        for ( let [ key, val ] of items.entries() ) {
+        for ( let [ key, val ] of items ) {
             // for ( let [ key, val ] of state.items.entries() ) {
             console.log( 'getallitemslist', key, val );
             out.push( val );
         }
         // }
         return out;
-    },
-
-    getItemCount: ( state ) => {
-        return state.itemsRepo.length;
     },
 
     /**
@@ -341,21 +256,11 @@ const getters = {
      * @param payload
      * @returns {Number}
      */
-    getNumberOfItems: ( state, getters ) => ( items) => {
-        // return items.size;
-        return items.length;
-        // return Object.keys( state.items ).length || 0;
+    getItemCount: ( state, getters ) => {
+        return state.items.length;
     },
 
-    /**
-     * Returns the highest index value
-     * @param state
-     * @param getters
-     * @param payload
-     */
-    getMaxIndex: ( state, getters, payload ) => {
-        //   return Object.keys( state.items ).max || 0;
-    }
+
 };
 
 export default {

@@ -51,12 +51,9 @@ module.exports = {
         displayOrder: {
             get: function () {
                 //if question, return q number
-
                 //if element, return order
-
             },
             set: function ( v ) {
-
             }
         },
 
@@ -69,34 +66,27 @@ module.exports = {
 
         },
 
+
         name: {
             get: function () {
-
-                // return this.$store.getters.getItemNameByIndex( this.itemIndex );
-                let item = this.$store.getters.getItemByIndex(this.index);
-                console.log( "item", item );
-                if(typeof item.name != 'undefined'){
+                let item = this.$store.getters.getItemByIndex( this.index );
+                if ( typeof item.name != 'undefined' ) {
                     return item.name;
-
                 }
-
             },
 
             set: function ( v ) {
-                let pl = Payload.factory( {index: this.index, str: v} );
-                this.$store.commit( mTypes.updateItemName, pl );
-
-                // this.$store.commit( mTypes.updateItemNameByIndex, pl );
-                // let item = this.$store.getters.getItemByIndex(this.index)
-                // this.itemObj.name = v;
-
+                    let pl = Payload.factory( {index: this.index, updateProp: 'name', updateVal: v} );
+                this.$store.commit( mTypes.updateItem, pl );
             }
         },
 
         public: function () {
-            // return this.itemObj.isPublic();
-        }
-
+            let item = this.$store.getters.getItemByIndex( this.index );
+            if ( typeof item.name != 'undefined' ) {
+                return item.isPublic();
+            }
+        },
     },
 
     methods: {
@@ -110,19 +100,18 @@ module.exports = {
         },
 
         isPublic: function () {
-            // return this.item.Obj.isPublic();
+            return this.public;
         }
-
     },
 
     directives: {},
 
     events: {
-
-
         'toggle-public': function () {
-            // console.log( 'itemName', 'CAUGHT', 'toggle-public' , this.itemObj);
-            // this.itemObj.togglePublic();
+            let item = this.$store.getters.getItemByIndex( this.index );
+            if ( typeof item.name != 'undefined' ) {
+                return item.togglePublic();
+            }
         }
     },
 
