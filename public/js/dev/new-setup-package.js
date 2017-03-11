@@ -34855,45 +34855,34 @@ module.exports = {
         questionText: {
             get: function get() {
                 return this.getter('text');
-                // let item = this.$store.getters.getItemByIndex( this.index );
-                // if ( typeof item != 'undefined' ) {
-                //     return item.text;
-                // }
             },
 
             set: function set(v) {
-                var pl = _Payload2.default.factory({ index: this.index, updateProp: 'text', updateVal: v });
-                this.$store.commit(mTypes.updateItem, pl);
+                this.setter('text', v);
+                // let pl = Payload.factory( {index: this.index, updateProp: 'text', updateVal: v} );
+                // this.$store.commit( mTypes.updateItem, pl );
             }
         },
 
         questionNumber: {
             get: function get() {
                 return this.getter('number');
-                // let item = this.$store.getters.getItemByIndex( this.index );
-                // if ( typeof item != 'undefined' ) {
-                //     return item.number;
-                // }
             },
 
             set: function set(v) {
-                var pl = _Payload2.default.factory({ index: this.index, updateProp: 'number', updateVal: v });
-                this.$store.commit(mTypes.updateItem, pl);
+                this.setter('number', v);
+                // let pl = Payload.factory( {index: this.index, updateProp: 'number', updateVal: v} );
+                // this.$store.commit( mTypes.updateItem, pl );
             }
 
         },
         maxScore: {
             get: function get() {
                 return this.getter('maxScore');
-                // let item = this.$store.getters.getItemByIndex( this.index );
-                // if ( typeof item != 'undefined' ) {
-                //     return item.maxScore;
-                // }
             },
 
             set: function set(v) {
-                var pl = _Payload2.default.factory({ index: this.index, updateProp: 'maxScore', updateVal: v });
-                this.$store.commit(mTypes.updateItem, pl);
+                this.setter('maxScore', v);
             }
 
         }
@@ -34905,6 +34894,11 @@ module.exports = {
             if (typeof item != 'undefined') {
                 return item[name];
             }
+        },
+
+        setter: function setter(name, value) {
+            var pl = _Payload2.default.factory({ index: this.index, updateProp: name, updateVal: value });
+            this.$store.commit(mTypes.updateItem, pl);
         }
     },
 
