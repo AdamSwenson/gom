@@ -22,8 +22,11 @@ module.exports = {
     data: function () {
         return {
             icons: {
-                leftArrow: 'glyphicon glyphicon-chevron-left',
-                rightArrow: 'glyphicon glyphicon-chevron-right'
+                leftArrow: 'glyphicon glyphicon-arrow-left',
+                rightArrow: 'glyphicon glyphicon-right'
+
+                // leftArrow: 'glyphicon glyphicon-chevron-left',
+                // rightArrow: 'glyphicon glyphicon-chevron-right'
             }
         };
     },

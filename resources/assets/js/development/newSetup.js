@@ -33,6 +33,9 @@ import cardList from './components/cardList.component'
 import itemDetail from './components/itemSettings.detail.component'
 import commentSetup from './components/itemSettings.commentSetup.component'
 
+import valenceButton from './components/valenceButton.component'
+import deleteButton from './components/deleteItemButton.component'
+import depthControl from './components/depthControl.component'
 
 Vue.component( 'exam-name', examName )
 Vue.component( 'exam-properties', examProperties )
@@ -48,6 +51,9 @@ Vue.component( 'item-card', itemCard )
 Vue.component( 'card-list', cardList )
 Vue.component( 'item-settings-detail', itemDetail )
 Vue.component( 'item-settings-comment-setup', commentSetup )
+Vue.component('valence-button', valenceButton)
+Vue.component('delete-item-button', deleteButton)
+Vue.component('depth-control', depthControl)
 // install router
 // Vue.use(Router)
 

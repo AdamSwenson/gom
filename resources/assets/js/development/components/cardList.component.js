@@ -24,18 +24,12 @@ module.exports = {
     },
 
     computed: {
-        // mix the getters into computed with object spread operator
-        // ...mapGetters( {
-        //     items: 'getAllItemsList'
-        // } ),
         items: function () {
             return this.$store.getters.getAllItems;
         },
 
-
-//         },
         numberOfItems: function () {
-            return this.$store.itemsRepo.length;
+            return this.$store.getters.getItemCount
         }
     },
 
@@ -132,19 +126,6 @@ module.exports = {
 //     } );
 // }
 
-// // set all relevant names and ids of [item] to value [order]
-// function updateListItemData( item, order ) {
-//     $( item ).attr( 'id', 'questionItem' + order );
-//     $( item ).find( '#displayNumber' ).text( 'Question #' + (order) );
-//     $( item ).find( "[id^='questionName']" ).attr( 'id', 'questionName' + order );
-//     $( item ).find( "[id^='questionName']" ).attr( 'name', 'questionName' + order );
-//     $( item ).find( 'textarea' ).attr( 'id', 'questionText' + order );
-//     $( item ).find( 'textarea' ).attr( 'name', 'questionText' + order );
-//     $( item ).find( '#questionId' ).attr( 'name', 'questionId' + order );
-//     $( item ).find( "[id^='maxScore']" ).attr( 'id', 'maxScore' + order );
-//     $( item ).find( "[id^='maxScore']" ).attr( 'name', 'maxScore' + order );
-//
-// }
 
 // function getQuestionCount() {
 //     // return number of questions currently in the questionList
@@ -164,22 +145,21 @@ module.exports = {
     },
 
     ready: function () {
-        console.log( '.....', this.items );
         this.addItem();
-        console.log( 'cardList ready', this.$store );
+        console.log( 'cardList ready');
 
-        //
-        // try {
-        //     var qList = this.el;
-        //     var editableList = Sortable.create( qList, {
-        //         filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
-        //         animation: 150,
-        //         handle: '.handle',  // Drag handle selector within list items
-        //         ghostClass: "sortable-ghost", // Class name for the drop placeholder
-        //     } );
-        // } catch (e) {
-        //     window.console.log( e );
-        // }
+
+        try {
+            var qList = this.$el;
+            var editableList = Sortable.create( qList, {
+                filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
+                animation: 150,
+                handle: '.handle',  // Drag handle selector within list items
+                ghostClass: "sortable-ghost", // Class name for the drop placeholder
+            } );
+        } catch (e) {
+            window.console.log( e );
+        }
 
 
     },

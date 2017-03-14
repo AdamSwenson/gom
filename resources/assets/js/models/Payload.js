@@ -37,6 +37,8 @@ export default class Payload {
         /** The new value to set the property in updateProp */
         this.updateVal;
 
+        /** When used to update a comment, this indicates the valence */
+        this.updateValence;
     }
 
     /*  ************************* Identifier values ************************* */
@@ -112,7 +114,7 @@ export default class Payload {
      */
     static get fillableProps() {
         return [
-            'id', 'index', 'num', 'obj', 'str', 'stamp', 'updateProp', 'updateVal'
+            'id', 'index', 'num', 'obj', 'str', 'stamp', 'updateProp', 'updateVal', 'updateValence'
         ];
     }
 

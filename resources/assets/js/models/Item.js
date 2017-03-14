@@ -4,44 +4,19 @@
  * Created by adam on 2/17/17.
  */
 
-
+import Comment from './Comment';
 import IModel from './IModel';
 
-export default class Item extends IModel
-{
+export default class Item extends IModel {
     constructor() {
         super();
 
-        /**
-         * The db identifier of the model
-         */
-        this._id;
-
-        /**
-         * The locator value
-         */
-        // this._index;
-        this.index;
-
-        /** The nickname or title by which this item is identified */
-        this.name ="";
-
-        this.number = null;
-
-        this.text;
-        /**
-         * The secondary locator value
-         * Q1 E2 = index 0, depth 3
-         */
-        this._depth;
+        this.comments = new Map();
 
         /**
          * The maximum possible value of the item
          */
         this.maxScore;
-
-
-        // this.name;
 
         /**
          * Whether the item is currently set to
@@ -56,58 +31,53 @@ export default class Item extends IModel
          */
         this._public = false;
 
-        /**
-         * The full length text of the item.
-         * This could be the question prompt;
-         * a longer description of the element; etc
-         */
-        // this._text;
-
-        /**
-         * The role played by the item
-         */
-        this._type;
-
-        /**
-         * The possible values of this._type
-         */
-        this.types = [ 'comment', 'element', 'question' ];
-    }
-
-
-    /* *************************** Id *************** */
-    /**
-     * Alias for _id
-     * @returns {*}
-     */
-    get id() {
-        return Number(this._id) || null;
     }
 
     /**
-     * Alias for _id
+     * utility for determining which of the older types
+     * this item belongs to
      */
-    set id( v ) {
-        this._id = Number(v);
+    determineType(){
+        return this.depth > 0 ? 'element' : 'question';
+
+    }
+
+    /**
+     * Creates the expected empty comments in the comments array
+     */
+    initializeComments() {
+        if ( this.comments.size === 0 ) {
+            let me = this;
+            Comment.valences.forEach( function ( c ) {
+                me.addComment( c, Comment.factory( {valence: c} ) );
+            } );
+        }
+    }
+
+    addComment( valence, comment ) {
+        // this.comments.push( comment );
+        this.comments.set( valence, comment );
+    }
+
+    getStockComment() {
+        return this.getComment( 'stock' );
+    }
+
+    getComment( valence ) {
+        return this.comments.get( valence );
+    }
+
+    promote() {
+        this.depth += 1;
+    }
+
+    demote() {
+        if ( this.depth > 0 ) {
+            this.depth -= 1;
+        }
     }
 
 
-    /* *************************** Index *************** */
-    // /**
-    //  * The locator for the item
-    //  * @returns {*}
-    //  */
-    // get index() {
-    //     return this._index;
-    // }
-    //
-    // /**
-    //  * The locator for the item
-    //  * @param v
-    //  */
-    // set index( v ) {
-    //     this._index = v;
-    // }
     //
     //
     // /* *************************** Max score *************** */
@@ -151,46 +121,13 @@ export default class Item extends IModel
 
 
     /* *************************** Type *************** */
+
+    /**
+     * The role played by the item
+     */
     get type() {
-        return this._type;
+        return this.determineType();
     }
-
-
-    // /* *************************** Text *************** */
-    // /**
-    //  * The full length text of the item.
-    //  * @returns {*}
-    //  */
-    // get text() {
-    //     return this._text;
-    // }
-    //
-    // /**
-    //  * The full length text of the item.
-    //  * @param v
-    //  */
-    // set text( v ) {
-    //     this._text = v;
-    // }
-    //
-
-    /* *************************** Name *************** */
-    // /**
-    //  * The nickname or title by which this item is identified
-    //  * @returns {*}
-    //  */
-    // get name() {
-    //     return this._name;
-    // }
-    //
-    // /**
-    //  * The nickname or title by which this item is identified
-    //  * @param v
-    //  */
-    // set name( v ) {
-    //     this._name = v;
-    // }
-    //
 
 
     /**
@@ -214,6 +151,7 @@ export default class Item extends IModel
         return [
             'id',
             'index',
+            'depth',
             'name',
             'number',
             'text',

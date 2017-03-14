@@ -1,8 +1,8 @@
 /**
  * Created by adam on 2/15/17.
  */
-//var $ = require('jquery');
-//window.$ = $;
+
+import * as mTypes from '../../store/mutation-types';
 
 module.exports = {
 
@@ -25,17 +25,16 @@ module.exports = {
 
     methods: {
         /**
-         * Displays the buttons for removing items
+         * Displays or hides the buttons for removing items
          */
-        activateDeleteMode: function () {
-
+        toggleDeleteMode: function () {
+            console.log( 'toggleDeleteMode', 'pressed' );
+            this.$store.commit(mTypes.toggleDeleteButtonVisibility)
         },
 
-        /**
-         * Hides the delete item buttons
-         */
-        cancelDeleteMode: function () {
-
+        toggleReorderMode: function(){
+            console.log( 'toggleReorderMode', 'pressed' );
+            this.$store.commit(mTypes.toggleReorderMode);
         },
 
         /**
@@ -43,7 +42,8 @@ module.exports = {
          * would see, given current settings
          */
         showSampleFeedback: function(){
-         //dispatch request
+            console.log( 'showSampleFeedback', 'pressed' );
+            this.$store.commit(mTypes.toggleSampleFeedback);
         },
 
         /**

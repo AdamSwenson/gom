@@ -26,6 +26,10 @@ module.exports = {
 
     computed: {
 
+        tabActive: function(){
+
+        },
+
         hidden: {
             get: function () {
                 console.log( this.hiding );

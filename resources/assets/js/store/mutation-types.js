@@ -76,7 +76,18 @@ export const setItem = 'setItem';
 export const addItemIndexMapping = 'addItemIndexMapping'
 export const loadItems = 'loadItems'
 
+
+export const promoteItem = 'promoteItem'
+export const demoteItem = 'demoteItem'
+
 export const updateItemName = 'updateItemName'
 export const updateItem = 'updateItem'
 export const setItemNameByIndex = 'setItemNameByIndex'
 // export const updateItemNameByIndex = 'updateItemNameByIndex'
+
+export const updateComment = 'updateComment'
+
+//settings
+export const toggleDeleteButtonVisibility = 'toggleDeleteButtonVisibility'
+export const toggleReorderMode ='toggleReorderMode'
+export const toggleSampleFeedback = 'toggleSampleFeedback'

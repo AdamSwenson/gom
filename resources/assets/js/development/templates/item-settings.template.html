@@ -8,7 +8,6 @@
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation"
-                    class=""
                     v-for="tab in tabs">
                     <a href="#{{tab}}{{index}}"
                        aria-controls="{{tab}}{{index}}"
@@ -21,7 +20,7 @@
             <div class="tab-content">
 
                 <div role="tabpanel"
-                     class="tab-pane active "
+                     class="tab-pane active"
                      id="details{{index}}"
                 >
                     <item-settings-detail :index="index"></item-settings-detail>
@@ -60,6 +59,8 @@
         </div>
 
     </slot>
+
+    <slot name="controlsArea"></slot>
     <!--<item-settings-element item="item"></item-settings-element>-->
     <!--<item-settings-question :item="item"></item-settings-question>-->
 

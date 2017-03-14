@@ -19,7 +19,7 @@ const makeState = ( n = 5 ) => {
 
     for ( let i = 0; i < n; i++ ) {
         let e = factories.itemFactory();
-        s.items.set( i, e );
+        s.items[i ] =  e ;
         s.indexMap.set( e.id, i );
     }
     return s;
@@ -29,7 +29,6 @@ const makeRootState = function () {
     return {
         items: new Map(),
         indexMap: new Map(),
-        itemsRepo: []
     };
 };
 
@@ -75,11 +74,11 @@ fdescribe( "store.modules.items | ", function () {
                         let payload = Payload.factory( {obj: this.item} );
 
                         //call
-                        mutations[ mTypes.setItem ]( this.state, {}, payload );
+                        mutations[ mTypes.setItem ]( this.state, payload );
 
                         //check
                         //expect( state.items[ item.index ] ).toBe( item );
-                        expect( this.state.items.get( this.item.index ) ).toBe( this.item );
+                        expect( this.state.items[ this.item.index ]).toBe( this.item );
                     } );
 
                     describe( 'unhappy paths | ', function () {
@@ -98,17 +97,17 @@ fdescribe( "store.modules.items | ", function () {
                 } );
 
                 describe( " payload is Item", function () {
-                    it( "happy path", function () {
-                        //call
-                        mutations[ mTypes.setItem ]( this.state, {}, this.item );
-
-                        //check
-                        expect( this.state.items.get( this.item.index ) ).toBe( this.item );
-                        // expect( this.state.items[ item.index ] ).toBe( item );
-                    } );
-
-                    describe( "unhappy paths | ", function () {
-                    } );
+                    // it( "happy path", function () {
+                    //     //call
+                    //     mutations[ mTypes.setItem ]( this.state, this.item );
+                    //
+                    //     //check
+                    //     expect( this.state.items[ this.item.index ] ).toBe( this.item );
+                    //     // expect( this.state.items[ item.index ] ).toBe( item );
+                    // } );
+                    //
+                    // describe( "unhappy paths | ", function () {
+                    // } );
                 } );
 
             } );
@@ -181,51 +180,51 @@ fdescribe( "store.modules.items | ", function () {
                 //needs non instance of Item case too
             } );
         } );
-
-
-        describe( description( aTypes.addNewItem ), function () {
-            it( "happy path  ", function () {
-
-                // let action = actions[ aTypes.addNewItem ];
-                // expect( typeof action ).not.toBe( 'undefined' );
-                //
-                // let expectedMutations = [
-                //     {
-                //         type: mTypes.setItem,
-                //         payload: this.mutationPayload
-                //     }
-                // ];
-                //
-                // testAction( action, {
-                //     index: this.mutationPayload.index,
-                //     id: this.mutationPayload.id,
-                //     obj: this.mutationPayload.obj
-                // }, this.state, expectedMutations );
-
-
-                let action = actions[ aTypes.addNewItem ];
-
-                let numPreexisting = this.state.items.size;
-                // let pl = Item.factory({index: numPreexisting + 1, id: numPreexisting + 1 })})
-
-                let item = Item.factory( {index: numPreexisting + 1} );
-                let pl = Payload.factory( {obj: item} );
-
-                let expectedMutations = [
-                    {
-                        type: mTypes.setItem,
-                        payload: pl
-                    }
-                ];
-
-                testAction( action, {}, this.state, expectedMutations, {verbose: true} );
-            } );
-
-
-            describe( "unhappy paths | ", function () {
-                //needs non instance of Item case too
-            } );
-        } );
+        //
+        //
+        // describe( description( aTypes.addNewItem ), function () {
+        //     it( "happy path  ", function () {
+        //
+        //         // let action = actions[ aTypes.addNewItem ];
+        //         // expect( typeof action ).not.toBe( 'undefined' );
+        //         //
+        //         // let expectedMutations = [
+        //         //     {
+        //         //         type: mTypes.setItem,
+        //         //         payload: this.mutationPayload
+        //         //     }
+        //         // ];
+        //         //
+        //         // testAction( action, {
+        //         //     index: this.mutationPayload.index,
+        //         //     id: this.mutationPayload.id,
+        //         //     obj: this.mutationPayload.obj
+        //         // }, this.state, expectedMutations );
+        //
+        //
+        //         let action = actions[ aTypes.addNewItem ];
+        //
+        //         let numPreexisting = this.state.items.size;
+        //         // let pl = Item.factory({index: numPreexisting + 1, id: numPreexisting + 1 })})
+        //
+        //         let item = Item.factory( {index: numPreexisting + 1} );
+        //         let pl = Payload.factory( {obj: item} );
+        //
+        //         let expectedMutations = [
+        //             {
+        //                 type: mTypes.setItem,
+        //                 payload: pl
+        //             }
+        //         ];
+        //
+        //         testAction( action, {}, this.state, expectedMutations, {verbose: true} );
+        //     } );
+        //
+        //
+        //     describe( "unhappy paths | ", function () {
+        //         //needs non instance of Item case too
+        //     } );
+        // } );
 
 
         describe( description( aTypes.loadItems ), function () {
@@ -257,10 +256,10 @@ fdescribe( "store.modules.items | ", function () {
         describe( "getItem | ", function () {
             it( "happy path | ", function () {
                 //prep
-                this.state.items.set( this.payload.index, this.payload.obj );
+                this.state.items[ this.payload.index] = this.payload.obj ;
 
                 //call
-                let result = getters.getItem( this.state, {}, {}, this.payload );
+                let result = getters.getItem( this.state, {}, this.payload );
 
                 //check
                 expect( result ).toBe( this.payload.obj );
@@ -273,18 +272,19 @@ fdescribe( "store.modules.items | ", function () {
         describe( "getItemByIndex | ", function () {
             it( "happy path | ", function () {
                 //prep
-                this.state.itemsRepo = [];
+                this.state.items = [];
                 let numItems = 3;
                 for ( let i = 0; i < numItems; i++ ) {
-                    this.state.itemsRepo.push( Item.factory( {index: i} ) );
+                    this.state.items[i] =  Item.factory( {index: i} );
                 }
 
                 //call and check
                 for ( let i = 0; i < numItems; i++ ) {
                     //call
-                    let result = getters.getItemByIndex( this.state, {}, {}, i );
+                    let result = getters.getItemByIndex( this.state, {}, i );
+                    // let result = getters.getItemByIndex( this.state, {}, {}, i );
                     //check
-                    expect( result ).toBe( this.state.itemsRepo[ i ] );
+                    expect( result ).toBe( this.state.items[ i ] );
                     expect( result.index ).toBe( i );
                 }
 

@@ -11223,6 +11223,110 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _IModel2 = require('./IModel');
+
+var _IModel3 = _interopRequireDefault(_IModel2);
+
+var _Item = require('./Item');
+
+var _Item2 = _interopRequireDefault(_Item);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Created by adam on 3/10/17.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+var Comment = function (_IModel) {
+    _inherits(Comment, _IModel);
+
+    function Comment() {
+        _classCallCheck(this, Comment);
+
+        var _this = _possibleConstructorReturn(this, (Comment.__proto__ || Object.getPrototypeOf(Comment)).call(this));
+
+        _this.type = 'comment';
+        _this.valence = null;
+        return _this;
+    }
+
+    _createClass(Comment, [{
+        key: 'isStock',
+        value: function isStock() {
+            if (this.valence == 'stock') {
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
+         */
+
+    }], [{
+        key: 'identifiers',
+
+
+        /**
+         * Returns a list of fields which may
+         * be used to look up an exam from the store
+         */
+        value: function identifiers() {
+            return ['id', 'index'];
+        }
+
+        /**
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
+         */
+
+    }, {
+        key: 'factory',
+        value: function factory(params) {
+            var obj = new Comment();
+            return this.fillObject(obj, params);
+        }
+    }, {
+        key: 'valences',
+        get: function get() {
+            return ['stock', 'absent', 'poor', 'good', 'excellent'];
+        }
+    }, {
+        key: 'fillableProps',
+        get: function get() {
+            return ['id', 'index', 'text', 'valence'];
+        }
+    }, {
+        key: 'aliasMap',
+        get: function get() {
+            return {
+                ItemId: 'id',
+                ItemIndex: 'index'
+            };
+        }
+    }]);
+
+    return Comment;
+}(_IModel3.default);
+
+exports.default = Comment;
+
+},{"./IModel":6,"./Item":7}],5:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _Item2 = require('./Item');
 
 var _Item3 = _interopRequireDefault(_Item2);
@@ -11356,7 +11460,7 @@ var Exam = function (_Item) {
 
 exports.default = Exam;
 
-},{"./Item":6}],5:[function(require,module,exports){
+},{"./Item":7}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11374,19 +11478,126 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var IModel = function () {
     function IModel() {
         _classCallCheck(this, IModel);
-    }
-
-    _createClass(IModel, null, [{
-        key: 'fillObject',
-
 
         /**
-         * Iterate over the provided parameters and set the properties of the
-         * object.
-         * @param obj
-         * @param params
+         * The db identifier of the model
+         */
+        this._id;
+
+        /**
+         * The locator value
+         */
+        this.index;
+
+        /** The nickname or title by which this item is identified */
+        this.name;
+
+        this.number = null;
+
+        /**
+         * The full length text of the item.
+         * This could be the question prompt;
+         * a longer description of the element; etc
+         */
+        this.text = '';
+
+        /**
+         * The secondary locator value
+         * Q1 E2 = index 0, depth 3
+         */
+        this.depth = 0;
+
+        /**
+         * The possible values of this._type
+         */
+        this.types = ['comment', 'element', 'question'];
+    }
+
+    /**
+     * Iterate over the provided parameters and set the properties of the
+     * object.
+     * @param obj
+     * @param params
+     * @returns {*}
+     */
+
+
+    _createClass(IModel, [{
+        key: 'id',
+
+
+        /* *************************** Id *************** */
+        /**
+         * Alias for _id
          * @returns {*}
          */
+        get: function get() {
+            return Number(this._id) || null;
+        }
+
+        /**
+         * Alias for _id
+         */
+        ,
+        set: function set(v) {
+            this._id = Number(v);
+        }
+
+        /* *************************** Index *************** */
+        // /**
+        //  * The locator for the item
+        //  * @returns {*}
+        //  */
+        // get index() {
+        //     return this._index;
+        // }
+        //
+        // /**
+        //  * The locator for the item
+        //  * @param v
+        //  */
+        // set index( v ) {
+        //     this._index = v;
+        // }
+
+        // /* *************************** Text *************** */
+        // /**
+        //  * The full length text of the item.
+        //  * @returns {*}
+        //  */
+        // get text() {
+        //     return this._text;
+        // }
+        //
+        // /**
+        //  * The full length text of the item.
+        //  * @param v
+        //  */
+        // set text( v ) {
+        //     this._text = v;
+        // }
+        //
+
+        /* *************************** Name *************** */
+        // /**
+        //  * The nickname or title by which this item is identified
+        //  * @returns {*}
+        //  */
+        // get name() {
+        //     return this._name;
+        // }
+        //
+        // /**
+        //  * The nickname or title by which this item is identified
+        //  * @param v
+        //  */
+        // set name( v ) {
+        //     this._name = v;
+        // }
+        //
+
+    }], [{
+        key: 'fillObject',
         value: function fillObject(obj, params) {
             if (typeof params != 'undefined') {
 
@@ -11418,14 +11629,18 @@ var IModel = function () {
 
 exports.default = IModel;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Comment = require('./Comment');
+
+var _Comment2 = _interopRequireDefault(_Comment);
 
 var _IModel2 = require('./IModel');
 
@@ -11444,252 +11659,198 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
 var Item = function (_IModel) {
-  _inherits(Item, _IModel);
+    _inherits(Item, _IModel);
 
-  function Item() {
-    _classCallCheck(this, Item);
+    function Item() {
+        _classCallCheck(this, Item);
 
-    /**
-     * The db identifier of the model
-     */
-    var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
+        var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this));
 
-    _this._id;
+        _this.comments = new Map();
 
-    /**
-     * The locator value
-     */
-    // this._index;
-    _this.index;
+        /**
+         * The maximum possible value of the item
+         */
+        _this.maxScore;
 
-    /** The nickname or title by which this item is identified */
-    _this.name = "";
+        /**
+         * Whether the item is currently set to
+         * be appear in pages, emails, or anything
+         * else that a student could see.
+         *
+         * If this value is true, there are some outputs viewable
+         * by students, which this appears in.
+         *
+         * @type {boolean}
+         * @private
+         */
+        _this._public = false;
 
-    _this.number = null;
-
-    _this.text;
-    /**
-     * The secondary locator value
-     * Q1 E2 = index 0, depth 3
-     */
-    _this._depth;
-
-    /**
-     * The maximum possible value of the item
-     */
-    _this.maxScore;
-
-    // this.name;
-
-    /**
-     * Whether the item is currently set to
-     * be appear in pages, emails, or anything
-     * else that a student could see.
-     *
-     * If this value is true, there are some outputs viewable
-     * by students, which this appears in.
-     *
-     * @type {boolean}
-     * @private
-     */
-    _this._public = false;
-
-    /**
-     * The full length text of the item.
-     * This could be the question prompt;
-     * a longer description of the element; etc
-     */
-    // this._text;
-
-    /**
-     * The role played by the item
-     */
-    _this._type;
-
-    /**
-     * The possible values of this._type
-     */
-    _this.types = ['comment', 'element', 'question'];
-    return _this;
-  }
-
-  /* *************************** Id *************** */
-  /**
-   * Alias for _id
-   * @returns {*}
-   */
-
-
-  _createClass(Item, [{
-    key: 'isPublic',
-
-
-    /* *************************** Index *************** */
-    // /**
-    //  * The locator for the item
-    //  * @returns {*}
-    //  */
-    // get index() {
-    //     return this._index;
-    // }
-    //
-    // /**
-    //  * The locator for the item
-    //  * @param v
-    //  */
-    // set index( v ) {
-    //     this._index = v;
-    // }
-    //
-    //
-    // /* *************************** Max score *************** */
-    // get maxScore() {
-    //     return this._maxScore ? Number( this._maxScore ) : null;
-    // };
-    //
-    // set maxScore( score ) {
-    //     this._maxScore = score;
-    // };
-
-
-    /* *************************** Public *************** */
-    /**
-     * Getter for whether this can currently appear in student-viewable outputs
-     * @returns {boolean|*}
-     */
-    value: function isPublic() {
-      return this._public;
+        return _this;
     }
 
     /**
-     * Makes able to appear in student-viewable outputs
+     * utility for determining which of the older types
+     * this item belongs to
      */
 
-  }, {
-    key: 'makePublic',
-    value: function makePublic() {
-      this._public = true;
-    }
 
-    /**
-     * Makes no longer visible to students
-     */
+    _createClass(Item, [{
+        key: 'determineType',
+        value: function determineType() {
+            return this.depth > 0 ? 'element' : 'question';
+        }
 
-  }, {
-    key: 'hide',
-    value: function hide() {
-      this._public = false;
-    }
-  }, {
-    key: 'togglePublic',
-    value: function togglePublic() {
-      console.log('Item', 'CALLED', 'togglePublic', this._public);
-      this._public = !this._public;
-      console.log(this._public);
-    }
+        /**
+         * Creates the expected empty comments in the comments array
+         */
 
-    /* *************************** Type *************** */
+    }, {
+        key: 'initializeComments',
+        value: function initializeComments() {
+            if (this.comments.size === 0) {
+                var me = this;
+                _Comment2.default.valences.forEach(function (c) {
+                    me.addComment(c, _Comment2.default.factory({ valence: c }));
+                });
+            }
+        }
+    }, {
+        key: 'addComment',
+        value: function addComment(valence, comment) {
+            // this.comments.push( comment );
+            this.comments.set(valence, comment);
+        }
+    }, {
+        key: 'getStockComment',
+        value: function getStockComment() {
+            return this.getComment('stock');
+        }
+    }, {
+        key: 'getComment',
+        value: function getComment(valence) {
+            return this.comments.get(valence);
+        }
+    }, {
+        key: 'promote',
+        value: function promote() {
+            this.depth += 1;
+        }
+    }, {
+        key: 'demote',
+        value: function demote() {
+            if (this.depth > 0) {
+                this.depth -= 1;
+            }
+        }
 
-  }, {
-    key: 'id',
-    get: function get() {
-      return Number(this._id) || null;
-    }
-
-    /**
-     * Alias for _id
-     */
-    ,
-    set: function set(v) {
-      this._id = Number(v);
-    }
-  }, {
-    key: 'type',
-    get: function get() {
-      return this._type;
-    }
-
-    // /* *************************** Text *************** */
-    // /**
-    //  * The full length text of the item.
-    //  * @returns {*}
-    //  */
-    // get text() {
-    //     return this._text;
-    // }
-    //
-    // /**
-    //  * The full length text of the item.
-    //  * @param v
-    //  */
-    // set text( v ) {
-    //     this._text = v;
-    // }
-    //
-
-    /* *************************** Name *************** */
-    // /**
-    //  * The nickname or title by which this item is identified
-    //  * @returns {*}
-    //  */
-    // get name() {
-    //     return this._name;
-    // }
-    //
-    // /**
-    //  * The nickname or title by which this item is identified
-    //  * @param v
-    //  */
-    // set name( v ) {
-    //     this._name = v;
-    // }
-    //
+        //
+        //
+        // /* *************************** Max score *************** */
+        // get maxScore() {
+        //     return this._maxScore ? Number( this._maxScore ) : null;
+        // };
+        //
+        // set maxScore( score ) {
+        //     this._maxScore = score;
+        // };
 
 
-    /**
-     * Returns a list of fields which may
-     * be used to look up an exam from the store
-     */
+        /* *************************** Public *************** */
+        /**
+         * Getter for whether this can currently appear in student-viewable outputs
+         * @returns {boolean|*}
+         */
 
-  }], [{
-    key: 'identifiers',
-    value: function identifiers() {
-      return ['id', 'index'];
-    }
+    }, {
+        key: 'isPublic',
+        value: function isPublic() {
+            return this._public;
+        }
 
-    /**
-     * Returns a list of strings which are property
-     * names. These fields can be filled from the input
-     * @returns {[string,string]}
-     */
+        /**
+         * Makes able to appear in student-viewable outputs
+         */
 
-  }, {
-    key: 'factory',
-    value: function factory(params) {
-      var obj = new Item();
-      return this.fillObject(obj, params);
-    }
-  }, {
-    key: 'fillableProps',
-    get: function get() {
-      return ['id', 'index', 'name', 'number', 'text', 'maxScore'];
-    }
-  }, {
-    key: 'aliasMap',
-    get: function get() {
-      return {
-        ItemId: 'id',
-        ItemIndex: 'index'
-      };
-    }
-  }]);
+    }, {
+        key: 'makePublic',
+        value: function makePublic() {
+            this._public = true;
+        }
 
-  return Item;
+        /**
+         * Makes no longer visible to students
+         */
+
+    }, {
+        key: 'hide',
+        value: function hide() {
+            this._public = false;
+        }
+    }, {
+        key: 'togglePublic',
+        value: function togglePublic() {
+            console.log('Item', 'CALLED', 'togglePublic', this._public);
+            this._public = !this._public;
+            console.log(this._public);
+        }
+
+        /* *************************** Type *************** */
+
+        /**
+         * The role played by the item
+         */
+
+    }, {
+        key: 'type',
+        get: function get() {
+            return this.determineType();
+        }
+
+        /**
+         * Returns a list of fields which may
+         * be used to look up an exam from the store
+         */
+
+    }], [{
+        key: 'identifiers',
+        value: function identifiers() {
+            return ['id', 'index'];
+        }
+
+        /**
+         * Returns a list of strings which are property
+         * names. These fields can be filled from the input
+         * @returns {[string,string]}
+         */
+
+    }, {
+        key: 'factory',
+        value: function factory(params) {
+            var obj = new Item();
+            return this.fillObject(obj, params);
+        }
+    }, {
+        key: 'fillableProps',
+        get: function get() {
+            return ['id', 'index', 'depth', 'name', 'number', 'text', 'maxScore'];
+        }
+    }, {
+        key: 'aliasMap',
+        get: function get() {
+            return {
+                ItemId: 'id',
+                ItemIndex: 'index'
+            };
+        }
+    }]);
+
+    return Item;
 }(_IModel3.default);
 
 exports.default = Item;
 
-},{"./IModel":5}],7:[function(require,module,exports){
+},{"./Comment":4,"./IModel":6}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11742,6 +11903,9 @@ var Payload = function () {
         this.updateProp;
         /** The new value to set the property in updateProp */
         this.updateVal;
+
+        /** When used to update a comment, this indicates the valence */
+        this.updateValence;
     }
 
     /*  ************************* Identifier values ************************* */
@@ -11858,7 +12022,7 @@ var Payload = function () {
     }, {
         key: 'fillableProps',
         get: function get() {
-            return ['id', 'index', 'num', 'obj', 'str', 'stamp', 'updateProp', 'updateVal'];
+            return ['id', 'index', 'num', 'obj', 'str', 'stamp', 'updateProp', 'updateVal', 'updateValence'];
         }
     }, {
         key: 'aliasMap',
@@ -11875,7 +12039,7 @@ var Payload = function () {
 
 exports.default = Payload;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12032,7 +12196,7 @@ var Question = function (_Item) {
 
 exports.default = Question;
 
-},{"./Item":6}],9:[function(require,module,exports){
+},{"./Item":7}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12323,7 +12487,7 @@ var Student = function (_IModel) {
 
 exports.default = Student;
 
-},{"./IModel":5}],10:[function(require,module,exports){
+},{"./IModel":6}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12391,11 +12555,12 @@ var loadGradingTimes = exports.loadGradingTimes = 'loadGradingTimes';
 
 //items
 var createItem = exports.createItem = 'createItem';
+var deleteItem = exports.deleteItem = 'deleteItem';
 var addNewItem = exports.addNewItem = 'addNewItem';
 var loadItems = exports.loadItems = 'loadItems';
 var updateItemName = exports.updateItemName = 'updateItemName';
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12607,7 +12772,7 @@ var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes
     commit(mTypes.setElementScore, out);
 }), _actions);
 
-},{"../models/Student":9,"./action-types":10,"./mutation-types":26}],12:[function(require,module,exports){
+},{"../models/Student":10,"./action-types":11,"./mutation-types":27}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12651,7 +12816,7 @@ var checkValid = exports.checkValid = function checkValid(state, propertyName) {
     return true;
 };
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12819,7 +12984,7 @@ var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = 
     return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -12926,13 +13091,13 @@ var _students = require('./modules/students.js');
 
 var _students2 = _interopRequireDefault(_students);
 
+var _settings = require('./modules/settings');
+
+var _settings2 = _interopRequireDefault(_settings);
+
 var _times = require('./modules/times.js');
 
 var _times2 = _interopRequireDefault(_times);
-
-var _item = require('./modules/item.names');
-
-var _item2 = _interopRequireDefault(_item);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -12980,9 +13145,10 @@ exports.default = new _vuex2.default.Store({
     grades: _grades2.default,
     qscores: _qscores2.default,
     questions: _questions2.default,
+    settings: _settings2.default,
     students: _students2.default,
-    times: _times2.default,
-    names: _item2.default
+    times: _times2.default
+
   },
   state: state,
   api: api,
@@ -12990,7 +13156,7 @@ exports.default = new _vuex2.default.Store({
   strict: debug });
 
 }).call(this,require('_process'))
-},{"./actions":11,"./api":12,"./getters":13,"./modules/activeexam.js":15,"./modules/activestudent.js":16,"./modules/comments.js":17,"./modules/escores.js":18,"./modules/grades.js":19,"./modules/item.names":20,"./modules/items.js":21,"./modules/qscores.js":22,"./modules/questions.js":23,"./modules/students.js":24,"./modules/times.js":25,"./mutations":27,"./state":28,"_process":1,"vue":2,"vuex":3}],15:[function(require,module,exports){
+},{"./actions":12,"./api":13,"./getters":14,"./modules/activeexam.js":16,"./modules/activestudent.js":17,"./modules/comments.js":18,"./modules/escores.js":19,"./modules/grades.js":20,"./modules/items.js":21,"./modules/qscores.js":22,"./modules/questions.js":23,"./modules/settings":24,"./modules/students.js":25,"./modules/times.js":26,"./mutations":28,"./state":29,"_process":1,"vue":2,"vuex":3}],16:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13088,7 +13254,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":4,"../../models/Payload":7,"../action-types":10,"../mutation-types":26}],16:[function(require,module,exports){
+},{"../../models/Exam":5,"../../models/Payload":8,"../action-types":11,"../mutation-types":27}],17:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13221,7 +13387,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":7,"../../models/Student":9,"../action-types":10,"../mutation-types":26}],17:[function(require,module,exports){
+},{"../../models/Payload":8,"../../models/Student":10,"../action-types":11,"../mutation-types":27}],18:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13385,7 +13551,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":7,"../action-types":10,"../mutation-types":26}],18:[function(require,module,exports){
+},{"../../models/Payload":8,"../action-types":11,"../mutation-types":27}],19:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13479,7 +13645,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":7,"../action-types":10,"../mutation-types":26}],19:[function(require,module,exports){
+},{"../../models/Payload":8,"../action-types":11,"../mutation-types":27}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13638,72 +13804,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":7,"../action-types":10,"../mutation-types":26}],20:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mutations;
-
-var _mutationTypes = require('../mutation-types');
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _actionTypes = require('../action-types');
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _Payload = require('../../models/Payload');
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
-                                                                                                                                                                                                                   * Created by adam on 3/10/17.
-                                                                                                                                                                                                                   */
-
-var state = {
-    // itemNames: {}
-    itemNames: [] //new Map()
-};
-
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.setItemNameByIndex, function (state, payload) {
-    console.log('*****', 'addName', payload, state);
-    // Vue.set(state.itemNames, payload.index, payload.str);
-
-    //state.itemNames.splice( payload.index, 0, payload.str );
-}), _defineProperty(_mutations, mTypes.updateItemNameByIndex, function (state, payload) {
-    console.log('*****', 'updateItemNameByIndex', state, payload);
-    state.itemNames.$set(payload.index, payload.str);
-}), _mutations);
-
-var actions = {};
-var getters = {
-
-    getItemNameByIndex: function getItemNameByIndex(state, getters) {
-        return function (index) {
-            console.log('getItemNameByIndex', state, index);
-            // return state.itemNames.filter((index) => state.itemNames[index] );
-
-            return state.itemNames[index];
-            // return state.itemNames.get( index )
-        };
-    }
-};
-
-exports.default = {
-    actions: actions,
-    getters: getters,
-    mutations: mutations,
-    state: state
-};
-
-},{"../../models/Payload":7,"../action-types":10,"../mutation-types":26}],21:[function(require,module,exports){
+},{"../../models/Payload":8,"../action-types":11,"../mutation-types":27}],21:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13769,8 +13870,10 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.addNewItem,
     //set the item index
     var index = len == 0 || 1 ? len : len + 1;
     var item = _Item2.default.factory({ index: index });
+    Vue.set(item, 'index', index);
+    state.items.$set(index, item);
 
-    state.items.push(item);
+    // state.items.push( item );
 }), _defineProperty(_mutations, mTypes.updateItem, function (state, payload) {
     console.log(mTypes.updateItem, payload, state);
     //get the item
@@ -13779,9 +13882,32 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.addNewItem,
     Vue.set(itm, payload.updateProp, payload.updateVal);
     //Push the altered item back into the array
     state.items.$set(payload.index, itm);
+}), _defineProperty(_mutations, mTypes.updateComment, function (state, payload) {
+    console.log(mTypes.updateComment, payload, state);
+    //get the item
+    var itm = state.items[payload.index];
+    var comment = itm.getComment(payload.updateValence);
+
+    if (typeof comment != 'undefined') {
+        //Set the value so vue can see it
+        Vue.set(comment, 'text', payload.updateVal);
+    }
+
+    //Push the altered item back into the array
+    state.items.$set(payload.index, itm);
 }), _defineProperty(_mutations, mTypes.setItem, function (state, payload) {
     console.log('items.mutations', mTypes.setItem, state, payload);
     state.items.$set(payload.obj.index, payload.obj);
+}), _defineProperty(_mutations, mTypes.promoteItem, function (state, payload) {
+    var index = payload.index;
+
+    var item = state.items[index];
+    item.promote();
+}), _defineProperty(_mutations, mTypes.demoteItem, function (state, payload) {
+    var index = payload.index;
+
+    var item = state.items[index];
+    item.demote();
 }), _defineProperty(_mutations, mTypes.addItemIndexMapping, function (state, rootState, payload) {
     _Payload2.default.checkIfPayload(payload);
     state.indexMap.set(payload.index, payload.id);
@@ -13826,6 +13952,12 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.createItem, funct
 
     console.log(aTypes.createItem, state);
     commit(mTypes.addNewItem);
+}), _defineProperty(_actions, aTypes.deleteItem, function (_ref2) {
+    var state = _ref2.state,
+        commit = _ref2.commit;
+
+    console.log(aTypes.deleteItem, state, commit);
+    //todo write
 }), _defineProperty(_actions, aTypes.loadItems, function (state, rootState, payload) {
     //check if payload has correct structure
     //todo
@@ -13853,7 +13985,7 @@ var getters = {
      * @param getters
      * @param payload Object containing Item identifier
      */
-    getItem: function getItem(state, getters, rootState, payload) {
+    getItem: function getItem(state, getters, payload) {
         var index = void 0;
 
         //room for other ways of finding index
@@ -13870,18 +14002,37 @@ var getters = {
      * @param rootState
      * @param index
      */
+    // getItemByIndex: ( state, getters, index ) => {
     getItemByIndex: function getItemByIndex(state, getters) {
         return function (index) {
+            //
             console.log('getItemByIndex', state, index);
+            // return state.items[ index ];
 
             return function (state, index) {
+                return state.items[index];
+                // var r = state.items.filter( function ( i ) {
+                //     if ( i.index === index ) {
+                //         return i;
+                //     }
+                // } );
+                // return r[ 0 ];
+            }(state, index);
+        };
+    },
+
+    getItemById: function getItemById(state, getters) {
+        return function (id) {
+            console.log('getItemById', state, id);
+
+            return function (state, id) {
                 var r = state.items.filter(function (i) {
-                    if (i.index === index) {
+                    if (i.id === id) {
                         return i;
                     }
                 });
                 return r[0];
-            }(state, index);
+            }(state, id);
         };
     },
 
@@ -13908,7 +14059,7 @@ var getters = {
                     key = _step$value[0],
                     val = _step$value[1];
 
-                console.log('getall idexes itemslist', key, val);
+                // console.log( 'getAllIndexesList', key, val );
                 out.push(key);
             }
         } catch (err) {
@@ -13951,7 +14102,7 @@ var getters = {
                         val = _step2$value[1];
 
                     // for ( let [ key, val ] of state.items.entries() ) {
-                    console.log('getallitemslist', key, val);
+                    // console.log( 'getAllItemsList', key, val );
                     out.push(val);
                 }
                 // }
@@ -13994,7 +14145,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Item":6,"../../models/Payload":7,"../../store/action-types":10,"../../store/mutation-types":26,"vue":2}],22:[function(require,module,exports){
+},{"../../models/Item":7,"../../models/Payload":8,"../../store/action-types":11,"../../store/mutation-types":27,"vue":2}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14093,7 +14244,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":7,"../action-types":10,"../mutation-types":26}],23:[function(require,module,exports){
+},{"../../models/Payload":8,"../action-types":11,"../mutation-types":27}],23:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14232,7 +14383,76 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":7,"../../models/Question":8,"../action-types":10,"../mutation-types":26}],24:[function(require,module,exports){
+},{"../../models/Payload":8,"../../models/Question":9,"../action-types":11,"../mutation-types":27}],24:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutations;
+
+var _mutationTypes = require('../mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _actionTypes = require('../action-types');
+
+var aTypes = _interopRequireWildcard(_actionTypes);
+
+var _Payload = require('../../models/Payload');
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * This handles various global settings like whether
+                                                                                                                                                                                                                   * the delete buttons are visible
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * Created by adam on 3/10/17.
+                                                                                                                                                                                                                   */
+
+var state = {
+    deleteButtonsVisible: false,
+    reorderModeOn: false,
+    sampleFeedbackVisible: false
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.toggleDeleteButtonVisibility, function (state, payload) {
+    state.deleteButtonsVisible = !state.deleteButtonsVisible;
+}), _defineProperty(_mutations, mTypes.toggleReorderMode, function (state, payload) {
+    state.reorderModeOn = !state.reorderModeOn;
+}), _defineProperty(_mutations, mTypes.toggleSampleFeedback, function (state, payload) {
+    state.sampleFeedbackVisible = !state.sampleFeedbackVisible;
+}), _mutations);
+
+var actions = {};
+
+var getters = {
+    isDeleteVisible: function isDeleteVisible(state, getters) {
+        return state.deleteButtonsVisible;
+    },
+
+    isReorderModeOn: function isReorderModeOn(state, getters) {
+        return state.reorderModeOn;
+    },
+
+    isSampleFeedbackVisible: function isSampleFeedbackVisible(state, getters) {
+        return state.sampleFeedbackVisible;
+    }
+};
+
+exports.default = {
+    actions: actions,
+    getters: getters,
+    mutations: mutations,
+    state: state
+};
+
+},{"../../models/Payload":8,"../action-types":11,"../mutation-types":27}],25:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14352,7 +14572,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":7,"../../models/Student":9,"../action-types":10,"../mutation-types":26}],25:[function(require,module,exports){
+},{"../../models/Payload":8,"../../models/Student":10,"../action-types":11,"../mutation-types":27}],26:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14489,7 +14709,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../../models/Payload":7,"../action-types":10,"../mutation-types":26}],26:[function(require,module,exports){
+},{"../../models/Payload":8,"../action-types":11,"../mutation-types":27}],27:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14564,12 +14784,22 @@ var setItem = exports.setItem = 'setItem';
 var addItemIndexMapping = exports.addItemIndexMapping = 'addItemIndexMapping';
 var loadItems = exports.loadItems = 'loadItems';
 
+var promoteItem = exports.promoteItem = 'promoteItem';
+var demoteItem = exports.demoteItem = 'demoteItem';
+
 var updateItemName = exports.updateItemName = 'updateItemName';
 var updateItem = exports.updateItem = 'updateItem';
 var setItemNameByIndex = exports.setItemNameByIndex = 'setItemNameByIndex';
 // export const updateItemNameByIndex = 'updateItemNameByIndex'
 
-},{}],27:[function(require,module,exports){
+var updateComment = exports.updateComment = 'updateComment';
+
+//settings
+var toggleDeleteButtonVisibility = exports.toggleDeleteButtonVisibility = 'toggleDeleteButtonVisibility';
+var toggleReorderMode = exports.toggleReorderMode = 'toggleReorderMode';
+var toggleSampleFeedback = exports.toggleSampleFeedback = 'toggleSampleFeedback';
+
+},{}],28:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14603,7 +14833,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":26}],28:[function(require,module,exports){
+},{"./mutation-types":27}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14633,6 +14863,6 @@ exports.default = {
 
 };
 
-},{}]},{},[14]);
+},{}]},{},[15]);
 
 //# sourceMappingURL=test2-package.js.map

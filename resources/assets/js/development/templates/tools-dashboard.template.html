@@ -2,16 +2,33 @@
 
     <ul class="list-group">
         <li class="list-group-item">
-            <button class="btn btn-block btn-danger"  v-on:click="activateDeleteMode">Remove items</button>
+            <button
+                    class="btn btn-block btn-danger"
+                    v-on:click="toggleDeleteMode"
+            >Remove items</button>
         </li>
 
         <li class="list-group-item">
-            <button class="btn btn-block btn-primary"  v-on:click="showSampleFeedback">View sample feedback</button>
+            <button
+                    class="btn btn-block btn-warning"
+                    v-on:click="toggleReorderMode"
+            >Reorder items</button>
+        </li>
+
+
+        <li class="list-group-item">
+            <button
+                    class="btn btn-block btn-primary"
+                    v-on:click="showSampleFeedback"
+            >View sample feedback</button>
         </li>
 
         <li class="list-group-item">
             <!--replace with toggle-->
-            <button class="btn btn-block btn-primary" v-on:click="toggleHolesShown">Show holes</button>
+            <button
+                    class="btn btn-block btn-primary"
+                    v-on:click="toggleHolesShown"
+            >Show holes</button>
         </li>
     </ul>
 </div>

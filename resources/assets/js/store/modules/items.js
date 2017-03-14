@@ -1,10 +1,9 @@
 import * as mTypes from '../../store/mutation-types'
 import * as aTypes from '../../store/action-types'
-
 import Payload from '../../models/Payload'
 import Item from '../../models/Item'
-
 const Vue = require( 'vue' );
+
 
 
 /**
@@ -47,8 +46,10 @@ const mutations = {
         //set the item index
         let index = len == 0 || 1 ? len : len + 1;
         let item = Item.factory( {index: index} );
+        Vue.set( item, 'index', index );
+        state.items.$set( index, item );
 
-        state.items.push( item );
+        // state.items.push( item );
     },
 
 
@@ -69,6 +70,28 @@ const mutations = {
     },
 
     /**
+     * Alters the the property named in updateProp to have the
+     * the value set in updateVal
+     * @param state
+     * @param payload
+     */
+    [mTypes.updateComment]: ( state, payload ) => {
+        console.log( mTypes.updateComment, payload, state )
+        //get the item
+        let itm = state.items[ payload.index ];
+        let comment = itm.getComment( payload.updateValence );
+
+        if ( typeof comment != 'undefined' ) {
+            //Set the value so vue can see it
+            Vue.set( comment, 'text', payload.updateVal );
+        }
+
+        //Push the altered item back into the array
+        state.items.$set( payload.index, itm );
+    },
+
+
+    /**
      * Push an Item into storage at a particular index
      * Payload should have keys: obj, index
      *
@@ -79,6 +102,30 @@ const mutations = {
     [mTypes.setItem]: ( state, payload ) => {
         console.log( 'items.mutations', mTypes.setItem, state, payload );
         state.items.$set( payload.obj.index, payload.obj );
+    },
+
+    /**
+     * Makes an item into sibling of others by decreasing
+     * its depth
+     * @param state
+     * @param payload
+     */
+    [mTypes.promoteItem]: ( state, payload ) => {
+        let {index} = payload;
+        let item = state.items[ index ];
+        item.promote();
+    },
+
+    /**
+     * Makes an item into a child of others by
+     * increasing its depth
+     * @param state
+     * @param payload
+     */
+    [mTypes.demoteItem]: ( state, payload ) => {
+        let {index} = payload;
+        let item = state.items[ index ];
+        item.demote();
     },
 
 
@@ -140,6 +187,16 @@ const actions = {
         commit( mTypes.addNewItem );
     },
 
+    /**
+     * Handles the removal of an item
+     * @param state
+     * @param commit
+     */
+    [aTypes.deleteItem]: ( {state, commit} ) => {
+        console.log( aTypes.deleteItem, state, commit );
+        //todo write
+    },
+
 
     /**
      * Consume a json object and populate the Items store
@@ -166,102 +223,121 @@ const actions = {
 };
 
 const getters = {
-    /**
-     * Returns the desired Item object
-     * Payload can have any of the following identifiers,
-     * used in descending order:
-     *      ItemId,
-     *      ItemIndex
-     *      todo Add others
-     * @param state
-     * @param getters
-     * @param payload Object containing Item identifier
-     */
-    getItem: ( state, getters, rootState, payload ) => {
-        let index;
+        /**
+         * Returns the desired Item object
+         * Payload can have any of the following identifiers,
+         * used in descending order:
+         *      ItemId,
+         *      ItemIndex
+         *      todo Add others
+         * @param state
+         * @param getters
+         * @param payload Object containing Item identifier
+         */
+        getItem: ( state, getters, payload ) => {
+            let index;
 
-        //room for other ways of finding index
-        index = payload.index;
+            //room for other ways of finding index
+            index = payload.index;
 
-        console.log( 'getItem', payload );
-        return state.items[ index ];
-    },
-
-
-    /**
-     * Returns the item object with the given index
-     * @param state
-     * @param getters
-     * @param rootState
-     * @param index
-     */
-    getItemByIndex: ( state, getters ) => ( index ) => {
-        console.log( 'getItemByIndex', state, index );
-
-        return function ( state, index ) {
-            var r = state.items.filter( function ( i ) {
-                if ( i.index === index ) {
-                    return i;
-                }
-            } );
-            return r[ 0 ];
-        }( state, index )
-    },
+            console.log( 'getItem', payload );
+            return state.items[ index ];
+        },
 
 
-    /**
-     * Returns list of items objects
-     * @param state
-     * @param getters
-     * @param payload
-     * @returns []
-     */
-    getAllItems: ( state, getters, rootState ) => {
-        return state.items;
-    },
+        /**
+         * Returns the item object with the given index
+         * @param state
+         * @param getters
+         * @param rootState
+         * @param index
+         */
+        // getItemByIndex: ( state, getters, index ) => {
+        getItemByIndex: ( state, getters ) => ( index ) => {
+            //
+            console.log( 'getItemByIndex', state, index );
+            // return state.items[ index ];
 
-    getAllIndexesList: ( state, getters, rootState, payload ) => {
-        let out = [];
-        for ( let [ key, val ] of state.items ) {
-            console.log( 'getall idexes itemslist', key, val );
-            out.push( key );
-        }
-        return out;
-    },
+            return function ( state, index ) {
+                return state.items[ index ];
+                // var r = state.items.filter( function ( i ) {
+                //     if ( i.index === index ) {
+                //         return i;
+                //     }
+                // } );
+                // return r[ 0 ];
+            }( state, index )
 
+        },
 
-    /**
-     * Return list of Item objects
-     * @param state
-     * @param getters
-     * @param payload
-     * @returns []
-     */
-    getAllItemsList: ( state, getters ) => ( items ) => {
-        let out = [];
-        // if ( state.items.size > 0 ) {
-        for ( let [ key, val ] of items ) {
-            // for ( let [ key, val ] of state.items.entries() ) {
-            console.log( 'getallitemslist', key, val );
-            out.push( val );
-        }
-        // }
-        return out;
-    },
+        getItemById: ( state, getters ) => ( id ) => {
+            console.log( 'getItemById', state, id );
 
-    /**
-     * Returns the current count of items
-     * @param state
-     * @param getters
-     * @param payload
-     * @returns {Number}
-     */
-    getItemCount: ( state, getters ) => {
-        return state.items.length;
-    },
+            return function ( state, id ) {
+                var r = state.items.filter( function ( i ) {
+                    if ( i.id === id ) {
+                        return i;
+                    }
+                } );
+                return r[ 0 ];
+            }( state, id )
+
+        },
 
 
-};
+        /**
+         * Returns list of items objects
+         * @param state
+         * @param getters
+         * @param payload
+         * @returns []
+         */
+        getAllItems: ( state, getters, rootState ) => {
+            return state.items;
+        },
+
+        getAllIndexesList: ( state, getters, rootState, payload ) => {
+            let out = [];
+            for ( let [ key, val ] of state.items ) {
+                // console.log( 'getAllIndexesList', key, val );
+                out.push( key );
+            }
+            return out;
+        },
+
+
+        /**
+         * Return list of Item objects
+         * @param state
+         * @param getters
+         * @param payload
+         * @returns []
+         */
+        getAllItemsList: ( state, getters ) => ( items ) => {
+            let out = [];
+            // if ( state.items.size > 0 ) {
+            for ( let [ key, val ] of items ) {
+                // for ( let [ key, val ] of state.items.entries() ) {
+                // console.log( 'getAllItemsList', key, val );
+                out.push( val );
+            }
+            // }
+            return out;
+        },
+
+        /**
+         * Returns the current count of items
+         * @param state
+         * @param getters
+         * @param payload
+         * @returns {Number}
+         */
+        getItemCount: ( state, getters ) => {
+            return state.items.length;
+        },
+
+
+    };
 
 export default {
     actions,

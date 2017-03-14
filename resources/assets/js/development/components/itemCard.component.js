@@ -21,7 +21,9 @@ module.exports = {
             defaults: {
                 depth: null,
                 index: null,
-                type: null
+                type: null,
+                //how much one unit of depth will be offset
+                tabOffset: 2
             },
             isCommented: false,
             /**
@@ -32,13 +34,30 @@ module.exports = {
     },
 
     computed: {
+        /**
+         * Returns the bootstrap class for the depth
+         */
+        offsetClass: function () {
+            if ( this.depth > 0 ) {
+                let amt = this.defaults.tabOffset * this.depth;
+                let col = "col-md-offset-" + amt;
+                return col
+            }
+        },
 
         depth: {
             get: function () {
-                return this.defaults.depth;
-            },
-            set: function () {
+                let item = this.$store.getters.getItemByIndex( this.index );
+                if ( typeof item != 'undefined' ) {
+                    return item.depth
+                }
 
+            },
+            set: function (v) {
+                let item = this.$store.getters.getItemByIndex( this.index );
+                if ( typeof item != 'undefined' ) {
+                    this.$store.commit(Payload.factory({index: this.index, updateProp: 'depth', updateVal: v}));
+                }
             }
         },
 
@@ -80,7 +99,7 @@ module.exports = {
 
     events: {
         'display-settings': function () {
-            console.log( 'itemName', 'CAUGHT', 'display-settings', this.index);
+            console.log( 'itemName', 'CAUGHT', 'display-settings', this.index );
             this.$broadcast( 'display-settings' );
         },
     },

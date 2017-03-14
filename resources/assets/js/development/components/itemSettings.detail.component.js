@@ -23,7 +23,8 @@ module.exports = {
     data: function () {
         return {
             placeholders: {
-                questionName: "Enter a brief description of the question or task, e.g. &quot;Causes of the Civil War&quot;"
+                questionName: "Enter a brief description of the question or task, e.g. &quot;Causes of the Civil War&quot;",
+                questionText: "Enter the full question text (optional)"
             },
         };
     },
@@ -32,24 +33,23 @@ module.exports = {
 
         questionText: {
             get: function () {
-                return this.getter('text');
+                return this.getter( 'text' );
 
             },
 
             set: function ( v ) {
-                this.setter('text', v);
-                // let pl = Payload.factory( {index: this.index, updateProp: 'text', updateVal: v} );
-                // this.$store.commit( mTypes.updateItem, pl );
+                this.setter( 'text', v );
             }
         },
 
         questionNumber: {
             get: function () {
-                return this.getter('number');
-                          },
+
+                return this.getter( 'number' );
+            },
 
             set: function ( v ) {
-                this.setter('number', v);
+                this.setter( 'number', v );
                 // let pl = Payload.factory( {index: this.index, updateProp: 'number', updateVal: v} );
                 // this.$store.commit( mTypes.updateItem, pl );
             }
@@ -57,25 +57,25 @@ module.exports = {
         },
         maxScore: {
             get: function () {
-                return this.getter('maxScore');
+                return this.getter( 'maxScore' );
             },
 
             set: function ( v ) {
-this.setter('maxScore', v)
+                this.setter( 'maxScore', v )
             }
 
         },
     },
 
     methods: {
-        getter: function(name){
+        getter: function ( name ) {
             let item = this.$store.getters.getItemByIndex( this.index );
             if ( typeof item != 'undefined' ) {
-                return item[name]
+                return item[ name ]
             }
         },
 
-        setter: function(name, value){
+        setter: function ( name, value ) {
             let pl = Payload.factory( {index: this.index, updateProp: name, updateVal: value} );
             this.$store.commit( mTypes.updateItem, pl );
         }

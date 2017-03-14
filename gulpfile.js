@@ -2,6 +2,7 @@ var elixir = require( 'laravel-elixir' );
 
 require('laravel-elixir-images');
 
+
 /*
  |--------------------------------------------------------------------------
  | Elixir Asset Management
@@ -174,14 +175,14 @@ elixir( function ( mix ) {
     mix.browserify( 'data/Store.js', 'public/js/dev/new-data-package.js' );
     mix.browserify( 'grade/gradeVue.js', 'public/js/dev/grade-vue.js' );
 
-    mix.browserify('data/vuex.Data.js', 'public/js/dev/test-package.js')
+    mix.browserify('data/vuex.Data.js', 'public/js/dev/test-package.js');
 
-    mix.browserify('store/index.js', 'public/js/dev/test2-package.js')
-    mix.browserify('navigation/crumbnav.js', 'public/js/dev/test2.js')
+    mix.browserify('store/index.js', 'public/js/dev/test2-package.js');
+    mix.browserify('navigation/crumbnav.js', 'public/js/dev/test2.js');
 
 
-    mix.browserify('development/newSetup.js', 'public/js/dev/new-setup-package.js')
-
+    mix.browserify('development/newSetup.js', 'public/js/dev/new-setup-package.js');
+mix.sass(['development/newSetup.sass'], 'public/css/new-setup-package.css');
 
     //
     // elixir(function(mix) {

@@ -1,90 +1,96 @@
 /**
  * Created by adam on 2/19/17.
  */
-//var $ = require('jquery');
-//window.$ = $;
+
+import Comment from '../../models/Comment'
+import Payload from '../../models/Payload'
+import * as mTypes from '../../store/mutation-types';
+
+import * as aTypes from '../../store/action-types';
 
 module.exports = {
 
     template: require( '../templates/item-settings.commentSetup.template.html' ),
 
-    props: ['item'],
+    props: [ 'index' ],
 
     data: function () {
         return {
 
+            displayedValence: 'stock',
+
             defaults: {
-                name: '',
-                text: '',
                 commentText: ''
             },
             placeholders: {
                 elementName: "Enter a short reminder for this element, e.g., &quot;Economic causes of World War I&quot; ",
-                elementText: "Explain in detail what needed to be done in order to fully answer this element. This will form the basis for the response seen by the student.",
+                elementText: "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student.",
             },
-            //
-            // tabs:[
-            //     'details', 'stats', 'history', 'notes'
-            // ]
         };
     },
 
     computed: {
-        index: {
+
+        commentText: {
             get: function () {
-                // if ( typeof this.item == 'undefined' ) {
-                //     return this.item.index;
-                // }
-                // if ( typeof this.itemIndex == 'undefined' ) {
-                //     return this.defaults.index;
-                // }
-                // return this.item.index;
+                let item = this.$store.getters.getItemByIndex( this.index );
+
+                //make sure there is a comment object waiting for us
+                // if not, initialize it
+                if ( item.comments.size === 0 ) {
+                    item.initializeComments();
+                }
+                
+                let comment = item.getComment( this.displayedValence );
+                console.log( 'commenet', comment );
+                if(typeof comment != 'undefined'){
+                    return comment.text;
+                }
             },
 
-            //todo this is a kludge until get store and item worked in
             set: function ( v ) {
-                // if ( typeof this.item == 'undefined' ) {
-                //     this.item.index = v;
-                // }
-                // if ( typeof this.item.index == 'undefined' ) {
-                //     this.defaults.index = v;
-                // }
-                // this.item.index = v;
+                let pl = Payload.factory( {
+                    index: this.index,
+                    updateValence: this.displayedValence,
+                    updateVal: v
+                } );
+
+                this.$store.commit( mTypes.updateComment, pl );
             }
         },
 
-        name: {
-            get:function(){
-                // return this.item.name
-            },
-            set:function(v){
-                // this.item.name = v;
-            }
-        },
-        text: {
-            get:function(){
-                // return this.item.text
-            },
-            set:function(v){
-                // this.item.text = v;
-            }
-        },
-        commentText:  {
-            get:function(){
-                // return this.item.commentText;
-            },
-            set:function(v){
-                // this.item.commentText = v;
-            }
-        },
+        valences: function(){
+        return Comment.valences;
+        }
+
     },
 
-    methods: {},
+    methods: {
+        getter: function ( name ) {
+            let item = this.$store.getters.getItemByIndex( this.index );
+            if ( typeof item != 'undefined' ) {
+                return item[ name ]
+            }
+        },
+
+        setter: function ( name, value ) {
+            let pl = Payload.factory( {index: this.index, updateProp: name, updateVal: value} );
+            this.$store.commit( mTypes.updateItem, pl );
+        }
+    },
+
 
     directives: {},
 
-    events: {},
+    events: {
+        'please-change-valence' : function(evt) {
+            console.log( 'caught please-change-valence', evt );
+            this.displayedValence = evt;
+        }
+    },
 
     ready: function () {
+        //push a comment into the item
+
     },
 };

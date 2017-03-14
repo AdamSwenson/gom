@@ -66,6 +66,7 @@ export const loadGradingTimes = 'loadGradingTimes'
 
 //items
 export const createItem = 'createItem'
+export const deleteItem = 'deleteItem'
 export const addNewItem = 'addNewItem'
 export const loadItems = 'loadItems'
 export const updateItemName = 'updateItemName'

@@ -6,6 +6,8 @@
     <meta name=viewport content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="{{ asset("css/common-package.css")}}">
+
+    <link rel="stylesheet" href="{{ asset("css/new-setup-package.css")}}">
 <style>
     .dashboard{
         border: double;

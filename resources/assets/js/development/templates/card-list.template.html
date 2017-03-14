@@ -1,7 +1,13 @@
-<div class="card-list">
-
-    <div class="item-cards" v-for="(index, item) in items">
-        <item-card :index="index"></item-card>
+<div class="card-list-component">
+    <div class="card-list">
+        <ul class="list-group">
+            <li
+                    class="item-cards list-group-item"
+                    v-for="(index, item) in items"
+            >
+                <item-card :index="index"></item-card>
+            </li>
+        </ul>
     </div>
 
     <div class="row">
