@@ -13,7 +13,7 @@ module.exports = {
 
     template: require( '../templates/item-card.template.html' ),
 
-    props: [ 'index' ],
+    props: [ 'index' , 'id'],
 
     data: function () {
         return {
@@ -47,16 +47,20 @@ module.exports = {
 
         depth: {
             get: function () {
-                let item = this.$store.getters.getItemByIndex( this.index );
+                let item = this.$store.getters.getItemById( this.id );
+
+//                let item = this.$store.getters.getItemByIndex( this.index );
                 if ( typeof item != 'undefined' ) {
                     return item.depth
                 }
 
             },
             set: function (v) {
-                let item = this.$store.getters.getItemByIndex( this.index );
+                let item = this.$store.getters.getItemById( this.id );
+
+                // let item = this.$store.getters.getItemByIndex( this.index );
                 if ( typeof item != 'undefined' ) {
-                    this.$store.commit(Payload.factory({index: this.index, updateProp: 'depth', updateVal: v}));
+                    this.$store.commit(Payload.factory({id: this.id, index: this.index, updateProp: 'depth', updateVal: v}));
                 }
             }
         },

@@ -18,7 +18,7 @@ module.exports = {
 
     template: require( '../templates/item-settings.detail.template.html' ),
 
-    props: [ 'index' ],
+    props: [ 'index', 'id' ],
 
     data: function () {
         return {
@@ -69,7 +69,8 @@ module.exports = {
 
     methods: {
         getter: function ( name ) {
-            let item = this.$store.getters.getItemByIndex( this.index );
+            let item = this.$store.getters.getItemById( this.id );
+            // let item = this.$store.getters.getItemByIndex( this.index );
             if ( typeof item != 'undefined' ) {
                 return item[ name ]
             }

@@ -33141,6 +33141,314 @@ setTimeout(function () {
 module.exports = Vue;
 }).call(this,require('_process'))
 },{"_process":311}],315:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+(function () {
+  "use strict";
+
+  function buildDraggable(Sortable) {
+    function removeNode(node) {
+      node.parentElement.removeChild(node);
+    }
+
+    function insertNodeAt(fatherNode, node, position) {
+      if (position < fatherNode.children.length) {
+        fatherNode.insertBefore(node, fatherNode.children[position]);
+      } else {
+        fatherNode.appendChild(node);
+      }
+    }
+
+    function computeVmIndex(vnodes, element) {
+      return vnodes.map(function (elt) {
+        return elt.elm;
+      }).indexOf(element);
+    }
+
+    function _computeIndexes(slots, children) {
+      return !slots ? [] : Array.prototype.map.call(children, function (elt) {
+        return computeVmIndex(slots, elt);
+      });
+    }
+
+    function emit(evtName, evtData) {
+      this.$emit(evtName.toLowerCase(), evtData);
+    }
+
+    function delegateAndEmit(evtName) {
+      var _this = this;
+
+      return function (evtData) {
+        if (_this.realList !== null) {
+          _this['onDrag' + evtName](evtData);
+        }
+        emit.call(_this, evtName, evtData);
+      };
+    }
+
+    var eventsListened = ['Start', 'Add', 'Remove', 'Update', 'End'];
+    var eventsToEmit = ['Choose', 'Sort', 'Filter', 'Clone'];
+    var readonlyProperties = ['Move'].concat(eventsListened, eventsToEmit).map(function (evt) {
+      return 'on' + evt;
+    });
+    var draggingElement = null;
+
+    var props = {
+      options: Object,
+      list: {
+        type: Array,
+        required: false,
+        default: null
+      },
+      value: {
+        type: Array,
+        required: false,
+        default: null
+      },
+      clone: {
+        type: Function,
+        default: function _default(original) {
+          return original;
+        }
+      },
+      element: {
+        type: String,
+        default: 'div'
+      },
+      move: {
+        type: Function,
+        default: null
+      }
+    };
+
+    var draggableComponent = {
+      props: props,
+
+      data: function data() {
+        return {
+          transitionMode: false
+        };
+      },
+      render: function render(h) {
+        if (this.$slots.default && this.$slots.default.length === 1) {
+          var child = this.$slots.default[0];
+          if (child.componentOptions && child.componentOptions.tag === "transition-group") {
+            this.transitionMode = true;
+          }
+        }
+        return h(this.element, null, this.$slots.default);
+      },
+      mounted: function mounted() {
+        var _this2 = this;
+
+        var optionsAdded = {};
+        eventsListened.forEach(function (elt) {
+          optionsAdded['on' + elt] = delegateAndEmit.call(_this2, elt);
+        });
+
+        eventsToEmit.forEach(function (elt) {
+          optionsAdded['on' + elt] = emit.bind(_this2, elt);
+        });
+
+        var options = _extends({}, this.options, optionsAdded, { onMove: function onMove(evt) {
+            return _this2.onDragMove(evt);
+          } });
+        this._sortable = new Sortable(this.rootContainer, options);
+        this.computeIndexes();
+      },
+      beforeDestroy: function beforeDestroy() {
+        this._sortable.destroy();
+      },
+
+
+      computed: {
+        rootContainer: function rootContainer() {
+          return this.transitionMode ? this.$el.children[0] : this.$el;
+        },
+        isCloning: function isCloning() {
+          return !!this.options && !!this.options.group && this.options.group.pull === 'clone';
+        },
+        realList: function realList() {
+          return !!this.list ? this.list : this.value;
+        }
+      },
+
+      watch: {
+        options: function options(newOptionValue) {
+          for (var property in newOptionValue) {
+            if (readonlyProperties.indexOf(property) == -1) {
+              this._sortable.option(property, newOptionValue[property]);
+            }
+          }
+        },
+        realList: function realList() {
+          this.computeIndexes();
+        }
+      },
+
+      methods: {
+        getChildrenNodes: function getChildrenNodes() {
+          var rawNodes = this.$slots.default;
+          return this.transitionMode ? rawNodes[0].child.$slots.default : rawNodes;
+        },
+        computeIndexes: function computeIndexes() {
+          var _this3 = this;
+
+          this.$nextTick(function () {
+            _this3.visibleIndexes = _computeIndexes(_this3.getChildrenNodes(), _this3.rootContainer.children);
+          });
+        },
+        getUnderlyingVm: function getUnderlyingVm(htmlElt) {
+          var index = computeVmIndex(this.getChildrenNodes(), htmlElt);
+          var element = this.realList[index];
+          return { index: index, element: element };
+        },
+        getUnderlyingPotencialDraggableComponent: function getUnderlyingPotencialDraggableComponent(_ref) {
+          var __vue__ = _ref.__vue__;
+
+          if (!__vue__ || !__vue__.$options || __vue__.$options._componentTag !== "transition-group") {
+            return __vue__;
+          }
+          return __vue__.$parent;
+        },
+        emitChanges: function emitChanges(evt) {
+          var _this4 = this;
+
+          this.$nextTick(function () {
+            _this4.$emit('change', evt);
+          });
+        },
+        alterList: function alterList(onList) {
+          if (!!this.list) {
+            onList(this.list);
+          } else {
+            var newList = [].concat(_toConsumableArray(this.value));
+            onList(newList);
+            this.$emit('input', newList);
+          }
+        },
+        spliceList: function spliceList() {
+          var _arguments = arguments;
+
+          var spliceList = function spliceList(list) {
+            return list.splice.apply(list, _arguments);
+          };
+          this.alterList(spliceList);
+        },
+        updatePosition: function updatePosition(oldIndex, newIndex) {
+          var updatePosition = function updatePosition(list) {
+            return list.splice(newIndex, 0, list.splice(oldIndex, 1)[0]);
+          };
+          this.alterList(updatePosition);
+        },
+        getRelatedContextFromMoveEvent: function getRelatedContextFromMoveEvent(_ref2) {
+          var to = _ref2.to;
+          var related = _ref2.related;
+
+          var component = this.getUnderlyingPotencialDraggableComponent(to);
+          if (!component) {
+            return { component: component };
+          }
+          var list = component.realList;
+          var context = { list: list, component: component };
+          if (to !== related && list && component.getUnderlyingVm) {
+            var destination = component.getUnderlyingVm(related);
+            return _extends(destination, context);
+          }
+
+          return context;
+        },
+        getVmIndex: function getVmIndex(domIndex) {
+          var indexes = this.visibleIndexes;
+          var numberIndexes = indexes.length;
+          return domIndex > numberIndexes - 1 ? numberIndexes : indexes[domIndex];
+        },
+        onDragStart: function onDragStart(evt) {
+          this.context = this.getUnderlyingVm(evt.item);
+          evt.item._underlying_vm_ = this.clone(this.context.element);
+          draggingElement = evt.item;
+        },
+        onDragAdd: function onDragAdd(evt) {
+          var element = evt.item._underlying_vm_;
+          if (element === undefined) {
+            return;
+          }
+          removeNode(evt.item);
+          var newIndex = this.getVmIndex(evt.newIndex);
+          this.spliceList(newIndex, 0, element);
+          this.computeIndexes();
+          var added = { element: element, newIndex: newIndex };
+          this.emitChanges({ added: added });
+        },
+        onDragRemove: function onDragRemove(evt) {
+          insertNodeAt(this.rootContainer, evt.item, evt.oldIndex);
+          if (this.isCloning) {
+            removeNode(evt.clone);
+            return;
+          }
+          var oldIndex = this.context.index;
+          this.spliceList(oldIndex, 1);
+          var removed = { element: this.context.element, oldIndex: oldIndex };
+          this.emitChanges({ removed: removed });
+        },
+        onDragUpdate: function onDragUpdate(evt) {
+          removeNode(evt.item);
+          insertNodeAt(evt.from, evt.item, evt.oldIndex);
+          var oldIndex = this.context.index;
+          var newIndex = this.getVmIndex(evt.newIndex);
+          this.updatePosition(oldIndex, newIndex);
+          var moved = { element: this.context.element, oldIndex: oldIndex, newIndex: newIndex };
+          this.emitChanges({ moved: moved });
+        },
+        computeFutureIndex: function computeFutureIndex(relatedContext, evt) {
+          if (!relatedContext.element) {
+            return 0;
+          }
+          var domChildren = [].concat(_toConsumableArray(evt.to.children));
+          var currentDOMIndex = domChildren.indexOf(evt.related);
+          var currentIndex = relatedContext.component.getVmIndex(currentDOMIndex);
+          var draggedInList = domChildren.indexOf(draggingElement) != -1;
+          return draggedInList ? currentIndex : currentIndex + 1;
+        },
+        onDragMove: function onDragMove(evt) {
+          var onMove = this.move;
+          if (!onMove || !this.realList) {
+            return true;
+          }
+
+          var relatedContext = this.getRelatedContextFromMoveEvent(evt);
+          var draggedContext = this.context;
+          var futureIndex = this.computeFutureIndex(relatedContext, evt);
+          _extends(draggedContext, { futureIndex: futureIndex });
+          _extends(evt, { relatedContext: relatedContext, draggedContext: draggedContext });
+          return onMove(evt);
+        },
+        onDragEnd: function onDragEnd(evt) {
+          this.computeIndexes();
+          draggingElement = null;
+        }
+      }
+    };
+    return draggableComponent;
+  }
+
+  if (typeof exports == "object") {
+    var Sortable = require("sortablejs");
+    module.exports = buildDraggable(Sortable);
+  } else if (typeof define == "function" && define.amd) {
+    define(['sortablejs'], function (Sortable) {
+      return buildDraggable(Sortable);
+    });
+  } else if (window && window.Vue && window.Sortable) {
+    var draggable = buildDraggable(window.Sortable);
+    Vue.component('draggable', draggable);
+  }
+})();
+},{"sortablejs":312}],316:[function(require,module,exports){
 /**
  * vuex v2.2.1
  * (c) 2017 Evan You
@@ -33953,14 +34261,16 @@ return index;
 
 })));
 
-},{}],316:[function(require,module,exports){
+},{}],317:[function(require,module,exports){
 'use strict';
-
-var _vuex = require('vuex');
 
 var _Item = require('../../models/Item');
 
 var _Item2 = _interopRequireDefault(_Item);
+
+var _mutationTypes = require('../../store/mutation-types');
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
 
 var _actionTypes = require('../../store/action-types');
 
@@ -33978,8 +34288,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var $ = require('jquery');
 window.$ = $;
 
-var Sortable = require('sortablejs');
+//For Vue.js 2.0
+// var draggable = require('vuedraggable')
 
+var Sortable = require('sortablejs');
 
 module.exports = {
 
@@ -33998,6 +34310,15 @@ module.exports = {
 
         numberOfItems: function numberOfItems() {
             return this.$store.getters.getItemCount;
+        },
+
+        myList: {
+            get: function get() {
+                return this.$store.state.myList;
+            },
+            set: function set(value) {
+                this.$store.commit(mTy, value);
+            }
         }
     },
 
@@ -34045,57 +34366,8 @@ module.exports = {
                     }
                 }
             });
-        },
-
-        // Sortable is the lib for drag and drop questions
-        // create an editable list and set up some filters to handle callbacks
-        initializeSort: function initializeSort() {
-
-            try {
-
-                localStorage.clear();
-                var qList = this.$el;
-                var editableList = Sortable.create(qList, {
-                    filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
-                    animation: 150,
-                    handle: '.handle', // Drag handle selector within list items
-                    ghostClass: "sortable-ghost", // Class name for the drop placeholder
-
-                    onFilter: function onFilter(evt) {
-                        handleDelete(evt, editableList);
-                    },
-                    store: {
-                        // store the ordering to localStorage
-                        get: function get(sortable) {
-                            var order = localStorage.getItem(sortable.options.group);
-                            //window.console.log(localStorage.getItem(sortable.options.group));
-                            return order ? order.split('|') : [];
-                        },
-                        set: function set(sortable) {
-                            var order = sortable.toArray();
-                            localStorage.setItem(sortable.options.group, order.join('|'));
-                            updateNumbers();
-                        }
-                    }
-                });
-            } catch (e) {
-                window.console.log(e);
-            }
-
-            // update all "questionItem" ids. These define the ordering when saved to the DB.
-            // function updateNumbers() {
-            //     $( '#questionForm' ).find( "[id^='questionItem']" ).each( function ( index, el ) {
-            //         updateListItemData( el, (index + 1) );
-            //     } );
-            // }
-
-
-            // function getQuestionCount() {
-            //     // return number of questions currently in the questionList
-            //     return $( "[id^='questionItem']" ).length;
-            // }
-            //
         }
+
     },
 
     directives: {},
@@ -34109,22 +34381,89 @@ module.exports = {
 
     ready: function ready() {
         this.addItem();
-        console.log('cardList ready');
-
+        var me = this;
         try {
-            var qList = this.$el;
+            var qList = document.getElementById('card-list');
             var editableList = Sortable.create(qList, {
                 filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
                 animation: 150,
                 handle: '.handle', // Drag handle selector within list items
-                ghostClass: "sortable-ghost" });
+                ghostClass: "sortable-ghost", // Class name for the drop placeholder
+
+                onSort: function onSort(evt) {
+                    me.$store.commit(mTypes.updateOrder);
+                },
+
+                setData: function setData( /** DataTransfer */dataTransfer, /** HTMLElement*/dragEl) {
+                    dataTransfer.setData('Text', dragEl.textContent); // `dataTransfer` object of HTML5 DragEvent
+                },
+
+                // Element is chosen
+                onChoose: function onChoose( /**Event*/evt) {
+                    evt.oldIndex; // element index within parent
+                },
+
+                // Element dragging started
+                onStart: function onStart( /**Event*/evt) {
+                    evt.oldIndex; // element index within parent
+                },
+
+                // Element dragging ended
+                onEnd: function onEnd( /**Event*/evt) {
+                    evt.oldIndex; // element's old index within parent
+                    evt.newIndex; // element's new index within parent
+                },
+
+                // Element is dropped into the list from another list
+                onAdd: function onAdd( /**Event*/evt) {
+                    var itemEl = evt.item; // dragged HTMLElement
+                    evt.from; // previous list
+                    // + indexes from onEnd
+                },
+
+                // Changed sorting within list
+                onUpdate: function onUpdate( /**Event*/evt) {
+                    var itemEl = evt.item; // dragged HTMLElement
+                    // + indexes from onEnd
+                },
+
+                // Element is removed from the list into another list
+                onRemove: function onRemove( /**Event*/evt) {
+                    // same properties as onUpdate
+                },
+
+                // Attempt to drag a filtered element
+                onFilter: function onFilter( /**Event*/evt) {
+                    var itemEl = evt.item; // HTMLElement receiving the `mousedown|tapstart` event.
+                },
+
+                // Event when you move an item in the list or between lists
+                onMove: function onMove( /**Event*/evt, /**Event*/originalEvent) {
+                    // Example: http://jsbin.com/tuyafe/1/edit?js,output
+                    evt.dragged; // dragged HTMLElement
+                    evt.draggedRect; // TextRectangle {left, top, right и bottom}
+                    evt.related; // HTMLElement on which have guided
+                    evt.relatedRect; // TextRectangle
+                    originalEvent.clientY; // mouse position
+                    // return false; — for cancel
+                },
+
+                // Called when creating a clone of element
+                onClone: function onClone( /**Event*/evt) {
+                    var origEl = evt.item;
+                    var cloneEl = evt.clone;
+                }
+
+            });
         } catch (e) {
             window.console.log(e);
         }
+
+        console.log('cardList ready');
     }
 };
 
-},{"../../models/Item":355,"../../store/action-types":359,"../templates/card-list.template.html":335,"jquery":310,"sortablejs":312,"vuex":315}],317:[function(require,module,exports){
+},{"../../models/Item":356,"../../store/action-types":360,"../../store/mutation-types":376,"../templates/card-list.template.html":336,"jquery":310,"sortablejs":312}],318:[function(require,module,exports){
 'use strict';
 
 var _actionTypes = require('../../store/action-types');
@@ -34172,7 +34511,7 @@ module.exports = {
     * Created by adam on 3/10/17.
     */
 
-},{"../../store/action-types":359,"../templates/delete-item-button.template.html":336}],318:[function(require,module,exports){
+},{"../../store/action-types":360,"../templates/delete-item-button.template.html":337}],319:[function(require,module,exports){
 'use strict';
 
 var _actionTypes = require('../../store/action-types');
@@ -34289,7 +34628,7 @@ module.exports = {
     * Created by adam on 2/17/17.
     */
 
-},{"../../models/Payload":356,"../../store/action-types":359,"../../store/mutation-types":375,"../templates/item-nav.template.html":343}],319:[function(require,module,exports){
+},{"../../models/Payload":357,"../../store/action-types":360,"../../store/mutation-types":376,"../templates/item-nav.template.html":344}],320:[function(require,module,exports){
 "use strict";
 
 /**
@@ -34365,7 +34704,7 @@ module.exports = {
     }
 };
 
-},{"../templates/exam-name.template.html":338}],320:[function(require,module,exports){
+},{"../templates/exam-name.template.html":339}],321:[function(require,module,exports){
 'use strict';
 
 /**
@@ -34425,7 +34764,7 @@ module.exports = {
     }
 };
 
-},{"../templates/exam-properties.template.html":339}],321:[function(require,module,exports){
+},{"../templates/exam-properties.template.html":340}],322:[function(require,module,exports){
 'use strict';
 
 var _actionTypes = require('../../store/action-types');
@@ -34481,7 +34820,7 @@ module.exports = {
     }
 };
 
-},{"../../store/action-types":359,"../../store/mutation-types":375,"../templates/item-add-button.template.html":340}],322:[function(require,module,exports){
+},{"../../store/action-types":360,"../../store/mutation-types":376,"../templates/item-add-button.template.html":341}],323:[function(require,module,exports){
 'use strict';
 
 /**
@@ -34499,7 +34838,7 @@ module.exports = {
 
     template: require('../templates/item-card.template.html'),
 
-    props: ['index'],
+    props: ['index', 'id'],
 
     data: function data() {
         return {
@@ -34533,15 +34872,19 @@ module.exports = {
 
         depth: {
             get: function get() {
-                var item = this.$store.getters.getItemByIndex(this.index);
+                var item = this.$store.getters.getItemById(this.id);
+
+                //                let item = this.$store.getters.getItemByIndex( this.index );
                 if (typeof item != 'undefined') {
                     return item.depth;
                 }
             },
             set: function set(v) {
-                var item = this.$store.getters.getItemByIndex(this.index);
+                var item = this.$store.getters.getItemById(this.id);
+
+                // let item = this.$store.getters.getItemByIndex( this.index );
                 if (typeof item != 'undefined') {
-                    this.$store.commit(Payload.factory({ index: this.index, updateProp: 'depth', updateVal: v }));
+                    this.$store.commit(Payload.factory({ id: this.id, index: this.index, updateProp: 'depth', updateVal: v }));
                 }
             }
         },
@@ -34589,7 +34932,7 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/item-card.template.html":341}],323:[function(require,module,exports){
+},{"../templates/item-card.template.html":342}],324:[function(require,module,exports){
 'use strict';
 
 var _Item = require('../../models/Item');
@@ -34612,7 +34955,7 @@ module.exports = {
 
     template: require('../templates/item-name.template.html'),
 
-    props: ['index'],
+    props: ['index', 'id'],
 
     data: function data() {
         return {
@@ -34653,32 +34996,25 @@ module.exports = {
             set: function set(v) {}
         },
 
-        /**
-         * The id of the item that this is the name of
-         * @returns {module.exports.computed.itemId|null|itemId}
-         */
-        itemId: function itemId() {
-            // return this.itemObj.id;
-
-        },
-
         name: {
             get: function get() {
-                var item = this.$store.getters.getItemByIndex(this.index);
-                if (typeof item.name != 'undefined') {
+                var item = this.$store.getters.getItemById(this.id);
+                // let item = this.$store.getters.getItemByIndex( this.index );
+                if (typeof item != 'undefined') {
                     return item.name;
                 }
             },
 
             set: function set(v) {
-                var pl = _Payload2.default.factory({ index: this.index, updateProp: 'name', updateVal: v });
+                var pl = _Payload2.default.factory({ id: this.id, index: this.index, updateProp: 'name', updateVal: v });
                 this.$store.commit(mTypes.updateItem, pl);
             }
         },
 
         public: function _public() {
-            var item = this.$store.getters.getItemByIndex(this.index);
-            if (typeof item.name != 'undefined') {
+            var item = this.$store.getters.getItemById(this.id);
+            // let item = this.$store.getters.getItemByIndex( this.index );
+            if (typeof item != 'undefined') {
                 return item.isPublic();
             }
         }
@@ -34703,8 +35039,9 @@ module.exports = {
 
     events: {
         'toggle-public': function togglePublic() {
-            var item = this.$store.getters.getItemByIndex(this.index);
-            if (typeof item.name != 'undefined') {
+            var item = this.$store.getters.getItemById(this.id);
+            // let item = this.$store.getters.getItemByIndex( this.index );
+            if (typeof item != 'undefined') {
                 return item.togglePublic();
             }
         }
@@ -34719,7 +35056,7 @@ module.exports = {
 //var $ = require('jquery');
 //window.$ = $;
 
-},{"../../models/Item":355,"../../models/Payload":356,"../../store/mutation-types":375,"../templates/item-name.template.html":342}],324:[function(require,module,exports){
+},{"../../models/Item":356,"../../models/Payload":357,"../../store/mutation-types":376,"../templates/item-name.template.html":343}],325:[function(require,module,exports){
 'use strict';
 
 /**
@@ -34819,7 +35156,7 @@ module.exports = {
     }
 };
 
-},{"../templates/item-nav.template.html":343}],325:[function(require,module,exports){
+},{"../templates/item-nav.template.html":344}],326:[function(require,module,exports){
 'use strict';
 
 var _Comment = require('../../models/Comment');
@@ -34932,7 +35269,7 @@ module.exports = {
     }
 };
 
-},{"../../models/Comment":352,"../../models/Payload":356,"../../store/action-types":359,"../../store/mutation-types":375,"../templates/item-settings.commentSetup.template.html":344}],326:[function(require,module,exports){
+},{"../../models/Comment":353,"../../models/Payload":357,"../../store/action-types":360,"../../store/mutation-types":376,"../templates/item-settings.commentSetup.template.html":345}],327:[function(require,module,exports){
 'use strict';
 
 /**
@@ -35009,7 +35346,7 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/item-settings.template.html":346}],327:[function(require,module,exports){
+},{"../templates/item-settings.template.html":347}],328:[function(require,module,exports){
 'use strict';
 
 var _actionTypes = require('../../store/action-types');
@@ -35032,7 +35369,7 @@ module.exports = {
 
     template: require('../templates/item-settings.detail.template.html'),
 
-    props: ['index'],
+    props: ['index', 'id'],
 
     data: function data() {
         return {
@@ -35082,7 +35419,8 @@ module.exports = {
 
     methods: {
         getter: function getter(name) {
-            var item = this.$store.getters.getItemByIndex(this.index);
+            var item = this.$store.getters.getItemById(this.id);
+            // let item = this.$store.getters.getItemByIndex( this.index );
             if (typeof item != 'undefined') {
                 return item[name];
             }
@@ -35109,7 +35447,7 @@ module.exports = {
     * Created by adam on 2/19/17.
     */
 
-},{"../../models/Payload":356,"../../store/action-types":359,"../../store/mutation-types":375,"../templates/item-settings.detail.template.html":345}],328:[function(require,module,exports){
+},{"../../models/Payload":357,"../../store/action-types":360,"../../store/mutation-types":376,"../templates/item-settings.detail.template.html":346}],329:[function(require,module,exports){
 'use strict';
 
 /**
@@ -35204,7 +35542,7 @@ module.exports = {
     }
 };
 
-},{"../templates/props-dashboard.template.html":347}],329:[function(require,module,exports){
+},{"../templates/props-dashboard.template.html":348}],330:[function(require,module,exports){
 'use strict';
 
 /**
@@ -35323,7 +35661,7 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/public-indicator.template.html":348}],330:[function(require,module,exports){
+},{"../templates/public-indicator.template.html":349}],331:[function(require,module,exports){
 'use strict';
 
 /**
@@ -35372,7 +35710,7 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/settings-button.template.html":349}],331:[function(require,module,exports){
+},{"../templates/settings-button.template.html":350}],332:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35418,7 +35756,7 @@ exports.default = {
     }
 };
 
-},{"./examName.component":319,"./examProperties.component":320,"./propsDashboard.component":328,"./toolsDashboard.component":332,"babel-polyfill":1,"vue":314}],332:[function(require,module,exports){
+},{"./examName.component":320,"./examProperties.component":321,"./propsDashboard.component":329,"./toolsDashboard.component":333,"babel-polyfill":1,"vue":314}],333:[function(require,module,exports){
 'use strict';
 
 var _mutationTypes = require('../../store/mutation-types');
@@ -35487,7 +35825,7 @@ module.exports = {
     * Created by adam on 2/15/17.
     */
 
-},{"../../store/mutation-types":375,"../templates/tools-dashboard.template.html":350}],333:[function(require,module,exports){
+},{"../../store/mutation-types":376,"../templates/tools-dashboard.template.html":351}],334:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35537,7 +35875,7 @@ exports.default = {
     }
 };
 
-},{"../templates/valence-button.template.html":351}],334:[function(require,module,exports){
+},{"../templates/valence-button.template.html":352}],335:[function(require,module,exports){
 'use strict';
 
 require('babel-polyfill');
@@ -35641,6 +35979,8 @@ require('bootstrap');
 // var bootbox = require( 'bootbox' );
 
 
+var draggable = require('vuedraggable');
+
 _vue2.default.component('exam-name', _examName2.default);
 _vue2.default.component('exam-properties', _examProperties2.default);
 _vue2.default.component('props-dashboard', _propsDashboard2.default);
@@ -35658,6 +35998,9 @@ _vue2.default.component('item-settings-comment-setup', _itemSettingsCommentSetup
 _vue2.default.component('valence-button', _valenceButton2.default);
 _vue2.default.component('delete-item-button', _deleteItemButton2.default);
 _vue2.default.component('depth-control', _depthControl2.default);
+
+_vue2.default.component('draggable', draggable);
+
 // install router
 // Vue.use(Router)
 
@@ -35702,41 +36045,41 @@ new _vue2.default({
 
 // router.start(App, '#app')
 
-},{"../store":363,"./components/cardList.component":316,"./components/deleteItemButton.component":317,"./components/depthControl.component":318,"./components/examName.component":319,"./components/examProperties.component":320,"./components/itemAddButton.component":321,"./components/itemCard.component":322,"./components/itemName.component":323,"./components/itemNav.component":324,"./components/itemSettings.commentSetup.component":325,"./components/itemSettings.component":326,"./components/itemSettings.detail.component":327,"./components/propsDashboard.component":328,"./components/publicIndicator.component":329,"./components/settingsButton.component":330,"./components/setupApp.vue.js":331,"./components/toolsDashboard.component":332,"./components/valenceButton.component":333,"./templates/exam-editor.template.html":337,"babel-polyfill":1,"bootstrap":3,"jquery":310,"vue":314,"vue-router":313}],335:[function(require,module,exports){
-module.exports = '<div class="card-list-component">\n    <div class="card-list">\n        <ul class="list-group">\n            <li\n                    class="item-cards list-group-item"\n                    v-for="(index, item) in items"\n            >\n                <item-card :index="index"></item-card>\n            </li>\n        </ul>\n    </div>\n\n    <div class="row">\n        <div class="col-lg-12 ">\n            <div class="text-right">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n</div>\n';
-},{}],336:[function(require,module,exports){
-module.exports = '<div class="deleteButton ">\n    <button\n            v-if="visible"\n            class="btn btn-danger btn-block js-remove "\n            v-on:click="remove"\n    >\n        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete\n    </button>\n</div>';
+},{"../store":364,"./components/cardList.component":317,"./components/deleteItemButton.component":318,"./components/depthControl.component":319,"./components/examName.component":320,"./components/examProperties.component":321,"./components/itemAddButton.component":322,"./components/itemCard.component":323,"./components/itemName.component":324,"./components/itemNav.component":325,"./components/itemSettings.commentSetup.component":326,"./components/itemSettings.component":327,"./components/itemSettings.detail.component":328,"./components/propsDashboard.component":329,"./components/publicIndicator.component":330,"./components/settingsButton.component":331,"./components/setupApp.vue.js":332,"./components/toolsDashboard.component":333,"./components/valenceButton.component":334,"./templates/exam-editor.template.html":338,"babel-polyfill":1,"bootstrap":3,"jquery":310,"vue":314,"vue-router":313,"vuedraggable":315}],336:[function(require,module,exports){
+module.exports = '<div class="card-list card-list-component">\n<!--<draggable v-model=\'items\'>-->\n\n        <ul id=\'card-list\' class="list-group">\n            <li\n                    class="item-cards list-group-item handle"\n                    v-for="(index, item) in items"\n            >\n                <item-card :index="index" :id="index"></item-card>\n            </li>\n        </ul>\n    <!--</div>-->\n\n    <div class="row">\n        <div class="col-lg-12 ">\n            <div class="text-right">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n<!--</draggable>-->\n</div>';
 },{}],337:[function(require,module,exports){
-module.exports = '<div id="app">\n    <div id="examEditor">\n\n        <!--<div class="row">-->\n        <!--<div class="col-lg-8">-->\n        <exam-name></exam-name>\n        <!--</div>-->\n        <!--</div>-->\n\n\n        <div id="examEditorBody"\n             class="row">\n\n            <div id="itemCol"\n                 class="col-lg-9 well well-lg">\n\n                <div class="itemRow row">\n                    <div class="col-lg-12">\n                        <card-list></card-list>\n                    </div>\n                </div>\n\n            </div>\n\n            <div id="infoCol"\n                 class="col-lg-3">\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <props-dashboard></props-dashboard>\n                    </div>\n                </div>\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <tools-dashboard></tools-dashboard>\n                    </div>\n                </div>\n\n            </div>\n\n        </div>\n    </div>\n\n</div>';
+module.exports = '<div class="deleteButton ">\n    <button\n            v-if="visible"\n            class="btn btn-danger btn-block js-remove "\n            v-on:click="remove"\n    >\n        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete\n    </button>\n</div>';
 },{}],338:[function(require,module,exports){
-module.exports = '<div id="examNameArea">\n\n    <div class="input-group">\n        <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>\n        <input type="text"\n               class="form-control input-lg"\n               id="privateName"\n               name="privateName"\n               aria-describedby="basic-addon1"\n               placeholder="{{ placeHolders.privateName }}"\n               v-model="privateName"\n        >\n        <span class="input-group-addon" id="basic-addon2"> <span v-on:click="openExamProperties" class="glyphicon glyphicon-cog"></span></span>\n\n    </div>\n\n\n\n</div>\n';
+module.exports = '<div id="app">\n    <div id="examEditor">\n\n        <!--<div class="row">-->\n        <!--<div class="col-lg-8">-->\n        <exam-name></exam-name>\n        <!--</div>-->\n        <!--</div>-->\n\n\n        <div id="examEditorBody"\n             class="row">\n\n            <div id="itemCol"\n                 class="col-lg-9 well well-lg">\n\n                <div class="itemRow row">\n                    <div class="col-lg-12">\n                        <card-list></card-list>\n                    </div>\n                </div>\n\n            </div>\n\n            <div id="infoCol"\n                 class="col-lg-3">\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <props-dashboard></props-dashboard>\n                    </div>\n                </div>\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <tools-dashboard></tools-dashboard>\n                    </div>\n                </div>\n\n            </div>\n\n        </div>\n    </div>\n\n</div>';
 },{}],339:[function(require,module,exports){
-module.exports = '<!--This is the hideable area via which we edit the exam\'s properties-->\n\n<div class="row">\n    <div class="col-lg-10">\n        <!-- name input -->\n        <div class="input-group">\n                    <span class="input-group-addon"\n                          id="basic-addon1">Public Assignment Name</span>\n            <input type="text"\n                   class="form-control input-lg"\n                   id="publicName"\n                   name="publicName"\n                   aria-describedby="basic-addon1"\n                   v-model="publicName"\n            >\n            <span class="glyphicon glyphicon-question-sign"></span>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="col-lg-5">\n\n            <!-- term selector -->\n            <input v-model="term"\n                   name="examTerm"\n                   type="hidden"\n                   id="hiddenTerm"\n            />\n\n            <div class="btn-group btn-group">\n                <button\n                        class="btn btn-primary dropdown-toggle"\n                        id="term"\n                        title="Choose Term"\n                        data-toggle="dropdown"\n                >{{ term }} <span class="glyphicon glyphicon-menu-down"></span></button>\n\n                <ul class="dropdown-menu" id="termList" role="menu" style="cursor:pointer;">\n                    <li v-for="term in terms">\n                        <a class="termItem">{{ term }}</a>\n                    </li>\n                </ul>\n            </div>\n        </div>\n\n        <div class="col-lg-5">\n            <!-- year selector -->\n            <input name="examYear"\n                   type="hidden"\n                   id="hiddenYear"\n                   v-model="year"\n            />\n\n            <div class="btn-group btn-group">\n                <button class="btn btn-primary dropdown-toggle"\n                        id="year"\n                        title="Choose Year"\n                        data-toggle="dropdown">{{ year }}\n                    <span class="glyphicon glyphicon-menu-down"></span>\n                </button>\n\n                <ul class="dropdown-menu"\n                    id="yearList"\n                    role="menu"\n                    style="cursor:pointer;">\n                    <li v-for="year in years">\n                        <a class="yearItem">{{ year }}</a>\n                    </li>\n                </ul>\n            </div>\n             <span class="glyphicon glyphicon-question-sign"></span>\n        </div>\n    </div>\n\n</div>';
+module.exports = '<div id="examNameArea">\n\n    <div class="input-group">\n        <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>\n        <input type="text"\n               class="form-control input-lg"\n               id="privateName"\n               name="privateName"\n               aria-describedby="basic-addon1"\n               placeholder="{{ placeHolders.privateName }}"\n               v-model="privateName"\n        >\n        <span class="input-group-addon" id="basic-addon2"> <span v-on:click="openExamProperties" class="glyphicon glyphicon-cog"></span></span>\n\n    </div>\n\n\n\n</div>\n';
 },{}],340:[function(require,module,exports){
-module.exports = '<button\n        class="btn btn-info"\n        v-on:click="addItem"\n>\n    <span class="glyphicon glyphicon-plus"></span>\n    <span class="hidden-md"> Add item</span>\n</button>';
+module.exports = '<!--This is the hideable area via which we edit the exam\'s properties-->\n\n<div class="row">\n    <div class="col-lg-10">\n        <!-- name input -->\n        <div class="input-group">\n                    <span class="input-group-addon"\n                          id="basic-addon1">Public Assignment Name</span>\n            <input type="text"\n                   class="form-control input-lg"\n                   id="publicName"\n                   name="publicName"\n                   aria-describedby="basic-addon1"\n                   v-model="publicName"\n            >\n            <span class="glyphicon glyphicon-question-sign"></span>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="col-lg-5">\n\n            <!-- term selector -->\n            <input v-model="term"\n                   name="examTerm"\n                   type="hidden"\n                   id="hiddenTerm"\n            />\n\n            <div class="btn-group btn-group">\n                <button\n                        class="btn btn-primary dropdown-toggle"\n                        id="term"\n                        title="Choose Term"\n                        data-toggle="dropdown"\n                >{{ term }} <span class="glyphicon glyphicon-menu-down"></span></button>\n\n                <ul class="dropdown-menu" id="termList" role="menu" style="cursor:pointer;">\n                    <li v-for="term in terms">\n                        <a class="termItem">{{ term }}</a>\n                    </li>\n                </ul>\n            </div>\n        </div>\n\n        <div class="col-lg-5">\n            <!-- year selector -->\n            <input name="examYear"\n                   type="hidden"\n                   id="hiddenYear"\n                   v-model="year"\n            />\n\n            <div class="btn-group btn-group">\n                <button class="btn btn-primary dropdown-toggle"\n                        id="year"\n                        title="Choose Year"\n                        data-toggle="dropdown">{{ year }}\n                    <span class="glyphicon glyphicon-menu-down"></span>\n                </button>\n\n                <ul class="dropdown-menu"\n                    id="yearList"\n                    role="menu"\n                    style="cursor:pointer;">\n                    <li v-for="year in years">\n                        <a class="yearItem">{{ year }}</a>\n                    </li>\n                </ul>\n            </div>\n             <span class="glyphicon glyphicon-question-sign"></span>\n        </div>\n    </div>\n\n</div>';
 },{}],341:[function(require,module,exports){
-module.exports = '<!--This represents a question or an element-->\n<div class="item-card-component"\n     v-bind:class="offsetClass"\n>\n    <div class="row">\n        <item-name :index="index"></item-name>\n\n    </div>\n    <div class="row">\n        <div class="clearfix"></div>\n\n        <!--<div class="col-lg-1">-->\n\n            <!--<depth-control-->\n                    <!--type="demote"-->\n                    <!--:index="index"-->\n            <!--&gt;</depth-control>-->\n        <!--</div>-->\n        <div class="col-lg-12">\n        <!--<div class="col-lg-10">-->\n            <div class="clearfix"></div>\n            <slot name="head">\n                <item-settings\n                        :index="index"\n                        is="currentView"\n                >\n                    <div slot="controlsArea">\n                        <div class="row">\n                            <div class="col-md-1">\n                                <depth-control\n                                        type="demote"\n                                        :index="index"\n                                ></depth-control>\n                            </div>\n\n                            <div class="col-md-10"></div>\n\n                            <div class="col-md-1">\n                                <depth-control\n                                        type="promote"\n                                        :index="index"\n                                ></depth-control>\n                            </div>\n\n                        </div>\n                    </div>\n                </item-settings>\n            </slot>\n\n            <div class="clearfix"></div>\n\n        </div>\n\n        <!--<div class="col-lg-1 vertical-align">-->\n            <!--<depth-control type="promote" :index="index"></depth-control>-->\n        <!--</div>-->\n    </div>\n\n    <div class="row">\n        <div class="col-lg-1"></div>\n        <div class="col-lg-10">\n            <delete-item-button></delete-item-button>\n        </div>\n        <div class="col-lg-1"></div>\n    </div>\n</div>\n\n';
+module.exports = '<button\n        class="btn btn-info"\n        v-on:click="addItem"\n>\n    <span class="glyphicon glyphicon-plus"></span>\n    <span class="hidden-md"> Add item</span>\n</button>';
 },{}],342:[function(require,module,exports){
-module.exports = '<div class="item-name-component input-group input-group-lg">\n\n    <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>\n\n    <input type="text"\n           class="itemName form-control"\n           aria-describedby="basic-addon1"\n           placeholder="{{ placeHolders.privateName }}"\n           v-model="name"\n    >\n\n    <div class="input-group-btn">\n        <settings-button></settings-button>\n        <public-indicator></public-indicator>\n    </div>\n\n</div>';
+module.exports = '<!--This represents a question or an element-->\n<div id="item-card-{{index}}"\n     class="item-card-component"\n     v-bind:class="offsetClass"\n>\n    <div class="row">\n        <item-name\n                :index="index"\n                :id="id"\n        ></item-name>\n\n    </div>\n    <div class="row">\n        <div class="clearfix"></div>\n\n        <div class="col-lg-12">\n            <!--<div class="col-lg-10">-->\n            <div class="clearfix"></div>\n            <slot name="head">\n\n                <item-settings\n                        :index="index"\n                        :id="id"\n                >\n                    <!--is="currentView"-->\n                    <div slot="controlsArea">\n                        <div class="row">\n                            <div class="col-md-1">\n                                <depth-control\n                                        type="demote"\n                                        :index="index"\n                                        :id="id"\n                                ></depth-control>\n                            </div>\n\n                            <div class="col-md-10"></div>\n\n                            <div class="col-md-1">\n                                <depth-control\n                                        type="promote"\n                                        :index="index"\n                                        :id="id"\n                                ></depth-control>\n                            </div>\n\n                        </div>\n                    </div>\n                </item-settings>\n            </slot>\n\n            <div class="clearfix"></div>\n\n        </div>\n\n        <!--<div class="col-lg-1 vertical-align">-->\n        <!--<depth-control type="promote" :index="index"></depth-control>-->\n        <!--</div>-->\n    </div>\n\n    <div class="row">\n        <div class="col-lg-1"></div>\n        <div class="col-lg-10">\n            <delete-item-button></delete-item-button>\n        </div>\n        <div class="col-lg-1"></div>\n    </div>\n</div>\n\n';
 },{}],343:[function(require,module,exports){
-module.exports = '<div class="item-nav-component "\n     v-on:click="goTo"\n>\n    <div class="nav-arrow text-center">\n        <span v-bind:class="arrow"></span>\n    </div>\n</div>';
+module.exports = '<div class="item-name-component input-group input-group-lg">\n\n    <span class="input-group-addon" id="basic-addon1">{{index}}{{ displayType }} Name</span>\n\n    <input type="text"\n           class="itemName form-control"\n           aria-describedby="basic-addon1"\n           placeholder="{{ placeHolders.privateName }}"\n           v-model="name"\n    >\n\n    <div class="input-group-btn">\n        <settings-button></settings-button>\n        <public-indicator></public-indicator>\n    </div>\n\n</div>';
 },{}],344:[function(require,module,exports){
-module.exports = '<!-- Template used by \'edit_element\' to hold the fields and buttons for an individual element.  -->\n<div class="item-settings-comment-setup-component">\n    <div class="row">\n        <div class="col-md-12 ">\n\n            <h5>Set up your comments for this item</h5>\n            <!-- element description (the "stock comment") -->\n            <div class="form-group">\n                        <textarea\n                                class="form-control"\n                                rows="3"\n                                placeholder="{{ placeholders.elementText }}"\n                                v-model="commentText"></textarea>\n            </div>\n\n            <div class="form-group">\n                <div class="btn-group-justified"\n                     role="group"\n                     aria-label="valence buttons">\n\n                        <valence-button\n                                v-for="v in valences"\n                                :valence="v"></valence-button>\n\n                </div>\n            </div>\n\n        </div>\n\n    </div>\n</div>\n';
+module.exports = '<div class="item-nav-component "\n     v-on:click="goTo"\n>\n    <div class="nav-arrow text-center">\n        <span v-bind:class="arrow"></span>\n    </div>\n</div>';
 },{}],345:[function(require,module,exports){
-module.exports = '<!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n<div class="item-settings-detail-component">\n    <div class="row">\n        <div class="col-md-6">\n\n            <div class="question-num-area input-group">\n\n                <span class="input-group-addon">Question #</span>\n                <input style="width:6em;"\n                       type="number"\n                       min="0"\n                       title="order of the question on the exam"\n                       class="form-control input"\n                       aria-describedby="basic-addon"\n                       v-model="questionNumber"/>\n\n            </div>\n        </div>\n\n        <div class="col-md-6">\n            <div class="max-score-area" style="text-align: left">\n                <!-- max grade -->\n                <div class="input-group">\n                    <span class="input-group-addon">Max Score</span>\n                    <input style="width:6em;"\n                           type="number"\n                           min="0"\n                           title="maximum score for this question"\n                           class="form-control input"\n                           aria-describedby="basic-addon"\n                           v-model="maxScore"\n                    />\n                </div>\n            </div>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="question-text-area col-md-12">\n            <div class="form-group">\n                            <textarea class="question-text form-control"\n                                      rows="3"\n                                      placeholder="Enter the full question text (optional)"\n                            v-model="questionText"></textarea>\n            </div>\n        </div>\n    </div>\n\n    <!--<div class="row">-->\n        <!--<div class="form-group questionButtonArea">-->\n                        <!--<span class="btn btn-info btn-sm handle">-->\n                            <!--<span class="glyphicon glyphicon-move" aria-hidden="true"></span> Move</span>-->\n\n            <!--<button type="button"-->\n                    <!--class="btn btn-danger btn-sm js-remove"-->\n                    <!--data-question-number="{{questionNumber }}">-->\n                <!--<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete-->\n            <!--</button>-->\n        <!--</div>-->\n    <!--</div>-->\n\n</div>';
+module.exports = '<!-- Template used by \'edit_element\' to hold the fields and buttons for an individual element.  -->\n<div class="item-settings-comment-setup-component">\n    <div class="row">\n        <div class="col-md-12 ">\n\n            <h5>Set up your comments for this item</h5>\n            <!-- element description (the "stock comment") -->\n            <div class="form-group">\n                        <textarea\n                                class="form-control"\n                                rows="3"\n                                placeholder="{{ placeholders.elementText }}"\n                                v-model="commentText"></textarea>\n            </div>\n\n            <div class="form-group">\n                <div class="btn-group-justified"\n                     role="group"\n                     aria-label="valence buttons">\n\n                        <valence-button\n                                v-for="v in valences"\n                                :valence="v"></valence-button>\n\n                </div>\n            </div>\n\n        </div>\n\n    </div>\n</div>\n';
 },{}],346:[function(require,module,exports){
-module.exports = '<div class="well" v-show="hidden">\n\n    <slot name="settingsBody">\n\n        <div>\n            <!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n\n            <!-- Nav tabs -->\n            <ul class="nav nav-tabs" role="tablist">\n                <li role="presentation"\n                    v-for="tab in tabs">\n                    <a href="#{{tab}}{{index}}"\n                       aria-controls="{{tab}}{{index}}"\n                       role="tab"\n                       data-toggle="tab">{{ tab | capitalize }}</a>\n                </li>\n            </ul>\n\n            <!-- Tab panes -->\n            <div class="tab-content">\n\n                <div role="tabpanel"\n                     class="tab-pane active"\n                     id="details{{index}}"\n                >\n                    <item-settings-detail :index="index"></item-settings-detail>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane  "\n                     id="comments{{index}}"\n                >\n                    <item-settings-comment-setup :index="index"></item-settings-comment-setup>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="stats{{index}}"\n                >\n                    <p>Stats here</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="history{{index}}"\n                >\n                    <p>Which exams clones of this item have been used on</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane fade"\n                     id="notes{{index}}"\n                >\n                    <p>Notes to self about item</p>\n                </div>\n\n            </div>\n\n        </div>\n\n    </slot>\n\n    <slot name="controlsArea"></slot>\n    <!--<item-settings-element item="item"></item-settings-element>-->\n    <!--<item-settings-question :item="item"></item-settings-question>-->\n\n    <!--<button class="btn btn-primary" v-on:click="hide">Close</button>-->\n</div>\n';
+module.exports = '<!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n<div class="item-settings-detail-component">\n    <div class="row">\n        <div class="col-md-6">\n\n            <div class="question-num-area input-group">\n\n                <span class="input-group-addon">Question #</span>\n                <input style="width:6em;"\n                       type="number"\n                       min="0"\n                       title="order of the question on the exam"\n                       class="form-control input"\n                       aria-describedby="basic-addon"\n                       v-model="questionNumber"/>\n\n            </div>\n        </div>\n\n        <div class="col-md-6">\n            <div class="max-score-area" style="text-align: left">\n                <!-- max grade -->\n                <div class="input-group">\n                    <span class="input-group-addon">Max Score</span>\n                    <input style="width:6em;"\n                           type="number"\n                           min="0"\n                           title="maximum score for this question"\n                           class="form-control input"\n                           aria-describedby="basic-addon"\n                           v-model="maxScore"\n                    />\n                </div>\n            </div>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="question-text-area col-md-12">\n            <div class="form-group">\n                            <textarea class="question-text form-control"\n                                      rows="3"\n                                      placeholder="Enter the full question text (optional)"\n                            v-model="questionText"></textarea>\n            </div>\n        </div>\n    </div>\n\n</div>';
 },{}],347:[function(require,module,exports){
-module.exports = '<div id="props-dashboard" class="dashboard">\n    <dl class="dl-horizontal">\n\n        <dt># items</dt>\n        <dd>{{ numberItems }}</dd>\n\n        <dt>Max total score</dt>\n        <dd>{{ perfectScore }}</dd>\n        <!--<dd><input type="number" v-model="perfectScore" /></dd>-->\n\n        <dt># Students</dt>\n        <dd>{{ numberStudents}}</dd>\n\n        <dt># Graded</dt>\n        <dd>{{ numberGraded }}</dd>\n\n        <dt>Time grading</dt>\n        <dd>{{ timeGrading }}</dd>\n\n    </dl>\n\n</div>';
+module.exports = '<div class="well well-sm" v-show="hidden">\n\n    <slot name="settingsBody">\n\n        <div>\n            <!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n\n            <!-- Nav tabs -->\n            <ul class="nav nav-tabs" role="tablist">\n                <li role="presentation"\n                    v-for="tab in tabs">\n                    <a href="#{{tab}}{{index}}"\n                       aria-controls="{{tab}}{{index}}"\n                       role="tab"\n                       data-toggle="tab">{{ tab | capitalize }}</a>\n                </li>\n            </ul>\n\n            <!-- Tab panes -->\n            <div class="tab-content">\n\n                <div role="tabpanel"\n                     class="tab-pane active"\n                     id="details{{index}}"\n                >\n                    <item-settings-detail :index="index"></item-settings-detail>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane  "\n                     id="comments{{index}}"\n                >\n                    <item-settings-comment-setup :index="index"></item-settings-comment-setup>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="stats{{index}}"\n                >\n                    <p>Stats here</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="history{{index}}"\n                >\n                    <p>Which exams clones of this item have been used on</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane fade"\n                     id="notes{{index}}"\n                >\n                    <p>Notes to self about item</p>\n                </div>\n\n            </div>\n\n        </div>\n\n    </slot>\n\n    <slot name="controlsArea"></slot>\n    <!--<item-settings-element item="item"></item-settings-element>-->\n    <!--<item-settings-question :item="item"></item-settings-question>-->\n\n    <!--<button class="btn btn-primary" v-on:click="hide">Close</button>-->\n</div>\n';
 },{}],348:[function(require,module,exports){
-module.exports = '<button\n        class="btn public-indicator"\n        v-bind:class="{\'btn-warning\': public}"\n        v-on:click="togglePublic"\n>\n    <span v-bind:class="icon"></span>\n</button>';
+module.exports = '<div id="props-dashboard" class="dashboard">\n    <dl class="dl-horizontal">\n\n        <dt># items</dt>\n        <dd>{{ numberItems }}</dd>\n\n        <dt>Max total score</dt>\n        <dd>{{ perfectScore }}</dd>\n        <!--<dd><input type="number" v-model="perfectScore" /></dd>-->\n\n        <dt># Students</dt>\n        <dd>{{ numberStudents}}</dd>\n\n        <dt># Graded</dt>\n        <dd>{{ numberGraded }}</dd>\n\n        <dt>Time grading</dt>\n        <dd>{{ timeGrading }}</dd>\n\n    </dl>\n\n</div>';
 },{}],349:[function(require,module,exports){
-module.exports = '<button\n        class="btn settings-button"\n        v-on:click="openItemSettings"\n>\n    <span class="glyphicon glyphicon-cog"></span>\n</button>';
+module.exports = '<button\n        class="btn public-indicator"\n        v-bind:class="{\'btn-warning\': public}"\n        v-on:click="togglePublic"\n>\n    <span v-bind:class="icon"></span>\n</button>';
 },{}],350:[function(require,module,exports){
-module.exports = '<div id="setupToolDashboard" class="dashboard">\n\n    <ul class="list-group">\n        <li class="list-group-item">\n            <button\n                    class="btn btn-block btn-danger"\n                    v-on:click="toggleDeleteMode"\n            >Remove items</button>\n        </li>\n\n        <li class="list-group-item">\n            <button\n                    class="btn btn-block btn-warning"\n                    v-on:click="toggleReorderMode"\n            >Reorder items</button>\n        </li>\n\n\n        <li class="list-group-item">\n            <button\n                    class="btn btn-block btn-primary"\n                    v-on:click="showSampleFeedback"\n            >View sample feedback</button>\n        </li>\n\n        <li class="list-group-item">\n            <!--replace with toggle-->\n            <button\n                    class="btn btn-block btn-primary"\n                    v-on:click="toggleHolesShown"\n            >Show holes</button>\n        </li>\n    </ul>\n</div>';
+module.exports = '<button\n        class="btn settings-button"\n        v-on:click="openItemSettings"\n>\n    <span class="glyphicon glyphicon-cog"></span>\n</button>';
 },{}],351:[function(require,module,exports){
-module.exports = '<div class="btn-group" role="group">\n<button type="button" class="btn btn-small valence-button"\n        v-bind:class="classObject"\n        v-on:click="selectValence"\n>{{ valence }}</button>\n</div>';
+module.exports = '<div id="setupToolDashboard" class="dashboard">\n\n    <ul class="list-group">\n        <li class="list-group-item">\n            <button\n                    class="btn btn-block btn-danger"\n                    v-on:click="toggleDeleteMode"\n            >Remove items</button>\n        </li>\n\n        <li class="list-group-item">\n            <button\n                    class="btn btn-block btn-warning"\n                    v-on:click="toggleReorderMode"\n            >Reorder items</button>\n        </li>\n\n\n        <li class="list-group-item">\n            <button\n                    class="btn btn-block btn-primary"\n                    v-on:click="showSampleFeedback"\n            >View sample feedback</button>\n        </li>\n\n        <li class="list-group-item">\n            <!--replace with toggle-->\n            <button\n                    class="btn btn-block btn-primary"\n                    v-on:click="toggleHolesShown"\n            >Show holes</button>\n        </li>\n    </ul>\n</div>';
 },{}],352:[function(require,module,exports){
+module.exports = '<div class="btn-group" role="group">\n<button type="button" class="btn btn-small valence-button"\n        v-bind:class="classObject"\n        v-on:click="selectValence"\n>{{ valence }}</button>\n</div>';
+},{}],353:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35840,7 +36183,7 @@ var Comment = function (_IModel) {
 
 exports.default = Comment;
 
-},{"./IModel":354,"./Item":355}],353:[function(require,module,exports){
+},{"./IModel":355,"./Item":356}],354:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35982,7 +36325,7 @@ var Exam = function (_Item) {
 
 exports.default = Exam;
 
-},{"./Item":355}],354:[function(require,module,exports){
+},{"./Item":356}],355:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36151,7 +36494,7 @@ var IModel = function () {
 
 exports.default = IModel;
 
-},{}],355:[function(require,module,exports){
+},{}],356:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36372,7 +36715,7 @@ var Item = function (_IModel) {
 
 exports.default = Item;
 
-},{"./Comment":352,"./IModel":354}],356:[function(require,module,exports){
+},{"./Comment":353,"./IModel":355}],357:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36561,7 +36904,7 @@ var Payload = function () {
 
 exports.default = Payload;
 
-},{}],357:[function(require,module,exports){
+},{}],358:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36718,7 +37061,7 @@ var Question = function (_Item) {
 
 exports.default = Question;
 
-},{"./Item":355}],358:[function(require,module,exports){
+},{"./Item":356}],359:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37009,7 +37352,7 @@ var Student = function (_IModel) {
 
 exports.default = Student;
 
-},{"./IModel":354}],359:[function(require,module,exports){
+},{"./IModel":355}],360:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37082,7 +37425,7 @@ var addNewItem = exports.addNewItem = 'addNewItem';
 var loadItems = exports.loadItems = 'loadItems';
 var updateItemName = exports.updateItemName = 'updateItemName';
 
-},{}],360:[function(require,module,exports){
+},{}],361:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37294,7 +37637,7 @@ var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes
     commit(mTypes.setElementScore, out);
 }), _actions);
 
-},{"../models/Student":358,"./action-types":359,"./mutation-types":375}],361:[function(require,module,exports){
+},{"../models/Student":359,"./action-types":360,"./mutation-types":376}],362:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -37338,7 +37681,7 @@ var checkValid = exports.checkValid = function checkValid(state, propertyName) {
     return true;
 };
 
-},{}],362:[function(require,module,exports){
+},{}],363:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37506,7 +37849,7 @@ var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = 
     return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
 };
 
-},{}],363:[function(require,module,exports){
+},{}],364:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -37678,7 +38021,7 @@ exports.default = new _vuex2.default.Store({
   strict: debug });
 
 }).call(this,require('_process'))
-},{"./actions":360,"./api":361,"./getters":362,"./modules/activeexam.js":364,"./modules/activestudent.js":365,"./modules/comments.js":366,"./modules/escores.js":367,"./modules/grades.js":368,"./modules/items.js":369,"./modules/qscores.js":370,"./modules/questions.js":371,"./modules/settings":372,"./modules/students.js":373,"./modules/times.js":374,"./mutations":376,"./state":377,"_process":311,"vue":314,"vuex":315}],364:[function(require,module,exports){
+},{"./actions":361,"./api":362,"./getters":363,"./modules/activeexam.js":365,"./modules/activestudent.js":366,"./modules/comments.js":367,"./modules/escores.js":368,"./modules/grades.js":369,"./modules/items.js":370,"./modules/qscores.js":371,"./modules/questions.js":372,"./modules/settings":373,"./modules/students.js":374,"./modules/times.js":375,"./mutations":377,"./state":378,"_process":311,"vue":314,"vuex":316}],365:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37776,7 +38119,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":353,"../../models/Payload":356,"../action-types":359,"../mutation-types":375}],365:[function(require,module,exports){
+},{"../../models/Exam":354,"../../models/Payload":357,"../action-types":360,"../mutation-types":376}],366:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37909,7 +38252,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":356,"../../models/Student":358,"../action-types":359,"../mutation-types":375}],366:[function(require,module,exports){
+},{"../../models/Payload":357,"../../models/Student":359,"../action-types":360,"../mutation-types":376}],367:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38073,7 +38416,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":356,"../action-types":359,"../mutation-types":375}],367:[function(require,module,exports){
+},{"../../models/Payload":357,"../action-types":360,"../mutation-types":376}],368:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38167,7 +38510,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":356,"../action-types":359,"../mutation-types":375}],368:[function(require,module,exports){
+},{"../../models/Payload":357,"../action-types":360,"../mutation-types":376}],369:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38326,7 +38669,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":356,"../action-types":359,"../mutation-types":375}],369:[function(require,module,exports){
+},{"../../models/Payload":357,"../action-types":360,"../mutation-types":376}],370:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38380,26 +38723,55 @@ var state = {
      */
     items: [],
 
+    myList: [],
+
     /**
      * Mapping from older ItemIndex to new Item id value
      */
     indexMap: new Map()
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.addNewItem, function (state, payload) {
+var helpers = {
+    getItemFromPayload: function getItemFromPayload(state, payload) {
+        if (typeof payload.id != 'undefined') {
+            //get the item
+            var item = state.items.filter(function (i) {
+                if (i.id === id) {
+                    return i;
+                }
+            });
+            return item;
+        } else {
+            //get the item
+            return state.items[payload.index];
+        }
+    }
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder, function (state, payload) {
+    console.log(mTypes.updateOrder, state, payload);
+
+    //this just requires us to match list indexes w the
+    //property of the item
+    for (var i = 0; i < state.items.length; i++) {
+        var item = state.items[i];
+        //set the property on the object
+        Vue.set(item, 'index', i);
+        //set it in the array with vue
+        state.items.$set(i, item);
+    }
+}), _defineProperty(_mutations, mTypes.addNewItem, function (state, payload) {
     console.log(mTypes.addNewItem, state, payload);
     var len = state.items.length;
     //set the item index
     var index = len == 0 || 1 ? len : len + 1;
-    var item = _Item2.default.factory({ index: index });
+    var item = _Item2.default.factory({ id: index, index: index });
     Vue.set(item, 'index', index);
     state.items.$set(index, item);
-
-    // state.items.push( item );
 }), _defineProperty(_mutations, mTypes.updateItem, function (state, payload) {
     console.log(mTypes.updateItem, payload, state);
-    //get the item
-    var itm = state.items[payload.index];
+    var itm = helpers.getItemFromPayload(state, payload);
+
     //Set the value so vue can see it
     Vue.set(itm, payload.updateProp, payload.updateVal);
     //Push the altered item back into the array
@@ -38407,7 +38779,8 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.addNewItem,
 }), _defineProperty(_mutations, mTypes.updateComment, function (state, payload) {
     console.log(mTypes.updateComment, payload, state);
     //get the item
-    var itm = state.items[payload.index];
+    var itm = helpers.getItemFromPayload(state, payload);
+    // let itm = state.items[ payload.index ];
     var comment = itm.getComment(payload.updateValence);
 
     if (typeof comment != 'undefined') {
@@ -38454,7 +38827,7 @@ var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, pay
     if (!obj instanceof _Item2.default) {
         //create a new Item
         var name = payload.name,
-            id = payload.id,
+            _id = payload.id,
             index = payload.index;
 
         var ItemJson = { name: name, ItemIndex: ItemIndex };
@@ -38667,7 +39040,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Item":355,"../../models/Payload":356,"../../store/action-types":359,"../../store/mutation-types":375,"vue":314}],370:[function(require,module,exports){
+},{"../../models/Item":356,"../../models/Payload":357,"../../store/action-types":360,"../../store/mutation-types":376,"vue":314}],371:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38766,7 +39139,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":356,"../action-types":359,"../mutation-types":375}],371:[function(require,module,exports){
+},{"../../models/Payload":357,"../action-types":360,"../mutation-types":376}],372:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38905,7 +39278,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":356,"../../models/Question":357,"../action-types":359,"../mutation-types":375}],372:[function(require,module,exports){
+},{"../../models/Payload":357,"../../models/Question":358,"../action-types":360,"../mutation-types":376}],373:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38974,7 +39347,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":356,"../action-types":359,"../mutation-types":375}],373:[function(require,module,exports){
+},{"../../models/Payload":357,"../action-types":360,"../mutation-types":376}],374:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39094,7 +39467,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":356,"../../models/Student":358,"../action-types":359,"../mutation-types":375}],374:[function(require,module,exports){
+},{"../../models/Payload":357,"../../models/Student":359,"../action-types":360,"../mutation-types":376}],375:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39231,7 +39604,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../../models/Payload":356,"../action-types":359,"../mutation-types":375}],375:[function(require,module,exports){
+},{"../../models/Payload":357,"../action-types":360,"../mutation-types":376}],376:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39305,6 +39678,7 @@ var addNewItem = exports.addNewItem = 'addNewItem';
 var setItem = exports.setItem = 'setItem';
 var addItemIndexMapping = exports.addItemIndexMapping = 'addItemIndexMapping';
 var loadItems = exports.loadItems = 'loadItems';
+var updateOrder = exports.updateOrder = 'updateOrder';
 
 var promoteItem = exports.promoteItem = 'promoteItem';
 var demoteItem = exports.demoteItem = 'demoteItem';
@@ -39321,7 +39695,7 @@ var toggleDeleteButtonVisibility = exports.toggleDeleteButtonVisibility = 'toggl
 var toggleReorderMode = exports.toggleReorderMode = 'toggleReorderMode';
 var toggleSampleFeedback = exports.toggleSampleFeedback = 'toggleSampleFeedback';
 
-},{}],376:[function(require,module,exports){
+},{}],377:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39355,7 +39729,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":375}],377:[function(require,module,exports){
+},{"./mutation-types":376}],378:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39385,6 +39759,6 @@ exports.default = {
 
 };
 
-},{}]},{},[334]);
+},{}]},{},[335]);
 
 //# sourceMappingURL=new-setup-package.js.map

@@ -37,6 +37,9 @@ import valenceButton from './components/valenceButton.component'
 import deleteButton from './components/deleteItemButton.component'
 import depthControl from './components/depthControl.component'
 
+var draggable = require('vuedraggable');
+
+
 Vue.component( 'exam-name', examName )
 Vue.component( 'exam-properties', examProperties )
 Vue.component( 'props-dashboard', propsDashboard )
@@ -54,6 +57,10 @@ Vue.component( 'item-settings-comment-setup', commentSetup )
 Vue.component('valence-button', valenceButton)
 Vue.component('delete-item-button', deleteButton)
 Vue.component('depth-control', depthControl)
+
+Vue.component('draggable', draggable)
+
+
 // install router
 // Vue.use(Router)
 

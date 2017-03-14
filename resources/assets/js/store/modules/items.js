@@ -25,13 +25,44 @@ const state = {
      */
     items: [],
 
+    myList: [],
+
     /**
      * Mapping from older ItemIndex to new Item id value
      */
     indexMap: new Map()
 };
 
+const helpers = {
+    getItemFromPayload(state, payload){
+        if(typeof payload.id != 'undefined'){
+            //get the item
+            var item = state.items.filter( function ( i ) {
+                if ( i.id === id ) { return i; }
+            } );
+            return item;
+        }else{
+            //get the item
+            return state.items[ payload.index ];
+        }
+    }
+}
+
 const mutations = {
+    
+    [mTypes.updateOrder]: (state, payload) =>{
+        console.log( mTypes.updateOrder, state, payload );
+
+        //this just requires us to match list indexes w the
+        //property of the item
+        for(let i=0; i<state.items.length; i++){
+            let item = state.items[i];
+            //set the property on the object
+            Vue.set(item, 'index', i);
+            //set it in the array with vue
+            state.items.$set(i, item);
+        }
+    },
 
     /**
      * Creates a new item and pushes it into storage
@@ -45,11 +76,9 @@ const mutations = {
         let len = state.items.length;
         //set the item index
         let index = len == 0 || 1 ? len : len + 1;
-        let item = Item.factory( {index: index} );
+        let item = Item.factory( {id: index, index: index} );
         Vue.set( item, 'index', index );
         state.items.$set( index, item );
-
-        // state.items.push( item );
     },
 
 
@@ -61,8 +90,8 @@ const mutations = {
      */
     [mTypes.updateItem]: ( state, payload ) => {
         console.log( mTypes.updateItem, payload, state )
-        //get the item
-        let itm = state.items[ payload.index ];
+let itm = helpers.getItemFromPayload(state, payload)
+
         //Set the value so vue can see it
         Vue.set( itm, payload.updateProp, payload.updateVal );
         //Push the altered item back into the array
@@ -78,7 +107,8 @@ const mutations = {
     [mTypes.updateComment]: ( state, payload ) => {
         console.log( mTypes.updateComment, payload, state )
         //get the item
-        let itm = state.items[ payload.index ];
+        let itm = helpers.getItemFromPayload(state, payload)
+        // let itm = state.items[ payload.index ];
         let comment = itm.getComment( payload.updateValence );
 
         if ( typeof comment != 'undefined' ) {

@@ -6,12 +6,15 @@
 var $ = require( 'jquery' );
 window.$ = $;
 
-import {mapGetters} from 'vuex'
-
-var Sortable = require( 'sortablejs' );
 import Item from '../../models/Item'
 
+import * as mTypes from '../../store/mutation-types';
 import * as aTypes from '../../store/action-types';
+
+//For Vue.js 2.0
+// var draggable = require('vuedraggable')
+
+var Sortable = require( 'sortablejs' );
 
 module.exports = {
 
@@ -30,6 +33,15 @@ module.exports = {
 
         numberOfItems: function () {
             return this.$store.getters.getItemCount
+        },
+
+        myList: {
+            get() {
+                return this.$store.state.myList
+            },
+            set(value) {
+                this.$store.commit(mTy, value)
+            }
         }
     },
 
@@ -85,39 +97,39 @@ module.exports = {
         },
 
         // Sortable is the lib for drag and drop questions
-// create an editable list and set up some filters to handle callbacks
-        initializeSort: function () {
-
-            try {
-
-                localStorage.clear();
-                var qList = this.$el;
-                var editableList = Sortable.create( qList, {
-                    filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
-                    animation: 150,
-                    handle: '.handle',  // Drag handle selector within list items
-                    ghostClass: "sortable-ghost", // Class name for the drop placeholder
-
-                    onFilter: function ( evt ) {
-                        handleDelete( evt, editableList );
-                    },
-                    store: {
-                        // store the ordering to localStorage
-                        get: function ( sortable ) {
-                            var order = localStorage.getItem( sortable.options.group );
-                            //window.console.log(localStorage.getItem(sortable.options.group));
-                            return order ? order.split( '|' ) : [];
-                        },
-                        set: function ( sortable ) {
-                            var order = sortable.toArray();
-                            localStorage.setItem( sortable.options.group, order.join( '|' ) );
-                            updateNumbers();
-                        }
-                    }
-                } );
-            } catch (e) {
-                window.console.log( e );
-            }
+// // create an editable list and set up some filters to handle callbacks
+//         initializeSort: function () {
+//
+//             try {
+//
+//                 localStorage.clear();
+//                 var qList = this.$el;
+//                 var editableList = Sortable.create( qList, {
+//                     filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
+//                     animation: 150,
+//                     handle: '.handle',  // Drag handle selector within list items
+//                     ghostClass: "sortable-ghost", // Class name for the drop placeholder
+//
+//                     onFilter: function ( evt ) {
+//                         handleDelete( evt, editableList );
+//                     },
+//                     store: {
+//                         // store the ordering to localStorage
+//                         get: function ( sortable ) {
+//                             var order = localStorage.getItem( sortable.options.group );
+//                             //window.console.log(localStorage.getItem(sortable.options.group));
+//                             return order ? order.split( '|' ) : [];
+//                         },
+//                         set: function ( sortable ) {
+//                             var order = sortable.toArray();
+//                             localStorage.setItem( sortable.options.group, order.join( '|' ) );
+//                             updateNumbers();
+//                         }
+//                     }
+//                 } );
+//             } catch (e) {
+//                 window.console.log( e );
+//             }
 
 // update all "questionItem" ids. These define the ordering when saved to the DB.
 // function updateNumbers() {
@@ -127,12 +139,7 @@ module.exports = {
 // }
 
 
-// function getQuestionCount() {
-//     // return number of questions currently in the questionList
-//     return $( "[id^='questionItem']" ).length;
-// }
-//
-        }
+        // }
     },
 
     directives: {},
@@ -146,21 +153,86 @@ module.exports = {
 
     ready: function () {
         this.addItem();
-        console.log( 'cardList ready');
-
-
+let me = this;
         try {
-            var qList = this.$el;
+            var qList = document.getElementById('card-list');
             var editableList = Sortable.create( qList, {
                 filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
                 animation: 150,
                 handle: '.handle',  // Drag handle selector within list items
                 ghostClass: "sortable-ghost", // Class name for the drop placeholder
+
+                onSort: function(evt){
+                    me.$store.commit(mTypes.updateOrder);
+                },
+
+                setData: function (/** DataTransfer */dataTransfer, /** HTMLElement*/dragEl) {
+                    dataTransfer.setData('Text', dragEl.textContent); // `dataTransfer` object of HTML5 DragEvent
+                },
+
+                // Element is chosen
+                onChoose: function (/**Event*/evt) {
+                    evt.oldIndex;  // element index within parent
+                },
+
+                // Element dragging started
+                onStart: function (/**Event*/evt) {
+                    evt.oldIndex;  // element index within parent
+                },
+
+                // Element dragging ended
+                onEnd: function (/**Event*/evt) {
+                    evt.oldIndex;  // element's old index within parent
+                    evt.newIndex;  // element's new index within parent
+                },
+
+                // Element is dropped into the list from another list
+                onAdd: function (/**Event*/evt) {
+                    var itemEl = evt.item;  // dragged HTMLElement
+                    evt.from;  // previous list
+                    // + indexes from onEnd
+                },
+
+                // Changed sorting within list
+                onUpdate: function (/**Event*/evt) {
+                    var itemEl = evt.item;  // dragged HTMLElement
+                    // + indexes from onEnd
+                },
+
+
+                // Element is removed from the list into another list
+                onRemove: function (/**Event*/evt) {
+                    // same properties as onUpdate
+                },
+
+                // Attempt to drag a filtered element
+                onFilter: function (/**Event*/evt) {
+                    var itemEl = evt.item;  // HTMLElement receiving the `mousedown|tapstart` event.
+                },
+
+                // Event when you move an item in the list or between lists
+                onMove: function (/**Event*/evt, /**Event*/originalEvent) {
+                    // Example: http://jsbin.com/tuyafe/1/edit?js,output
+                    evt.dragged; // dragged HTMLElement
+                    evt.draggedRect; // TextRectangle {left, top, right и bottom}
+                    evt.related; // HTMLElement on which have guided
+                    evt.relatedRect; // TextRectangle
+                    originalEvent.clientY; // mouse position
+                    // return false; — for cancel
+                },
+
+                // Called when creating a clone of element
+                onClone: function (/**Event*/evt) {
+                    var origEl = evt.item;
+                    var cloneEl = evt.clone;
+                }
+
             } );
         } catch (e) {
             window.console.log( e );
         }
 
+        console.log( 'cardList ready');
 
     },
 };

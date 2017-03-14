@@ -15,7 +15,7 @@ module.exports = {
 
     template: require( '../templates/item-name.template.html' ),
 
-    props: [ 'index' ],
+    props: [ 'index', 'id' ],
 
     data: function () {
         return {
@@ -57,33 +57,26 @@ module.exports = {
             }
         },
 
-        /**
-         * The id of the item that this is the name of
-         * @returns {module.exports.computed.itemId|null|itemId}
-         */
-        itemId: function () {
-            // return this.itemObj.id;
-
-        },
-
 
         name: {
             get: function () {
-                let item = this.$store.getters.getItemByIndex( this.index );
-                if ( typeof item.name != 'undefined' ) {
+                let item = this.$store.getters.getItemById( this.id );
+                // let item = this.$store.getters.getItemByIndex( this.index );
+                if ( typeof item != 'undefined' ) {
                     return item.name;
                 }
             },
 
             set: function ( v ) {
-                    let pl = Payload.factory( {index: this.index, updateProp: 'name', updateVal: v} );
+                    let pl = Payload.factory( {id: this.id, index: this.index, updateProp: 'name', updateVal: v} );
                 this.$store.commit( mTypes.updateItem, pl );
             }
         },
 
         public: function () {
-            let item = this.$store.getters.getItemByIndex( this.index );
-            if ( typeof item.name != 'undefined' ) {
+            let item = this.$store.getters.getItemById( this.id );
+            // let item = this.$store.getters.getItemByIndex( this.index );
+            if ( typeof item != 'undefined' ) {
                 return item.isPublic();
             }
         },
@@ -108,8 +101,9 @@ module.exports = {
 
     events: {
         'toggle-public': function () {
-            let item = this.$store.getters.getItemByIndex( this.index );
-            if ( typeof item.name != 'undefined' ) {
+            let item = this.$store.getters.getItemById( this.id );
+            // let item = this.$store.getters.getItemByIndex( this.index );
+            if ( typeof item!= 'undefined' ) {
                 return item.togglePublic();
             }
         }

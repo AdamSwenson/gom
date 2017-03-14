@@ -13858,26 +13858,55 @@ var state = {
      */
     items: [],
 
+    myList: [],
+
     /**
      * Mapping from older ItemIndex to new Item id value
      */
     indexMap: new Map()
 };
 
-var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.addNewItem, function (state, payload) {
+var helpers = {
+    getItemFromPayload: function getItemFromPayload(state, payload) {
+        if (typeof payload.id != 'undefined') {
+            //get the item
+            var item = state.items.filter(function (i) {
+                if (i.id === id) {
+                    return i;
+                }
+            });
+            return item;
+        } else {
+            //get the item
+            return state.items[payload.index];
+        }
+    }
+};
+
+var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder, function (state, payload) {
+    console.log(mTypes.updateOrder, state, payload);
+
+    //this just requires us to match list indexes w the
+    //property of the item
+    for (var i = 0; i < state.items.length; i++) {
+        var item = state.items[i];
+        //set the property on the object
+        Vue.set(item, 'index', i);
+        //set it in the array with vue
+        state.items.$set(i, item);
+    }
+}), _defineProperty(_mutations, mTypes.addNewItem, function (state, payload) {
     console.log(mTypes.addNewItem, state, payload);
     var len = state.items.length;
     //set the item index
     var index = len == 0 || 1 ? len : len + 1;
-    var item = _Item2.default.factory({ index: index });
+    var item = _Item2.default.factory({ id: index, index: index });
     Vue.set(item, 'index', index);
     state.items.$set(index, item);
-
-    // state.items.push( item );
 }), _defineProperty(_mutations, mTypes.updateItem, function (state, payload) {
     console.log(mTypes.updateItem, payload, state);
-    //get the item
-    var itm = state.items[payload.index];
+    var itm = helpers.getItemFromPayload(state, payload);
+
     //Set the value so vue can see it
     Vue.set(itm, payload.updateProp, payload.updateVal);
     //Push the altered item back into the array
@@ -13885,7 +13914,8 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.addNewItem,
 }), _defineProperty(_mutations, mTypes.updateComment, function (state, payload) {
     console.log(mTypes.updateComment, payload, state);
     //get the item
-    var itm = state.items[payload.index];
+    var itm = helpers.getItemFromPayload(state, payload);
+    // let itm = state.items[ payload.index ];
     var comment = itm.getComment(payload.updateValence);
 
     if (typeof comment != 'undefined') {
@@ -13932,7 +13962,7 @@ var buildPayloadFromInput = function buildPayloadFromInput(state, rootState, pay
     if (!obj instanceof _Item2.default) {
         //create a new Item
         var name = payload.name,
-            id = payload.id,
+            _id = payload.id,
             index = payload.index;
 
         var ItemJson = { name: name, ItemIndex: ItemIndex };
@@ -14783,6 +14813,7 @@ var addNewItem = exports.addNewItem = 'addNewItem';
 var setItem = exports.setItem = 'setItem';
 var addItemIndexMapping = exports.addItemIndexMapping = 'addItemIndexMapping';
 var loadItems = exports.loadItems = 'loadItems';
+var updateOrder = exports.updateOrder = 'updateOrder';
 
 var promoteItem = exports.promoteItem = 'promoteItem';
 var demoteItem = exports.demoteItem = 'demoteItem';

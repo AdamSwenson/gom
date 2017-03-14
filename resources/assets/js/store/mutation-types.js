@@ -75,6 +75,7 @@ export const addNewItem = 'addNewItem';
 export const setItem = 'setItem';
 export const addItemIndexMapping = 'addItemIndexMapping'
 export const loadItems = 'loadItems'
+export const updateOrder = 'updateOrder'
 
 
 export const promoteItem = 'promoteItem'
