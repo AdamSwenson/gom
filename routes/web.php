@@ -151,6 +151,7 @@ Route::get('dev/test', 'TestController@test');
 //Route::get('dev/home', 'TestController@home');
 Route::get('dev/newsetup', 'TestController@newSetup');
 
+Route::resource('items', 'ItemController');
 
 //Auth::routes();
 
