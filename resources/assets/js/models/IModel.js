@@ -9,10 +9,10 @@ export default class IModel {
         /**
          * The db identifier of the model
          */
-        this._id;
+        this.id;
 
         /**
-         * The locator value
+         * The stored order of the item overall
          */
         this.index;
 
@@ -73,22 +73,22 @@ export default class IModel {
         //were no parameters
         return obj;
     }
-
-    /* *************************** Id *************** */
-    /**
-     * Alias for _id
-     * @returns {*}
-     */
-    get id() {
-        return Number( this._id ) || null;
-    }
-
-    /**
-     * Alias for _id
-     */
-    set id( v ) {
-        this._id = Number( v );
-    }
+    //
+    // /* *************************** Id *************** */
+    // /**
+    //  * Alias for _id
+    //  * @returns {*}
+    //  */
+    // get id() {
+    //     return Number( this._id ) || null;
+    // }
+    //
+    // /**
+    //  * Alias for _id
+    //  */
+    // set id( v ) {
+    //     this._id = Number( v );
+    // }
 
 
     /* *************************** Index *************** */

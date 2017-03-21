@@ -8,7 +8,7 @@ module.exports = {
 
     template: require( '../templates/item-settings.template.html' ),
 
-    props: [ "index" ],
+    props: [ "index", 'id' ],
 
     data: function () {
         return {

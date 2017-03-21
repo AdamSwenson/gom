@@ -11482,10 +11482,10 @@ var IModel = function () {
         /**
          * The db identifier of the model
          */
-        this._id;
+        this.id;
 
         /**
-         * The locator value
+         * The stored order of the item overall
          */
         this.index;
 
@@ -11522,26 +11522,49 @@ var IModel = function () {
      */
 
 
-    _createClass(IModel, [{
-        key: 'id',
+    _createClass(IModel, null, [{
+        key: 'fillObject',
+        value: function fillObject(obj, params) {
+            if (typeof params != 'undefined') {
 
+                //fill any fillable values
+                this.fillableProps.forEach(function (v) {
+                    // console.log( 'params', params, v );
+                    if (typeof params[v] != 'undefined') {
+                        obj[v] = params[v];
+                    }
+                });
 
-        /* *************************** Id *************** */
-        /**
-         * Alias for _id
-         * @returns {*}
-         */
-        get: function get() {
-            return Number(this._id) || null;
+                //fill any aliased values
+                for (var v in this.aliasMap) {
+                    if (typeof params[v] != 'undefined') {
+                        // console.log( 'alias', v, map[v] );
+                        obj[this.aliasMap[v]] = params[v];
+                    }
+                }
+            }
+
+            //we will still return the empty obj if there
+            //were no parameters
+            return obj;
         }
+        //
+        // /* *************************** Id *************** */
+        // /**
+        //  * Alias for _id
+        //  * @returns {*}
+        //  */
+        // get id() {
+        //     return Number( this._id ) || null;
+        // }
+        //
+        // /**
+        //  * Alias for _id
+        //  */
+        // set id( v ) {
+        //     this._id = Number( v );
+        // }
 
-        /**
-         * Alias for _id
-         */
-        ,
-        set: function set(v) {
-            this._id = Number(v);
-        }
 
         /* *************************** Index *************** */
         // /**
@@ -11596,32 +11619,6 @@ var IModel = function () {
         // }
         //
 
-    }], [{
-        key: 'fillObject',
-        value: function fillObject(obj, params) {
-            if (typeof params != 'undefined') {
-
-                //fill any fillable values
-                this.fillableProps.forEach(function (v) {
-                    // console.log( 'params', params, v );
-                    if (typeof params[v] != 'undefined') {
-                        obj[v] = params[v];
-                    }
-                });
-
-                //fill any aliased values
-                for (var v in this.aliasMap) {
-                    if (typeof params[v] != 'undefined') {
-                        // console.log( 'alias', v, map[v] );
-                        obj[this.aliasMap[v]] = params[v];
-                    }
-                }
-            }
-
-            //we will still return the empty obj if there
-            //were no parameters
-            return obj;
-        }
     }]);
 
     return IModel;
@@ -13858,8 +13855,6 @@ var state = {
      */
     items: [],
 
-    myList: [],
-
     /**
      * Mapping from older ItemIndex to new Item id value
      */
@@ -13900,8 +13895,13 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
     var len = state.items.length;
     //set the item index
     var index = len == 0 || 1 ? len : len + 1;
-    var item = _Item2.default.factory({ id: index, index: index });
+
+    //to be replaced with lookup from server
+    var id = Math.floor(Math.random() * (999999999 - 1111111111 + 1)) + 1111111111;
+
+    var item = new _Item2.default(); //.factory( {id: id, index: index} );
     Vue.set(item, 'index', index);
+    Vue.set(item, 'id', id);
     state.items.$set(index, item);
 }), _defineProperty(_mutations, mTypes.updateItem, function (state, payload) {
     console.log(mTypes.updateItem, payload, state);
@@ -13982,11 +13982,25 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.createItem, funct
 
     console.log(aTypes.createItem, state);
     commit(mTypes.addNewItem);
-}), _defineProperty(_actions, aTypes.deleteItem, function (_ref2) {
+}), _defineProperty(_actions, aTypes.deleteItem, function (_ref2, payload) {
     var state = _ref2.state,
         commit = _ref2.commit;
 
-    console.log(aTypes.deleteItem, state, commit);
+    console.log(aTypes.deleteItem, state, commit, payload);
+    //check if payload has correct structure
+    var index = payload.index,
+        id = payload.id;
+    //remove from page
+
+    //reorder index
+
+    //call to server to delete
+
+    //confirm
+
+    //if fail, put back on page with message
+
+    //reorder index
     //todo write
 }), _defineProperty(_actions, aTypes.loadItems, function (state, rootState, payload) {
     //check if payload has correct structure
@@ -14016,45 +14030,58 @@ var getters = {
      * @param payload Object containing Item identifier
      */
     getItem: function getItem(state, getters, payload) {
-        var index = void 0;
-
+        var index = payload.index,
+            id = payload.id;
         //room for other ways of finding index
-        index = payload.index;
 
-        console.log('getItem', payload);
-        return state.items[index];
+        if (typeof id != 'undefined') {
+            return undefined.getItemById(state, getters, id);
+        }
+        if (typeof index != 'undefined') {
+            return undefined.getItemByIndex(state, getters, index);
+        }
+        //default case
+        throw new Error('bad input to getItem');
     },
 
     /**
-     * Returns the item object with the given index
+     * Returns the item object residing at the
+     * given index in the list.
+     * This does not guarantee
+     * that the item.index property will equal the
+     * list index. That could happen if updateOrder has not
+     * yet run.
      * @param state
      * @param getters
      * @param rootState
      * @param index
      */
-    // getItemByIndex: ( state, getters, index ) => {
     getItemByIndex: function getItemByIndex(state, getters) {
         return function (index) {
-            //
             console.log('getItemByIndex', state, index);
-            // return state.items[ index ];
-
             return function (state, index) {
                 return state.items[index];
-                // var r = state.items.filter( function ( i ) {
-                //     if ( i.index === index ) {
-                //         return i;
-                //     }
-                // } );
-                // return r[ 0 ];
             }(state, index);
         };
     },
 
+    /**
+     * Returns the item object with the given id.
+     * This is the preferred way of looking up objects.
+     * It is immutable across re-sorting and corresponds with
+     * the stored db value.
+     * Getting an object by this does not guarantee
+     * that the item.index property will equal the
+     * list index. That could happen if updateOrder has not
+     * yet run.
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param index
+     */
     getItemById: function getItemById(state, getters) {
         return function (id) {
             console.log('getItemById', state, id);
-
             return function (state, id) {
                 var r = state.items.filter(function (i) {
                     if (i.id === id) {

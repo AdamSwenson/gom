@@ -29,7 +29,7 @@ define(String.prototype, "padRight", "".padEnd);
   [][key] && define(Array, key, Function.call.bind([][key]));
 });
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"core-js/fn/regexp/escape":16,"core-js/shim":309,"regenerator-runtime/runtime":2}],2:[function(require,module,exports){
+},{"core-js/fn/regexp/escape":17,"core-js/shim":310,"regenerator-runtime/runtime":2}],2:[function(require,module,exports){
 (function (process,global){
 /**
  * Copyright (c) 2014, Facebook, Inc.
@@ -716,7 +716,994 @@ define(String.prototype, "padRight", "".padEnd);
 );
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":311}],3:[function(require,module,exports){
+},{"_process":312}],3:[function(require,module,exports){
+/**
+ * bootbox.js [v4.4.0]
+ *
+ * http://bootboxjs.com/license.txt
+ */
+
+// @see https://github.com/makeusabrew/bootbox/issues/180
+// @see https://github.com/makeusabrew/bootbox/issues/186
+(function (root, factory) {
+
+  "use strict";
+  if (typeof define === "function" && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(["jquery"], factory);
+  } else if (typeof exports === "object") {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory(require("jquery"));
+  } else {
+    // Browser globals (root is window)
+    root.bootbox = factory(root.jQuery);
+  }
+
+}(this, function init($, undefined) {
+
+  "use strict";
+
+  // the base DOM structure needed to create a modal
+  var templates = {
+    dialog:
+      "<div class='bootbox modal' tabindex='-1' role='dialog'>" +
+        "<div class='modal-dialog'>" +
+          "<div class='modal-content'>" +
+            "<div class='modal-body'><div class='bootbox-body'></div></div>" +
+          "</div>" +
+        "</div>" +
+      "</div>",
+    header:
+      "<div class='modal-header'>" +
+        "<h4 class='modal-title'></h4>" +
+      "</div>",
+    footer:
+      "<div class='modal-footer'></div>",
+    closeButton:
+      "<button type='button' class='bootbox-close-button close' data-dismiss='modal' aria-hidden='true'>&times;</button>",
+    form:
+      "<form class='bootbox-form'></form>",
+    inputs: {
+      text:
+        "<input class='bootbox-input bootbox-input-text form-control' autocomplete=off type=text />",
+      textarea:
+        "<textarea class='bootbox-input bootbox-input-textarea form-control'></textarea>",
+      email:
+        "<input class='bootbox-input bootbox-input-email form-control' autocomplete='off' type='email' />",
+      select:
+        "<select class='bootbox-input bootbox-input-select form-control'></select>",
+      checkbox:
+        "<div class='checkbox'><label><input class='bootbox-input bootbox-input-checkbox' type='checkbox' /></label></div>",
+      date:
+        "<input class='bootbox-input bootbox-input-date form-control' autocomplete=off type='date' />",
+      time:
+        "<input class='bootbox-input bootbox-input-time form-control' autocomplete=off type='time' />",
+      number:
+        "<input class='bootbox-input bootbox-input-number form-control' autocomplete=off type='number' />",
+      password:
+        "<input class='bootbox-input bootbox-input-password form-control' autocomplete='off' type='password' />"
+    }
+  };
+
+  var defaults = {
+    // default language
+    locale: "en",
+    // show backdrop or not. Default to static so user has to interact with dialog
+    backdrop: "static",
+    // animate the modal in/out
+    animate: true,
+    // additional class string applied to the top level dialog
+    className: null,
+    // whether or not to include a close button
+    closeButton: true,
+    // show the dialog immediately by default
+    show: true,
+    // dialog container
+    container: "body"
+  };
+
+  // our public object; augmented after our private API
+  var exports = {};
+
+  /**
+   * @private
+   */
+  function _t(key) {
+    var locale = locales[defaults.locale];
+    return locale ? locale[key] : locales.en[key];
+  }
+
+  function processCallback(e, dialog, callback) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    // by default we assume a callback will get rid of the dialog,
+    // although it is given the opportunity to override this
+
+    // so, if the callback can be invoked and it *explicitly returns false*
+    // then we'll set a flag to keep the dialog active...
+    var preserveDialog = $.isFunction(callback) && callback.call(dialog, e) === false;
+
+    // ... otherwise we'll bin it
+    if (!preserveDialog) {
+      dialog.modal("hide");
+    }
+  }
+
+  function getKeyLength(obj) {
+    // @TODO defer to Object.keys(x).length if available?
+    var k, t = 0;
+    for (k in obj) {
+      t ++;
+    }
+    return t;
+  }
+
+  function each(collection, iterator) {
+    var index = 0;
+    $.each(collection, function(key, value) {
+      iterator(key, value, index++);
+    });
+  }
+
+  function sanitize(options) {
+    var buttons;
+    var total;
+
+    if (typeof options !== "object") {
+      throw new Error("Please supply an object of options");
+    }
+
+    if (!options.message) {
+      throw new Error("Please specify a message");
+    }
+
+    // make sure any supplied options take precedence over defaults
+    options = $.extend({}, defaults, options);
+
+    if (!options.buttons) {
+      options.buttons = {};
+    }
+
+    buttons = options.buttons;
+
+    total = getKeyLength(buttons);
+
+    each(buttons, function(key, button, index) {
+
+      if ($.isFunction(button)) {
+        // short form, assume value is our callback. Since button
+        // isn't an object it isn't a reference either so re-assign it
+        button = buttons[key] = {
+          callback: button
+        };
+      }
+
+      // before any further checks make sure by now button is the correct type
+      if ($.type(button) !== "object") {
+        throw new Error("button with key " + key + " must be an object");
+      }
+
+      if (!button.label) {
+        // the lack of an explicit label means we'll assume the key is good enough
+        button.label = key;
+      }
+
+      if (!button.className) {
+        if (total <= 2 && index === total-1) {
+          // always add a primary to the main option in a two-button dialog
+          button.className = "btn-primary";
+        } else {
+          button.className = "btn-default";
+        }
+      }
+    });
+
+    return options;
+  }
+
+  /**
+   * map a flexible set of arguments into a single returned object
+   * if args.length is already one just return it, otherwise
+   * use the properties argument to map the unnamed args to
+   * object properties
+   * so in the latter case:
+   * mapArguments(["foo", $.noop], ["message", "callback"])
+   * -> { message: "foo", callback: $.noop }
+   */
+  function mapArguments(args, properties) {
+    var argn = args.length;
+    var options = {};
+
+    if (argn < 1 || argn > 2) {
+      throw new Error("Invalid argument length");
+    }
+
+    if (argn === 2 || typeof args[0] === "string") {
+      options[properties[0]] = args[0];
+      options[properties[1]] = args[1];
+    } else {
+      options = args[0];
+    }
+
+    return options;
+  }
+
+  /**
+   * merge a set of default dialog options with user supplied arguments
+   */
+  function mergeArguments(defaults, args, properties) {
+    return $.extend(
+      // deep merge
+      true,
+      // ensure the target is an empty, unreferenced object
+      {},
+      // the base options object for this type of dialog (often just buttons)
+      defaults,
+      // args could be an object or array; if it's an array properties will
+      // map it to a proper options object
+      mapArguments(
+        args,
+        properties
+      )
+    );
+  }
+
+  /**
+   * this entry-level method makes heavy use of composition to take a simple
+   * range of inputs and return valid options suitable for passing to bootbox.dialog
+   */
+  function mergeDialogOptions(className, labels, properties, args) {
+    //  build up a base set of dialog properties
+    var baseOptions = {
+      className: "bootbox-" + className,
+      buttons: createLabels.apply(null, labels)
+    };
+
+    // ensure the buttons properties generated, *after* merging
+    // with user args are still valid against the supplied labels
+    return validateButtons(
+      // merge the generated base properties with user supplied arguments
+      mergeArguments(
+        baseOptions,
+        args,
+        // if args.length > 1, properties specify how each arg maps to an object key
+        properties
+      ),
+      labels
+    );
+  }
+
+  /**
+   * from a given list of arguments return a suitable object of button labels
+   * all this does is normalise the given labels and translate them where possible
+   * e.g. "ok", "confirm" -> { ok: "OK, cancel: "Annuleren" }
+   */
+  function createLabels() {
+    var buttons = {};
+
+    for (var i = 0, j = arguments.length; i < j; i++) {
+      var argument = arguments[i];
+      var key = argument.toLowerCase();
+      var value = argument.toUpperCase();
+
+      buttons[key] = {
+        label: _t(value)
+      };
+    }
+
+    return buttons;
+  }
+
+  function validateButtons(options, buttons) {
+    var allowedButtons = {};
+    each(buttons, function(key, value) {
+      allowedButtons[value] = true;
+    });
+
+    each(options.buttons, function(key) {
+      if (allowedButtons[key] === undefined) {
+        throw new Error("button key " + key + " is not allowed (options are " + buttons.join("\n") + ")");
+      }
+    });
+
+    return options;
+  }
+
+  exports.alert = function() {
+    var options;
+
+    options = mergeDialogOptions("alert", ["ok"], ["message", "callback"], arguments);
+
+    if (options.callback && !$.isFunction(options.callback)) {
+      throw new Error("alert requires callback property to be a function when provided");
+    }
+
+    /**
+     * overrides
+     */
+    options.buttons.ok.callback = options.onEscape = function() {
+      if ($.isFunction(options.callback)) {
+        return options.callback.call(this);
+      }
+      return true;
+    };
+
+    return exports.dialog(options);
+  };
+
+  exports.confirm = function() {
+    var options;
+
+    options = mergeDialogOptions("confirm", ["cancel", "confirm"], ["message", "callback"], arguments);
+
+    /**
+     * overrides; undo anything the user tried to set they shouldn't have
+     */
+    options.buttons.cancel.callback = options.onEscape = function() {
+      return options.callback.call(this, false);
+    };
+
+    options.buttons.confirm.callback = function() {
+      return options.callback.call(this, true);
+    };
+
+    // confirm specific validation
+    if (!$.isFunction(options.callback)) {
+      throw new Error("confirm requires a callback");
+    }
+
+    return exports.dialog(options);
+  };
+
+  exports.prompt = function() {
+    var options;
+    var defaults;
+    var dialog;
+    var form;
+    var input;
+    var shouldShow;
+    var inputOptions;
+
+    // we have to create our form first otherwise
+    // its value is undefined when gearing up our options
+    // @TODO this could be solved by allowing message to
+    // be a function instead...
+    form = $(templates.form);
+
+    // prompt defaults are more complex than others in that
+    // users can override more defaults
+    // @TODO I don't like that prompt has to do a lot of heavy
+    // lifting which mergeDialogOptions can *almost* support already
+    // just because of 'value' and 'inputType' - can we refactor?
+    defaults = {
+      className: "bootbox-prompt",
+      buttons: createLabels("cancel", "confirm"),
+      value: "",
+      inputType: "text"
+    };
+
+    options = validateButtons(
+      mergeArguments(defaults, arguments, ["title", "callback"]),
+      ["cancel", "confirm"]
+    );
+
+    // capture the user's show value; we always set this to false before
+    // spawning the dialog to give us a chance to attach some handlers to
+    // it, but we need to make sure we respect a preference not to show it
+    shouldShow = (options.show === undefined) ? true : options.show;
+
+    /**
+     * overrides; undo anything the user tried to set they shouldn't have
+     */
+    options.message = form;
+
+    options.buttons.cancel.callback = options.onEscape = function() {
+      return options.callback.call(this, null);
+    };
+
+    options.buttons.confirm.callback = function() {
+      var value;
+
+      switch (options.inputType) {
+        case "text":
+        case "textarea":
+        case "email":
+        case "select":
+        case "date":
+        case "time":
+        case "number":
+        case "password":
+          value = input.val();
+          break;
+
+        case "checkbox":
+          var checkedItems = input.find("input:checked");
+
+          // we assume that checkboxes are always multiple,
+          // hence we default to an empty array
+          value = [];
+
+          each(checkedItems, function(_, item) {
+            value.push($(item).val());
+          });
+          break;
+      }
+
+      return options.callback.call(this, value);
+    };
+
+    options.show = false;
+
+    // prompt specific validation
+    if (!options.title) {
+      throw new Error("prompt requires a title");
+    }
+
+    if (!$.isFunction(options.callback)) {
+      throw new Error("prompt requires a callback");
+    }
+
+    if (!templates.inputs[options.inputType]) {
+      throw new Error("invalid prompt type");
+    }
+
+    // create the input based on the supplied type
+    input = $(templates.inputs[options.inputType]);
+
+    switch (options.inputType) {
+      case "text":
+      case "textarea":
+      case "email":
+      case "date":
+      case "time":
+      case "number":
+      case "password":
+        input.val(options.value);
+        break;
+
+      case "select":
+        var groups = {};
+        inputOptions = options.inputOptions || [];
+
+        if (!$.isArray(inputOptions)) {
+          throw new Error("Please pass an array of input options");
+        }
+
+        if (!inputOptions.length) {
+          throw new Error("prompt with select requires options");
+        }
+
+        each(inputOptions, function(_, option) {
+
+          // assume the element to attach to is the input...
+          var elem = input;
+
+          if (option.value === undefined || option.text === undefined) {
+            throw new Error("given options in wrong format");
+          }
+
+          // ... but override that element if this option sits in a group
+
+          if (option.group) {
+            // initialise group if necessary
+            if (!groups[option.group]) {
+              groups[option.group] = $("<optgroup/>").attr("label", option.group);
+            }
+
+            elem = groups[option.group];
+          }
+
+          elem.append("<option value='" + option.value + "'>" + option.text + "</option>");
+        });
+
+        each(groups, function(_, group) {
+          input.append(group);
+        });
+
+        // safe to set a select's value as per a normal input
+        input.val(options.value);
+        break;
+
+      case "checkbox":
+        var values   = $.isArray(options.value) ? options.value : [options.value];
+        inputOptions = options.inputOptions || [];
+
+        if (!inputOptions.length) {
+          throw new Error("prompt with checkbox requires options");
+        }
+
+        if (!inputOptions[0].value || !inputOptions[0].text) {
+          throw new Error("given options in wrong format");
+        }
+
+        // checkboxes have to nest within a containing element, so
+        // they break the rules a bit and we end up re-assigning
+        // our 'input' element to this container instead
+        input = $("<div/>");
+
+        each(inputOptions, function(_, option) {
+          var checkbox = $(templates.inputs[options.inputType]);
+
+          checkbox.find("input").attr("value", option.value);
+          checkbox.find("label").append(option.text);
+
+          // we've ensured values is an array so we can always iterate over it
+          each(values, function(_, value) {
+            if (value === option.value) {
+              checkbox.find("input").prop("checked", true);
+            }
+          });
+
+          input.append(checkbox);
+        });
+        break;
+    }
+
+    // @TODO provide an attributes option instead
+    // and simply map that as keys: vals
+    if (options.placeholder) {
+      input.attr("placeholder", options.placeholder);
+    }
+
+    if (options.pattern) {
+      input.attr("pattern", options.pattern);
+    }
+
+    if (options.maxlength) {
+      input.attr("maxlength", options.maxlength);
+    }
+
+    // now place it in our form
+    form.append(input);
+
+    form.on("submit", function(e) {
+      e.preventDefault();
+      // Fix for SammyJS (or similar JS routing library) hijacking the form post.
+      e.stopPropagation();
+      // @TODO can we actually click *the* button object instead?
+      // e.g. buttons.confirm.click() or similar
+      dialog.find(".btn-primary").click();
+    });
+
+    dialog = exports.dialog(options);
+
+    // clear the existing handler focusing the submit button...
+    dialog.off("shown.bs.modal");
+
+    // ...and replace it with one focusing our input, if possible
+    dialog.on("shown.bs.modal", function() {
+      // need the closure here since input isn't
+      // an object otherwise
+      input.focus();
+    });
+
+    if (shouldShow === true) {
+      dialog.modal("show");
+    }
+
+    return dialog;
+  };
+
+  exports.dialog = function(options) {
+    options = sanitize(options);
+
+    var dialog = $(templates.dialog);
+    var innerDialog = dialog.find(".modal-dialog");
+    var body = dialog.find(".modal-body");
+    var buttons = options.buttons;
+    var buttonStr = "";
+    var callbacks = {
+      onEscape: options.onEscape
+    };
+
+    if ($.fn.modal === undefined) {
+      throw new Error(
+        "$.fn.modal is not defined; please double check you have included " +
+        "the Bootstrap JavaScript library. See http://getbootstrap.com/javascript/ " +
+        "for more details."
+      );
+    }
+
+    each(buttons, function(key, button) {
+
+      // @TODO I don't like this string appending to itself; bit dirty. Needs reworking
+      // can we just build up button elements instead? slower but neater. Then button
+      // can just become a template too
+      buttonStr += "<button data-bb-handler='" + key + "' type='button' class='btn " + button.className + "'>" + button.label + "</button>";
+      callbacks[key] = button.callback;
+    });
+
+    body.find(".bootbox-body").html(options.message);
+
+    if (options.animate === true) {
+      dialog.addClass("fade");
+    }
+
+    if (options.className) {
+      dialog.addClass(options.className);
+    }
+
+    if (options.size === "large") {
+      innerDialog.addClass("modal-lg");
+    } else if (options.size === "small") {
+      innerDialog.addClass("modal-sm");
+    }
+
+    if (options.title) {
+      body.before(templates.header);
+    }
+
+    if (options.closeButton) {
+      var closeButton = $(templates.closeButton);
+
+      if (options.title) {
+        dialog.find(".modal-header").prepend(closeButton);
+      } else {
+        closeButton.css("margin-top", "-10px").prependTo(body);
+      }
+    }
+
+    if (options.title) {
+      dialog.find(".modal-title").html(options.title);
+    }
+
+    if (buttonStr.length) {
+      body.after(templates.footer);
+      dialog.find(".modal-footer").html(buttonStr);
+    }
+
+
+    /**
+     * Bootstrap event listeners; used handle extra
+     * setup & teardown required after the underlying
+     * modal has performed certain actions
+     */
+
+    dialog.on("hidden.bs.modal", function(e) {
+      // ensure we don't accidentally intercept hidden events triggered
+      // by children of the current dialog. We shouldn't anymore now BS
+      // namespaces its events; but still worth doing
+      if (e.target === this) {
+        dialog.remove();
+      }
+    });
+
+    /*
+    dialog.on("show.bs.modal", function() {
+      // sadly this doesn't work; show is called *just* before
+      // the backdrop is added so we'd need a setTimeout hack or
+      // otherwise... leaving in as would be nice
+      if (options.backdrop) {
+        dialog.next(".modal-backdrop").addClass("bootbox-backdrop");
+      }
+    });
+    */
+
+    dialog.on("shown.bs.modal", function() {
+      dialog.find(".btn-primary:first").focus();
+    });
+
+    /**
+     * Bootbox event listeners; experimental and may not last
+     * just an attempt to decouple some behaviours from their
+     * respective triggers
+     */
+
+    if (options.backdrop !== "static") {
+      // A boolean true/false according to the Bootstrap docs
+      // should show a dialog the user can dismiss by clicking on
+      // the background.
+      // We always only ever pass static/false to the actual
+      // $.modal function because with `true` we can't trap
+      // this event (the .modal-backdrop swallows it)
+      // However, we still want to sort of respect true
+      // and invoke the escape mechanism instead
+      dialog.on("click.dismiss.bs.modal", function(e) {
+        // @NOTE: the target varies in >= 3.3.x releases since the modal backdrop
+        // moved *inside* the outer dialog rather than *alongside* it
+        if (dialog.children(".modal-backdrop").length) {
+          e.currentTarget = dialog.children(".modal-backdrop").get(0);
+        }
+
+        if (e.target !== e.currentTarget) {
+          return;
+        }
+
+        dialog.trigger("escape.close.bb");
+      });
+    }
+
+    dialog.on("escape.close.bb", function(e) {
+      if (callbacks.onEscape) {
+        processCallback(e, dialog, callbacks.onEscape);
+      }
+    });
+
+    /**
+     * Standard jQuery event listeners; used to handle user
+     * interaction with our dialog
+     */
+
+    dialog.on("click", ".modal-footer button", function(e) {
+      var callbackKey = $(this).data("bb-handler");
+
+      processCallback(e, dialog, callbacks[callbackKey]);
+    });
+
+    dialog.on("click", ".bootbox-close-button", function(e) {
+      // onEscape might be falsy but that's fine; the fact is
+      // if the user has managed to click the close button we
+      // have to close the dialog, callback or not
+      processCallback(e, dialog, callbacks.onEscape);
+    });
+
+    dialog.on("keyup", function(e) {
+      if (e.which === 27) {
+        dialog.trigger("escape.close.bb");
+      }
+    });
+
+    // the remainder of this method simply deals with adding our
+    // dialogent to the DOM, augmenting it with Bootstrap's modal
+    // functionality and then giving the resulting object back
+    // to our caller
+
+    $(options.container).append(dialog);
+
+    dialog.modal({
+      backdrop: options.backdrop ? "static": false,
+      keyboard: false,
+      show: false
+    });
+
+    if (options.show) {
+      dialog.modal("show");
+    }
+
+    // @TODO should we return the raw element here or should
+    // we wrap it in an object on which we can expose some neater
+    // methods, e.g. var d = bootbox.alert(); d.hide(); instead
+    // of d.modal("hide");
+
+   /*
+    function BBDialog(elem) {
+      this.elem = elem;
+    }
+
+    BBDialog.prototype = {
+      hide: function() {
+        return this.elem.modal("hide");
+      },
+      show: function() {
+        return this.elem.modal("show");
+      }
+    };
+    */
+
+    return dialog;
+
+  };
+
+  exports.setDefaults = function() {
+    var values = {};
+
+    if (arguments.length === 2) {
+      // allow passing of single key/value...
+      values[arguments[0]] = arguments[1];
+    } else {
+      // ... and as an object too
+      values = arguments[0];
+    }
+
+    $.extend(defaults, values);
+  };
+
+  exports.hideAll = function() {
+    $(".bootbox").modal("hide");
+
+    return exports;
+  };
+
+
+  /**
+   * standard locales. Please add more according to ISO 639-1 standard. Multiple language variants are
+   * unlikely to be required. If this gets too large it can be split out into separate JS files.
+   */
+  var locales = {
+    bg_BG : {
+      OK      : "Ок",
+      CANCEL  : "Отказ",
+      CONFIRM : "Потвърждавам"
+    },
+    br : {
+      OK      : "OK",
+      CANCEL  : "Cancelar",
+      CONFIRM : "Sim"
+    },
+    cs : {
+      OK      : "OK",
+      CANCEL  : "Zrušit",
+      CONFIRM : "Potvrdit"
+    },
+    da : {
+      OK      : "OK",
+      CANCEL  : "Annuller",
+      CONFIRM : "Accepter"
+    },
+    de : {
+      OK      : "OK",
+      CANCEL  : "Abbrechen",
+      CONFIRM : "Akzeptieren"
+    },
+    el : {
+      OK      : "Εντάξει",
+      CANCEL  : "Ακύρωση",
+      CONFIRM : "Επιβεβαίωση"
+    },
+    en : {
+      OK      : "OK",
+      CANCEL  : "Cancel",
+      CONFIRM : "OK"
+    },
+    es : {
+      OK      : "OK",
+      CANCEL  : "Cancelar",
+      CONFIRM : "Aceptar"
+    },
+    et : {
+      OK      : "OK",
+      CANCEL  : "Katkesta",
+      CONFIRM : "OK"
+    },
+    fa : {
+      OK      : "قبول",
+      CANCEL  : "لغو",
+      CONFIRM : "تایید"
+    },
+    fi : {
+      OK      : "OK",
+      CANCEL  : "Peruuta",
+      CONFIRM : "OK"
+    },
+    fr : {
+      OK      : "OK",
+      CANCEL  : "Annuler",
+      CONFIRM : "D'accord"
+    },
+    he : {
+      OK      : "אישור",
+      CANCEL  : "ביטול",
+      CONFIRM : "אישור"
+    },
+    hu : {
+      OK      : "OK",
+      CANCEL  : "Mégsem",
+      CONFIRM : "Megerősít"
+    },
+    hr : {
+      OK      : "OK",
+      CANCEL  : "Odustani",
+      CONFIRM : "Potvrdi"
+    },
+    id : {
+      OK      : "OK",
+      CANCEL  : "Batal",
+      CONFIRM : "OK"
+    },
+    it : {
+      OK      : "OK",
+      CANCEL  : "Annulla",
+      CONFIRM : "Conferma"
+    },
+    ja : {
+      OK      : "OK",
+      CANCEL  : "キャンセル",
+      CONFIRM : "確認"
+    },
+    lt : {
+      OK      : "Gerai",
+      CANCEL  : "Atšaukti",
+      CONFIRM : "Patvirtinti"
+    },
+    lv : {
+      OK      : "Labi",
+      CANCEL  : "Atcelt",
+      CONFIRM : "Apstiprināt"
+    },
+    nl : {
+      OK      : "OK",
+      CANCEL  : "Annuleren",
+      CONFIRM : "Accepteren"
+    },
+    no : {
+      OK      : "OK",
+      CANCEL  : "Avbryt",
+      CONFIRM : "OK"
+    },
+    pl : {
+      OK      : "OK",
+      CANCEL  : "Anuluj",
+      CONFIRM : "Potwierdź"
+    },
+    pt : {
+      OK      : "OK",
+      CANCEL  : "Cancelar",
+      CONFIRM : "Confirmar"
+    },
+    ru : {
+      OK      : "OK",
+      CANCEL  : "Отмена",
+      CONFIRM : "Применить"
+    },
+    sq : {
+      OK : "OK",
+      CANCEL : "Anulo",
+      CONFIRM : "Prano"
+    },
+    sv : {
+      OK      : "OK",
+      CANCEL  : "Avbryt",
+      CONFIRM : "OK"
+    },
+    th : {
+      OK      : "ตกลง",
+      CANCEL  : "ยกเลิก",
+      CONFIRM : "ยืนยัน"
+    },
+    tr : {
+      OK      : "Tamam",
+      CANCEL  : "İptal",
+      CONFIRM : "Onayla"
+    },
+    zh_CN : {
+      OK      : "OK",
+      CANCEL  : "取消",
+      CONFIRM : "确认"
+    },
+    zh_TW : {
+      OK      : "OK",
+      CANCEL  : "取消",
+      CONFIRM : "確認"
+    }
+  };
+
+  exports.addLocale = function(name, values) {
+    $.each(["OK", "CANCEL", "CONFIRM"], function(_, v) {
+      if (!values[v]) {
+        throw new Error("Please supply a translation for '" + v + "'");
+      }
+    });
+
+    locales[name] = {
+      OK: values.OK,
+      CANCEL: values.CANCEL,
+      CONFIRM: values.CONFIRM
+    };
+
+    return exports;
+  };
+
+  exports.removeLocale = function(name) {
+    delete locales[name];
+
+    return exports;
+  };
+
+  exports.setLocale = function(name) {
+    return exports.setDefaults("locale", name);
+  };
+
+  exports.init = function(_$) {
+    return init(_$ || $);
+  };
+
+  return exports;
+}));
+
+},{"jquery":311}],4:[function(require,module,exports){
 // This file is autogenerated via the `commonjs` Grunt task. You can require() this file in a CommonJS environment.
 require('../../js/transition.js')
 require('../../js/alert.js')
@@ -730,7 +1717,7 @@ require('../../js/popover.js')
 require('../../js/scrollspy.js')
 require('../../js/tab.js')
 require('../../js/affix.js')
-},{"../../js/affix.js":4,"../../js/alert.js":5,"../../js/button.js":6,"../../js/carousel.js":7,"../../js/collapse.js":8,"../../js/dropdown.js":9,"../../js/modal.js":10,"../../js/popover.js":11,"../../js/scrollspy.js":12,"../../js/tab.js":13,"../../js/tooltip.js":14,"../../js/transition.js":15}],4:[function(require,module,exports){
+},{"../../js/affix.js":5,"../../js/alert.js":6,"../../js/button.js":7,"../../js/carousel.js":8,"../../js/collapse.js":9,"../../js/dropdown.js":10,"../../js/modal.js":11,"../../js/popover.js":12,"../../js/scrollspy.js":13,"../../js/tab.js":14,"../../js/tooltip.js":15,"../../js/transition.js":16}],5:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: affix.js v3.3.7
  * http://getbootstrap.com/javascript/#affix
@@ -894,7 +1881,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: alert.js v3.3.7
  * http://getbootstrap.com/javascript/#alerts
@@ -990,7 +1977,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: button.js v3.3.7
  * http://getbootstrap.com/javascript/#buttons
@@ -1117,7 +2104,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: carousel.js v3.3.7
  * http://getbootstrap.com/javascript/#carousel
@@ -1356,7 +2343,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: collapse.js v3.3.7
  * http://getbootstrap.com/javascript/#collapse
@@ -1570,7 +2557,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: dropdown.js v3.3.7
  * http://getbootstrap.com/javascript/#dropdowns
@@ -1737,7 +2724,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: modal.js v3.3.7
  * http://getbootstrap.com/javascript/#modals
@@ -2078,7 +3065,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: popover.js v3.3.7
  * http://getbootstrap.com/javascript/#popovers
@@ -2188,7 +3175,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: scrollspy.js v3.3.7
  * http://getbootstrap.com/javascript/#scrollspy
@@ -2362,7 +3349,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: tab.js v3.3.7
  * http://getbootstrap.com/javascript/#tabs
@@ -2519,7 +3506,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: tooltip.js v3.3.7
  * http://getbootstrap.com/javascript/#tooltip
@@ -3041,7 +4028,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: transition.js v3.3.7
  * http://getbootstrap.com/javascript/#transitions
@@ -3102,21 +4089,21 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 require('../../modules/core.regexp.escape');
 module.exports = require('../../modules/_core').RegExp.escape;
-},{"../../modules/_core":37,"../../modules/core.regexp.escape":133}],17:[function(require,module,exports){
+},{"../../modules/_core":38,"../../modules/core.regexp.escape":134}],18:[function(require,module,exports){
 module.exports = function(it){
   if(typeof it != 'function')throw TypeError(it + ' is not a function!');
   return it;
 };
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var cof = require('./_cof');
 module.exports = function(it, msg){
   if(typeof it != 'number' && cof(it) != 'Number')throw TypeError(msg);
   return +it;
 };
-},{"./_cof":32}],19:[function(require,module,exports){
+},{"./_cof":33}],20:[function(require,module,exports){
 // 22.1.3.31 Array.prototype[@@unscopables]
 var UNSCOPABLES = require('./_wks')('unscopables')
   , ArrayProto  = Array.prototype;
@@ -3124,19 +4111,19 @@ if(ArrayProto[UNSCOPABLES] == undefined)require('./_hide')(ArrayProto, UNSCOPABL
 module.exports = function(key){
   ArrayProto[UNSCOPABLES][key] = true;
 };
-},{"./_hide":54,"./_wks":131}],20:[function(require,module,exports){
+},{"./_hide":55,"./_wks":132}],21:[function(require,module,exports){
 module.exports = function(it, Constructor, name, forbiddenField){
   if(!(it instanceof Constructor) || (forbiddenField !== undefined && forbiddenField in it)){
     throw TypeError(name + ': incorrect invocation!');
   } return it;
 };
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var isObject = require('./_is-object');
 module.exports = function(it){
   if(!isObject(it))throw TypeError(it + ' is not an object!');
   return it;
 };
-},{"./_is-object":63}],22:[function(require,module,exports){
+},{"./_is-object":64}],23:[function(require,module,exports){
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
 'use strict';
 var toObject = require('./_to-object')
@@ -3163,7 +4150,7 @@ module.exports = [].copyWithin || function copyWithin(target/*= 0*/, start/*= 0,
     from += inc;
   } return O;
 };
-},{"./_to-index":119,"./_to-length":122,"./_to-object":123}],23:[function(require,module,exports){
+},{"./_to-index":120,"./_to-length":123,"./_to-object":124}],24:[function(require,module,exports){
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
 'use strict';
 var toObject = require('./_to-object')
@@ -3179,7 +4166,7 @@ module.exports = function fill(value /*, start = 0, end = @length */){
   while(endPos > index)O[index++] = value;
   return O;
 };
-},{"./_to-index":119,"./_to-length":122,"./_to-object":123}],24:[function(require,module,exports){
+},{"./_to-index":120,"./_to-length":123,"./_to-object":124}],25:[function(require,module,exports){
 var forOf = require('./_for-of');
 
 module.exports = function(iter, ITERATOR){
@@ -3188,7 +4175,7 @@ module.exports = function(iter, ITERATOR){
   return result;
 };
 
-},{"./_for-of":51}],25:[function(require,module,exports){
+},{"./_for-of":52}],26:[function(require,module,exports){
 // false -> Array#indexOf
 // true  -> Array#includes
 var toIObject = require('./_to-iobject')
@@ -3210,7 +4197,7 @@ module.exports = function(IS_INCLUDES){
     } return !IS_INCLUDES && -1;
   };
 };
-},{"./_to-index":119,"./_to-iobject":121,"./_to-length":122}],26:[function(require,module,exports){
+},{"./_to-index":120,"./_to-iobject":122,"./_to-length":123}],27:[function(require,module,exports){
 // 0 -> Array#forEach
 // 1 -> Array#map
 // 2 -> Array#filter
@@ -3255,7 +4242,7 @@ module.exports = function(TYPE, $create){
     return IS_FIND_INDEX ? -1 : IS_SOME || IS_EVERY ? IS_EVERY : result;
   };
 };
-},{"./_array-species-create":29,"./_ctx":39,"./_iobject":59,"./_to-length":122,"./_to-object":123}],27:[function(require,module,exports){
+},{"./_array-species-create":30,"./_ctx":40,"./_iobject":60,"./_to-length":123,"./_to-object":124}],28:[function(require,module,exports){
 var aFunction = require('./_a-function')
   , toObject  = require('./_to-object')
   , IObject   = require('./_iobject')
@@ -3284,7 +4271,7 @@ module.exports = function(that, callbackfn, aLen, memo, isRight){
   }
   return memo;
 };
-},{"./_a-function":17,"./_iobject":59,"./_to-length":122,"./_to-object":123}],28:[function(require,module,exports){
+},{"./_a-function":18,"./_iobject":60,"./_to-length":123,"./_to-object":124}],29:[function(require,module,exports){
 var isObject = require('./_is-object')
   , isArray  = require('./_is-array')
   , SPECIES  = require('./_wks')('species');
@@ -3301,14 +4288,14 @@ module.exports = function(original){
     }
   } return C === undefined ? Array : C;
 };
-},{"./_is-array":61,"./_is-object":63,"./_wks":131}],29:[function(require,module,exports){
+},{"./_is-array":62,"./_is-object":64,"./_wks":132}],30:[function(require,module,exports){
 // 9.4.2.3 ArraySpeciesCreate(originalArray, length)
 var speciesConstructor = require('./_array-species-constructor');
 
 module.exports = function(original, length){
   return new (speciesConstructor(original))(length);
 };
-},{"./_array-species-constructor":28}],30:[function(require,module,exports){
+},{"./_array-species-constructor":29}],31:[function(require,module,exports){
 'use strict';
 var aFunction  = require('./_a-function')
   , isObject   = require('./_is-object')
@@ -3333,7 +4320,7 @@ module.exports = Function.bind || function bind(that /*, args... */){
   if(isObject(fn.prototype))bound.prototype = fn.prototype;
   return bound;
 };
-},{"./_a-function":17,"./_invoke":58,"./_is-object":63}],31:[function(require,module,exports){
+},{"./_a-function":18,"./_invoke":59,"./_is-object":64}],32:[function(require,module,exports){
 // getting tag from 19.1.3.6 Object.prototype.toString()
 var cof = require('./_cof')
   , TAG = require('./_wks')('toStringTag')
@@ -3357,13 +4344,13 @@ module.exports = function(it){
     // ES3 arguments fallback
     : (B = cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
 };
-},{"./_cof":32,"./_wks":131}],32:[function(require,module,exports){
+},{"./_cof":33,"./_wks":132}],33:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = function(it){
   return toString.call(it).slice(8, -1);
 };
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 var dP          = require('./_object-dp').f
   , create      = require('./_object-create')
@@ -3506,7 +4493,7 @@ module.exports = {
     setSpecies(NAME);
   }
 };
-},{"./_an-instance":20,"./_ctx":39,"./_defined":41,"./_descriptors":42,"./_for-of":51,"./_iter-define":67,"./_iter-step":69,"./_meta":76,"./_object-create":80,"./_object-dp":81,"./_redefine-all":100,"./_set-species":105}],34:[function(require,module,exports){
+},{"./_an-instance":21,"./_ctx":40,"./_defined":42,"./_descriptors":43,"./_for-of":52,"./_iter-define":68,"./_iter-step":70,"./_meta":77,"./_object-create":81,"./_object-dp":82,"./_redefine-all":101,"./_set-species":106}],35:[function(require,module,exports){
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var classof = require('./_classof')
   , from    = require('./_array-from-iterable');
@@ -3516,7 +4503,7 @@ module.exports = function(NAME){
     return from(this);
   };
 };
-},{"./_array-from-iterable":24,"./_classof":31}],35:[function(require,module,exports){
+},{"./_array-from-iterable":25,"./_classof":32}],36:[function(require,module,exports){
 'use strict';
 var redefineAll       = require('./_redefine-all')
   , getWeak           = require('./_meta').getWeak
@@ -3600,7 +4587,7 @@ module.exports = {
   },
   ufstore: uncaughtFrozenStore
 };
-},{"./_an-instance":20,"./_an-object":21,"./_array-methods":26,"./_for-of":51,"./_has":53,"./_is-object":63,"./_meta":76,"./_redefine-all":100}],36:[function(require,module,exports){
+},{"./_an-instance":21,"./_an-object":22,"./_array-methods":27,"./_for-of":52,"./_has":54,"./_is-object":64,"./_meta":77,"./_redefine-all":101}],37:[function(require,module,exports){
 'use strict';
 var global            = require('./_global')
   , $export           = require('./_export')
@@ -3686,10 +4673,10 @@ module.exports = function(NAME, wrapper, methods, common, IS_MAP, IS_WEAK){
 
   return C;
 };
-},{"./_an-instance":20,"./_export":46,"./_fails":48,"./_for-of":51,"./_global":52,"./_inherit-if-required":57,"./_is-object":63,"./_iter-detect":68,"./_meta":76,"./_redefine":101,"./_redefine-all":100,"./_set-to-string-tag":106}],37:[function(require,module,exports){
+},{"./_an-instance":21,"./_export":47,"./_fails":49,"./_for-of":52,"./_global":53,"./_inherit-if-required":58,"./_is-object":64,"./_iter-detect":69,"./_meta":77,"./_redefine":102,"./_redefine-all":101,"./_set-to-string-tag":107}],38:[function(require,module,exports){
 var core = module.exports = {version: '2.4.0'};
 if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 var $defineProperty = require('./_object-dp')
   , createDesc      = require('./_property-desc');
@@ -3698,7 +4685,7 @@ module.exports = function(object, index, value){
   if(index in object)$defineProperty.f(object, index, createDesc(0, value));
   else object[index] = value;
 };
-},{"./_object-dp":81,"./_property-desc":99}],39:[function(require,module,exports){
+},{"./_object-dp":82,"./_property-desc":100}],40:[function(require,module,exports){
 // optional / simple context binding
 var aFunction = require('./_a-function');
 module.exports = function(fn, that, length){
@@ -3719,7 +4706,7 @@ module.exports = function(fn, that, length){
     return fn.apply(that, arguments);
   };
 };
-},{"./_a-function":17}],40:[function(require,module,exports){
+},{"./_a-function":18}],41:[function(require,module,exports){
 'use strict';
 var anObject    = require('./_an-object')
   , toPrimitive = require('./_to-primitive')
@@ -3729,18 +4716,18 @@ module.exports = function(hint){
   if(hint !== 'string' && hint !== NUMBER && hint !== 'default')throw TypeError('Incorrect hint');
   return toPrimitive(anObject(this), hint != NUMBER);
 };
-},{"./_an-object":21,"./_to-primitive":124}],41:[function(require,module,exports){
+},{"./_an-object":22,"./_to-primitive":125}],42:[function(require,module,exports){
 // 7.2.1 RequireObjectCoercible(argument)
 module.exports = function(it){
   if(it == undefined)throw TypeError("Can't call method on  " + it);
   return it;
 };
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 // Thank's IE8 for his funny defineProperty
 module.exports = !require('./_fails')(function(){
   return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
 });
-},{"./_fails":48}],43:[function(require,module,exports){
+},{"./_fails":49}],44:[function(require,module,exports){
 var isObject = require('./_is-object')
   , document = require('./_global').document
   // in old IE typeof document.createElement is 'object'
@@ -3748,12 +4735,12 @@ var isObject = require('./_is-object')
 module.exports = function(it){
   return is ? document.createElement(it) : {};
 };
-},{"./_global":52,"./_is-object":63}],44:[function(require,module,exports){
+},{"./_global":53,"./_is-object":64}],45:[function(require,module,exports){
 // IE 8- don't enum bug keys
 module.exports = (
   'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
 ).split(',');
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 // all enumerable object keys, includes symbols
 var getKeys = require('./_object-keys')
   , gOPS    = require('./_object-gops')
@@ -3769,7 +4756,7 @@ module.exports = function(it){
     while(symbols.length > i)if(isEnum.call(it, key = symbols[i++]))result.push(key);
   } return result;
 };
-},{"./_object-gops":87,"./_object-keys":90,"./_object-pie":91}],46:[function(require,module,exports){
+},{"./_object-gops":88,"./_object-keys":91,"./_object-pie":92}],47:[function(require,module,exports){
 var global    = require('./_global')
   , core      = require('./_core')
   , hide      = require('./_hide')
@@ -3813,7 +4800,7 @@ $export.W = 32;  // wrap
 $export.U = 64;  // safe
 $export.R = 128; // real proto method for `library` 
 module.exports = $export;
-},{"./_core":37,"./_ctx":39,"./_global":52,"./_hide":54,"./_redefine":101}],47:[function(require,module,exports){
+},{"./_core":38,"./_ctx":40,"./_global":53,"./_hide":55,"./_redefine":102}],48:[function(require,module,exports){
 var MATCH = require('./_wks')('match');
 module.exports = function(KEY){
   var re = /./;
@@ -3826,7 +4813,7 @@ module.exports = function(KEY){
     } catch(f){ /* empty */ }
   } return true;
 };
-},{"./_wks":131}],48:[function(require,module,exports){
+},{"./_wks":132}],49:[function(require,module,exports){
 module.exports = function(exec){
   try {
     return !!exec();
@@ -3834,7 +4821,7 @@ module.exports = function(exec){
     return true;
   }
 };
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 'use strict';
 var hide     = require('./_hide')
   , redefine = require('./_redefine')
@@ -3863,7 +4850,7 @@ module.exports = function(KEY, length, exec){
     );
   }
 };
-},{"./_defined":41,"./_fails":48,"./_hide":54,"./_redefine":101,"./_wks":131}],50:[function(require,module,exports){
+},{"./_defined":42,"./_fails":49,"./_hide":55,"./_redefine":102,"./_wks":132}],51:[function(require,module,exports){
 'use strict';
 // 21.2.5.3 get RegExp.prototype.flags
 var anObject = require('./_an-object');
@@ -3877,7 +4864,7 @@ module.exports = function(){
   if(that.sticky)     result += 'y';
   return result;
 };
-},{"./_an-object":21}],51:[function(require,module,exports){
+},{"./_an-object":22}],52:[function(require,module,exports){
 var ctx         = require('./_ctx')
   , call        = require('./_iter-call')
   , isArrayIter = require('./_is-array-iter')
@@ -3903,17 +4890,17 @@ var exports = module.exports = function(iterable, entries, fn, that, ITERATOR){
 };
 exports.BREAK  = BREAK;
 exports.RETURN = RETURN;
-},{"./_an-object":21,"./_ctx":39,"./_is-array-iter":60,"./_iter-call":65,"./_to-length":122,"./core.get-iterator-method":132}],52:[function(require,module,exports){
+},{"./_an-object":22,"./_ctx":40,"./_is-array-iter":61,"./_iter-call":66,"./_to-length":123,"./core.get-iterator-method":133}],53:[function(require,module,exports){
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
 var global = module.exports = typeof window != 'undefined' && window.Math == Math
   ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
 if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 var hasOwnProperty = {}.hasOwnProperty;
 module.exports = function(it, key){
   return hasOwnProperty.call(it, key);
 };
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 var dP         = require('./_object-dp')
   , createDesc = require('./_property-desc');
 module.exports = require('./_descriptors') ? function(object, key, value){
@@ -3922,13 +4909,13 @@ module.exports = require('./_descriptors') ? function(object, key, value){
   object[key] = value;
   return object;
 };
-},{"./_descriptors":42,"./_object-dp":81,"./_property-desc":99}],55:[function(require,module,exports){
+},{"./_descriptors":43,"./_object-dp":82,"./_property-desc":100}],56:[function(require,module,exports){
 module.exports = require('./_global').document && document.documentElement;
-},{"./_global":52}],56:[function(require,module,exports){
+},{"./_global":53}],57:[function(require,module,exports){
 module.exports = !require('./_descriptors') && !require('./_fails')(function(){
   return Object.defineProperty(require('./_dom-create')('div'), 'a', {get: function(){ return 7; }}).a != 7;
 });
-},{"./_descriptors":42,"./_dom-create":43,"./_fails":48}],57:[function(require,module,exports){
+},{"./_descriptors":43,"./_dom-create":44,"./_fails":49}],58:[function(require,module,exports){
 var isObject       = require('./_is-object')
   , setPrototypeOf = require('./_set-proto').set;
 module.exports = function(that, target, C){
@@ -3937,7 +4924,7 @@ module.exports = function(that, target, C){
     setPrototypeOf(that, P);
   } return that;
 };
-},{"./_is-object":63,"./_set-proto":104}],58:[function(require,module,exports){
+},{"./_is-object":64,"./_set-proto":105}],59:[function(require,module,exports){
 // fast apply, http://jsperf.lnkit.com/fast-apply/5
 module.exports = function(fn, args, that){
   var un = that === undefined;
@@ -3954,13 +4941,13 @@ module.exports = function(fn, args, that){
                       : fn.call(that, args[0], args[1], args[2], args[3]);
   } return              fn.apply(that, args);
 };
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
 var cof = require('./_cof');
 module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
   return cof(it) == 'String' ? it.split('') : Object(it);
 };
-},{"./_cof":32}],60:[function(require,module,exports){
+},{"./_cof":33}],61:[function(require,module,exports){
 // check on default Array iterator
 var Iterators  = require('./_iterators')
   , ITERATOR   = require('./_wks')('iterator')
@@ -3969,24 +4956,24 @@ var Iterators  = require('./_iterators')
 module.exports = function(it){
   return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);
 };
-},{"./_iterators":70,"./_wks":131}],61:[function(require,module,exports){
+},{"./_iterators":71,"./_wks":132}],62:[function(require,module,exports){
 // 7.2.2 IsArray(argument)
 var cof = require('./_cof');
 module.exports = Array.isArray || function isArray(arg){
   return cof(arg) == 'Array';
 };
-},{"./_cof":32}],62:[function(require,module,exports){
+},{"./_cof":33}],63:[function(require,module,exports){
 // 20.1.2.3 Number.isInteger(number)
 var isObject = require('./_is-object')
   , floor    = Math.floor;
 module.exports = function isInteger(it){
   return !isObject(it) && isFinite(it) && floor(it) === it;
 };
-},{"./_is-object":63}],63:[function(require,module,exports){
+},{"./_is-object":64}],64:[function(require,module,exports){
 module.exports = function(it){
   return typeof it === 'object' ? it !== null : typeof it === 'function';
 };
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 // 7.2.8 IsRegExp(argument)
 var isObject = require('./_is-object')
   , cof      = require('./_cof')
@@ -3995,7 +4982,7 @@ module.exports = function(it){
   var isRegExp;
   return isObject(it) && ((isRegExp = it[MATCH]) !== undefined ? !!isRegExp : cof(it) == 'RegExp');
 };
-},{"./_cof":32,"./_is-object":63,"./_wks":131}],65:[function(require,module,exports){
+},{"./_cof":33,"./_is-object":64,"./_wks":132}],66:[function(require,module,exports){
 // call something on iterator step with safe closing on error
 var anObject = require('./_an-object');
 module.exports = function(iterator, fn, value, entries){
@@ -4008,7 +4995,7 @@ module.exports = function(iterator, fn, value, entries){
     throw e;
   }
 };
-},{"./_an-object":21}],66:[function(require,module,exports){
+},{"./_an-object":22}],67:[function(require,module,exports){
 'use strict';
 var create         = require('./_object-create')
   , descriptor     = require('./_property-desc')
@@ -4022,7 +5009,7 @@ module.exports = function(Constructor, NAME, next){
   Constructor.prototype = create(IteratorPrototype, {next: descriptor(1, next)});
   setToStringTag(Constructor, NAME + ' Iterator');
 };
-},{"./_hide":54,"./_object-create":80,"./_property-desc":99,"./_set-to-string-tag":106,"./_wks":131}],67:[function(require,module,exports){
+},{"./_hide":55,"./_object-create":81,"./_property-desc":100,"./_set-to-string-tag":107,"./_wks":132}],68:[function(require,module,exports){
 'use strict';
 var LIBRARY        = require('./_library')
   , $export        = require('./_export')
@@ -4093,7 +5080,7 @@ module.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED
   }
   return methods;
 };
-},{"./_export":46,"./_has":53,"./_hide":54,"./_iter-create":66,"./_iterators":70,"./_library":72,"./_object-gpo":88,"./_redefine":101,"./_set-to-string-tag":106,"./_wks":131}],68:[function(require,module,exports){
+},{"./_export":47,"./_has":54,"./_hide":55,"./_iter-create":67,"./_iterators":71,"./_library":73,"./_object-gpo":89,"./_redefine":102,"./_set-to-string-tag":107,"./_wks":132}],69:[function(require,module,exports){
 var ITERATOR     = require('./_wks')('iterator')
   , SAFE_CLOSING = false;
 
@@ -4115,13 +5102,13 @@ module.exports = function(exec, skipClosing){
   } catch(e){ /* empty */ }
   return safe;
 };
-},{"./_wks":131}],69:[function(require,module,exports){
+},{"./_wks":132}],70:[function(require,module,exports){
 module.exports = function(done, value){
   return {value: value, done: !!done};
 };
-},{}],70:[function(require,module,exports){
-module.exports = {};
 },{}],71:[function(require,module,exports){
+module.exports = {};
+},{}],72:[function(require,module,exports){
 var getKeys   = require('./_object-keys')
   , toIObject = require('./_to-iobject');
 module.exports = function(object, el){
@@ -4132,9 +5119,9 @@ module.exports = function(object, el){
     , key;
   while(length > index)if(O[key = keys[index++]] === el)return key;
 };
-},{"./_object-keys":90,"./_to-iobject":121}],72:[function(require,module,exports){
+},{"./_object-keys":91,"./_to-iobject":122}],73:[function(require,module,exports){
 module.exports = false;
-},{}],73:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 // 20.2.2.14 Math.expm1(x)
 var $expm1 = Math.expm1;
 module.exports = (!$expm1
@@ -4145,17 +5132,17 @@ module.exports = (!$expm1
 ) ? function expm1(x){
   return (x = +x) == 0 ? x : x > -1e-6 && x < 1e-6 ? x + x * x / 2 : Math.exp(x) - 1;
 } : $expm1;
-},{}],74:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 // 20.2.2.20 Math.log1p(x)
 module.exports = Math.log1p || function log1p(x){
   return (x = +x) > -1e-8 && x < 1e-8 ? x - x * x / 2 : Math.log(1 + x);
 };
-},{}],75:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 // 20.2.2.28 Math.sign(x)
 module.exports = Math.sign || function sign(x){
   return (x = +x) == 0 || x != x ? x : x < 0 ? -1 : 1;
 };
-},{}],76:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 var META     = require('./_uid')('meta')
   , isObject = require('./_is-object')
   , has      = require('./_has')
@@ -4209,7 +5196,7 @@ var meta = module.exports = {
   getWeak:  getWeak,
   onFreeze: onFreeze
 };
-},{"./_fails":48,"./_has":53,"./_is-object":63,"./_object-dp":81,"./_uid":128}],77:[function(require,module,exports){
+},{"./_fails":49,"./_has":54,"./_is-object":64,"./_object-dp":82,"./_uid":129}],78:[function(require,module,exports){
 var Map     = require('./es6.map')
   , $export = require('./_export')
   , shared  = require('./_shared')('metadata')
@@ -4261,7 +5248,7 @@ module.exports = {
   key: toMetaKey,
   exp: exp
 };
-},{"./_export":46,"./_shared":108,"./es6.map":163,"./es6.weak-map":269}],78:[function(require,module,exports){
+},{"./_export":47,"./_shared":109,"./es6.map":164,"./es6.weak-map":270}],79:[function(require,module,exports){
 var global    = require('./_global')
   , macrotask = require('./_task').set
   , Observer  = global.MutationObserver || global.WebKitMutationObserver
@@ -4330,7 +5317,7 @@ module.exports = function(){
     } last = task;
   };
 };
-},{"./_cof":32,"./_global":52,"./_task":118}],79:[function(require,module,exports){
+},{"./_cof":33,"./_global":53,"./_task":119}],80:[function(require,module,exports){
 'use strict';
 // 19.1.2.1 Object.assign(target, source, ...)
 var getKeys  = require('./_object-keys')
@@ -4364,7 +5351,7 @@ module.exports = !$assign || require('./_fails')(function(){
     while(length > j)if(isEnum.call(S, key = keys[j++]))T[key] = S[key];
   } return T;
 } : $assign;
-},{"./_fails":48,"./_iobject":59,"./_object-gops":87,"./_object-keys":90,"./_object-pie":91,"./_to-object":123}],80:[function(require,module,exports){
+},{"./_fails":49,"./_iobject":60,"./_object-gops":88,"./_object-keys":91,"./_object-pie":92,"./_to-object":124}],81:[function(require,module,exports){
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 var anObject    = require('./_an-object')
   , dPs         = require('./_object-dps')
@@ -4407,7 +5394,7 @@ module.exports = Object.create || function create(O, Properties){
   return Properties === undefined ? result : dPs(result, Properties);
 };
 
-},{"./_an-object":21,"./_dom-create":43,"./_enum-bug-keys":44,"./_html":55,"./_object-dps":82,"./_shared-key":107}],81:[function(require,module,exports){
+},{"./_an-object":22,"./_dom-create":44,"./_enum-bug-keys":45,"./_html":56,"./_object-dps":83,"./_shared-key":108}],82:[function(require,module,exports){
 var anObject       = require('./_an-object')
   , IE8_DOM_DEFINE = require('./_ie8-dom-define')
   , toPrimitive    = require('./_to-primitive')
@@ -4424,7 +5411,7 @@ exports.f = require('./_descriptors') ? Object.defineProperty : function defineP
   if('value' in Attributes)O[P] = Attributes.value;
   return O;
 };
-},{"./_an-object":21,"./_descriptors":42,"./_ie8-dom-define":56,"./_to-primitive":124}],82:[function(require,module,exports){
+},{"./_an-object":22,"./_descriptors":43,"./_ie8-dom-define":57,"./_to-primitive":125}],83:[function(require,module,exports){
 var dP       = require('./_object-dp')
   , anObject = require('./_an-object')
   , getKeys  = require('./_object-keys');
@@ -4438,7 +5425,7 @@ module.exports = require('./_descriptors') ? Object.defineProperties : function 
   while(length > i)dP.f(O, P = keys[i++], Properties[P]);
   return O;
 };
-},{"./_an-object":21,"./_descriptors":42,"./_object-dp":81,"./_object-keys":90}],83:[function(require,module,exports){
+},{"./_an-object":22,"./_descriptors":43,"./_object-dp":82,"./_object-keys":91}],84:[function(require,module,exports){
 // Forced replacement prototype accessors methods
 module.exports = require('./_library')|| !require('./_fails')(function(){
   var K = Math.random();
@@ -4446,7 +5433,7 @@ module.exports = require('./_library')|| !require('./_fails')(function(){
   __defineSetter__.call(null, K, function(){ /* empty */});
   delete require('./_global')[K];
 });
-},{"./_fails":48,"./_global":52,"./_library":72}],84:[function(require,module,exports){
+},{"./_fails":49,"./_global":53,"./_library":73}],85:[function(require,module,exports){
 var pIE            = require('./_object-pie')
   , createDesc     = require('./_property-desc')
   , toIObject      = require('./_to-iobject')
@@ -4463,7 +5450,7 @@ exports.f = require('./_descriptors') ? gOPD : function getOwnPropertyDescriptor
   } catch(e){ /* empty */ }
   if(has(O, P))return createDesc(!pIE.f.call(O, P), O[P]);
 };
-},{"./_descriptors":42,"./_has":53,"./_ie8-dom-define":56,"./_object-pie":91,"./_property-desc":99,"./_to-iobject":121,"./_to-primitive":124}],85:[function(require,module,exports){
+},{"./_descriptors":43,"./_has":54,"./_ie8-dom-define":57,"./_object-pie":92,"./_property-desc":100,"./_to-iobject":122,"./_to-primitive":125}],86:[function(require,module,exports){
 // fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
 var toIObject = require('./_to-iobject')
   , gOPN      = require('./_object-gopn').f
@@ -4484,7 +5471,7 @@ module.exports.f = function getOwnPropertyNames(it){
   return windowNames && toString.call(it) == '[object Window]' ? getWindowNames(it) : gOPN(toIObject(it));
 };
 
-},{"./_object-gopn":86,"./_to-iobject":121}],86:[function(require,module,exports){
+},{"./_object-gopn":87,"./_to-iobject":122}],87:[function(require,module,exports){
 // 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
 var $keys      = require('./_object-keys-internal')
   , hiddenKeys = require('./_enum-bug-keys').concat('length', 'prototype');
@@ -4492,9 +5479,9 @@ var $keys      = require('./_object-keys-internal')
 exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O){
   return $keys(O, hiddenKeys);
 };
-},{"./_enum-bug-keys":44,"./_object-keys-internal":89}],87:[function(require,module,exports){
+},{"./_enum-bug-keys":45,"./_object-keys-internal":90}],88:[function(require,module,exports){
 exports.f = Object.getOwnPropertySymbols;
-},{}],88:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has         = require('./_has')
   , toObject    = require('./_to-object')
@@ -4508,7 +5495,7 @@ module.exports = Object.getPrototypeOf || function(O){
     return O.constructor.prototype;
   } return O instanceof Object ? ObjectProto : null;
 };
-},{"./_has":53,"./_shared-key":107,"./_to-object":123}],89:[function(require,module,exports){
+},{"./_has":54,"./_shared-key":108,"./_to-object":124}],90:[function(require,module,exports){
 var has          = require('./_has')
   , toIObject    = require('./_to-iobject')
   , arrayIndexOf = require('./_array-includes')(false)
@@ -4526,7 +5513,7 @@ module.exports = function(object, names){
   }
   return result;
 };
-},{"./_array-includes":25,"./_has":53,"./_shared-key":107,"./_to-iobject":121}],90:[function(require,module,exports){
+},{"./_array-includes":26,"./_has":54,"./_shared-key":108,"./_to-iobject":122}],91:[function(require,module,exports){
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
 var $keys       = require('./_object-keys-internal')
   , enumBugKeys = require('./_enum-bug-keys');
@@ -4534,9 +5521,9 @@ var $keys       = require('./_object-keys-internal')
 module.exports = Object.keys || function keys(O){
   return $keys(O, enumBugKeys);
 };
-},{"./_enum-bug-keys":44,"./_object-keys-internal":89}],91:[function(require,module,exports){
+},{"./_enum-bug-keys":45,"./_object-keys-internal":90}],92:[function(require,module,exports){
 exports.f = {}.propertyIsEnumerable;
-},{}],92:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 // most Object methods by ES6 should accept primitives
 var $export = require('./_export')
   , core    = require('./_core')
@@ -4547,7 +5534,7 @@ module.exports = function(KEY, exec){
   exp[KEY] = exec(fn);
   $export($export.S + $export.F * fails(function(){ fn(1); }), 'Object', exp);
 };
-},{"./_core":37,"./_export":46,"./_fails":48}],93:[function(require,module,exports){
+},{"./_core":38,"./_export":47,"./_fails":49}],94:[function(require,module,exports){
 var getKeys   = require('./_object-keys')
   , toIObject = require('./_to-iobject')
   , isEnum    = require('./_object-pie').f;
@@ -4564,7 +5551,7 @@ module.exports = function(isEntries){
     } return result;
   };
 };
-},{"./_object-keys":90,"./_object-pie":91,"./_to-iobject":121}],94:[function(require,module,exports){
+},{"./_object-keys":91,"./_object-pie":92,"./_to-iobject":122}],95:[function(require,module,exports){
 // all object keys, includes non-enumerable and symbols
 var gOPN     = require('./_object-gopn')
   , gOPS     = require('./_object-gops')
@@ -4575,7 +5562,7 @@ module.exports = Reflect && Reflect.ownKeys || function ownKeys(it){
     , getSymbols = gOPS.f;
   return getSymbols ? keys.concat(getSymbols(it)) : keys;
 };
-},{"./_an-object":21,"./_global":52,"./_object-gopn":86,"./_object-gops":87}],95:[function(require,module,exports){
+},{"./_an-object":22,"./_global":53,"./_object-gopn":87,"./_object-gops":88}],96:[function(require,module,exports){
 var $parseFloat = require('./_global').parseFloat
   , $trim       = require('./_string-trim').trim;
 
@@ -4584,7 +5571,7 @@ module.exports = 1 / $parseFloat(require('./_string-ws') + '-0') !== -Infinity ?
     , result = $parseFloat(string);
   return result === 0 && string.charAt(0) == '-' ? -0 : result;
 } : $parseFloat;
-},{"./_global":52,"./_string-trim":116,"./_string-ws":117}],96:[function(require,module,exports){
+},{"./_global":53,"./_string-trim":117,"./_string-ws":118}],97:[function(require,module,exports){
 var $parseInt = require('./_global').parseInt
   , $trim     = require('./_string-trim').trim
   , ws        = require('./_string-ws')
@@ -4594,7 +5581,7 @@ module.exports = $parseInt(ws + '08') !== 8 || $parseInt(ws + '0x16') !== 22 ? f
   var string = $trim(String(str), 3);
   return $parseInt(string, (radix >>> 0) || (hex.test(string) ? 16 : 10));
 } : $parseInt;
-},{"./_global":52,"./_string-trim":116,"./_string-ws":117}],97:[function(require,module,exports){
+},{"./_global":53,"./_string-trim":117,"./_string-ws":118}],98:[function(require,module,exports){
 'use strict';
 var path      = require('./_path')
   , invoke    = require('./_invoke')
@@ -4618,9 +5605,9 @@ module.exports = function(/* ...pargs */){
     return invoke(fn, args, that);
   };
 };
-},{"./_a-function":17,"./_invoke":58,"./_path":98}],98:[function(require,module,exports){
+},{"./_a-function":18,"./_invoke":59,"./_path":99}],99:[function(require,module,exports){
 module.exports = require('./_global');
-},{"./_global":52}],99:[function(require,module,exports){
+},{"./_global":53}],100:[function(require,module,exports){
 module.exports = function(bitmap, value){
   return {
     enumerable  : !(bitmap & 1),
@@ -4629,13 +5616,13 @@ module.exports = function(bitmap, value){
     value       : value
   };
 };
-},{}],100:[function(require,module,exports){
+},{}],101:[function(require,module,exports){
 var redefine = require('./_redefine');
 module.exports = function(target, src, safe){
   for(var key in src)redefine(target, key, src[key], safe);
   return target;
 };
-},{"./_redefine":101}],101:[function(require,module,exports){
+},{"./_redefine":102}],102:[function(require,module,exports){
 var global    = require('./_global')
   , hide      = require('./_hide')
   , has       = require('./_has')
@@ -4668,7 +5655,7 @@ require('./_core').inspectSource = function(it){
 })(Function.prototype, TO_STRING, function toString(){
   return typeof this == 'function' && this[SRC] || $toString.call(this);
 });
-},{"./_core":37,"./_global":52,"./_has":53,"./_hide":54,"./_uid":128}],102:[function(require,module,exports){
+},{"./_core":38,"./_global":53,"./_has":54,"./_hide":55,"./_uid":129}],103:[function(require,module,exports){
 module.exports = function(regExp, replace){
   var replacer = replace === Object(replace) ? function(part){
     return replace[part];
@@ -4677,12 +5664,12 @@ module.exports = function(regExp, replace){
     return String(it).replace(regExp, replacer);
   };
 };
-},{}],103:[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 // 7.2.9 SameValue(x, y)
 module.exports = Object.is || function is(x, y){
   return x === y ? x !== 0 || 1 / x === 1 / y : x != x && y != y;
 };
-},{}],104:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 // Works with __proto__ only. Old v8 can't work with null proto objects.
 /* eslint-disable no-proto */
 var isObject = require('./_is-object')
@@ -4708,7 +5695,7 @@ module.exports = {
     }({}, false) : undefined),
   check: check
 };
-},{"./_an-object":21,"./_ctx":39,"./_is-object":63,"./_object-gopd":84}],105:[function(require,module,exports){
+},{"./_an-object":22,"./_ctx":40,"./_is-object":64,"./_object-gopd":85}],106:[function(require,module,exports){
 'use strict';
 var global      = require('./_global')
   , dP          = require('./_object-dp')
@@ -4722,7 +5709,7 @@ module.exports = function(KEY){
     get: function(){ return this; }
   });
 };
-},{"./_descriptors":42,"./_global":52,"./_object-dp":81,"./_wks":131}],106:[function(require,module,exports){
+},{"./_descriptors":43,"./_global":53,"./_object-dp":82,"./_wks":132}],107:[function(require,module,exports){
 var def = require('./_object-dp').f
   , has = require('./_has')
   , TAG = require('./_wks')('toStringTag');
@@ -4730,20 +5717,20 @@ var def = require('./_object-dp').f
 module.exports = function(it, tag, stat){
   if(it && !has(it = stat ? it : it.prototype, TAG))def(it, TAG, {configurable: true, value: tag});
 };
-},{"./_has":53,"./_object-dp":81,"./_wks":131}],107:[function(require,module,exports){
+},{"./_has":54,"./_object-dp":82,"./_wks":132}],108:[function(require,module,exports){
 var shared = require('./_shared')('keys')
   , uid    = require('./_uid');
 module.exports = function(key){
   return shared[key] || (shared[key] = uid(key));
 };
-},{"./_shared":108,"./_uid":128}],108:[function(require,module,exports){
+},{"./_shared":109,"./_uid":129}],109:[function(require,module,exports){
 var global = require('./_global')
   , SHARED = '__core-js_shared__'
   , store  = global[SHARED] || (global[SHARED] = {});
 module.exports = function(key){
   return store[key] || (store[key] = {});
 };
-},{"./_global":52}],109:[function(require,module,exports){
+},{"./_global":53}],110:[function(require,module,exports){
 // 7.3.20 SpeciesConstructor(O, defaultConstructor)
 var anObject  = require('./_an-object')
   , aFunction = require('./_a-function')
@@ -4752,7 +5739,7 @@ module.exports = function(O, D){
   var C = anObject(O).constructor, S;
   return C === undefined || (S = anObject(C)[SPECIES]) == undefined ? D : aFunction(S);
 };
-},{"./_a-function":17,"./_an-object":21,"./_wks":131}],110:[function(require,module,exports){
+},{"./_a-function":18,"./_an-object":22,"./_wks":132}],111:[function(require,module,exports){
 var fails = require('./_fails');
 
 module.exports = function(method, arg){
@@ -4760,7 +5747,7 @@ module.exports = function(method, arg){
     arg ? method.call(null, function(){}, 1) : method.call(null);
   });
 };
-},{"./_fails":48}],111:[function(require,module,exports){
+},{"./_fails":49}],112:[function(require,module,exports){
 var toInteger = require('./_to-integer')
   , defined   = require('./_defined');
 // true  -> String#at
@@ -4778,7 +5765,7 @@ module.exports = function(TO_STRING){
       : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;
   };
 };
-},{"./_defined":41,"./_to-integer":120}],112:[function(require,module,exports){
+},{"./_defined":42,"./_to-integer":121}],113:[function(require,module,exports){
 // helper for String#{startsWith, endsWith, includes}
 var isRegExp = require('./_is-regexp')
   , defined  = require('./_defined');
@@ -4787,7 +5774,7 @@ module.exports = function(that, searchString, NAME){
   if(isRegExp(searchString))throw TypeError('String#' + NAME + " doesn't accept regex!");
   return String(defined(that));
 };
-},{"./_defined":41,"./_is-regexp":64}],113:[function(require,module,exports){
+},{"./_defined":42,"./_is-regexp":65}],114:[function(require,module,exports){
 var $export = require('./_export')
   , fails   = require('./_fails')
   , defined = require('./_defined')
@@ -4807,7 +5794,7 @@ module.exports = function(NAME, exec){
     return test !== test.toLowerCase() || test.split('"').length > 3;
   }), 'String', O);
 };
-},{"./_defined":41,"./_export":46,"./_fails":48}],114:[function(require,module,exports){
+},{"./_defined":42,"./_export":47,"./_fails":49}],115:[function(require,module,exports){
 // https://github.com/tc39/proposal-string-pad-start-end
 var toLength = require('./_to-length')
   , repeat   = require('./_string-repeat')
@@ -4825,7 +5812,7 @@ module.exports = function(that, maxLength, fillString, left){
   return left ? stringFiller + S : S + stringFiller;
 };
 
-},{"./_defined":41,"./_string-repeat":115,"./_to-length":122}],115:[function(require,module,exports){
+},{"./_defined":42,"./_string-repeat":116,"./_to-length":123}],116:[function(require,module,exports){
 'use strict';
 var toInteger = require('./_to-integer')
   , defined   = require('./_defined');
@@ -4838,7 +5825,7 @@ module.exports = function repeat(count){
   for(;n > 0; (n >>>= 1) && (str += str))if(n & 1)res += str;
   return res;
 };
-},{"./_defined":41,"./_to-integer":120}],116:[function(require,module,exports){
+},{"./_defined":42,"./_to-integer":121}],117:[function(require,module,exports){
 var $export = require('./_export')
   , defined = require('./_defined')
   , fails   = require('./_fails')
@@ -4869,10 +5856,10 @@ var trim = exporter.trim = function(string, TYPE){
 };
 
 module.exports = exporter;
-},{"./_defined":41,"./_export":46,"./_fails":48,"./_string-ws":117}],117:[function(require,module,exports){
+},{"./_defined":42,"./_export":47,"./_fails":49,"./_string-ws":118}],118:[function(require,module,exports){
 module.exports = '\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003' +
   '\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF';
-},{}],118:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 var ctx                = require('./_ctx')
   , invoke             = require('./_invoke')
   , html               = require('./_html')
@@ -4948,7 +5935,7 @@ module.exports = {
   set:   setTask,
   clear: clearTask
 };
-},{"./_cof":32,"./_ctx":39,"./_dom-create":43,"./_global":52,"./_html":55,"./_invoke":58}],119:[function(require,module,exports){
+},{"./_cof":33,"./_ctx":40,"./_dom-create":44,"./_global":53,"./_html":56,"./_invoke":59}],120:[function(require,module,exports){
 var toInteger = require('./_to-integer')
   , max       = Math.max
   , min       = Math.min;
@@ -4956,34 +5943,34 @@ module.exports = function(index, length){
   index = toInteger(index);
   return index < 0 ? max(index + length, 0) : min(index, length);
 };
-},{"./_to-integer":120}],120:[function(require,module,exports){
+},{"./_to-integer":121}],121:[function(require,module,exports){
 // 7.1.4 ToInteger
 var ceil  = Math.ceil
   , floor = Math.floor;
 module.exports = function(it){
   return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
 };
-},{}],121:[function(require,module,exports){
+},{}],122:[function(require,module,exports){
 // to indexed object, toObject with fallback for non-array-like ES3 strings
 var IObject = require('./_iobject')
   , defined = require('./_defined');
 module.exports = function(it){
   return IObject(defined(it));
 };
-},{"./_defined":41,"./_iobject":59}],122:[function(require,module,exports){
+},{"./_defined":42,"./_iobject":60}],123:[function(require,module,exports){
 // 7.1.15 ToLength
 var toInteger = require('./_to-integer')
   , min       = Math.min;
 module.exports = function(it){
   return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
 };
-},{"./_to-integer":120}],123:[function(require,module,exports){
+},{"./_to-integer":121}],124:[function(require,module,exports){
 // 7.1.13 ToObject(argument)
 var defined = require('./_defined');
 module.exports = function(it){
   return Object(defined(it));
 };
-},{"./_defined":41}],124:[function(require,module,exports){
+},{"./_defined":42}],125:[function(require,module,exports){
 // 7.1.1 ToPrimitive(input [, PreferredType])
 var isObject = require('./_is-object');
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
@@ -4996,7 +5983,7 @@ module.exports = function(it, S){
   if(!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
   throw TypeError("Can't convert object to primitive value");
 };
-},{"./_is-object":63}],125:[function(require,module,exports){
+},{"./_is-object":64}],126:[function(require,module,exports){
 'use strict';
 if(require('./_descriptors')){
   var LIBRARY             = require('./_library')
@@ -5476,7 +6463,7 @@ if(require('./_descriptors')){
     if(!LIBRARY && !CORRECT_ITER_NAME)hide(TypedArrayPrototype, ITERATOR, $iterator);
   };
 } else module.exports = function(){ /* empty */ };
-},{"./_an-instance":20,"./_array-copy-within":22,"./_array-fill":23,"./_array-includes":25,"./_array-methods":26,"./_classof":31,"./_ctx":39,"./_descriptors":42,"./_export":46,"./_fails":48,"./_global":52,"./_has":53,"./_hide":54,"./_is-array-iter":60,"./_is-object":63,"./_iter-detect":68,"./_iterators":70,"./_library":72,"./_object-create":80,"./_object-dp":81,"./_object-gopd":84,"./_object-gopn":86,"./_object-gpo":88,"./_property-desc":99,"./_redefine-all":100,"./_same-value":103,"./_set-species":105,"./_species-constructor":109,"./_to-index":119,"./_to-integer":120,"./_to-length":122,"./_to-object":123,"./_to-primitive":124,"./_typed":127,"./_typed-buffer":126,"./_uid":128,"./_wks":131,"./core.get-iterator-method":132,"./es6.array.iterator":144}],126:[function(require,module,exports){
+},{"./_an-instance":21,"./_array-copy-within":23,"./_array-fill":24,"./_array-includes":26,"./_array-methods":27,"./_classof":32,"./_ctx":40,"./_descriptors":43,"./_export":47,"./_fails":49,"./_global":53,"./_has":54,"./_hide":55,"./_is-array-iter":61,"./_is-object":64,"./_iter-detect":69,"./_iterators":71,"./_library":73,"./_object-create":81,"./_object-dp":82,"./_object-gopd":85,"./_object-gopn":87,"./_object-gpo":89,"./_property-desc":100,"./_redefine-all":101,"./_same-value":104,"./_set-species":106,"./_species-constructor":110,"./_to-index":120,"./_to-integer":121,"./_to-length":123,"./_to-object":124,"./_to-primitive":125,"./_typed":128,"./_typed-buffer":127,"./_uid":129,"./_wks":132,"./core.get-iterator-method":133,"./es6.array.iterator":145}],127:[function(require,module,exports){
 'use strict';
 var global         = require('./_global')
   , DESCRIPTORS    = require('./_descriptors')
@@ -5750,7 +6737,7 @@ setToStringTag($DataView, DATA_VIEW);
 hide($DataView[PROTOTYPE], $typed.VIEW, true);
 exports[ARRAY_BUFFER] = $ArrayBuffer;
 exports[DATA_VIEW] = $DataView;
-},{"./_an-instance":20,"./_array-fill":23,"./_descriptors":42,"./_fails":48,"./_global":52,"./_hide":54,"./_library":72,"./_object-dp":81,"./_object-gopn":86,"./_redefine-all":100,"./_set-to-string-tag":106,"./_to-integer":120,"./_to-length":122,"./_typed":127}],127:[function(require,module,exports){
+},{"./_an-instance":21,"./_array-fill":24,"./_descriptors":43,"./_fails":49,"./_global":53,"./_hide":55,"./_library":73,"./_object-dp":82,"./_object-gopn":87,"./_redefine-all":101,"./_set-to-string-tag":107,"./_to-integer":121,"./_to-length":123,"./_typed":128}],128:[function(require,module,exports){
 var global = require('./_global')
   , hide   = require('./_hide')
   , uid    = require('./_uid')
@@ -5777,13 +6764,13 @@ module.exports = {
   TYPED:  TYPED,
   VIEW:   VIEW
 };
-},{"./_global":52,"./_hide":54,"./_uid":128}],128:[function(require,module,exports){
+},{"./_global":53,"./_hide":55,"./_uid":129}],129:[function(require,module,exports){
 var id = 0
   , px = Math.random();
 module.exports = function(key){
   return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
 };
-},{}],129:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 var global         = require('./_global')
   , core           = require('./_core')
   , LIBRARY        = require('./_library')
@@ -5793,9 +6780,9 @@ module.exports = function(name){
   var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
   if(name.charAt(0) != '_' && !(name in $Symbol))defineProperty($Symbol, name, {value: wksExt.f(name)});
 };
-},{"./_core":37,"./_global":52,"./_library":72,"./_object-dp":81,"./_wks-ext":130}],130:[function(require,module,exports){
+},{"./_core":38,"./_global":53,"./_library":73,"./_object-dp":82,"./_wks-ext":131}],131:[function(require,module,exports){
 exports.f = require('./_wks');
-},{"./_wks":131}],131:[function(require,module,exports){
+},{"./_wks":132}],132:[function(require,module,exports){
 var store      = require('./_shared')('wks')
   , uid        = require('./_uid')
   , Symbol     = require('./_global').Symbol
@@ -5807,7 +6794,7 @@ var $exports = module.exports = function(name){
 };
 
 $exports.store = store;
-},{"./_global":52,"./_shared":108,"./_uid":128}],132:[function(require,module,exports){
+},{"./_global":53,"./_shared":109,"./_uid":129}],133:[function(require,module,exports){
 var classof   = require('./_classof')
   , ITERATOR  = require('./_wks')('iterator')
   , Iterators = require('./_iterators');
@@ -5816,21 +6803,21 @@ module.exports = require('./_core').getIteratorMethod = function(it){
     || it['@@iterator']
     || Iterators[classof(it)];
 };
-},{"./_classof":31,"./_core":37,"./_iterators":70,"./_wks":131}],133:[function(require,module,exports){
+},{"./_classof":32,"./_core":38,"./_iterators":71,"./_wks":132}],134:[function(require,module,exports){
 // https://github.com/benjamingr/RexExp.escape
 var $export = require('./_export')
   , $re     = require('./_replacer')(/[\\^$*+?.()|[\]{}]/g, '\\$&');
 
 $export($export.S, 'RegExp', {escape: function escape(it){ return $re(it); }});
 
-},{"./_export":46,"./_replacer":102}],134:[function(require,module,exports){
+},{"./_export":47,"./_replacer":103}],135:[function(require,module,exports){
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
 var $export = require('./_export');
 
 $export($export.P, 'Array', {copyWithin: require('./_array-copy-within')});
 
 require('./_add-to-unscopables')('copyWithin');
-},{"./_add-to-unscopables":19,"./_array-copy-within":22,"./_export":46}],135:[function(require,module,exports){
+},{"./_add-to-unscopables":20,"./_array-copy-within":23,"./_export":47}],136:[function(require,module,exports){
 'use strict';
 var $export = require('./_export')
   , $every  = require('./_array-methods')(4);
@@ -5841,14 +6828,14 @@ $export($export.P + $export.F * !require('./_strict-method')([].every, true), 'A
     return $every(this, callbackfn, arguments[1]);
   }
 });
-},{"./_array-methods":26,"./_export":46,"./_strict-method":110}],136:[function(require,module,exports){
+},{"./_array-methods":27,"./_export":47,"./_strict-method":111}],137:[function(require,module,exports){
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
 var $export = require('./_export');
 
 $export($export.P, 'Array', {fill: require('./_array-fill')});
 
 require('./_add-to-unscopables')('fill');
-},{"./_add-to-unscopables":19,"./_array-fill":23,"./_export":46}],137:[function(require,module,exports){
+},{"./_add-to-unscopables":20,"./_array-fill":24,"./_export":47}],138:[function(require,module,exports){
 'use strict';
 var $export = require('./_export')
   , $filter = require('./_array-methods')(2);
@@ -5859,7 +6846,7 @@ $export($export.P + $export.F * !require('./_strict-method')([].filter, true), '
     return $filter(this, callbackfn, arguments[1]);
   }
 });
-},{"./_array-methods":26,"./_export":46,"./_strict-method":110}],138:[function(require,module,exports){
+},{"./_array-methods":27,"./_export":47,"./_strict-method":111}],139:[function(require,module,exports){
 'use strict';
 // 22.1.3.9 Array.prototype.findIndex(predicate, thisArg = undefined)
 var $export = require('./_export')
@@ -5874,7 +6861,7 @@ $export($export.P + $export.F * forced, 'Array', {
   }
 });
 require('./_add-to-unscopables')(KEY);
-},{"./_add-to-unscopables":19,"./_array-methods":26,"./_export":46}],139:[function(require,module,exports){
+},{"./_add-to-unscopables":20,"./_array-methods":27,"./_export":47}],140:[function(require,module,exports){
 'use strict';
 // 22.1.3.8 Array.prototype.find(predicate, thisArg = undefined)
 var $export = require('./_export')
@@ -5889,7 +6876,7 @@ $export($export.P + $export.F * forced, 'Array', {
   }
 });
 require('./_add-to-unscopables')(KEY);
-},{"./_add-to-unscopables":19,"./_array-methods":26,"./_export":46}],140:[function(require,module,exports){
+},{"./_add-to-unscopables":20,"./_array-methods":27,"./_export":47}],141:[function(require,module,exports){
 'use strict';
 var $export  = require('./_export')
   , $forEach = require('./_array-methods')(0)
@@ -5901,7 +6888,7 @@ $export($export.P + $export.F * !STRICT, 'Array', {
     return $forEach(this, callbackfn, arguments[1]);
   }
 });
-},{"./_array-methods":26,"./_export":46,"./_strict-method":110}],141:[function(require,module,exports){
+},{"./_array-methods":27,"./_export":47,"./_strict-method":111}],142:[function(require,module,exports){
 'use strict';
 var ctx            = require('./_ctx')
   , $export        = require('./_export')
@@ -5940,7 +6927,7 @@ $export($export.S + $export.F * !require('./_iter-detect')(function(iter){ Array
   }
 });
 
-},{"./_create-property":38,"./_ctx":39,"./_export":46,"./_is-array-iter":60,"./_iter-call":65,"./_iter-detect":68,"./_to-length":122,"./_to-object":123,"./core.get-iterator-method":132}],142:[function(require,module,exports){
+},{"./_create-property":39,"./_ctx":40,"./_export":47,"./_is-array-iter":61,"./_iter-call":66,"./_iter-detect":69,"./_to-length":123,"./_to-object":124,"./core.get-iterator-method":133}],143:[function(require,module,exports){
 'use strict';
 var $export       = require('./_export')
   , $indexOf      = require('./_array-includes')(false)
@@ -5956,12 +6943,12 @@ $export($export.P + $export.F * (NEGATIVE_ZERO || !require('./_strict-method')($
       : $indexOf(this, searchElement, arguments[1]);
   }
 });
-},{"./_array-includes":25,"./_export":46,"./_strict-method":110}],143:[function(require,module,exports){
+},{"./_array-includes":26,"./_export":47,"./_strict-method":111}],144:[function(require,module,exports){
 // 22.1.2.2 / 15.4.3.2 Array.isArray(arg)
 var $export = require('./_export');
 
 $export($export.S, 'Array', {isArray: require('./_is-array')});
-},{"./_export":46,"./_is-array":61}],144:[function(require,module,exports){
+},{"./_export":47,"./_is-array":62}],145:[function(require,module,exports){
 'use strict';
 var addToUnscopables = require('./_add-to-unscopables')
   , step             = require('./_iter-step')
@@ -5996,7 +6983,7 @@ Iterators.Arguments = Iterators.Array;
 addToUnscopables('keys');
 addToUnscopables('values');
 addToUnscopables('entries');
-},{"./_add-to-unscopables":19,"./_iter-define":67,"./_iter-step":69,"./_iterators":70,"./_to-iobject":121}],145:[function(require,module,exports){
+},{"./_add-to-unscopables":20,"./_iter-define":68,"./_iter-step":70,"./_iterators":71,"./_to-iobject":122}],146:[function(require,module,exports){
 'use strict';
 // 22.1.3.13 Array.prototype.join(separator)
 var $export   = require('./_export')
@@ -6009,7 +6996,7 @@ $export($export.P + $export.F * (require('./_iobject') != Object || !require('./
     return arrayJoin.call(toIObject(this), separator === undefined ? ',' : separator);
   }
 });
-},{"./_export":46,"./_iobject":59,"./_strict-method":110,"./_to-iobject":121}],146:[function(require,module,exports){
+},{"./_export":47,"./_iobject":60,"./_strict-method":111,"./_to-iobject":122}],147:[function(require,module,exports){
 'use strict';
 var $export       = require('./_export')
   , toIObject     = require('./_to-iobject')
@@ -6032,7 +7019,7 @@ $export($export.P + $export.F * (NEGATIVE_ZERO || !require('./_strict-method')($
     return -1;
   }
 });
-},{"./_export":46,"./_strict-method":110,"./_to-integer":120,"./_to-iobject":121,"./_to-length":122}],147:[function(require,module,exports){
+},{"./_export":47,"./_strict-method":111,"./_to-integer":121,"./_to-iobject":122,"./_to-length":123}],148:[function(require,module,exports){
 'use strict';
 var $export = require('./_export')
   , $map    = require('./_array-methods')(1);
@@ -6043,7 +7030,7 @@ $export($export.P + $export.F * !require('./_strict-method')([].map, true), 'Arr
     return $map(this, callbackfn, arguments[1]);
   }
 });
-},{"./_array-methods":26,"./_export":46,"./_strict-method":110}],148:[function(require,module,exports){
+},{"./_array-methods":27,"./_export":47,"./_strict-method":111}],149:[function(require,module,exports){
 'use strict';
 var $export        = require('./_export')
   , createProperty = require('./_create-property');
@@ -6063,7 +7050,7 @@ $export($export.S + $export.F * require('./_fails')(function(){
     return result;
   }
 });
-},{"./_create-property":38,"./_export":46,"./_fails":48}],149:[function(require,module,exports){
+},{"./_create-property":39,"./_export":47,"./_fails":49}],150:[function(require,module,exports){
 'use strict';
 var $export = require('./_export')
   , $reduce = require('./_array-reduce');
@@ -6074,7 +7061,7 @@ $export($export.P + $export.F * !require('./_strict-method')([].reduceRight, tru
     return $reduce(this, callbackfn, arguments.length, arguments[1], true);
   }
 });
-},{"./_array-reduce":27,"./_export":46,"./_strict-method":110}],150:[function(require,module,exports){
+},{"./_array-reduce":28,"./_export":47,"./_strict-method":111}],151:[function(require,module,exports){
 'use strict';
 var $export = require('./_export')
   , $reduce = require('./_array-reduce');
@@ -6085,7 +7072,7 @@ $export($export.P + $export.F * !require('./_strict-method')([].reduce, true), '
     return $reduce(this, callbackfn, arguments.length, arguments[1], false);
   }
 });
-},{"./_array-reduce":27,"./_export":46,"./_strict-method":110}],151:[function(require,module,exports){
+},{"./_array-reduce":28,"./_export":47,"./_strict-method":111}],152:[function(require,module,exports){
 'use strict';
 var $export    = require('./_export')
   , html       = require('./_html')
@@ -6114,7 +7101,7 @@ $export($export.P + $export.F * require('./_fails')(function(){
     return cloned;
   }
 });
-},{"./_cof":32,"./_export":46,"./_fails":48,"./_html":55,"./_to-index":119,"./_to-length":122}],152:[function(require,module,exports){
+},{"./_cof":33,"./_export":47,"./_fails":49,"./_html":56,"./_to-index":120,"./_to-length":123}],153:[function(require,module,exports){
 'use strict';
 var $export = require('./_export')
   , $some   = require('./_array-methods')(3);
@@ -6125,7 +7112,7 @@ $export($export.P + $export.F * !require('./_strict-method')([].some, true), 'Ar
     return $some(this, callbackfn, arguments[1]);
   }
 });
-},{"./_array-methods":26,"./_export":46,"./_strict-method":110}],153:[function(require,module,exports){
+},{"./_array-methods":27,"./_export":47,"./_strict-method":111}],154:[function(require,module,exports){
 'use strict';
 var $export   = require('./_export')
   , aFunction = require('./_a-function')
@@ -6149,14 +7136,14 @@ $export($export.P + $export.F * (fails(function(){
       : $sort.call(toObject(this), aFunction(comparefn));
   }
 });
-},{"./_a-function":17,"./_export":46,"./_fails":48,"./_strict-method":110,"./_to-object":123}],154:[function(require,module,exports){
+},{"./_a-function":18,"./_export":47,"./_fails":49,"./_strict-method":111,"./_to-object":124}],155:[function(require,module,exports){
 require('./_set-species')('Array');
-},{"./_set-species":105}],155:[function(require,module,exports){
+},{"./_set-species":106}],156:[function(require,module,exports){
 // 20.3.3.1 / 15.9.4.4 Date.now()
 var $export = require('./_export');
 
 $export($export.S, 'Date', {now: function(){ return new Date().getTime(); }});
-},{"./_export":46}],156:[function(require,module,exports){
+},{"./_export":47}],157:[function(require,module,exports){
 'use strict';
 // 20.3.4.36 / 15.9.5.43 Date.prototype.toISOString()
 var $export = require('./_export')
@@ -6185,7 +7172,7 @@ $export($export.P + $export.F * (fails(function(){
       ':' + lz(d.getUTCSeconds()) + '.' + (m > 99 ? m : '0' + lz(m)) + 'Z';
   }
 });
-},{"./_export":46,"./_fails":48}],157:[function(require,module,exports){
+},{"./_export":47,"./_fails":49}],158:[function(require,module,exports){
 'use strict';
 var $export     = require('./_export')
   , toObject    = require('./_to-object')
@@ -6200,12 +7187,12 @@ $export($export.P + $export.F * require('./_fails')(function(){
     return typeof pv == 'number' && !isFinite(pv) ? null : O.toISOString();
   }
 });
-},{"./_export":46,"./_fails":48,"./_to-object":123,"./_to-primitive":124}],158:[function(require,module,exports){
+},{"./_export":47,"./_fails":49,"./_to-object":124,"./_to-primitive":125}],159:[function(require,module,exports){
 var TO_PRIMITIVE = require('./_wks')('toPrimitive')
   , proto        = Date.prototype;
 
 if(!(TO_PRIMITIVE in proto))require('./_hide')(proto, TO_PRIMITIVE, require('./_date-to-primitive'));
-},{"./_date-to-primitive":40,"./_hide":54,"./_wks":131}],159:[function(require,module,exports){
+},{"./_date-to-primitive":41,"./_hide":55,"./_wks":132}],160:[function(require,module,exports){
 var DateProto    = Date.prototype
   , INVALID_DATE = 'Invalid Date'
   , TO_STRING    = 'toString'
@@ -6217,12 +7204,12 @@ if(new Date(NaN) + '' != INVALID_DATE){
     return value === value ? $toString.call(this) : INVALID_DATE;
   });
 }
-},{"./_redefine":101}],160:[function(require,module,exports){
+},{"./_redefine":102}],161:[function(require,module,exports){
 // 19.2.3.2 / 15.3.4.5 Function.prototype.bind(thisArg, args...)
 var $export = require('./_export');
 
 $export($export.P, 'Function', {bind: require('./_bind')});
-},{"./_bind":30,"./_export":46}],161:[function(require,module,exports){
+},{"./_bind":31,"./_export":47}],162:[function(require,module,exports){
 'use strict';
 var isObject       = require('./_is-object')
   , getPrototypeOf = require('./_object-gpo')
@@ -6236,7 +7223,7 @@ if(!(HAS_INSTANCE in FunctionProto))require('./_object-dp').f(FunctionProto, HAS
   while(O = getPrototypeOf(O))if(this.prototype === O)return true;
   return false;
 }});
-},{"./_is-object":63,"./_object-dp":81,"./_object-gpo":88,"./_wks":131}],162:[function(require,module,exports){
+},{"./_is-object":64,"./_object-dp":82,"./_object-gpo":89,"./_wks":132}],163:[function(require,module,exports){
 var dP         = require('./_object-dp').f
   , createDesc = require('./_property-desc')
   , has        = require('./_has')
@@ -6262,7 +7249,7 @@ NAME in FProto || require('./_descriptors') && dP(FProto, NAME, {
     }
   }
 });
-},{"./_descriptors":42,"./_has":53,"./_object-dp":81,"./_property-desc":99}],163:[function(require,module,exports){
+},{"./_descriptors":43,"./_has":54,"./_object-dp":82,"./_property-desc":100}],164:[function(require,module,exports){
 'use strict';
 var strong = require('./_collection-strong');
 
@@ -6280,7 +7267,7 @@ module.exports = require('./_collection')('Map', function(get){
     return strong.def(this, key === 0 ? 0 : key, value);
   }
 }, strong, true);
-},{"./_collection":36,"./_collection-strong":33}],164:[function(require,module,exports){
+},{"./_collection":37,"./_collection-strong":34}],165:[function(require,module,exports){
 // 20.2.2.3 Math.acosh(x)
 var $export = require('./_export')
   , log1p   = require('./_math-log1p')
@@ -6299,7 +7286,7 @@ $export($export.S + $export.F * !($acosh
       : log1p(x - 1 + sqrt(x - 1) * sqrt(x + 1));
   }
 });
-},{"./_export":46,"./_math-log1p":74}],165:[function(require,module,exports){
+},{"./_export":47,"./_math-log1p":75}],166:[function(require,module,exports){
 // 20.2.2.5 Math.asinh(x)
 var $export = require('./_export')
   , $asinh  = Math.asinh;
@@ -6310,7 +7297,7 @@ function asinh(x){
 
 // Tor Browser bug: Math.asinh(0) -> -0 
 $export($export.S + $export.F * !($asinh && 1 / $asinh(0) > 0), 'Math', {asinh: asinh});
-},{"./_export":46}],166:[function(require,module,exports){
+},{"./_export":47}],167:[function(require,module,exports){
 // 20.2.2.7 Math.atanh(x)
 var $export = require('./_export')
   , $atanh  = Math.atanh;
@@ -6321,7 +7308,7 @@ $export($export.S + $export.F * !($atanh && 1 / $atanh(-0) < 0), 'Math', {
     return (x = +x) == 0 ? x : Math.log((1 + x) / (1 - x)) / 2;
   }
 });
-},{"./_export":46}],167:[function(require,module,exports){
+},{"./_export":47}],168:[function(require,module,exports){
 // 20.2.2.9 Math.cbrt(x)
 var $export = require('./_export')
   , sign    = require('./_math-sign');
@@ -6331,7 +7318,7 @@ $export($export.S, 'Math', {
     return sign(x = +x) * Math.pow(Math.abs(x), 1 / 3);
   }
 });
-},{"./_export":46,"./_math-sign":75}],168:[function(require,module,exports){
+},{"./_export":47,"./_math-sign":76}],169:[function(require,module,exports){
 // 20.2.2.11 Math.clz32(x)
 var $export = require('./_export');
 
@@ -6340,7 +7327,7 @@ $export($export.S, 'Math', {
     return (x >>>= 0) ? 31 - Math.floor(Math.log(x + 0.5) * Math.LOG2E) : 32;
   }
 });
-},{"./_export":46}],169:[function(require,module,exports){
+},{"./_export":47}],170:[function(require,module,exports){
 // 20.2.2.12 Math.cosh(x)
 var $export = require('./_export')
   , exp     = Math.exp;
@@ -6350,13 +7337,13 @@ $export($export.S, 'Math', {
     return (exp(x = +x) + exp(-x)) / 2;
   }
 });
-},{"./_export":46}],170:[function(require,module,exports){
+},{"./_export":47}],171:[function(require,module,exports){
 // 20.2.2.14 Math.expm1(x)
 var $export = require('./_export')
   , $expm1  = require('./_math-expm1');
 
 $export($export.S + $export.F * ($expm1 != Math.expm1), 'Math', {expm1: $expm1});
-},{"./_export":46,"./_math-expm1":73}],171:[function(require,module,exports){
+},{"./_export":47,"./_math-expm1":74}],172:[function(require,module,exports){
 // 20.2.2.16 Math.fround(x)
 var $export   = require('./_export')
   , sign      = require('./_math-sign')
@@ -6383,7 +7370,7 @@ $export($export.S, 'Math', {
     return $sign * result;
   }
 });
-},{"./_export":46,"./_math-sign":75}],172:[function(require,module,exports){
+},{"./_export":47,"./_math-sign":76}],173:[function(require,module,exports){
 // 20.2.2.17 Math.hypot([value1[, value2[, … ]]])
 var $export = require('./_export')
   , abs     = Math.abs;
@@ -6409,7 +7396,7 @@ $export($export.S, 'Math', {
     return larg === Infinity ? Infinity : larg * Math.sqrt(sum);
   }
 });
-},{"./_export":46}],173:[function(require,module,exports){
+},{"./_export":47}],174:[function(require,module,exports){
 // 20.2.2.18 Math.imul(x, y)
 var $export = require('./_export')
   , $imul   = Math.imul;
@@ -6427,7 +7414,7 @@ $export($export.S + $export.F * require('./_fails')(function(){
     return 0 | xl * yl + ((UINT16 & xn >>> 16) * yl + xl * (UINT16 & yn >>> 16) << 16 >>> 0);
   }
 });
-},{"./_export":46,"./_fails":48}],174:[function(require,module,exports){
+},{"./_export":47,"./_fails":49}],175:[function(require,module,exports){
 // 20.2.2.21 Math.log10(x)
 var $export = require('./_export');
 
@@ -6436,12 +7423,12 @@ $export($export.S, 'Math', {
     return Math.log(x) / Math.LN10;
   }
 });
-},{"./_export":46}],175:[function(require,module,exports){
+},{"./_export":47}],176:[function(require,module,exports){
 // 20.2.2.20 Math.log1p(x)
 var $export = require('./_export');
 
 $export($export.S, 'Math', {log1p: require('./_math-log1p')});
-},{"./_export":46,"./_math-log1p":74}],176:[function(require,module,exports){
+},{"./_export":47,"./_math-log1p":75}],177:[function(require,module,exports){
 // 20.2.2.22 Math.log2(x)
 var $export = require('./_export');
 
@@ -6450,12 +7437,12 @@ $export($export.S, 'Math', {
     return Math.log(x) / Math.LN2;
   }
 });
-},{"./_export":46}],177:[function(require,module,exports){
+},{"./_export":47}],178:[function(require,module,exports){
 // 20.2.2.28 Math.sign(x)
 var $export = require('./_export');
 
 $export($export.S, 'Math', {sign: require('./_math-sign')});
-},{"./_export":46,"./_math-sign":75}],178:[function(require,module,exports){
+},{"./_export":47,"./_math-sign":76}],179:[function(require,module,exports){
 // 20.2.2.30 Math.sinh(x)
 var $export = require('./_export')
   , expm1   = require('./_math-expm1')
@@ -6471,7 +7458,7 @@ $export($export.S + $export.F * require('./_fails')(function(){
       : (exp(x - 1) - exp(-x - 1)) * (Math.E / 2);
   }
 });
-},{"./_export":46,"./_fails":48,"./_math-expm1":73}],179:[function(require,module,exports){
+},{"./_export":47,"./_fails":49,"./_math-expm1":74}],180:[function(require,module,exports){
 // 20.2.2.33 Math.tanh(x)
 var $export = require('./_export')
   , expm1   = require('./_math-expm1')
@@ -6484,7 +7471,7 @@ $export($export.S, 'Math', {
     return a == Infinity ? 1 : b == Infinity ? -1 : (a - b) / (exp(x) + exp(-x));
   }
 });
-},{"./_export":46,"./_math-expm1":73}],180:[function(require,module,exports){
+},{"./_export":47,"./_math-expm1":74}],181:[function(require,module,exports){
 // 20.2.2.34 Math.trunc(x)
 var $export = require('./_export');
 
@@ -6493,7 +7480,7 @@ $export($export.S, 'Math', {
     return (it > 0 ? Math.floor : Math.ceil)(it);
   }
 });
-},{"./_export":46}],181:[function(require,module,exports){
+},{"./_export":47}],182:[function(require,module,exports){
 'use strict';
 var global            = require('./_global')
   , has               = require('./_has')
@@ -6563,12 +7550,12 @@ if(!$Number(' 0o1') || !$Number('0b1') || $Number('+0x1')){
   proto.constructor = $Number;
   require('./_redefine')(global, NUMBER, $Number);
 }
-},{"./_cof":32,"./_descriptors":42,"./_fails":48,"./_global":52,"./_has":53,"./_inherit-if-required":57,"./_object-create":80,"./_object-dp":81,"./_object-gopd":84,"./_object-gopn":86,"./_redefine":101,"./_string-trim":116,"./_to-primitive":124}],182:[function(require,module,exports){
+},{"./_cof":33,"./_descriptors":43,"./_fails":49,"./_global":53,"./_has":54,"./_inherit-if-required":58,"./_object-create":81,"./_object-dp":82,"./_object-gopd":85,"./_object-gopn":87,"./_redefine":102,"./_string-trim":117,"./_to-primitive":125}],183:[function(require,module,exports){
 // 20.1.2.1 Number.EPSILON
 var $export = require('./_export');
 
 $export($export.S, 'Number', {EPSILON: Math.pow(2, -52)});
-},{"./_export":46}],183:[function(require,module,exports){
+},{"./_export":47}],184:[function(require,module,exports){
 // 20.1.2.2 Number.isFinite(number)
 var $export   = require('./_export')
   , _isFinite = require('./_global').isFinite;
@@ -6578,12 +7565,12 @@ $export($export.S, 'Number', {
     return typeof it == 'number' && _isFinite(it);
   }
 });
-},{"./_export":46,"./_global":52}],184:[function(require,module,exports){
+},{"./_export":47,"./_global":53}],185:[function(require,module,exports){
 // 20.1.2.3 Number.isInteger(number)
 var $export = require('./_export');
 
 $export($export.S, 'Number', {isInteger: require('./_is-integer')});
-},{"./_export":46,"./_is-integer":62}],185:[function(require,module,exports){
+},{"./_export":47,"./_is-integer":63}],186:[function(require,module,exports){
 // 20.1.2.4 Number.isNaN(number)
 var $export = require('./_export');
 
@@ -6592,7 +7579,7 @@ $export($export.S, 'Number', {
     return number != number;
   }
 });
-},{"./_export":46}],186:[function(require,module,exports){
+},{"./_export":47}],187:[function(require,module,exports){
 // 20.1.2.5 Number.isSafeInteger(number)
 var $export   = require('./_export')
   , isInteger = require('./_is-integer')
@@ -6603,27 +7590,27 @@ $export($export.S, 'Number', {
     return isInteger(number) && abs(number) <= 0x1fffffffffffff;
   }
 });
-},{"./_export":46,"./_is-integer":62}],187:[function(require,module,exports){
+},{"./_export":47,"./_is-integer":63}],188:[function(require,module,exports){
 // 20.1.2.6 Number.MAX_SAFE_INTEGER
 var $export = require('./_export');
 
 $export($export.S, 'Number', {MAX_SAFE_INTEGER: 0x1fffffffffffff});
-},{"./_export":46}],188:[function(require,module,exports){
+},{"./_export":47}],189:[function(require,module,exports){
 // 20.1.2.10 Number.MIN_SAFE_INTEGER
 var $export = require('./_export');
 
 $export($export.S, 'Number', {MIN_SAFE_INTEGER: -0x1fffffffffffff});
-},{"./_export":46}],189:[function(require,module,exports){
+},{"./_export":47}],190:[function(require,module,exports){
 var $export     = require('./_export')
   , $parseFloat = require('./_parse-float');
 // 20.1.2.12 Number.parseFloat(string)
 $export($export.S + $export.F * (Number.parseFloat != $parseFloat), 'Number', {parseFloat: $parseFloat});
-},{"./_export":46,"./_parse-float":95}],190:[function(require,module,exports){
+},{"./_export":47,"./_parse-float":96}],191:[function(require,module,exports){
 var $export   = require('./_export')
   , $parseInt = require('./_parse-int');
 // 20.1.2.13 Number.parseInt(string, radix)
 $export($export.S + $export.F * (Number.parseInt != $parseInt), 'Number', {parseInt: $parseInt});
-},{"./_export":46,"./_parse-int":96}],191:[function(require,module,exports){
+},{"./_export":47,"./_parse-int":97}],192:[function(require,module,exports){
 'use strict';
 var $export      = require('./_export')
   , toInteger    = require('./_to-integer')
@@ -6737,7 +7724,7 @@ $export($export.P + $export.F * (!!$toFixed && (
     } return m;
   }
 });
-},{"./_a-number-value":18,"./_export":46,"./_fails":48,"./_string-repeat":115,"./_to-integer":120}],192:[function(require,module,exports){
+},{"./_a-number-value":19,"./_export":47,"./_fails":49,"./_string-repeat":116,"./_to-integer":121}],193:[function(require,module,exports){
 'use strict';
 var $export      = require('./_export')
   , $fails       = require('./_fails')
@@ -6756,24 +7743,24 @@ $export($export.P + $export.F * ($fails(function(){
     return precision === undefined ? $toPrecision.call(that) : $toPrecision.call(that, precision); 
   }
 });
-},{"./_a-number-value":18,"./_export":46,"./_fails":48}],193:[function(require,module,exports){
+},{"./_a-number-value":19,"./_export":47,"./_fails":49}],194:[function(require,module,exports){
 // 19.1.3.1 Object.assign(target, source)
 var $export = require('./_export');
 
 $export($export.S + $export.F, 'Object', {assign: require('./_object-assign')});
-},{"./_export":46,"./_object-assign":79}],194:[function(require,module,exports){
+},{"./_export":47,"./_object-assign":80}],195:[function(require,module,exports){
 var $export = require('./_export')
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 $export($export.S, 'Object', {create: require('./_object-create')});
-},{"./_export":46,"./_object-create":80}],195:[function(require,module,exports){
+},{"./_export":47,"./_object-create":81}],196:[function(require,module,exports){
 var $export = require('./_export');
 // 19.1.2.3 / 15.2.3.7 Object.defineProperties(O, Properties)
 $export($export.S + $export.F * !require('./_descriptors'), 'Object', {defineProperties: require('./_object-dps')});
-},{"./_descriptors":42,"./_export":46,"./_object-dps":82}],196:[function(require,module,exports){
+},{"./_descriptors":43,"./_export":47,"./_object-dps":83}],197:[function(require,module,exports){
 var $export = require('./_export');
 // 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
 $export($export.S + $export.F * !require('./_descriptors'), 'Object', {defineProperty: require('./_object-dp').f});
-},{"./_descriptors":42,"./_export":46,"./_object-dp":81}],197:[function(require,module,exports){
+},{"./_descriptors":43,"./_export":47,"./_object-dp":82}],198:[function(require,module,exports){
 // 19.1.2.5 Object.freeze(O)
 var isObject = require('./_is-object')
   , meta     = require('./_meta').onFreeze;
@@ -6783,7 +7770,7 @@ require('./_object-sap')('freeze', function($freeze){
     return $freeze && isObject(it) ? $freeze(meta(it)) : it;
   };
 });
-},{"./_is-object":63,"./_meta":76,"./_object-sap":92}],198:[function(require,module,exports){
+},{"./_is-object":64,"./_meta":77,"./_object-sap":93}],199:[function(require,module,exports){
 // 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
 var toIObject                 = require('./_to-iobject')
   , $getOwnPropertyDescriptor = require('./_object-gopd').f;
@@ -6793,12 +7780,12 @@ require('./_object-sap')('getOwnPropertyDescriptor', function(){
     return $getOwnPropertyDescriptor(toIObject(it), key);
   };
 });
-},{"./_object-gopd":84,"./_object-sap":92,"./_to-iobject":121}],199:[function(require,module,exports){
+},{"./_object-gopd":85,"./_object-sap":93,"./_to-iobject":122}],200:[function(require,module,exports){
 // 19.1.2.7 Object.getOwnPropertyNames(O)
 require('./_object-sap')('getOwnPropertyNames', function(){
   return require('./_object-gopn-ext').f;
 });
-},{"./_object-gopn-ext":85,"./_object-sap":92}],200:[function(require,module,exports){
+},{"./_object-gopn-ext":86,"./_object-sap":93}],201:[function(require,module,exports){
 // 19.1.2.9 Object.getPrototypeOf(O)
 var toObject        = require('./_to-object')
   , $getPrototypeOf = require('./_object-gpo');
@@ -6808,7 +7795,7 @@ require('./_object-sap')('getPrototypeOf', function(){
     return $getPrototypeOf(toObject(it));
   };
 });
-},{"./_object-gpo":88,"./_object-sap":92,"./_to-object":123}],201:[function(require,module,exports){
+},{"./_object-gpo":89,"./_object-sap":93,"./_to-object":124}],202:[function(require,module,exports){
 // 19.1.2.11 Object.isExtensible(O)
 var isObject = require('./_is-object');
 
@@ -6817,7 +7804,7 @@ require('./_object-sap')('isExtensible', function($isExtensible){
     return isObject(it) ? $isExtensible ? $isExtensible(it) : true : false;
   };
 });
-},{"./_is-object":63,"./_object-sap":92}],202:[function(require,module,exports){
+},{"./_is-object":64,"./_object-sap":93}],203:[function(require,module,exports){
 // 19.1.2.12 Object.isFrozen(O)
 var isObject = require('./_is-object');
 
@@ -6826,7 +7813,7 @@ require('./_object-sap')('isFrozen', function($isFrozen){
     return isObject(it) ? $isFrozen ? $isFrozen(it) : false : true;
   };
 });
-},{"./_is-object":63,"./_object-sap":92}],203:[function(require,module,exports){
+},{"./_is-object":64,"./_object-sap":93}],204:[function(require,module,exports){
 // 19.1.2.13 Object.isSealed(O)
 var isObject = require('./_is-object');
 
@@ -6835,11 +7822,11 @@ require('./_object-sap')('isSealed', function($isSealed){
     return isObject(it) ? $isSealed ? $isSealed(it) : false : true;
   };
 });
-},{"./_is-object":63,"./_object-sap":92}],204:[function(require,module,exports){
+},{"./_is-object":64,"./_object-sap":93}],205:[function(require,module,exports){
 // 19.1.3.10 Object.is(value1, value2)
 var $export = require('./_export');
 $export($export.S, 'Object', {is: require('./_same-value')});
-},{"./_export":46,"./_same-value":103}],205:[function(require,module,exports){
+},{"./_export":47,"./_same-value":104}],206:[function(require,module,exports){
 // 19.1.2.14 Object.keys(O)
 var toObject = require('./_to-object')
   , $keys    = require('./_object-keys');
@@ -6849,7 +7836,7 @@ require('./_object-sap')('keys', function(){
     return $keys(toObject(it));
   };
 });
-},{"./_object-keys":90,"./_object-sap":92,"./_to-object":123}],206:[function(require,module,exports){
+},{"./_object-keys":91,"./_object-sap":93,"./_to-object":124}],207:[function(require,module,exports){
 // 19.1.2.15 Object.preventExtensions(O)
 var isObject = require('./_is-object')
   , meta     = require('./_meta').onFreeze;
@@ -6859,7 +7846,7 @@ require('./_object-sap')('preventExtensions', function($preventExtensions){
     return $preventExtensions && isObject(it) ? $preventExtensions(meta(it)) : it;
   };
 });
-},{"./_is-object":63,"./_meta":76,"./_object-sap":92}],207:[function(require,module,exports){
+},{"./_is-object":64,"./_meta":77,"./_object-sap":93}],208:[function(require,module,exports){
 // 19.1.2.17 Object.seal(O)
 var isObject = require('./_is-object')
   , meta     = require('./_meta').onFreeze;
@@ -6869,11 +7856,11 @@ require('./_object-sap')('seal', function($seal){
     return $seal && isObject(it) ? $seal(meta(it)) : it;
   };
 });
-},{"./_is-object":63,"./_meta":76,"./_object-sap":92}],208:[function(require,module,exports){
+},{"./_is-object":64,"./_meta":77,"./_object-sap":93}],209:[function(require,module,exports){
 // 19.1.3.19 Object.setPrototypeOf(O, proto)
 var $export = require('./_export');
 $export($export.S, 'Object', {setPrototypeOf: require('./_set-proto').set});
-},{"./_export":46,"./_set-proto":104}],209:[function(require,module,exports){
+},{"./_export":47,"./_set-proto":105}],210:[function(require,module,exports){
 'use strict';
 // 19.1.3.6 Object.prototype.toString()
 var classof = require('./_classof')
@@ -6884,17 +7871,17 @@ if(test + '' != '[object z]'){
     return '[object ' + classof(this) + ']';
   }, true);
 }
-},{"./_classof":31,"./_redefine":101,"./_wks":131}],210:[function(require,module,exports){
+},{"./_classof":32,"./_redefine":102,"./_wks":132}],211:[function(require,module,exports){
 var $export     = require('./_export')
   , $parseFloat = require('./_parse-float');
 // 18.2.4 parseFloat(string)
 $export($export.G + $export.F * (parseFloat != $parseFloat), {parseFloat: $parseFloat});
-},{"./_export":46,"./_parse-float":95}],211:[function(require,module,exports){
+},{"./_export":47,"./_parse-float":96}],212:[function(require,module,exports){
 var $export   = require('./_export')
   , $parseInt = require('./_parse-int');
 // 18.2.5 parseInt(string, radix)
 $export($export.G + $export.F * (parseInt != $parseInt), {parseInt: $parseInt});
-},{"./_export":46,"./_parse-int":96}],212:[function(require,module,exports){
+},{"./_export":47,"./_parse-int":97}],213:[function(require,module,exports){
 'use strict';
 var LIBRARY            = require('./_library')
   , global             = require('./_global')
@@ -7194,7 +8181,7 @@ $export($export.S + $export.F * !(USE_NATIVE && require('./_iter-detect')(functi
     return capability.promise;
   }
 });
-},{"./_a-function":17,"./_an-instance":20,"./_classof":31,"./_core":37,"./_ctx":39,"./_export":46,"./_for-of":51,"./_global":52,"./_is-object":63,"./_iter-detect":68,"./_library":72,"./_microtask":78,"./_redefine-all":100,"./_set-species":105,"./_set-to-string-tag":106,"./_species-constructor":109,"./_task":118,"./_wks":131}],213:[function(require,module,exports){
+},{"./_a-function":18,"./_an-instance":21,"./_classof":32,"./_core":38,"./_ctx":40,"./_export":47,"./_for-of":52,"./_global":53,"./_is-object":64,"./_iter-detect":69,"./_library":73,"./_microtask":79,"./_redefine-all":101,"./_set-species":106,"./_set-to-string-tag":107,"./_species-constructor":110,"./_task":119,"./_wks":132}],214:[function(require,module,exports){
 // 26.1.1 Reflect.apply(target, thisArgument, argumentsList)
 var $export   = require('./_export')
   , aFunction = require('./_a-function')
@@ -7211,7 +8198,7 @@ $export($export.S + $export.F * !require('./_fails')(function(){
     return rApply ? rApply(T, thisArgument, L) : fApply.call(T, thisArgument, L);
   }
 });
-},{"./_a-function":17,"./_an-object":21,"./_export":46,"./_fails":48,"./_global":52}],214:[function(require,module,exports){
+},{"./_a-function":18,"./_an-object":22,"./_export":47,"./_fails":49,"./_global":53}],215:[function(require,module,exports){
 // 26.1.2 Reflect.construct(target, argumentsList [, newTarget])
 var $export    = require('./_export')
   , create     = require('./_object-create')
@@ -7259,7 +8246,7 @@ $export($export.S + $export.F * (NEW_TARGET_BUG || ARGS_BUG), 'Reflect', {
     return isObject(result) ? result : instance;
   }
 });
-},{"./_a-function":17,"./_an-object":21,"./_bind":30,"./_export":46,"./_fails":48,"./_global":52,"./_is-object":63,"./_object-create":80}],215:[function(require,module,exports){
+},{"./_a-function":18,"./_an-object":22,"./_bind":31,"./_export":47,"./_fails":49,"./_global":53,"./_is-object":64,"./_object-create":81}],216:[function(require,module,exports){
 // 26.1.3 Reflect.defineProperty(target, propertyKey, attributes)
 var dP          = require('./_object-dp')
   , $export     = require('./_export')
@@ -7282,7 +8269,7 @@ $export($export.S + $export.F * require('./_fails')(function(){
     }
   }
 });
-},{"./_an-object":21,"./_export":46,"./_fails":48,"./_object-dp":81,"./_to-primitive":124}],216:[function(require,module,exports){
+},{"./_an-object":22,"./_export":47,"./_fails":49,"./_object-dp":82,"./_to-primitive":125}],217:[function(require,module,exports){
 // 26.1.4 Reflect.deleteProperty(target, propertyKey)
 var $export  = require('./_export')
   , gOPD     = require('./_object-gopd').f
@@ -7294,7 +8281,7 @@ $export($export.S, 'Reflect', {
     return desc && !desc.configurable ? false : delete target[propertyKey];
   }
 });
-},{"./_an-object":21,"./_export":46,"./_object-gopd":84}],217:[function(require,module,exports){
+},{"./_an-object":22,"./_export":47,"./_object-gopd":85}],218:[function(require,module,exports){
 'use strict';
 // 26.1.5 Reflect.enumerate(target)
 var $export  = require('./_export')
@@ -7321,7 +8308,7 @@ $export($export.S, 'Reflect', {
     return new Enumerate(target);
   }
 });
-},{"./_an-object":21,"./_export":46,"./_iter-create":66}],218:[function(require,module,exports){
+},{"./_an-object":22,"./_export":47,"./_iter-create":67}],219:[function(require,module,exports){
 // 26.1.7 Reflect.getOwnPropertyDescriptor(target, propertyKey)
 var gOPD     = require('./_object-gopd')
   , $export  = require('./_export')
@@ -7332,7 +8319,7 @@ $export($export.S, 'Reflect', {
     return gOPD.f(anObject(target), propertyKey);
   }
 });
-},{"./_an-object":21,"./_export":46,"./_object-gopd":84}],219:[function(require,module,exports){
+},{"./_an-object":22,"./_export":47,"./_object-gopd":85}],220:[function(require,module,exports){
 // 26.1.8 Reflect.getPrototypeOf(target)
 var $export  = require('./_export')
   , getProto = require('./_object-gpo')
@@ -7343,7 +8330,7 @@ $export($export.S, 'Reflect', {
     return getProto(anObject(target));
   }
 });
-},{"./_an-object":21,"./_export":46,"./_object-gpo":88}],220:[function(require,module,exports){
+},{"./_an-object":22,"./_export":47,"./_object-gpo":89}],221:[function(require,module,exports){
 // 26.1.6 Reflect.get(target, propertyKey [, receiver])
 var gOPD           = require('./_object-gopd')
   , getPrototypeOf = require('./_object-gpo')
@@ -7365,7 +8352,7 @@ function get(target, propertyKey/*, receiver*/){
 }
 
 $export($export.S, 'Reflect', {get: get});
-},{"./_an-object":21,"./_export":46,"./_has":53,"./_is-object":63,"./_object-gopd":84,"./_object-gpo":88}],221:[function(require,module,exports){
+},{"./_an-object":22,"./_export":47,"./_has":54,"./_is-object":64,"./_object-gopd":85,"./_object-gpo":89}],222:[function(require,module,exports){
 // 26.1.9 Reflect.has(target, propertyKey)
 var $export = require('./_export');
 
@@ -7374,7 +8361,7 @@ $export($export.S, 'Reflect', {
     return propertyKey in target;
   }
 });
-},{"./_export":46}],222:[function(require,module,exports){
+},{"./_export":47}],223:[function(require,module,exports){
 // 26.1.10 Reflect.isExtensible(target)
 var $export       = require('./_export')
   , anObject      = require('./_an-object')
@@ -7386,12 +8373,12 @@ $export($export.S, 'Reflect', {
     return $isExtensible ? $isExtensible(target) : true;
   }
 });
-},{"./_an-object":21,"./_export":46}],223:[function(require,module,exports){
+},{"./_an-object":22,"./_export":47}],224:[function(require,module,exports){
 // 26.1.11 Reflect.ownKeys(target)
 var $export = require('./_export');
 
 $export($export.S, 'Reflect', {ownKeys: require('./_own-keys')});
-},{"./_export":46,"./_own-keys":94}],224:[function(require,module,exports){
+},{"./_export":47,"./_own-keys":95}],225:[function(require,module,exports){
 // 26.1.12 Reflect.preventExtensions(target)
 var $export            = require('./_export')
   , anObject           = require('./_an-object')
@@ -7408,7 +8395,7 @@ $export($export.S, 'Reflect', {
     }
   }
 });
-},{"./_an-object":21,"./_export":46}],225:[function(require,module,exports){
+},{"./_an-object":22,"./_export":47}],226:[function(require,module,exports){
 // 26.1.14 Reflect.setPrototypeOf(target, proto)
 var $export  = require('./_export')
   , setProto = require('./_set-proto');
@@ -7424,7 +8411,7 @@ if(setProto)$export($export.S, 'Reflect', {
     }
   }
 });
-},{"./_export":46,"./_set-proto":104}],226:[function(require,module,exports){
+},{"./_export":47,"./_set-proto":105}],227:[function(require,module,exports){
 // 26.1.13 Reflect.set(target, propertyKey, V [, receiver])
 var dP             = require('./_object-dp')
   , gOPD           = require('./_object-gopd')
@@ -7456,7 +8443,7 @@ function set(target, propertyKey, V/*, receiver*/){
 }
 
 $export($export.S, 'Reflect', {set: set});
-},{"./_an-object":21,"./_export":46,"./_has":53,"./_is-object":63,"./_object-dp":81,"./_object-gopd":84,"./_object-gpo":88,"./_property-desc":99}],227:[function(require,module,exports){
+},{"./_an-object":22,"./_export":47,"./_has":54,"./_is-object":64,"./_object-dp":82,"./_object-gopd":85,"./_object-gpo":89,"./_property-desc":100}],228:[function(require,module,exports){
 var global            = require('./_global')
   , inheritIfRequired = require('./_inherit-if-required')
   , dP                = require('./_object-dp').f
@@ -7500,13 +8487,13 @@ if(require('./_descriptors') && (!CORRECT_NEW || require('./_fails')(function(){
 }
 
 require('./_set-species')('RegExp');
-},{"./_descriptors":42,"./_fails":48,"./_flags":50,"./_global":52,"./_inherit-if-required":57,"./_is-regexp":64,"./_object-dp":81,"./_object-gopn":86,"./_redefine":101,"./_set-species":105,"./_wks":131}],228:[function(require,module,exports){
+},{"./_descriptors":43,"./_fails":49,"./_flags":51,"./_global":53,"./_inherit-if-required":58,"./_is-regexp":65,"./_object-dp":82,"./_object-gopn":87,"./_redefine":102,"./_set-species":106,"./_wks":132}],229:[function(require,module,exports){
 // 21.2.5.3 get RegExp.prototype.flags()
 if(require('./_descriptors') && /./g.flags != 'g')require('./_object-dp').f(RegExp.prototype, 'flags', {
   configurable: true,
   get: require('./_flags')
 });
-},{"./_descriptors":42,"./_flags":50,"./_object-dp":81}],229:[function(require,module,exports){
+},{"./_descriptors":43,"./_flags":51,"./_object-dp":82}],230:[function(require,module,exports){
 // @@match logic
 require('./_fix-re-wks')('match', 1, function(defined, MATCH, $match){
   // 21.1.3.11 String.prototype.match(regexp)
@@ -7517,7 +8504,7 @@ require('./_fix-re-wks')('match', 1, function(defined, MATCH, $match){
     return fn !== undefined ? fn.call(regexp, O) : new RegExp(regexp)[MATCH](String(O));
   }, $match];
 });
-},{"./_fix-re-wks":49}],230:[function(require,module,exports){
+},{"./_fix-re-wks":50}],231:[function(require,module,exports){
 // @@replace logic
 require('./_fix-re-wks')('replace', 2, function(defined, REPLACE, $replace){
   // 21.1.3.14 String.prototype.replace(searchValue, replaceValue)
@@ -7530,7 +8517,7 @@ require('./_fix-re-wks')('replace', 2, function(defined, REPLACE, $replace){
       : $replace.call(String(O), searchValue, replaceValue);
   }, $replace];
 });
-},{"./_fix-re-wks":49}],231:[function(require,module,exports){
+},{"./_fix-re-wks":50}],232:[function(require,module,exports){
 // @@search logic
 require('./_fix-re-wks')('search', 1, function(defined, SEARCH, $search){
   // 21.1.3.15 String.prototype.search(regexp)
@@ -7541,7 +8528,7 @@ require('./_fix-re-wks')('search', 1, function(defined, SEARCH, $search){
     return fn !== undefined ? fn.call(regexp, O) : new RegExp(regexp)[SEARCH](String(O));
   }, $search];
 });
-},{"./_fix-re-wks":49}],232:[function(require,module,exports){
+},{"./_fix-re-wks":50}],233:[function(require,module,exports){
 // @@split logic
 require('./_fix-re-wks')('split', 2, function(defined, SPLIT, $split){
   'use strict';
@@ -7612,7 +8599,7 @@ require('./_fix-re-wks')('split', 2, function(defined, SPLIT, $split){
     return fn !== undefined ? fn.call(separator, O, limit) : $split.call(String(O), separator, limit);
   }, $split];
 });
-},{"./_fix-re-wks":49,"./_is-regexp":64}],233:[function(require,module,exports){
+},{"./_fix-re-wks":50,"./_is-regexp":65}],234:[function(require,module,exports){
 'use strict';
 require('./es6.regexp.flags');
 var anObject    = require('./_an-object')
@@ -7638,7 +8625,7 @@ if(require('./_fails')(function(){ return $toString.call({source: 'a', flags: 'b
     return $toString.call(this);
   });
 }
-},{"./_an-object":21,"./_descriptors":42,"./_fails":48,"./_flags":50,"./_redefine":101,"./es6.regexp.flags":228}],234:[function(require,module,exports){
+},{"./_an-object":22,"./_descriptors":43,"./_fails":49,"./_flags":51,"./_redefine":102,"./es6.regexp.flags":229}],235:[function(require,module,exports){
 'use strict';
 var strong = require('./_collection-strong');
 
@@ -7651,7 +8638,7 @@ module.exports = require('./_collection')('Set', function(get){
     return strong.def(this, value = value === 0 ? 0 : value, value);
   }
 }, strong);
-},{"./_collection":36,"./_collection-strong":33}],235:[function(require,module,exports){
+},{"./_collection":37,"./_collection-strong":34}],236:[function(require,module,exports){
 'use strict';
 // B.2.3.2 String.prototype.anchor(name)
 require('./_string-html')('anchor', function(createHTML){
@@ -7659,7 +8646,7 @@ require('./_string-html')('anchor', function(createHTML){
     return createHTML(this, 'a', 'name', name);
   }
 });
-},{"./_string-html":113}],236:[function(require,module,exports){
+},{"./_string-html":114}],237:[function(require,module,exports){
 'use strict';
 // B.2.3.3 String.prototype.big()
 require('./_string-html')('big', function(createHTML){
@@ -7667,7 +8654,7 @@ require('./_string-html')('big', function(createHTML){
     return createHTML(this, 'big', '', '');
   }
 });
-},{"./_string-html":113}],237:[function(require,module,exports){
+},{"./_string-html":114}],238:[function(require,module,exports){
 'use strict';
 // B.2.3.4 String.prototype.blink()
 require('./_string-html')('blink', function(createHTML){
@@ -7675,7 +8662,7 @@ require('./_string-html')('blink', function(createHTML){
     return createHTML(this, 'blink', '', '');
   }
 });
-},{"./_string-html":113}],238:[function(require,module,exports){
+},{"./_string-html":114}],239:[function(require,module,exports){
 'use strict';
 // B.2.3.5 String.prototype.bold()
 require('./_string-html')('bold', function(createHTML){
@@ -7683,7 +8670,7 @@ require('./_string-html')('bold', function(createHTML){
     return createHTML(this, 'b', '', '');
   }
 });
-},{"./_string-html":113}],239:[function(require,module,exports){
+},{"./_string-html":114}],240:[function(require,module,exports){
 'use strict';
 var $export = require('./_export')
   , $at     = require('./_string-at')(false);
@@ -7693,7 +8680,7 @@ $export($export.P, 'String', {
     return $at(this, pos);
   }
 });
-},{"./_export":46,"./_string-at":111}],240:[function(require,module,exports){
+},{"./_export":47,"./_string-at":112}],241:[function(require,module,exports){
 // 21.1.3.6 String.prototype.endsWith(searchString [, endPosition])
 'use strict';
 var $export   = require('./_export')
@@ -7714,7 +8701,7 @@ $export($export.P + $export.F * require('./_fails-is-regexp')(ENDS_WITH), 'Strin
       : that.slice(end - search.length, end) === search;
   }
 });
-},{"./_export":46,"./_fails-is-regexp":47,"./_string-context":112,"./_to-length":122}],241:[function(require,module,exports){
+},{"./_export":47,"./_fails-is-regexp":48,"./_string-context":113,"./_to-length":123}],242:[function(require,module,exports){
 'use strict';
 // B.2.3.6 String.prototype.fixed()
 require('./_string-html')('fixed', function(createHTML){
@@ -7722,7 +8709,7 @@ require('./_string-html')('fixed', function(createHTML){
     return createHTML(this, 'tt', '', '');
   }
 });
-},{"./_string-html":113}],242:[function(require,module,exports){
+},{"./_string-html":114}],243:[function(require,module,exports){
 'use strict';
 // B.2.3.7 String.prototype.fontcolor(color)
 require('./_string-html')('fontcolor', function(createHTML){
@@ -7730,7 +8717,7 @@ require('./_string-html')('fontcolor', function(createHTML){
     return createHTML(this, 'font', 'color', color);
   }
 });
-},{"./_string-html":113}],243:[function(require,module,exports){
+},{"./_string-html":114}],244:[function(require,module,exports){
 'use strict';
 // B.2.3.8 String.prototype.fontsize(size)
 require('./_string-html')('fontsize', function(createHTML){
@@ -7738,7 +8725,7 @@ require('./_string-html')('fontsize', function(createHTML){
     return createHTML(this, 'font', 'size', size);
   }
 });
-},{"./_string-html":113}],244:[function(require,module,exports){
+},{"./_string-html":114}],245:[function(require,module,exports){
 var $export        = require('./_export')
   , toIndex        = require('./_to-index')
   , fromCharCode   = String.fromCharCode
@@ -7762,7 +8749,7 @@ $export($export.S + $export.F * (!!$fromCodePoint && $fromCodePoint.length != 1)
     } return res.join('');
   }
 });
-},{"./_export":46,"./_to-index":119}],245:[function(require,module,exports){
+},{"./_export":47,"./_to-index":120}],246:[function(require,module,exports){
 // 21.1.3.7 String.prototype.includes(searchString, position = 0)
 'use strict';
 var $export  = require('./_export')
@@ -7775,7 +8762,7 @@ $export($export.P + $export.F * require('./_fails-is-regexp')(INCLUDES), 'String
       .indexOf(searchString, arguments.length > 1 ? arguments[1] : undefined);
   }
 });
-},{"./_export":46,"./_fails-is-regexp":47,"./_string-context":112}],246:[function(require,module,exports){
+},{"./_export":47,"./_fails-is-regexp":48,"./_string-context":113}],247:[function(require,module,exports){
 'use strict';
 // B.2.3.9 String.prototype.italics()
 require('./_string-html')('italics', function(createHTML){
@@ -7783,7 +8770,7 @@ require('./_string-html')('italics', function(createHTML){
     return createHTML(this, 'i', '', '');
   }
 });
-},{"./_string-html":113}],247:[function(require,module,exports){
+},{"./_string-html":114}],248:[function(require,module,exports){
 'use strict';
 var $at  = require('./_string-at')(true);
 
@@ -7801,7 +8788,7 @@ require('./_iter-define')(String, 'String', function(iterated){
   this._i += point.length;
   return {value: point, done: false};
 });
-},{"./_iter-define":67,"./_string-at":111}],248:[function(require,module,exports){
+},{"./_iter-define":68,"./_string-at":112}],249:[function(require,module,exports){
 'use strict';
 // B.2.3.10 String.prototype.link(url)
 require('./_string-html')('link', function(createHTML){
@@ -7809,7 +8796,7 @@ require('./_string-html')('link', function(createHTML){
     return createHTML(this, 'a', 'href', url);
   }
 });
-},{"./_string-html":113}],249:[function(require,module,exports){
+},{"./_string-html":114}],250:[function(require,module,exports){
 var $export   = require('./_export')
   , toIObject = require('./_to-iobject')
   , toLength  = require('./_to-length');
@@ -7828,14 +8815,14 @@ $export($export.S, 'String', {
     } return res.join('');
   }
 });
-},{"./_export":46,"./_to-iobject":121,"./_to-length":122}],250:[function(require,module,exports){
+},{"./_export":47,"./_to-iobject":122,"./_to-length":123}],251:[function(require,module,exports){
 var $export = require('./_export');
 
 $export($export.P, 'String', {
   // 21.1.3.13 String.prototype.repeat(count)
   repeat: require('./_string-repeat')
 });
-},{"./_export":46,"./_string-repeat":115}],251:[function(require,module,exports){
+},{"./_export":47,"./_string-repeat":116}],252:[function(require,module,exports){
 'use strict';
 // B.2.3.11 String.prototype.small()
 require('./_string-html')('small', function(createHTML){
@@ -7843,7 +8830,7 @@ require('./_string-html')('small', function(createHTML){
     return createHTML(this, 'small', '', '');
   }
 });
-},{"./_string-html":113}],252:[function(require,module,exports){
+},{"./_string-html":114}],253:[function(require,module,exports){
 // 21.1.3.18 String.prototype.startsWith(searchString [, position ])
 'use strict';
 var $export     = require('./_export')
@@ -7862,7 +8849,7 @@ $export($export.P + $export.F * require('./_fails-is-regexp')(STARTS_WITH), 'Str
       : that.slice(index, index + search.length) === search;
   }
 });
-},{"./_export":46,"./_fails-is-regexp":47,"./_string-context":112,"./_to-length":122}],253:[function(require,module,exports){
+},{"./_export":47,"./_fails-is-regexp":48,"./_string-context":113,"./_to-length":123}],254:[function(require,module,exports){
 'use strict';
 // B.2.3.12 String.prototype.strike()
 require('./_string-html')('strike', function(createHTML){
@@ -7870,7 +8857,7 @@ require('./_string-html')('strike', function(createHTML){
     return createHTML(this, 'strike', '', '');
   }
 });
-},{"./_string-html":113}],254:[function(require,module,exports){
+},{"./_string-html":114}],255:[function(require,module,exports){
 'use strict';
 // B.2.3.13 String.prototype.sub()
 require('./_string-html')('sub', function(createHTML){
@@ -7878,7 +8865,7 @@ require('./_string-html')('sub', function(createHTML){
     return createHTML(this, 'sub', '', '');
   }
 });
-},{"./_string-html":113}],255:[function(require,module,exports){
+},{"./_string-html":114}],256:[function(require,module,exports){
 'use strict';
 // B.2.3.14 String.prototype.sup()
 require('./_string-html')('sup', function(createHTML){
@@ -7886,7 +8873,7 @@ require('./_string-html')('sup', function(createHTML){
     return createHTML(this, 'sup', '', '');
   }
 });
-},{"./_string-html":113}],256:[function(require,module,exports){
+},{"./_string-html":114}],257:[function(require,module,exports){
 'use strict';
 // 21.1.3.25 String.prototype.trim()
 require('./_string-trim')('trim', function($trim){
@@ -7894,7 +8881,7 @@ require('./_string-trim')('trim', function($trim){
     return $trim(this, 3);
   };
 });
-},{"./_string-trim":116}],257:[function(require,module,exports){
+},{"./_string-trim":117}],258:[function(require,module,exports){
 'use strict';
 // ECMAScript 6 symbols shim
 var global         = require('./_global')
@@ -8130,7 +9117,7 @@ setToStringTag($Symbol, 'Symbol');
 setToStringTag(Math, 'Math', true);
 // 24.3.3 JSON[@@toStringTag]
 setToStringTag(global.JSON, 'JSON', true);
-},{"./_an-object":21,"./_descriptors":42,"./_enum-keys":45,"./_export":46,"./_fails":48,"./_global":52,"./_has":53,"./_hide":54,"./_is-array":61,"./_keyof":71,"./_library":72,"./_meta":76,"./_object-create":80,"./_object-dp":81,"./_object-gopd":84,"./_object-gopn":86,"./_object-gopn-ext":85,"./_object-gops":87,"./_object-keys":90,"./_object-pie":91,"./_property-desc":99,"./_redefine":101,"./_set-to-string-tag":106,"./_shared":108,"./_to-iobject":121,"./_to-primitive":124,"./_uid":128,"./_wks":131,"./_wks-define":129,"./_wks-ext":130}],258:[function(require,module,exports){
+},{"./_an-object":22,"./_descriptors":43,"./_enum-keys":46,"./_export":47,"./_fails":49,"./_global":53,"./_has":54,"./_hide":55,"./_is-array":62,"./_keyof":72,"./_library":73,"./_meta":77,"./_object-create":81,"./_object-dp":82,"./_object-gopd":85,"./_object-gopn":87,"./_object-gopn-ext":86,"./_object-gops":88,"./_object-keys":91,"./_object-pie":92,"./_property-desc":100,"./_redefine":102,"./_set-to-string-tag":107,"./_shared":109,"./_to-iobject":122,"./_to-primitive":125,"./_uid":129,"./_wks":132,"./_wks-define":130,"./_wks-ext":131}],259:[function(require,module,exports){
 'use strict';
 var $export      = require('./_export')
   , $typed       = require('./_typed')
@@ -8177,66 +9164,66 @@ $export($export.P + $export.U + $export.F * require('./_fails')(function(){
 });
 
 require('./_set-species')(ARRAY_BUFFER);
-},{"./_an-object":21,"./_export":46,"./_fails":48,"./_global":52,"./_is-object":63,"./_set-species":105,"./_species-constructor":109,"./_to-index":119,"./_to-length":122,"./_typed":127,"./_typed-buffer":126}],259:[function(require,module,exports){
+},{"./_an-object":22,"./_export":47,"./_fails":49,"./_global":53,"./_is-object":64,"./_set-species":106,"./_species-constructor":110,"./_to-index":120,"./_to-length":123,"./_typed":128,"./_typed-buffer":127}],260:[function(require,module,exports){
 var $export = require('./_export');
 $export($export.G + $export.W + $export.F * !require('./_typed').ABV, {
   DataView: require('./_typed-buffer').DataView
 });
-},{"./_export":46,"./_typed":127,"./_typed-buffer":126}],260:[function(require,module,exports){
+},{"./_export":47,"./_typed":128,"./_typed-buffer":127}],261:[function(require,module,exports){
 require('./_typed-array')('Float32', 4, function(init){
   return function Float32Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
-},{"./_typed-array":125}],261:[function(require,module,exports){
+},{"./_typed-array":126}],262:[function(require,module,exports){
 require('./_typed-array')('Float64', 8, function(init){
   return function Float64Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
-},{"./_typed-array":125}],262:[function(require,module,exports){
+},{"./_typed-array":126}],263:[function(require,module,exports){
 require('./_typed-array')('Int16', 2, function(init){
   return function Int16Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
-},{"./_typed-array":125}],263:[function(require,module,exports){
+},{"./_typed-array":126}],264:[function(require,module,exports){
 require('./_typed-array')('Int32', 4, function(init){
   return function Int32Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
-},{"./_typed-array":125}],264:[function(require,module,exports){
+},{"./_typed-array":126}],265:[function(require,module,exports){
 require('./_typed-array')('Int8', 1, function(init){
   return function Int8Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
-},{"./_typed-array":125}],265:[function(require,module,exports){
+},{"./_typed-array":126}],266:[function(require,module,exports){
 require('./_typed-array')('Uint16', 2, function(init){
   return function Uint16Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
-},{"./_typed-array":125}],266:[function(require,module,exports){
+},{"./_typed-array":126}],267:[function(require,module,exports){
 require('./_typed-array')('Uint32', 4, function(init){
   return function Uint32Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
-},{"./_typed-array":125}],267:[function(require,module,exports){
+},{"./_typed-array":126}],268:[function(require,module,exports){
 require('./_typed-array')('Uint8', 1, function(init){
   return function Uint8Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
-},{"./_typed-array":125}],268:[function(require,module,exports){
+},{"./_typed-array":126}],269:[function(require,module,exports){
 require('./_typed-array')('Uint8', 1, function(init){
   return function Uint8ClampedArray(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 }, true);
-},{"./_typed-array":125}],269:[function(require,module,exports){
+},{"./_typed-array":126}],270:[function(require,module,exports){
 'use strict';
 var each         = require('./_array-methods')(0)
   , redefine     = require('./_redefine')
@@ -8293,7 +9280,7 @@ if(new $WeakMap().set((Object.freeze || Object)(tmp), 7).get(tmp) != 7){
     });
   });
 }
-},{"./_array-methods":26,"./_collection":36,"./_collection-weak":35,"./_is-object":63,"./_meta":76,"./_object-assign":79,"./_redefine":101}],270:[function(require,module,exports){
+},{"./_array-methods":27,"./_collection":37,"./_collection-weak":36,"./_is-object":64,"./_meta":77,"./_object-assign":80,"./_redefine":102}],271:[function(require,module,exports){
 'use strict';
 var weak = require('./_collection-weak');
 
@@ -8306,7 +9293,7 @@ require('./_collection')('WeakSet', function(get){
     return weak.def(this, value, true);
   }
 }, weak, false, true);
-},{"./_collection":36,"./_collection-weak":35}],271:[function(require,module,exports){
+},{"./_collection":37,"./_collection-weak":36}],272:[function(require,module,exports){
 'use strict';
 // https://github.com/tc39/Array.prototype.includes
 var $export   = require('./_export')
@@ -8319,7 +9306,7 @@ $export($export.P, 'Array', {
 });
 
 require('./_add-to-unscopables')('includes');
-},{"./_add-to-unscopables":19,"./_array-includes":25,"./_export":46}],272:[function(require,module,exports){
+},{"./_add-to-unscopables":20,"./_array-includes":26,"./_export":47}],273:[function(require,module,exports){
 // https://github.com/rwaldron/tc39-notes/blob/master/es6/2014-09/sept-25.md#510-globalasap-for-enqueuing-a-microtask
 var $export   = require('./_export')
   , microtask = require('./_microtask')()
@@ -8332,7 +9319,7 @@ $export($export.G, {
     microtask(domain ? domain.bind(fn) : fn);
   }
 });
-},{"./_cof":32,"./_export":46,"./_global":52,"./_microtask":78}],273:[function(require,module,exports){
+},{"./_cof":33,"./_export":47,"./_global":53,"./_microtask":79}],274:[function(require,module,exports){
 // https://github.com/ljharb/proposal-is-error
 var $export = require('./_export')
   , cof     = require('./_cof');
@@ -8342,12 +9329,12 @@ $export($export.S, 'Error', {
     return cof(it) === 'Error';
   }
 });
-},{"./_cof":32,"./_export":46}],274:[function(require,module,exports){
+},{"./_cof":33,"./_export":47}],275:[function(require,module,exports){
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var $export  = require('./_export');
 
 $export($export.P + $export.R, 'Map', {toJSON: require('./_collection-to-json')('Map')});
-},{"./_collection-to-json":34,"./_export":46}],275:[function(require,module,exports){
+},{"./_collection-to-json":35,"./_export":47}],276:[function(require,module,exports){
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
 var $export = require('./_export');
 
@@ -8359,7 +9346,7 @@ $export($export.S, 'Math', {
     return $x1 + (y1 >>> 0) + (($x0 & $y0 | ($x0 | $y0) & ~($x0 + $y0 >>> 0)) >>> 31) | 0;
   }
 });
-},{"./_export":46}],276:[function(require,module,exports){
+},{"./_export":47}],277:[function(require,module,exports){
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
 var $export = require('./_export');
 
@@ -8376,7 +9363,7 @@ $export($export.S, 'Math', {
     return u1 * v1 + (t >> 16) + ((u0 * v1 >>> 0) + (t & UINT16) >> 16);
   }
 });
-},{"./_export":46}],277:[function(require,module,exports){
+},{"./_export":47}],278:[function(require,module,exports){
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
 var $export = require('./_export');
 
@@ -8388,7 +9375,7 @@ $export($export.S, 'Math', {
     return $x1 - (y1 >>> 0) - ((~$x0 & $y0 | ~($x0 ^ $y0) & $x0 - $y0 >>> 0) >>> 31) | 0;
   }
 });
-},{"./_export":46}],278:[function(require,module,exports){
+},{"./_export":47}],279:[function(require,module,exports){
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
 var $export = require('./_export');
 
@@ -8405,7 +9392,7 @@ $export($export.S, 'Math', {
     return u1 * v1 + (t >>> 16) + ((u0 * v1 >>> 0) + (t & UINT16) >>> 16);
   }
 });
-},{"./_export":46}],279:[function(require,module,exports){
+},{"./_export":47}],280:[function(require,module,exports){
 'use strict';
 var $export         = require('./_export')
   , toObject        = require('./_to-object')
@@ -8418,7 +9405,7 @@ require('./_descriptors') && $export($export.P + require('./_object-forced-pam')
     $defineProperty.f(toObject(this), P, {get: aFunction(getter), enumerable: true, configurable: true});
   }
 });
-},{"./_a-function":17,"./_descriptors":42,"./_export":46,"./_object-dp":81,"./_object-forced-pam":83,"./_to-object":123}],280:[function(require,module,exports){
+},{"./_a-function":18,"./_descriptors":43,"./_export":47,"./_object-dp":82,"./_object-forced-pam":84,"./_to-object":124}],281:[function(require,module,exports){
 'use strict';
 var $export         = require('./_export')
   , toObject        = require('./_to-object')
@@ -8431,7 +9418,7 @@ require('./_descriptors') && $export($export.P + require('./_object-forced-pam')
     $defineProperty.f(toObject(this), P, {set: aFunction(setter), enumerable: true, configurable: true});
   }
 });
-},{"./_a-function":17,"./_descriptors":42,"./_export":46,"./_object-dp":81,"./_object-forced-pam":83,"./_to-object":123}],281:[function(require,module,exports){
+},{"./_a-function":18,"./_descriptors":43,"./_export":47,"./_object-dp":82,"./_object-forced-pam":84,"./_to-object":124}],282:[function(require,module,exports){
 // https://github.com/tc39/proposal-object-values-entries
 var $export  = require('./_export')
   , $entries = require('./_object-to-array')(true);
@@ -8441,7 +9428,7 @@ $export($export.S, 'Object', {
     return $entries(it);
   }
 });
-},{"./_export":46,"./_object-to-array":93}],282:[function(require,module,exports){
+},{"./_export":47,"./_object-to-array":94}],283:[function(require,module,exports){
 // https://github.com/tc39/proposal-object-getownpropertydescriptors
 var $export        = require('./_export')
   , ownKeys        = require('./_own-keys')
@@ -8461,7 +9448,7 @@ $export($export.S, 'Object', {
     return result;
   }
 });
-},{"./_create-property":38,"./_export":46,"./_object-gopd":84,"./_own-keys":94,"./_to-iobject":121}],283:[function(require,module,exports){
+},{"./_create-property":39,"./_export":47,"./_object-gopd":85,"./_own-keys":95,"./_to-iobject":122}],284:[function(require,module,exports){
 'use strict';
 var $export                  = require('./_export')
   , toObject                 = require('./_to-object')
@@ -8480,7 +9467,7 @@ require('./_descriptors') && $export($export.P + require('./_object-forced-pam')
     } while(O = getPrototypeOf(O));
   }
 });
-},{"./_descriptors":42,"./_export":46,"./_object-forced-pam":83,"./_object-gopd":84,"./_object-gpo":88,"./_to-object":123,"./_to-primitive":124}],284:[function(require,module,exports){
+},{"./_descriptors":43,"./_export":47,"./_object-forced-pam":84,"./_object-gopd":85,"./_object-gpo":89,"./_to-object":124,"./_to-primitive":125}],285:[function(require,module,exports){
 'use strict';
 var $export                  = require('./_export')
   , toObject                 = require('./_to-object')
@@ -8499,7 +9486,7 @@ require('./_descriptors') && $export($export.P + require('./_object-forced-pam')
     } while(O = getPrototypeOf(O));
   }
 });
-},{"./_descriptors":42,"./_export":46,"./_object-forced-pam":83,"./_object-gopd":84,"./_object-gpo":88,"./_to-object":123,"./_to-primitive":124}],285:[function(require,module,exports){
+},{"./_descriptors":43,"./_export":47,"./_object-forced-pam":84,"./_object-gopd":85,"./_object-gpo":89,"./_to-object":124,"./_to-primitive":125}],286:[function(require,module,exports){
 // https://github.com/tc39/proposal-object-values-entries
 var $export = require('./_export')
   , $values = require('./_object-to-array')(false);
@@ -8509,7 +9496,7 @@ $export($export.S, 'Object', {
     return $values(it);
   }
 });
-},{"./_export":46,"./_object-to-array":93}],286:[function(require,module,exports){
+},{"./_export":47,"./_object-to-array":94}],287:[function(require,module,exports){
 'use strict';
 // https://github.com/zenparsing/es-observable
 var $export     = require('./_export')
@@ -8709,7 +9696,7 @@ hide($Observable.prototype, OBSERVABLE, function(){ return this; });
 $export($export.G, {Observable: $Observable});
 
 require('./_set-species')('Observable');
-},{"./_a-function":17,"./_an-instance":20,"./_an-object":21,"./_core":37,"./_export":46,"./_for-of":51,"./_global":52,"./_hide":54,"./_microtask":78,"./_redefine-all":100,"./_set-species":105,"./_wks":131}],287:[function(require,module,exports){
+},{"./_a-function":18,"./_an-instance":21,"./_an-object":22,"./_core":38,"./_export":47,"./_for-of":52,"./_global":53,"./_hide":55,"./_microtask":79,"./_redefine-all":101,"./_set-species":106,"./_wks":132}],288:[function(require,module,exports){
 var metadata                  = require('./_metadata')
   , anObject                  = require('./_an-object')
   , toMetaKey                 = metadata.key
@@ -8718,7 +9705,7 @@ var metadata                  = require('./_metadata')
 metadata.exp({defineMetadata: function defineMetadata(metadataKey, metadataValue, target, targetKey){
   ordinaryDefineOwnMetadata(metadataKey, metadataValue, anObject(target), toMetaKey(targetKey));
 }});
-},{"./_an-object":21,"./_metadata":77}],288:[function(require,module,exports){
+},{"./_an-object":22,"./_metadata":78}],289:[function(require,module,exports){
 var metadata               = require('./_metadata')
   , anObject               = require('./_an-object')
   , toMetaKey              = metadata.key
@@ -8734,7 +9721,7 @@ metadata.exp({deleteMetadata: function deleteMetadata(metadataKey, target /*, ta
   targetMetadata['delete'](targetKey);
   return !!targetMetadata.size || store['delete'](target);
 }});
-},{"./_an-object":21,"./_metadata":77}],289:[function(require,module,exports){
+},{"./_an-object":22,"./_metadata":78}],290:[function(require,module,exports){
 var Set                     = require('./es6.set')
   , from                    = require('./_array-from-iterable')
   , metadata                = require('./_metadata')
@@ -8754,7 +9741,7 @@ var ordinaryMetadataKeys = function(O, P){
 metadata.exp({getMetadataKeys: function getMetadataKeys(target /*, targetKey */){
   return ordinaryMetadataKeys(anObject(target), arguments.length < 2 ? undefined : toMetaKey(arguments[1]));
 }});
-},{"./_an-object":21,"./_array-from-iterable":24,"./_metadata":77,"./_object-gpo":88,"./es6.set":234}],290:[function(require,module,exports){
+},{"./_an-object":22,"./_array-from-iterable":25,"./_metadata":78,"./_object-gpo":89,"./es6.set":235}],291:[function(require,module,exports){
 var metadata               = require('./_metadata')
   , anObject               = require('./_an-object')
   , getPrototypeOf         = require('./_object-gpo')
@@ -8772,7 +9759,7 @@ var ordinaryGetMetadata = function(MetadataKey, O, P){
 metadata.exp({getMetadata: function getMetadata(metadataKey, target /*, targetKey */){
   return ordinaryGetMetadata(metadataKey, anObject(target), arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
 }});
-},{"./_an-object":21,"./_metadata":77,"./_object-gpo":88}],291:[function(require,module,exports){
+},{"./_an-object":22,"./_metadata":78,"./_object-gpo":89}],292:[function(require,module,exports){
 var metadata                = require('./_metadata')
   , anObject                = require('./_an-object')
   , ordinaryOwnMetadataKeys = metadata.keys
@@ -8781,7 +9768,7 @@ var metadata                = require('./_metadata')
 metadata.exp({getOwnMetadataKeys: function getOwnMetadataKeys(target /*, targetKey */){
   return ordinaryOwnMetadataKeys(anObject(target), arguments.length < 2 ? undefined : toMetaKey(arguments[1]));
 }});
-},{"./_an-object":21,"./_metadata":77}],292:[function(require,module,exports){
+},{"./_an-object":22,"./_metadata":78}],293:[function(require,module,exports){
 var metadata               = require('./_metadata')
   , anObject               = require('./_an-object')
   , ordinaryGetOwnMetadata = metadata.get
@@ -8791,7 +9778,7 @@ metadata.exp({getOwnMetadata: function getOwnMetadata(metadataKey, target /*, ta
   return ordinaryGetOwnMetadata(metadataKey, anObject(target)
     , arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
 }});
-},{"./_an-object":21,"./_metadata":77}],293:[function(require,module,exports){
+},{"./_an-object":22,"./_metadata":78}],294:[function(require,module,exports){
 var metadata               = require('./_metadata')
   , anObject               = require('./_an-object')
   , getPrototypeOf         = require('./_object-gpo')
@@ -8808,7 +9795,7 @@ var ordinaryHasMetadata = function(MetadataKey, O, P){
 metadata.exp({hasMetadata: function hasMetadata(metadataKey, target /*, targetKey */){
   return ordinaryHasMetadata(metadataKey, anObject(target), arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
 }});
-},{"./_an-object":21,"./_metadata":77,"./_object-gpo":88}],294:[function(require,module,exports){
+},{"./_an-object":22,"./_metadata":78,"./_object-gpo":89}],295:[function(require,module,exports){
 var metadata               = require('./_metadata')
   , anObject               = require('./_an-object')
   , ordinaryHasOwnMetadata = metadata.has
@@ -8818,7 +9805,7 @@ metadata.exp({hasOwnMetadata: function hasOwnMetadata(metadataKey, target /*, ta
   return ordinaryHasOwnMetadata(metadataKey, anObject(target)
     , arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
 }});
-},{"./_an-object":21,"./_metadata":77}],295:[function(require,module,exports){
+},{"./_an-object":22,"./_metadata":78}],296:[function(require,module,exports){
 var metadata                  = require('./_metadata')
   , anObject                  = require('./_an-object')
   , aFunction                 = require('./_a-function')
@@ -8834,12 +9821,12 @@ metadata.exp({metadata: function metadata(metadataKey, metadataValue){
     );
   };
 }});
-},{"./_a-function":17,"./_an-object":21,"./_metadata":77}],296:[function(require,module,exports){
+},{"./_a-function":18,"./_an-object":22,"./_metadata":78}],297:[function(require,module,exports){
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var $export  = require('./_export');
 
 $export($export.P + $export.R, 'Set', {toJSON: require('./_collection-to-json')('Set')});
-},{"./_collection-to-json":34,"./_export":46}],297:[function(require,module,exports){
+},{"./_collection-to-json":35,"./_export":47}],298:[function(require,module,exports){
 'use strict';
 // https://github.com/mathiasbynens/String.prototype.at
 var $export = require('./_export')
@@ -8850,7 +9837,7 @@ $export($export.P, 'String', {
     return $at(this, pos);
   }
 });
-},{"./_export":46,"./_string-at":111}],298:[function(require,module,exports){
+},{"./_export":47,"./_string-at":112}],299:[function(require,module,exports){
 'use strict';
 // https://tc39.github.io/String.prototype.matchAll/
 var $export     = require('./_export')
@@ -8881,7 +9868,7 @@ $export($export.P, 'String', {
     return new $RegExpStringIterator(rx, S);
   }
 });
-},{"./_defined":41,"./_export":46,"./_flags":50,"./_is-regexp":64,"./_iter-create":66,"./_to-length":122}],299:[function(require,module,exports){
+},{"./_defined":42,"./_export":47,"./_flags":51,"./_is-regexp":65,"./_iter-create":67,"./_to-length":123}],300:[function(require,module,exports){
 'use strict';
 // https://github.com/tc39/proposal-string-pad-start-end
 var $export = require('./_export')
@@ -8892,7 +9879,7 @@ $export($export.P, 'String', {
     return $pad(this, maxLength, arguments.length > 1 ? arguments[1] : undefined, false);
   }
 });
-},{"./_export":46,"./_string-pad":114}],300:[function(require,module,exports){
+},{"./_export":47,"./_string-pad":115}],301:[function(require,module,exports){
 'use strict';
 // https://github.com/tc39/proposal-string-pad-start-end
 var $export = require('./_export')
@@ -8903,7 +9890,7 @@ $export($export.P, 'String', {
     return $pad(this, maxLength, arguments.length > 1 ? arguments[1] : undefined, true);
   }
 });
-},{"./_export":46,"./_string-pad":114}],301:[function(require,module,exports){
+},{"./_export":47,"./_string-pad":115}],302:[function(require,module,exports){
 'use strict';
 // https://github.com/sebmarkbage/ecmascript-string-left-right-trim
 require('./_string-trim')('trimLeft', function($trim){
@@ -8911,7 +9898,7 @@ require('./_string-trim')('trimLeft', function($trim){
     return $trim(this, 1);
   };
 }, 'trimStart');
-},{"./_string-trim":116}],302:[function(require,module,exports){
+},{"./_string-trim":117}],303:[function(require,module,exports){
 'use strict';
 // https://github.com/sebmarkbage/ecmascript-string-left-right-trim
 require('./_string-trim')('trimRight', function($trim){
@@ -8919,16 +9906,16 @@ require('./_string-trim')('trimRight', function($trim){
     return $trim(this, 2);
   };
 }, 'trimEnd');
-},{"./_string-trim":116}],303:[function(require,module,exports){
+},{"./_string-trim":117}],304:[function(require,module,exports){
 require('./_wks-define')('asyncIterator');
-},{"./_wks-define":129}],304:[function(require,module,exports){
+},{"./_wks-define":130}],305:[function(require,module,exports){
 require('./_wks-define')('observable');
-},{"./_wks-define":129}],305:[function(require,module,exports){
+},{"./_wks-define":130}],306:[function(require,module,exports){
 // https://github.com/ljharb/proposal-global
 var $export = require('./_export');
 
 $export($export.S, 'System', {global: require('./_global')});
-},{"./_export":46,"./_global":52}],306:[function(require,module,exports){
+},{"./_export":47,"./_global":53}],307:[function(require,module,exports){
 var $iterators    = require('./es6.array.iterator')
   , redefine      = require('./_redefine')
   , global        = require('./_global')
@@ -8951,14 +9938,14 @@ for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList'
     for(key in $iterators)if(!proto[key])redefine(proto, key, $iterators[key], true);
   }
 }
-},{"./_global":52,"./_hide":54,"./_iterators":70,"./_redefine":101,"./_wks":131,"./es6.array.iterator":144}],307:[function(require,module,exports){
+},{"./_global":53,"./_hide":55,"./_iterators":71,"./_redefine":102,"./_wks":132,"./es6.array.iterator":145}],308:[function(require,module,exports){
 var $export = require('./_export')
   , $task   = require('./_task');
 $export($export.G + $export.B, {
   setImmediate:   $task.set,
   clearImmediate: $task.clear
 });
-},{"./_export":46,"./_task":118}],308:[function(require,module,exports){
+},{"./_export":47,"./_task":119}],309:[function(require,module,exports){
 // ie9- setTimeout & setInterval additional parameters fix
 var global     = require('./_global')
   , $export    = require('./_export')
@@ -8979,7 +9966,7 @@ $export($export.G + $export.B + $export.F * MSIE, {
   setTimeout:  wrap(global.setTimeout),
   setInterval: wrap(global.setInterval)
 });
-},{"./_export":46,"./_global":52,"./_invoke":58,"./_partial":97}],309:[function(require,module,exports){
+},{"./_export":47,"./_global":53,"./_invoke":59,"./_partial":98}],310:[function(require,module,exports){
 require('./modules/es6.symbol');
 require('./modules/es6.object.create');
 require('./modules/es6.object.define-property');
@@ -9156,7 +10143,7 @@ require('./modules/web.timers');
 require('./modules/web.immediate');
 require('./modules/web.dom.iterable');
 module.exports = require('./modules/_core');
-},{"./modules/_core":37,"./modules/es6.array.copy-within":134,"./modules/es6.array.every":135,"./modules/es6.array.fill":136,"./modules/es6.array.filter":137,"./modules/es6.array.find":139,"./modules/es6.array.find-index":138,"./modules/es6.array.for-each":140,"./modules/es6.array.from":141,"./modules/es6.array.index-of":142,"./modules/es6.array.is-array":143,"./modules/es6.array.iterator":144,"./modules/es6.array.join":145,"./modules/es6.array.last-index-of":146,"./modules/es6.array.map":147,"./modules/es6.array.of":148,"./modules/es6.array.reduce":150,"./modules/es6.array.reduce-right":149,"./modules/es6.array.slice":151,"./modules/es6.array.some":152,"./modules/es6.array.sort":153,"./modules/es6.array.species":154,"./modules/es6.date.now":155,"./modules/es6.date.to-iso-string":156,"./modules/es6.date.to-json":157,"./modules/es6.date.to-primitive":158,"./modules/es6.date.to-string":159,"./modules/es6.function.bind":160,"./modules/es6.function.has-instance":161,"./modules/es6.function.name":162,"./modules/es6.map":163,"./modules/es6.math.acosh":164,"./modules/es6.math.asinh":165,"./modules/es6.math.atanh":166,"./modules/es6.math.cbrt":167,"./modules/es6.math.clz32":168,"./modules/es6.math.cosh":169,"./modules/es6.math.expm1":170,"./modules/es6.math.fround":171,"./modules/es6.math.hypot":172,"./modules/es6.math.imul":173,"./modules/es6.math.log10":174,"./modules/es6.math.log1p":175,"./modules/es6.math.log2":176,"./modules/es6.math.sign":177,"./modules/es6.math.sinh":178,"./modules/es6.math.tanh":179,"./modules/es6.math.trunc":180,"./modules/es6.number.constructor":181,"./modules/es6.number.epsilon":182,"./modules/es6.number.is-finite":183,"./modules/es6.number.is-integer":184,"./modules/es6.number.is-nan":185,"./modules/es6.number.is-safe-integer":186,"./modules/es6.number.max-safe-integer":187,"./modules/es6.number.min-safe-integer":188,"./modules/es6.number.parse-float":189,"./modules/es6.number.parse-int":190,"./modules/es6.number.to-fixed":191,"./modules/es6.number.to-precision":192,"./modules/es6.object.assign":193,"./modules/es6.object.create":194,"./modules/es6.object.define-properties":195,"./modules/es6.object.define-property":196,"./modules/es6.object.freeze":197,"./modules/es6.object.get-own-property-descriptor":198,"./modules/es6.object.get-own-property-names":199,"./modules/es6.object.get-prototype-of":200,"./modules/es6.object.is":204,"./modules/es6.object.is-extensible":201,"./modules/es6.object.is-frozen":202,"./modules/es6.object.is-sealed":203,"./modules/es6.object.keys":205,"./modules/es6.object.prevent-extensions":206,"./modules/es6.object.seal":207,"./modules/es6.object.set-prototype-of":208,"./modules/es6.object.to-string":209,"./modules/es6.parse-float":210,"./modules/es6.parse-int":211,"./modules/es6.promise":212,"./modules/es6.reflect.apply":213,"./modules/es6.reflect.construct":214,"./modules/es6.reflect.define-property":215,"./modules/es6.reflect.delete-property":216,"./modules/es6.reflect.enumerate":217,"./modules/es6.reflect.get":220,"./modules/es6.reflect.get-own-property-descriptor":218,"./modules/es6.reflect.get-prototype-of":219,"./modules/es6.reflect.has":221,"./modules/es6.reflect.is-extensible":222,"./modules/es6.reflect.own-keys":223,"./modules/es6.reflect.prevent-extensions":224,"./modules/es6.reflect.set":226,"./modules/es6.reflect.set-prototype-of":225,"./modules/es6.regexp.constructor":227,"./modules/es6.regexp.flags":228,"./modules/es6.regexp.match":229,"./modules/es6.regexp.replace":230,"./modules/es6.regexp.search":231,"./modules/es6.regexp.split":232,"./modules/es6.regexp.to-string":233,"./modules/es6.set":234,"./modules/es6.string.anchor":235,"./modules/es6.string.big":236,"./modules/es6.string.blink":237,"./modules/es6.string.bold":238,"./modules/es6.string.code-point-at":239,"./modules/es6.string.ends-with":240,"./modules/es6.string.fixed":241,"./modules/es6.string.fontcolor":242,"./modules/es6.string.fontsize":243,"./modules/es6.string.from-code-point":244,"./modules/es6.string.includes":245,"./modules/es6.string.italics":246,"./modules/es6.string.iterator":247,"./modules/es6.string.link":248,"./modules/es6.string.raw":249,"./modules/es6.string.repeat":250,"./modules/es6.string.small":251,"./modules/es6.string.starts-with":252,"./modules/es6.string.strike":253,"./modules/es6.string.sub":254,"./modules/es6.string.sup":255,"./modules/es6.string.trim":256,"./modules/es6.symbol":257,"./modules/es6.typed.array-buffer":258,"./modules/es6.typed.data-view":259,"./modules/es6.typed.float32-array":260,"./modules/es6.typed.float64-array":261,"./modules/es6.typed.int16-array":262,"./modules/es6.typed.int32-array":263,"./modules/es6.typed.int8-array":264,"./modules/es6.typed.uint16-array":265,"./modules/es6.typed.uint32-array":266,"./modules/es6.typed.uint8-array":267,"./modules/es6.typed.uint8-clamped-array":268,"./modules/es6.weak-map":269,"./modules/es6.weak-set":270,"./modules/es7.array.includes":271,"./modules/es7.asap":272,"./modules/es7.error.is-error":273,"./modules/es7.map.to-json":274,"./modules/es7.math.iaddh":275,"./modules/es7.math.imulh":276,"./modules/es7.math.isubh":277,"./modules/es7.math.umulh":278,"./modules/es7.object.define-getter":279,"./modules/es7.object.define-setter":280,"./modules/es7.object.entries":281,"./modules/es7.object.get-own-property-descriptors":282,"./modules/es7.object.lookup-getter":283,"./modules/es7.object.lookup-setter":284,"./modules/es7.object.values":285,"./modules/es7.observable":286,"./modules/es7.reflect.define-metadata":287,"./modules/es7.reflect.delete-metadata":288,"./modules/es7.reflect.get-metadata":290,"./modules/es7.reflect.get-metadata-keys":289,"./modules/es7.reflect.get-own-metadata":292,"./modules/es7.reflect.get-own-metadata-keys":291,"./modules/es7.reflect.has-metadata":293,"./modules/es7.reflect.has-own-metadata":294,"./modules/es7.reflect.metadata":295,"./modules/es7.set.to-json":296,"./modules/es7.string.at":297,"./modules/es7.string.match-all":298,"./modules/es7.string.pad-end":299,"./modules/es7.string.pad-start":300,"./modules/es7.string.trim-left":301,"./modules/es7.string.trim-right":302,"./modules/es7.symbol.async-iterator":303,"./modules/es7.symbol.observable":304,"./modules/es7.system.global":305,"./modules/web.dom.iterable":306,"./modules/web.immediate":307,"./modules/web.timers":308}],310:[function(require,module,exports){
+},{"./modules/_core":38,"./modules/es6.array.copy-within":135,"./modules/es6.array.every":136,"./modules/es6.array.fill":137,"./modules/es6.array.filter":138,"./modules/es6.array.find":140,"./modules/es6.array.find-index":139,"./modules/es6.array.for-each":141,"./modules/es6.array.from":142,"./modules/es6.array.index-of":143,"./modules/es6.array.is-array":144,"./modules/es6.array.iterator":145,"./modules/es6.array.join":146,"./modules/es6.array.last-index-of":147,"./modules/es6.array.map":148,"./modules/es6.array.of":149,"./modules/es6.array.reduce":151,"./modules/es6.array.reduce-right":150,"./modules/es6.array.slice":152,"./modules/es6.array.some":153,"./modules/es6.array.sort":154,"./modules/es6.array.species":155,"./modules/es6.date.now":156,"./modules/es6.date.to-iso-string":157,"./modules/es6.date.to-json":158,"./modules/es6.date.to-primitive":159,"./modules/es6.date.to-string":160,"./modules/es6.function.bind":161,"./modules/es6.function.has-instance":162,"./modules/es6.function.name":163,"./modules/es6.map":164,"./modules/es6.math.acosh":165,"./modules/es6.math.asinh":166,"./modules/es6.math.atanh":167,"./modules/es6.math.cbrt":168,"./modules/es6.math.clz32":169,"./modules/es6.math.cosh":170,"./modules/es6.math.expm1":171,"./modules/es6.math.fround":172,"./modules/es6.math.hypot":173,"./modules/es6.math.imul":174,"./modules/es6.math.log10":175,"./modules/es6.math.log1p":176,"./modules/es6.math.log2":177,"./modules/es6.math.sign":178,"./modules/es6.math.sinh":179,"./modules/es6.math.tanh":180,"./modules/es6.math.trunc":181,"./modules/es6.number.constructor":182,"./modules/es6.number.epsilon":183,"./modules/es6.number.is-finite":184,"./modules/es6.number.is-integer":185,"./modules/es6.number.is-nan":186,"./modules/es6.number.is-safe-integer":187,"./modules/es6.number.max-safe-integer":188,"./modules/es6.number.min-safe-integer":189,"./modules/es6.number.parse-float":190,"./modules/es6.number.parse-int":191,"./modules/es6.number.to-fixed":192,"./modules/es6.number.to-precision":193,"./modules/es6.object.assign":194,"./modules/es6.object.create":195,"./modules/es6.object.define-properties":196,"./modules/es6.object.define-property":197,"./modules/es6.object.freeze":198,"./modules/es6.object.get-own-property-descriptor":199,"./modules/es6.object.get-own-property-names":200,"./modules/es6.object.get-prototype-of":201,"./modules/es6.object.is":205,"./modules/es6.object.is-extensible":202,"./modules/es6.object.is-frozen":203,"./modules/es6.object.is-sealed":204,"./modules/es6.object.keys":206,"./modules/es6.object.prevent-extensions":207,"./modules/es6.object.seal":208,"./modules/es6.object.set-prototype-of":209,"./modules/es6.object.to-string":210,"./modules/es6.parse-float":211,"./modules/es6.parse-int":212,"./modules/es6.promise":213,"./modules/es6.reflect.apply":214,"./modules/es6.reflect.construct":215,"./modules/es6.reflect.define-property":216,"./modules/es6.reflect.delete-property":217,"./modules/es6.reflect.enumerate":218,"./modules/es6.reflect.get":221,"./modules/es6.reflect.get-own-property-descriptor":219,"./modules/es6.reflect.get-prototype-of":220,"./modules/es6.reflect.has":222,"./modules/es6.reflect.is-extensible":223,"./modules/es6.reflect.own-keys":224,"./modules/es6.reflect.prevent-extensions":225,"./modules/es6.reflect.set":227,"./modules/es6.reflect.set-prototype-of":226,"./modules/es6.regexp.constructor":228,"./modules/es6.regexp.flags":229,"./modules/es6.regexp.match":230,"./modules/es6.regexp.replace":231,"./modules/es6.regexp.search":232,"./modules/es6.regexp.split":233,"./modules/es6.regexp.to-string":234,"./modules/es6.set":235,"./modules/es6.string.anchor":236,"./modules/es6.string.big":237,"./modules/es6.string.blink":238,"./modules/es6.string.bold":239,"./modules/es6.string.code-point-at":240,"./modules/es6.string.ends-with":241,"./modules/es6.string.fixed":242,"./modules/es6.string.fontcolor":243,"./modules/es6.string.fontsize":244,"./modules/es6.string.from-code-point":245,"./modules/es6.string.includes":246,"./modules/es6.string.italics":247,"./modules/es6.string.iterator":248,"./modules/es6.string.link":249,"./modules/es6.string.raw":250,"./modules/es6.string.repeat":251,"./modules/es6.string.small":252,"./modules/es6.string.starts-with":253,"./modules/es6.string.strike":254,"./modules/es6.string.sub":255,"./modules/es6.string.sup":256,"./modules/es6.string.trim":257,"./modules/es6.symbol":258,"./modules/es6.typed.array-buffer":259,"./modules/es6.typed.data-view":260,"./modules/es6.typed.float32-array":261,"./modules/es6.typed.float64-array":262,"./modules/es6.typed.int16-array":263,"./modules/es6.typed.int32-array":264,"./modules/es6.typed.int8-array":265,"./modules/es6.typed.uint16-array":266,"./modules/es6.typed.uint32-array":267,"./modules/es6.typed.uint8-array":268,"./modules/es6.typed.uint8-clamped-array":269,"./modules/es6.weak-map":270,"./modules/es6.weak-set":271,"./modules/es7.array.includes":272,"./modules/es7.asap":273,"./modules/es7.error.is-error":274,"./modules/es7.map.to-json":275,"./modules/es7.math.iaddh":276,"./modules/es7.math.imulh":277,"./modules/es7.math.isubh":278,"./modules/es7.math.umulh":279,"./modules/es7.object.define-getter":280,"./modules/es7.object.define-setter":281,"./modules/es7.object.entries":282,"./modules/es7.object.get-own-property-descriptors":283,"./modules/es7.object.lookup-getter":284,"./modules/es7.object.lookup-setter":285,"./modules/es7.object.values":286,"./modules/es7.observable":287,"./modules/es7.reflect.define-metadata":288,"./modules/es7.reflect.delete-metadata":289,"./modules/es7.reflect.get-metadata":291,"./modules/es7.reflect.get-metadata-keys":290,"./modules/es7.reflect.get-own-metadata":293,"./modules/es7.reflect.get-own-metadata-keys":292,"./modules/es7.reflect.has-metadata":294,"./modules/es7.reflect.has-own-metadata":295,"./modules/es7.reflect.metadata":296,"./modules/es7.set.to-json":297,"./modules/es7.string.at":298,"./modules/es7.string.match-all":299,"./modules/es7.string.pad-end":300,"./modules/es7.string.pad-start":301,"./modules/es7.string.trim-left":302,"./modules/es7.string.trim-right":303,"./modules/es7.symbol.async-iterator":304,"./modules/es7.symbol.observable":305,"./modules/es7.system.global":306,"./modules/web.dom.iterable":307,"./modules/web.immediate":308,"./modules/web.timers":309}],311:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.2.4
  * http://jquery.com/
@@ -18972,7 +19959,7 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-},{}],311:[function(require,module,exports){
+},{}],312:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -19134,7 +20121,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],312:[function(require,module,exports){
+},{}],313:[function(require,module,exports){
 /**!
  * Sortable
  * @author	RubaXa   <trash@rubaxa.org>
@@ -20617,7 +21604,7 @@ process.umask = function() { return 0; };
 	return Sortable;
 });
 
-},{}],313:[function(require,module,exports){
+},{}],314:[function(require,module,exports){
 (function (process){
 /**
   * vue-router v2.2.1
@@ -22899,7 +23886,7 @@ if (inBrowser && window.Vue) {
 module.exports = VueRouter;
 
 }).call(this,require('_process'))
-},{"_process":311}],314:[function(require,module,exports){
+},{"_process":312}],315:[function(require,module,exports){
 (function (process){
 /*!
  * Vue.js v1.0.28
@@ -33140,7 +34127,7 @@ setTimeout(function () {
 
 module.exports = Vue;
 }).call(this,require('_process'))
-},{"_process":311}],315:[function(require,module,exports){
+},{"_process":312}],316:[function(require,module,exports){
 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -33448,7 +34435,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     Vue.component('draggable', draggable);
   }
 })();
-},{"sortablejs":312}],316:[function(require,module,exports){
+},{"sortablejs":313}],317:[function(require,module,exports){
 /**
  * vuex v2.2.1
  * (c) 2017 Evan You
@@ -34261,7 +35248,7 @@ return index;
 
 })));
 
-},{}],317:[function(require,module,exports){
+},{}],318:[function(require,module,exports){
 'use strict';
 
 var _Item = require('../../models/Item');
@@ -34310,16 +35297,8 @@ module.exports = {
 
         numberOfItems: function numberOfItems() {
             return this.$store.getters.getItemCount;
-        },
-
-        myList: {
-            get: function get() {
-                return this.$store.state.myList;
-            },
-            set: function set(value) {
-                this.$store.commit(mTy, value);
-            }
         }
+
     },
 
     methods: {
@@ -34332,40 +35311,6 @@ module.exports = {
         addItem: function addItem() {
             console.log('cardList.component', 'methods', 'setItem', this.$store);
             this.$store.dispatch(aTypes.createItem);
-        },
-
-        /**
-         * Handle deletion - items will be deleted once the form is submitted
-         * This is actually listening for an attempt to drag a filtered element.
-         * It fires on mousedown, so it is practically equivalent to a click.
-         *
-         * evt.item is HTMLElement receiving the `mousedown|tapstart` event.
-         *
-         * @param evt
-         */
-        handleDelete: function handleDelete(evt, editableList) {
-            //get the element from the list
-            var el = editableList.closest(evt.item);
-
-            bootbox.dialog({
-                className: 'confirmationModal',
-                message: "<p class='questionDeleteWarning' id='questionDeleteWarning'> <span class='glyphicon glyphicon-warning-sign'></span>" + " Warning: This will permanently delete all elements and scores associated with the question </p>",
-                title: "Delete Question",
-                buttons: {
-                    success: {
-                        label: 'Cancel',
-                        className: "btn-sm bnt-primary cancelQuestionDelete",
-                        callback: function callback() {}
-                    },
-                    danger: {
-                        label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
-                        className: "btn-danger btn-sm confirmQuestionDelete",
-                        callback: function callback() {
-                            if (el && el.parentNode.removeChild(el)) updateNumbers();
-                        }
-                    }
-                }
-            });
         }
 
     },
@@ -34463,7 +35408,7 @@ module.exports = {
     }
 };
 
-},{"../../models/Item":356,"../../store/action-types":360,"../../store/mutation-types":376,"../templates/card-list.template.html":336,"jquery":310,"sortablejs":312}],318:[function(require,module,exports){
+},{"../../models/Item":357,"../../store/action-types":361,"../../store/mutation-types":377,"../templates/card-list.template.html":337,"jquery":311,"sortablejs":313}],319:[function(require,module,exports){
 'use strict';
 
 var _actionTypes = require('../../store/action-types');
@@ -34472,11 +35417,16 @@ var aTypes = _interopRequireWildcard(_actionTypes);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+var bootbox = require('bootbox'); /**
+                                   * Created by adam on 3/10/17.
+                                   */
+
+
 module.exports = {
 
     template: require('../templates/delete-item-button.template.html'),
 
-    props: [],
+    props: ['index', 'id'],
 
     computed: {
         visible: function visible() {
@@ -34495,23 +35445,40 @@ module.exports = {
          */
         remove: function remove() {
             console.log('deleteItem pressed');
-            this.sendRequest();
+            var me = this;
+            bootbox.dialog({
+                className: 'confirmationModal',
+                message: "<p class='questionDeleteWarning' id='questionDeleteWarning'> <span class='glyphicon glyphicon-warning-sign'></span>" + " Warning: This will permanently delete all scores associated with the item </p>",
+                title: "Delete",
+                buttons: {
+                    success: {
+                        label: 'Cancel',
+                        className: "btn-sm bnt-primary cancelQuestionDelete",
+                        callback: function callback() {}
+                    },
+                    danger: {
+                        label: '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete',
+                        className: "btn-danger btn-sm confirmQuestionDelete",
+                        callback: function callback() {
+                            me.sendRequest();
+                        }
+                    }
+                }
+            });
         },
 
         /**
-         * This sends the actual request(s)
+         * This sends the actual request(s) for deletion
          */
         sendRequest: function sendRequest() {
-            this.$store.dispatch(aTypes.deleteItem);
+            this.$store.dispatch(aTypes.deleteItem, { index: this.index, id: this.id });
         }
     },
 
     ready: function ready() {}
-}; /**
-    * Created by adam on 3/10/17.
-    */
+};
 
-},{"../../store/action-types":360,"../templates/delete-item-button.template.html":337}],319:[function(require,module,exports){
+},{"../../store/action-types":361,"../templates/delete-item-button.template.html":338,"bootbox":3}],320:[function(require,module,exports){
 'use strict';
 
 var _actionTypes = require('../../store/action-types');
@@ -34628,7 +35595,7 @@ module.exports = {
     * Created by adam on 2/17/17.
     */
 
-},{"../../models/Payload":357,"../../store/action-types":360,"../../store/mutation-types":376,"../templates/item-nav.template.html":344}],320:[function(require,module,exports){
+},{"../../models/Payload":358,"../../store/action-types":361,"../../store/mutation-types":377,"../templates/item-nav.template.html":345}],321:[function(require,module,exports){
 "use strict";
 
 /**
@@ -34704,7 +35671,7 @@ module.exports = {
     }
 };
 
-},{"../templates/exam-name.template.html":339}],321:[function(require,module,exports){
+},{"../templates/exam-name.template.html":340}],322:[function(require,module,exports){
 'use strict';
 
 /**
@@ -34764,7 +35731,7 @@ module.exports = {
     }
 };
 
-},{"../templates/exam-properties.template.html":340}],322:[function(require,module,exports){
+},{"../templates/exam-properties.template.html":341}],323:[function(require,module,exports){
 'use strict';
 
 var _actionTypes = require('../../store/action-types');
@@ -34820,7 +35787,7 @@ module.exports = {
     }
 };
 
-},{"../../store/action-types":360,"../../store/mutation-types":376,"../templates/item-add-button.template.html":341}],323:[function(require,module,exports){
+},{"../../store/action-types":361,"../../store/mutation-types":377,"../templates/item-add-button.template.html":342}],324:[function(require,module,exports){
 'use strict';
 
 /**
@@ -34873,7 +35840,6 @@ module.exports = {
         depth: {
             get: function get() {
                 var item = this.$store.getters.getItemById(this.id);
-
                 //                let item = this.$store.getters.getItemByIndex( this.index );
                 if (typeof item != 'undefined') {
                     return item.depth;
@@ -34881,7 +35847,6 @@ module.exports = {
             },
             set: function set(v) {
                 var item = this.$store.getters.getItemById(this.id);
-
                 // let item = this.$store.getters.getItemByIndex( this.index );
                 if (typeof item != 'undefined') {
                     this.$store.commit(Payload.factory({ id: this.id, index: this.index, updateProp: 'depth', updateVal: v }));
@@ -34932,7 +35897,7 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/item-card.template.html":342}],324:[function(require,module,exports){
+},{"../templates/item-card.template.html":343}],325:[function(require,module,exports){
 'use strict';
 
 var _Item = require('../../models/Item');
@@ -35056,7 +36021,7 @@ module.exports = {
 //var $ = require('jquery');
 //window.$ = $;
 
-},{"../../models/Item":356,"../../models/Payload":357,"../../store/mutation-types":376,"../templates/item-name.template.html":343}],325:[function(require,module,exports){
+},{"../../models/Item":357,"../../models/Payload":358,"../../store/mutation-types":377,"../templates/item-name.template.html":344}],326:[function(require,module,exports){
 'use strict';
 
 /**
@@ -35156,7 +36121,7 @@ module.exports = {
     }
 };
 
-},{"../templates/item-nav.template.html":344}],326:[function(require,module,exports){
+},{"../templates/item-nav.template.html":345}],327:[function(require,module,exports){
 'use strict';
 
 var _Comment = require('../../models/Comment');
@@ -35269,7 +36234,7 @@ module.exports = {
     }
 };
 
-},{"../../models/Comment":353,"../../models/Payload":357,"../../store/action-types":360,"../../store/mutation-types":376,"../templates/item-settings.commentSetup.template.html":345}],327:[function(require,module,exports){
+},{"../../models/Comment":354,"../../models/Payload":358,"../../store/action-types":361,"../../store/mutation-types":377,"../templates/item-settings.commentSetup.template.html":346}],328:[function(require,module,exports){
 'use strict';
 
 /**
@@ -35282,7 +36247,7 @@ module.exports = {
 
     template: require('../templates/item-settings.template.html'),
 
-    props: ["index"],
+    props: ["index", 'id'],
 
     data: function data() {
         return {
@@ -35346,7 +36311,7 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/item-settings.template.html":347}],328:[function(require,module,exports){
+},{"../templates/item-settings.template.html":348}],329:[function(require,module,exports){
 'use strict';
 
 var _actionTypes = require('../../store/action-types');
@@ -35447,7 +36412,7 @@ module.exports = {
     * Created by adam on 2/19/17.
     */
 
-},{"../../models/Payload":357,"../../store/action-types":360,"../../store/mutation-types":376,"../templates/item-settings.detail.template.html":346}],329:[function(require,module,exports){
+},{"../../models/Payload":358,"../../store/action-types":361,"../../store/mutation-types":377,"../templates/item-settings.detail.template.html":347}],330:[function(require,module,exports){
 'use strict';
 
 /**
@@ -35542,7 +36507,7 @@ module.exports = {
     }
 };
 
-},{"../templates/props-dashboard.template.html":348}],330:[function(require,module,exports){
+},{"../templates/props-dashboard.template.html":349}],331:[function(require,module,exports){
 'use strict';
 
 /**
@@ -35661,7 +36626,7 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/public-indicator.template.html":349}],331:[function(require,module,exports){
+},{"../templates/public-indicator.template.html":350}],332:[function(require,module,exports){
 'use strict';
 
 /**
@@ -35710,7 +36675,7 @@ module.exports = {
     ready: function ready() {}
 };
 
-},{"../templates/settings-button.template.html":350}],332:[function(require,module,exports){
+},{"../templates/settings-button.template.html":351}],333:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35756,7 +36721,7 @@ exports.default = {
     }
 };
 
-},{"./examName.component":320,"./examProperties.component":321,"./propsDashboard.component":329,"./toolsDashboard.component":333,"babel-polyfill":1,"vue":314}],333:[function(require,module,exports){
+},{"./examName.component":321,"./examProperties.component":322,"./propsDashboard.component":330,"./toolsDashboard.component":334,"babel-polyfill":1,"vue":315}],334:[function(require,module,exports){
 'use strict';
 
 var _mutationTypes = require('../../store/mutation-types');
@@ -35825,7 +36790,7 @@ module.exports = {
     * Created by adam on 2/15/17.
     */
 
-},{"../../store/mutation-types":376,"../templates/tools-dashboard.template.html":351}],334:[function(require,module,exports){
+},{"../../store/mutation-types":377,"../templates/tools-dashboard.template.html":352}],335:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35875,7 +36840,7 @@ exports.default = {
     }
 };
 
-},{"../templates/valence-button.template.html":352}],335:[function(require,module,exports){
+},{"../templates/valence-button.template.html":353}],336:[function(require,module,exports){
 'use strict';
 
 require('babel-polyfill');
@@ -36045,41 +37010,41 @@ new _vue2.default({
 
 // router.start(App, '#app')
 
-},{"../store":364,"./components/cardList.component":317,"./components/deleteItemButton.component":318,"./components/depthControl.component":319,"./components/examName.component":320,"./components/examProperties.component":321,"./components/itemAddButton.component":322,"./components/itemCard.component":323,"./components/itemName.component":324,"./components/itemNav.component":325,"./components/itemSettings.commentSetup.component":326,"./components/itemSettings.component":327,"./components/itemSettings.detail.component":328,"./components/propsDashboard.component":329,"./components/publicIndicator.component":330,"./components/settingsButton.component":331,"./components/setupApp.vue.js":332,"./components/toolsDashboard.component":333,"./components/valenceButton.component":334,"./templates/exam-editor.template.html":338,"babel-polyfill":1,"bootstrap":3,"jquery":310,"vue":314,"vue-router":313,"vuedraggable":315}],336:[function(require,module,exports){
-module.exports = '<div class="card-list card-list-component">\n<!--<draggable v-model=\'items\'>-->\n\n        <ul id=\'card-list\' class="list-group">\n            <li\n                    class="item-cards list-group-item handle"\n                    v-for="(index, item) in items"\n            >\n                <item-card :index="index" :id="index"></item-card>\n            </li>\n        </ul>\n    <!--</div>-->\n\n    <div class="row">\n        <div class="col-lg-12 ">\n            <div class="text-right">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n<!--</draggable>-->\n</div>';
-},{}],337:[function(require,module,exports){
-module.exports = '<div class="deleteButton ">\n    <button\n            v-if="visible"\n            class="btn btn-danger btn-block js-remove "\n            v-on:click="remove"\n    >\n        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete\n    </button>\n</div>';
+},{"../store":365,"./components/cardList.component":318,"./components/deleteItemButton.component":319,"./components/depthControl.component":320,"./components/examName.component":321,"./components/examProperties.component":322,"./components/itemAddButton.component":323,"./components/itemCard.component":324,"./components/itemName.component":325,"./components/itemNav.component":326,"./components/itemSettings.commentSetup.component":327,"./components/itemSettings.component":328,"./components/itemSettings.detail.component":329,"./components/propsDashboard.component":330,"./components/publicIndicator.component":331,"./components/settingsButton.component":332,"./components/setupApp.vue.js":333,"./components/toolsDashboard.component":334,"./components/valenceButton.component":335,"./templates/exam-editor.template.html":339,"babel-polyfill":1,"bootstrap":4,"jquery":311,"vue":315,"vue-router":314,"vuedraggable":316}],337:[function(require,module,exports){
+module.exports = '<div class="card-list card-list-component">\n<!--<draggable v-model=\'items\'>-->\n\n        <ul id=\'card-list\' class="list-group">\n            <li\n                    class="item-cards list-group-item handle"\n                    v-for="(index, item) in items"\n            >\n                <item-card :index="item.index" :id="item.id"></item-card>\n            </li>\n        </ul>\n    <!--</div>-->\n\n    <div class="row">\n        <div class="col-lg-12 ">\n            <div class="text-right">\n                <item-add-button></item-add-button>\n            </div>\n        </div>\n    </div>\n<!--</draggable>-->\n</div>';
 },{}],338:[function(require,module,exports){
-module.exports = '<div id="app">\n    <div id="examEditor">\n\n        <!--<div class="row">-->\n        <!--<div class="col-lg-8">-->\n        <exam-name></exam-name>\n        <!--</div>-->\n        <!--</div>-->\n\n\n        <div id="examEditorBody"\n             class="row">\n\n            <div id="itemCol"\n                 class="col-lg-9 well well-lg">\n\n                <div class="itemRow row">\n                    <div class="col-lg-12">\n                        <card-list></card-list>\n                    </div>\n                </div>\n\n            </div>\n\n            <div id="infoCol"\n                 class="col-lg-3">\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <props-dashboard></props-dashboard>\n                    </div>\n                </div>\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <tools-dashboard></tools-dashboard>\n                    </div>\n                </div>\n\n            </div>\n\n        </div>\n    </div>\n\n</div>';
+module.exports = '<div class="deleteButton ">\n    <button\n            v-if="visible"\n            class="btn btn-danger btn-block js-remove "\n            v-on:click="remove"\n    >\n        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Delete\n    </button>\n</div>';
 },{}],339:[function(require,module,exports){
-module.exports = '<div id="examNameArea">\n\n    <div class="input-group">\n        <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>\n        <input type="text"\n               class="form-control input-lg"\n               id="privateName"\n               name="privateName"\n               aria-describedby="basic-addon1"\n               placeholder="{{ placeHolders.privateName }}"\n               v-model="privateName"\n        >\n        <span class="input-group-addon" id="basic-addon2"> <span v-on:click="openExamProperties" class="glyphicon glyphicon-cog"></span></span>\n\n    </div>\n\n\n\n</div>\n';
+module.exports = '<div id="app">\n    <div id="examEditor">\n\n        <!--<div class="row">-->\n        <!--<div class="col-lg-8">-->\n        <exam-name></exam-name>\n        <!--</div>-->\n        <!--</div>-->\n\n\n        <div id="examEditorBody"\n             class="row">\n\n            <div id="itemCol"\n                 class="col-lg-9 well well-lg">\n\n                <div class="itemRow row">\n                    <div class="col-lg-12">\n                        <card-list></card-list>\n                    </div>\n                </div>\n\n            </div>\n\n            <div id="infoCol"\n                 class="col-lg-3">\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <props-dashboard></props-dashboard>\n                    </div>\n                </div>\n\n                <div class="row">\n                    <div class="col-lg-12">\n                        <tools-dashboard></tools-dashboard>\n                    </div>\n                </div>\n\n            </div>\n\n        </div>\n    </div>\n\n</div>';
 },{}],340:[function(require,module,exports){
-module.exports = '<!--This is the hideable area via which we edit the exam\'s properties-->\n\n<div class="row">\n    <div class="col-lg-10">\n        <!-- name input -->\n        <div class="input-group">\n                    <span class="input-group-addon"\n                          id="basic-addon1">Public Assignment Name</span>\n            <input type="text"\n                   class="form-control input-lg"\n                   id="publicName"\n                   name="publicName"\n                   aria-describedby="basic-addon1"\n                   v-model="publicName"\n            >\n            <span class="glyphicon glyphicon-question-sign"></span>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="col-lg-5">\n\n            <!-- term selector -->\n            <input v-model="term"\n                   name="examTerm"\n                   type="hidden"\n                   id="hiddenTerm"\n            />\n\n            <div class="btn-group btn-group">\n                <button\n                        class="btn btn-primary dropdown-toggle"\n                        id="term"\n                        title="Choose Term"\n                        data-toggle="dropdown"\n                >{{ term }} <span class="glyphicon glyphicon-menu-down"></span></button>\n\n                <ul class="dropdown-menu" id="termList" role="menu" style="cursor:pointer;">\n                    <li v-for="term in terms">\n                        <a class="termItem">{{ term }}</a>\n                    </li>\n                </ul>\n            </div>\n        </div>\n\n        <div class="col-lg-5">\n            <!-- year selector -->\n            <input name="examYear"\n                   type="hidden"\n                   id="hiddenYear"\n                   v-model="year"\n            />\n\n            <div class="btn-group btn-group">\n                <button class="btn btn-primary dropdown-toggle"\n                        id="year"\n                        title="Choose Year"\n                        data-toggle="dropdown">{{ year }}\n                    <span class="glyphicon glyphicon-menu-down"></span>\n                </button>\n\n                <ul class="dropdown-menu"\n                    id="yearList"\n                    role="menu"\n                    style="cursor:pointer;">\n                    <li v-for="year in years">\n                        <a class="yearItem">{{ year }}</a>\n                    </li>\n                </ul>\n            </div>\n             <span class="glyphicon glyphicon-question-sign"></span>\n        </div>\n    </div>\n\n</div>';
+module.exports = '<div id="examNameArea">\n\n    <div class="input-group">\n        <span class="input-group-addon" id="basic-addon1">{{ displayType }} Name</span>\n        <input type="text"\n               class="form-control input-lg"\n               id="privateName"\n               name="privateName"\n               aria-describedby="basic-addon1"\n               placeholder="{{ placeHolders.privateName }}"\n               v-model="privateName"\n        >\n        <span class="input-group-addon" id="basic-addon2"> <span v-on:click="openExamProperties" class="glyphicon glyphicon-cog"></span></span>\n\n    </div>\n\n\n\n</div>\n';
 },{}],341:[function(require,module,exports){
-module.exports = '<button\n        class="btn btn-info"\n        v-on:click="addItem"\n>\n    <span class="glyphicon glyphicon-plus"></span>\n    <span class="hidden-md"> Add item</span>\n</button>';
+module.exports = '<!--This is the hideable area via which we edit the exam\'s properties-->\n\n<div class="row">\n    <div class="col-lg-10">\n        <!-- name input -->\n        <div class="input-group">\n                    <span class="input-group-addon"\n                          id="basic-addon1">Public Assignment Name</span>\n            <input type="text"\n                   class="form-control input-lg"\n                   id="publicName"\n                   name="publicName"\n                   aria-describedby="basic-addon1"\n                   v-model="publicName"\n            >\n            <span class="glyphicon glyphicon-question-sign"></span>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="col-lg-5">\n\n            <!-- term selector -->\n            <input v-model="term"\n                   name="examTerm"\n                   type="hidden"\n                   id="hiddenTerm"\n            />\n\n            <div class="btn-group btn-group">\n                <button\n                        class="btn btn-primary dropdown-toggle"\n                        id="term"\n                        title="Choose Term"\n                        data-toggle="dropdown"\n                >{{ term }} <span class="glyphicon glyphicon-menu-down"></span></button>\n\n                <ul class="dropdown-menu" id="termList" role="menu" style="cursor:pointer;">\n                    <li v-for="term in terms">\n                        <a class="termItem">{{ term }}</a>\n                    </li>\n                </ul>\n            </div>\n        </div>\n\n        <div class="col-lg-5">\n            <!-- year selector -->\n            <input name="examYear"\n                   type="hidden"\n                   id="hiddenYear"\n                   v-model="year"\n            />\n\n            <div class="btn-group btn-group">\n                <button class="btn btn-primary dropdown-toggle"\n                        id="year"\n                        title="Choose Year"\n                        data-toggle="dropdown">{{ year }}\n                    <span class="glyphicon glyphicon-menu-down"></span>\n                </button>\n\n                <ul class="dropdown-menu"\n                    id="yearList"\n                    role="menu"\n                    style="cursor:pointer;">\n                    <li v-for="year in years">\n                        <a class="yearItem">{{ year }}</a>\n                    </li>\n                </ul>\n            </div>\n             <span class="glyphicon glyphicon-question-sign"></span>\n        </div>\n    </div>\n\n</div>';
 },{}],342:[function(require,module,exports){
-module.exports = '<!--This represents a question or an element-->\n<div id="item-card-{{index}}"\n     class="item-card-component"\n     v-bind:class="offsetClass"\n>\n    <div class="row">\n        <item-name\n                :index="index"\n                :id="id"\n        ></item-name>\n\n    </div>\n    <div class="row">\n        <div class="clearfix"></div>\n\n        <div class="col-lg-12">\n            <!--<div class="col-lg-10">-->\n            <div class="clearfix"></div>\n            <slot name="head">\n\n                <item-settings\n                        :index="index"\n                        :id="id"\n                >\n                    <!--is="currentView"-->\n                    <div slot="controlsArea">\n                        <div class="row">\n                            <div class="col-md-1">\n                                <depth-control\n                                        type="demote"\n                                        :index="index"\n                                        :id="id"\n                                ></depth-control>\n                            </div>\n\n                            <div class="col-md-10"></div>\n\n                            <div class="col-md-1">\n                                <depth-control\n                                        type="promote"\n                                        :index="index"\n                                        :id="id"\n                                ></depth-control>\n                            </div>\n\n                        </div>\n                    </div>\n                </item-settings>\n            </slot>\n\n            <div class="clearfix"></div>\n\n        </div>\n\n        <!--<div class="col-lg-1 vertical-align">-->\n        <!--<depth-control type="promote" :index="index"></depth-control>-->\n        <!--</div>-->\n    </div>\n\n    <div class="row">\n        <div class="col-lg-1"></div>\n        <div class="col-lg-10">\n            <delete-item-button></delete-item-button>\n        </div>\n        <div class="col-lg-1"></div>\n    </div>\n</div>\n\n';
+module.exports = '<button\n        class="btn btn-info"\n        v-on:click="addItem"\n>\n    <span class="glyphicon glyphicon-plus"></span>\n    <span class="hidden-md"> Add item</span>\n</button>';
 },{}],343:[function(require,module,exports){
-module.exports = '<div class="item-name-component input-group input-group-lg">\n\n    <span class="input-group-addon" id="basic-addon1">{{index}}{{ displayType }} Name</span>\n\n    <input type="text"\n           class="itemName form-control"\n           aria-describedby="basic-addon1"\n           placeholder="{{ placeHolders.privateName }}"\n           v-model="name"\n    >\n\n    <div class="input-group-btn">\n        <settings-button></settings-button>\n        <public-indicator></public-indicator>\n    </div>\n\n</div>';
+module.exports = '<!--This represents a question or an element-->\n<div id="item-card-{{index}}"\n     class="item-card-component"\n     v-bind:class="offsetClass"\n>\n    <div class="row">\n        <item-name\n                :index="index"\n                :id="id"\n        ></item-name>\n\n    </div>\n    <div class="row">\n        <div class="clearfix"></div>\n\n        <div class="col-lg-12">\n            <!--<div class="col-lg-10">-->\n            <div class="clearfix"></div>\n            <slot name="head">\n\n                <item-settings\n                        :index="index"\n                        :id="id"\n                >\n                    <!--is="currentView"-->\n                    <div slot="controlsArea">\n                        <div class="row">\n                            <div class="col-md-1">\n                                <depth-control\n                                        type="demote"\n                                        :index="index"\n                                        :id="id"\n                                ></depth-control>\n                            </div>\n\n                            <div class="col-md-10"></div>\n\n                            <div class="col-md-1">\n                                <depth-control\n                                        type="promote"\n                                        :index="index"\n                                        :id="id"\n                                ></depth-control>\n                            </div>\n\n                        </div>\n                    </div>\n                </item-settings>\n            </slot>\n\n            <div class="clearfix"></div>\n\n        </div>\n\n        <!--<div class="col-lg-1 vertical-align">-->\n        <!--<depth-control type="promote" :index="index"></depth-control>-->\n        <!--</div>-->\n    </div>\n\n    <div class="row">\n        <!--<div class="col-lg-1"></div>-->\n        <div class="col-lg-12">\n            <delete-item-button\n                    :index="index"\n                    :id="id"\n            ></delete-item-button>\n        </div>\n        <!--<div class="col-lg-1"></div>-->\n    </div>\n</div>\n\n';
 },{}],344:[function(require,module,exports){
-module.exports = '<div class="item-nav-component "\n     v-on:click="goTo"\n>\n    <div class="nav-arrow text-center">\n        <span v-bind:class="arrow"></span>\n    </div>\n</div>';
+module.exports = '<div class="item-name-component input-group input-group-lg">\n\n    <span class="input-group-addon" id="basic-addon1">{{index}}{{ displayType }} Name</span>\n\n    <input type="text"\n           class="itemName form-control"\n           aria-describedby="basic-addon1"\n           placeholder="{{ placeHolders.privateName }}"\n           v-model="name"\n    >\n\n    <div class="input-group-btn">\n        <settings-button></settings-button>\n        <public-indicator></public-indicator>\n    </div>\n\n</div>';
 },{}],345:[function(require,module,exports){
-module.exports = '<!-- Template used by \'edit_element\' to hold the fields and buttons for an individual element.  -->\n<div class="item-settings-comment-setup-component">\n    <div class="row">\n        <div class="col-md-12 ">\n\n            <h5>Set up your comments for this item</h5>\n            <!-- element description (the "stock comment") -->\n            <div class="form-group">\n                        <textarea\n                                class="form-control"\n                                rows="3"\n                                placeholder="{{ placeholders.elementText }}"\n                                v-model="commentText"></textarea>\n            </div>\n\n            <div class="form-group">\n                <div class="btn-group-justified"\n                     role="group"\n                     aria-label="valence buttons">\n\n                        <valence-button\n                                v-for="v in valences"\n                                :valence="v"></valence-button>\n\n                </div>\n            </div>\n\n        </div>\n\n    </div>\n</div>\n';
+module.exports = '<div class="item-nav-component "\n     v-on:click="goTo"\n>\n    <div class="nav-arrow text-center">\n        <span v-bind:class="arrow"></span>\n    </div>\n</div>';
 },{}],346:[function(require,module,exports){
-module.exports = '<!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n<div class="item-settings-detail-component">\n    <div class="row">\n        <div class="col-md-6">\n\n            <div class="question-num-area input-group">\n\n                <span class="input-group-addon">Question #</span>\n                <input style="width:6em;"\n                       type="number"\n                       min="0"\n                       title="order of the question on the exam"\n                       class="form-control input"\n                       aria-describedby="basic-addon"\n                       v-model="questionNumber"/>\n\n            </div>\n        </div>\n\n        <div class="col-md-6">\n            <div class="max-score-area" style="text-align: left">\n                <!-- max grade -->\n                <div class="input-group">\n                    <span class="input-group-addon">Max Score</span>\n                    <input style="width:6em;"\n                           type="number"\n                           min="0"\n                           title="maximum score for this question"\n                           class="form-control input"\n                           aria-describedby="basic-addon"\n                           v-model="maxScore"\n                    />\n                </div>\n            </div>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="question-text-area col-md-12">\n            <div class="form-group">\n                            <textarea class="question-text form-control"\n                                      rows="3"\n                                      placeholder="Enter the full question text (optional)"\n                            v-model="questionText"></textarea>\n            </div>\n        </div>\n    </div>\n\n</div>';
+module.exports = '<!-- Template used by \'edit_element\' to hold the fields and buttons for an individual element.  -->\n<div class="item-settings-comment-setup-component">\n    <div class="row">\n        <div class="col-md-12 ">\n\n            <h5>Set up your comments for this item</h5>\n            <!-- element description (the "stock comment") -->\n            <div class="form-group">\n                        <textarea\n                                class="form-control"\n                                rows="3"\n                                placeholder="{{ placeholders.elementText }}"\n                                v-model="commentText"></textarea>\n            </div>\n\n            <div class="form-group">\n                <div class="btn-group-justified"\n                     role="group"\n                     aria-label="valence buttons">\n\n                        <valence-button\n                                v-for="v in valences"\n                                :valence="v"></valence-button>\n\n                </div>\n            </div>\n\n        </div>\n\n    </div>\n</div>\n';
 },{}],347:[function(require,module,exports){
-module.exports = '<div class="well well-sm" v-show="hidden">\n\n    <slot name="settingsBody">\n\n        <div>\n            <!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n\n            <!-- Nav tabs -->\n            <ul class="nav nav-tabs" role="tablist">\n                <li role="presentation"\n                    v-for="tab in tabs">\n                    <a href="#{{tab}}{{index}}"\n                       aria-controls="{{tab}}{{index}}"\n                       role="tab"\n                       data-toggle="tab">{{ tab | capitalize }}</a>\n                </li>\n            </ul>\n\n            <!-- Tab panes -->\n            <div class="tab-content">\n\n                <div role="tabpanel"\n                     class="tab-pane active"\n                     id="details{{index}}"\n                >\n                    <item-settings-detail :index="index"></item-settings-detail>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane  "\n                     id="comments{{index}}"\n                >\n                    <item-settings-comment-setup :index="index"></item-settings-comment-setup>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="stats{{index}}"\n                >\n                    <p>Stats here</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="history{{index}}"\n                >\n                    <p>Which exams clones of this item have been used on</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane fade"\n                     id="notes{{index}}"\n                >\n                    <p>Notes to self about item</p>\n                </div>\n\n            </div>\n\n        </div>\n\n    </slot>\n\n    <slot name="controlsArea"></slot>\n    <!--<item-settings-element item="item"></item-settings-element>-->\n    <!--<item-settings-question :item="item"></item-settings-question>-->\n\n    <!--<button class="btn btn-primary" v-on:click="hide">Close</button>-->\n</div>\n';
+module.exports = '<!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n<div class="item-settings-detail-component">\n    <div class="row">\n        <div class="col-md-6">\n\n            <div class="question-num-area input-group">\n\n                <span class="input-group-addon">Question #</span>\n                <input style="width:6em;"\n                       type="number"\n                       min="0"\n                       title="order of the question on the exam"\n                       class="form-control input"\n                       aria-describedby="basic-addon"\n                       v-model="questionNumber"/>\n\n            </div>\n        </div>\n\n        <div class="col-md-6">\n            <div class="max-score-area" style="text-align: left">\n                <!-- max grade -->\n                <div class="input-group">\n                    <span class="input-group-addon">Max Score</span>\n                    <input style="width:6em;"\n                           type="number"\n                           min="0"\n                           title="maximum score for this question"\n                           class="form-control input"\n                           aria-describedby="basic-addon"\n                           v-model="maxScore"\n                    />\n                </div>\n            </div>\n        </div>\n    </div>\n\n    <div class="row">\n        <div class="question-text-area col-md-12">\n            <div class="form-group">\n                            <textarea class="question-text form-control"\n                                      rows="3"\n                                      placeholder="Enter the full question text (optional)"\n                            v-model="questionText"></textarea>\n            </div>\n        </div>\n    </div>\n\n</div>';
 },{}],348:[function(require,module,exports){
-module.exports = '<div id="props-dashboard" class="dashboard">\n    <dl class="dl-horizontal">\n\n        <dt># items</dt>\n        <dd>{{ numberItems }}</dd>\n\n        <dt>Max total score</dt>\n        <dd>{{ perfectScore }}</dd>\n        <!--<dd><input type="number" v-model="perfectScore" /></dd>-->\n\n        <dt># Students</dt>\n        <dd>{{ numberStudents}}</dd>\n\n        <dt># Graded</dt>\n        <dd>{{ numberGraded }}</dd>\n\n        <dt>Time grading</dt>\n        <dd>{{ timeGrading }}</dd>\n\n    </dl>\n\n</div>';
+module.exports = '<div class="well well-sm" v-show="hidden">\n\n    <slot name="settingsBody">\n\n        <div>\n            <!-- Used by "edit_question" to hold fields and buttons for an individual question -->\n\n            <!-- Nav tabs -->\n            <ul class="nav nav-tabs" role="tablist">\n                <li role="presentation"\n                    v-for="tab in tabs">\n                    <a href="#{{tab}}{{index}}"\n                       aria-controls="{{tab}}{{index}}"\n                       role="tab"\n                       data-toggle="tab">{{ tab | capitalize }}</a>\n                </li>\n            </ul>\n\n            <!-- Tab panes -->\n            <div class="tab-content">\n\n                <div role="tabpanel"\n                     class="tab-pane active"\n                     id="details{{index}}"\n                >\n                    <item-settings-detail :index="index"></item-settings-detail>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane  "\n                     id="comments{{index}}"\n                >\n                    <item-settings-comment-setup :index="index"></item-settings-comment-setup>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="stats{{index}}"\n                >\n                    <p>Stats here</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane "\n                     id="history{{index}}"\n                >\n                    <p>Which exams clones of this item have been used on</p>\n                </div>\n\n                <div role="tabpanel"\n                     class="tab-pane fade"\n                     id="notes{{index}}"\n                >\n                    <p>Notes to self about item</p>\n                </div>\n\n            </div>\n\n        </div>\n\n    </slot>\n\n    <slot name="controlsArea"></slot>\n    <!--<item-settings-element item="item"></item-settings-element>-->\n    <!--<item-settings-question :item="item"></item-settings-question>-->\n\n    <!--<button class="btn btn-primary" v-on:click="hide">Close</button>-->\n</div>\n';
 },{}],349:[function(require,module,exports){
-module.exports = '<button\n        class="btn public-indicator"\n        v-bind:class="{\'btn-warning\': public}"\n        v-on:click="togglePublic"\n>\n    <span v-bind:class="icon"></span>\n</button>';
+module.exports = '<div id="props-dashboard" class="dashboard">\n    <dl class="dl-horizontal">\n\n        <dt># items</dt>\n        <dd>{{ numberItems }}</dd>\n\n        <dt>Max total score</dt>\n        <dd>{{ perfectScore }}</dd>\n        <!--<dd><input type="number" v-model="perfectScore" /></dd>-->\n\n        <dt># Students</dt>\n        <dd>{{ numberStudents}}</dd>\n\n        <dt># Graded</dt>\n        <dd>{{ numberGraded }}</dd>\n\n        <dt>Time grading</dt>\n        <dd>{{ timeGrading }}</dd>\n\n    </dl>\n\n</div>';
 },{}],350:[function(require,module,exports){
-module.exports = '<button\n        class="btn settings-button"\n        v-on:click="openItemSettings"\n>\n    <span class="glyphicon glyphicon-cog"></span>\n</button>';
+module.exports = '<button\n        class="btn public-indicator"\n        v-bind:class="{\'btn-warning\': public}"\n        v-on:click="togglePublic"\n>\n    <span v-bind:class="icon"></span>\n</button>';
 },{}],351:[function(require,module,exports){
-module.exports = '<div id="setupToolDashboard" class="dashboard">\n\n    <ul class="list-group">\n        <li class="list-group-item">\n            <button\n                    class="btn btn-block btn-danger"\n                    v-on:click="toggleDeleteMode"\n            >Remove items</button>\n        </li>\n\n        <li class="list-group-item">\n            <button\n                    class="btn btn-block btn-warning"\n                    v-on:click="toggleReorderMode"\n            >Reorder items</button>\n        </li>\n\n\n        <li class="list-group-item">\n            <button\n                    class="btn btn-block btn-primary"\n                    v-on:click="showSampleFeedback"\n            >View sample feedback</button>\n        </li>\n\n        <li class="list-group-item">\n            <!--replace with toggle-->\n            <button\n                    class="btn btn-block btn-primary"\n                    v-on:click="toggleHolesShown"\n            >Show holes</button>\n        </li>\n    </ul>\n</div>';
+module.exports = '<button\n        class="btn settings-button"\n        v-on:click="openItemSettings"\n>\n    <span class="glyphicon glyphicon-cog"></span>\n</button>';
 },{}],352:[function(require,module,exports){
-module.exports = '<div class="btn-group" role="group">\n<button type="button" class="btn btn-small valence-button"\n        v-bind:class="classObject"\n        v-on:click="selectValence"\n>{{ valence }}</button>\n</div>';
+module.exports = '<div id="setupToolDashboard" class="dashboard">\n\n    <ul class="list-group">\n        <li class="list-group-item">\n            <button\n                    class="btn btn-block btn-danger"\n                    v-on:click="toggleDeleteMode"\n            >Remove items</button>\n        </li>\n\n        <li class="list-group-item">\n            <button\n                    class="btn btn-block btn-warning"\n                    v-on:click="toggleReorderMode"\n            >Reorder items</button>\n        </li>\n\n\n        <li class="list-group-item">\n            <button\n                    class="btn btn-block btn-primary"\n                    v-on:click="showSampleFeedback"\n            >View sample feedback</button>\n        </li>\n\n        <li class="list-group-item">\n            <!--replace with toggle-->\n            <button\n                    class="btn btn-block btn-primary"\n                    v-on:click="toggleHolesShown"\n            >Show holes</button>\n        </li>\n    </ul>\n</div>';
 },{}],353:[function(require,module,exports){
+module.exports = '<div class="btn-group" role="group">\n<button type="button" class="btn btn-small valence-button"\n        v-bind:class="classObject"\n        v-on:click="selectValence"\n>{{ valence }}</button>\n</div>';
+},{}],354:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36183,7 +37148,7 @@ var Comment = function (_IModel) {
 
 exports.default = Comment;
 
-},{"./IModel":355,"./Item":356}],354:[function(require,module,exports){
+},{"./IModel":356,"./Item":357}],355:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36325,7 +37290,7 @@ var Exam = function (_Item) {
 
 exports.default = Exam;
 
-},{"./Item":356}],355:[function(require,module,exports){
+},{"./Item":357}],356:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36347,10 +37312,10 @@ var IModel = function () {
         /**
          * The db identifier of the model
          */
-        this._id;
+        this.id;
 
         /**
-         * The locator value
+         * The stored order of the item overall
          */
         this.index;
 
@@ -36387,26 +37352,49 @@ var IModel = function () {
      */
 
 
-    _createClass(IModel, [{
-        key: 'id',
+    _createClass(IModel, null, [{
+        key: 'fillObject',
+        value: function fillObject(obj, params) {
+            if (typeof params != 'undefined') {
 
+                //fill any fillable values
+                this.fillableProps.forEach(function (v) {
+                    // console.log( 'params', params, v );
+                    if (typeof params[v] != 'undefined') {
+                        obj[v] = params[v];
+                    }
+                });
 
-        /* *************************** Id *************** */
-        /**
-         * Alias for _id
-         * @returns {*}
-         */
-        get: function get() {
-            return Number(this._id) || null;
+                //fill any aliased values
+                for (var v in this.aliasMap) {
+                    if (typeof params[v] != 'undefined') {
+                        // console.log( 'alias', v, map[v] );
+                        obj[this.aliasMap[v]] = params[v];
+                    }
+                }
+            }
+
+            //we will still return the empty obj if there
+            //were no parameters
+            return obj;
         }
+        //
+        // /* *************************** Id *************** */
+        // /**
+        //  * Alias for _id
+        //  * @returns {*}
+        //  */
+        // get id() {
+        //     return Number( this._id ) || null;
+        // }
+        //
+        // /**
+        //  * Alias for _id
+        //  */
+        // set id( v ) {
+        //     this._id = Number( v );
+        // }
 
-        /**
-         * Alias for _id
-         */
-        ,
-        set: function set(v) {
-            this._id = Number(v);
-        }
 
         /* *************************** Index *************** */
         // /**
@@ -36461,32 +37449,6 @@ var IModel = function () {
         // }
         //
 
-    }], [{
-        key: 'fillObject',
-        value: function fillObject(obj, params) {
-            if (typeof params != 'undefined') {
-
-                //fill any fillable values
-                this.fillableProps.forEach(function (v) {
-                    // console.log( 'params', params, v );
-                    if (typeof params[v] != 'undefined') {
-                        obj[v] = params[v];
-                    }
-                });
-
-                //fill any aliased values
-                for (var v in this.aliasMap) {
-                    if (typeof params[v] != 'undefined') {
-                        // console.log( 'alias', v, map[v] );
-                        obj[this.aliasMap[v]] = params[v];
-                    }
-                }
-            }
-
-            //we will still return the empty obj if there
-            //were no parameters
-            return obj;
-        }
     }]);
 
     return IModel;
@@ -36494,7 +37456,7 @@ var IModel = function () {
 
 exports.default = IModel;
 
-},{}],356:[function(require,module,exports){
+},{}],357:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36715,7 +37677,7 @@ var Item = function (_IModel) {
 
 exports.default = Item;
 
-},{"./Comment":353,"./IModel":355}],357:[function(require,module,exports){
+},{"./Comment":354,"./IModel":356}],358:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36904,7 +37866,7 @@ var Payload = function () {
 
 exports.default = Payload;
 
-},{}],358:[function(require,module,exports){
+},{}],359:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37061,7 +38023,7 @@ var Question = function (_Item) {
 
 exports.default = Question;
 
-},{"./Item":356}],359:[function(require,module,exports){
+},{"./Item":357}],360:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37352,7 +38314,7 @@ var Student = function (_IModel) {
 
 exports.default = Student;
 
-},{"./IModel":355}],360:[function(require,module,exports){
+},{"./IModel":356}],361:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37425,7 +38387,7 @@ var addNewItem = exports.addNewItem = 'addNewItem';
 var loadItems = exports.loadItems = 'loadItems';
 var updateItemName = exports.updateItemName = 'updateItemName';
 
-},{}],361:[function(require,module,exports){
+},{}],362:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37637,7 +38599,7 @@ var actions = exports.actions = (_actions = {}, _defineProperty(_actions, aTypes
     commit(mTypes.setElementScore, out);
 }), _actions);
 
-},{"../models/Student":359,"./action-types":360,"./mutation-types":376}],362:[function(require,module,exports){
+},{"../models/Student":360,"./action-types":361,"./mutation-types":377}],363:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -37681,7 +38643,7 @@ var checkValid = exports.checkValid = function checkValid(state, propertyName) {
     return true;
 };
 
-},{}],363:[function(require,module,exports){
+},{}],364:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37849,7 +38811,7 @@ var getElementScoreForActiveStudent = exports.getElementScoreForActiveStudent = 
     return getters.getElementScore(state, getters, rootState, idx, elementIndex); //state.elementScores[state.activeStudentIndex][elementIndex];
 };
 
-},{}],364:[function(require,module,exports){
+},{}],365:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -38021,7 +38983,7 @@ exports.default = new _vuex2.default.Store({
   strict: debug });
 
 }).call(this,require('_process'))
-},{"./actions":361,"./api":362,"./getters":363,"./modules/activeexam.js":365,"./modules/activestudent.js":366,"./modules/comments.js":367,"./modules/escores.js":368,"./modules/grades.js":369,"./modules/items.js":370,"./modules/qscores.js":371,"./modules/questions.js":372,"./modules/settings":373,"./modules/students.js":374,"./modules/times.js":375,"./mutations":377,"./state":378,"_process":311,"vue":314,"vuex":316}],365:[function(require,module,exports){
+},{"./actions":362,"./api":363,"./getters":364,"./modules/activeexam.js":366,"./modules/activestudent.js":367,"./modules/comments.js":368,"./modules/escores.js":369,"./modules/grades.js":370,"./modules/items.js":371,"./modules/qscores.js":372,"./modules/questions.js":373,"./modules/settings":374,"./modules/students.js":375,"./modules/times.js":376,"./mutations":378,"./state":379,"_process":312,"vue":315,"vuex":317}],366:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38119,7 +39081,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Exam":354,"../../models/Payload":357,"../action-types":360,"../mutation-types":376}],366:[function(require,module,exports){
+},{"../../models/Exam":355,"../../models/Payload":358,"../action-types":361,"../mutation-types":377}],367:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38252,7 +39214,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":357,"../../models/Student":359,"../action-types":360,"../mutation-types":376}],367:[function(require,module,exports){
+},{"../../models/Payload":358,"../../models/Student":360,"../action-types":361,"../mutation-types":377}],368:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38416,7 +39378,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":357,"../action-types":360,"../mutation-types":376}],368:[function(require,module,exports){
+},{"../../models/Payload":358,"../action-types":361,"../mutation-types":377}],369:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38510,7 +39472,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":357,"../action-types":360,"../mutation-types":376}],369:[function(require,module,exports){
+},{"../../models/Payload":358,"../action-types":361,"../mutation-types":377}],370:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38669,7 +39631,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":357,"../action-types":360,"../mutation-types":376}],370:[function(require,module,exports){
+},{"../../models/Payload":358,"../action-types":361,"../mutation-types":377}],371:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38723,8 +39685,6 @@ var state = {
      */
     items: [],
 
-    myList: [],
-
     /**
      * Mapping from older ItemIndex to new Item id value
      */
@@ -38765,8 +39725,13 @@ var mutations = (_mutations = {}, _defineProperty(_mutations, mTypes.updateOrder
     var len = state.items.length;
     //set the item index
     var index = len == 0 || 1 ? len : len + 1;
-    var item = _Item2.default.factory({ id: index, index: index });
+
+    //to be replaced with lookup from server
+    var id = Math.floor(Math.random() * (999999999 - 1111111111 + 1)) + 1111111111;
+
+    var item = new _Item2.default(); //.factory( {id: id, index: index} );
     Vue.set(item, 'index', index);
+    Vue.set(item, 'id', id);
     state.items.$set(index, item);
 }), _defineProperty(_mutations, mTypes.updateItem, function (state, payload) {
     console.log(mTypes.updateItem, payload, state);
@@ -38847,11 +39812,25 @@ var actions = (_actions = {}, _defineProperty(_actions, aTypes.createItem, funct
 
     console.log(aTypes.createItem, state);
     commit(mTypes.addNewItem);
-}), _defineProperty(_actions, aTypes.deleteItem, function (_ref2) {
+}), _defineProperty(_actions, aTypes.deleteItem, function (_ref2, payload) {
     var state = _ref2.state,
         commit = _ref2.commit;
 
-    console.log(aTypes.deleteItem, state, commit);
+    console.log(aTypes.deleteItem, state, commit, payload);
+    //check if payload has correct structure
+    var index = payload.index,
+        id = payload.id;
+    //remove from page
+
+    //reorder index
+
+    //call to server to delete
+
+    //confirm
+
+    //if fail, put back on page with message
+
+    //reorder index
     //todo write
 }), _defineProperty(_actions, aTypes.loadItems, function (state, rootState, payload) {
     //check if payload has correct structure
@@ -38881,45 +39860,58 @@ var getters = {
      * @param payload Object containing Item identifier
      */
     getItem: function getItem(state, getters, payload) {
-        var index = void 0;
-
+        var index = payload.index,
+            id = payload.id;
         //room for other ways of finding index
-        index = payload.index;
 
-        console.log('getItem', payload);
-        return state.items[index];
+        if (typeof id != 'undefined') {
+            return undefined.getItemById(state, getters, id);
+        }
+        if (typeof index != 'undefined') {
+            return undefined.getItemByIndex(state, getters, index);
+        }
+        //default case
+        throw new Error('bad input to getItem');
     },
 
     /**
-     * Returns the item object with the given index
+     * Returns the item object residing at the
+     * given index in the list.
+     * This does not guarantee
+     * that the item.index property will equal the
+     * list index. That could happen if updateOrder has not
+     * yet run.
      * @param state
      * @param getters
      * @param rootState
      * @param index
      */
-    // getItemByIndex: ( state, getters, index ) => {
     getItemByIndex: function getItemByIndex(state, getters) {
         return function (index) {
-            //
             console.log('getItemByIndex', state, index);
-            // return state.items[ index ];
-
             return function (state, index) {
                 return state.items[index];
-                // var r = state.items.filter( function ( i ) {
-                //     if ( i.index === index ) {
-                //         return i;
-                //     }
-                // } );
-                // return r[ 0 ];
             }(state, index);
         };
     },
 
+    /**
+     * Returns the item object with the given id.
+     * This is the preferred way of looking up objects.
+     * It is immutable across re-sorting and corresponds with
+     * the stored db value.
+     * Getting an object by this does not guarantee
+     * that the item.index property will equal the
+     * list index. That could happen if updateOrder has not
+     * yet run.
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param index
+     */
     getItemById: function getItemById(state, getters) {
         return function (id) {
             console.log('getItemById', state, id);
-
             return function (state, id) {
                 var r = state.items.filter(function (i) {
                     if (i.id === id) {
@@ -39040,7 +40032,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Item":356,"../../models/Payload":357,"../../store/action-types":360,"../../store/mutation-types":376,"vue":314}],371:[function(require,module,exports){
+},{"../../models/Item":357,"../../models/Payload":358,"../../store/action-types":361,"../../store/mutation-types":377,"vue":315}],372:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39139,7 +40131,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":357,"../action-types":360,"../mutation-types":376}],372:[function(require,module,exports){
+},{"../../models/Payload":358,"../action-types":361,"../mutation-types":377}],373:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39278,7 +40270,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":357,"../../models/Question":358,"../action-types":360,"../mutation-types":376}],373:[function(require,module,exports){
+},{"../../models/Payload":358,"../../models/Question":359,"../action-types":361,"../mutation-types":377}],374:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39347,7 +40339,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":357,"../action-types":360,"../mutation-types":376}],374:[function(require,module,exports){
+},{"../../models/Payload":358,"../action-types":361,"../mutation-types":377}],375:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39467,7 +40459,7 @@ exports.default = {
     state: state
 };
 
-},{"../../models/Payload":357,"../../models/Student":359,"../action-types":360,"../mutation-types":376}],375:[function(require,module,exports){
+},{"../../models/Payload":358,"../../models/Student":360,"../action-types":361,"../mutation-types":377}],376:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39604,7 +40596,7 @@ exports.default = {
     mutations: mutations
 };
 
-},{"../../models/Payload":357,"../action-types":360,"../mutation-types":376}],376:[function(require,module,exports){
+},{"../../models/Payload":358,"../action-types":361,"../mutation-types":377}],377:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39695,7 +40687,7 @@ var toggleDeleteButtonVisibility = exports.toggleDeleteButtonVisibility = 'toggl
 var toggleReorderMode = exports.toggleReorderMode = 'toggleReorderMode';
 var toggleSampleFeedback = exports.toggleSampleFeedback = 'toggleSampleFeedback';
 
-},{}],377:[function(require,module,exports){
+},{}],378:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -39729,7 +40721,7 @@ var mutations = exports.mutations = _defineProperty({}, mTypes.setExam, function
     //other allowed payload types
 });
 
-},{"./mutation-types":376}],378:[function(require,module,exports){
+},{"./mutation-types":377}],379:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39759,6 +40751,6 @@ exports.default = {
 
 };
 
-},{}]},{},[335]);
+},{}]},{},[336]);
 
 //# sourceMappingURL=new-setup-package.js.map

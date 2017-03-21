@@ -5,7 +5,6 @@ import Item from '../../models/Item'
 const Vue = require( 'vue' );
 
 
-
 /**
  * The older version used an index value to do lots of stuff.
  * Given the prospect of using a websocket connection or connecting
@@ -25,8 +24,6 @@ const state = {
      */
     items: [],
 
-    myList: [],
-
     /**
      * Mapping from older ItemIndex to new Item id value
      */
@@ -34,14 +31,16 @@ const state = {
 };
 
 const helpers = {
-    getItemFromPayload(state, payload){
-        if(typeof payload.id != 'undefined'){
+    getItemFromPayload( state, payload ){
+        if ( typeof payload.id != 'undefined' ) {
             //get the item
             var item = state.items.filter( function ( i ) {
-                if ( i.id === id ) { return i; }
+                if ( i.id === id ) {
+                    return i;
+                }
             } );
             return item;
-        }else{
+        } else {
             //get the item
             return state.items[ payload.index ];
         }
@@ -49,18 +48,18 @@ const helpers = {
 }
 
 const mutations = {
-    
-    [mTypes.updateOrder]: (state, payload) =>{
+
+    [mTypes.updateOrder]: ( state, payload ) => {
         console.log( mTypes.updateOrder, state, payload );
 
         //this just requires us to match list indexes w the
         //property of the item
-        for(let i=0; i<state.items.length; i++){
-            let item = state.items[i];
+        for ( let i = 0; i < state.items.length; i++ ) {
+            let item = state.items[ i ];
             //set the property on the object
-            Vue.set(item, 'index', i);
+            Vue.set( item, 'index', i );
             //set it in the array with vue
-            state.items.$set(i, item);
+            state.items.$set( i, item );
         }
     },
 
@@ -76,8 +75,13 @@ const mutations = {
         let len = state.items.length;
         //set the item index
         let index = len == 0 || 1 ? len : len + 1;
-        let item = Item.factory( {id: index, index: index} );
+
+        //to be replaced with lookup from server
+        let id = Math.floor(Math.random() * (999999999 - 1111111111 + 1)) +  1111111111;
+
+        let item = new Item() //.factory( {id: id, index: index} );
         Vue.set( item, 'index', index );
+        Vue.set(item, 'id', id);
         state.items.$set( index, item );
     },
 
@@ -90,7 +94,7 @@ const mutations = {
      */
     [mTypes.updateItem]: ( state, payload ) => {
         console.log( mTypes.updateItem, payload, state )
-let itm = helpers.getItemFromPayload(state, payload)
+        let itm = helpers.getItemFromPayload( state, payload )
 
         //Set the value so vue can see it
         Vue.set( itm, payload.updateProp, payload.updateVal );
@@ -107,7 +111,7 @@ let itm = helpers.getItemFromPayload(state, payload)
     [mTypes.updateComment]: ( state, payload ) => {
         console.log( mTypes.updateComment, payload, state )
         //get the item
-        let itm = helpers.getItemFromPayload(state, payload)
+        let itm = helpers.getItemFromPayload( state, payload )
         // let itm = state.items[ payload.index ];
         let comment = itm.getComment( payload.updateValence );
 
@@ -222,8 +226,21 @@ const actions = {
      * @param state
      * @param commit
      */
-    [aTypes.deleteItem]: ( {state, commit} ) => {
-        console.log( aTypes.deleteItem, state, commit );
+    [aTypes.deleteItem]: ( {state, commit}, payload ) => {
+        console.log( aTypes.deleteItem, state, commit , payload);
+        //check if payload has correct structure
+       let  {index, id} =  payload;
+        //remove from page
+
+            //reorder index
+
+       //call to server to delete
+
+        //confirm
+
+        //if fail, put back on page with message
+
+            //reorder index
         //todo write
     },
 
@@ -253,121 +270,131 @@ const actions = {
 };
 
 const getters = {
-        /**
-         * Returns the desired Item object
-         * Payload can have any of the following identifiers,
-         * used in descending order:
-         *      ItemId,
-         *      ItemIndex
-         *      todo Add others
-         * @param state
-         * @param getters
-         * @param payload Object containing Item identifier
-         */
-        getItem: ( state, getters, payload ) => {
-            let index;
+    /**
+     * Returns the desired Item object
+     * Payload can have any of the following identifiers,
+     * used in descending order:
+     *      ItemId,
+     *      ItemIndex
+     *      todo Add others
+     * @param state
+     * @param getters
+     * @param payload Object containing Item identifier
+     */
+    getItem: ( state, getters, payload ) => {
+        let {index, id} = payload;
+        //room for other ways of finding index
+        if ( typeof id != 'undefined' ) {
+            return this.getItemById( state, getters, id );
+        }
+        if ( typeof index != 'undefined' ) {
+            return this.getItemByIndex( state, getters, index );
+        }
+        //default case
+        throw new Error( 'bad input to getItem' )
+    },
 
-            //room for other ways of finding index
-            index = payload.index;
 
-            console.log( 'getItem', payload );
+    /**
+     * Returns the item object residing at the
+     * given index in the list.
+     * This does not guarantee
+     * that the item.index property will equal the
+     * list index. That could happen if updateOrder has not
+     * yet run.
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param index
+     */
+    getItemByIndex: ( state, getters ) => ( index ) => {
+        console.log( 'getItemByIndex', state, index );
+        return function ( state, index ) {
             return state.items[ index ];
-        },
+         }( state, index )
+    },
+
+    /**
+     * Returns the item object with the given id.
+     * This is the preferred way of looking up objects.
+     * It is immutable across re-sorting and corresponds with
+     * the stored db value.
+     * Getting an object by this does not guarantee
+     * that the item.index property will equal the
+     * list index. That could happen if updateOrder has not
+     * yet run.
+     * @param state
+     * @param getters
+     * @param rootState
+     * @param index
+     */
+    getItemById: ( state, getters ) => ( id ) => {
+        console.log( 'getItemById', state, id );
+        return function ( state, id ) {
+            var r = state.items.filter( function ( i ) {
+                if ( i.id === id ) {
+                    return i;
+                }
+            } );
+            return r[ 0 ];
+        }( state, id )
+
+    },
 
 
-        /**
-         * Returns the item object with the given index
-         * @param state
-         * @param getters
-         * @param rootState
-         * @param index
-         */
-        // getItemByIndex: ( state, getters, index ) => {
-        getItemByIndex: ( state, getters ) => ( index ) => {
-            //
-            console.log( 'getItemByIndex', state, index );
-            // return state.items[ index ];
+    /**
+     * Returns list of items objects
+     * @param state
+     * @param getters
+     * @param payload
+     * @returns []
+     */
+    getAllItems: ( state, getters, rootState ) => {
+        return state.items;
+    },
 
-            return function ( state, index ) {
-                return state.items[ index ];
-                // var r = state.items.filter( function ( i ) {
-                //     if ( i.index === index ) {
-                //         return i;
-                //     }
-                // } );
-                // return r[ 0 ];
-            }( state, index )
-
-        },
-
-        getItemById: ( state, getters ) => ( id ) => {
-            console.log( 'getItemById', state, id );
-
-            return function ( state, id ) {
-                var r = state.items.filter( function ( i ) {
-                    if ( i.id === id ) {
-                        return i;
-                    }
-                } );
-                return r[ 0 ];
-            }( state, id )
-
-        },
+    getAllIndexesList: ( state, getters, rootState, payload ) => {
+        let out = [];
+        for ( let [ key, val ] of state.items ) {
+            // console.log( 'getAllIndexesList', key, val );
+            out.push( key );
+        }
+        return out;
+    },
 
 
-        /**
-         * Returns list of items objects
-         * @param state
-         * @param getters
-         * @param payload
-         * @returns []
-         */
-        getAllItems: ( state, getters, rootState ) => {
-            return state.items;
-        },
+    /**
+     * Return list of Item objects
+     * @param state
+     * @param getters
+     * @param payload
+     * @returns []
+     */
+    getAllItemsList: ( state, getters ) => ( items ) => {
+        let out = [];
+        // if ( state.items.size > 0 ) {
+        for ( let [ key, val ] of items ) {
+            // for ( let [ key, val ] of state.items.entries() ) {
+            // console.log( 'getAllItemsList', key, val );
+            out.push( val );
+        }
+        // }
+        return out;
+    },
 
-        getAllIndexesList: ( state, getters, rootState, payload ) => {
-            let out = [];
-            for ( let [ key, val ] of state.items ) {
-                // console.log( 'getAllIndexesList', key, val );
-                out.push( key );
-            }
-            return out;
-        },
-
-
-        /**
-         * Return list of Item objects
-         * @param state
-         * @param getters
-         * @param payload
-         * @returns []
-         */
-        getAllItemsList: ( state, getters ) => ( items ) => {
-            let out = [];
-            // if ( state.items.size > 0 ) {
-            for ( let [ key, val ] of items ) {
-                // for ( let [ key, val ] of state.items.entries() ) {
-                // console.log( 'getAllItemsList', key, val );
-                out.push( val );
-            }
-            // }
-            return out;
-        },
-
-        /**
-         * Returns the current count of items
-         * @param state
-         * @param getters
-         * @param payload
-         * @returns {Number}
-         */
-        getItemCount: ( state, getters ) => {
-            return state.items.length;
-        },
+    /**
+     * Returns the current count of items
+     * @param state
+     * @param getters
+     * @param payload
+     * @returns {Number}
+     */
+    getItemCount: ( state, getters ) => {
+        return state.items.length;
+    },
 
 
-    };
+};
 
 export default {
     actions,
